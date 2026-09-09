@@ -1,0 +1,25 @@
+node_modules/
+build-ts/
+dist/*
+!dist/packed/
+dist/packed/*
+!dist/packed/.gitkeep
+*.log
+.DS_Store
+.env
+.env.local
+.env.*
+!.env.example
+
+# Playwright state, profiles, reports, and test artifacts
+test-artifacts/
+tests/.auth/
+.auth/
+storage-state*.json
+auth*.json
+
+# Local secrets and private credentials
+*.key
+*.pem
+*.p12
+*.pfx

@@ -1,0 +1,187 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Additional Settings | Fobles</title>
+    <style>
+      :root {
+        --blue: #2f6fed;
+        --border: #d8e4f2;
+        --text: #203047;
+        --muted: #6d7d90;
+        --surface: #f5f8fc;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        max-width: 960px;
+        margin: 32px auto;
+        padding: 0 24px;
+        background: var(--surface);
+        color: var(--text);
+        font:
+          14px "Open Sans",
+          Arial,
+          sans-serif;
+      }
+      h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+      p {
+        color: var(--muted);
+        line-height: 1.5;
+      }
+      #groups {
+        display: grid;
+        gap: 12px;
+        margin: 24px 0;
+      }
+      .group {
+        display: grid;
+        gap: 14px;
+        padding: 16px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: #fff;
+      }
+      .group-details,
+      .mapping {
+        display: grid;
+        grid-template-columns: 2fr 1fr 1fr auto;
+        gap: 10px;
+        align-items: end;
+      }
+      .mapping {
+        grid-template-columns: 2fr 1fr auto;
+        padding: 12px;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        background: var(--surface);
+      }
+      .group-actions {
+        display: flex;
+        gap: 8px;
+      }
+      label {
+        display: grid;
+        gap: 5px;
+        color: var(--muted);
+        font-size: 12px;
+      }
+      .visibility-setting {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin: 0 0 12px;
+        color: var(--text);
+        font-size: 14px;
+      }
+      .visibility-setting input {
+        width: 16px;
+        height: 16px;
+        margin: 0;
+        flex-shrink: 0;
+      }
+      .visibility-setting span {
+        color: var(--text);
+        line-height: 1.4;
+      }
+      .field-error {
+        color: #b42318;
+        font-size: 12px;
+        font-weight: 600;
+      }
+      input {
+        width: 100%;
+        min-height: 32px;
+        padding: 6px 8px;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        color: var(--text);
+        font: inherit;
+      }
+      input[aria-invalid="true"] {
+        border-color: #b42318;
+      }
+      button {
+        min-height: 32px;
+        padding: 6px 12px;
+        border: 1px solid rgba(47, 111, 237, 0.2);
+        border-radius: 3px;
+        background: var(--blue);
+        color: #fff;
+        cursor: pointer;
+        font: inherit;
+      }
+      .remove {
+        background: #fff;
+        color: #9c2d2d;
+        border-color: #d7a6a6;
+      }
+      #status {
+        min-height: 20px;
+        color: var(--muted);
+      }
+      details {
+        max-width: 680px;
+        color: var(--muted);
+      }
+      code {
+        color: var(--text);
+      }
+      @media (max-width: 720px) {
+        .group-details,
+        .mapping,
+        .tab-group-rule {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <h1>Fobles Settings</h1>
+    <section>
+      <h2>Developer Settings</h2>
+      <p>
+        These options are for local debugging and development only. Both default
+        to off.
+      </p>
+      <label class="visibility-setting">
+        <input id="debug-logging" type="checkbox" />
+        <span>Enable debug logging</span>
+      </label>
+      <label class="visibility-setting">
+        <input id="show-reload-extension-button" type="checkbox" />
+        <span>Show Reload Extension button</span>
+      </label>
+      <button id="save-debug-settings" type="button">
+        Save developer settings
+      </button>
+      <p id="debug-status" role="status"></p>
+    </section>
+    <h2>Additional Settings</h2>
+    <p>
+      Add one group per Sitecore account, then map that group's content roots to
+      AI Pages sites. The most specific matching root is used.
+    </p>
+    <details>
+      <summary>SitecoreAI settings example</summary>
+      <p>
+        <code
+          >Client: MyCloud | Organization: org_Ab12Cd34Ef56 | Tenant name:
+          tenant_Ab12Cd34Ef56 | Root:
+          /sitecore/content/ExampleTenant/example-site-123 | Site:
+          example-site-123</code
+        >
+      </p>
+    </details>
+    <div id="groups"></div>
+    <button id="add-group" type="button">Add group</button>
+    <button id="save-mappings" type="button">Save mappings</button>
+    <p id="status" role="status"></p>
+    <script src="options.js"></script>
+  </body>
+</html>

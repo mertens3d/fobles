@@ -1,0 +1,27 @@
+{
+  "name": "fobles",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "engines": {
+    "node": "24.x"
+  },
+  "scripts": {
+    "build:extension": "node tools/scripts/build/build-extension.js",
+    "check:node": "node tools/scripts/dev/check-node-version.js",
+    "test:e2e:login": "node tools/scripts/test/login-sitecore.js",
+    "test:e2e": "playwright test -c tests/playwright.config.ts --retries=0",
+    "test:e2e:debug": "playwright test -c tests/playwright.config.ts --debug",
+    "typecheck:extension": "tsc --noEmit -p tsconfig.extension.json",
+    "build:scss": "sass src/styles/fobles-extension.scss dist/unpacked/fobles.css --no-source-map"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.55.0",
+    "@types/chrome": "^0.2.9",
+    "@types/node": "^26.5.0",
+    "dotenv": "^16.6.1",
+    "esbuild": "^0.27.2",
+    "sass": "^1.97.3",
+    "typescript": "^5.6.3"
+  }
+}
