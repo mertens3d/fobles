@@ -118,7 +118,7 @@ export const CLASS = {
   TOOLBAR_CLOSE_BUTTON: "fobles-toolbar-close-button",
   TOOLBAR_POSITION_BUTTON: "fobles-toolbar-position-button",
   TOOLBAR_SET_ISE_TITLE_BUTTON: "foble-nav-set-ise-title-button",
-  TOOLBAR_FEATURE_BUTTON: "foble-nav-button foble-nav-feature-button",
+  TOOLBAR_LBOLT_BUTTON: "foble-nav-button foble-nav-lbolt-button",
 } as const;
 
 export const SELECTORS = {

@@ -4,10 +4,27 @@ const path = require("node:path");
 class StaticTestReporter {
   constructor(options = {}) {
     this.outputFile = path.resolve(
-      options.outputFile ?? path.resolve(__dirname, "../../../test-artifacts/reports/test-report.html"),
+      options.outputFile ??
+        path.resolve(
+          __dirname,
+          "../../../test-artifacts/reports/browser-test-report.html",
+        ),
     );
     this.startedAt = new Date();
     this.results = [];
+  }
+
+  onBegin(config, suite) {
+    process.env.FOBLES_TOTAL_TESTS = String(suite.allTests().length);
+    console.log(`Testing ${suite.allTests().length} test(s)`);
+    this.writeReport({ status: "running" });
+  }
+
+  onTestBegin(test) {
+    const testNumber = test.parent.allTests().indexOf(test) + 1;
+    console.log(
+      `test ${testNumber}:${test.location.line} - ${test.titlePath().join(" > ")}`,
+    );
   }
 
   onTestEnd(test, result) {
@@ -18,6 +35,8 @@ class StaticTestReporter {
       error: stripAnsi(result.error?.message ?? ""),
       steps: flattenSteps(result.steps ?? []),
     });
+    const testNumber = test.parent.allTests().indexOf(test) + 1;
+    console.log(`test ${testNumber} ${result.status}`);
     this.writeReport({ status: "running" });
   }
 
@@ -30,14 +49,21 @@ class StaticTestReporter {
     const timestamp = finishedAt.toLocaleString();
     const duration = finishedAt.getTime() - this.startedAt.getTime();
     const checks = this.results.flatMap((result) => result.steps);
-    const counts = checks.reduce((summary, result) => {
+    const stepCounts = checks.reduce((summary, result) => {
+      summary[result.status] = (summary[result.status] ?? 0) + 1;
+      return summary;
+    }, {});
+    const testCounts = this.results.reduce((summary, result) => {
       summary[result.status] = (summary[result.status] ?? 0) + 1;
       return summary;
     }, {});
     const passed = fullResult.status === "passed";
     const running = fullResult.status === "running";
+    const discoveryOnly = this.results.length === 0;
     const reportStatus = running
       ? "Run in progress"
+      : discoveryOnly
+        ? "Discovery only - no tests executed"
       : passed
         ? "All tests passed"
         : `Run ${formatStatus(fullResult.status).toLowerCase()}`;
@@ -70,6 +96,7 @@ class StaticTestReporter {
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
+  ${running ? '<meta http-equiv="refresh" content="2">' : ""}
   <title>Playwright Test Report</title>
   <style>
     body { color: #1f2933; font: 16px system-ui, sans-serif; margin: 1rem 2rem; }
@@ -101,10 +128,14 @@ class StaticTestReporter {
     <p class="status">${reportStatus}</p>
     <p class="meta">${running ? "Updated" : "Completed"} ${escapeHtml(timestamp)} · Total duration ${escapeHtml(formatDuration(duration))}</p>
     <section class="summary">
-      <div class="summary-card"><strong>${counts.passed ?? 0}</strong>Checks passed</div>
-      <div class="summary-card"><strong>${counts.failed ?? 0}</strong>Checks failed</div>
-      <div class="summary-card"><strong>${counts.skipped ?? 0}</strong>Checks skipped</div>
-      <div class="summary-card"><strong>${checks.length}</strong>Checks total</div>
+      <div class="summary-card"><strong>${testCounts.passed ?? 0}</strong>Tests passed</div>
+      <div class="summary-card"><strong>${testCounts.failed ?? 0}</strong>Tests failed</div>
+      <div class="summary-card"><strong>${testCounts.skipped ?? 0}</strong>Tests skipped</div>
+      <div class="summary-card"><strong>${this.results.length}</strong>Tests total</div>
+      <div class="summary-card"><strong>${stepCounts.passed ?? 0}</strong>Steps passed</div>
+      <div class="summary-card"><strong>${stepCounts.failed ?? 0}</strong>Steps failed</div>
+      <div class="summary-card"><strong>${stepCounts.skipped ?? 0}</strong>Steps skipped</div>
+      <div class="summary-card"><strong>${checks.length}</strong>Steps total</div>
     </section>
     <table>
       <thead><tr><th>Result</th><th>Test step</th><th>Duration</th><th>Details</th></tr></thead>
@@ -117,7 +148,9 @@ class StaticTestReporter {
 
     fs.mkdirSync(path.dirname(this.outputFile), { recursive: true });
     fs.writeFileSync(this.outputFile, html, "utf8");
-    console.log(`Static test report written to ${this.outputFile}`);
+    if (!fullResult || fullResult.status !== "running") {
+      console.log(`Browser test report written to ${this.outputFile}`);
+    }
   }
 }
 

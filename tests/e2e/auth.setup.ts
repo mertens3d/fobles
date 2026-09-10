@@ -1,10 +1,11 @@
 import { test as setup } from "./fixtures/playwright";
 import { getTestEnvironment } from "./fixtures/environment";
+import { testLogger } from "../testLogger";
 
 setup("manual auth note", async ({ page }) => {
   const { loginUrl } = getTestEnvironment();
 
-  console.warn(
+  testLogger.warn(
     [
       "Using a persistent Chrome profile for local authentication.",
       "Log in to Sitecore once in the browser profile, then keep using that same browser.",

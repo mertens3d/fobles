@@ -1,4 +1,5 @@
 import { CONST } from "./CONST";
+import { testLogger } from "../testLogger";
 import {
   expect,
   type Frame,
@@ -71,9 +72,7 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
         height: box.height,
       };
     });
-  console.log(
-    `[fobles] Mouse preflight initial marker: ${JSON.stringify(markerState)}`,
-  );
+  testLogger.debug("Mouse preflight initial marker", markerState);
 
   await page.mouse.move(100, 100);
   await page.evaluate(() => {
@@ -96,9 +95,7 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
         height: box.height,
       };
     });
-  console.log(
-    `[fobles] Mouse preflight moved marker: ${JSON.stringify(movedState)}`,
-  );
+  testLogger.debug("Mouse preflight moved marker", movedState);
   expect(movedState.width).toBeGreaterThan(0);
   expect(movedState.height).toBeGreaterThan(0);
   expect(movedState.left).toBeGreaterThan(90);
@@ -114,7 +111,7 @@ export async function moveMouseTo(
   const box = await target.boundingBox();
   if (!box) throw new Error("Could not locate mouse target");
 
-  console.log(`[fobles] Mouse target ${label}: ${JSON.stringify(box)}`);
+  testLogger.step(`Mouse target ${label}`, box);
   await moveMouseToPosition(
     page,
     {
@@ -144,8 +141,8 @@ export async function moveMouseToPosition(
     1_000;
   const stepDelay = 1_000 / CONST.MOUSE.UPDATE_HZ;
   const steps = Math.max(1, Math.ceil(durationMs / stepDelay));
-  console.log(
-    `[fobles] Mouse move ${label}: start=(${startPosition.x.toFixed(1)}, ${startPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${steps}`,
+  testLogger.step(
+    `Mouse move ${label}: start=(${startPosition.x.toFixed(1)}, ${startPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${steps}`,
   );
 
   for (let step = 1; step <= steps; step += 1) {
@@ -159,8 +156,8 @@ export async function moveMouseToPosition(
 
   position.x = targetPosition.x;
   position.y = targetPosition.y;
-  console.log(
-    `[fobles] Mouse move ${label} ended at (${position.x.toFixed(1)}, ${position.y.toFixed(1)})`,
+  testLogger.debug(
+    `Mouse move ${label} ended at (${position.x.toFixed(1)}, ${position.y.toFixed(1)})`,
   );
 }
 
@@ -187,9 +184,7 @@ export async function moveMouseOutsideHoverArea(
       Math.max(...sourceBoxes.map((box) => box.y + box.height)) -
       Math.min(...sourceBoxes.map((box) => box.y)),
   };
-  console.log(
-    `[fobles] Hover region ${label}: ${JSON.stringify(sourceBoxes)} => ${JSON.stringify(sourceBox)}`,
-  );
+  testLogger.debug(`Hover region ${label}`, { sourceBoxes, sourceBox });
 
   const viewport = await page.evaluate(() => ({
     width: window.innerWidth,
@@ -232,8 +227,8 @@ export async function moveMouseOutsideHoverArea(
     return candidateDistance < closestDistance ? candidate : closest;
   });
 
-  console.log(
-    `[fobles] Hover boundary ${label}: outside ${JSON.stringify(sourceBox)} => (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`,
+  testLogger.step(
+    `Hover boundary ${label}: outside ${JSON.stringify(sourceBox)} => (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`,
   );
   await moveMouseToPosition(page, targetPosition, position, label);
 }

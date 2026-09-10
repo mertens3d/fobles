@@ -1,6 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 import { CONST } from "../CONST";
 import { getTestEnvironment } from "./environment";
+import { testLogger } from "../../testLogger";
 
 async function ensureAuthenticatedUrl(page: Page): Promise<void> {
   const currentUrl = page.url();
@@ -12,34 +13,49 @@ async function ensureAuthenticatedUrl(page: Page): Promise<void> {
       return currentUrl;
     }
   })();
-  console.log(`[sitecore preflight] Looking for Fobles menu at: ${displayUrl}`);
-
-  await expect
-    .poll(
-      async () => {
-        for (const frame of page.frames()) {
-          if (
-            (await frame
-              .locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER)
-              .count()) > 0
-          ) {
-            return true;
+  testLogger.waitFor(
+    `Fobles menu after login at ${displayUrl}`,
+    CONST.TIMEOUTS.DISCOVERY_MS,
+  );
+  try {
+    await expect
+      .poll(
+        async () => {
+          for (const frame of page.frames()) {
+            if (
+              (await frame
+                .locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER)
+                .count()) > 0
+            ) {
+              testLogger.info(`Login succeeded; Fobles menu found in frame ${frame.url()}`);
+              return true;
+            }
           }
-        }
-        return false;
-      },
-      {
-        timeout: CONST.TIMEOUTS.DISCOVERY_MS,
-        message: `Waiting for the Fobles menu to appear at ${displayUrl}`,
-      },
-    )
-    .toBe(true);
+          return false;
+        },
+        {
+          timeout: CONST.TIMEOUTS.DISCOVERY_MS,
+          message: `Waiting for the Fobles menu to appear at ${displayUrl}`,
+        },
+      )
+      .toBe(true);
+  } catch (error) {
+    testLogger.error("Fobles menu wait failed", {
+      pageUrl: page.url(),
+      frameUrls: page.frames().map((frame) => frame.url()),
+      timeoutMs: CONST.TIMEOUTS.DISCOVERY_MS,
+      reason: error instanceof Error ? error.message : String(error),
+    });
+    throw error;
+  }
 }
 
 export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   const { baseUrl } = getTestEnvironment();
   const url = new URL(path || baseUrl, baseUrl).toString();
+  testLogger.step(`Navigate to ${url}`);
   await page.goto(url, { waitUntil: "domcontentloaded" });
+  testLogger.info(`Navigation reached ${page.url()}`);
   await ensureAuthenticatedUrl(page);
 }
 

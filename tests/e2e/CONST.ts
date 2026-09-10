@@ -1,8 +1,34 @@
 import { scenarios } from "./scenarios";
 import type { TestSpeed } from "./types";
 
+const ATTRIBUTES = {
+  FOBLE_BUTTON: "data-is-foble-button",
+  FOBLE_WRAPPER: "data-foble-wrapper",
+  NAV: "data-foble-nav",
+  NAV_OWNER: "data-foble-nav-owner",
+  MENU_URL: "data-foble-menu-url",
+  MENU_VISIBLE: "data-visible",
+  TREE_JUMP_PATH: "data-foble-tree-jump-path",
+  VALUE: {
+    PRESENT: "1",
+    TRUE: "true",
+    FALSE: "false",
+  },
+} as const;
+
 export const CONST = {
+  ATTRIBUTES,
   SCENARIOS: scenarios,
+  LOGGING: {
+    IGNORED_BROWSER_ERRORS: [
+      "auth.sitecorecloud.io/favicon.ico",
+      "/-/icon/Applications/48x48/chart.png",
+      "/-/icon/Applications/48x48/database.png",
+      "Tracking Prevention blocked access to storage for https://s.gravatar.com/avatar/",
+      "Tracking Prevention blocked access to storage for https://i0.wp.com/cdn.auth0.com/avatars/gr.png",
+      "Permissions policy violation: unload is not allowed in this document.",
+    ],
+  },
   SPEED: {
     SELECTED: "WALK" as TestSpeed,
     SETTINGS: {
@@ -51,11 +77,15 @@ export const CONST = {
   },
   SITECORE: {
     SELECTORS: {
-      TOOLBAR: "[data-foble-nav]",
-      QUICK_MENU_TRIGGER: "[data-foble-nav-owner='1']",
+      EDITOR_TABS: "#EditorTabs",
+      LBOLT_BUTTON: "button.foble-nav-lbolt-button",
+      TOOLBAR: `[${ATTRIBUTES.NAV}]`,
+      QUICK_MENU_TRIGGER: `[${ATTRIBUTES.NAV_OWNER}='${ATTRIBUTES.VALUE.PRESENT}']`,
       QUICK_MENU: ".fobles-quick-menu",
       TOOLBAR_TOGGLE_BUTTON: "button[title='Toggle Foble navigation']",
       MENU_TRIGGER: ".fobles-quick-menu-trigger",
+      TREE_JUMP_BUTTON: `[${ATTRIBUTES.TREE_JUMP_PATH}]`,
+      MENU_URL_BUTTON: `[${ATTRIBUTES.MENU_URL}]`,
     },
     LABELS: {
       TOGGLE_FOBLES: /toggle fobles/i,

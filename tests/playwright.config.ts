@@ -13,15 +13,24 @@ export default defineConfig({
   expect: {
     timeout: 20_000,
   },
-  retries: 1,
+  workers: 1,
+  retries: 0,
   reporter: [
-    ["list"],
+    [
+      "json",
+      { outputFile: path.join(testArtifactsDir, "logs/playwright-report.json") },
+    ],
     [
       path.resolve(
         process.cwd(),
         "tools/scripts/test/static-test-reporter.cjs",
       ),
-      { outputFile: path.join(testArtifactsDir, "reports/test-report.html") },
+      {
+        outputFile: path.join(
+          testArtifactsDir,
+          "reports/browser-test-report.html",
+        ),
+      },
     ],
   ],
   use: {

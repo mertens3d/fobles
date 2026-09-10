@@ -47,7 +47,7 @@ function getEnvironment() {
 
 const environment = getEnvironment();
 const targetUrl = environment.endpoint;
-const maxAttempts = 10;
+const maxAttempts = 1;
 const retryDelayMs = 2_000;
 const testArtifactsDir = path.join(projectRoot, "test-artifacts/logs");
 const logFile = path.join(testArtifactsDir, "test-run.log");

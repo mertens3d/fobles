@@ -88,7 +88,7 @@ function createMenuTrigger(
 function createFeatureButton(context: ToolbarContext): HTMLButtonElement {
   const button = context.doc.createElement("button");
   button.type = "button";
-  button.className = CLASS.TOOLBAR_FEATURE_BUTTON;
+  button.className = CLASS.TOOLBAR_LBOLT_BUTTON;
   button.textContent = SYMBOLS.LIGHTNING;
   button.title = TEXT.TOGGLE_FEATURES;
   button.setAttribute(
@@ -256,7 +256,7 @@ export function injectToolbar(context: ToolbarContext): void {
     isSelectRenderingDialog(context.win.location) ||
     isFieldEditorDialogPath(context.win.location.pathname);
 
-  if (!container.querySelector(`.${CLASS.TOOLBAR_FEATURE_BUTTON.split(" ").join(".")}`)) {
+  if (!container.querySelector(`.${CLASS.TOOLBAR_LBOLT_BUTTON.split(" ").join(".")}`)) {
     container.appendChild(createFeatureButton(context));
   }
 

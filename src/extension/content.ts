@@ -295,7 +295,7 @@ async function reconcileCurrentPage(): Promise<void> {
   setToolbarVisible(getToolbarContext(), fobleNavVisible);
   extensionLog.debug("Fobles menu injection result", {
     toolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
-    featureButton: Boolean(document.querySelector(".foble-nav-feature-button")),
+    featureButton: Boolean(document.querySelector(".foble-nav-lbolt-button")),
     menuTrigger: Boolean(document.querySelector(SELECTORS.QUICK_MENU_TRIGGER)),
     foblesUiActive,
   });
