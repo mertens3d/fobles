@@ -6,12 +6,10 @@ const projectRoot = resolve(
   dirname(fileURLToPath(import.meta.url)),
   "../../..",
 );
-const buildInfoPath = join(projectRoot, "src", "extension", "buildInfo.ts");
-const buildInfo = await readFile(buildInfoPath, "utf8");
-const buildMatch = buildInfo.match(/BUILD_STAMP\s*=\s*"([^"]+)"/);
-const buildStamp = buildMatch
-  ? buildMatch[1]
-  : new Date().toISOString().replace("T", " ").slice(0, 19);
+const stampPath = join(projectRoot, "dist", "build-stamp.txt");
+const buildStamp = await readFile(stampPath, "utf8").catch(
+  () => new Date().toISOString().replace("T", " ").slice(0, 19),
+);
 
 const banner = [
   "// =============================================================",
@@ -37,10 +35,10 @@ async function applyBannerToGeneratedFiles() {
   await copyFile(iconSourcePath, iconOutputPath);
 
   for (const fileName of maintainedFiles) {
-    await copyFile(
-      join(projectRoot, "src", "extension", fileName),
-      join(projectRoot, "dist", "unpacked", fileName),
-    );
+    const sourcePath = join(projectRoot, "src", "extension", fileName);
+    const outputPath = join(projectRoot, "dist", "unpacked", fileName);
+    const content = await readFile(sourcePath, "utf8");
+    await writeFile(outputPath, content.replaceAll("__BUILD_STAMP__", buildStamp));
   }
 
   for (const fileName of generatedFiles) {

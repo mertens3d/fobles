@@ -106,6 +106,21 @@
           Arial,
           sans-serif;
       }
+
+      #reload-extension {
+        margin-bottom: 8px;
+        background: #ffffff;
+        border-color: var(--border);
+        color: var(--text);
+      }
+
+      .build-info {
+        margin-top: 12px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        line-height: 1.5;
+      }
     </style>
   </head>
   <body>
@@ -140,7 +155,13 @@
       <input id="turn-off-fobles-after-navigation" type="checkbox" />
       <span>Turn off Fobles after opening an item</span>
     </label>
+    <button id="reload-extension" type="button" hidden>Reload Extension</button>
     <button id="open-options" type="button">Additional Settings</button>
+    <aside class="build-info">
+      <div>Fobles for Sitecore</div>
+      <div>Build: <strong>__BUILD_STAMP__</strong></div>
+      <div>Created by: <strong>Gregory Mertens</strong></div>
+    </aside>
     <script src="popup.js"></script>
   </body>
 </html>
