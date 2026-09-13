@@ -1,3 +1,11 @@
+import { QUICK_MENU_BUTTON_CATALOG, type QuickMenuButtonDescriptor } from "../features/quick-menu";
+import {
+  getQuickMenuButtonSettings,
+  sanitizeQuickMenuPathSuffix,
+  setQuickMenuButtonSettings,
+  type QuickMenuButtonSettings,
+} from "../features/quick-menu/button-settings";
+
 const AI_PAGES_MAPPINGS_KEY = "aiPagesMappings";
 const DEBUG_LOGGING_KEY = "debugLogging";
 const SHOW_RELOAD_EXTENSION_BUTTON_KEY = "showReloadExtensionButton";
@@ -28,6 +36,10 @@ const showReloadExtensionButtonInput = getElement<HTMLInputElement>(
   "show-reload-extension-button",
 );
 const debugStatus = getElement<HTMLParagraphElement>("debug-status");
+const viewStoredSettingsButton = getElement<HTMLButtonElement>("view-stored-settings");
+const storedSettingsOutput = getElement<HTMLPreElement>("stored-settings-output");
+const quickMenuButtonsContainer = getElement<HTMLDivElement>("quick-menu-buttons");
+const quickMenuButtonsStatus = getElement<HTMLParagraphElement>("quick-menu-buttons-status");
 
 groupsContainer.addEventListener("input", () => {
   statusMessage.textContent = "";
@@ -194,3 +206,124 @@ void chrome.storage.sync
     showReloadExtensionButtonInput.checked =
       result[SHOW_RELOAD_EXTENSION_BUTTON_KEY] === true;
   });
+
+viewStoredSettingsButton.addEventListener("click", () => {
+  void Promise.all([
+    chrome.storage.sync.get(null),
+    chrome.storage.local.get(null),
+  ]).then(([sync, local]) => {
+    storedSettingsOutput.textContent = JSON.stringify({ sync, local }, null, 2);
+    storedSettingsOutput.hidden = false;
+  });
+});
+
+function createQuickMenuButtonRow(
+  descriptor: QuickMenuButtonDescriptor,
+  settings: QuickMenuButtonSettings,
+): HTMLDivElement {
+  const row = document.createElement("div");
+  row.className = "quick-menu-button-row";
+  if (!descriptor.supportsPathSuffix) {
+    row.classList.add("quick-menu-button-row--no-suffix");
+  }
+
+  const enabledInput = document.createElement("input");
+  enabledInput.type = "checkbox";
+  enabledInput.name = "enabled";
+  enabledInput.dataset.buttonId = descriptor.id;
+  enabledInput.checked = settings[descriptor.id]?.enabled !== false;
+  row.appendChild(enabledInput);
+
+  const label = document.createElement("span");
+  label.className = "quick-menu-button-label";
+  label.textContent = descriptor.label;
+  if (descriptor.basePath) {
+    label.title = descriptor.basePath;
+  }
+  row.appendChild(label);
+
+  if (descriptor.supportsPathSuffix) {
+    const suffixInput = document.createElement("input");
+    suffixInput.type = "text";
+    suffixInput.name = "pathSuffix";
+    suffixInput.dataset.buttonId = descriptor.id;
+    suffixInput.placeholder = "optional sub-path";
+    suffixInput.title = `Appended after ${descriptor.basePath}`;
+    suffixInput.value = settings[descriptor.id]?.pathSuffix ?? "";
+    suffixInput.addEventListener("blur", () => {
+      suffixInput.value = sanitizeQuickMenuPathSuffix(suffixInput.value);
+    });
+    row.appendChild(suffixInput);
+  }
+
+  return row;
+}
+
+function renderQuickMenuButtons(settings: QuickMenuButtonSettings): void {
+  quickMenuButtonsContainer.textContent = "";
+
+  const columns = new Map<string, QuickMenuButtonDescriptor[]>();
+  QUICK_MENU_BUTTON_CATALOG.forEach((descriptor) => {
+    const column = columns.get(descriptor.column) ?? [];
+    column.push(descriptor);
+    columns.set(descriptor.column, column);
+  });
+
+  const columnDetailsElements: HTMLDetailsElement[] = [];
+
+  columns.forEach((descriptors, columnTitle) => {
+    const columnSection = document.createElement("details");
+    columnSection.className = "quick-menu-column";
+    // The "name" attribute is a native accordion hint in newer browsers; the toggle
+    // listener below enforces single-open behavior everywhere else.
+    columnSection.setAttribute("name", "quick-menu-column");
+
+    const summary = document.createElement("summary");
+    summary.textContent = columnTitle;
+    columnSection.appendChild(summary);
+
+    descriptors.forEach((descriptor) =>
+      columnSection.appendChild(createQuickMenuButtonRow(descriptor, settings)),
+    );
+    quickMenuButtonsContainer.appendChild(columnSection);
+    columnDetailsElements.push(columnSection);
+  });
+
+  columnDetailsElements.forEach((details) => {
+    details.addEventListener("toggle", () => {
+      if (!details.open) return;
+      columnDetailsElements.forEach((other) => {
+        if (other !== details) other.open = false;
+      });
+    });
+  });
+}
+
+getElement<HTMLButtonElement>("save-quick-menu-buttons").addEventListener("click", () => {
+  const settings: QuickMenuButtonSettings = {};
+  QUICK_MENU_BUTTON_CATALOG.forEach((descriptor) => {
+    const enabledInput = quickMenuButtonsContainer.querySelector<HTMLInputElement>(
+      `input[name='enabled'][data-button-id='${descriptor.id}']`,
+    );
+    const suffixInput = quickMenuButtonsContainer.querySelector<HTMLInputElement>(
+      `input[name='pathSuffix'][data-button-id='${descriptor.id}']`,
+    );
+    const pathSuffix = suffixInput ? sanitizeQuickMenuPathSuffix(suffixInput.value) : "";
+    if (suffixInput) suffixInput.value = pathSuffix;
+
+    settings[descriptor.id] = {
+      label: descriptor.label,
+      enabled: enabledInput?.checked !== false,
+      pathSuffix,
+    };
+  });
+
+  void setQuickMenuButtonSettings(settings).then(() => {
+    quickMenuButtonsStatus.textContent = "Quick menu buttons saved.";
+  });
+});
+
+void getQuickMenuButtonSettings().then((settings) => {
+  renderQuickMenuButtons(settings);
+});
+

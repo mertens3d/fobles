@@ -84,14 +84,15 @@ const getOrCreateConfirmation = (doc: Document): ConfirmationState => {
 };
 
 const confirmSameTabNavigation = async (doc: Document): Promise<boolean> => {
-  if (!(await getFobleNavWarningVisible())) return true;
+  const warningVisible = await getFobleNavWarningVisible();
+  if (!warningVisible) return true;
 
   const state = getOrCreateConfirmation(doc);
   if (state.dialog.open) {
     state.dialog.close();
     state.resolve?.(false);
   }
-  state.setting.checked = true;
+  state.setting.checked = warningVisible;
   return new Promise<boolean>((resolve) => {
     state.resolve = resolve;
     state.dialog.showModal();

@@ -132,6 +132,8 @@
 .fobles-quick-menu,
 .fobles-proxy-buttons {
   @include foble-menu-panel;
+  // Overrides the draggable toolbar container's grab cursor so the flyout doesn't look draggable.
+  cursor: default;
 
   &[data-visible="true"] {
     opacity: 1;

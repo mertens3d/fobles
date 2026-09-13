@@ -8,6 +8,7 @@ export const STORAGE = {
     FOBLE_NAV_VISIBLE: "fobleNavVisible",
     FOBLE_NAV_WARNING_VISIBLE: "fobleNavWarningVisible",
     TURN_OFF_FOBLES_AFTER_NAVIGATION: "turnOffFoblesAfterNavigation",
+    QUICK_MENU_BUTTON_SETTINGS: "quickMenuButtonSettings",
     AI_PAGES_MAPPINGS: "aiPagesMappings",
     KICK_ALL_USERS: "foble_kick_all_users",
   },
@@ -52,6 +53,8 @@ export const ICONS = {
 
 const POWERSHELL_ISE_PATH =
   "/sitecore/shell/Applications/PowerShell/PowerShellIse";
+const POWERSHELL_SCRIPT_LIBRARY_PATH =
+  "/sitecore/system/Modules/PowerShell/Script Library";
 const FIELD_EDITOR_PATH = "/sitecore/shell/Applications/Field Editor.aspx";
 const SHELL_DEFAULT_PATH = "/sitecore/shell/default.aspx";
 const FILE_EXPLORER_XML_CONTROL = "FileExplorer";
@@ -68,6 +71,7 @@ export const SITECORE = {
   DATABASE_QUERY_PARAMETER: "db",
   ITEM_ID_QUERY_PARAMETER: "id",
   POWERSHELL_ISE_PATH,
+  POWERSHELL_SCRIPT_LIBRARY_PATH,
   FIELD_EDITOR_PATH,
   KICK_USERS_PATH: "/sitecore/client/Applications/LicenseOptions/KickUser.aspx",
   MENU_PATHS: [

@@ -4,7 +4,6 @@ import {
   TOOLBAR_CORNERS,
   type ToolbarPlacement,
 } from "./constants";
-import { extensionLog } from "./logger";
 import type { DebugSettings } from "./content.types";
 
 function isValidPlacement(value: unknown): value is ToolbarPlacement {

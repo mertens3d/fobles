@@ -48,6 +48,8 @@ npm run test:e2e
 
 Use `npm run test:e2e:debug` when stepping through a test interactively.
 
+See [tests/README.md](../tests/README.md) for setup details and the Sitecore test login troubleshooting note.
+
 ## Usage
 
 - **Ctrl+Shift+E** (or **Cmd+Shift+E** on Mac): Toggle Fobles on or off.

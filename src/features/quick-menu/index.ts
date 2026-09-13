@@ -4,10 +4,20 @@ import { createFobleButton } from "../fobles/helper";
 import { getCurrentItemId, getQuickInfoValue, openAiPages } from "./ai-pages";
 import { kickAllUsers } from "./kick-users";
 import { setProxyButtonsVisible } from "../proxy-buttons";
+import { QUICK_MENU_BUTTON_ID } from "./button-ids";
+import {
+  getQuickMenuButtonSettings,
+  joinQuickMenuPath,
+  onQuickMenuButtonSettingsChanged,
+  type QuickMenuButtonSettings,
+} from "./button-settings";
 
 export { resumeKickAllUsers } from "./kick-users";
+export { QUICK_MENU_BUTTON_ID } from "./button-ids";
+export type { QuickMenuButtonSetting, QuickMenuButtonSettings } from "./button-settings";
 
 interface MenuOption {
+  id: string;
   label: string;
   path?: string;
   url?: string;
@@ -20,6 +30,45 @@ interface MenuGroup {
   title?: string;
   options: readonly MenuOption[];
 }
+
+export interface QuickMenuButtonDescriptor {
+  id: string;
+  label: string;
+  column: string;
+  group?: string;
+  supportsPathSuffix: boolean;
+  basePath?: string;
+}
+
+let buttonSettings: QuickMenuButtonSettings = {};
+const registeredRows: Array<{ id: string; row: HTMLElement }> = [];
+
+// The row's "display: flex !important" rule outranks the `hidden` attribute's UA style,
+// so disabled rows must be hidden via an inline !important override instead.
+const setRowVisibility = (row: HTMLElement, visible: boolean): void => {
+  if (visible) {
+    row.style.removeProperty("display");
+  } else {
+    row.style.setProperty("display", "none", "important");
+  }
+};
+
+const applyQuickMenuButtonSettings = (): void => {
+  registeredRows.forEach(({ id, row }) => {
+    setRowVisibility(row, buttonSettings[id]?.enabled !== false);
+  });
+};
+
+const loadQuickMenuButtonSettings = async (): Promise<void> => {
+  buttonSettings = await getQuickMenuButtonSettings();
+  applyQuickMenuButtonSettings();
+};
+
+void loadQuickMenuButtonSettings();
+onQuickMenuButtonSettingsChanged((settings) => {
+  buttonSettings = settings;
+  applyQuickMenuButtonSettings();
+});
 
 const getCurrentDatabase = (doc: Document): string | null => {
   const currentUrl = new URL(
@@ -48,7 +97,8 @@ const getCurrentDatabase = (doc: Document): string | null => {
 // A "path" option jumps the content editor tree (fo=), a "url" option navigates directly.
 const buildMenuOptionUrl = (doc: Document, option: MenuOption): string => {
   if (option.path !== undefined) {
-    return `${window.location.origin}${SITECORE.CONTENT_EDITOR_PATH}?sc_bw=1&fo=${encodeURI(option.path)}`;
+    const fullPath = joinQuickMenuPath(option.path, buttonSettings[option.id]?.pathSuffix ?? "");
+    return `${window.location.origin}${SITECORE.CONTENT_EDITOR_PATH}?sc_bw=1&fo=${encodeURI(fullPath)}`;
   }
 
   const origin = doc.defaultView?.location.origin ?? window.location.origin;
@@ -65,12 +115,12 @@ const buildMenuOptionUrl = (doc: Document, option: MenuOption): string => {
 const TREE_JUMP_GROUPS: readonly MenuGroup[] = [
   {
     options: [
-      { label: "/Layout /Renderings", path: "/sitecore/layout/Renderings", icon: "/-/icon/software/48x48/elements1.png" },
-      { label: "/Layout /Placeholders", path: "/sitecore/layout/Placeholder Settings", icon: "/-/icon/business/48x48/table_selection_block.png" },
-      { label: "/Media library", path: "/sitecore/media library", icon: "/-/icon/applications/48x48/photo_scenery.png" },
-      { label: "/System /PowerShell", path: "/sitecore/system/Modules/PowerShell/Script Library", icon: "/-/icon//powershell/48x48/spe.png" },
-      { label: "/Media /Project", path: "/sitecore/media library/Project", icon: "/-/icon/Applications/48x48/folder_window.png" },
-      { label: "/Templates /Feature", path: "/sitecore/templates/Feature", icon: "/-/icon/Applications/48x48/folder_cubes.png" },
+      { id: QUICK_MENU_BUTTON_ID.LAYOUT_RENDERINGS, label: "/Layout /Renderings", path: "/sitecore/layout/Renderings", icon: "/-/icon/software/48x48/elements1.png" },
+      { id: QUICK_MENU_BUTTON_ID.LAYOUT_PLACEHOLDERS, label: "/Layout /Placeholders", path: "/sitecore/layout/Placeholder Settings", icon: "/-/icon/business/48x48/table_selection_block.png" },
+      { id: QUICK_MENU_BUTTON_ID.MEDIA_LIBRARY, label: "/Media library", path: "/sitecore/media library", icon: "/-/icon/applications/48x48/photo_scenery.png" },
+      { id: QUICK_MENU_BUTTON_ID.POWERSHELL_SCRIPT_LIBRARY, label: "/System /PowerShell", path: SITECORE.POWERSHELL_SCRIPT_LIBRARY_PATH, icon: "/-/icon//powershell/48x48/spe.png" },
+      { id: QUICK_MENU_BUTTON_ID.MEDIA_PROJECT, label: "/Media /Project", path: "/sitecore/media library/Project", icon: "/-/icon/Applications/48x48/folder_window.png" },
+      { id: QUICK_MENU_BUTTON_ID.TEMPLATES, label: "/Templates", path: "/sitecore/templates", icon: "/-/icon/Applications/48x48/folder_cubes.png" },
     ],
   },
 ];
@@ -78,23 +128,23 @@ const TREE_JUMP_GROUPS: readonly MenuGroup[] = [
 const ADMIN_PAGE_GROUPS: readonly MenuGroup[] = [
   {
     options: [
-      { label: "Show Config", url: "/sitecore/admin/showconfig.aspx", icon: "/~/icon/applications/48x48/gear_view.png" },
-      { label: "Show Services Config", url: "/sitecore/admin/showservicesconfig.aspx", icon: "/-/icon/Applications/48x48/document_gear.png"  },
-      { label: "PowerShell ISE", url: "/sitecore/shell/Applications/PowerShell/PowerShellIse?sc_bw=1", useCurrentItemId: true, icon: "/-/icon/powershell/48x48/ise8.png" },
-      { label: "Kick User", url: "/sitecore/client/Applications/LicenseOptions/KickUser", icon: "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png" },
-      { label: "Kick All Users", action: (doc) => kickAllUsers(doc), icon: "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png" },
-      { label: "Cache", url: "/sitecore/admin/cache.aspx", icon: "/-/icon/Applications/48x48/document_gear.png"  },
-      { label: "Unicorn", url: "/unicorn.aspx" , icon: "/~/icon/applicationsv2/32x32/arrow_up_right_green.png" },
-      { label: "File Explorer", url: "/sitecore/shell/default.aspx?xmlcontrol=FileExplorer", icon: "/-/icon/Applications/48x48/folder_window.png" },
-      { label: "Jobs", url: "/sitecore/admin/jobs.aspx", icon: "/-/icon/Applications/48x48/document_gear.png" },
-      { label: "Stats", url: "/sitecore/admin/stats.aspx", icon: "/-/icon/Applications/48x48/chart.png" },
+      { id: QUICK_MENU_BUTTON_ID.SHOW_CONFIG, label: "Show Config", url: "/sitecore/admin/showconfig.aspx", icon: "/~/icon/applications/48x48/gear_view.png" },
+      { id: QUICK_MENU_BUTTON_ID.SHOW_SERVICES_CONFIG, label: "Show Services Config", url: "/sitecore/admin/showservicesconfig.aspx", icon: "/-/icon/Applications/48x48/document_gear.png"  },
+      { id: QUICK_MENU_BUTTON_ID.POWERSHELL_ISE, label: "PowerShell ISE", url: "/sitecore/shell/Applications/PowerShell/PowerShellIse?sc_bw=1", useCurrentItemId: true, icon: "/-/icon/powershell/48x48/ise8.png" },
+      { id: QUICK_MENU_BUTTON_ID.KICK_USER, label: "Kick User", url: "/sitecore/client/Applications/LicenseOptions/KickUser", icon: "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png" },
+      { id: QUICK_MENU_BUTTON_ID.KICK_ALL_USERS, label: "Kick All Users", action: (doc) => kickAllUsers(doc), icon: "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png" },
+      { id: QUICK_MENU_BUTTON_ID.CACHE, label: "Cache", url: "/sitecore/admin/cache.aspx", icon: "/-/icon/Applications/48x48/document_gear.png"  },
+      { id: QUICK_MENU_BUTTON_ID.UNICORN, label: "Unicorn", url: "/unicorn.aspx" , icon: "/~/icon/applicationsv2/32x32/arrow_up_right_green.png" },
+      { id: QUICK_MENU_BUTTON_ID.FILE_EXPLORER, label: "File Explorer", url: "/sitecore/shell/default.aspx?xmlcontrol=FileExplorer", icon: "/-/icon/Applications/48x48/folder_window.png" },
+      { id: QUICK_MENU_BUTTON_ID.JOBS, label: "Jobs", url: "/sitecore/admin/jobs.aspx", icon: "/-/icon/Applications/48x48/document_gear.png" },
+      { id: QUICK_MENU_BUTTON_ID.STATS, label: "Stats", url: "/sitecore/admin/stats.aspx", icon: "/-/icon/Applications/48x48/chart.png" },
     ],
   },
   {
     title: "XP",
     options: [
-      { label: "DB Browser", url: "/sitecore/admin/dbbrowser.aspx", icon: "/-/icon/Applications/48x48/database.png" },
-      { label: "Logs", url: "/sitecore/admin/logs.aspx", icon: "/-/icon/Applications/48x48/document_text.png" },
+      { id: QUICK_MENU_BUTTON_ID.DB_BROWSER, label: "DB Browser", url: "/sitecore/admin/dbbrowser.aspx", icon: "/-/icon/Applications/48x48/database.png" },
+      { id: QUICK_MENU_BUTTON_ID.LOGS, label: "Logs", url: "/sitecore/admin/logs.aspx", icon: "/-/icon/Applications/48x48/document_text.png" },
     ],
   },
 ];
@@ -102,21 +152,44 @@ const ADMIN_PAGE_GROUPS: readonly MenuGroup[] = [
 const LANDING_PAGE_GROUPS: readonly MenuGroup[] = [
   {
     options: [
-      { label: "Launchpad", url: "/sitecore/shell/sitecore/client/applications/launchpad", icon: "/sitecore/shell/client/Applications/LaunchPad/Assets/dots-grid.svg" },
-      { label: "Control Panel", url: "/sitecore/client/Applications/ControlPanel.aspx", icon: "/-/icon/launchpadicons/48x48/controlpanel.png" },
-      { label: "Desktop", url: "/sitecore/shell/default.aspx", icon: "/-/icon/launchpadicons/48x48/desktop.png" },
-      { label: "Content Editor", url: SITECORE.CONTENT_EDITOR_PATH, icon: "/-/icon/launchpadicons/48x48/contenteditor.png" },
+      { id: QUICK_MENU_BUTTON_ID.LAUNCHPAD, label: "Launchpad", url: "/sitecore/shell/sitecore/client/applications/launchpad", icon: "/sitecore/shell/client/Applications/LaunchPad/Assets/dots-grid.svg" },
+      { id: QUICK_MENU_BUTTON_ID.CONTROL_PANEL, label: "Control Panel", url: "/sitecore/client/Applications/ControlPanel.aspx", icon: "/-/icon/launchpadicons/48x48/controlpanel.png" },
+      { id: QUICK_MENU_BUTTON_ID.DESKTOP, label: "Desktop", url: "/sitecore/shell/default.aspx", icon: "/-/icon/launchpadicons/48x48/desktop.png" },
+      { id: QUICK_MENU_BUTTON_ID.CONTENT_EDITOR, label: "Content Editor", url: SITECORE.CONTENT_EDITOR_PATH, icon: "/-/icon/launchpadicons/48x48/contenteditor.png" },
     ],
   },
   {
     title: "AI",
-    options: [{ label: "Pages", action: (doc) => openAiPages(doc), icon: "/~/icon/applicationsv2/48x48/edit.png"}],
+    options: [{ id: QUICK_MENU_BUTTON_ID.AI_PAGES, label: "Pages", action: (doc) => openAiPages(doc), icon: "/~/icon/applicationsv2/48x48/edit.png"}],
   },
   {
     title: "External",
-    options: [{ label: "Sitecore Icon Search", url: "https://sitecoreicons.com/" , icon: "/-/icon/wordprocessing/32x32/search_a_h.png"}],
+    options: [{ id: QUICK_MENU_BUTTON_ID.SITECORE_ICON_SEARCH, label: "Sitecore Icon Search", url: "https://sitecoreicons.com/" , icon: "/-/icon/wordprocessing/32x32/search_a_h.png"}],
   },
 ];
+
+const buildButtonCatalog = (): readonly QuickMenuButtonDescriptor[] => {
+  const columns: ReadonlyArray<{ title: string; groups: readonly MenuGroup[] }> = [
+    { title: TEXT.TREE_JUMPS, groups: TREE_JUMP_GROUPS },
+    { title: TEXT.ADMIN_PAGES, groups: ADMIN_PAGE_GROUPS },
+    { title: TEXT.LANDING_PAGES, groups: LANDING_PAGE_GROUPS },
+  ];
+
+  return columns.flatMap(({ title, groups }) =>
+    groups.flatMap((group) =>
+      group.options.map((option) => ({
+        id: option.id,
+        label: option.label,
+        column: title,
+        group: group.title,
+        supportsPathSuffix: option.path !== undefined,
+        basePath: option.path,
+      })),
+    ),
+  );
+};
+
+export const QUICK_MENU_BUTTON_CATALOG: readonly QuickMenuButtonDescriptor[] = buildButtonCatalog();
 
 const createMenuOptionButton = (doc: Document, option: MenuOption): HTMLButtonElement => {
   const button = createFobleButton(
@@ -173,6 +246,8 @@ const createMenuOptionRow = (doc: Document, option: MenuOption): HTMLDivElement 
   const row = doc.createElement("div");
   row.className = CLASS.QUICK_MENU_ACTION;
   row.appendChild(createMenuOptionButton(doc, option));
+  setRowVisibility(row, buttonSettings[option.id]?.enabled !== false);
+  registeredRows.push({ id: option.id, row });
   return row;
 };
 

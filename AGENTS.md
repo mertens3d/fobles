@@ -16,7 +16,7 @@
 - Run `npm run build:extension` after extension changes. It regenerates runtime bundles and copies the extension icon.
 - Run `npm run test:e2e -- --project=edge --list` to verify Playwright test discovery.
 - Generated test output is stored under `test-artifacts/` and should not be committed.
-- Reload the unpacked extension and refresh affected Sitecore tabs after manifest or content-script changes.
+- Reload the unpacked extension and hard-refresh (Ctrl+F5) affected Sitecore tabs after manifest or content-script changes. A normal refresh can leave the old content script running against an invalidated extension context, causing `chrome.storage` reads to silently fall back to defaults.
 
 ## Extension Behavior
 

@@ -147,12 +147,99 @@
         color: var(--muted);
         line-height: 1.5;
       }
+
+      #stored-settings-output {
+        max-height: 320px;
+        margin-top: 8px;
+        padding: 10px;
+        overflow: auto;
+        border: 1px solid var(--border);
+        border-radius: 3px;
+        background: #fff;
+        color: var(--text);
+        font-family: Consolas, monospace;
+        font-size: 12px;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      .quick-menu-column {
+        margin-bottom: 10px;
+        padding: 2px 12px 6px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+      }
+
+      .quick-menu-column > summary {
+        margin: 0 -12px;
+        padding: 8px 12px;
+        color: var(--text);
+        font-size: 14px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .quick-menu-column[open] > summary {
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 6px;
+      }
+
+      .quick-menu-button-row {
+        display: grid;
+        grid-template-columns: 20px minmax(160px, 280px) minmax(160px, 1fr);
+        align-items: center;
+        column-gap: 10px;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .quick-menu-button-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+      }
+
+      .quick-menu-button-label {
+        overflow: hidden;
+        color: var(--text);
+        white-space: nowrap;
+        text-overflow: ellipsis;
+      }
+
+      .quick-menu-button-row--no-suffix .quick-menu-button-label {
+        grid-column: 2 / -1;
+      }
+
+      .quick-menu-button-row input[name="pathSuffix"] {
+        min-height: 26px;
+      }
+
+      .settings-section {
+        margin: 0 0 14px;
+        padding: 4px 16px 16px;
+        border: 1px solid var(--border);
+        border-radius: 4px;
+        background: #fff;
+      }
+
+      .settings-section > summary {
+        margin: 0 -16px;
+        padding: 12px 16px;
+        color: var(--text);
+        font-size: 18px;
+        font-weight: 700;
+        cursor: pointer;
+      }
+
+      .settings-section[open] > summary {
+        border-bottom: 1px solid var(--border);
+        margin-bottom: 14px;
+      }
     </style>
   </head>
   <body>
     <h1>Fobles Settings</h1>
-    <section>
-      <h2>Developer Settings</h2>
+    <details class="settings-section">
+      <summary>Developer Settings</summary>
       <p>
         These options are for local debugging and development only. Both default
         to off.
@@ -169,27 +256,45 @@
         Save developer settings
       </button>
       <p id="debug-status" role="status"></p>
-    </section>
-    <h2>Additional Settings</h2>
-    <p>
-      Add one group per Sitecore account, then map that group's content roots to
-      AI Pages sites. The most specific matching root is used.
-    </p>
-    <details>
-      <summary>SitecoreAI settings example</summary>
-      <p>
-        <code
-          >Client: MyCloud | Organization: org_Ab12Cd34Ef56 | Tenant name:
-          tenant_Ab12Cd34Ef56 | Root:
-          /sitecore/content/ExampleTenant/example-site-123 | Site:
-          example-site-123</code
-        >
-      </p>
+      <button id="view-stored-settings" type="button">
+        View stored settings
+      </button>
+      <pre id="stored-settings-output" hidden></pre>
     </details>
-    <div id="groups"></div>
-    <button id="add-group" type="button">Add group</button>
-    <button id="save-mappings" type="button">Save mappings</button>
-    <p id="status" role="status"></p>
+    <details class="settings-section">
+      <summary>Quick Menu Buttons</summary>
+      <p>
+        Toggle buttons on or off, and optionally add a sub-path suffix to a
+        Tree Jump button's base path.
+      </p>
+      <div id="quick-menu-buttons"></div>
+      <button id="save-quick-menu-buttons" type="button">
+        Save quick menu buttons
+      </button>
+      <p id="quick-menu-buttons-status" role="status"></p>
+    </details>
+    <details class="settings-section">
+      <summary>Additional Settings</summary>
+      <p>
+        Add one group per Sitecore account, then map that group's content roots to
+        AI Pages sites. The most specific matching root is used.
+      </p>
+      <details>
+        <summary>SitecoreAI settings example</summary>
+        <p>
+          <code
+            >Client: MyCloud | Organization: org_Ab12Cd34Ef56 | Tenant name:
+            tenant_Ab12Cd34Ef56 | Root:
+            /sitecore/content/ExampleTenant/example-site-123 | Site:
+            example-site-123</code
+          >
+        </p>
+      </details>
+      <div id="groups"></div>
+      <button id="add-group" type="button">Add group</button>
+      <button id="save-mappings" type="button">Save mappings</button>
+      <p id="status" role="status"></p>
+    </details>
     <aside class="build-info">
       <div>Fobles for Sitecore</div>
       <div>Build: <strong>__BUILD_STAMP__</strong></div>
