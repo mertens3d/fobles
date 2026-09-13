@@ -1,6 +1,6 @@
 import { FOBLES } from "../constants";
 import { buildFobleUrl, createFobleButton, normalizeFobleValue } from "../helper";
-import { fobleLog } from "../logger";
+import { extensionLog } from "../../../extension/logger";
 import { applyButtonClasses } from "../shared/apply-button-classes";
 import type { DropTreeFoble as DropTreeConfig } from "../foble.types";
 
@@ -76,7 +76,7 @@ export function applyDropTreeStrategy(
   config: DropTreeConfig,
 ): void {
   const hosts = findEligibleHosts(doc, config);
-  fobleLog.Debug("Found", hosts.length, "eligible DropTree fields");
+  extensionLog.debug("Found", hosts.length, "eligible DropTree fields");
 
   hosts.forEach((host) => replaceHostWithFoble(doc, host, config));
 }

@@ -166,11 +166,23 @@ export function isProxyButtonsVisible(doc: Document): boolean {
 export function setProxyButtonsVisible(doc: Document, visible: boolean): void {
   const panel = getOrCreateProxyButtonsPanel(doc);
   panel?.setAttribute("data-visible", visible ? "true" : "false");
+  if (!visible) proxyButtonsPinned = false;
 
   if (visible) {
     if (panel) refreshProxyButtonsState(doc, panel);
     setQuickMenuVisible(doc, false);
   }
+}
+
+let proxyButtonsPinned = false;
+
+export function isProxyButtonsPinned(): boolean {
+  return proxyButtonsPinned;
+}
+
+export function setProxyButtonsPinned(doc: Document, pinned: boolean): void {
+  proxyButtonsPinned = pinned;
+  if (pinned) setProxyButtonsVisible(doc, true);
 }
 
 let proxyButtonsCloseTimer: number | null = null;
@@ -182,6 +194,7 @@ function cancelProxyButtonsClose(): void {
 }
 
 function scheduleProxyButtonsClose(doc: Document): void {
+  if (proxyButtonsPinned) return;
   cancelProxyButtonsClose();
   proxyButtonsCloseTimer = window.setTimeout(() => {
     proxyButtonsCloseTimer = null;

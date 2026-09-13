@@ -2,9 +2,9 @@
 
 Fobles is a Chrome and Edge extension that adds navigation and productivity helpers for Sitecore developers. The project is currently all rights reserved while its future license is being finalized.
 
-See [LICENSE](LICENSE) for the current licensing status. [LICENSE-DRAFT.md](LICENSE-DRAFT.md) contains proposed noncommercial terms for discussion only and is not binding.
+See [LICENSE](LICENSE) for the current licensing status. [docs/LICENSE-DRAFT.md](docs/LICENSE-DRAFT.md) contains proposed noncommercial terms for discussion only and is not binding.
 
-See [CONTRIBUTING.md](CONTRIBUTING.md) for development and pull request guidance, and [SECURITY.md](SECURITY.md) for vulnerability reporting.
+See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for development and pull request guidance, and [docs/SECURITY.md](docs/SECURITY.md) for vulnerability reporting.
 
 ## Requirements
 
@@ -70,7 +70,7 @@ The repository can still add a safe GitHub Actions workflow for pull requests. T
 
 Adding that static validation workflow is a future task; it is intentionally separate from the authenticated Sitecore test run.
 
-See [TODO.md](TODO.md) for deferred release, security, packaging, and CI work.
+See [docs/TODO.md](docs/TODO.md) for deferred release, security, packaging, and CI work.
 
 ## Project Layout
 

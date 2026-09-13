@@ -11,7 +11,7 @@ function normalizePath(pathname: string): string {
   return normalizedPath.toLowerCase();
 }
 
-const toUrl = (value: string | Location | URL, baseUrl?: string): URL | null => {
+function toUrl(value: string | Location | URL, baseUrl?: string): URL | null {
   try {
     if (value instanceof URL) return value;
     if (typeof value !== "string") return new URL(value.href);
@@ -19,7 +19,7 @@ const toUrl = (value: string | Location | URL, baseUrl?: string): URL | null => 
   } catch {
     return null;
   }
-};
+}
 
 export function isMenuPathAllowed(
   value: string | Location | URL,

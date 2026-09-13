@@ -1,4 +1,4 @@
-import { extensionLog as extensionLog } from "../../../extension/logger";
+import { extensionLog } from "../../../extension/logger";
 import { isMenuOwnedFrame } from "../../../extension/menu-path";
 import { FOBLES } from "../constants";
 import {

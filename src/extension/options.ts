@@ -15,6 +15,12 @@ const getElement = <T extends HTMLElement>(id: string): T => {
   return element as T;
 };
 
+const requireInput = (scope: ParentNode, selector: string): HTMLInputElement => {
+  const input = scope.querySelector<HTMLInputElement>(selector);
+  if (!input) throw new Error(`Missing options input: ${selector}`);
+  return input;
+};
+
 const groupsContainer = getElement<HTMLDivElement>("groups");
 const statusMessage = getElement<HTMLParagraphElement>("status");
 const debugLoggingInput = getElement<HTMLInputElement>("debug-logging");
@@ -87,11 +93,10 @@ function addMapping(
 function readMappings(group: Element): AiPagesMapping[] {
   return Array.from(group.querySelectorAll(".mapping"))
     .map((row) => ({
-      contentRoot: row
-        .querySelector<HTMLInputElement>("[name='contentRoot']")!
+      contentRoot: requireInput(row, "[name='contentRoot']")
         .value.trim()
         .replace(/\/+$/, ""),
-      site: row.querySelector<HTMLInputElement>("[name='site']")!.value.trim(),
+      site: requireInput(row, "[name='site']").value.trim(),
     }))
     .filter((mapping) => mapping.contentRoot || mapping.site);
 }
@@ -164,9 +169,9 @@ getElement<HTMLButtonElement>("save-mappings").addEventListener("click", () => {
 
   const groups = Array.from(groupsContainer.querySelectorAll(".group")).map(
     (group) => ({
-      name: group.querySelector<HTMLInputElement>("[name='name']")!.value.trim(),
-      organization: group.querySelector<HTMLInputElement>("[name='organization']")!.value.trim(),
-      tenantName: group.querySelector<HTMLInputElement>("[name='tenantName']")!.value.trim(),
+      name: requireInput(group, "[name='name']").value.trim(),
+      organization: requireInput(group, "[name='organization']").value.trim(),
+      tenantName: requireInput(group, "[name='tenantName']").value.trim(),
       mappings: readMappings(group),
     }),
   );

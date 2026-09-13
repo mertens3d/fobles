@@ -22,26 +22,18 @@ export const MESSAGE = {
 } as const;
 
 export const LOGGER = {
-  NAMESPACE: "[scFobles]",
+  NAMESPACE: "[Fobles]",
 } as const;
 
 export const SYMBOLS = {
-  CLOSE: "\u00d7",
   LIGHTNING: "\u26A1\uFE0E",
-  ROTATE_CLOCKWISE: "\u21bb",
 } as const;
 
 export const TEXT = {
-  BUILD_LABEL: "Build:",
-  CREATED_BY_LABEL: "Created by:",
-  CREATOR: "Gregory Mertens",
+  DRAG_NAV: "Drag to move Foble navigation",
   HIDE_NAV: "Hide Foble navigation",
-  MOVE_NAV: "Move Foble navigation clockwise",
-  PRODUCT_NAME: "scFobles",
   QUICK_MENU: "Menu",
   QUICK_MENU_TITLE: "Toggle quick jump, utilities & about",
-  RELOAD_EXTENSION: "Reload Extension",
-  RELOAD_EXTENSION_TITLE: "Reload the extension after a rebuild",
   TREE_JUMPS: "Tree Jumps",
   ADMIN_PAGES: "Admin Pages",
   LANDING_PAGES: "Landing Pages",
@@ -52,6 +44,10 @@ export const TEXT = {
   TOGGLE_FEATURES: "Toggle tree and slide-out buttons",
   VIEW: "View",
   VIEW_TITLE: "Toggle view actions",
+} as const;
+
+export const ICONS = {
+  CLOSE: "/sitecore/shell/themes/standard/Images/Window%20Management/page_close.png",
 } as const;
 
 const POWERSHELL_ISE_PATH =
@@ -104,9 +100,6 @@ export const CLASS = {
   QUICK_MENU_OPTION_ICON_BOX: "fobles-quick-menu-option-icon-box",
   QUICK_MENU_OPTION_ICON: "fobles-quick-menu-option-icon",
   QUICK_MENU_OPTION_LABEL: "fobles-quick-menu-option-label",
-  QUICK_MENU_INFO: "fobles-quick-menu-info",
-  QUICK_MENU_INFO_ROW: "fobles-quick-menu-info-row",
-  QUICK_MENU_RELOAD_BUTTON: "fobles-quick-menu-reload-button",
   PROXY_BUTTONS: "fobles-proxy-buttons",
   PROXY_BUTTONS_TRIGGER: "fobles-proxy-buttons-trigger",
   PROXY_BUTTONS_ACTIONS: "fobles-proxy-buttons-actions",
@@ -115,8 +108,12 @@ export const CLASS = {
   PROXY_BUTTON_INPUT: "fobles-proxy-button-input",
   PROXY_BUTTON_LABEL: "fobles-proxy-button-label",
   TOOLBAR_CONTAINER: "fobles-toolbar-container",
+  TOOLBAR_BODY: "fobles-toolbar-body",
   TOOLBAR_CLOSE_BUTTON: "fobles-toolbar-close-button",
-  TOOLBAR_POSITION_BUTTON: "fobles-toolbar-position-button",
+  TOOLBAR_CLOSE_ICON: "fobles-toolbar-close-icon",
+  TOOLBAR_GRIP: "fobles-toolbar-grip",
+  TOOLBAR_DRAGGING: "fobles-toolbar-dragging",
+  TOOLBAR_RESIZING: "fobles-toolbar-resizing",
   TOOLBAR_SET_ISE_TITLE_BUTTON: "foble-nav-set-ise-title-button",
   TOOLBAR_FEATURE_BUTTON: "foble-nav-button foble-nav-feature-button",
 } as const;
@@ -127,8 +124,9 @@ export const SELECTORS = {
   PROXY_BUTTONS: ".fobles-proxy-buttons",
   PROXY_BUTTONS_TRIGGER: ".fobles-proxy-buttons-trigger",
   TOOLBAR_CONTAINER: ".fobles-toolbar-container",
+  TOOLBAR_BODY: ".fobles-toolbar-body",
   TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",
-  TOOLBAR_POSITION_BUTTON: ".fobles-toolbar-position-button",
+  TOOLBAR_GRIP: ".fobles-toolbar-grip",
   TOOLBAR_SET_ISE_TITLE_BUTTON: ".foble-nav-set-ise-title-button",
   FOBLE_WRAPPER: "[data-foble-wrapper]",
   FOBLE_BUTTON: "[data-is-foble-button='1']",
@@ -140,15 +138,26 @@ export const SELECTORS = {
   SITECORE_URI_ELEMENT: "[onfocus*='sitecore://'], [onblur*='sitecore://']",
 } as const;
 
-export const TOOLBAR_POSITIONS = [
+export const TOOLBAR_CORNERS = [
   "upper-left",
   "upper-right",
-  "editor-header",
   "bottom-right",
   "bottom-left",
 ] as const;
 
-export type ToolbarPosition = (typeof TOOLBAR_POSITIONS)[number];
+export type ToolbarCorner = (typeof TOOLBAR_CORNERS)[number];
+
+export type ToolbarPlacement = {
+  corner: ToolbarCorner;
+  offsetX: number;
+  offsetY: number;
+};
+
+export const DEFAULT_TOOLBAR_PLACEMENT: ToolbarPlacement = {
+  corner: "upper-left",
+  offsetX: 70,
+  offsetY: 3,
+};
 
 export const ATTRIBUTE = {
   DATA: {

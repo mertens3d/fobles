@@ -17,38 +17,33 @@
 
 .fobles-toolbar-container {
   position: fixed;
+  top: 3px;
+  left: 70px;
   display: flex;
   align-items: center;
   gap: 8px;
-  padding: 10px;
-  border-radius: 6px;
-  background-color: var(--foble-toolbar-background, #{$foble-toolbar-background});
   font-family: system-ui, "Segoe UI", Arial, sans-serif;
+  cursor: grab;
+  touch-action: none;
   z-index: 2147483647;
-  &[data-position="upper-left"] {
-    top: 3px;
-    left: var(--foble-toolbar-left, 70px);
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -6px;
   }
 
-  &[data-position="upper-right"] {
-    top: 3px;
-    right: var(--foble-toolbar-right, 15px);
+  &.fobles-toolbar-dragging {
+    cursor: grabbing;
+    opacity: 0.85;
   }
 
-  &[data-position="editor-header"] {
-    top: var(--foble-toolbar-top, 3px);
-    right: var(--foble-toolbar-right, 15px);
-    left: var(--foble-toolbar-left, auto);
+  &.fobles-toolbar-resizing {
+    visibility: hidden;
   }
 
-  &[data-position="bottom-right"] {
-    right: 15px;
-    bottom: 15px;
-  }
-
-  &[data-position="bottom-left"] {
-    bottom: 15px;
-    left: 15px;
+  &.fobles-toolbar-dragging .fobles-toolbar-body {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
   }
 
   &[data-position$="right"]
@@ -72,8 +67,20 @@
   }
 }
 
-.fobles-toolbar-close-button,
-.fobles-toolbar-position-button {
+.fobles-toolbar-body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: var(--foble-toolbar-background, #{$foble-toolbar-background});
+
+  .fobles-toolbar-container:hover & {
+    filter: brightness(1.15);
+  }
+}
+
+.fobles-toolbar-close-button {
   appearance: none;
   display: inline-flex;
   align-items: center;
@@ -81,19 +88,35 @@
   width: $foble-toolbar-control-size;
   height: $foble-toolbar-control-size;
   padding: 0;
-  border: 1px solid $foble-border;
+  border: 1px solid transparent;
   border-radius: $foble-radius-small;
-  background: $foble-white;
-  color: $foble-text;
-  font:
-    400 18px/1 "Open Sans",
-    Arial,
-    sans-serif;
+  background: transparent;
   cursor: pointer;
+  margin-left: -10px;
+  transform: translate(8px, -8px);
+}
 
-  &:hover {
-    background: $foble-surface-hover;
-  }
+.fobles-toolbar-close-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  // Scales the icon's white pixels down to Sitecore's #BEBEBE (190/255 ≈ 0.745).
+  filter: brightness(0.745);
+}
+
+.fobles-toolbar-grip {
+  flex: none;
+  width: 10px;
+  height: 20px;
+  color: $foble-navy;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.fobles-toolbar-container:hover .fobles-toolbar-grip,
+.fobles-toolbar-container.fobles-toolbar-dragging .fobles-toolbar-grip {
+  opacity: 1;
 }
 
 .fobles-quick-menu-trigger,
@@ -320,7 +343,10 @@
   &::before {
     content: "";
     position: absolute;
-    inset: -50%;
+    top: -25%;
+    right: -25%;
+    bottom: -25%;
+    left: -2px;
     z-index: -1;
   }
 

@@ -1,6 +1,6 @@
 import { FOBLES } from "../constants";
 import { buildFobleUrl, createFobleButton } from "../helper";
-import { fobleLog } from "../logger";
+import { extensionLog } from "../../../extension/logger";
 import { applyButtonClasses } from "../shared/apply-button-classes";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
 import type { TreelistExFoble as TreelistExConfig } from "../foble.types";
@@ -80,7 +80,7 @@ export function applyTreelistExStrategy(
   config: TreelistExConfig,
 ): void {
   const hosts = findEligibleHosts(doc, config);
-  fobleLog.Debug("Found", hosts.length, "eligible TreelistEx fields");
+  extensionLog.debug("Found", hosts.length, "eligible TreelistEx fields");
 
   hosts.forEach((host) => replaceHostWithFobles(doc, host));
 }

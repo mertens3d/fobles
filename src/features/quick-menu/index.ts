@@ -1,13 +1,4 @@
-import {
-  ATTRIBUTE,
-  CLASS,
-  MESSAGE,
-  SELECTORS,
-  SITECORE,
-  STORAGE,
-  TEXT,
-} from "../../extension/constants";
-import { BUILD_STAMP } from "../../extension/buildInfo";
+import { ATTRIBUTE, CLASS, SELECTORS, SITECORE, TEXT } from "../../extension/constants";
 import { extensionLog } from "../../extension/logger";
 import { createFobleButton } from "../fobles/helper";
 import { getCurrentItemId, getQuickInfoValue, openAiPages } from "./ai-pages";
@@ -29,28 +20,6 @@ interface MenuGroup {
   title?: string;
   options: readonly MenuOption[];
 }
-
-let showReloadExtensionButton = false;
-const setShowReloadExtensionButton = (value: unknown): void => {
-  showReloadExtensionButton = value === true;
-};
-
-void chrome.storage?.sync
-  ?.get([STORAGE.KEY.SHOW_RELOAD_EXTENSION_BUTTON])
-  .then((result) => {
-    setShowReloadExtensionButton(result[STORAGE.KEY.SHOW_RELOAD_EXTENSION_BUTTON]);
-  })
-  .catch(() => undefined);
-
-chrome.storage?.onChanged?.addListener((changes, areaName) => {
-  if (areaName !== "sync") return;
-
-  if (STORAGE.KEY.SHOW_RELOAD_EXTENSION_BUTTON in changes) {
-    setShowReloadExtensionButton(
-      changes[STORAGE.KEY.SHOW_RELOAD_EXTENSION_BUTTON]?.newValue,
-    );
-  }
-});
 
 const getCurrentDatabase = (doc: Document): string | null => {
   const currentUrl = new URL(
@@ -242,26 +211,6 @@ const createMenuColumn = (
   return column;
 };
 
-const createQuickMenuInfo = (doc: Document): HTMLDivElement => {
-  const info = doc.createElement("div");
-  info.className = CLASS.QUICK_MENU_INFO;
-  info.innerHTML = `<div class="${CLASS.QUICK_MENU_INFO_ROW}">${TEXT.PRODUCT_NAME}</div><div class="${CLASS.QUICK_MENU_INFO_ROW}">${TEXT.BUILD_LABEL} <b>${BUILD_STAMP}</b></div><div class="${CLASS.QUICK_MENU_INFO_ROW}">${TEXT.CREATED_BY_LABEL} <b>${TEXT.CREATOR}</b></div>`;
-
-  if (showReloadExtensionButton) {
-    const reloadButton = doc.createElement("button");
-    reloadButton.type = "button";
-    reloadButton.className = CLASS.QUICK_MENU_RELOAD_BUTTON;
-    reloadButton.textContent = TEXT.RELOAD_EXTENSION;
-    reloadButton.title = TEXT.RELOAD_EXTENSION_TITLE;
-    reloadButton.addEventListener("click", () => {
-      void chrome.runtime?.sendMessage?.({ action: MESSAGE.ACTION.RELOAD_EXTENSION });
-    });
-    info.appendChild(reloadButton);
-  }
-
-  return info;
-};
-
 const createQuickMenu = (doc: Document): HTMLDivElement => {
   const menu = doc.createElement("div");
   menu.className = CLASS.QUICK_MENU;
@@ -273,7 +222,6 @@ const createQuickMenu = (doc: Document): HTMLDivElement => {
   columns.appendChild(createMenuColumn(doc, TEXT.ADMIN_PAGES, ADMIN_PAGE_GROUPS));
   columns.appendChild(createMenuColumn(doc, TEXT.LANDING_PAGES, LANDING_PAGE_GROUPS));
   menu.appendChild(columns);
-  menu.appendChild(createQuickMenuInfo(doc));
   return menu;
 };
 
@@ -309,8 +257,20 @@ export function isQuickMenuVisible(doc: Document): boolean {
 export function setQuickMenuVisible(doc: Document, visible: boolean): void {
   const menu = getOrCreateQuickMenu(doc);
   menu?.setAttribute("data-visible", visible ? "true" : "false");
+  if (!visible) quickMenuPinned = false;
 
   if (visible) setProxyButtonsVisible(doc, false);
+}
+
+let quickMenuPinned = false;
+
+export function isQuickMenuPinned(): boolean {
+  return quickMenuPinned;
+}
+
+export function setQuickMenuPinned(doc: Document, pinned: boolean): void {
+  quickMenuPinned = pinned;
+  if (pinned) setQuickMenuVisible(doc, true);
 }
 
 let quickMenuCloseTimer: number | null = null;
@@ -322,6 +282,7 @@ function cancelQuickMenuClose(): void {
 }
 
 function scheduleQuickMenuClose(doc: Document): void {
+  if (quickMenuPinned) return;
   cancelQuickMenuClose();
   quickMenuCloseTimer = window.setTimeout(() => {
     quickMenuCloseTimer = null;

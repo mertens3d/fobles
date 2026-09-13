@@ -1,18 +1,21 @@
 const FOBLE_NAV_VISIBLE_KEY = "fobleNavVisible";
 const FOBLE_NAV_WARNING_VISIBLE_KEY = "fobleNavWarningVisible";
 const TURN_OFF_FOBLES_AFTER_NAVIGATION_KEY = "turnOffFoblesAfterNavigation";
+const SHOW_RELOAD_EXTENSION_BUTTON_KEY = "showReloadExtensionButton";
 const visibilityCheckbox = document.getElementById("foble-nav-visible");
 const warningCheckbox = document.getElementById("foble-nav-warning-visible");
 const turnOffAfterNavigationCheckbox = document.getElementById(
   "turn-off-fobles-after-navigation",
 );
 const openOptionsButton = document.getElementById("open-options");
+const reloadExtensionButton = document.getElementById("reload-extension");
 
 void chrome.storage.sync
   .get([
     FOBLE_NAV_VISIBLE_KEY,
     FOBLE_NAV_WARNING_VISIBLE_KEY,
     TURN_OFF_FOBLES_AFTER_NAVIGATION_KEY,
+    SHOW_RELOAD_EXTENSION_BUTTON_KEY,
   ])
   .then((result) => {
     if (visibilityCheckbox) {
@@ -24,6 +27,9 @@ void chrome.storage.sync
     if (turnOffAfterNavigationCheckbox) {
       turnOffAfterNavigationCheckbox.checked =
         result[TURN_OFF_FOBLES_AFTER_NAVIGATION_KEY] === true;
+    }
+    if (reloadExtensionButton) {
+      reloadExtensionButton.hidden = result[SHOW_RELOAD_EXTENSION_BUTTON_KEY] !== true;
     }
   });
 
@@ -50,6 +56,10 @@ openOptionsButton?.addEventListener("click", () => {
   void chrome.runtime.openOptionsPage();
 });
 
+reloadExtensionButton?.addEventListener("click", () => {
+  void chrome.runtime.sendMessage({ action: "reload-extension" });
+});
+
 chrome.storage.onChanged.addListener((changes, areaName) => {
   if (areaName !== "sync") return;
 
@@ -71,5 +81,11 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
   ) {
     turnOffAfterNavigationCheckbox.checked =
       changes[TURN_OFF_FOBLES_AFTER_NAVIGATION_KEY].newValue;
+  }
+  if (
+    reloadExtensionButton &&
+    typeof changes[SHOW_RELOAD_EXTENSION_BUTTON_KEY]?.newValue === "boolean"
+  ) {
+    reloadExtensionButton.hidden = changes[SHOW_RELOAD_EXTENSION_BUTTON_KEY].newValue !== true;
   }
 });

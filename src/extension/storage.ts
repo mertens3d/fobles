@@ -1,10 +1,21 @@
 import {
+  DEFAULT_TOOLBAR_PLACEMENT,
   STORAGE,
-  TOOLBAR_POSITIONS,
-  type ToolbarPosition,
+  TOOLBAR_CORNERS,
+  type ToolbarPlacement,
 } from "./constants";
 import { extensionLog } from "./logger";
 import type { DebugSettings } from "./content.types";
+
+function isValidPlacement(value: unknown): value is ToolbarPlacement {
+  if (!value || typeof value !== "object") return false;
+  const candidate = value as Partial<ToolbarPlacement>;
+  return (
+    TOOLBAR_CORNERS.includes(candidate.corner as ToolbarPlacement["corner"]) &&
+    typeof candidate.offsetX === "number" &&
+    typeof candidate.offsetY === "number"
+  );
+}
 
 async function setSyncValue(values: Record<string, unknown>): Promise<void> {
   try {
@@ -41,26 +52,6 @@ export async function getDebugSettings(): Promise<DebugSettings> {
       showReloadExtensionButton: false,
     };
   }
-}
-
-export async function getShowReloadExtensionButton(): Promise<boolean> {
-  try {
-    const storage = chrome.storage?.sync;
-    if (!storage) return false;
-
-    const result = await storage.get([STORAGE.KEY.SHOW_RELOAD_EXTENSION_BUTTON]);
-    return result[STORAGE.KEY.SHOW_RELOAD_EXTENSION_BUTTON] === true;
-  } catch {
-    return false;
-  }
-}
-
-export async function setShowReloadExtensionButton(
-  visible: boolean,
-): Promise<void> {
-  await setSyncValue({
-    [STORAGE.KEY.SHOW_RELOAD_EXTENSION_BUTTON]: visible,
-  });
 }
 
 export async function getFobleNavVisible(): Promise<boolean> {
@@ -115,51 +106,61 @@ export async function getTurnOffFoblesAfterNavigation(): Promise<boolean> {
   }
 }
 
-export async function getFobleNavPosition(): Promise<ToolbarPosition> {
+async function getPlacementForOrigin(
+  storageKey: string,
+  origin: string,
+): Promise<ToolbarPlacement> {
   try {
     const storage = chrome.storage?.sync;
-    if (!storage) return "upper-left";
+    if (!storage) return DEFAULT_TOOLBAR_PLACEMENT;
 
-    const result = await storage.get([STORAGE.KEY.FOBLE_NAV_POSITION]);
-    const value = result[STORAGE.KEY.FOBLE_NAV_POSITION];
-    return TOOLBAR_POSITIONS.includes(value as ToolbarPosition)
-      ? value as ToolbarPosition
-      : "upper-left";
+    const result = await storage.get([storageKey]);
+    const placementsByOrigin = result[storageKey];
+    const value = (placementsByOrigin as Record<string, unknown> | undefined)?.[origin];
+    return isValidPlacement(value) ? value : DEFAULT_TOOLBAR_PLACEMENT;
   } catch {
-    return "upper-left";
+    return DEFAULT_TOOLBAR_PLACEMENT;
   }
 }
 
-export async function setFobleNavPosition(
-  position: ToolbarPosition,
+async function setPlacementForOrigin(
+  storageKey: string,
+  origin: string,
+  placement: ToolbarPlacement,
 ): Promise<void> {
-  await setSyncValue({
-    [STORAGE.KEY.FOBLE_NAV_POSITION]: position,
-  });
-}
-
-export async function getSelectRenderingFobleNavPosition(): Promise<ToolbarPosition> {
   try {
     const storage = chrome.storage?.sync;
-    if (!storage) return "upper-left";
+    if (!storage) return;
 
-    const result = await storage.get([
-      STORAGE.KEY.SELECT_RENDERING_FOBLE_NAV_POSITION,
-    ]);
-    const value = result[STORAGE.KEY.SELECT_RENDERING_FOBLE_NAV_POSITION];
-    return TOOLBAR_POSITIONS.includes(value as ToolbarPosition)
-      ? value as ToolbarPosition
-      : "upper-left";
+    const result = await storage.get([storageKey]);
+    const placementsByOrigin = (result[storageKey] as Record<string, ToolbarPlacement> | undefined) ?? {};
+    await setSyncValue({
+      [storageKey]: { ...placementsByOrigin, [origin]: placement },
+    });
   } catch {
-    return "upper-left";
+    // The content script can outlive a reloaded extension context.
   }
 }
 
-export async function setSelectRenderingFobleNavPosition(
-  position: ToolbarPosition,
+export function getFobleNavPlacement(origin: string): Promise<ToolbarPlacement> {
+  return getPlacementForOrigin(STORAGE.KEY.FOBLE_NAV_POSITION, origin);
+}
+
+export function setFobleNavPlacement(
+  origin: string,
+  placement: ToolbarPlacement,
 ): Promise<void> {
-  await setSyncValue({
-    [STORAGE.KEY.SELECT_RENDERING_FOBLE_NAV_POSITION]: position,
-  });
+  return setPlacementForOrigin(STORAGE.KEY.FOBLE_NAV_POSITION, origin, placement);
+}
+
+export function getSelectRenderingFobleNavPlacement(origin: string): Promise<ToolbarPlacement> {
+  return getPlacementForOrigin(STORAGE.KEY.SELECT_RENDERING_FOBLE_NAV_POSITION, origin);
+}
+
+export function setSelectRenderingFobleNavPlacement(
+  origin: string,
+  placement: ToolbarPlacement,
+): Promise<void> {
+  return setPlacementForOrigin(STORAGE.KEY.SELECT_RENDERING_FOBLE_NAV_POSITION, origin, placement);
 }
 

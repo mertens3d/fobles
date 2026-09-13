@@ -139,6 +139,14 @@
           grid-template-columns: 1fr;
         }
       }
+
+      .build-info {
+        margin-top: 24px;
+        padding-top: 12px;
+        border-top: 1px solid var(--border);
+        color: var(--muted);
+        line-height: 1.5;
+      }
     </style>
   </head>
   <body>
@@ -182,6 +190,11 @@
     <button id="add-group" type="button">Add group</button>
     <button id="save-mappings" type="button">Save mappings</button>
     <p id="status" role="status"></p>
+    <aside class="build-info">
+      <div>Fobles for Sitecore</div>
+      <div>Build: <strong>__BUILD_STAMP__</strong></div>
+      <div>Created by: <strong>Gregory Mertens</strong></div>
+    </aside>
     <script src="options.js"></script>
   </body>
 </html>
