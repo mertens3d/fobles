@@ -12,7 +12,7 @@
     "test:e2e:login": "node tools/scripts/test/login-sitecore.js",
     "test:e2e": "playwright test -c tests/playwright.config.ts --retries=0",
     "test:e2e:debug": "playwright test -c tests/playwright.config.ts --debug",
-    "typecheck:extension": "tsc --noEmit -p tsconfig.extension.json",
+    "typecheck:extension": "tsc --noEmit -p tsconfig.json",
     "build:scss": "sass src/styles/fobles-extension.scss dist/unpacked/fobles.css --no-source-map"
   },
   "devDependencies": {

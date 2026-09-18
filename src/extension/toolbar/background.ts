@@ -9,7 +9,7 @@ export function updateToolbarBackground(context: ToolbarContext): void {
   );
   if (!container) return;
 
-  container.style.removeProperty("--foble-toolbar-background");
+  container.style.removeProperty("--fobles-toolbar-background");
   const globalHeader = context.doc.querySelector<HTMLElement>(".sc-globalHeader");
   if (!globalHeader) return;
 
@@ -19,7 +19,7 @@ export function updateToolbarBackground(context: ToolbarContext): void {
     backgroundColor !== "transparent" &&
     backgroundColor !== "rgba(0, 0, 0, 0)"
   ) {
-    container.style.setProperty("--foble-toolbar-background", backgroundColor);
+    container.style.setProperty("--fobles-toolbar-background", backgroundColor);
   }
 }
 

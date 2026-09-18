@@ -1,4 +1,5 @@
-import { SITECORE } from "./constants";
+import { ALLOWED_PATHS, ALLOWED_XML_CONTROLS } from "./constants";
+import { SITECORE } from "./sitecore";
 
 function normalizePath(pathname: string): string {
   let normalizedPath = pathname;
@@ -29,27 +30,31 @@ export function isMenuPathAllowed(
   if (!url) return false;
 
   const path = normalizePath(url.pathname);
+  // A media request path can appear nested behind another page's path (e.g. Content Editor.aspx)
+  // but is always a media resource, never a real shell page eligible for the toolbar.
+  if (path.includes(SITECORE.RELATIVE_PATHS.MEDIA_REQUEST_SEGMENT.toLowerCase())) return false;
+
   if (
-    SITECORE.MENU_PATHS.some((allowedPath) =>
+    ALLOWED_PATHS.some((allowedPath) =>
       path.includes(allowedPath.toLowerCase()),
     )
   ) return true;
 
-  if (path !== SITECORE.SHELL_DEFAULT_PATH.toLowerCase()) return false;
+  if (path !== SITECORE.RELATIVE_PATHS.SHELL_DEFAULT.toLowerCase()) return false;
 
   const xmlControl = url.searchParams
-    .get(SITECORE.XML_CONTROL_QUERY_PARAMETER)
+    .get(SITECORE.QUERY_PARAMS.XML_CONTROL)
     ?.trim();
   if (!xmlControl) return false;
 
-  return SITECORE.ALLOWED_XML_CONTROLS.some(
+  return ALLOWED_XML_CONTROLS.some(
     (allowedControl) => allowedControl.toLowerCase() === xmlControl.toLowerCase(),
   );
 }
 
 export function isContentEditorPath(pathname: string): boolean {
   return normalizePath(pathname).includes(
-    SITECORE.CONTENT_EDITOR_PATH.toLowerCase(),
+    SITECORE.RELATIVE_PATHS.CONTENT_EDITOR.toLowerCase(),
   );
 }
 
@@ -72,25 +77,25 @@ export function isMenuOwnedFrame(
 
 export function isPowerShellIsePath(pathname: string): boolean {
   return normalizePath(pathname).includes(
-    SITECORE.POWERSHELL_ISE_PATH.toLowerCase(),
+    SITECORE.RELATIVE_PATHS.POWERSHELL_ISE.toLowerCase(),
   );
 }
 
 export function isFieldEditorDialogPath(pathname: string): boolean {
   return normalizePath(pathname).includes(
-    SITECORE.FIELD_EDITOR_PATH.toLowerCase(),
+    SITECORE.RELATIVE_PATHS.FIELD_EDITOR.toLowerCase(),
   );
 }
 
 export function isSelectRenderingDialog(location: Location): boolean {
   const url = new URL(location.href);
-  return normalizePath(location.pathname) === SITECORE.SHELL_DEFAULT_PATH &&
-    url.searchParams.get(SITECORE.XML_CONTROL_QUERY_PARAMETER) ===
-      SITECORE.SELECT_RENDERING_XML_CONTROL;
+  return normalizePath(location.pathname) === SITECORE.RELATIVE_PATHS.SHELL_DEFAULT &&
+    url.searchParams.get(SITECORE.QUERY_PARAMS.XML_CONTROL) ===
+      SITECORE.XML_CONTROLS.SELECT_RENDERING;
 }
 
 export function isKickUsersPath(pathname: string): boolean {
   return normalizePath(pathname).includes(
-    SITECORE.KICK_USERS_PATH.toLowerCase(),
+    SITECORE.RELATIVE_PATHS.KICK_USERS.toLowerCase(),
   );
 }

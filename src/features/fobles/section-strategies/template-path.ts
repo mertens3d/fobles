@@ -1,12 +1,12 @@
 import { FOBLES } from "../constants";
-import type { TemplatePathFoble as TemplatePathConfig } from "../foble.types";
-import { buildFobleUrl, createFobleButton } from "../helper";
+import type { TemplatePathFobles as TemplatePathConfig } from "../fobles.types";
+import { buildFoblesUrl, createFoblesButton } from "../helper";
 
 export function applyTemplatePathStrategy(
   doc: Document,
   config: TemplatePathConfig,
 ): void {
-  doc.querySelectorAll<HTMLElement>(config.FobleTopSelector).forEach((element) => {
+  doc.querySelectorAll<HTMLElement>(config.FoblesTopSelector).forEach((element) => {
     if (element.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;
 
     const text = element.textContent?.trim() ?? "";
@@ -21,7 +21,7 @@ export function applyTemplatePathStrategy(
       FOBLES.CLASSES.WRAPPERS.BASE,
       FOBLES.CLASSES.WRAPPERS.TEMPLATE_PATH,
     );
-    wrapper.appendChild(createFobleButton(doc, target, buildFobleUrl(target), {
+    wrapper.appendChild(createFoblesButton(doc, target, buildFoblesUrl(target), {
       classNames: [
         FOBLES.CLASSES.BUTTONS.BASE,
         FOBLES.CLASSES.BUTTONS.TEMPLATE_PATH,

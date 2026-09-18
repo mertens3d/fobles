@@ -1,10 +1,11 @@
-import { QUICK_MENU_BUTTON_CATALOG, type QuickMenuButtonDescriptor } from "../features/quick-menu";
 import {
   getQuickMenuButtonSettings,
+  QUICK_MENU_BUTTON_CATALOG,
   sanitizeQuickMenuPathSuffix,
   setQuickMenuButtonSettings,
+  type QuickMenuButtonDescriptor,
   type QuickMenuButtonSettings,
-} from "../features/quick-menu/button-settings";
+} from "../features/quick-menu";
 
 const AI_PAGES_MAPPINGS_KEY = "aiPagesMappings";
 const DEBUG_LOGGING_KEY = "debugLogging";
@@ -219,7 +220,7 @@ viewStoredSettingsButton.addEventListener("click", () => {
 
 function createQuickMenuButtonRow(
   descriptor: QuickMenuButtonDescriptor,
-  settings: QuickMenuButtonSettings,
+  userSettings: QuickMenuButtonSettings,
 ): HTMLDivElement {
   const row = document.createElement("div");
   row.className = "quick-menu-button-row";
@@ -231,7 +232,7 @@ function createQuickMenuButtonRow(
   enabledInput.type = "checkbox";
   enabledInput.name = "enabled";
   enabledInput.dataset.buttonId = descriptor.id;
-  enabledInput.checked = settings[descriptor.id]?.enabled !== false;
+  enabledInput.checked = userSettings[descriptor.id]?.enabled !== false;
   row.appendChild(enabledInput);
 
   const label = document.createElement("span");
@@ -249,7 +250,7 @@ function createQuickMenuButtonRow(
     suffixInput.dataset.buttonId = descriptor.id;
     suffixInput.placeholder = "optional sub-path";
     suffixInput.title = `Appended after ${descriptor.basePath}`;
-    suffixInput.value = settings[descriptor.id]?.pathSuffix ?? "";
+    suffixInput.value = userSettings[descriptor.id]?.pathSuffix ?? "";
     suffixInput.addEventListener("blur", () => {
       suffixInput.value = sanitizeQuickMenuPathSuffix(suffixInput.value);
     });
@@ -259,7 +260,7 @@ function createQuickMenuButtonRow(
   return row;
 }
 
-function renderQuickMenuButtons(settings: QuickMenuButtonSettings): void {
+function renderQuickMenuButtons(userSettings: QuickMenuButtonSettings): void {
   quickMenuButtonsContainer.textContent = "";
 
   const columns = new Map<string, QuickMenuButtonDescriptor[]>();
@@ -283,7 +284,7 @@ function renderQuickMenuButtons(settings: QuickMenuButtonSettings): void {
     columnSection.appendChild(summary);
 
     descriptors.forEach((descriptor) =>
-      columnSection.appendChild(createQuickMenuButtonRow(descriptor, settings)),
+      columnSection.appendChild(createQuickMenuButtonRow(descriptor, userSettings)),
     );
     quickMenuButtonsContainer.appendChild(columnSection);
     columnDetailsElements.push(columnSection);
@@ -300,7 +301,7 @@ function renderQuickMenuButtons(settings: QuickMenuButtonSettings): void {
 }
 
 getElement<HTMLButtonElement>("save-quick-menu-buttons").addEventListener("click", () => {
-  const settings: QuickMenuButtonSettings = {};
+  const userSettings: QuickMenuButtonSettings = {};
   QUICK_MENU_BUTTON_CATALOG.forEach((descriptor) => {
     const enabledInput = quickMenuButtonsContainer.querySelector<HTMLInputElement>(
       `input[name='enabled'][data-button-id='${descriptor.id}']`,
@@ -311,19 +312,19 @@ getElement<HTMLButtonElement>("save-quick-menu-buttons").addEventListener("click
     const pathSuffix = suffixInput ? sanitizeQuickMenuPathSuffix(suffixInput.value) : "";
     if (suffixInput) suffixInput.value = pathSuffix;
 
-    settings[descriptor.id] = {
+    userSettings[descriptor.id] = {
       label: descriptor.label,
       enabled: enabledInput?.checked !== false,
       pathSuffix,
     };
   });
 
-  void setQuickMenuButtonSettings(settings).then(() => {
+  void setQuickMenuButtonSettings(userSettings).then(() => {
     quickMenuButtonsStatus.textContent = "Quick menu buttons saved.";
   });
 });
 
-void getQuickMenuButtonSettings().then((settings) => {
-  renderQuickMenuButtons(settings);
+void getQuickMenuButtonSettings().then((userSettings) => {
+  renderQuickMenuButtons(userSettings);
 });
 

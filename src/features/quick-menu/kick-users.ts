@@ -1,4 +1,5 @@
-import { SITECORE, STORAGE } from "../../extension/constants";
+import { STORAGE } from "../../extension/constants";
+import { SITECORE } from "../../extension/sitecore";
 import { extensionLog } from "../../extension/logger";
 
 const KICK_ALL_USERS_WAIT_MS = 1_000;
@@ -6,7 +7,7 @@ const KICK_ALL_USERS_MAX_BUTTON_RETRIES = 5;
 
 const getKickUsersUrl = (doc: Document): string => {
   const origin = doc.defaultView?.location.origin ?? window.location.origin;
-  return `${origin}${SITECORE.KICK_USERS_PATH}`;
+  return `${origin}${SITECORE.RELATIVE_PATHS.KICK_USERS}`;
 };
 
 const findKickButton = (doc: Document): HTMLButtonElement | null =>
@@ -180,7 +181,7 @@ export function resumeKickAllUsers(doc: Document): void {
   const path = new URL(
     doc.defaultView?.location.href ?? window.location.href,
   ).pathname;
-  if (path.toLowerCase() === SITECORE.KICK_USERS_PATH.toLowerCase()) {
+  if (path.toLowerCase() === SITECORE.RELATIVE_PATHS.KICK_USERS.toLowerCase()) {
     void processKickAllUsers(doc);
   }
 }

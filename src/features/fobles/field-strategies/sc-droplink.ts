@@ -1,6 +1,6 @@
 import { FOBLES } from "../constants";
-import type { DroplinkFoble as DroplinkConfig } from "../foble.types";
-import { buildFobleUrl, createFobleButton } from "../helper";
+import type { DroplinkFobles as DroplinkConfig } from "../fobles.types";
+import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { applyButtonClasses } from "../shared/apply-button-classes";
 import { extractGuid } from "../shared/guid";
 
@@ -24,7 +24,7 @@ const createWrapper = (doc: Document): HTMLSpanElement => {
   return wrapper;
 };
 
-const renderSelectedFoble = (
+const renderSelectedFobles = (
   doc: Document,
   select: HTMLSelectElement,
   wrapper: HTMLSpanElement,
@@ -37,10 +37,10 @@ const renderSelectedFoble = (
   if (!value) return;
 
   const label = option?.textContent?.trim() || value;
-  const button = createFobleButton(
+  const button = createFoblesButton(
     doc,
     config.getButtonText?.(select, label) ?? label,
-    buildFobleUrl(value),
+    buildFoblesUrl(value),
     {
       classNames: [
         FOBLES.CLASSES.BUTTONS.BASE,
@@ -56,16 +56,16 @@ export function applyDroplinkStrategy(
   doc: Document,
   config: DroplinkConfig,
 ): void {
-  doc.querySelectorAll<HTMLSelectElement>(config.FobleTopSelector).forEach((select) => {
+  doc.querySelectorAll<HTMLSelectElement>(config.FoblesTopSelector).forEach((select) => {
     if (select.hasAttribute(FOBLES.ATTRIBUTES.MARKER) || !isDroplink(select)) return;
 
     const wrapper = createWrapper(doc);
     select.classList.add(FOBLES.CLASSES.HIDDEN);
     select.after(wrapper);
     select.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");
-    renderSelectedFoble(doc, select, wrapper, config);
+    renderSelectedFobles(doc, select, wrapper, config);
     select.addEventListener("change", () => {
-      if (wrapper.isConnected) renderSelectedFoble(doc, select, wrapper, config);
+      if (wrapper.isConnected) renderSelectedFobles(doc, select, wrapper, config);
     });
   });
 }

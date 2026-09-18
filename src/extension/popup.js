@@ -1,9 +1,9 @@
-const FOBLE_NAV_VISIBLE_KEY = "fobleNavVisible";
-const FOBLE_NAV_WARNING_VISIBLE_KEY = "fobleNavWarningVisible";
+const FOBLES_NAV_VISIBLE_KEY = "foblesNavVisible";
+const FOBLES_NAV_WARNING_VISIBLE_KEY = "foblesNavWarningVisible";
 const TURN_OFF_FOBLES_AFTER_NAVIGATION_KEY = "turnOffFoblesAfterNavigation";
 const SHOW_RELOAD_EXTENSION_BUTTON_KEY = "showReloadExtensionButton";
-const visibilityCheckbox = document.getElementById("foble-nav-visible");
-const warningCheckbox = document.getElementById("foble-nav-warning-visible");
+const visibilityCheckbox = document.getElementById("fobles-nav-visible");
+const warningCheckbox = document.getElementById("fobles-nav-warning-visible");
 const turnOffAfterNavigationCheckbox = document.getElementById(
   "turn-off-fobles-after-navigation",
 );
@@ -12,17 +12,17 @@ const reloadExtensionButton = document.getElementById("reload-extension");
 
 void chrome.storage.sync
   .get([
-    FOBLE_NAV_VISIBLE_KEY,
-    FOBLE_NAV_WARNING_VISIBLE_KEY,
+    FOBLES_NAV_VISIBLE_KEY,
+    FOBLES_NAV_WARNING_VISIBLE_KEY,
     TURN_OFF_FOBLES_AFTER_NAVIGATION_KEY,
     SHOW_RELOAD_EXTENSION_BUTTON_KEY,
   ])
   .then((result) => {
     if (visibilityCheckbox) {
-      visibilityCheckbox.checked = result[FOBLE_NAV_VISIBLE_KEY] !== false;
+      visibilityCheckbox.checked = result[FOBLES_NAV_VISIBLE_KEY] !== false;
     }
     if (warningCheckbox) {
-      warningCheckbox.checked = result[FOBLE_NAV_WARNING_VISIBLE_KEY] !== false;
+      warningCheckbox.checked = result[FOBLES_NAV_WARNING_VISIBLE_KEY] !== false;
     }
     if (turnOffAfterNavigationCheckbox) {
       turnOffAfterNavigationCheckbox.checked =
@@ -35,13 +35,13 @@ void chrome.storage.sync
 
 visibilityCheckbox?.addEventListener("change", () => {
   void chrome.storage.sync.set({
-    [FOBLE_NAV_VISIBLE_KEY]: visibilityCheckbox.checked,
+    [FOBLES_NAV_VISIBLE_KEY]: visibilityCheckbox.checked,
   });
 });
 
 warningCheckbox?.addEventListener("change", () => {
   void chrome.storage.sync.set({
-    [FOBLE_NAV_WARNING_VISIBLE_KEY]: warningCheckbox.checked,
+    [FOBLES_NAV_WARNING_VISIBLE_KEY]: warningCheckbox.checked,
   });
 });
 
@@ -65,15 +65,15 @@ chrome.storage.onChanged.addListener((changes, areaName) => {
 
   if (
     visibilityCheckbox &&
-    typeof changes[FOBLE_NAV_VISIBLE_KEY]?.newValue === "boolean"
+    typeof changes[FOBLES_NAV_VISIBLE_KEY]?.newValue === "boolean"
   ) {
-    visibilityCheckbox.checked = changes[FOBLE_NAV_VISIBLE_KEY].newValue;
+    visibilityCheckbox.checked = changes[FOBLES_NAV_VISIBLE_KEY].newValue;
   }
   if (
     warningCheckbox &&
-    typeof changes[FOBLE_NAV_WARNING_VISIBLE_KEY]?.newValue === "boolean"
+    typeof changes[FOBLES_NAV_WARNING_VISIBLE_KEY]?.newValue === "boolean"
   ) {
-    warningCheckbox.checked = changes[FOBLE_NAV_WARNING_VISIBLE_KEY].newValue;
+    warningCheckbox.checked = changes[FOBLES_NAV_WARNING_VISIBLE_KEY].newValue;
   }
   if (
     turnOffAfterNavigationCheckbox &&

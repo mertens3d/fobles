@@ -1,15 +1,16 @@
 import { FOBLES } from "../constants";
-import { buildFobleUrl, createFobleButton } from "../helper";
+import { SITECORE } from "../../../extension/sitecore";
+import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
-import type { MultilistOptionsFoble as MultilistConfig } from "../foble.types";
+import type { MultilistOptionsFobles as MultilistConfig } from "../fobles.types";
 
-interface MultilistOption {
+type MultilistOption = {
   value: string;
   label: string;
-}
+};
 
 const findEligibleHosts = (table: Element): HTMLSelectElement[] =>
-  Array.from(table.querySelectorAll<HTMLSelectElement>(FOBLES.SELECTORS.MULTILIST_BOX))
+  Array.from(table.querySelectorAll<HTMLSelectElement>(SITECORE.SELECTORS.MULTILIST_BOX))
     .filter((select) => !select.hasAttribute(FOBLES.ATTRIBUTES.MARKER));
 
 const getHostContainer = (select: HTMLSelectElement): Element | null =>
@@ -53,8 +54,8 @@ const createMultilistWrapper = (doc: Document, height: number): HTMLDivElement =
 };
 
 const createOptionButton = (doc: Document, option: MultilistOption): HTMLButtonElement => {
-  const buttonUrl = buildFobleUrl(option.value);
-  return createFobleButton(doc, option.label, buttonUrl, {
+  const buttonUrl = buildFoblesUrl(option.value);
+  return createFoblesButton(doc, option.label, buttonUrl, {
     classNames: [
       FOBLES.CLASSES.BUTTONS.BASE,
       FOBLES.CLASSES.BUTTONS.MULTILIST,
@@ -78,13 +79,13 @@ const hideOriginalControls = (
   select: HTMLSelectElement,
 ): void => {
   const row = control.closest("tr");
-  const fieldCell = control.closest(FOBLES.SELECTORS.FIELD_CELL) ?? select.closest("td") ?? select.parentElement;
+  const fieldCell = control.closest(SITECORE.SELECTORS.FIELD_CELL) ?? select.closest("td") ?? select.parentElement;
 
-  row?.querySelectorAll<HTMLElement>(FOBLES.SELECTORS.MULTILIST_NAV_BUTTON).forEach((navButton) => {
+  row?.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.MULTILIST_NAV_BUTTON).forEach((navButton) => {
     navButton.classList.add(FOBLES.CLASSES.HIDDEN);
   });
 
-  fieldCell?.querySelectorAll<HTMLElement>(FOBLES.SELECTORS.MULTILIST_FIELD_BUTTONS).forEach((actionButton) => {
+  fieldCell?.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.MULTILIST_FIELD_BUTTONS).forEach((actionButton) => {
     hideWithStyledSpacer(actionButton);
   });
 
@@ -114,7 +115,7 @@ export function applyMultilistStrategy(
   doc: Document,
   config: MultilistConfig,
 ): void {
-  const tables = doc.querySelectorAll(config.FobleTopSelector);
+  const tables = doc.querySelectorAll(config.FoblesTopSelector);
 
   tables.forEach((table) => {
     if (table.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;

@@ -1,18 +1,18 @@
 import { FOBLES } from "../constants";
-import { buildFobleUrl, createFobleButton, normalizeFobleValue } from "../helper";
+import { buildFoblesUrl, createFoblesButton, normalizeFoblesValue } from "../helper";
 import { extensionLog } from "../../../extension/logger";
 import { applyButtonClasses } from "../shared/apply-button-classes";
-import type { DropTreeFoble as DropTreeConfig } from "../foble.types";
+import type { DropTreeFobles as DropTreeConfig } from "../fobles.types";
 
-const getFobleValue = (host: HTMLInputElement): string | null => {
+const getFoblesValue = (host: HTMLInputElement): string | null => {
   const value = host.value.trim();
   return value || null;
 };
 
 const findEligibleHosts = (doc: Document, config: DropTreeConfig): HTMLInputElement[] =>
-  Array.from(doc.querySelectorAll<HTMLInputElement>(config.FobleTopSelector))
+  Array.from(doc.querySelectorAll<HTMLInputElement>(config.FoblesTopSelector))
     .filter((host) => !host.hasAttribute(FOBLES.ATTRIBUTES.MARKER))
-    .filter((host) => Boolean(getFobleValue(host)));
+    .filter((host) => Boolean(getFoblesValue(host)));
 
 const createDropTreeWrapper = (doc: Document): HTMLSpanElement => {
   const wrapper = doc.createElement("span");
@@ -35,9 +35,9 @@ const createDropTreeButton = (
   doc: Document,
   value: string,
 ): HTMLButtonElement => {
-  const normalizedValue = normalizeFobleValue(value);
-  const fobleUrl = buildFobleUrl(normalizedValue);
-  const button = createFobleButton(doc, value, fobleUrl, {
+  const normalizedValue = normalizeFoblesValue(value);
+  const foblesUrl = buildFoblesUrl(normalizedValue);
+  const button = createFoblesButton(doc, value, foblesUrl, {
     classNames: [FOBLES.CLASSES.BUTTONS.BASE],
   });
   applyButtonClasses(button);
@@ -53,12 +53,12 @@ const hideAdditionalElements = (host: HTMLInputElement, selectors?: string[]): v
   });
 };
 
-const replaceHostWithFoble = (
+const replaceHostWithFobles = (
   doc: Document,
   host: HTMLInputElement,
   config: DropTreeConfig,
 ): void => {
-  const value = getFobleValue(host);
+  const value = getFoblesValue(host);
   if (!value) return;
 
   const wrapper = createDropTreeWrapper(doc);
@@ -78,5 +78,5 @@ export function applyDropTreeStrategy(
   const hosts = findEligibleHosts(doc, config);
   extensionLog.debug("Found", hosts.length, "eligible DropTree fields");
 
-  hosts.forEach((host) => replaceHostWithFoble(doc, host, config));
+  hosts.forEach((host) => replaceHostWithFobles(doc, host, config));
 }

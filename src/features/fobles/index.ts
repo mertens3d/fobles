@@ -1,10 +1,11 @@
 
 import { ATTRIBUTE, SELECTORS } from "../../extension/constants";
+import { SITECORE } from "../../extension/sitecore";
 import { extensionLog } from "../../extension/logger";
 import { isMenuOwnedFrame } from "../../extension/menu-path";
 import { FOBLES } from "./constants";
 import { fieldConfigs } from "./_config";
-import type { FobleConfig, FobleStrategy } from "./foble.types";
+import type { FoblesConfig, FoblesStrategy } from "./fobles.types";
 import { applyDroplinkStrategy } from "./field-strategies/sc-droplink";
 import { applyDroplistStrategy } from "./field-strategies/sc-droplist";
 import { applyDropTreeStrategy } from "./field-strategies/sc-droptree";
@@ -21,17 +22,17 @@ import { applyTreeListStrategy } from "./field-strategies/sc-treelist";
 import { applyTreelistExStrategy } from "./field-strategies/sc-treelistex";
 import { applyReferenceLinksStrategy } from "./section-strategies/reference-links";
 import { applyTemplatePathStrategy } from "./section-strategies/template-path";
-import { removeFobleTooltips } from "./shared/foble-tooltip";
+import { removeFoblesTooltips } from "./shared/fobles-tooltip";
 
-const fobleDismissListeners = new WeakSet<Document>();
+const foblesDismissListeners = new WeakSet<Document>();
 let dismissFoblesHandler: (() => void) | null = null;
 
-export function setFobleDismissHandler(handler: (() => void) | null): void {
+export function setFoblesDismissHandler(handler: (() => void) | null): void {
   dismissFoblesHandler = handler;
 }
 
-function listenForFobleDismissal(doc: Document): void {
-  if (fobleDismissListeners.has(doc)) return;
+function listenForFoblesDismissal(doc: Document): void {
+  if (foblesDismissListeners.has(doc)) return;
 
   doc.addEventListener("click", (event) => {
     const target = event.target as Node | null;
@@ -50,13 +51,13 @@ function listenForFobleDismissal(doc: Document): void {
 
     dismissFoblesHandler?.();
   });
-  fobleDismissListeners.add(doc);
+  foblesDismissListeners.add(doc);
 }
 
 function applyStrategy(
   doc: Document,
-  strategy: FobleStrategy,
-  config: FobleConfig,
+  strategy: FoblesStrategy,
+  config: FoblesConfig,
 ): void {
   switch (strategy) {
     case "drop-link":
@@ -168,7 +169,7 @@ function walkAllDocuments(doc: Document, callback: (currentDoc: Document) => voi
 
 export function triggerFobles(doc: Document): void {
   walkDocuments(doc, (currentDoc) => {
-    listenForFobleDismissal(currentDoc);
+    listenForFoblesDismissal(currentDoc);
     extensionLog.debug("triggerFobles", {
       url: location.href,
       topVsSelf: window.top !== window.self,
@@ -189,7 +190,7 @@ export function triggerFobles(doc: Document): void {
 
 export function clearFobles(doc: Document): void {
   walkAllDocuments(doc, (currentDoc) => {
-    removeFobleTooltips(currentDoc);
+    removeFoblesTooltips(currentDoc);
     const headerArea = currentDoc.querySelector(".sc-globalHeader-content");
     extensionLog.debug("clearFobles start", {
       headerButtons: headerArea ? headerArea.querySelectorAll("button").length : 0,
@@ -232,15 +233,15 @@ export function clearFobles(doc: Document): void {
     });
 
     currentDoc.querySelectorAll(FOBLES.SELECTORS.BUTTON).forEach((button) => {
-      if (button.hasAttribute(ATTRIBUTE.DATA.KEY.FOBLE_NAV_OWNER)) return;
+      if (button.hasAttribute(ATTRIBUTE.DATA.KEY.FOBLES_NAV_OWNER)) return;
       button.remove();
     });
 
-    currentDoc.querySelectorAll(`${FOBLES.SELECTORS.MULTILIST_BOX}${FOBLES.SELECTORS.PROCESSED}`).forEach((el) => {
+    currentDoc.querySelectorAll(`${SITECORE.SELECTORS.MULTILIST_BOX}${FOBLES.SELECTORS.PROCESSED}`).forEach((el) => {
       resetElement(el as HTMLElement);
     });
 
-    currentDoc.querySelectorAll(`${FOBLES.SELECTORS.MULTILIST}${FOBLES.SELECTORS.PROCESSED}`).forEach((el) => {
+    currentDoc.querySelectorAll(`${SITECORE.SELECTORS.MULTILIST}${FOBLES.SELECTORS.PROCESSED}`).forEach((el) => {
       resetElement(el as HTMLElement);
     });
 

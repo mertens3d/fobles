@@ -2,8 +2,8 @@ import {
   DEFAULT_TOOLBAR_PLACEMENT,
   STORAGE,
   TOOLBAR_CORNERS,
-  type ToolbarPlacement,
 } from "./constants";
+import type { ToolbarPlacement } from "./toolbar.types";
 import type { DebugSettings } from "./content.types";
 
 function isValidPlacement(value: unknown): value is ToolbarPlacement {
@@ -53,41 +53,41 @@ export async function getDebugSettings(): Promise<DebugSettings> {
   }
 }
 
-export async function getFobleNavVisible(): Promise<boolean> {
+export async function getFoblesNavVisible(): Promise<boolean> {
   try {
     const storage = chrome.storage?.sync;
     if (!storage) return true;
 
-    const result = await storage.get([STORAGE.KEY.FOBLE_NAV_VISIBLE]);
-    const value = result[STORAGE.KEY.FOBLE_NAV_VISIBLE];
+    const result = await storage.get([STORAGE.KEY.FOBLES_NAV_VISIBLE]);
+    const value = result[STORAGE.KEY.FOBLES_NAV_VISIBLE];
     return typeof value === "boolean" ? value : true;
   } catch {
     return true;
   }
 }
 
-export async function setFobleNavVisible(visible: boolean): Promise<void> {
+export async function setFoblesNavVisible(visible: boolean): Promise<void> {
   await setSyncValue({
-    [STORAGE.KEY.FOBLE_NAV_VISIBLE]: visible,
+    [STORAGE.KEY.FOBLES_NAV_VISIBLE]: visible,
   });
 }
 
-export async function getFobleNavWarningVisible(): Promise<boolean> {
+export async function getFoblesNavWarningVisible(): Promise<boolean> {
   try {
     const storage = chrome.storage?.sync;
     if (!storage) return true;
 
-    const result = await storage.get([STORAGE.KEY.FOBLE_NAV_WARNING_VISIBLE]);
-    const value = result[STORAGE.KEY.FOBLE_NAV_WARNING_VISIBLE];
+    const result = await storage.get([STORAGE.KEY.FOBLES_NAV_WARNING_VISIBLE]);
+    const value = result[STORAGE.KEY.FOBLES_NAV_WARNING_VISIBLE];
     return typeof value === "boolean" ? value : true;
   } catch {
     return true;
   }
 }
 
-export async function setFobleNavWarningVisible(visible: boolean): Promise<void> {
+export async function setFoblesNavWarningVisible(visible: boolean): Promise<void> {
   await setSyncValue({
-    [STORAGE.KEY.FOBLE_NAV_WARNING_VISIBLE]: visible,
+    [STORAGE.KEY.FOBLES_NAV_WARNING_VISIBLE]: visible,
   });
 }
 
@@ -141,25 +141,25 @@ async function setPlacementForOrigin(
   }
 }
 
-export function getFobleNavPlacement(origin: string): Promise<ToolbarPlacement> {
-  return getPlacementForOrigin(STORAGE.KEY.FOBLE_NAV_POSITION, origin);
+export function getFoblesNavPlacement(origin: string): Promise<ToolbarPlacement> {
+  return getPlacementForOrigin(STORAGE.KEY.FOBLES_NAV_POSITION, origin);
 }
 
-export function setFobleNavPlacement(
+export function setFoblesNavPlacement(
   origin: string,
   placement: ToolbarPlacement,
 ): Promise<void> {
-  return setPlacementForOrigin(STORAGE.KEY.FOBLE_NAV_POSITION, origin, placement);
+  return setPlacementForOrigin(STORAGE.KEY.FOBLES_NAV_POSITION, origin, placement);
 }
 
-export function getSelectRenderingFobleNavPlacement(origin: string): Promise<ToolbarPlacement> {
-  return getPlacementForOrigin(STORAGE.KEY.SELECT_RENDERING_FOBLE_NAV_POSITION, origin);
+export function getSelectRenderingFoblesNavPlacement(origin: string): Promise<ToolbarPlacement> {
+  return getPlacementForOrigin(STORAGE.KEY.SELECT_RENDERING_FOBLES_NAV_POSITION, origin);
 }
 
-export function setSelectRenderingFobleNavPlacement(
+export function setSelectRenderingFoblesNavPlacement(
   origin: string,
   placement: ToolbarPlacement,
 ): Promise<void> {
-  return setPlacementForOrigin(STORAGE.KEY.SELECT_RENDERING_FOBLE_NAV_POSITION, origin, placement);
+  return setPlacementForOrigin(STORAGE.KEY.SELECT_RENDERING_FOBLES_NAV_POSITION, origin, placement);
 }
 

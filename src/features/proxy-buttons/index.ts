@@ -65,7 +65,7 @@ const createProxyButton = (
   option: (typeof PROXY_BUTTONS)[number],
 ): HTMLLabelElement => {
   const wrapper = doc.createElement("label");
-  wrapper.className = `${CLASS.PROXY_BUTTON} ${CLASS.FOBLE_NAV_BUTTON} ${CLASS.FOBLE_NAV_BUTTON_COMPACT}`;
+  wrapper.className = `${CLASS.PROXY_BUTTON} ${CLASS.FOBLES_NAV_BUTTON} ${CLASS.FOBLES_NAV_BUTTON_COMPACT}`;
   wrapper.title = option.label;
 
   const checkbox = doc.createElement("input");
@@ -74,7 +74,7 @@ const createProxyButton = (
   checkbox.className = CLASS.PROXY_BUTTON_INPUT;
   checkbox.checked = Boolean(findRibbonCheckbox(doc, option.checkboxId)?.checked);
   checkbox.setAttribute(
-    ATTRIBUTE.DATA.KEY.FOBLE_NAV_OWNER,
+    ATTRIBUTE.DATA.KEY.FOBLES_NAV_OWNER,
     ATTRIBUTE.DATA.VALUE.PERSISTENT,
   );
 

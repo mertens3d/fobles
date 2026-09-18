@@ -6,6 +6,7 @@ import {
   SYMBOLS,
   TEXT,
 } from "../constants";
+import { SITECORE } from "../sitecore";
 import {
   openQuickMenuOnHover,
   scheduleCloseQuickMenuOnHover,
@@ -25,61 +26,73 @@ function createMenuTrigger(
   context: ToolbarContext,
   button: HTMLButtonElement,
   triggerClass: string,
+  onHover: { open: () => void; scheduleClose: () => void },
 ): HTMLDivElement {
   const trigger = context.doc.createElement("div");
   trigger.className = triggerClass;
   trigger.appendChild(button);
+  trigger.addEventListener("mouseenter", onHover.open);
+  trigger.addEventListener("mouseleave", onHover.scheduleClose);
   return trigger;
+}
+
+function createFoblesNavButton(
+  context: ToolbarContext,
+  options: {
+    className: string;
+    text: string;
+    title: string;
+    onClick: (event: MouseEvent) => void;
+  },
+): HTMLButtonElement {
+  const button = context.doc.createElement("button");
+  button.type = "button";
+  button.className = options.className;
+  button.textContent = options.text;
+  button.title = options.title;
+  button.setAttribute(
+    ATTRIBUTE.DATA.KEY.FOBLES_NAV_OWNER,
+    ATTRIBUTE.DATA.VALUE.PERSISTENT,
+  );
+  button.addEventListener("click", options.onClick);
+  return button;
 }
 
 export function createQuickMenuTrigger(context: ToolbarContext): HTMLDivElement {
-  const button = context.doc.createElement("button");
-  button.type = "button";
-  button.className = CLASS.FOBLE_NAV_BUTTON;
-  button.setAttribute(
-    ATTRIBUTE.DATA.KEY.FOBLE_NAV_OWNER,
-    ATTRIBUTE.DATA.VALUE.PERSISTENT,
-  );
-  button.textContent = TEXT.QUICK_MENU;
-  button.title = TEXT.QUICK_MENU_TITLE;
-  button.addEventListener("click", () => toggleQuickMenu(context));
+  const button = createFoblesNavButton(context, {
+    className: CLASS.FOBLES_NAV_BUTTON,
+    text: TEXT.QUICK_MENU,
+    title: TEXT.QUICK_MENU_TITLE,
+    onClick: () => toggleQuickMenu(context),
+  });
 
-  const trigger = createMenuTrigger(context, button, CLASS.QUICK_MENU_TRIGGER);
-  trigger.addEventListener("mouseenter", () => openQuickMenuOnHover(context.doc));
-  trigger.addEventListener("mouseleave", () => scheduleCloseQuickMenuOnHover(context.doc));
-  return trigger;
+  return createMenuTrigger(context, button, CLASS.QUICK_MENU_TRIGGER, {
+    open: () => openQuickMenuOnHover(context.doc),
+    scheduleClose: () => scheduleCloseQuickMenuOnHover(context.doc),
+  });
 }
 
 export function createProxyButtonsTrigger(context: ToolbarContext): HTMLDivElement {
-  const button = context.doc.createElement("button");
-  button.type = "button";
-  button.className = CLASS.FOBLE_NAV_BUTTON;
-  button.setAttribute(
-    ATTRIBUTE.DATA.KEY.FOBLE_NAV_OWNER,
-    ATTRIBUTE.DATA.VALUE.PERSISTENT,
-  );
-  button.textContent = TEXT.VIEW;
-  button.title = TEXT.VIEW_TITLE;
-  button.addEventListener("click", () => toggleProxyButtons(context));
+  const button = createFoblesNavButton(context, {
+    className: CLASS.FOBLES_NAV_BUTTON,
+    text: TEXT.VIEW,
+    title: TEXT.VIEW_TITLE,
+    onClick: () => toggleProxyButtons(context),
+  });
 
-  const trigger = createMenuTrigger(context, button, CLASS.PROXY_BUTTONS_TRIGGER);
-  trigger.addEventListener("mouseenter", () => openProxyButtonsOnHover(context.doc));
-  trigger.addEventListener("mouseleave", () => scheduleCloseProxyButtonsOnHover(context.doc));
-  return trigger;
+  return createMenuTrigger(context, button, CLASS.PROXY_BUTTONS_TRIGGER, {
+    open: () => openProxyButtonsOnHover(context.doc),
+    scheduleClose: () => scheduleCloseProxyButtonsOnHover(context.doc),
+  });
 }
 
 export function createFeatureButton(context: ToolbarContext): HTMLButtonElement {
-  const button = context.doc.createElement("button");
-  button.type = "button";
-  button.className = CLASS.TOOLBAR_FEATURE_BUTTON;
-  button.textContent = SYMBOLS.LIGHTNING;
-  button.title = TEXT.TOGGLE_FEATURES;
-  button.setAttribute(
-    ATTRIBUTE.DATA.KEY.FOBLE_NAV_OWNER,
-    ATTRIBUTE.DATA.VALUE.PERSISTENT,
-  );
-  button.addEventListener("click", context.onToggleFeatures);
-  return button;
+  return createFoblesNavButton(context, {
+    className: CLASS.TOOLBAR_FEATURE_BUTTON,
+    text: SYMBOLS.LIGHTNING,
+    title: TEXT.TOGGLE_FEATURES,
+    onClick: context.onToggleFeatures,
+  });
 }
 
 export function createToolbarCloseButton(
@@ -126,7 +139,7 @@ export function createToolbarGrip(context: ToolbarContext): SVGSVGElement {
 
 function getPowerShellIseScriptTitle(doc: Document): string | null {
   const scriptName = doc
-    .querySelector(SELECTORS.SITECORE_SCRIPT_NAME)
+    .querySelector(SITECORE.SELECTORS.SCRIPT_NAME)
     ?.textContent
     ?.trim();
   return scriptName?.split(/[\\/]/).filter(Boolean).pop() ?? null;
@@ -135,23 +148,18 @@ function getPowerShellIseScriptTitle(doc: Document): string | null {
 export function createSetIseTabTitleButton(
   context: ToolbarContext,
 ): HTMLButtonElement {
-  const button = context.doc.createElement("button");
-  button.type = "button";
-  button.className = `${CLASS.FOBLE_NAV_BUTTON} ${CLASS.TOOLBAR_SET_ISE_TITLE_BUTTON}`;
-  button.textContent = TEXT.SET_ISE_TAB_TITLE;
-  button.title = TEXT.SET_ISE_TAB_TITLE_TITLE;
-  button.setAttribute(
-    ATTRIBUTE.DATA.KEY.FOBLE_NAV_OWNER,
-    ATTRIBUTE.DATA.VALUE.PERSISTENT,
-  );
-  button.addEventListener("click", () => {
-    const title = getPowerShellIseScriptTitle(context.doc);
-    if (!title) {
-      context.win.alert(TEXT.SET_ISE_TAB_TITLE_ERROR);
-      return;
-    }
+  return createFoblesNavButton(context, {
+    className: `${CLASS.FOBLES_NAV_BUTTON} ${CLASS.TOOLBAR_SET_ISE_TITLE_BUTTON}`,
+    text: TEXT.SET_ISE_TAB_TITLE,
+    title: TEXT.SET_ISE_TAB_TITLE_TITLE,
+    onClick: () => {
+      const title = getPowerShellIseScriptTitle(context.doc);
+      if (!title) {
+        context.win.alert(TEXT.SET_ISE_TAB_TITLE_ERROR);
+        return;
+      }
 
-    context.doc.title = title;
+      context.doc.title = title;
+    },
   });
-  return button;
 }

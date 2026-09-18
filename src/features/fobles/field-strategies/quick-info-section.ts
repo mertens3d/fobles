@@ -1,10 +1,10 @@
 import { FOBLES } from "../constants";
 import type {
   QuickInfoCandidate,
-  QuickInfoSectionFoble as QuickInfoSectionConfig,
+  QuickInfoSectionFobles as QuickInfoSectionConfig,
   QuickInfoSource,
-} from "../foble.types";
-import { buildFobleUrl, createFobleButton } from "../helper";
+} from "../fobles.types";
+import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { extractGuid } from "../shared/guid";
 
 const startsWithLabel = (value: string, candidate: string): boolean =>
@@ -52,7 +52,7 @@ const replaceSource = (
   if (!target) return;
 
   const wrapper = createWrapper(doc, source);
-  const button = createFobleButton(doc, value, buildFobleUrl(target), {
+  const button = createFoblesButton(doc, value, buildFoblesUrl(target), {
     classNames: [
       FOBLES.CLASSES.BUTTONS.BASE,
       source.wrapperVariant === "quickinfo"
@@ -87,7 +87,7 @@ export function applyQuickInfoSectionStrategy(
   doc: Document,
   config: QuickInfoSectionConfig,
 ): void {
-  doc.querySelectorAll<HTMLTableElement>(config.FobleTopSelector).forEach((table) => {
+  doc.querySelectorAll<HTMLTableElement>(config.FoblesTopSelector).forEach((table) => {
     Array.from(table.rows).forEach((row) => {
       config.candidates.forEach((candidate) => applyCandidate(doc, row, candidate));
     });

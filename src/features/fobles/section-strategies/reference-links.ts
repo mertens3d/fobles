@@ -1,13 +1,13 @@
 import { FOBLES } from "../constants";
-import type { ReferenceLinksFoble as ReferenceLinksConfig } from "../foble.types";
-import { buildFobleUrl, createFobleButton } from "../helper";
+import type { ReferenceLinksFobles as ReferenceLinksConfig } from "../fobles.types";
+import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { extractGuid } from "../shared/guid";
 
 export function applyReferenceLinksStrategy(
   doc: Document,
   config: ReferenceLinksConfig,
 ): void {
-  doc.querySelectorAll<HTMLAnchorElement>(config.FobleTopSelector).forEach((anchor) => {
+  doc.querySelectorAll<HTMLAnchorElement>(config.FoblesTopSelector).forEach((anchor) => {
     if (anchor.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;
 
     const target = extractGuid(anchor.getAttribute("onclick"));
@@ -21,7 +21,7 @@ export function applyReferenceLinksStrategy(
       FOBLES.CLASSES.WRAPPERS.BASE,
       FOBLES.CLASSES.WRAPPERS.REFERENCE_LINKS,
     );
-    wrapper.appendChild(createFobleButton(doc, label, buildFobleUrl(target), {
+    wrapper.appendChild(createFoblesButton(doc, label, buildFoblesUrl(target), {
       classNames: [
         FOBLES.CLASSES.BUTTONS.BASE,
         FOBLES.CLASSES.BUTTONS.REFERENCE_LINKS,

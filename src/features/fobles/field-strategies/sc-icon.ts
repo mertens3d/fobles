@@ -1,18 +1,19 @@
 import { FOBLES } from "../constants";
-import type { IconFoble as IconConfig } from "../foble.types";
+import { SITECORE } from "../../../extension/sitecore";
+import type { IconFobles as IconConfig } from "../fobles.types";
 
 const isIconField = (input: HTMLInputElement): boolean => {
-  const fieldCell = input.closest(FOBLES.SELECTORS.FIELD_CELL);
-  return Array.from(fieldCell?.querySelectorAll(FOBLES.SELECTORS.FIELD_ACTION) ?? [])
+  const fieldCell = input.closest(SITECORE.SELECTORS.FIELD_CELL);
+  return Array.from(fieldCell?.querySelectorAll(SITECORE.SELECTORS.FIELD_ACTION) ?? [])
     .some((button) =>
       (button.getAttribute("onclick") ?? "")
         .toLowerCase()
-        .includes(`${FOBLES.SITECORE.ACTION_PREFIXES.ICON}:`),
+        .includes(`${SITECORE.ACTION_PREFIXES.ICON}:`),
     );
 };
 
 export function applyIconStrategy(doc: Document, config: IconConfig): void {
-  doc.querySelectorAll<HTMLInputElement>(config.FobleTopSelector).forEach((input) => {
+  doc.querySelectorAll<HTMLInputElement>(config.FoblesTopSelector).forEach((input) => {
     if (input.hasAttribute(FOBLES.ATTRIBUTES.MARKER) || !isIconField(input)) return;
 
     input.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");

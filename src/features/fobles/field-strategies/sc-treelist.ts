@@ -1,13 +1,14 @@
 import { FOBLES } from "../constants";
-import { buildFobleUrl, createFobleButton } from "../helper";
+import { SITECORE } from "../../../extension/sitecore";
+import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { applyButtonClasses } from "../shared/apply-button-classes";
 import { extractGuid, formatFoId } from "../shared/guid";
-import type { TreeListFoble as TreeListConfig } from "../foble.types";
+import type { TreeListFobles as TreeListConfig } from "../fobles.types";
 
-interface TreeListItem {
+type TreeListItem = {
   label: string;
   value: string;
-}
+};
 
 const getTreeNodeValue = (node: Element): string | null => {
   const match = node.id.match(/([0-9a-f]{32})$/i);
@@ -15,16 +16,16 @@ const getTreeNodeValue = (node: Element): string | null => {
 };
 
 const getAllTreeItems = (treePane: Element): TreeListItem[] =>
-  Array.from(treePane.querySelectorAll(FOBLES.SELECTORS.TREE_NODES_WITH_ID))
+  Array.from(treePane.querySelectorAll(SITECORE.SELECTORS.TREE_NODES_WITH_ID))
     .map((node) => {
       const value = getTreeNodeValue(node);
-      const label = node.querySelector(FOBLES.SELECTORS.TREE_NODE_TITLE)?.textContent?.trim() ?? "";
+      const label = node.querySelector(SITECORE.SELECTORS.TREE_NODE_TITLE)?.textContent?.trim() ?? "";
       return value && label ? { value, label } : null;
     })
     .filter((item): item is TreeListItem => item !== null);
 
 const getSelectedItems = (selectedPane: Element): TreeListItem[] => {
-  const select = selectedPane.querySelector<HTMLSelectElement>(FOBLES.SELECTORS.MULTILIST_BOX);
+  const select = selectedPane.querySelector<HTMLSelectElement>(SITECORE.SELECTORS.MULTILIST_BOX);
   if (!select) return [];
 
   return Array.from(select.options)
@@ -53,7 +54,7 @@ const createPaneWrapper = (doc: Document, height: number): HTMLDivElement => {
 };
 
 const createTreeListButton = (doc: Document, item: TreeListItem): HTMLButtonElement => {
-  const button = createFobleButton(doc, item.label, buildFobleUrl(item.value), {
+  const button = createFoblesButton(doc, item.label, buildFoblesUrl(item.value), {
     classNames: [
       FOBLES.CLASSES.BUTTONS.BASE,
       FOBLES.CLASSES.BUTTONS.TREE_LIST,
@@ -78,7 +79,7 @@ const replacePaneWithFobles = (
 };
 
 const hideTreeListNavigation = (control: Element): void => {
-  control.querySelectorAll<HTMLElement>(FOBLES.SELECTORS.MULTILIST_NAV_BUTTON).forEach((button) => {
+  control.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.MULTILIST_NAV_BUTTON).forEach((button) => {
     button.classList.add(FOBLES.CLASSES.HIDDEN);
   });
 };
@@ -87,11 +88,11 @@ export function applyTreeListStrategy(
   doc: Document,
   config: TreeListConfig,
 ): void {
-  doc.querySelectorAll(config.FobleTopSelector).forEach((control) => {
+  doc.querySelectorAll(config.FoblesTopSelector).forEach((control) => {
     if (control.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;
 
-    const allTreePane = control.querySelector(".scScrollbox.scContentControlTree");
-    const selectedPane = control.querySelector(".scContentControlSelectedList");
+    const allTreePane = control.querySelector(SITECORE.SELECTORS.TREE_LIST_ALL_PANE);
+    const selectedPane = control.querySelector(SITECORE.SELECTORS.TREE_LIST_SELECTED_PANE);
     const replacedAllPane = allTreePane
       ? replacePaneWithFobles(doc, allTreePane, getAllTreeItems(allTreePane))
       : false;

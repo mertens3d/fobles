@@ -1,0 +1,389 @@
+@use "tokens" as *;
+@use "mixins" as *;
+
+:root {
+  --sitecore-navy: #{$fobles-navy};
+  --sitecore-blue: #{$fobles-blue};
+  --sitecore-blue-deep: #{$fobles-blue-deep};
+  --sitecore-teal: #{$fobles-teal};
+  --sitecore-teal-soft: #{$fobles-teal-soft};
+  --sitecore-surface: #{$fobles-surface};
+  --sitecore-border: #{$fobles-border};
+  --sitecore-text: #{$fobles-text};
+  --sitecore-muted: #{$fobles-muted-sitecore};
+  --sitecore-shadow: #{$fobles-shadow-sitecore};
+}
+
+.fobles-toolbar-container {
+  position: fixed;
+  top: 3px;
+  left: 70px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-family: system-ui, "Segoe UI", Arial, sans-serif;
+  cursor: grab;
+  touch-action: none;
+  z-index: 2147483647;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -6px;
+  }
+
+  &.fobles-toolbar-dragging {
+    cursor: grabbing;
+    opacity: 0.85;
+  }
+
+  &.fobles-toolbar-resizing {
+    visibility: hidden;
+  }
+
+  &.fobles-toolbar-dragging .fobles-toolbar-body {
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+  }
+
+  &[data-position$="right"]
+    :is(.fobles-quick-menu, .fobles-proxy-buttons) {
+    right: 0;
+    left: auto;
+    transform: translateX(8px);
+    transform-origin: top right;
+  }
+
+  &[data-position^="bottom"]
+    :is(.fobles-quick-menu, .fobles-proxy-buttons) {
+    top: auto;
+    bottom: calc(100% + 8px);
+    transform-origin: bottom left;
+  }
+
+  &[data-position="bottom-right"]
+    :is(.fobles-quick-menu, .fobles-proxy-buttons) {
+    transform-origin: bottom right;
+  }
+}
+
+.fobles-toolbar-body {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px;
+  border-radius: 6px;
+  background-color: var(--fobles-toolbar-background, #{$fobles-toolbar-background});
+
+  .fobles-toolbar-container:hover & {
+    filter: brightness(1.15);
+  }
+}
+
+.fobles-toolbar-close-button {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $fobles-toolbar-control-size;
+  height: $fobles-toolbar-control-size;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: $fobles-radius-small;
+  background: transparent;
+  cursor: pointer;
+  margin-left: -10px;
+  transform: translate(8px, -8px);
+}
+
+.fobles-toolbar-close-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  // Scales the icon's white pixels down to Sitecore's #BEBEBE (190/255 ≈ 0.745).
+  filter: brightness(0.745);
+}
+
+.fobles-toolbar-grip {
+  flex: none;
+  width: 10px;
+  height: 20px;
+  color: $fobles-navy;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+  pointer-events: none;
+}
+
+.fobles-toolbar-container:hover .fobles-toolbar-grip,
+.fobles-toolbar-container.fobles-toolbar-dragging .fobles-toolbar-grip {
+  opacity: 1;
+}
+
+.fobles-quick-menu-trigger,
+.fobles-proxy-buttons-trigger {
+  position: relative;
+  display: flex;
+
+  .fobles-nav-button {
+    text-transform: uppercase;
+  }
+}
+
+.fobles-quick-menu,
+.fobles-proxy-buttons {
+  @include fobles-menu-panel;
+  // Overrides the draggable toolbar container's grab cursor so the flyout doesn't look draggable.
+  cursor: default;
+
+  &[data-visible="true"] {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateX(0);
+  }
+}
+
+.fobles-quick-menu {
+  flex-direction: column;
+  min-width: $fobles-quick-menu-width;
+
+  &-columns {
+    display: flex;
+    gap: 6px;
+  }
+
+  &-column {
+    display: flex;
+    flex: 1 1 0;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+    padding: 2px 8px;
+    color: var(--sitecore-blue-deep);
+    font-family: "Open Sans", Arial, sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+  }
+
+  &-info {
+    margin-top: 6px;
+    padding: 6px 8px 2px;
+    border-top: 1px solid rgba($fobles-blue, 0.2);
+
+    &-row {
+      color: var(--sitecore-muted);
+      font-family: system-ui, "Segoe UI", Arial, sans-serif;
+      font-size: 11px;
+      line-height: 1.4;
+    }
+  }
+
+  &-reload-button {
+    appearance: none;
+    display: inline-block;
+    margin-top: 6px;
+    padding: 3px 8px;
+    border: 1px solid rgba($fobles-blue, 0.35);
+    border-radius: 4px;
+    background: $fobles-white;
+    color: var(--sitecore-blue-deep);
+    font-family: "Open Sans", Arial, sans-serif;
+    font-size: 11px;
+    font-weight: 600;
+    cursor: pointer;
+
+    &:hover {
+      background: $fobles-surface-hover;
+    }
+  }
+
+  &-actions {
+    display: flex !important;
+    flex-direction: column;
+    gap: 2px;
+    width: 100% !important;
+  }
+
+  &-action {
+    display: flex !important;
+    width: 100% !important;
+  }
+
+  .fobles-nav-button {
+    position: relative;
+    display: inline-flex !important;
+    align-items: stretch;
+    box-sizing: border-box;
+    width: 100% !important;
+    min-height: var(--fobles-height) !important;
+    height: var(--fobles-height) !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    border: 1px solid rgba($fobles-blue, 0.35) !important;
+    border-radius: 6px !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    overflow: hidden;
+    visibility: visible !important;
+    opacity: 1 !important;
+    text-align: left;
+
+    &:hover .fobles-quick-menu-option-label {
+      filter: brightness(1.04);
+      box-shadow: 0 5px 12px $fobles-shadow-button-hover;
+    }
+  }
+
+  &-option-badge {
+    position: absolute;
+    right: 4px;
+    bottom: 4px;
+    z-index: 1;
+    color: #000000;
+    font-size: 8px;
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: 0.02em;
+    pointer-events: none;
+  }
+
+  &-option-icon-box {
+    display: flex;
+    flex: 0 0 auto;
+    align-items: center;
+    align-self: stretch;
+    justify-content: center;
+    box-sizing: border-box;
+    width: 26px;
+    border-right: 1px solid rgba($fobles-blue, 0.35);
+    background: $fobles-white;
+  }
+
+  &-option-icon {
+    display: block;
+    width: 14px;
+    height: 14px;
+    object-fit: contain;
+  }
+
+  &-option-label {
+    display: inline-flex;
+    align-items: center;
+    align-self: stretch;
+    box-sizing: border-box;
+    flex: 1 1 auto;
+    min-width: 0;
+    padding: 2px 8px;
+    overflow: hidden;
+    background: linear-gradient(180deg, $fobles-blue 0%, $fobles-blue-dark 100%);
+    color: $fobles-white;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+.fobles-proxy-buttons {
+  transition:
+    opacity 0.05s ease,
+    transform 0.05s ease;
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: -20%;
+    z-index: -1;
+  }
+
+  &-actions {
+    display: flex !important;
+    flex-direction: column;
+    gap: 2px;
+    width: 100% !important;
+  }
+
+  &-action {
+    display: flex !important;
+    width: 100% !important;
+  }
+
+  .fobles-nav-button {
+    display: inline-flex !important;
+    align-items: center;
+    box-sizing: border-box;
+    width: 100% !important;
+    min-height: var(--fobles-height) !important;
+    height: var(--fobles-height) !important;
+    margin: 0 !important;
+    padding: 2px 8px !important;
+    border: 1px solid rgba($fobles-blue, 0.2) !important;
+    background: linear-gradient(180deg, $fobles-blue 0%, $fobles-blue-dark 100%) !important;
+    color: $fobles-white !important;
+    visibility: visible !important;
+    opacity: 1 !important;
+    text-align: left;
+  }
+}
+
+.fobles-nav-button,
+.fobles-nav-toggle,
+.fobles-action-button {
+  @include fobles-button-base;
+
+  &:hover {
+    filter: brightness(1.04);
+    box-shadow: 0 5px 12px $fobles-shadow-button-hover;
+  }
+}
+
+.fobles-nav-button--compact,
+.fobles-action-button--compact {
+  padding: 2px 8px;
+  font-size: 11px;
+}
+
+.fobles-nav-feature-button {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $fobles-feature-button-width;
+  min-width: $fobles-feature-button-width;
+  height: $fobles-toolbar-control-size;
+  min-height: $fobles-toolbar-control-size;
+  padding: 0;
+  font-size: 16px;
+  line-height: 1;
+  transform-origin: top right;
+
+  &::before {
+    content: "";
+    position: absolute;
+    top: -25%;
+    right: -25%;
+    bottom: -25%;
+    left: -2px;
+    z-index: -1;
+  }
+
+  &:hover {
+    transform: scale(1.5);
+  }
+}
+
+.fobles-proxy-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  user-select: none;
+
+  &-input {
+    width: 13px;
+    height: 13px;
+    margin: 0;
+    cursor: pointer;
+  }
+
+  &-label {
+    pointer-events: none;
+  }
+}

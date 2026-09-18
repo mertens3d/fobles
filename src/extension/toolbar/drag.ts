@@ -1,4 +1,5 @@
-import { CLASS, SELECTORS, type ToolbarCorner, type ToolbarPlacement } from "../constants";
+import { CLASS, SELECTORS } from "../constants";
+import type { ToolbarCorner, ToolbarPlacement } from "../toolbar.types";
 import type { ToolbarContext } from "./types";
 
 const draggableContainers = new WeakSet<HTMLElement>();

@@ -1,8 +1,9 @@
 import { FOBLES } from "../constants";
+import { SITECORE } from "../../../extension/sitecore";
 import {
   ensurePathShape,
 } from "../helper";
-import type { GeneralLinkFoble as GeneralLinkConfig } from "../foble.types";
+import type { GeneralLinkFobles as GeneralLinkConfig } from "../fobles.types";
 import { applySingleInputFieldStrategy } from "../shared/apply-single-input-field";
 import { extractGuid } from "../shared/guid";
 
@@ -23,7 +24,7 @@ export function applyGeneralLinkStrategy(
   config: GeneralLinkConfig,
 ): void {
   applySingleInputFieldStrategy(doc, config, {
-    actionPrefix: FOBLES.SITECORE.ACTION_PREFIXES.GENERAL_LINK,
+    actionPrefix: SITECORE.ACTION_PREFIXES.GENERAL_LINK,
     buttonClass: FOBLES.CLASSES.BUTTONS.GENERAL_LINK,
     wrapperClass: FOBLES.CLASSES.WRAPPERS.GENERAL_LINK,
     getTarget: getInternalTarget,

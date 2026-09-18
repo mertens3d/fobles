@@ -1,4 +1,5 @@
-import { CLASS, SELECTORS, TEXT, type ToolbarPlacement } from "../constants";
+import { CLASS, SELECTORS, TEXT } from "../constants";
+import type { ToolbarPlacement } from "../toolbar.types";
 import {
   isFieldEditorDialogPath,
   isPowerShellIsePath,

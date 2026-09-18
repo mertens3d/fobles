@@ -49,11 +49,11 @@ const populateTooltip = (doc: Document, tooltip: HTMLDivElement): void => {
   tooltip.replaceChildren(primary, secondary);
 };
 
-export function hideFobleTooltip(doc: Document): void {
-  removeFobleTooltips(doc);
+export function hideFoblesTooltip(doc: Document): void {
+  removeFoblesTooltips(doc);
 }
 
-export function removeFobleTooltips(doc: Document): void {
+export function removeFoblesTooltips(doc: Document): void {
   doc.querySelectorAll(`.${FOBLES.CLASSES.TOOLTIP.BASE}`).forEach((tooltip) => {
     tooltip.remove();
   });
@@ -66,13 +66,13 @@ const listenForTooltipDismissal = (doc: Document): void => {
   doc.addEventListener("pointermove", (event) => {
     const target = event.target as Element | null;
     if (!target?.closest(FOBLES.SELECTORS.BUTTON)) {
-      hideFobleTooltip(doc);
+      hideFoblesTooltip(doc);
     }
   });
   tooltipDismissListeners.add(doc);
 };
 
-export function attachFobleTooltip(button: HTMLElement): void {
+export function attachFoblesTooltip(button: HTMLElement): void {
   button.removeAttribute("title");
   listenForTooltipDismissal(button.ownerDocument);
 
@@ -84,7 +84,7 @@ export function attachFobleTooltip(button: HTMLElement): void {
     positionTooltip(button, tooltip, event);
   };
   const hide = (): void => {
-    hideFobleTooltip(button.ownerDocument);
+    hideFoblesTooltip(button.ownerDocument);
   };
 
   button.addEventListener("pointerenter", (event) => show(event));

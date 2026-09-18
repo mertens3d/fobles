@@ -1,22 +1,18 @@
 import { FOBLES } from "../constants";
-import type { FobleConfigBase, FobleStrategy } from "../foble.types";
-import { buildFobleUrl, createFobleButton } from "../helper";
+import { SITECORE } from "../../../extension/sitecore";
+import type { FoblesConfigBase, FoblesStrategy, SingleInputFieldOptions } from "../fobles.types";
+import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { applyButtonClasses } from "./apply-button-classes";
 import { hideWithStyledSpacer } from "./hide-with-styled-spacer";
 
-export type SingleInputFieldOptions = {
-  actionPrefix: string;
-  buttonClass: string;
-  wrapperClass: string;
-  getTarget: (value: string) => string | null;
-};
+export type { SingleInputFieldOptions } from "../fobles.types";
 
 const hasActionPrefix = (
   input: HTMLInputElement,
   actionPrefix: string,
 ): boolean => {
-  const fieldCell = input.closest(FOBLES.SELECTORS.FIELD_CELL);
-  return Array.from(fieldCell?.querySelectorAll(FOBLES.SELECTORS.FIELD_ACTION) ?? [])
+  const fieldCell = input.closest(SITECORE.SELECTORS.FIELD_CELL);
+  return Array.from(fieldCell?.querySelectorAll(SITECORE.SELECTORS.FIELD_ACTION) ?? [])
     .some((button) =>
       (button.getAttribute("onclick") ?? "")
         .toLowerCase()
@@ -26,17 +22,17 @@ const hasActionPrefix = (
 
 const hideFieldActions = (input: HTMLInputElement): void => {
   const actions = input
-    .closest(FOBLES.SELECTORS.FIELD_CELL)
-    ?.querySelector<HTMLElement>(FOBLES.SELECTORS.FIELD_ACTIONS);
+    .closest(SITECORE.SELECTORS.FIELD_CELL)
+    ?.querySelector<HTMLElement>(SITECORE.SELECTORS.FIELD_ACTIONS);
   if (actions) hideWithStyledSpacer(actions);
 };
 
-export function applySingleInputFieldStrategy<TStrategy extends FobleStrategy>(
+export function applySingleInputFieldStrategy<TStrategy extends FoblesStrategy>(
   doc: Document,
-  config: FobleConfigBase<TStrategy>,
+  config: FoblesConfigBase<TStrategy>,
   options: SingleInputFieldOptions,
 ): void {
-  doc.querySelectorAll<HTMLInputElement>(config.FobleTopSelector).forEach((input) => {
+  doc.querySelectorAll<HTMLInputElement>(config.FoblesTopSelector).forEach((input) => {
     if (
       input.hasAttribute(FOBLES.ATTRIBUTES.MARKER) ||
       !hasActionPrefix(input, options.actionPrefix)
@@ -58,10 +54,10 @@ export function applySingleInputFieldStrategy<TStrategy extends FobleStrategy>(
       options.wrapperClass,
     );
 
-    const button = createFobleButton(
+    const button = createFoblesButton(
       doc,
       config.getButtonText?.(input, value) ?? value,
-      buildFobleUrl(target),
+      buildFoblesUrl(target),
       {
         classNames: [
           FOBLES.CLASSES.BUTTONS.BASE,

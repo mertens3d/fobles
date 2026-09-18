@@ -1,71 +1,71 @@
-import type { FobleConfig } from "./foble.types";
+import type { FoblesConfig } from "./fobles.types";
 
-export const fieldConfigs: FobleConfig[] = [
+export const fieldConfigs: FoblesConfig[] = [
   {
     strategy: "drop-tree",
     // Sitecore AI adds role/aria attributes to the combobox input, while XP keeps the
     // legacy readonly text field + dropdown button pattern. Match both so we don't need
     // a version detector for this field strategy.
-    FobleTopSelector: "input.scComboboxEdit[readonly]",
+    FoblesTopSelector: "input.scComboboxEdit[readonly]",
     additionalElementsToHide: ["img.scComboboxDropDown"],
   },
   {
     strategy: "drop-link",
-    FobleTopSelector: "select.scContentControl.scCombobox",
+    FoblesTopSelector: "select.scContentControl.scCombobox",
     sitecoreFieldTypes: ["Drop Link"],
   },
   {
     strategy: "droplist",
-    FobleTopSelector: "select.scContentControl.scCombobox",
+    FoblesTopSelector: "select.scContentControl.scCombobox",
     sitecoreFieldTypes: ["Droplist"],
   },
   {
     strategy: "multilist-options",
-    FobleTopSelector: "table.scContentControlMultilist",
+    FoblesTopSelector: "table.scContentControlMultilist",
   },
   {
     strategy: "multilist-with-search",
-    FobleTopSelector: ".scContentControlSearchListContainer > table.scContentControlMultilist",
+    FoblesTopSelector: ".scContentControlSearchListContainer > table.scContentControlMultilist",
   },
   {
     strategy: "tag-list",
-    FobleTopSelector: "table.scContentControl.scContentControlTreelist",
+    FoblesTopSelector: "table.scContentControl.scContentControlTreelist",
     sitecoreFieldTypes: ["Tag List"],
   },
   {
     strategy: "tree-list",
-    FobleTopSelector: "div.scContentControl.scContentControlTreelist",
+    FoblesTopSelector: "div.scContentControl.scContentControlTreelist",
   },
   {
     strategy: "treelist-ex",
-    FobleTopSelector: "div.scContentControl.scTreelistEx",
+    FoblesTopSelector: "div.scContentControl.scTreelistEx",
   },
   {
     strategy: "file",
-    FobleTopSelector: "input.scContentControl",
+    FoblesTopSelector: "input.scContentControl",
   },
   {
     strategy: "general-link",
-    FobleTopSelector: "input.scContentControl",
+    FoblesTopSelector: "input.scContentControl",
     sitecoreFieldTypes: ["General Link", "General Link with Search"],
   },
   {
     strategy: "icon",
-    FobleTopSelector: "input.scContentControl",
+    FoblesTopSelector: "input.scContentControl",
     sitecoreFieldTypes: ["Icon"],
   },
   {
     strategy: "image",
-    FobleTopSelector: "input.scContentControlImage",
+    FoblesTopSelector: "input.scContentControlImage",
   },
   {
     strategy: "internal-link",
-    FobleTopSelector: "input.scContentControl",
+    FoblesTopSelector: "input.scContentControl",
     sitecoreFieldTypes: ["Internal Link"],
   },
   {
     strategy: "quick-info-section",
-    FobleTopSelector: "td.scEditorSectionPanelCell > table.scEditorQuickInfo",
+    FoblesTopSelector: "td.scEditorSectionPanelCell > table.scEditorQuickInfo",
     candidates: [
       {
         labelStartsWith: "Item ID:",
@@ -110,11 +110,11 @@ export const fieldConfigs: FobleConfig[] = [
   },
   {
     strategy: "reference-links",
-    FobleTopSelector: "#Links a.scLink[onclick*='item:load']",
+    FoblesTopSelector: "#Links a.scLink[onclick*='item:load']",
   },
   {
     strategy: "template-path",
-    FobleTopSelector: "a.scTemplate span.scTemplatePath",
+    FoblesTopSelector: "a.scTemplate span.scTemplatePath",
   },
 
 ];

@@ -1,4 +1,4 @@
-import type { ToolbarPlacement } from "../constants";
+import type { ToolbarPlacement } from "../toolbar.types";
 
 export type ToolbarContext = {
   doc: Document;

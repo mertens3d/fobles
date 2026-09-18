@@ -1,14 +1,7 @@
 import { STORAGE } from "../../extension/constants";
+import type { QuickMenuButtonSetting, QuickMenuButtonSettings } from "./menu.types";
 
-// Persisted per-button customization, keyed by the button's stable GUID (see button-ids.ts).
-export type QuickMenuButtonSetting = {
-  // Snapshot of the button's label at save time, so raw storage is readable without cross-referencing code.
-  label: string;
-  enabled: boolean;
-  pathSuffix: string;
-};
-
-export type QuickMenuButtonSettings = Record<string, QuickMenuButtonSetting>;
+export type { QuickMenuButtonSetting, QuickMenuButtonSettings } from "./menu.types";
 
 // Sitecore item names disallow these characters; suffixes are joined with "/" as path segments.
 const INVALID_SUFFIX_CHARS = /[.\\:*?"<>|]/g;

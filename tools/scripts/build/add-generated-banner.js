@@ -22,8 +22,8 @@ const banner = [
 ].join("\n");
 
 const generatedFiles = ["background.js", "content.js"];
-const iconSourcePath = join(projectRoot, "src", "extension", "foble_icon.png");
-const iconOutputPath = join(projectRoot, "dist", "unpacked", "foble_icon.png");
+const iconSourcePath = join(projectRoot, "src", "extension", "fobles_icon.png");
+const iconOutputPath = join(projectRoot, "dist", "unpacked", "fobles_icon.png");
 const maintainedFiles = [
   "manifest.json",
   "options.html",

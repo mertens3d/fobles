@@ -1,17 +1,18 @@
 import { FOBLES } from "../constants";
-import { buildFobleUrl, createFobleButton } from "../helper";
+import { SITECORE } from "../../../extension/sitecore";
+import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { applyButtonClasses } from "../shared/apply-button-classes";
 import {
   createStyledSpacer,
   hideWithStyledSpacer,
 } from "../shared/hide-with-styled-spacer";
-import type { MultilistWithSearchFoble as MultilistWithSearchConfig } from "../foble.types";
+import type { MultilistWithSearchFobles as MultilistWithSearchConfig } from "../fobles.types";
 import { extractGuid } from "../shared/guid";
 
-interface MultilistWithSearchItem {
+type MultilistWithSearchItem = {
   label: string;
   value: string;
-}
+};
 
 const collectItems = (select: HTMLSelectElement): MultilistWithSearchItem[] =>
   Array.from(select.options)
@@ -45,7 +46,7 @@ const createItemButton = (
   doc: Document,
   item: MultilistWithSearchItem,
 ): HTMLButtonElement => {
-  const button = createFobleButton(doc, item.label, buildFobleUrl(item.value), {
+  const button = createFoblesButton(doc, item.label, buildFoblesUrl(item.value), {
     classNames: [
       FOBLES.CLASSES.BUTTONS.BASE,
       FOBLES.CLASSES.BUTTONS.MULTILIST_WITH_SEARCH,
@@ -67,9 +68,9 @@ const replacePane = (
 };
 
 const hideAncillaryControls = (control: Element): void => {
-  const fieldCell = control.closest(FOBLES.SELECTORS.FIELD_CELL);
+  const fieldCell = control.closest(SITECORE.SELECTORS.FIELD_CELL);
   fieldCell
-    ?.querySelectorAll<HTMLElement>(FOBLES.SELECTORS.FIELD_ACTION_LINKS)
+    ?.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.FIELD_ACTION_LINKS)
     .forEach(hideWithStyledSpacer);
   control
     .querySelectorAll<HTMLElement>(
@@ -82,7 +83,7 @@ export function applyMultilistWithSearchStrategy(
   doc: Document,
   config: MultilistWithSearchConfig,
 ): void {
-  doc.querySelectorAll(config.FobleTopSelector).forEach((control) => {
+  doc.querySelectorAll(config.FoblesTopSelector).forEach((control) => {
     if (control.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;
 
     const allPane = control.querySelector<HTMLSelectElement>("select.scBucketListBox");

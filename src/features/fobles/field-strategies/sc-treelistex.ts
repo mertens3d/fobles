@@ -1,17 +1,18 @@
 import { FOBLES } from "../constants";
-import { buildFobleUrl, createFobleButton } from "../helper";
+import { SITECORE } from "../../../extension/sitecore";
+import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { extensionLog } from "../../../extension/logger";
 import { applyButtonClasses } from "../shared/apply-button-classes";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
-import type { TreelistExFoble as TreelistExConfig } from "../foble.types";
+import type { TreelistExFobles as TreelistExConfig } from "../fobles.types";
 
-interface TreelistExItem {
+type TreelistExItem = {
   label: string;
   value: string;
-}
+};
 
 const findEligibleHosts = (doc: Document, config: TreelistExConfig): HTMLElement[] =>
-  Array.from(doc.querySelectorAll<HTMLElement>(config.FobleTopSelector))
+  Array.from(doc.querySelectorAll<HTMLElement>(config.FoblesTopSelector))
     .filter((host) => !host.hasAttribute(FOBLES.ATTRIBUTES.MARKER));
 
 // Each selected item renders as a direct child div carrying the Sitecore path in its title attribute.
@@ -44,7 +45,7 @@ const createWrapper = (doc: Document, height: number): HTMLDivElement => {
 };
 
 const createItemButton = (doc: Document, item: TreelistExItem): HTMLButtonElement => {
-  const button = createFobleButton(doc, item.label, buildFobleUrl(item.value), {
+  const button = createFoblesButton(doc, item.label, buildFoblesUrl(item.value), {
     classNames: [
       FOBLES.CLASSES.BUTTONS.BASE,
       FOBLES.CLASSES.BUTTONS.TREELIST_EX,
@@ -55,9 +56,9 @@ const createItemButton = (doc: Document, item: TreelistExItem): HTMLButtonElemen
 };
 
 const hideEditButton = (host: HTMLElement): void => {
-  const fieldCell = host.closest(FOBLES.SELECTORS.FIELD_CELL);
+  const fieldCell = host.closest(SITECORE.SELECTORS.FIELD_CELL);
   const editButton = fieldCell?.querySelector<HTMLAnchorElement>(
-    FOBLES.SELECTORS.FIELD_ACTION_LINKS,
+    SITECORE.SELECTORS.FIELD_ACTION_LINKS,
   );
   if (editButton) hideWithStyledSpacer(editButton);
 };

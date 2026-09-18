@@ -175,7 +175,7 @@ export async function moveMouseOutsideHoverArea(
     await Promise.all(sourceList.map((source) => source.boundingBox()))
   ).filter((box): box is NonNullable<typeof box> => box !== null);
   if (sourceBoxes.length === 0)
-    throw new Error("Could not locate Foble hover region");
+    throw new Error("Could not locate Fobles hover region");
 
   const sourceBox = {
     x: Math.min(...sourceBoxes.map((box) => box.x)),

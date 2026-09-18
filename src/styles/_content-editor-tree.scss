@@ -1,0 +1,47 @@
+@use "tokens" as *;
+
+.scContentTreeNode {
+  position: relative;
+}
+
+.tree-fobles-wrapper {
+  --tree-fobles-height: #{$fobles-tree-button-size};
+  position: absolute;
+  left: -10px;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: $fobles-tree-button-size;
+  height: var(--tree-fobles-height);
+  line-height: 1;
+  z-index: 2;
+}
+
+.tree-fobles-button {
+  position: absolute;
+  left: 22px;
+  top: 3px;
+  width: $fobles-tree-button-size;
+  height: $fobles-tree-button-size;
+  padding: 0;
+  border: 1px solid rgba($fobles-blue-deep, 0.45);
+  border-radius: $fobles-radius-small;
+  background: linear-gradient(180deg, $fobles-blue-light 0%, $fobles-blue-tree-dark 100%);
+  color: $fobles-white;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  opacity: 0.95;
+  z-index: 9999;
+  line-height: 1;
+  box-shadow: 0 1px 3px $fobles-shadow-tree;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  &:hover {
+    opacity: 1;
+    background: linear-gradient(180deg, $fobles-blue-hover 0%, $fobles-blue-tree-hover 100%);
+  }
+}

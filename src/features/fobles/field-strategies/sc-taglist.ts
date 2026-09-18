@@ -1,8 +1,9 @@
 import { FOBLES } from "../constants";
-import type { TagListFoble as TagListConfig } from "../foble.types";
+import { SITECORE } from "../../../extension/sitecore";
+import type { TagListFobles as TagListConfig } from "../fobles.types";
 import {
-  buildFobleUrl,
-  createFobleButton,
+  buildFoblesUrl,
+  createFoblesButton,
 } from "../helper";
 import { applyButtonClasses } from "../shared/apply-button-classes";
 import { extractGuid, formatFoId } from "../shared/guid";
@@ -14,11 +15,11 @@ type TagListItem = {
 };
 
 const collectTreeItems = (pane: Element): TagListItem[] =>
-  Array.from(pane.querySelectorAll(FOBLES.SELECTORS.TREE_NODES_WITH_ID))
+  Array.from(pane.querySelectorAll(SITECORE.SELECTORS.TREE_NODES_WITH_ID))
     .map((node) => {
       const compactGuid = node.id.match(/([0-9a-f]{32})$/i)?.[1];
       const value = compactGuid ? formatFoId(compactGuid) : null;
-      const label = node.querySelector(FOBLES.SELECTORS.TREE_NODE_TITLE)?.textContent?.trim() ?? "";
+      const label = node.querySelector(SITECORE.SELECTORS.TREE_NODE_TITLE)?.textContent?.trim() ?? "";
       return value && label ? { value, label } : null;
     })
     .filter((item): item is TagListItem => item !== null);
@@ -56,7 +57,7 @@ const replacePane = (
   const height = pane.getBoundingClientRect().height || pane.offsetHeight;
   const wrapper = createPaneWrapper(doc, height);
   items.forEach((item) => {
-    const button = createFobleButton(doc, item.label, buildFobleUrl(item.value), {
+    const button = createFoblesButton(doc, item.label, buildFoblesUrl(item.value), {
       classNames: [
         FOBLES.CLASSES.BUTTONS.BASE,
         FOBLES.CLASSES.BUTTONS.TAG_LIST,
@@ -79,7 +80,7 @@ const hideNavigation = (control: Element): void => {
 };
 
 export function applyTagListStrategy(doc: Document, config: TagListConfig): void {
-  doc.querySelectorAll<HTMLElement>(config.FobleTopSelector).forEach((control) => {
+  doc.querySelectorAll<HTMLElement>(config.FoblesTopSelector).forEach((control) => {
     if (control.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;
 
     const allPane = control.querySelector<HTMLElement>("td[rowspan] > .scScrollbox");

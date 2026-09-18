@@ -1,20 +1,22 @@
 import {
+  ALLOWED_PATHS,
+  ALLOWED_XML_CONTROLS,
   DEFAULT_TOOLBAR_PLACEMENT,
   MESSAGE,
   SELECTORS,
-  SITECORE,
   STORAGE,
   TOOLBAR_CORNERS,
-  type ToolbarPlacement,
 } from "../constants";
+import { SITECORE } from "../sitecore";
+import type { ToolbarPlacement } from "../toolbar.types";
 import { extensionLog, setExtensionDebugEnabled } from "../logger";
 import {
   getDebugSettings,
-  getFobleNavPlacement,
-  getFobleNavVisible,
-  getSelectRenderingFobleNavPlacement,
-  setFobleNavPlacement,
-  setSelectRenderingFobleNavPlacement,
+  getFoblesNavPlacement,
+  getFoblesNavVisible,
+  getSelectRenderingFoblesNavPlacement,
+  setFoblesNavPlacement,
+  setSelectRenderingFoblesNavPlacement,
 } from "../storage";
 import { getFoblesState, setFoblesState as setPersistedFoblesState } from "../state";
 import type { MessageRequest } from "../content.types";
@@ -34,8 +36,8 @@ import { applyPowerShellIseTabIdentity } from "./ise-tab-title";
 import { toggleLightningBolt } from "./feature-toggle";
 
 let foblesUiActive = false;
-let fobleNavPlacement: ToolbarPlacement = DEFAULT_TOOLBAR_PLACEMENT;
-let fobleNavVisible = true;
+let foblesNavPlacement: ToolbarPlacement = DEFAULT_TOOLBAR_PLACEMENT;
+let foblesNavVisible = true;
 let pageEligible = false;
 let toggleMessagesListening = false;
 
@@ -43,17 +45,17 @@ function getToolbarContext(): ToolbarContext {
   return {
     doc: document,
     win: window,
-    placement: fobleNavPlacement,
+    placement: foblesNavPlacement,
     setPlacement: (placement) => {
-      fobleNavPlacement = placement;
+      foblesNavPlacement = placement;
       if (isSelectRenderingDialog(window.location)) {
-        void setSelectRenderingFobleNavPlacement(window.location.origin, placement);
+        void setSelectRenderingFoblesNavPlacement(window.location.origin, placement);
       } else {
-        void setFobleNavPlacement(window.location.origin, placement);
+        void setFoblesNavPlacement(window.location.origin, placement);
       }
     },
     setVisible: (visible) => {
-      fobleNavVisible = visible;
+      foblesNavVisible = visible;
     },
     onToggleFeatures: toggleLightningBolt,
   };
@@ -123,14 +125,14 @@ function listenForStorageChanges(): void {
 
     if (!pageEligible) return;
 
-    const change = changes[STORAGE.KEY.FOBLE_NAV_VISIBLE];
+    const change = changes[STORAGE.KEY.FOBLES_NAV_VISIBLE];
     if (typeof change?.newValue === "boolean") {
       setToolbarVisible(getToolbarContext(), change.newValue);
     }
 
     const positionKey = isSelectRenderingDialog(window.location)
-      ? STORAGE.KEY.SELECT_RENDERING_FOBLE_NAV_POSITION
-      : STORAGE.KEY.FOBLE_NAV_POSITION;
+      ? STORAGE.KEY.SELECT_RENDERING_FOBLES_NAV_POSITION
+      : STORAGE.KEY.FOBLES_NAV_POSITION;
     const positionChange = changes[positionKey];
     const placementsByOrigin = positionChange?.newValue as
       | Record<string, ToolbarPlacement>
@@ -161,7 +163,7 @@ async function reconcileCurrentPage(): Promise<void> {
       return window.location.pathname.toLowerCase();
     }
   })();
-  const matchingMenuPath = SITECORE.MENU_PATHS.find((configuredPath) =>
+  const matchingMenuPath = ALLOWED_PATHS.find((configuredPath) =>
     normalizedPath.includes(configuredPath.toLowerCase()),
   ) ?? null;
   const kickUsersPath = isKickUsersPath(window.location.pathname);
@@ -172,8 +174,8 @@ async function reconcileCurrentPage(): Promise<void> {
     pathname: window.location.pathname,
     normalizedPath,
     matchingMenuPath,
-    xmlControl: currentUrl.searchParams.get(SITECORE.XML_CONTROL_QUERY_PARAMETER),
-    allowedXmlControls: SITECORE.ALLOWED_XML_CONTROLS,
+    xmlControl: currentUrl.searchParams.get(SITECORE.QUERY_PARAMS.XML_CONTROL),
+    allowedXmlControls: ALLOWED_XML_CONTROLS,
     pathAllowed,
     pageEligible,
     kickUsersPath,
@@ -186,8 +188,8 @@ async function reconcileCurrentPage(): Promise<void> {
     extensionLog.debug("Fobles menu not shown: page is not eligible", {
       href: currentUrl.href,
       matchingMenuPath,
-      allowedXmlControls: SITECORE.ALLOWED_XML_CONTROLS,
-      xmlControl: currentUrl.searchParams.get(SITECORE.XML_CONTROL_QUERY_PARAMETER),
+      allowedXmlControls: ALLOWED_XML_CONTROLS,
+      xmlControl: currentUrl.searchParams.get(SITECORE.QUERY_PARAMS.XML_CONTROL),
     });
     document.querySelector(SELECTORS.TOOLBAR_CONTAINER)?.remove();
     return;
@@ -198,10 +200,10 @@ async function reconcileCurrentPage(): Promise<void> {
 
   listenForToggleMessages();
   const getCurrentPageToolbarPlacement = isSelectRenderingDialog(window.location)
-    ? getSelectRenderingFobleNavPlacement
-    : getFobleNavPlacement;
-  [fobleNavVisible, fobleNavPlacement] = await Promise.all([
-    getFobleNavVisible(),
+    ? getSelectRenderingFoblesNavPlacement
+    : getFoblesNavPlacement;
+  [foblesNavVisible, foblesNavPlacement] = await Promise.all([
+    getFoblesNavVisible(),
     getCurrentPageToolbarPlacement(window.location.origin),
   ]);
   const shouldInitialize = getFoblesState();
@@ -209,8 +211,8 @@ async function reconcileCurrentPage(): Promise<void> {
   extensionLog.debug("Fobles menu initialization decision", {
     shouldInitialize,
     kickUsersPath,
-    toolbarVisible: fobleNavVisible,
-    currentToolbarPlacement: fobleNavPlacement,
+    toolbarVisible: foblesNavVisible,
+    currentToolbarPlacement: foblesNavPlacement,
     existingToolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
   });
 
@@ -224,10 +226,10 @@ async function reconcileCurrentPage(): Promise<void> {
 
   resumeKickAllUsers(document);
 
-  setToolbarVisible(getToolbarContext(), fobleNavVisible);
+  setToolbarVisible(getToolbarContext(), foblesNavVisible);
   extensionLog.debug("Fobles menu injection result", {
     toolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
-    featureButton: Boolean(document.querySelector(".foble-nav-feature-button")),
+    featureButton: Boolean(document.querySelector(".fobles-nav-feature-button")),
     menuTrigger: Boolean(document.querySelector(SELECTORS.QUICK_MENU_TRIGGER)),
     foblesUiActive,
   });

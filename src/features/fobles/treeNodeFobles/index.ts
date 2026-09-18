@@ -1,11 +1,12 @@
 import { extensionLog } from "../../../extension/logger";
 import { isMenuOwnedFrame } from "../../../extension/menu-path";
+import { SITECORE } from "../../../extension/sitecore";
 import { FOBLES } from "../constants";
 import {
-  buildFobleUrl,
-  openFobleUrl,
+  buildFoblesUrl,
+  openFoblesUrl,
 } from "../helper";
-import { attachFobleTooltip } from "../shared/foble-tooltip";
+import { attachFoblesTooltip } from "../shared/fobles-tooltip";
 import { extractGuid, formatFoId } from "../shared/guid";
 
 export function clearTreeButtons(root: ParentNode = document): void {
@@ -13,7 +14,7 @@ export function clearTreeButtons(root: ParentNode = document): void {
   root.querySelectorAll(`.${FOBLES.CLASSES.TREE.WRAPPER}`).forEach((wrapper) => wrapper.remove());
   root.querySelectorAll(`.${FOBLES.CLASSES.TREE.SPACER}`).forEach((spacer) => spacer.remove());
 
-  root.querySelectorAll(`${FOBLES.SELECTORS.TREE_GLYPH}.${FOBLES.CLASSES.TREE.GLYPH_HIDDEN}`).forEach((glyph) => {
+  root.querySelectorAll(`${SITECORE.SELECTORS.TREE_GLYPH}.${FOBLES.CLASSES.TREE.GLYPH_HIDDEN}`).forEach((glyph) => {
     const icon = glyph as HTMLImageElement;
     icon.classList.remove(FOBLES.CLASSES.TREE.GLYPH_HIDDEN);
   });
@@ -37,7 +38,7 @@ export function toggleTreeButtons(): void {
   const buttonClass = FOBLES.CLASSES.TREE.BUTTON;
 
   function buildNewUrl(itemId: string): string {
-    return buildFobleUrl(formatFoId(itemId));
+    return buildFoblesUrl(formatFoId(itemId));
   }
 
   function removeOpenButtons(root: ParentNode): void {
@@ -62,7 +63,7 @@ export function toggleTreeButtons(): void {
         return guid;
       }
 
-      const bare = value.match(new RegExp(`${FOBLES.SITECORE.TREE_ID_PREFIXES.GLYPH}(.+)$`));
+      const bare = value.match(new RegExp(`${SITECORE.TREE_ID_PREFIXES.GLYPH}(.+)$`));
       if (bare) {
         return bare[1];
       }
@@ -72,8 +73,8 @@ export function toggleTreeButtons(): void {
   }
 
   function getTreeNodeItemId(node: Element): string | null {
-    const glyph = node.querySelector(FOBLES.SELECTORS.TREE_GLYPH) as HTMLImageElement | null;
-    const anchor = node.querySelector(FOBLES.SELECTORS.TREE_NODE_LINK) as HTMLAnchorElement | null;
+    const glyph = node.querySelector(SITECORE.SELECTORS.TREE_GLYPH) as HTMLImageElement | null;
+    const anchor = node.querySelector(SITECORE.SELECTORS.TREE_NODE_LINK) as HTMLAnchorElement | null;
 
     extensionLog.debug("tree node inspect", {
       nodeHtml: node.outerHTML.slice(0, 400),
@@ -82,27 +83,27 @@ export function toggleTreeButtons(): void {
     });
 
     if (glyph?.id) {
-      const raw = glyph.id.replace(FOBLES.SITECORE.TREE_ID_PREFIXES.GLYPH, "");
+      const raw = glyph.id.replace(SITECORE.TREE_ID_PREFIXES.GLYPH, "");
       if (raw) return raw;
     }
 
     if (anchor?.id) {
-      const raw = anchor.id.replace(FOBLES.SITECORE.TREE_ID_PREFIXES.NODE, "");
+      const raw = anchor.id.replace(SITECORE.TREE_ID_PREFIXES.NODE, "");
       if (raw) return raw;
     }
 
     const directId = node.getAttribute("id") ?? "";
-    if (directId.startsWith(FOBLES.SITECORE.TREE_ID_PREFIXES.NODE)) {
-      return directId.replace(FOBLES.SITECORE.TREE_ID_PREFIXES.NODE, "");
+    if (directId.startsWith(SITECORE.TREE_ID_PREFIXES.NODE)) {
+      return directId.replace(SITECORE.TREE_ID_PREFIXES.NODE, "");
     }
 
-    if (directId.startsWith(FOBLES.SITECORE.TREE_ID_PREFIXES.GLYPH)) {
-      return directId.replace(FOBLES.SITECORE.TREE_ID_PREFIXES.GLYPH, "");
+    if (directId.startsWith(SITECORE.TREE_ID_PREFIXES.GLYPH)) {
+      return directId.replace(SITECORE.TREE_ID_PREFIXES.GLYPH, "");
     }
 
-    if (directId.startsWith(FOBLES.SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING)) {
+    if (directId.startsWith(SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING)) {
       return directId.replace(
-        FOBLES.SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING,
+        SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING,
         "",
       );
     }
@@ -112,7 +113,7 @@ export function toggleTreeButtons(): void {
 
   function addOpenButton(node: Element): void {
     if (node.querySelector(`.${buttonClass}`)) {
-      extensionLog.debug("tree node already has foble", node.outerHTML.slice(0, 200));
+      extensionLog.debug("tree node already has fobles", node.outerHTML.slice(0, 200));
       return;
     }
 
@@ -124,7 +125,7 @@ export function toggleTreeButtons(): void {
       return;
     }
 
-    const glyph = node.querySelector(FOBLES.SELECTORS.TREE_GLYPH) as HTMLImageElement | null;
+    const glyph = node.querySelector(SITECORE.SELECTORS.TREE_GLYPH) as HTMLImageElement | null;
     const glyphHeight = glyph
       ? Math.ceil(glyph.getBoundingClientRect().height || glyph.clientHeight || glyph.offsetHeight || 18)
       : 18;
@@ -138,11 +139,11 @@ export function toggleTreeButtons(): void {
     button.type = "button";
     button.className = buttonClass;
     button.textContent = FOBLES.SYMBOLS.TREE_BUTTON;
-    attachFobleTooltip(button);
+    attachFoblesTooltip(button);
     button.onclick = (event) => {
       event.preventDefault();
       event.stopPropagation();
-      void openFobleUrl(buildNewUrl(itemId), event);
+      void openFoblesUrl(buildNewUrl(itemId), event);
       return false;
     };
 
@@ -171,8 +172,8 @@ export function toggleTreeButtons(): void {
   }
 
   function walkTree(root: Document | ShadowRoot): void {
-    root.querySelectorAll(FOBLES.SELECTORS.TREE_ROOT).forEach((treePanel) => {
-      treePanel.querySelectorAll(FOBLES.SELECTORS.TREE_NODE).forEach((node) => {
+    root.querySelectorAll(SITECORE.SELECTORS.TREE_ROOT).forEach((treePanel) => {
+      treePanel.querySelectorAll(SITECORE.SELECTORS.TREE_NODE).forEach((node) => {
         addOpenButton(node);
       });
     });

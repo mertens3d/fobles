@@ -1,9 +1,9 @@
-import { SELECTORS } from "../constants";
+import { SITECORE } from "../sitecore";
 import { isPowerShellIsePath } from "../menu-path";
 
 function getPowerShellIseScriptTitle(): string | null {
   const scriptName = document
-    .querySelector(SELECTORS.SITECORE_SCRIPT_NAME)
+    .querySelector(SITECORE.SELECTORS.SCRIPT_NAME)
     ?.textContent
     ?.trim();
   return scriptName?.split(/[\\/]/).filter(Boolean).pop() ?? null;

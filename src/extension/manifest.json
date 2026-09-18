@@ -4,10 +4,10 @@
   "version": "1.0.0",
   "description": "Navigation and productivity helpers for Sitecore editors",
   "icons": {
-    "16": "foble_icon.png",
-    "32": "foble_icon.png",
-    "48": "foble_icon.png",
-    "128": "foble_icon.png"
+    "16": "fobles_icon.png",
+    "32": "fobles_icon.png",
+    "48": "fobles_icon.png",
+    "128": "fobles_icon.png"
   },
   "permissions": ["storage", "tabs"],
   "host_permissions": ["https://*/*", "http://*/*"],
@@ -22,10 +22,10 @@
   ],
   "action": {
     "default_icon": {
-      "16": "foble_icon.png",
-      "32": "foble_icon.png",
-      "48": "foble_icon.png",
-      "128": "foble_icon.png"
+      "16": "fobles_icon.png",
+      "32": "fobles_icon.png",
+      "48": "fobles_icon.png",
+      "128": "fobles_icon.png"
     },
     "default_title": "Fobles",
     "default_popup": "popup.html"

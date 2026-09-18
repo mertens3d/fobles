@@ -8,6 +8,19 @@
 - Do not edit generated `dist/unpacked/content.js`, `dist/unpacked/background.js`, or `dist/unpacked/fobles.css` directly.
 - `src/extension/manifest.json`, `src/extension/popup.html`, `src/extension/popup.js`, `src/extension/options.html`, and `src/extension/options.js` are maintained files and may be edited directly when needed.
 - Use `fobles` terminology for the active extension.
+- Always use "fobles"/"Fobles" (plural); never use the singular "foble"/"Foble" anywhere, including identifiers, file names, CSS classes, data attributes, and prose.
+
+## Code Conventions
+
+- Prefer `type` over `interface` for TypeScript type definitions.
+- Put shared types/interfaces in a dedicated `x.types.ts` file, not inline in a logic file.
+- Put shared const data/config collections in their own dedicated const file, separate from the logic that consumes them.
+- Prefer named `const`s over magic strings, especially for values reused more than once or that carry structural meaning (e.g. group titles).
+- Prefer event handlers/listeners in a dedicated `handlers.ts` file, not mixed in with element-building or other logic in the same file.
+- Order type/object fields with required fields first, then optional (`?`) fields, identity fields (`id`/`label`) leading within each group.
+- `SITECORE` (`src/extension/sitecore.ts`) holds every magic string/selector that Sitecore itself renders (its DOM classes/ids, paths, xmlcontrol names, query params). `FOBLES`/fobles-prefixed constants hold only strings the extension itself generates (its own injected classes, data attributes, UI copy). Never mix the two in the same const object.
+- Prefer const object properties to be listed alphabetically.
+- Prefer keeping code files under 314 lines; split into smaller dedicated files when a file grows past that.
 
 ## Build And Validation
 
@@ -22,13 +35,13 @@
 
 - Browser Site Access controls are authoritative; do not add a custom domain allowlist or dynamic content-script registration.
 - Content scripts are registered for HTTP/HTTPS pages and decide eligibility using `src/extension/menu-path.ts`.
-- Sitecore `default.aspx?xmlcontrol=...` pages must be explicitly allowlisted in `SITECORE.ALLOWED_XML_CONTROLS`.
-- Preserve Sitecore layout when hiding an original control by using the existing Foble spacer helpers.
-- Foble navigation targets the top-level tab for same-tab actions.
+- Sitecore `default.aspx?xmlcontrol=...` pages must be explicitly allowlisted in `ALLOWED_XML_CONTROLS`.
+- Preserve Sitecore layout when hiding an original control by using the existing Fobles spacer helpers.
+- Fobles navigation targets the top-level tab for same-tab actions.
 
 ## Styling
 
-- Foble field styles: `src/styles/_fobles.scss`.
+- Fobles field styles: `src/styles/_fobles.scss`.
 - Extension toolbar entry stylesheet: `src/styles/fobles-extension.scss`.
 - Generated runtime stylesheet: `dist/unpacked/fobles.css`.
 - Read the current Sass file before editing because it may contain user changes.

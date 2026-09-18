@@ -1,11 +1,11 @@
-import { SITECORE } from "../../extension/constants";
+import { SITECORE } from "../../extension/sitecore";
 import {
-  getFobleNavWarningVisible,
+  getFoblesNavWarningVisible,
   getTurnOffFoblesAfterNavigation,
-  setFobleNavWarningVisible,
+  setFoblesNavWarningVisible,
 } from "../../extension/storage";
 import { FOBLES } from "./constants";
-import { attachFobleTooltip, hideFobleTooltip } from "./shared/foble-tooltip";
+import { attachFoblesTooltip, hideFoblesTooltip } from "./shared/fobles-tooltip";
 import { isGuidLike, stripGuidBraces } from "./shared/guid";
 
 type ConfirmationState = {
@@ -17,7 +17,7 @@ type ConfirmationState = {
 const confirmationStates = new WeakMap<Document, ConfirmationState>();
 let afterNavigationHandler: (() => void) | null = null;
 
-export function setAfterFobleNavigationHandler(
+export function setAfterFoblesNavigationHandler(
   handler: (() => void) | null,
 ): void {
   afterNavigationHandler = handler;
@@ -72,7 +72,7 @@ const getOrCreateConfirmation = (doc: Document): ConfirmationState => {
   };
   cancel.addEventListener("click", () => finish(false));
   proceed.addEventListener("click", () => {
-    void setFobleNavWarningVisible(setting.checked);
+    void setFoblesNavWarningVisible(setting.checked);
     finish(true);
   });
   dialog.addEventListener("cancel", (event) => {
@@ -84,7 +84,7 @@ const getOrCreateConfirmation = (doc: Document): ConfirmationState => {
 };
 
 const confirmSameTabNavigation = async (doc: Document): Promise<boolean> => {
-  const warningVisible = await getFobleNavWarningVisible();
+  const warningVisible = await getFoblesNavWarningVisible();
   if (!warningVisible) return true;
 
   const state = getOrCreateConfirmation(doc);
@@ -103,7 +103,7 @@ const opensContentEditor = (url: string, view: Window): boolean => {
   try {
     const target = new URL(url, view.location.href);
     return decodeURIComponent(target.pathname).toLowerCase() ===
-      SITECORE.CONTENT_EDITOR_PATH.toLowerCase();
+      SITECORE.RELATIVE_PATHS.CONTENT_EDITOR.toLowerCase();
   } catch {
     return false;
   }
@@ -161,7 +161,7 @@ export function ensurePathShape(
   return `/sitecore/content/${withoutLeadingSlash}`;
 }
 
-export function normalizeFobleValue(raw: string): string {
+export function normalizeFoblesValue(raw: string): string {
   if (!raw) return raw;
 
   if (isGuidLike(raw)) {
@@ -193,14 +193,14 @@ export function normalizeFobleValue(raw: string): string {
   return `/sitecore/${withoutLeadingSlash}`;
 }
 
-export function buildFobleUrl(fo: string): string {
-  const normalizedFo = normalizeFobleValue(fo);
+export function buildFoblesUrl(fo: string): string {
+  const normalizedFo = normalizeFoblesValue(fo);
   const host = location.hostname;
   const protocol = window.location.protocol;
-  return `${protocol}//${host}${SITECORE.CONTENT_EDITOR_PATH}?sc_bw=1&fo=${encodeURI(normalizedFo)}`;
+  return `${protocol}//${host}${SITECORE.RELATIVE_PATHS.CONTENT_EDITOR}?sc_bw=1&fo=${encodeURI(normalizedFo)}`;
 }
 
-export function createFobleButton(
+export function createFoblesButton(
   doc: Document,
   label: string,
   url: string | (() => string),
@@ -221,7 +221,7 @@ export function createFobleButton(
   }
 
   button.textContent = label;
-  attachFobleTooltip(button);
+  attachFoblesTooltip(button);
 
   if (options?.classNames?.length) {
     button.classList.add(...options.classNames);
@@ -235,20 +235,20 @@ export function createFobleButton(
 
   button.onclick = (event) => {
     const resolvedUrl = typeof url === "function" ? url() : url;
-    void openFobleUrl(resolvedUrl, event);
+    void openFoblesUrl(resolvedUrl, event);
   };
 
   return button;
 }
 
-export async function openFobleUrl(url: string, event?: MouseEvent): Promise<void> {
+export async function openFoblesUrl(url: string, event?: MouseEvent): Promise<void> {
   const shouldOpenNewTab = !!event && (event.ctrlKey || event.metaKey || event.button === 1);
   const source = event?.currentTarget as Node | null | undefined;
   const doc = source?.ownerDocument ?? document;
   const view = doc.defaultView ?? window;
   const topLevelView = view.top ?? view;
 
-  hideFobleTooltip(doc);
+  hideFoblesTooltip(doc);
 
   if (shouldOpenNewTab) {
     view.open(url, "_blank", "noopener,noreferrer");

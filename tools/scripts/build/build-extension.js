@@ -35,7 +35,7 @@ run(process.execPath, [
   "node_modules/typescript/bin/tsc",
   "--noEmit",
   "-p",
-  "tsconfig.extension.json",
+  "tsconfig.json",
 ]);
 run(process.execPath, [
   "node_modules/esbuild/bin/esbuild",
