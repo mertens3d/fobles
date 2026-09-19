@@ -1,0 +1,37 @@
+﻿# Do not commit this file to source control or modify it. It is safe to delete; it will recreate itself.
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.media.library.fobles\Fobles Testing.yml
+ID: "e7ce2ce6-866b-4226-8c9a-a74b1a06a2f9"
+Parent: "3d6658d8-a0bf-4e75-b3e2-d050fabcf4e1"
+Template: "fe5dd826-48c6-436d-b87a-7c4210c7413b"
+Path: /sitecore/media library/Fobles Testing
+Signature: 3EPkenz1X/LDwx1UPm2xXIrjKlrf2ePJOipuPASqB8Q=
+Modified: 639254318337976190
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.media.library.fobles\Fobles Testing\Pdf A.yml
+ID: "7b7c5f69-3599-4387-aa52-b25915fd3f1a"
+Parent: "e7ce2ce6-866b-4226-8c9a-a74b1a06a2f9"
+Template: "0603f166-35b8-469f-8123-e8d87bedc171"
+Path: /sitecore/media library/Fobles Testing/Pdf A
+Signature: SNwA3wDWTRQ01IlcttnnfoQIVXbOfsHjEDM/axfBkak=
+Modified: 639254316966741289
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.media.library.fobles\Fobles Testing\File A.yml
+ID: "9d62cd1d-5657-46fb-8777-646497d78660"
+Parent: "e7ce2ce6-866b-4226-8c9a-a74b1a06a2f9"
+Template: "962b53c4-f93b-4df9-9821-415c867b8903"
+Path: /sitecore/media library/Fobles Testing/File A
+Signature: li0BFDN18ciXb9xiIQJ0sh0QPVN+T4X65vCI6k3aHHQ=
+Modified: 639254316012360537
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.media.library.fobles\Fobles Testing\Jpeg A.yml
+ID: "76f9f431-35f6-437e-8271-014e2603331e"
+Parent: "e7ce2ce6-866b-4226-8c9a-a74b1a06a2f9"
+Template: "daf085e8-602e-43a6-8299-038ff171349f"
+Path: /sitecore/media library/Fobles Testing/Jpeg A
+Signature: rfpKcpFLphLRCjY4to57zesadyMZJGN29OErAf7j+J8=
+Modified: 639254316966726236

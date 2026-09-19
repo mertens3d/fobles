@@ -1,0 +1,23 @@
+---
+ID: "3a4b5c6d-7e8f-4a9b-8c0d-2e3f4a5b6c7d"
+Parent: "1e2f3a4b-5c6d-4e7f-8a9b-0c1d2e3f4a5b"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droptree/Strategy Droptree
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260919T160500Z
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "4b5c6d7e-8f9a-4b0c-9d1e-3f4a5b6c7d8e"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260919T160500Z

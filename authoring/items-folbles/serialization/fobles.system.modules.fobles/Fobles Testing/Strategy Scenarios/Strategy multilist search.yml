@@ -1,0 +1,40 @@
+---
+ID: "a7b1c2d3-4e5f-4b60-8c71-1a2b3c4d5e6f"
+Parent: "b9f711a4-10ff-419e-af9a-be9e6c360a8b"
+Template: "2d3e4f60-7182-4a93-8ba4-b5c6d7e8f92a"
+Path: /sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy multilist search
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260919T174000Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "93041526-d7e8-4af9-8b0a-a3b4c5d6e7f8"
+    - ID: "60718293-a4b5-4dc6-8ed7-e8f92a3b4c5d"
+      Hint: Strategy Multilist Search 1x
+      Value: "{2CAAAD6C-31B1-4672-9576-C408177DC2DB}"
+    - ID: "71829304-b5c6-4ed7-8fe8-f92a3b4c5d6e"
+      Hint: Strategy Multilist Search 3x
+      Value: "{3E40ED84-1411-4FF7-ABEE-344415A6DB8E}|{3EC5CCC4-711D-4DE6-8531-EEA9C281F2A1}"
+    - ID: "82930415-c6d7-4fe8-8af9-92a3b4c5d6e7"
+      Hint: Strategy Multilist Search 10x
+      Value: "{49CA54E8-3AC3-4AA3-ACC7-C141CA682381}|{F85C032D-AC21-4085-915D-12968F04497A}|{6A1F2E3D-4C5B-4A69-8D7E-9F0A1B2C3D4E}"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260919T174000Z

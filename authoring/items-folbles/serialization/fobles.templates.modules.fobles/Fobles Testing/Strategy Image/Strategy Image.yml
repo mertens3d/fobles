@@ -1,0 +1,23 @@
+---
+ID: "7b8c9d0e-1f2a-4b3c-8d4e-5f6a7b8c9d03"
+Parent: "6a7b8c9d-0e1f-4a2b-8c3d-4e5f6a7b8c92"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Image/Strategy Image
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260919T172000Z
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "c2a3b4c5-6d7e-4a8b-8c9d-0e1f2a3b4c58"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260919T172000Z

@@ -1,0 +1,50 @@
+﻿---
+ID: "c8d9e0f1-a2b3-4c4d-8e5f-a6b7c8d9e0f2"
+Parent: "b9f711a4-10ff-419e-af9a-be9e6c360a8b"
+Template: "e4f5a6b7-c8d9-4e0f-8a1b-c2d3e4f5a6b8"
+Path: /sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy general link
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260919T164000Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "bd9c03ba-29be-403a-93a6-f17233557e21"
+    - ID: "b7c8d9e0-f1a2-4b3c-8d4e-f5a6b7c8d9e1"
+      Hint: Strategy General Link Internal
+      Value: |
+        <link text="" anchor="" linktype="internal" class="" title="" target="" querystring="" id="{4F1948ED-6D71-4499-8097-794751BC5175}" />
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d0e1f2a3-b4c5-4d6e-8f7a-b8c9d0e1f2a4"
+      Hint: Strategy General Link Email
+      Value: "<link text='Fake Email' linktype='mailto' style='' url='mailto:fake@fake.com'  title='' />"
+    - ID: "d4e5f6a7-b8c9-4d0e-8f1a-b2c3d4e5f6a8"
+      Hint: Strategy General Link External
+      Value: |
+        <link text="" anchor="" linktype="external" class="" title="" target="" querystring="" url="https://github.com/mertens3d/fobles" />
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260919T165300Z
+    - ID: "f2a3b4c5-d6e7-4f8a-8b9c-d0e1f2a3b4c6"
+      Hint: Strategy General Link JavaScript
+      Value: |
+        <link text="Javascript link description" linktype="javascript" url="javascript:console.log(&quot;Fobles Testing&quot;);" anchor="" />
+    - ID: "f6a7b8c9-d0e1-4f2a-8b3c-d4e5f6a7b8c0"
+      Hint: Strategy General Link Media
+      Value: |
+        <link linktype="media" target="" id="{76F9F431-35F6-437E-8271-014E2603331E}" />

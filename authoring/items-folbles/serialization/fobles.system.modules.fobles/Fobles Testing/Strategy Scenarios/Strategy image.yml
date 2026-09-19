@@ -1,0 +1,34 @@
+---
+ID: "a0e1f2a3-4b5c-4e6f-8a7b-8c9d0e1f2a36"
+Parent: "b9f711a4-10ff-419e-af9a-be9e6c360a8b"
+Template: "6a7b8c9d-0e1f-4a2b-8c3d-4e5f6a7b8c92"
+Path: /sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy image
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260919T172000Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "f5d6e7f8-9a0b-4dbe-8fc0-3b4c5d6e7f8b"
+    - ID: "9d0e1f2a-3b4c-4d5e-8f6a-7b8c9d0e1f25"
+      Hint: Strategy Image Set
+      Value: "<image mediaid=\"{76F9F431-35F6-437E-8271-014E2603331E}\" src=\"-/media/76f9f43135f6437e8271014e2603331e.ashx\" alt=\"\" />"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260919T172000Z

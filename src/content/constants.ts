@@ -110,6 +110,10 @@ export const ATTRIBUTE = {
   },
 } as const;
 
+export const CSS_PROPERTIES = {
+  TOOLBAR_BACKGROUND: "--fobles-toolbar-background",
+} as const;
+
 // Shell pages considered eligible for the toolbar based on pathname alone (see isMenuPathAllowed).
 export const ALLOWED_PATHS = [
   SITECORE.RELATIVE_PATHS.TEMPLATE_MANAGER,

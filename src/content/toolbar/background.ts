@@ -1,4 +1,4 @@
-import { SELECTORS } from "../constants";
+import { CSS_PROPERTIES, SELECTORS } from "../constants";
 import { SITECORE } from "../sitecore";
 import type { ToolbarContext } from "./types";
 
@@ -10,7 +10,7 @@ export function updateToolbarBackground(context: ToolbarContext): void {
   );
   if (!container) return;
 
-  container.style.removeProperty("--fobles-toolbar-background");
+  container.style.removeProperty(CSS_PROPERTIES.TOOLBAR_BACKGROUND);
   const globalHeader = context.doc.querySelector<HTMLElement>(SITECORE.SELECTORS.GLOBAL_HEADER);
   if (!globalHeader) return;
 
@@ -20,7 +20,7 @@ export function updateToolbarBackground(context: ToolbarContext): void {
     backgroundColor !== "transparent" &&
     backgroundColor !== "rgba(0, 0, 0, 0)"
   ) {
-    container.style.setProperty("--fobles-toolbar-background", backgroundColor);
+    container.style.setProperty(CSS_PROPERTIES.TOOLBAR_BACKGROUND, backgroundColor);
   }
 }
 

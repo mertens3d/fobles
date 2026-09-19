@@ -1,0 +1,45 @@
+﻿---
+ID: "4c5b58e8-feea-4c2b-8d3c-5d6e7f809102"
+Parent: "b9f711a4-10ff-419e-af9a-be9e6c360a8b"
+Template: "73f8091b-2132-4a5e-8b6f-8091a2b3c4d5"
+Path: /sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy treelist ex
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260919T181000Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "4c5b58e8-feea-4c2b-8d3c-5d6e7f809102"
+    - ID: "a621be4e-5465-4d81-8e92-b3c4d5e6f708"
+      Hint: Strategy Treelist Ex 1x
+      Value: "{2CAAAD6C-31B1-4672-9576-C408177DC2DB}"
+    - ID: "b732cf5f-6576-4e92-8fa3-c4d5e6f70819"
+      Hint: Strategy Treelist Ex 3x
+      Value: |
+        {3E40ED84-1411-4FF7-ABEE-344415A6DB8E}
+        {3EC5CCC4-711D-4DE6-8531-EEA9C281F2A1}
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "c843d060-7687-4fa3-8ab4-d5e6f708192a"
+      Hint: Strategy Treelist Ex 10x
+      Value: |
+        {49CA54E8-3AC3-4AA3-ACC7-C141CA682381}
+        {F85C032D-AC21-4085-915D-12968F04497A}
+        {6A1F2E3D-4C5B-4A69-8D7E-9F0A1B2C3D4E}
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260919T181000Z
