@@ -1,5 +1,5 @@
-import { STORAGE } from "../constants";
-import { getStorageValue, onStorageChange, setStorageValue } from "./storage";
+import { STORAGE } from "./constants";
+import { getStorageValue, onStorageChange, setStorageValue } from "./storage/storage";
 
 export type DebugSettings = {
   debugLogging: boolean;

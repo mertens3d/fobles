@@ -1,8 +1,8 @@
 import { SITECORE } from "./sitecore";
 import { isPowerShellIsePath } from "./guard";
 
-function getPowerShellIseScriptTitle(): string | null {
-  const scriptName = document
+export function getPowerShellIseScriptTitle(doc: Document): string | null {
+  const scriptName = doc
     .querySelector(SITECORE.SELECTORS.SCRIPT_NAME)
     ?.textContent
     ?.trim();
@@ -14,6 +14,6 @@ export function applyPowerShellIseTabIdentity(): void {
     return;
   }
 
-  const scriptTitle = getPowerShellIseScriptTitle();
+  const scriptTitle = getPowerShellIseScriptTitle(document);
   if (scriptTitle) document.title = scriptTitle;
 }

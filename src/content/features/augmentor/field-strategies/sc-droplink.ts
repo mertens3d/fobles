@@ -1,7 +1,7 @@
 import { FOBLES } from "../constants";
 import type { DroplinkFobles as DroplinkConfig } from "../fobles.types";
-import { buildFoblesUrl, createFoblesButton } from "../helper";
-import { applyButtonClasses } from "../shared/apply-button-classes";
+import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
+import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { extractGuid } from "../shared/guid";
 
 // The Content Editor tags Drop Link selects with an aria-label; the Field Editor dialog
@@ -13,21 +13,17 @@ const isDroplink = (select: HTMLSelectElement): boolean => {
   return /\bdroplink\s+field\b/i.test(ariaLabel);
 };
 
-const createWrapper = (doc: Document): HTMLSpanElement => {
-  const wrapper = doc.createElement("span");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.WRAPPER, "1");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.STRATEGY, FOBLES.STRATEGIES.DROP_LINK);
-  wrapper.classList.add(
-    FOBLES.CLASSES.WRAPPERS.BASE,
-    FOBLES.CLASSES.WRAPPERS.DROP_LINK,
-  );
-  return wrapper;
-};
+const createWrapper = (doc: Document): HTMLElement =>
+  createFoblesWrapper(doc, {
+    tag: "span",
+    strategy: FOBLES.STRATEGIES.DROP_LINK,
+    classNames: [FOBLES.CLASSES.WRAPPERS.DROP_LINK],
+  });
 
 const renderSelectedFobles = (
   doc: Document,
   select: HTMLSelectElement,
-  wrapper: HTMLSpanElement,
+  wrapper: HTMLElement,
   config: DroplinkConfig,
 ): void => {
   wrapper.replaceChildren();
@@ -37,18 +33,8 @@ const renderSelectedFobles = (
   if (!value) return;
 
   const label = option?.textContent?.trim() || value;
-  const button = createFoblesButton(
-    doc,
-    config.getButtonText?.(select, label) ?? label,
-    buildFoblesUrl(value),
-    {
-      classNames: [
-        FOBLES.CLASSES.BUTTONS.BASE,
-        FOBLES.CLASSES.BUTTONS.DROP_LINK,
-      ],
-    },
-  );
-  applyButtonClasses(button);
+  const buttonText = config.getButtonText?.(select, label) ?? label;
+  const button = createFoblesItemButton(doc, buttonText, value, FOBLES.CLASSES.BUTTONS.DROP_LINK);
   wrapper.appendChild(button);
 };
 

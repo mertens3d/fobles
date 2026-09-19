@@ -29,7 +29,7 @@ export function injectToolbar(context: ToolbarContext): void {
   ) as HTMLDivElement | null;
   if (!container) {
     container = context.doc.createElement("div");
-    container.className = "fobles-toolbar-container";
+    container.className = CLASS.TOOLBAR_CONTAINER;
     container.title = TEXT.DRAG_NAV;
   }
 
@@ -40,7 +40,7 @@ export function injectToolbar(context: ToolbarContext): void {
   let body = container.querySelector(SELECTORS.TOOLBAR_BODY) as HTMLDivElement | null;
   if (!body) {
     body = context.doc.createElement("div");
-    body.className = "fobles-toolbar-body";
+    body.className = CLASS.TOOLBAR_BODY;
     container.appendChild(body);
   }
 

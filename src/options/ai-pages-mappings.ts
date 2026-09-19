@@ -4,7 +4,7 @@ import {
   setAiPagesMappings,
   type AiPagesGroup,
   type AiPagesMapping,
-} from "../shared/storage/ai-pages-mappings";
+} from "../shared/ai-pages-mappings";
 
 const groupsContainer = getElement<HTMLDivElement>("groups");
 const statusMessage = getElement<HTMLParagraphElement>("status");

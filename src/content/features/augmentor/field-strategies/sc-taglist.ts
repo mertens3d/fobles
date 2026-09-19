@@ -1,13 +1,12 @@
 import { FOBLES } from "../constants";
 import { SITECORE } from "../../../sitecore";
 import type { TagListFobles as TagListConfig } from "../fobles.types";
-import {
-  buildFoblesUrl,
-  createFoblesButton,
-} from "../helper";
-import { applyButtonClasses } from "../shared/apply-button-classes";
-import { extractGuid, formatFoId } from "../shared/guid";
+import { formatFoId } from "../shared/guid";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
+import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
+import { createFoblesItemButton } from "../shared/create-fobles-item-button";
+import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
+import { collectGuidOptionItems } from "../shared/collect-select-options";
 
 type TagListItem = {
   label: string;
@@ -24,47 +23,22 @@ const collectTreeItems = (pane: Element): TagListItem[] =>
     })
     .filter((item): item is TagListItem => item !== null);
 
-const collectSelectedItems = (select: HTMLSelectElement): TagListItem[] =>
-  Array.from(select.options)
-    .map((option) => {
-      const value = extractGuid(option.value);
-      const label = option.textContent?.trim() ?? "";
-      return value && label ? { value, label } : null;
-    })
-    .filter((item): item is TagListItem => item !== null);
-
-const createPaneWrapper = (doc: Document, height: number): HTMLDivElement => {
-  const wrapper = doc.createElement("div");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.WRAPPER, "1");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.STRATEGY, FOBLES.STRATEGIES.TAG_LIST);
-  wrapper.classList.add(
-    FOBLES.CLASSES.WRAPPERS.BASE,
-    FOBLES.CLASSES.WRAPPERS.STACKED,
-    FOBLES.CLASSES.WRAPPERS.TAG_LIST,
-  );
-  wrapper.style.setProperty(
-    FOBLES.CSS_PROPERTIES.LIST_HEIGHT,
-    `${Math.max(Math.ceil(height), 96)}px`,
-  );
-  return wrapper;
-};
+const createPaneWrapper = (doc: Document, height: number): HTMLElement =>
+  createFoblesWrapper(doc, {
+    strategy: FOBLES.STRATEGIES.TAG_LIST,
+    classNames: [FOBLES.CLASSES.WRAPPERS.STACKED, FOBLES.CLASSES.WRAPPERS.TAG_LIST],
+    cssHeightProperty: FOBLES.CSS_PROPERTIES.LIST_HEIGHT,
+    height,
+  });
 
 const replacePane = (
   doc: Document,
   pane: HTMLElement,
   items: TagListItem[],
 ): void => {
-  const height = pane.getBoundingClientRect().height || pane.offsetHeight;
-  const wrapper = createPaneWrapper(doc, height);
+  const wrapper = createPaneWrapper(doc, measureFoblesPaneHeight(pane));
   items.forEach((item) => {
-    const button = createFoblesButton(doc, item.label, buildFoblesUrl(item.value), {
-      classNames: [
-        FOBLES.CLASSES.BUTTONS.BASE,
-        FOBLES.CLASSES.BUTTONS.TAG_LIST,
-      ],
-    });
-    applyButtonClasses(button);
-    wrapper.appendChild(button);
+    wrapper.appendChild(createFoblesItemButton(doc, item.label, item.value, FOBLES.CLASSES.BUTTONS.TAG_LIST));
   });
 
   pane.classList.add(FOBLES.CLASSES.HIDDEN);
@@ -73,9 +47,7 @@ const replacePane = (
 
 const hideNavigation = (control: Element): void => {
   control
-    .querySelectorAll<HTMLElement>(
-      "img[id$='_right'], img[id$='_left'], img[id$='_up'], img[id$='_down']",
-    )
+    .querySelectorAll<HTMLElement>(SITECORE.SELECTORS.TAG_LIST_NAV_ARROWS)
     .forEach(hideWithStyledSpacer);
 };
 
@@ -90,7 +62,7 @@ export function applyTagListStrategy(doc: Document, config: TagListConfig): void
     if (!allPane || !selectedPane) return;
 
     replacePane(doc, allPane, collectTreeItems(allPane));
-    replacePane(doc, selectedPane, collectSelectedItems(selectedPane));
+    replacePane(doc, selectedPane, collectGuidOptionItems(selectedPane));
     hideNavigation(control);
     control.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");
   });

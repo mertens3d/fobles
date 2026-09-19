@@ -5,6 +5,7 @@ import type {
   QuickInfoSource,
 } from "../fobles.types";
 import { buildFoblesUrl, createFoblesButton } from "../helper";
+import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { extractGuid } from "../shared/guid";
 
 const startsWithLabel = (value: string, candidate: string): boolean =>
@@ -23,22 +24,18 @@ const getTarget = (value: string, source: QuickInfoSource): string | null => {
 const createWrapper = (
   doc: Document,
   source: QuickInfoSource,
-): HTMLSpanElement => {
-  const wrapper = doc.createElement("span");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.WRAPPER, "1");
-  wrapper.setAttribute(
-    FOBLES.ATTRIBUTES.STRATEGY,
-    FOBLES.STRATEGIES.QUICK_INFO_SECTION,
-  );
-  wrapper.classList.add(
-    FOBLES.CLASSES.WRAPPERS.BASE,
-    source.wrapperVariant === "quickinfo"
-      ? FOBLES.CLASSES.WRAPPERS.QUICK_INFO
-      : FOBLES.CLASSES.WRAPPERS.ROW,
-  );
-  wrapper.style.setProperty(FOBLES.CSS_PROPERTIES.HEIGHT, "24px");
-  return wrapper;
-};
+): HTMLElement =>
+  createFoblesWrapper(doc, {
+    tag: "span",
+    strategy: FOBLES.STRATEGIES.QUICK_INFO_SECTION,
+    classNames: [
+      source.wrapperVariant === "quickinfo"
+        ? FOBLES.CLASSES.WRAPPERS.QUICK_INFO
+        : FOBLES.CLASSES.WRAPPERS.ROW,
+    ],
+    cssHeightProperty: FOBLES.CSS_PROPERTIES.HEIGHT,
+    height: 24,
+  });
 
 const replaceSource = (
   doc: Document,

@@ -42,7 +42,7 @@
   }
 
   &.fobles-toolbar-dragging .fobles-toolbar-body {
-    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.35);
+    box-shadow: 0 4px 16px $fobles-shadow-drag;
   }
 
   &[data-position$="right"]
@@ -219,10 +219,11 @@
     height: var(--fobles-height) !important;
     margin: 0 !important;
     padding: 0 !important;
-    border: 1px solid rgba($fobles-blue, 0.35) !important;
-    border-radius: 6px !important;
-    background: transparent !important;
-    box-shadow: none !important;
+    // This selector already outranks the single-class base rule on specificity, no !important needed.
+    border: 1px solid rgba($fobles-blue, 0.35);
+    border-radius: 6px;
+    background: transparent;
+    box-shadow: none;
     overflow: hidden;
     visibility: visible !important;
     opacity: 1 !important;
@@ -315,9 +316,10 @@
     height: var(--fobles-height) !important;
     margin: 0 !important;
     padding: 2px 8px !important;
-    border: 1px solid rgba($fobles-blue, 0.2) !important;
-    background: linear-gradient(180deg, $fobles-blue 0%, $fobles-blue-dark 100%) !important;
-    color: $fobles-white !important;
+    // This selector already outranks the single-class base rule on specificity, no !important needed.
+    border: 1px solid rgba($fobles-blue, 0.2);
+    background: linear-gradient(180deg, $fobles-blue 0%, $fobles-blue-dark 100%);
+    color: $fobles-white;
     visibility: visible !important;
     opacity: 1 !important;
     text-align: left;
@@ -325,7 +327,6 @@
 }
 
 .fobles-nav-button,
-.fobles-nav-toggle,
 .fobles-action-button {
   @include fobles-button-base;
 

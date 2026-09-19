@@ -1,4 +1,4 @@
-import { STORAGE } from "../constants";
+import { STORAGE } from "../shared/constants";
 
 export function getFoblesState(): boolean {
   const savedState = localStorage.getItem(STORAGE.KEY.FOBLES_STATE);

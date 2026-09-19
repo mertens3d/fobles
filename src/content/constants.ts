@@ -77,6 +77,7 @@ export const SELECTORS = {
   TOOLBAR_BODY: ".fobles-toolbar-body",
   TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",
   TOOLBAR_CONTAINER: ".fobles-toolbar-container",
+  TOOLBAR_FEATURE_BUTTON: ".fobles-nav-feature-button",
   TOOLBAR_GRIP: ".fobles-toolbar-grip",
   TOOLBAR_SET_ISE_TITLE_BUTTON: ".fobles-nav-set-ise-title-button",
 } as const;
@@ -98,7 +99,10 @@ export const ATTRIBUTE = {
   DATA: {
     KEY: {
       FOBLES_NAV_OWNER: "data-fobles-nav-owner",
+      PROXY_BUTTONS: "data-proxy-buttons",
+      QUICK_MENU: "data-quick-menu",
       TEMPLATE_BUTTON: "data-template-button",
+      VISIBLE: "data-visible",
     },
     VALUE: {
       PERSISTENT: "persistent",

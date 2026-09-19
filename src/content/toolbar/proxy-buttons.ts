@@ -48,6 +48,9 @@ const createProxyButton = (
     });
     if (ribbonCheckbox) {
       ribbonCheckbox.click();
+      // Don't trust the browser's optimistic native toggle: reflect whatever Sitecore's
+      // real checkbox actually ended up at, in case its own click handling diverges.
+      checkbox.checked = ribbonCheckbox.checked;
     } else {
       const posted = postSitecoreEvent(doc, option.eventName);
       extensionLog.debug("Proxy button fallback", {
@@ -79,7 +82,7 @@ const createProxyButtonAction = (
 const createProxyButtonsPanel = (doc: Document): HTMLDivElement => {
   const panel = doc.createElement("div");
   panel.className = CLASS.PROXY_BUTTONS;
-  panel.setAttribute("data-proxy-buttons", "1");
+  panel.setAttribute(ATTRIBUTE.DATA.KEY.PROXY_BUTTONS, "1");
 
   const actions = doc.createElement("div");
   actions.className = CLASS.PROXY_BUTTONS_ACTIONS;
@@ -120,12 +123,12 @@ const getOrCreateProxyButtonsPanel = (doc: Document): HTMLDivElement | null => {
 };
 
 export function isProxyButtonsVisible(doc: Document): boolean {
-  return doc.querySelector(SELECTORS.PROXY_BUTTONS)?.getAttribute("data-visible") === "true";
+  return doc.querySelector(SELECTORS.PROXY_BUTTONS)?.getAttribute(ATTRIBUTE.DATA.KEY.VISIBLE) === "true";
 }
 
 export function setProxyButtonsVisible(doc: Document, visible: boolean): void {
   const panel = getOrCreateProxyButtonsPanel(doc);
-  panel?.setAttribute("data-visible", visible ? "true" : "false");
+  panel?.setAttribute(ATTRIBUTE.DATA.KEY.VISIBLE, visible ? "true" : "false");
   if (!visible) proxyButtonsPinned = false;
 
   if (visible) {

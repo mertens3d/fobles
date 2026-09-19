@@ -4,6 +4,37 @@ import { extensionLog } from "../../logger";
 
 const KICK_ALL_USERS_WAIT_MS = 1_000;
 const KICK_ALL_USERS_MAX_BUTTON_RETRIES = 5;
+const KICK_ALL_USERS_BUTTON_RETRY_KEY = `${STORAGE.KEY.KICK_ALL_USERS}_button_retries`;
+
+const clearButtonRetryCount = (): void => {
+  localStorage.removeItem(KICK_ALL_USERS_BUTTON_RETRY_KEY);
+};
+
+const giveUpKickAllUsers = (message: string): void => {
+  localStorage.removeItem(STORAGE.KEY.KICK_ALL_USERS);
+  clearButtonRetryCount();
+  extensionLog.error(message);
+};
+
+// Walls off the "count this failure, give up after too many, otherwise reschedule" bookkeeping
+// so the two call sites below only describe *what* failed, not *how* retries are tracked.
+const retryOrGiveUp = (
+  doc: Document,
+  warnMessage: string,
+  giveUpMessage: string,
+): void => {
+  const retries = Number(localStorage.getItem(KICK_ALL_USERS_BUTTON_RETRY_KEY) ?? "0") + 1;
+  localStorage.setItem(KICK_ALL_USERS_BUTTON_RETRY_KEY, String(retries));
+  extensionLog.warn(warnMessage, { retries, maxRetries: KICK_ALL_USERS_MAX_BUTTON_RETRIES });
+
+  if (retries >= KICK_ALL_USERS_MAX_BUTTON_RETRIES) {
+    giveUpKickAllUsers(giveUpMessage);
+  } else {
+    window.setTimeout(() => {
+      void processKickAllUsers(doc);
+    }, KICK_ALL_USERS_WAIT_MS);
+  }
+};
 
 const getKickUsersUrl = (doc: Document): string => {
   const origin = doc.defaultView?.location.origin ?? window.location.origin;
@@ -50,7 +81,7 @@ const processKickAllUsers = async (doc: Document): Promise<void> => {
 
   if (rows.length === 1) {
     localStorage.removeItem(STORAGE.KEY.KICK_ALL_USERS);
-    localStorage.removeItem(`${STORAGE.KEY.KICK_ALL_USERS}_button_retries`);
+    clearButtonRetryCount();
     extensionLog.info("Kick All Users complete", { remainingRows: rows.length });
     return;
   }
@@ -91,22 +122,11 @@ const processKickAllUsers = async (doc: Document): Promise<void> => {
 
   const kickButton = findKickButton(doc);
   if (!kickButton) {
-    const retryKey = `${STORAGE.KEY.KICK_ALL_USERS}_button_retries`;
-    const retries = Number(localStorage.getItem(retryKey) ?? "0") + 1;
-    localStorage.setItem(retryKey, String(retries));
-    extensionLog.warn("Kick All Users could not find Kick off user button", {
-      retries,
-      maxRetries: KICK_ALL_USERS_MAX_BUTTON_RETRIES,
-    });
-    if (retries >= KICK_ALL_USERS_MAX_BUTTON_RETRIES) {
-      localStorage.removeItem(STORAGE.KEY.KICK_ALL_USERS);
-      localStorage.removeItem(retryKey);
-      extensionLog.error("Kick All Users stopped after repeated missing buttons");
-      return;
-    }
-    window.setTimeout(() => {
-      void processKickAllUsers(doc);
-    }, KICK_ALL_USERS_WAIT_MS);
+    retryOrGiveUp(
+      doc,
+      "Kick All Users could not find Kick off user button",
+      "Kick All Users stopped after repeated missing buttons",
+    );
     return;
   }
 
@@ -120,27 +140,15 @@ const processKickAllUsers = async (doc: Document): Promise<void> => {
   extensionLog.info("Kick All Users button object before confirmation", kickButton);
 
   if (kickButton.disabled) {
-    const retryKey = `${STORAGE.KEY.KICK_ALL_USERS}_button_retries`;
-    const retries = Number(localStorage.getItem(retryKey) ?? "0") + 1;
-    localStorage.setItem(retryKey, String(retries));
-    extensionLog.warn("Kick All Users button is disabled; waiting", {
-      retries,
-      maxRetries: KICK_ALL_USERS_MAX_BUTTON_RETRIES,
-    });
-    if (retries >= KICK_ALL_USERS_MAX_BUTTON_RETRIES) {
-      localStorage.removeItem(STORAGE.KEY.KICK_ALL_USERS);
-      localStorage.removeItem(retryKey);
-      extensionLog.error("Kick All Users stopped after repeated disabled buttons");
-      return;
-    }
-    window.setTimeout(() => {
-      void processKickAllUsers(doc);
-    }, KICK_ALL_USERS_WAIT_MS);
+    retryOrGiveUp(
+      doc,
+      "Kick All Users button is disabled; waiting",
+      "Kick All Users stopped after repeated disabled buttons",
+    );
     return;
   }
 
-  const retryKey = `${STORAGE.KEY.KICK_ALL_USERS}_button_retries`;
-  localStorage.removeItem(retryKey);
+  clearButtonRetryCount();
   const userName = row.cells.item(0)?.textContent?.trim() ?? "unknown user";
   extensionLog.info("Kick All Users about to ask for confirmation", {
     user: userName,

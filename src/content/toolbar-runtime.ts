@@ -9,15 +9,15 @@ import { MESSAGE, STORAGE } from "../shared/constants";
 import { SITECORE } from "./sitecore";
 import type { ToolbarPlacement } from "./toolbar.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";
-import { getDebugSettings } from "../shared/storage/debug-settings";
+import { getDebugSettings } from "../shared/debug-settings";
 import {
   getFoblesNavPlacement,
   getSelectRenderingFoblesNavPlacement,
   setFoblesNavPlacement,
   setSelectRenderingFoblesNavPlacement,
-} from "../shared/storage/toolbar-placement";
-import { getFoblesNavVisible } from "../shared/storage/nav-settings";
-import { getFoblesState, setFoblesState as setPersistedFoblesState } from "../shared/storage/fobles-state";
+} from "./toolbar-placement";
+import { getFoblesNavVisible } from "../shared/nav-settings";
+import { getFoblesState, setFoblesState as setPersistedFoblesState } from "./state";
 import type { MessageRequest } from "./content.types";
 import {
   isKickUsersPath,
@@ -228,7 +228,7 @@ async function reconcileCurrentPage(): Promise<void> {
   setToolbarVisible(getToolbarContext(), foblesNavVisible);
   extensionLog.debug("Fobles menu injection result", {
     toolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
-    featureButton: Boolean(document.querySelector(".fobles-nav-feature-button")),
+    featureButton: Boolean(document.querySelector(SELECTORS.TOOLBAR_FEATURE_BUTTON)),
     menuTrigger: Boolean(document.querySelector(SELECTORS.QUICK_MENU_TRIGGER)),
     foblesUiActive,
   });

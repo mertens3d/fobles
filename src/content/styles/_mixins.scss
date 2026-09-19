@@ -32,7 +32,7 @@
   border: 1px solid rgba($fobles-blue, 0.62);
   border-radius: 6px;
   background: $fobles-white;
-  box-shadow: 0 10px 22px rgba(22, 53, 91, 0.28);
+  box-shadow: 0 10px 22px $fobles-shadow-panel;
   z-index: 1000;
   opacity: 0;
   pointer-events: none;

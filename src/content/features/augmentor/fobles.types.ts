@@ -1,23 +1,3 @@
-export type ButtonConfig = {
-  label: string;
-  onClick: () => void;
-  icon?: string;
-};
-
-export type DropdownOption = {
-  label: string;
-  path?: string;
-  url?: string;
-  onClick?: () => void;
-};
-
-export type DropdownConfig = {
-  options: DropdownOption[];
-  onSelect: (option: DropdownOption) => void;
-  placeholder?: string;
-};
-
-
 export type FoblesStrategy =
   | "drop-link"
   | "drop-tree"
@@ -138,4 +118,9 @@ export type SingleInputFieldOptions = {
   buttonClass: string;
   wrapperClass: string;
   getTarget: (value: string) => string | null;
+};
+
+export type FoblesListItem = {
+  label: string;
+  value: string;
 };

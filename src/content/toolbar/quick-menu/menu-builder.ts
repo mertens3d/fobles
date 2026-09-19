@@ -1,4 +1,4 @@
-import { CLASS, SELECTORS, TEXT } from "../../constants";
+import { ATTRIBUTE, CLASS, SELECTORS, TEXT } from "../../constants";
 import {
   cancelQuickMenuClose,
   closeQuickMenuOnOutsidePointer,
@@ -16,7 +16,7 @@ import {
 function createQuickMenu(doc: Document, closeMenu: () => void): HTMLDivElement {
   const menu = doc.createElement("div");
   menu.className = CLASS.QUICK_MENU;
-  menu.setAttribute("data-quick-menu", "1");
+  menu.setAttribute(ATTRIBUTE.DATA.KEY.QUICK_MENU, "1");
 
   const columns = doc.createElement("div");
   columns.className = CLASS.QUICK_MENU_COLUMNS;

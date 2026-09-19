@@ -1,9 +1,10 @@
 import { FOBLES } from "../constants";
 import { SITECORE } from "../../../sitecore";
-import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { extensionLog } from "../../../logger";
-import { applyButtonClasses } from "../shared/apply-button-classes";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
+import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
+import { createFoblesItemButton } from "../shared/create-fobles-item-button";
+import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
 import type { TreelistExFobles as TreelistExConfig } from "../fobles.types";
 
 type TreelistExItem = {
@@ -26,34 +27,16 @@ const getItems = (host: HTMLElement): TreelistExItem[] =>
     })
     .filter((item): item is TreelistExItem => item !== null);
 
-const calculateContainerHeight = (host: HTMLElement): number => {
-  const baseHeight = Math.max(host.getBoundingClientRect().height || host.offsetHeight || 0, 96);
-  return Math.max(baseHeight - 8, 96);
-};
-
-const createWrapper = (doc: Document, height: number): HTMLDivElement => {
-  const wrapper = doc.createElement("div");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.WRAPPER, "1");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.STRATEGY, FOBLES.STRATEGIES.TREELIST_EX);
-  wrapper.classList.add(
-    FOBLES.CLASSES.WRAPPERS.BASE,
-    FOBLES.CLASSES.WRAPPERS.STACKED,
-    FOBLES.CLASSES.WRAPPERS.TREELIST_EX,
-  );
-  wrapper.style.setProperty(FOBLES.CSS_PROPERTIES.LIST_HEIGHT, `${height}px`);
-  return wrapper;
-};
-
-const createItemButton = (doc: Document, item: TreelistExItem): HTMLButtonElement => {
-  const button = createFoblesButton(doc, item.label, buildFoblesUrl(item.value), {
-    classNames: [
-      FOBLES.CLASSES.BUTTONS.BASE,
-      FOBLES.CLASSES.BUTTONS.TREELIST_EX,
-    ],
+const createWrapper = (doc: Document, height: number): HTMLElement =>
+  createFoblesWrapper(doc, {
+    strategy: FOBLES.STRATEGIES.TREELIST_EX,
+    classNames: [FOBLES.CLASSES.WRAPPERS.STACKED, FOBLES.CLASSES.WRAPPERS.TREELIST_EX],
+    cssHeightProperty: FOBLES.CSS_PROPERTIES.LIST_HEIGHT,
+    height,
   });
-  applyButtonClasses(button);
-  return button;
-};
+
+const createItemButton = (doc: Document, item: TreelistExItem): HTMLButtonElement =>
+  createFoblesItemButton(doc, item.label, item.value, FOBLES.CLASSES.BUTTONS.TREELIST_EX);
 
 const hideEditButton = (host: HTMLElement): void => {
   const fieldCell = host.closest(SITECORE.SELECTORS.FIELD_CELL);
@@ -67,7 +50,7 @@ const replaceHostWithFobles = (doc: Document, host: HTMLElement): void => {
   const items = getItems(host);
   if (items.length === 0) return;
 
-  const wrapper = createWrapper(doc, calculateContainerHeight(host));
+  const wrapper = createWrapper(doc, measureFoblesPaneHeight(host, { shrinkBy: 8 }));
   items.forEach((item) => wrapper.appendChild(createItemButton(doc, item)));
 
   hideEditButton(host);

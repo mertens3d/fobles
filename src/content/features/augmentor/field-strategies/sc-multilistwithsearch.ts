@@ -1,60 +1,24 @@
 import { FOBLES } from "../constants";
 import { SITECORE } from "../../../sitecore";
-import { buildFoblesUrl, createFoblesButton } from "../helper";
-import { applyButtonClasses } from "../shared/apply-button-classes";
 import {
   createStyledSpacer,
   hideWithStyledSpacer,
 } from "../shared/hide-with-styled-spacer";
+import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
+import { createFoblesItemButton } from "../shared/create-fobles-item-button";
+import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
+import { collectGuidOptionItems } from "../shared/collect-select-options";
 import type { MultilistWithSearchFobles as MultilistWithSearchConfig } from "../fobles.types";
-import { extractGuid } from "../shared/guid";
 
-type MultilistWithSearchItem = {
-  label: string;
-  value: string;
-};
+const calculatePaneHeight = (select: HTMLSelectElement): number => measureFoblesPaneHeight(select);
 
-const collectItems = (select: HTMLSelectElement): MultilistWithSearchItem[] =>
-  Array.from(select.options)
-    .map((option) => {
-      const value = extractGuid(option.value);
-      const label = option.textContent?.trim() ?? "";
-      return value && label ? { value, label } : null;
-    })
-    .filter((item): item is MultilistWithSearchItem => item !== null);
-
-const calculatePaneHeight = (select: HTMLSelectElement): number =>
-  Math.max(Math.ceil(select.getBoundingClientRect().height || select.offsetHeight || 0), 96);
-
-const createPaneWrapper = (doc: Document, height: number): HTMLDivElement => {
-  const wrapper = doc.createElement("div");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.WRAPPER, "1");
-  wrapper.setAttribute(
-    FOBLES.ATTRIBUTES.STRATEGY,
-    FOBLES.STRATEGIES.MULTILIST_WITH_SEARCH,
-  );
-  wrapper.classList.add(
-    FOBLES.CLASSES.WRAPPERS.BASE,
-    FOBLES.CLASSES.WRAPPERS.STACKED,
-    FOBLES.CLASSES.WRAPPERS.MULTILIST_WITH_SEARCH,
-  );
-  wrapper.style.setProperty(FOBLES.CSS_PROPERTIES.LIST_HEIGHT, `${height}px`);
-  return wrapper;
-};
-
-const createItemButton = (
-  doc: Document,
-  item: MultilistWithSearchItem,
-): HTMLButtonElement => {
-  const button = createFoblesButton(doc, item.label, buildFoblesUrl(item.value), {
-    classNames: [
-      FOBLES.CLASSES.BUTTONS.BASE,
-      FOBLES.CLASSES.BUTTONS.MULTILIST_WITH_SEARCH,
-    ],
+const createPaneWrapper = (doc: Document, height: number): HTMLElement =>
+  createFoblesWrapper(doc, {
+    strategy: FOBLES.STRATEGIES.MULTILIST_WITH_SEARCH,
+    classNames: [FOBLES.CLASSES.WRAPPERS.STACKED, FOBLES.CLASSES.WRAPPERS.MULTILIST_WITH_SEARCH],
+    cssHeightProperty: FOBLES.CSS_PROPERTIES.LIST_HEIGHT,
+    height,
   });
-  applyButtonClasses(button);
-  return button;
-};
 
 const replacePane = (
   doc: Document,
@@ -62,7 +26,9 @@ const replacePane = (
   height: number,
 ): void => {
   const wrapper = createPaneWrapper(doc, height);
-  collectItems(select).forEach((item) => wrapper.appendChild(createItemButton(doc, item)));
+  collectGuidOptionItems(select).forEach((item) =>
+    wrapper.appendChild(createFoblesItemButton(doc, item.label, item.value, FOBLES.CLASSES.BUTTONS.MULTILIST_WITH_SEARCH)),
+  );
   select.classList.add(FOBLES.CLASSES.HIDDEN);
   select.after(wrapper);
 };
@@ -74,7 +40,7 @@ const hideAncillaryControls = (control: Element): void => {
     .forEach(hideWithStyledSpacer);
   control
     .querySelectorAll<HTMLElement>(
-      ".scMultilistNav, img[id^='btnRight'], img[id^='btnLeft'], img[id^='btnUp'], img[id^='btnDown']",
+      `${SITECORE.SELECTORS.MULTILIST_NAV}, ${SITECORE.SELECTORS.MULTILIST_WITH_SEARCH_NAV_ARROWS}`,
     )
     .forEach(hideWithStyledSpacer);
 };
@@ -93,7 +59,7 @@ export function applyMultilistWithSearchStrategy(
     if (!allPane || !selectedPane) return;
 
     const paneHeight = calculatePaneHeight(allPane);
-    const navigation = control.querySelector<HTMLElement>(".scMultilistNav");
+    const navigation = control.querySelector<HTMLElement>(SITECORE.SELECTORS.MULTILIST_NAV);
     if (navigation) {
       selectedPane.before(createStyledSpacer(navigation));
     }

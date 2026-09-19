@@ -14,6 +14,15 @@ const findEligibleHosts = (doc: Document, config: DropTreeConfig): HTMLInputElem
     .filter((host) => !host.hasAttribute(FOBLES.ATTRIBUTES.MARKER))
     .filter((host) => Boolean(getFoblesValue(host)));
 
+// Mimics Sitecore's own input chrome (not a Fobles design token) so the wrapper reads as a
+// drop-in replacement for the input it hides.
+const SITECORE_INPUT_STYLE = {
+  BACKGROUND: "#ffffff",
+  BORDER: "1px solid #cccccc",
+  FLAT_CORNER_RADIUS: "0px",
+  HEIGHT: "35px",
+} as const;
+
 const createDropTreeWrapper = (doc: Document): HTMLSpanElement => {
   const wrapper = doc.createElement("span");
   wrapper.setAttribute(FOBLES.ATTRIBUTES.WRAPPER, "1");
@@ -22,12 +31,12 @@ const createDropTreeWrapper = (doc: Document): HTMLSpanElement => {
     FOBLES.CLASSES.WRAPPERS.BASE,
     FOBLES.CLASSES.WRAPPERS.STACKED,
   );
-  wrapper.style.setProperty("height", "35px");
-  wrapper.style.setProperty("background", "#ffffff");
+  wrapper.style.setProperty("height", SITECORE_INPUT_STYLE.HEIGHT);
+  wrapper.style.setProperty("background", SITECORE_INPUT_STYLE.BACKGROUND);
   // Match Sitecore's input outline: square right corners since the dropdown arrow sits there.
-  wrapper.style.setProperty("border", "1px solid #cccccc");
-  wrapper.style.setProperty("border-top-right-radius", "0px");
-  wrapper.style.setProperty("border-bottom-right-radius", "0px");
+  wrapper.style.setProperty("border", SITECORE_INPUT_STYLE.BORDER);
+  wrapper.style.setProperty("border-top-right-radius", SITECORE_INPUT_STYLE.FLAT_CORNER_RADIUS);
+  wrapper.style.setProperty("border-bottom-right-radius", SITECORE_INPUT_STYLE.FLAT_CORNER_RADIUS);
   return wrapper;
 };
 

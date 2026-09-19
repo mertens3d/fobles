@@ -9,11 +9,11 @@ import {
   setFoblesNavVisible,
   setFoblesNavWarningVisible,
   setTurnOffFoblesAfterNavigation,
-} from "../shared/storage/nav-settings";
+} from "../shared/nav-settings";
 import {
   getDebugSettings,
   onShowReloadExtensionButtonChange,
-} from "../shared/storage/debug-settings";
+} from "../shared/debug-settings";
 
 const visibilityCheckbox = document.getElementById(
   "fobles-nav-visible",

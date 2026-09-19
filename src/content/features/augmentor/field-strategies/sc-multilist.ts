@@ -1,7 +1,9 @@
 import { FOBLES } from "../constants";
 import { SITECORE } from "../../../sitecore";
-import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
+import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
+import { createFoblesItemButton } from "../shared/create-fobles-item-button";
+import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
 import type { MultilistOptionsFobles as MultilistConfig } from "../fobles.types";
 
 type MultilistOption = {
@@ -32,44 +34,24 @@ const collectOptions = (select: HTMLSelectElement): MultilistOption[] => {
   return entries;
 };
 
-const calculateContainerHeight = (select: HTMLSelectElement): number => {
-  const baseHeight = Math.max(
-    select.getBoundingClientRect().height || select.offsetHeight || 0,
-    96,
-  );
-  return Math.max(baseHeight - 8, 96);
-};
+const calculateContainerHeight = (select: HTMLSelectElement): number =>
+  measureFoblesPaneHeight(select, { shrinkBy: 8 });
 
-const createMultilistWrapper = (doc: Document, height: number): HTMLDivElement => {
-  const wrapper = doc.createElement("div") as HTMLDivElement;
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.WRAPPER, "1");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.STRATEGY, FOBLES.STRATEGIES.MULTILIST_OPTIONS);
-  wrapper.classList.add(
-    FOBLES.CLASSES.WRAPPERS.BASE,
-    FOBLES.CLASSES.WRAPPERS.STACKED,
-    FOBLES.CLASSES.WRAPPERS.MULTILIST,
-  );
-  wrapper.style.setProperty(FOBLES.CSS_PROPERTIES.LIST_HEIGHT, `${height}px`);
-  return wrapper;
-};
-
-const createOptionButton = (doc: Document, option: MultilistOption): HTMLButtonElement => {
-  const buttonUrl = buildFoblesUrl(option.value);
-  return createFoblesButton(doc, option.label, buttonUrl, {
-    classNames: [
-      FOBLES.CLASSES.BUTTONS.BASE,
-      FOBLES.CLASSES.BUTTONS.MULTILIST,
-    ],
+const createMultilistWrapper = (doc: Document, height: number): HTMLElement =>
+  createFoblesWrapper(doc, {
+    strategy: FOBLES.STRATEGIES.MULTILIST_OPTIONS,
+    classNames: [FOBLES.CLASSES.WRAPPERS.STACKED, FOBLES.CLASSES.WRAPPERS.MULTILIST],
+    cssHeightProperty: FOBLES.CSS_PROPERTIES.LIST_HEIGHT,
+    height,
   });
-};
 
 const addOptionButtons = (
   doc: Document,
-  wrapper: HTMLDivElement,
+  wrapper: HTMLElement,
   optionValues: MultilistOption[],
 ): void => {
   optionValues.forEach((option) => {
-    const button = createOptionButton(doc, option);
+    const button = createFoblesItemButton(doc, option.label, option.value, FOBLES.CLASSES.BUTTONS.MULTILIST);
     wrapper.appendChild(button);
   });
 };

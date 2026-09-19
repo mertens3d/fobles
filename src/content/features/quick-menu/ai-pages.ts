@@ -4,7 +4,7 @@ import {
   onAiPagesMappingsChange,
   type AiPagesGroup,
   type AiPagesMapping,
-} from "../../../shared/storage/ai-pages-mappings";
+} from "../../../shared/ai-pages-mappings";
 
 type ResolvedAiPagesMapping = AiPagesMapping & Omit<AiPagesGroup, "mappings">;
 
@@ -73,20 +73,12 @@ const getAiPagesMapping = (itemPath: string): ResolvedAiPagesMapping | null => {
   );
 };
 
-export const openAiPages = (doc: Document): void => {
-  const itemId = getCurrentItemId(doc);
-  const itemPath = getQuickInfoValue(doc, "Item path:");
-  const language = getQuickInfoValue(doc, "Language:");
-  const version = getQuickInfoValue(doc, "Version:");
-  const mapping = itemPath ? getAiPagesMapping(itemPath) : null;
-
-  if (!itemId || !mapping) {
-    window.alert(
-      "No AI Pages mapping matches the active item. Configure AI Pages mappings in the extension options.",
-    );
-    return;
-  }
-
+const buildAiPagesUrl = (
+  itemId: string,
+  mapping: ResolvedAiPagesMapping,
+  language: string | null,
+  version: string | null,
+): string => {
   const url = new URL("https://pages.sitecorecloud.io/editor");
   url.searchParams.set("sc_itemid", itemId);
   url.searchParams.set("sc_site", mapping.site);
@@ -94,4 +86,22 @@ export const openAiPages = (doc: Document): void => {
   url.searchParams.set("tenantName", mapping.tenantName);
   if (language) url.searchParams.set("sc_lang", language);
   if (version) url.searchParams.set("sc_version", version);
+  return url.toString();
+};
+
+export const openAiPages = (doc: Document): void => {
+  const itemId = getCurrentItemId(doc);
+  const itemPath = getQuickInfoValue(doc, "Item path:");
+  const language = getQuickInfoValue(doc, "Language:");
+  const version = getQuickInfoValue(doc, "Version:");
+  const mapping = itemPath ? getAiPagesMapping(itemPath) : null;
+
+  if (itemId && mapping) {
+    const url = buildAiPagesUrl(itemId, mapping, language, version);
+    window.open(url, "_blank", "noopener,noreferrer");
+  } else {
+    window.alert(
+      "No AI Pages mapping matches the active item. Configure AI Pages mappings in the extension options.",
+    );
+  }
 };

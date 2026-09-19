@@ -1,5 +1,4 @@
 import { extensionLog } from "../../../logger";
-import { isMenuOwnedFrame } from "../../../guard";
 import { SITECORE } from "../../../sitecore";
 import { FOBLES } from "../constants";
 import {
@@ -7,7 +6,8 @@ import {
   openFoblesUrl,
 } from "../helper";
 import { attachFoblesTooltip } from "../shared/fobles-tooltip";
-import { extractGuid, formatFoId } from "../shared/guid";
+import { formatFoId } from "../shared/guid";
+import { forEachFrameDocument } from "../shared/frame-documents";
 
 export function clearTreeButtons(root: ParentNode = document): void {
   root.querySelectorAll(`.${FOBLES.CLASSES.TREE.BUTTON}`).forEach((button) => button.remove());
@@ -19,19 +19,7 @@ export function clearTreeButtons(root: ParentNode = document): void {
     icon.classList.remove(FOBLES.CLASSES.TREE.GLYPH_HIDDEN);
   });
 
-  root.querySelectorAll(FOBLES.SELECTORS.FRAMES).forEach((frame) => {
-    try {
-      const frameEl = frame as HTMLIFrameElement | HTMLFrameElement;
-      if (isMenuOwnedFrame(frameEl)) return;
-
-      const doc = frameEl.contentDocument || frameEl.contentWindow?.document;
-      if (doc) {
-        clearTreeButtons(doc);
-      }
-    } catch {
-      // Ignore cross-origin frames.
-    }
-  });
+  forEachFrameDocument(root, (frameDoc) => clearTreeButtons(frameDoc), { skipMenuOwned: true });
 }
 
 export function toggleTreeButtons(): void {
@@ -43,33 +31,6 @@ export function toggleTreeButtons(): void {
 
   function removeOpenButtons(root: ParentNode): void {
     clearTreeButtons(root);
-  }
-
-  function extractItemIdFromAnchor(anchor: Element | null): string | null {
-    if (!anchor) return null;
-
-    const attributes = [
-      anchor.getAttribute("href"),
-      anchor.getAttribute("onclick"),
-      anchor.getAttribute("data-id"),
-      anchor.getAttribute("id"),
-    ];
-
-    for (const value of attributes) {
-      if (!value) continue;
-
-      const guid = extractGuid(value);
-      if (guid) {
-        return guid;
-      }
-
-      const bare = value.match(new RegExp(`${SITECORE.TREE_ID_PREFIXES.GLYPH}(.+)$`));
-      if (bare) {
-        return bare[1];
-      }
-    }
-
-    return null;
   }
 
   function getTreeNodeItemId(node: Element): string | null {
@@ -171,26 +132,14 @@ export function toggleTreeButtons(): void {
     extensionLog.debug("tree node button inserted", { itemId, measuredHeight, nodeHtml: node.outerHTML.slice(0, 250) });
   }
 
-  function walkTree(root: Document | ShadowRoot): void {
+  function walkTree(root: ParentNode): void {
     root.querySelectorAll(SITECORE.SELECTORS.TREE_ROOT).forEach((treePanel) => {
       treePanel.querySelectorAll(SITECORE.SELECTORS.TREE_NODE).forEach((node) => {
         addOpenButton(node);
       });
     });
 
-    root.querySelectorAll(FOBLES.SELECTORS.FRAMES).forEach((frame) => {
-      try {
-        const frameEl = frame as HTMLIFrameElement | HTMLFrameElement;
-        if (isMenuOwnedFrame(frameEl)) return;
-
-        const doc = frameEl.contentDocument || frameEl.contentWindow?.document;
-        if (doc) {
-          walkTree(doc);
-        }
-      } catch {
-        // Ignore cross-origin frames.
-      }
-    });
+    forEachFrameDocument(root, (frameDoc) => walkTree(frameDoc), { skipMenuOwned: true });
   }
 
   const existingTreeButtons = document.querySelectorAll(`.${buttonClass}`);

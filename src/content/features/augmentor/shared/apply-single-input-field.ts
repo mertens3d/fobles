@@ -1,8 +1,8 @@
 import { FOBLES } from "../constants";
 import { SITECORE } from "../../../sitecore";
 import type { FoblesConfigBase, FoblesStrategy, SingleInputFieldOptions } from "../fobles.types";
-import { buildFoblesUrl, createFoblesButton } from "../helper";
-import { applyButtonClasses } from "./apply-button-classes";
+import { createFoblesWrapper } from "./create-fobles-wrapper";
+import { createFoblesItemButton } from "./create-fobles-item-button";
 import { hideWithStyledSpacer } from "./hide-with-styled-spacer";
 
 export type { SingleInputFieldOptions } from "../fobles.types";
@@ -45,28 +45,13 @@ export function applySingleInputFieldStrategy<TStrategy extends FoblesStrategy>(
     const target = options.getTarget(value);
     if (!target) return;
 
-    const wrapper = doc.createElement("span");
-    wrapper.setAttribute(FOBLES.ATTRIBUTES.WRAPPER, "1");
-    wrapper.setAttribute(FOBLES.ATTRIBUTES.STRATEGY, config.strategy);
-    wrapper.classList.add(
-      FOBLES.CLASSES.WRAPPERS.BASE,
-      FOBLES.CLASSES.WRAPPERS.STACKED,
-      options.wrapperClass,
-    );
-
-    const button = createFoblesButton(
-      doc,
-      config.getButtonText?.(input, value) ?? value,
-      buildFoblesUrl(target),
-      {
-        classNames: [
-          FOBLES.CLASSES.BUTTONS.BASE,
-          options.buttonClass,
-        ],
-      },
-    );
-    applyButtonClasses(button);
-    wrapper.appendChild(button);
+    const wrapper = createFoblesWrapper(doc, {
+      tag: "span",
+      strategy: config.strategy,
+      classNames: [FOBLES.CLASSES.WRAPPERS.STACKED, options.wrapperClass],
+    });
+    const buttonText = config.getButtonText?.(input, value) ?? value;
+    wrapper.appendChild(createFoblesItemButton(doc, buttonText, target, options.buttonClass));
 
     input.classList.add(FOBLES.CLASSES.HIDDEN);
     input.after(wrapper);

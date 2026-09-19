@@ -6,7 +6,7 @@ import {
   SYMBOLS,
   TEXT,
 } from "../constants";
-import { SITECORE } from "../sitecore";
+import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {
   openQuickMenuOnHover,
   scheduleCloseQuickMenuOnHover,
@@ -135,14 +135,6 @@ export function createToolbarGrip(context: ToolbarContext): SVGSVGElement {
   }
 
   return svg;
-}
-
-function getPowerShellIseScriptTitle(doc: Document): string | null {
-  const scriptName = doc
-    .querySelector(SITECORE.SELECTORS.SCRIPT_NAME)
-    ?.textContent
-    ?.trim();
-  return scriptName?.split(/[\\/]/).filter(Boolean).pop() ?? null;
 }
 
 export function createSetIseTabTitleButton(

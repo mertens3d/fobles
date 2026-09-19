@@ -1,4 +1,4 @@
-import { getDebugSettings, setDebugSettings } from "../shared/storage/debug-settings";
+import { getDebugSettings, setDebugSettings } from "../shared/debug-settings";
 import { getAllStorageValues } from "../shared/storage/storage";
 import { getElement } from "./dom-helpers";
 

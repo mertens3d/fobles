@@ -2,9 +2,9 @@
 import { ATTRIBUTE, SELECTORS } from "../../constants";
 import { SITECORE } from "../../sitecore";
 import { extensionLog } from "../../logger";
-import { isMenuOwnedFrame } from "../../guard";
 import { FOBLES } from "./constants";
 import { fieldConfigs } from "./_config";
+import { walkFrameDocuments } from "./shared/frame-documents";
 import type { FoblesConfig, FoblesStrategy } from "./fobles.types";
 import { applyDroplinkStrategy } from "./field-strategies/sc-droplink";
 import { applyDroplistStrategy } from "./field-strategies/sc-droplist";
@@ -132,39 +132,11 @@ function applyStrategy(
 }
 
 function walkDocuments(doc: Document, callback: (currentDoc: Document) => void): void {
-  callback(doc);
-
-  doc.querySelectorAll(FOBLES.SELECTORS.FRAMES).forEach((frame) => {
-    try {
-      const frameElement = frame as HTMLIFrameElement | HTMLFrameElement;
-      if (isMenuOwnedFrame(frameElement)) return;
-
-      const frameDoc =
-        frameElement.contentDocument ?? frameElement.contentWindow?.document;
-
-      if (frameDoc) {
-        walkDocuments(frameDoc, callback);
-      }
-    } catch {
-      // Ignore cross-origin frame access issues.
-    }
-  });
+  walkFrameDocuments(doc, callback, { skipMenuOwned: true });
 }
 
 function walkAllDocuments(doc: Document, callback: (currentDoc: Document) => void): void {
-  callback(doc);
-
-  doc.querySelectorAll(FOBLES.SELECTORS.FRAMES).forEach((frame) => {
-    try {
-      const frameElement = frame as HTMLIFrameElement | HTMLFrameElement;
-      const frameDoc =
-        frameElement.contentDocument ?? frameElement.contentWindow?.document;
-
-      if (frameDoc) walkAllDocuments(frameDoc, callback);
-    } catch {
-      // Ignore cross-origin frame access issues.
-    }
-  });
+  walkFrameDocuments(doc, callback);
 }
 
 export function triggerFobles(doc: Document): void {
@@ -176,9 +148,9 @@ export function triggerFobles(doc: Document): void {
       frameElement: !!window.frameElement,
       readyState: document.readyState,
       selectCount: currentDoc.querySelectorAll("select").length,
-      contentControlCount: currentDoc.querySelectorAll(".scContentControl").length,
-      comboCount: currentDoc.querySelectorAll(".scCombobox").length,
-      hasScEditorFieldMarker: !!currentDoc.querySelector(".scEditorFieldMarker"),
+      contentControlCount: currentDoc.querySelectorAll(SITECORE.SELECTORS.CONTENT_CONTROL).length,
+      comboCount: currentDoc.querySelectorAll(SITECORE.SELECTORS.COMBOBOX).length,
+      hasScEditorFieldMarker: !!currentDoc.querySelector(SITECORE.SELECTORS.EDITOR_FIELD_MARKER),
       iframeCount: currentDoc.querySelectorAll("iframe").length,
     });
 
@@ -191,7 +163,7 @@ export function triggerFobles(doc: Document): void {
 export function clearFobles(doc: Document): void {
   walkAllDocuments(doc, (currentDoc) => {
     removeFoblesTooltips(currentDoc);
-    const headerArea = currentDoc.querySelector(".sc-globalHeader-content");
+    const headerArea = currentDoc.querySelector(SITECORE.SELECTORS.GLOBAL_HEADER_CONTENT);
     extensionLog.debug("clearFobles start", {
       headerButtons: headerArea ? headerArea.querySelectorAll("button").length : 0,
     });
@@ -269,7 +241,7 @@ export function clearFobles(doc: Document): void {
       spacer.remove();
     });
 
-    currentDoc.querySelectorAll("img.scNavButton, .scContentButtons, .scContentButton").forEach((el) => {
+    currentDoc.querySelectorAll(`${SITECORE.SELECTORS.MULTILIST_NAV_BUTTON}, ${SITECORE.SELECTORS.MULTILIST_FIELD_BUTTONS}`).forEach((el) => {
       const htmlEl = el as HTMLElement;
       htmlEl.classList.remove(FOBLES.CLASSES.HIDDEN);
       htmlEl.style.display = "";

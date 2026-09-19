@@ -1,7 +1,7 @@
-import { DEFAULT_TOOLBAR_PLACEMENT, TOOLBAR_CORNERS } from "../../content/constants";
-import { STORAGE } from "../constants";
-import { getStorageValue, setStorageValue } from "./storage";
-import type { ToolbarPlacement } from "../../content/toolbar.types";
+import { DEFAULT_TOOLBAR_PLACEMENT, TOOLBAR_CORNERS } from "./constants";
+import { STORAGE } from "../shared/constants";
+import { getStorageValue, setStorageValue } from "../shared/storage/storage";
+import type { ToolbarPlacement } from "./toolbar.types";
 
 function isValidPlacement(value: unknown): value is ToolbarPlacement {
   if (!value || typeof value !== "object") return false;

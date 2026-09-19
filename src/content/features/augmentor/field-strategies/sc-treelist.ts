@@ -1,8 +1,10 @@
 import { FOBLES } from "../constants";
 import { SITECORE } from "../../../sitecore";
-import { buildFoblesUrl, createFoblesButton } from "../helper";
-import { applyButtonClasses } from "../shared/apply-button-classes";
-import { extractGuid, formatFoId } from "../shared/guid";
+import { formatFoId } from "../shared/guid";
+import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
+import { createFoblesItemButton } from "../shared/create-fobles-item-button";
+import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
+import { collectGuidOptionItems } from "../shared/collect-select-options";
 import type { TreeListFobles as TreeListConfig } from "../fobles.types";
 
 type TreeListItem = {
@@ -26,43 +28,16 @@ const getAllTreeItems = (treePane: Element): TreeListItem[] =>
 
 const getSelectedItems = (selectedPane: Element): TreeListItem[] => {
   const select = selectedPane.querySelector<HTMLSelectElement>(SITECORE.SELECTORS.MULTILIST_BOX);
-  if (!select) return [];
-
-  return Array.from(select.options)
-    .map((option) => {
-      const value = extractGuid(option.value);
-      const label = option.textContent?.trim() ?? "";
-      return value && label ? { value, label } : null;
-    })
-    .filter((item): item is TreeListItem => item !== null);
+  return select ? collectGuidOptionItems(select) : [];
 };
 
-const calculatePaneHeight = (pane: Element): number =>
-  Math.max(Math.ceil(pane.getBoundingClientRect().height || 0), 96);
-
-const createPaneWrapper = (doc: Document, height: number): HTMLDivElement => {
-  const wrapper = doc.createElement("div");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.WRAPPER, "1");
-  wrapper.setAttribute(FOBLES.ATTRIBUTES.STRATEGY, FOBLES.STRATEGIES.TREE_LIST);
-  wrapper.classList.add(
-    FOBLES.CLASSES.WRAPPERS.BASE,
-    FOBLES.CLASSES.WRAPPERS.STACKED,
-    FOBLES.CLASSES.WRAPPERS.TREE_LIST,
-  );
-  wrapper.style.setProperty(FOBLES.CSS_PROPERTIES.LIST_HEIGHT, `${height}px`);
-  return wrapper;
-};
-
-const createTreeListButton = (doc: Document, item: TreeListItem): HTMLButtonElement => {
-  const button = createFoblesButton(doc, item.label, buildFoblesUrl(item.value), {
-    classNames: [
-      FOBLES.CLASSES.BUTTONS.BASE,
-      FOBLES.CLASSES.BUTTONS.TREE_LIST,
-    ],
+const createPaneWrapper = (doc: Document, height: number): HTMLElement =>
+  createFoblesWrapper(doc, {
+    strategy: FOBLES.STRATEGIES.TREE_LIST,
+    classNames: [FOBLES.CLASSES.WRAPPERS.STACKED, FOBLES.CLASSES.WRAPPERS.TREE_LIST],
+    cssHeightProperty: FOBLES.CSS_PROPERTIES.LIST_HEIGHT,
+    height,
   });
-  applyButtonClasses(button);
-  return button;
-};
 
 const replacePaneWithFobles = (
   doc: Document,
@@ -71,8 +46,8 @@ const replacePaneWithFobles = (
 ): boolean => {
   if (items.length === 0) return false;
 
-  const wrapper = createPaneWrapper(doc, calculatePaneHeight(pane));
-  items.forEach((item) => wrapper.appendChild(createTreeListButton(doc, item)));
+  const wrapper = createPaneWrapper(doc, measureFoblesPaneHeight(pane));
+  items.forEach((item) => wrapper.appendChild(createFoblesItemButton(doc, item.label, item.value, FOBLES.CLASSES.BUTTONS.TREE_LIST)));
   pane.classList.add(FOBLES.CLASSES.HIDDEN);
   pane.after(wrapper);
   return true;

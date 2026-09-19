@@ -1,5 +1,5 @@
-import { STORAGE } from "../constants";
-import { getStorageValue, onStorageChange, setStorageValue } from "./storage";
+import { STORAGE } from "./constants";
+import { getStorageValue, onStorageChange, setStorageValue } from "./storage/storage";
 
 export async function getFoblesNavVisible(): Promise<boolean> {
   const result = await getStorageValue<boolean>([STORAGE.KEY.FOBLES_NAV_VISIBLE]);
