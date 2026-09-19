@@ -1,0 +1,61 @@
+export const SITECORE = {
+  ACTION_PREFIXES: {
+    FILE: "contentfile",
+    GENERAL_LINK: "contentlink",
+    ICON: "icon",
+    IMAGE: "contentimage",
+    INTERNAL_LINK: "contentinternallink",
+  },
+  QUERY_PARAMS: {
+    DATABASE: "db",
+    // Alternate query keys Sitecore itself uses to indicate the current database.
+    DATABASE_KEYS: ["db", "sc_content"],
+    ITEM_ID: "id",
+    XML_CONTROL: "xmlcontrol",
+  },
+  // Named so every path used to build ALLOWED_PATHS has an identifier, not just a bare literal.
+  RELATIVE_PATHS: {
+    CONTENT_EDITOR: "/sitecore/shell/Applications/Content Editor.aspx",
+    CONTENT_EDITOR_MODERN: "/sitecore/shell/Applications/Content-Editor",
+    CONTENT_MANAGER: "/sitecore/shell/Applications/Content Manager/default.aspx",
+    KICK_USERS: "/sitecore/client/Applications/LicenseOptions/KickUser.aspx",
+    // Sitecore's media request virtual path; can appear nested after another page's path segment
+    // (e.g. behind Content Editor.aspx) but is never itself a page eligible for the toolbar.
+    MEDIA_REQUEST_SEGMENT: "/sitecore/shell/applications/-/media/",
+    POWERSHELL_ISE: "/sitecore/shell/Applications/PowerShell/PowerShellIse",
+    POWERSHELL_SCRIPT_LIBRARY: "/sitecore/system/Modules/PowerShell/Script Library",
+    SHELL_DEFAULT: "/sitecore/shell/default.aspx",
+    TEMPLATE_MANAGER: "/sitecore/shell/Applications/Templates/Template-Manager",
+  },
+  SELECTORS: {
+    DATABASE_INPUT: "input[id$='_Database'][value]",
+    FIELD_ACTION: "a.scContentButton",
+    FIELD_ACTIONS: ".scContentButtons",
+    FIELD_ACTION_LINKS: ".scContentButtons > a.scContentButton",
+    FIELD_CELL: "td.scEditorFieldMarkerInputCell",
+    MULTILIST: ".scContentControlMultilist",
+    MULTILIST_BOX: ".scContentControlMultilistBox",
+    MULTILIST_FIELD_BUTTONS: ".scContentButtons, .scContentButton",
+    MULTILIST_NAV_BUTTON: "img.scNavButton",
+    PROFILE_CARDS_IMAGE: "img.scEditorHeaderCustomizeProfilesIcon",
+    SCRIPT_NAME: "#ScriptName",
+    TREE_GLYPH: "img[id^='Tree_Glyph_']",
+    TREE_LIST_ALL_PANE: ".scScrollbox.scContentControlTree",
+    TREE_LIST_SELECTED_PANE: ".scContentControlSelectedList",
+    TREE_NODE: ".scContentTreeNode",
+    TREE_NODE_LINK: "a[id^='Tree_Node_']",
+    TREE_NODE_TITLE: ".scContentTreeNodeTitle",
+    TREE_NODES_WITH_ID: ".scContentTreeNode[id]",
+    TREE_ROOT: "#ContentTreeInnerPanel, #Treeview",
+    URI_ELEMENT: "[onfocus*='sitecore://'], [onblur*='sitecore://']",
+  },
+  TREE_ID_PREFIXES: {
+    GLYPH: "Tree_Glyph_",
+    NODE: "Tree_Node_",
+    SELECT_RENDERING: "Treeview_",
+  },
+  XML_CONTROLS: {
+    FILE_EXPLORER: "FileExplorer",
+    SELECT_RENDERING: "Sitecore.Shell.Applications.Dialogs.SelectRendering",
+  },
+} as const;

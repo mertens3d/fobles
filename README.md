@@ -57,7 +57,7 @@ npm run test:e2e:debug
 To verify Playwright configuration and test discovery without opening a browser or contacting Sitecore:
 
 ```text
-npm run test:e2e -- --project=edge --list
+npm run test:e2e:list
 ```
 
 This confirms that Playwright can load the configuration and discover the tests. It does not execute the tests or require Sitecore credentials.

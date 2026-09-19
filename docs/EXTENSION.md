@@ -32,10 +32,12 @@ After changing source files, run `npm run build:extension`, then select **Reload
 
 ## Source Layout
 
-- `src/extension/`: content-script and background-script source.
-- `src/features/`: Fobles feature implementations.
-- `src/styles/`: Sass source for the extension stylesheet.
-- `src/extension/`: maintained manifest, options, popup, and entrypoint assets.
+- `src/content/`: content-script source (injected into Sitecore pages), including its own `features/`, `styles/`, and `toolbar/`.
+- `src/background/`: MV3 service worker source.
+- `src/options/`: "Additional Settings" page logic.
+- `src/popup/`: toolbar-icon popup logic.
+- `src/shared/`: code used by more than one surface.
+- `src/public/`: maintained manifest, options/popup HTML shells, and icon asset.
 - `dist/unpacked/`: generated browser package loaded by the browser.
 - `tests/e2e/`: Playwright browser integration tests.
 

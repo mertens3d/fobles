@@ -8,8 +8,8 @@
 - [ ] Add a release packaging command that creates a store-ready archive from `dist/unpacked/` into `dist/packed/`.
 - [ ] Define the release process for version updates, Git tags, and GitHub Releases.
 - [ ] Decide how unpacked development settings should migrate to the eventual store extension ID.
-- [ ] Investigate the circular import between `src/features/quick-menu` and `src/features/proxy-buttons` (`quick-menu` imports `setProxyButtonsVisible` from `proxy-buttons`, which imports `setQuickMenuVisible` from `quick-menu`). Works today but is fragile under refactors and blocks tree-shaking/isolated testing.
-- [ ] `src/extension/toolbar/elements.ts`, `handlers.ts`, and `index.ts` import `quick-menu` and `proxy-buttons` directly, tightly coupling the generic toolbar shell to two specific feature implementations. Best-practice suggestion: define a small shared "togglable panel" interface (e.g. `{ isPinned, isVisible, setVisible, setPinned }`) that `quick-menu`/`proxy-buttons` implement, and have the toolbar shell depend on that interface/registry instead of importing the concrete features directly.
+- [ ] Investigate the circular import between `src/content/features/quick-menu` and `src/content/features/proxy-buttons` (`quick-menu` imports `setProxyButtonsVisible` from `proxy-buttons`, which imports `setQuickMenuVisible` from `quick-menu`). Works today but is fragile under refactors and blocks tree-shaking/isolated testing.
+- [ ] `src/content/toolbar/elements.ts`, `handlers.ts`, and `index.ts` import `quick-menu` and `proxy-buttons` directly, tightly coupling the generic toolbar shell to two specific feature implementations. Best-practice suggestion: define a small shared "togglable panel" interface (e.g. `{ isPinned, isVisible, setVisible, setPinned }`) that `quick-menu`/`proxy-buttons` implement, and have the toolbar shell depend on that interface/registry instead of importing the concrete features directly.
 
 ## Known Limitations
 

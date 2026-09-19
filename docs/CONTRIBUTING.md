@@ -17,7 +17,7 @@ Load `dist/unpacked/` as an unpacked extension in Edge or Chrome when testing br
 npm run check:node
 npm run typecheck:extension
 npm run build:extension
-npm run test:e2e -- --project=edge --list
+npm run test:e2e:list
 ```
 
 Authenticated Sitecore E2E tests require access to a Sitecore environment and must use local, uncommitted configuration. Do not add real endpoints, credentials, cookies, authentication state, browser profiles, logs, or test artifacts to a pull request.
