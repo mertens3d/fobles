@@ -9,21 +9,21 @@ import { MESSAGE, STORAGE } from "../shared/constants";
 import { SITECORE } from "./sitecore";
 import type { ToolbarPlacement } from "./toolbar.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";
+import { getDebugSettings } from "../shared/storage/debug-settings";
 import {
-  getDebugSettings,
   getFoblesNavPlacement,
-  getFoblesNavVisible,
   getSelectRenderingFoblesNavPlacement,
   setFoblesNavPlacement,
   setSelectRenderingFoblesNavPlacement,
-} from "./storage";
-import { getFoblesState, setFoblesState as setPersistedFoblesState } from "./state";
+} from "../shared/storage/toolbar-placement";
+import { getFoblesNavVisible } from "../shared/storage/nav-settings";
+import { getFoblesState, setFoblesState as setPersistedFoblesState } from "../shared/storage/fobles-state";
 import type { MessageRequest } from "./content.types";
 import {
   isKickUsersPath,
   isMenuPathAllowed,
   isSelectRenderingDialog,
-} from "./menu-path";
+} from "./guard";
 import { resumeKickAllUsers } from "./features/quick-menu";
 import {
   injectToolbar,

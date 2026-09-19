@@ -2,7 +2,7 @@
 import { ATTRIBUTE, SELECTORS } from "../../constants";
 import { SITECORE } from "../../sitecore";
 import { extensionLog } from "../../logger";
-import { isMenuOwnedFrame } from "../../menu-path";
+import { isMenuOwnedFrame } from "../../guard";
 import { FOBLES } from "./constants";
 import { fieldConfigs } from "./_config";
 import type { FoblesConfig, FoblesStrategy } from "./fobles.types";

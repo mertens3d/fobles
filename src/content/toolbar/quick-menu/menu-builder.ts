@@ -11,7 +11,7 @@ import {
   APPLICATION_PAGE_GROUP,
   THIRD_PARTY_GROUP,
   TREE_JUMP_GROUP,
-} from "./menu-groups";
+} from "../../../shared/quick-menu/menu-groups";
 
 function createQuickMenu(doc: Document, closeMenu: () => void): HTMLDivElement {
   const menu = doc.createElement("div");

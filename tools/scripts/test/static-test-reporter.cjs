@@ -4,7 +4,7 @@ const path = require("node:path");
 class StaticTestReporter {
   constructor(options = {}) {
     this.outputFile = path.resolve(
-      options.outputFile ?? path.resolve(__dirname, "../../../test-artifacts/reports/test-report.html"),
+      options.outputFile ?? path.resolve(__dirname, "../../../tests/test-artifacts/reports/test-report.html"),
     );
     this.startedAt = new Date();
     this.results = [];

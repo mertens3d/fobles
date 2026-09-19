@@ -1,7 +1,10 @@
 import { clearFieldError, getElement, requireInput, showFieldError } from "./dom-helpers";
-import type { AiPagesGroup, AiPagesMapping } from "./options.types";
-
-const AI_PAGES_MAPPINGS_KEY = "aiPagesMappings";
+import {
+  getAiPagesMappings,
+  setAiPagesMappings,
+  type AiPagesGroup,
+  type AiPagesMapping,
+} from "../shared/storage/ai-pages-mappings";
 
 const groupsContainer = getElement<HTMLDivElement>("groups");
 const statusMessage = getElement<HTMLParagraphElement>("status");
@@ -127,15 +130,12 @@ export function initAiPagesMappings(): void {
         mappings: readMappings(group),
       }),
     );
-    void chrome.storage.sync.set({ [AI_PAGES_MAPPINGS_KEY]: groups }).then(() => {
+    void setAiPagesMappings(groups).then(() => {
       statusMessage.textContent = "Mappings saved.";
     });
   });
 
-  void chrome.storage.sync.get([AI_PAGES_MAPPINGS_KEY]).then((result) => {
-    const mappings = Array.isArray(result[AI_PAGES_MAPPINGS_KEY])
-      ? result[AI_PAGES_MAPPINGS_KEY]
-      : [];
-    mappings.forEach((group) => addGroup(group));
+  void getAiPagesMappings().then((groups) => {
+    groups.forEach((group) => addGroup(group));
   });
 }

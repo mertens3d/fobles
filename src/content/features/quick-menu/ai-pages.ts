@@ -1,17 +1,10 @@
-import { STORAGE } from "../../../shared/constants";
-import { extractGuid } from "../fobles/shared/guid";
-
-type AiPagesMapping = {
-  contentRoot: string;
-  site: string;
-};
-
-type AiPagesGroup = {
-  mappings: readonly AiPagesMapping[];
-  name: string;
-  organization: string;
-  tenantName: string;
-};
+import { extractGuid } from "../augmentor/shared/guid";
+import {
+  getAiPagesMappings,
+  onAiPagesMappingsChange,
+  type AiPagesGroup,
+  type AiPagesMapping,
+} from "../../../shared/storage/ai-pages-mappings";
 
 type ResolvedAiPagesMapping = AiPagesMapping & Omit<AiPagesGroup, "mappings">;
 
@@ -20,55 +13,12 @@ let aiPagesGroups: readonly AiPagesGroup[] = [];
 const normalizeContentPath = (value: string): string =>
   value.trim().replace(/\/+$/, "").toLowerCase();
 
-const isAiPagesMapping = (value: unknown): value is AiPagesMapping => {
-  if (!value || typeof value !== "object") return false;
-
-  const mapping = value as Record<string, unknown>;
-  return ["contentRoot", "site"].every(
-    (key) => typeof mapping[key] === "string" && mapping[key].trim().length > 0,
-  );
-};
-
-const isAiPagesGroup = (value: unknown): value is AiPagesGroup => {
-  if (!value || typeof value !== "object") return false;
-
-  const group = value as Record<string, unknown>;
-  return (
-    ["name", "organization", "tenantName"].every(
-      (key) => typeof group[key] === "string" && group[key].trim().length > 0,
-    ) &&
-    Array.isArray(group.mappings) &&
-    group.mappings.every(isAiPagesMapping)
-  );
-};
-
-const normalizeAiPagesGroup = (group: AiPagesGroup): AiPagesGroup => ({
-  name: group.name.trim(),
-  organization: group.organization.trim(),
-  tenantName: group.tenantName.trim(),
-  mappings: group.mappings.map((mapping) => ({
-    contentRoot: mapping.contentRoot.trim().replace(/\/+$/, ""),
-    site: mapping.site.trim(),
-  })),
+void getAiPagesMappings().then((groups) => {
+  aiPagesGroups = groups;
 });
 
-const setAiPagesGroups = (value: unknown): void => {
-  aiPagesGroups = Array.isArray(value)
-    ? value.filter(isAiPagesGroup).map(normalizeAiPagesGroup)
-    : [];
-};
-
-void chrome.storage?.sync
-  ?.get([STORAGE.KEY.AI_PAGES_MAPPINGS])
-  .then((result) => {
-    setAiPagesGroups(result[STORAGE.KEY.AI_PAGES_MAPPINGS]);
-  })
-  .catch(() => undefined);
-
-chrome.storage?.onChanged?.addListener((changes, areaName) => {
-  if (areaName === "sync" && STORAGE.KEY.AI_PAGES_MAPPINGS in changes) {
-    setAiPagesGroups(changes[STORAGE.KEY.AI_PAGES_MAPPINGS].newValue);
-  }
+onAiPagesMappingsChange((groups) => {
+  aiPagesGroups = groups;
 });
 
 export const getQuickInfoValue = (

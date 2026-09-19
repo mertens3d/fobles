@@ -1,9 +1,9 @@
 import { SELECTORS } from "../../constants";
 import { SITECORE } from "../../sitecore";
-import { getCurrentItemId } from "./ai-pages";
+import { getCurrentItemId } from "../../features/quick-menu/ai-pages";
 import { joinQuickMenuPath } from "../../../shared/quick-menu/button-settings";
 import { getButtonSetting } from "./button-visibility";
-import type { MenuOption } from "./menu.types";
+import type { MenuOption } from "../../../shared/quick-menu/menu.types";
 
 function getCurrentDatabase(doc: Document): string | null {
   const currentUrl = new URL(

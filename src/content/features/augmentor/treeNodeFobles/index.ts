@@ -1,5 +1,5 @@
 import { extensionLog } from "../../../logger";
-import { isMenuOwnedFrame } from "../../../menu-path";
+import { isMenuOwnedFrame } from "../../../guard";
 import { SITECORE } from "../../../sitecore";
 import { FOBLES } from "../constants";
 import {

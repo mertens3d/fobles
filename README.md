@@ -52,7 +52,7 @@ npm run test:e2e
 npm run test:e2e:debug
 ```
 
-`test:e2e:login` opens a browser for manual Sitecore login and saves the local persistent profile under `test-artifacts/`.
+`test:e2e:login` opens a browser for manual Sitecore login and saves the local persistent profile under `tests/test-artifacts/`.
 
 To verify Playwright configuration and test discovery without opening a browser or contacting Sitecore:
 
@@ -76,12 +76,16 @@ See [docs/TODO.md](docs/TODO.md) for deferred release, security, packaging, and 
 
 ```text
 src/                 TypeScript and Sass source
-  extension/         Maintained manifest, options, popup, and extension source
-tests/               Playwright test source and configuration
+  content/           Content script: features/, styles/, toolbar/
+  background/        MV3 service worker
+  options/           "Additional Settings" page logic
+  popup/             Toolbar-icon popup logic
+  shared/            Cross-surface code (content/ and options/)
+  public/            Maintained manifest, HTML shells, icon
+tests/               Playwright test source, configuration, and test-artifacts/
 tools/scripts/       Build, development, and test helpers
 dist/unpacked/       Generated browser-loadable extension
 dist/packed/         Reserved for future release packages
-test-artifacts/      Ignored local test output
 docs/                Extended documentation
 ```
 

@@ -3,9 +3,9 @@ import type { ToolbarPlacement } from "../toolbar.types";
 import {
   isPowerShellIsePath,
   isSelectRenderingDialog,
-} from "../menu-path";
-import { setQuickMenuVisible } from "../features/quick-menu";
-import { setProxyButtonsVisible } from "../features/proxy-buttons";
+} from "../guard";
+import { setQuickMenuVisible } from "./quick-menu";
+import { setProxyButtonsVisible } from "./proxy-buttons";
 import {
   createFeatureButton,
   createProxyButtonsTrigger,

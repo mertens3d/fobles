@@ -1,4 +1,5 @@
 import { STORAGE } from "../constants";
+import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
 import type { QuickMenuButtonSetting, QuickMenuButtonSettings } from "./quick-menu.types";
 
 export type { QuickMenuButtonSetting, QuickMenuButtonSettings } from "./quick-menu.types";
@@ -52,36 +53,22 @@ function normalizeQuickMenuButtonSettings(value: unknown): QuickMenuButtonSettin
 }
 
 export async function getQuickMenuButtonSettings(): Promise<QuickMenuButtonSettings> {
-  try {
-    const storage = chrome.storage?.sync;
-    if (!storage) return {};
-
-    const result = await storage.get([STORAGE.KEY.QUICK_MENU_BUTTON_SETTINGS]);
-    return normalizeQuickMenuButtonSettings(result[STORAGE.KEY.QUICK_MENU_BUTTON_SETTINGS]);
-  } catch {
-    return {};
-  }
+  const result = await getStorageValue([STORAGE.KEY.QUICK_MENU_BUTTON_SETTINGS]);
+  return normalizeQuickMenuButtonSettings(result[STORAGE.KEY.QUICK_MENU_BUTTON_SETTINGS]);
 }
 
 export async function setQuickMenuButtonSettings(
   settings: QuickMenuButtonSettings,
 ): Promise<void> {
-  try {
-    await chrome.storage?.sync?.set({
-      [STORAGE.KEY.QUICK_MENU_BUTTON_SETTINGS]: settings,
-    });
-  } catch {
-    // The content script can outlive a reloaded extension context.
-  }
+  await setStorageValue({
+    [STORAGE.KEY.QUICK_MENU_BUTTON_SETTINGS]: settings,
+  });
 }
 
 export function onQuickMenuButtonSettingsChanged(
   callback: (settings: QuickMenuButtonSettings) => void,
 ): void {
-  chrome.storage?.onChanged?.addListener((changes, areaName) => {
-    if (areaName !== "sync") return;
-    if (!(STORAGE.KEY.QUICK_MENU_BUTTON_SETTINGS in changes)) return;
-
-    callback(normalizeQuickMenuButtonSettings(changes[STORAGE.KEY.QUICK_MENU_BUTTON_SETTINGS].newValue));
+  onStorageChange(STORAGE.KEY.QUICK_MENU_BUTTON_SETTINGS, (newValue) => {
+    callback(normalizeQuickMenuButtonSettings(newValue));
   });
 }

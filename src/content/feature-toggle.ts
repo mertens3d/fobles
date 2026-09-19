@@ -1,6 +1,6 @@
-import { clearTreeButtons, toggleTreeButtons as toggleTreeButtonsFeature } from "./features/fobles/treeNodeFobles/index";
-import { clearFobles, setFoblesDismissHandler, triggerFobles } from "./features/fobles";
-import { setAfterFoblesNavigationHandler } from "./features/fobles/helper";
+import { clearTreeButtons, toggleTreeButtons as toggleTreeButtonsFeature } from "./features/augmentor/treeNodeFobles/index";
+import { clearFobles, setFoblesDismissHandler, triggerFobles } from "./features/augmentor";
+import { setAfterFoblesNavigationHandler } from "./features/augmentor/helper";
 
 let lightningBoltActive = false;
 let foblesActive = false;

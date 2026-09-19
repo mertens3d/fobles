@@ -1,6 +1,6 @@
 import { CLASS } from "../../constants";
 import { createMenuGroup } from "./group-builder";
-import type { MenuGroup } from "./menu.types";
+import type { MenuGroup } from "../../../shared/quick-menu/menu.types";
 
 export function createMenuColumn(
   doc: Document,

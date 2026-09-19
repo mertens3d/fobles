@@ -10,11 +10,11 @@ import { SITECORE } from "../sitecore";
 import {
   openQuickMenuOnHover,
   scheduleCloseQuickMenuOnHover,
-} from "../features/quick-menu";
+} from "./quick-menu";
 import {
   openProxyButtonsOnHover,
   scheduleCloseProxyButtonsOnHover,
-} from "../features/proxy-buttons";
+} from "./proxy-buttons";
 import { toggleProxyButtons, toggleQuickMenu } from "./handlers";
 import type { ToolbarContext } from "./types";
 

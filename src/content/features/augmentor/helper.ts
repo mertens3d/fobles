@@ -3,7 +3,7 @@ import {
   getFoblesNavWarningVisible,
   getTurnOffFoblesAfterNavigation,
   setFoblesNavWarningVisible,
-} from "../../storage";
+} from "../../../shared/storage/nav-settings";
 import { FOBLES } from "./constants";
 import { attachFoblesTooltip, hideFoblesTooltip } from "./shared/fobles-tooltip";
 import { isGuidLike, stripGuidBraces } from "./shared/guid";

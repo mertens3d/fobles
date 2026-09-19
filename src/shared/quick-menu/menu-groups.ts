@@ -1,8 +1,8 @@
-import { TEXT } from "../../constants";
-import { SITECORE } from "../../sitecore";
-import { openAiPages } from "./ai-pages";
-import { kickAllUsers } from "./kick-users";
-import { QUICK_MENU_BUTTON_ID } from "../../../shared/quick-menu/button-ids";
+import { TEXT } from "../../content/constants";
+import { SITECORE } from "../../content/sitecore";
+import { openAiPages } from "../../content/features/quick-menu/ai-pages";
+import { kickAllUsers } from "../../content/features/quick-menu/kick-users";
+import { QUICK_MENU_BUTTON_ID } from "./button-ids";
 import type { MenuGroup } from "./menu.types";
 
 const KICK_USER_ICON = "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png";

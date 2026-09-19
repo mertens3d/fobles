@@ -1,10 +1,10 @@
-import { ATTRIBUTE, CLASS, SELECTORS } from "../../constants";
-import { extensionLog } from "../../logger";
-import { setQuickMenuVisible } from "../quick-menu";
+import { ATTRIBUTE, CLASS, SELECTORS } from "../constants";
+import { extensionLog } from "../logger";
+import { findRibbonCheckbox, postSitecoreEvent } from "../features/augmentor/proxy-buttons-ribbon";
+import { setQuickMenuVisible } from "./quick-menu";
 
-// Proxy Buttons mirror a real Sitecore ribbon checkbox and proxy clicks to it. The ribbon
-// checkbox stays the source of truth. These live in the main toolbar menu (not the editor
-// header) since the editor header gets redrawn every time a tree item is picked.
+// These live in the main toolbar menu (not the editor header) since the editor header
+// gets redrawn every time a tree item is picked.
 const PROXY_BUTTONS = [
   {
     checkboxId: "Check_BC29C1D329FB74DA585083FEC2AF3A81D",
@@ -19,46 +19,6 @@ const PROXY_BUTTONS = [
     label: "Raw Values",
   },
 ] as const;
-
-const findRibbonCheckbox = (
-  doc: Document,
-  checkboxId: string,
-): HTMLInputElement | null => {
-  const checkbox = doc.getElementById(checkboxId) as HTMLInputElement | null;
-  if (checkbox) return checkbox;
-
-  for (const frame of Array.from(doc.querySelectorAll("iframe, frame"))) {
-    try {
-      const frameDoc = (frame as HTMLIFrameElement | HTMLFrameElement)
-        .contentDocument;
-      if (!frameDoc) continue;
-
-      const frameCheckbox = findRibbonCheckbox(frameDoc, checkboxId);
-      if (frameCheckbox) return frameCheckbox;
-    } catch {
-      // Ignore inaccessible cross-origin frames.
-    }
-  }
-
-  return null;
-};
-
-const postSitecoreEvent = (doc: Document, eventName: string): boolean => {
-  const host = doc.body;
-  if (!host) return false;
-
-  const trigger = doc.createElement("button");
-  trigger.type = "button";
-  trigger.hidden = true;
-  trigger.setAttribute(
-    "onclick",
-    `if (typeof scForm !== 'undefined') { return scForm.postEvent(this, event, '${eventName}'); }`,
-  );
-  host.appendChild(trigger);
-  trigger.click();
-  trigger.remove();
-  return true;
-};
 
 const createProxyButton = (
   doc: Document,
@@ -210,4 +170,3 @@ export function openProxyButtonsOnHover(doc: Document): void {
 export function scheduleCloseProxyButtonsOnHover(doc: Document): void {
   scheduleProxyButtonsClose(doc);
 }
-

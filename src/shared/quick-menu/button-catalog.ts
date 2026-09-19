@@ -5,8 +5,8 @@ import {
   APPLICATION_PAGE_GROUP,
   THIRD_PARTY_GROUP,
   TREE_JUMP_GROUP,
-} from "../../content/features/quick-menu/menu-groups";
-import type { MenuGroup } from "../../content/features/quick-menu/menu.types";
+} from "./menu-groups";
+import type { MenuGroup } from "./menu.types";
 import type { QuickMenuButtonDescriptor } from "./quick-menu.types";
 
 export type { QuickMenuButtonDescriptor } from "./quick-menu.types";

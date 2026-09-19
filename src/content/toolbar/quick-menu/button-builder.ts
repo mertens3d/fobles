@@ -1,8 +1,8 @@
 import { ATTRIBUTE, CLASS } from "../../constants";
-import { createFoblesButton } from "../fobles/helper";
+import { createFoblesButton } from "../../features/augmentor/helper";
 import { buildMenuOptionUrl } from "./menu-option-url";
 import { registerButtonRow } from "./button-visibility";
-import type { MenuOption } from "./menu.types";
+import type { MenuOption } from "../../../shared/quick-menu/menu.types";
 
 function addIcon(doc: Document, button: HTMLButtonElement, option: MenuOption): void {
   const iconBox = doc.createElement("span");

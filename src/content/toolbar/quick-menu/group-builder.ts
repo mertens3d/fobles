@@ -1,6 +1,6 @@
 import { CLASS } from "../../constants";
 import { createMenuOptionRow } from "./button-builder";
-import type { MenuGroup } from "./menu.types";
+import type { MenuGroup } from "../../../shared/quick-menu/menu.types";
 
 export function createMenuGroup(
   doc: Document,

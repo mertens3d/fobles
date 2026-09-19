@@ -2,12 +2,12 @@ import {
   isQuickMenuPinned,
   setQuickMenuPinned,
   setQuickMenuVisible,
-} from "../features/quick-menu";
+} from "./quick-menu";
 import {
   isProxyButtonsPinned,
   setProxyButtonsPinned,
   setProxyButtonsVisible,
-} from "../features/proxy-buttons";
+} from "./proxy-buttons";
 import type { ToolbarContext } from "./types";
 
 export function toggleQuickMenu(context: ToolbarContext): void {

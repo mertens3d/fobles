@@ -11,7 +11,7 @@ import { installConsoleLogging, logDiagnostic } from "./logging";
 
 const profileDir = path.resolve(
   process.env.PLAYWRIGHT_PROFILE_DIR ??
-    "./test-artifacts/browser-profile",
+    "./tests/test-artifacts/browser-profile",
 );
 const extensionPath = path.resolve("./dist/unpacked");
 

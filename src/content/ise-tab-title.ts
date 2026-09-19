@@ -1,5 +1,5 @@
 import { SITECORE } from "./sitecore";
-import { isPowerShellIsePath } from "./menu-path";
+import { isPowerShellIsePath } from "./guard";
 
 function getPowerShellIseScriptTitle(): string | null {
   const scriptName = document
