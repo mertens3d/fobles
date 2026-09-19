@@ -11,6 +11,8 @@
 - [ ] Investigate the circular import between `src/content/toolbar/quick-menu` and `src/content/toolbar/proxy-buttons.ts` (`quick-menu` imports `setProxyButtonsVisible` from `proxy-buttons.ts`, which imports `setQuickMenuVisible` from `quick-menu`). Works today but is fragile under refactors and blocks tree-shaking/isolated testing.
 - [ ] `src/content/features/quick-menu/kick-users.ts` and `ai-pages.ts` are organizational anomalies: they're non-UI command/action logic that doesn't fit `toolbar/` (rendering-only) or `features/augmentor/` (Sitecore-page-manipulation commands) cleanly. Likely belong in `augmentor/` once revisited, since they do manipulate the real Sitecore page (kicking users, reading item info) - just not yet moved there.
 - [ ] `toggleTreeButtons` in `src/content/features/augmentor/treeNodeFobles/index.ts` nests 6 function declarations (~150 lines) inside one outer function. Hoist them to module-level functions (parameterizing on `buttonClass` where needed) so the real dispatch logic (existing buttons? clear : walk) isn't buried after the helpers, and so each helper can be tested/read in isolation.
+- [ ] `Strategy General Link Anchor` field (authoring/items-folbles, `/sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy general link`) has no value yet - `Internal`/`External`/`Media`/`Email`/`JavaScript` are all confirmed real values now. Set it via Content Editor's real "Insert Anchor" dialog and `ser pull`.
+- [ ] `Strategy Image Content Hub` field has no value yet - waiting on a real Content Hub link to test against.
 
 ## Known Limitations
 

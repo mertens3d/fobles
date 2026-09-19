@@ -4,18 +4,15 @@ import {
   type QuickMenuButtonSetting,
   type QuickMenuButtonSettings,
 } from "../../../shared/quick-menu/button-settings";
+import { FOBLES } from "../../features/augmentor/constants";
 
 let buttonSettings: QuickMenuButtonSettings = {};
 const registeredRows: Array<{ id: string; row: HTMLElement }> = [];
 
-// The row's "display: flex !important" rule outranks the `hidden` attribute's UA style,
-// so disabled rows must be hidden via an inline !important override instead.
+// Reuses the existing .fobles-hidden class instead of a hand-rolled !important override,
+// since it already beats the row's own "display: flex !important" rule.
 const setRowVisibility = (row: HTMLElement, visible: boolean): void => {
-  if (visible) {
-    row.style.removeProperty("display");
-  } else {
-    row.style.setProperty("display", "none", "important");
-  }
+  row.classList.toggle(FOBLES.CLASSES.HIDDEN, !visible);
 };
 
 const applyQuickMenuButtonSettings = (): void => {

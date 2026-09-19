@@ -1,0 +1,40 @@
+﻿---
+ID: "25fb9977-cc90-4e3c-b036-cafaae676303"
+Parent: "b9f711a4-10ff-419e-af9a-be9e6c360a8b"
+Template: "d8301749-35ef-4a9b-b76e-eacd63a421c5"
+Path: /sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy droplink
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260919T151806Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "33851c63-8a97-4591-85e3-ce2f837a5a00"
+    - ID: "b7eb4d91-d54f-497e-80bf-2850da6a54fe"
+      Hint: Strategy DropLink 3x
+      Value: "{3E40ED84-1411-4FF7-ABEE-344415A6DB8E}"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "c9f6fc88-25fa-406c-a4b3-486841e070fd"
+      Hint: Strategy DropLink 1x
+      Value: "{2CAAAD6C-31B1-4672-9576-C408177DC2DB}"
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260919T153321Z
+    - ID: "e99b8e3c-3d48-4ef7-9eda-773d7a5e70b0"
+      Hint: Strategy DropLink 10x
+      Value: "{F85C032D-AC21-4085-915D-12968F04497A}"

@@ -1,0 +1,703 @@
+﻿# Do not commit this file to source control or modify it. It is safe to delete; it will recreate itself.
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplink.yml
+ID: "d8301749-35ef-4a9b-b76e-eacd63a421c5"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplink
+Signature: MM78lhGGpmv1BG1DNuqQZU9vM0IL6YzDaPQoL9iHBZk=
+Modified: 639254294924923380
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Image\Strategy Image.yml
+ID: "7b8c9d0e-1f2a-4b3c-8d4e-5f6a7b8c9d03"
+Parent: "6a7b8c9d-0e1f-4a2b-8c3d-4e5f6a7b8c92"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Image/Strategy Image
+Signature: rSH1Ezgyjj1M0IlHwv/X2sOqCoNlFmCpwGFvMMcyCw0=
+Modified: 639254328956067454
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Treelist Ex\Strategy Treelist Ex\Strategy Treelist Ex 1x.yml
+ID: "a621be4e-5465-4d81-8e92-b3c4d5e6f708"
+Parent: "84091c2c-3243-4b6f-8c70-91a2b3c4d5e6"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Treelist Ex/Strategy Treelist Ex/Strategy Treelist Ex 1x
+Signature: uc6ZBqgPV7x0WGO6j9L+osupwhGRnKxg/Dmm9eheDZ0=
+Modified: 639254331857372473
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplink\Strategy Droplink\Strategy DropLink 10x.yml
+ID: "e99b8e3c-3d48-4ef7-9eda-773d7a5e70b0"
+Parent: "7b54ca73-60d1-4df8-a171-6850dd217831"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplink/Strategy Droplink/Strategy DropLink 10x
+Signature: BhIkr2Ytjz35UOD9llxFiICr3R9ep27O7990YqUsHQ0=
+Modified: 639254294924944195
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Fobles Data Item.yml
+ID: "0e2e40ba-308c-4484-a31a-bfd647d78312"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Fobles Data Item
+Signature: UuPrDOVxjXXhwZh6wmcNo1QpbkKtAVak/Wcu7BgdBG4=
+Modified: 639254289495643768
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplink\Strategy Droplink\Strategy DropLink 3x.yml
+ID: "b7eb4d91-d54f-497e-80bf-2850da6a54fe"
+Parent: "7b54ca73-60d1-4df8-a171-6850dd217831"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplink/Strategy Droplink/Strategy DropLink 3x
+Signature: U7owf4NxeFiA1nu6b7oY5bogRzEd+bsWyak99p89ehw=
+Modified: 639254294924955382
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Internal Link\Strategy Internal Link.yml
+ID: "2b3c4d5e-6f70-4b81-8c92-a3b4c5d6e7f8"
+Parent: "1a2b3c4d-5e6f-4a70-8b81-92a3b4c5d6e7"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Internal Link/Strategy Internal Link
+Signature: Q+VMmg6KLiiFruPs0yuUKsLiYtulMQAfIw5yuSt/3Zs=
+Modified: 639254328956017732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist\Strategy Multilist\Strategy Multilist 10x.yml
+ID: "60718293-a4b5-4fc6-8ad7-e8f90a1b2c3d"
+Parent: "2c3d4e5f-6071-4b82-8c93-a4b5c6d7e8f9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist/Strategy Multilist/Strategy Multilist 10x
+Signature: uM3JOL5GfLpa1nPa9TICo3qULnianeZUshmfbUYfpqw=
+Modified: 639254328956104610
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist\Strategy Multilist.yml
+ID: "2c3d4e5f-6071-4b82-8c93-a4b5c6d7e8f9"
+Parent: "1b2c3d4e-5f60-4a71-8b82-93a4b5c6d7e8"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist/Strategy Multilist
+Signature: nlDTF2Q5TBaKsVLCR1bdapTd4GMuGJv4LHZrpjAhpZk=
+Modified: 639254328956092655
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist Search\Strategy Multilist Search.yml
+ID: "3e4f6071-8293-4ba4-8cb5-c6d7e8f92a3b"
+Parent: "2d3e4f60-7182-4a93-8ba4-b5c6d7e8f92a"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist Search/Strategy Multilist Search
+Signature: btdoCtGNqj9S3J3dIgRCaGwH3DL0WoRjzXD0k9+cJS0=
+Modified: 639254330165896117
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tag List\Strategy Tag List.yml
+ID: "c3d4e5f6-7081-4b92-8ca3-3d4e5f607182"
+Parent: "b2c3d4e5-6f70-4a81-8b92-2c3d4e5f6071"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tag List/Strategy Tag List
+Signature: 0VYtEv/BAkOSDo8pYFZ8lq2JBN+sV6hpMgPmMbJe8FM=
+Modified: 639254330742710905
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tree List\Strategy Tree List.yml
+ID: "a6213c4d-5465-4d70-8e81-1b2c3d4e5f60"
+Parent: "95102b3c-4354-4c6f-8d70-0a1b2c3d4e5f"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tree List/Strategy Tree List
+Signature: +/ic4YCbwk+UDNNGk1S7f2We2B4u7AIPQsR8dhov8WU=
+Modified: 639254331321301447
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Treelist Ex\Strategy Treelist Ex.yml
+ID: "84091c2c-3243-4b6f-8c70-91a2b3c4d5e6"
+Parent: "73f8091b-2132-4a5e-8b6f-8091a2b3c4d5"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Treelist Ex/Strategy Treelist Ex
+Signature: p4fI/plTmDfS9g7plABAbNcTBtnsXausauv7USf3Dsw=
+Modified: 639254331853598252
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Fobles Data Item\Data Value\Title.yml
+ID: "c059f47a-6cf1-427c-ace5-fe3b78efb888"
+Parent: "8c3be2eb-b202-4b88-b685-53293f11b225"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Fobles Data Item/Data Value/Title
+Signature: 8/9NMJHaDHUfgnyBiaYDca998Al9ffRh5osYTy80cds=
+Modified: 639254289495747338
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplist.yml
+ID: "3f5a1e2d-7b4c-4a91-9d3e-6c8f0a1b2c3d"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplist
+Signature: 2G+7Wik7bexJ8cOufYgJOBhXr3HiDuOMYPuN9U794EY=
+Modified: 639254301613935272
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droptree.yml
+ID: "1e2f3a4b-5c6d-4e7f-8a9b-0c1d2e3f4a5b"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droptree
+Signature: 3toF3sjSaCPk55sT75ZLbAFzlU5E9sKubPYAfeGuq1E=
+Modified: 639254308961629924
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy File.yml
+ID: "4a5b6c7d-8e9f-4a0b-8c1d-2e3f4a5b6c7e"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy File
+Signature: XnKVUqwFRE8k42i/glrGlaqdSu2FLswPaF9H4uaPnf4=
+Modified: 639254311410940163
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy General Link.yml
+ID: "e4f5a6b7-c8d9-4e0f-8a1b-c2d3e4f5a6b8"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy General Link
+Signature: vVpcG/sJ70rezhbogyYshg7ZGAqDHef017nWMDLTY2w=
+Modified: 639254321826938428
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Icon.yml
+ID: "a4b5c6d7-e8f9-4a0b-8c1d-2e3f4a5b6c7f"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Icon
+Signature: 6HxxQwSrZINAiL4Z7kQI+BP03awA4EZGC8im80/k7IQ=
+Modified: 639254328956017732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Image.yml
+ID: "6a7b8c9d-0e1f-4a2b-8c3d-4e5f6a7b8c92"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Image
+Signature: lJ4IOZJTPTiw5cJWskXlloD/YYx29FsLghGNuPxgBYc=
+Modified: 639254328956067454
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Internal Link.yml
+ID: "1a2b3c4d-5e6f-4a70-8b81-92a3b4c5d6e7"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Internal Link
+Signature: mWiGKCgh8uJVc6XtpCZmG5BKGy/RmlQSHCopzB/zazY=
+Modified: 639254328956017732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist Search.yml
+ID: "2d3e4f60-7182-4a93-8ba4-b5c6d7e8f92a"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist Search
+Signature: FKgfYeEBix9O7sA3ZIaMI3wfbYpO0izh8KPpG/z4mDw=
+Modified: 639254330163322475
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist.yml
+ID: "1b2c3d4e-5f60-4a71-8b82-93a4b5c6d7e8"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist
+Signature: nFm/2ARzlHuUB6Wwa3nhQfkAMKQ1vZ8yqbDfO+gXUk0=
+Modified: 639254328956092655
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tag List.yml
+ID: "b2c3d4e5-6f70-4a81-8b92-2c3d4e5f6071"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tag List
+Signature: kC19wo7Q0zWcKlktO4Y9aohLV9xUTCPqK2uQZsq7cgg=
+Modified: 639254330740040206
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droptree\Strategy Droptree\Strategy DropTree 1x.yml
+ID: "7e8f9a0b-1c2d-4e3f-8a4b-6c7d8e9fa0b1"
+Parent: "3a4b5c6d-7e8f-4a9b-8c0d-2e3f4a5b6c7d"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droptree/Strategy Droptree/Strategy DropTree 1x
+Signature: yWWE1DkHeNcqPnKusuDwuROnqlFShDKKWey4Np/Ht6c=
+Modified: 639254308961639937
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy General Link\Strategy General Link\Strategy General Link Anchor.yml
+ID: "b8c9d0e1-f2a3-4b4c-8d5e-f6a7b8c9d0e2"
+Parent: "f5a6b7c8-d9e0-4f1a-8b2c-d3e4f5a6b7c9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy General Link/Strategy General Link/Strategy General Link Anchor
+Signature: qD5u5V6hvxllPAhQ1ZJ35t7P95VhW/HFMN1VHQnCSbE=
+Modified: 639254328956017732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy General Link\Strategy General Link\Strategy General Link Empty.yml
+ID: "a6b7c8d9-e0f1-4a2b-8c3d-e4f5a6b7c8d0"
+Parent: "f5a6b7c8-d9e0-4f1a-8b2c-d3e4f5a6b7c9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy General Link/Strategy General Link/Strategy General Link Empty
+Signature: t3FexzHhutfwR33pbM+HwItmAFDSjWJY+N64culTlUo=
+Modified: 639254321826938428
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy General Link\Strategy General Link\Strategy General Link External.yml
+ID: "d4e5f6a7-b8c9-4d0e-8f1a-b2c3d4e5f6a8"
+Parent: "f5a6b7c8-d9e0-4f1a-8b2c-d3e4f5a6b7c9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy General Link/Strategy General Link/Strategy General Link External
+Signature: 2b5nNRwGc4GPH97uo2OWnE3xbt710N69f8MgcjiOjPs=
+Modified: 639254328956017732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy General Link\Strategy General Link\Strategy General Link JavaScript.yml
+ID: "f2a3b4c5-d6e7-4f8a-8b9c-d0e1f2a3b4c6"
+Parent: "f5a6b7c8-d9e0-4f1a-8b2c-d3e4f5a6b7c9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy General Link/Strategy General Link/Strategy General Link JavaScript
+Signature: W43+Brk1H2lUkxkZ9QepUW1njEfMfdyjVRKrgTZ2O/o=
+Modified: 639254328956017732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Icon\Strategy Icon\Strategy Icon Empty.yml
+ID: "c6d7e8f9-a0b1-4c2d-8e3f-4a5b6c7d8e9b"
+Parent: "b5c6d7e8-f9a0-4b1c-8d2e-3f4a5b6c7d8a"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Icon/Strategy Icon/Strategy Icon Empty
+Signature: BQozCLkIk5FJXshyZgYvK7hhEnO7S0WqYdKGD/EnYtI=
+Modified: 639254328956017732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Icon\Strategy Icon\Strategy Icon Set.yml
+ID: "d7e8f9a0-b1c2-4d3e-8f4a-5b6c7d8e9f0c"
+Parent: "b5c6d7e8-f9a0-4b1c-8d2e-3f4a5b6c7d8a"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Icon/Strategy Icon/Strategy Icon Set
+Signature: 73EeIEo0QuKzOA/uTPG6Z1KMV0F6lYbD2/I5VNG7hqo=
+Modified: 639254328956017732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Image\Strategy Image\Strategy Image Content Hub.yml
+ID: "1e2f3a4c-5b6d-4e7f-8a9b-0c1d2e3f4a60"
+Parent: "7b8c9d0e-1f2a-4b3c-8d4e-5f6a7b8c9d03"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Image/Strategy Image/Strategy Image Content Hub
+Signature: BZdnVbFbWRqnIT6ELedeFQMkCgfiSaO5AerPsr2wXps=
+Modified: 639254336917317085
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Image\Strategy Image\Strategy Image Empty.yml
+ID: "8c9d0e1f-2a3b-4c4d-8e5f-6a7b8c9d0e14"
+Parent: "7b8c9d0e-1f2a-4b3c-8d4e-5f6a7b8c9d03"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Image/Strategy Image/Strategy Image Empty
+Signature: AIqdeAvDs2Py9GeMuOKOdu+M/c++BGfN14ZA564lkb0=
+Modified: 639254328956067454
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Image\Strategy Image\Strategy Image Set.yml
+ID: "9d0e1f2a-3b4c-4d5e-8f6a-7b8c9d0e1f25"
+Parent: "7b8c9d0e-1f2a-4b3c-8d4e-5f6a7b8c9d03"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Image/Strategy Image/Strategy Image Set
+Signature: PKkfYQewK5R7loYXXxycnpUBGKsi1CAFrnav8p1akRo=
+Modified: 639254328956092655
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Internal Link\Strategy Internal Link\Strategy Internal Link Empty.yml
+ID: "3c4d5e6f-7081-4c92-8da3-b4c5d6e7f809"
+Parent: "2b3c4d5e-6f70-4b81-8c92-a3b4c5d6e7f8"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Internal Link/Strategy Internal Link/Strategy Internal Link Empty
+Signature: zAZYq6236AZEsGBJ9bBpK3A7/0WEDkWLkkRsurwztCY=
+Modified: 639254328956067454
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Internal Link\Strategy Internal Link\Strategy Internal Link Set.yml
+ID: "4d5e6f70-8192-4da3-8eb4-c5d6e7f8091a"
+Parent: "2b3c4d5e-6f70-4b81-8c92-a3b4c5d6e7f8"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Internal Link/Strategy Internal Link/Strategy Internal Link Set
+Signature: GE7OhCzHOrwJGFnbEi2qP/ZLV2ulEkh60njmFBhnulA=
+Modified: 639254328956067454
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist\Strategy Multilist\Strategy Multilist 0x.yml
+ID: "3d4e5f60-7182-4c93-8da4-b5c6d7e8f90a"
+Parent: "2c3d4e5f-6071-4b82-8c93-a4b5c6d7e8f9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist/Strategy Multilist/Strategy Multilist 0x
+Signature: KEI8uyK53OrGblm8pQ+Vl4bUBwgm43Fk8nR5zPvCfH0=
+Modified: 639254328956092655
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist\Strategy Multilist\Strategy Multilist 1x.yml
+ID: "4e5f6071-8293-4da4-8eb5-c6d7e8f90a1b"
+Parent: "2c3d4e5f-6071-4b82-8c93-a4b5c6d7e8f9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist/Strategy Multilist/Strategy Multilist 1x
+Signature: 2vptLXABxe3Hu2+rt0Ebfz05Zlp6hv1mSEzdIdroSvs=
+Modified: 639254328956104610
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist\Strategy Multilist\Strategy Multilist 3x.yml
+ID: "5f607182-93a4-4eb5-8fc6-d7e8f90a1b2c"
+Parent: "2c3d4e5f-6071-4b82-8c93-a4b5c6d7e8f9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist/Strategy Multilist/Strategy Multilist 3x
+Signature: xNsWtLsO/WhQmBu/GYy1pzI7OMoPNFoVQAOaks7sOro=
+Modified: 639254328956104610
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist Search\Strategy Multilist Search\Strategy Multilist Search 0x.yml
+ID: "4f607182-93a4-4cb5-8dc6-d7e8f92a3b4c"
+Parent: "3e4f6071-8293-4ba4-8cb5-c6d7e8f92a3b"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist Search/Strategy Multilist Search/Strategy Multilist Search 0x
+Signature: MEV5ywwqVqDqoMmt50xEUjXAW1K0dn7jPK5ZCyiWbM0=
+Modified: 639254330167918169
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist Search\Strategy Multilist Search\Strategy Multilist Search 10x.yml
+ID: "82930415-c6d7-4fe8-8af9-92a3b4c5d6e7"
+Parent: "3e4f6071-8293-4ba4-8cb5-c6d7e8f92a3b"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist Search/Strategy Multilist Search/Strategy Multilist Search 10x
+Signature: Mrz1u+qTt4MFJMqEkLBsLxMIuAWQsWfMlBNvxUhmYoM=
+Modified: 639254330174491700
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist Search\Strategy Multilist Search\Strategy Multilist Search 1x.yml
+ID: "60718293-a4b5-4dc6-8ed7-e8f92a3b4c5d"
+Parent: "3e4f6071-8293-4ba4-8cb5-c6d7e8f92a3b"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist Search/Strategy Multilist Search/Strategy Multilist Search 1x
+Signature: UBUkUJRqrz9wfO/ZoKBU28Kdc1pMie3XxEcLEoDrk0s=
+Modified: 639254330170082064
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Multilist Search\Strategy Multilist Search\Strategy Multilist Search 3x.yml
+ID: "71829304-b5c6-4ed7-8fe8-f92a3b4c5d6e"
+Parent: "3e4f6071-8293-4ba4-8cb5-c6d7e8f92a3b"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist Search/Strategy Multilist Search/Strategy Multilist Search 3x
+Signature: jVTtRvEXDLuKh5PUDYiZw1if9+i51/cy8+9TFa2zuF4=
+Modified: 639254330172067591
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tree List.yml
+ID: "95102b3c-4354-4c6f-8d70-0a1b2c3d4e5f"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tree List
+Signature: zJoBUrppbizexydFfLovFiaklpC7c5DJy0NJsu9CMy0=
+Modified: 639254331319367023
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplist\Strategy Droplist\Strategy DropList 1x.yml
+ID: "c8b7a695-8473-4645-8536-2716050493f2"
+Parent: "4a6b2f3e-8c5d-4ba2-9e4f-7d9a1b2c3d4e"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplist/Strategy Droplist/Strategy DropList 1x
+Signature: 1Cm7/pX1iFjSeJzdw4JBvHdd+rEtzQKxH3mnmPjF1Y0=
+Modified: 639254301613945191
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplist\Strategy Droplist\Strategy DropList 3x.yml
+ID: "b7a69584-7362-4534-8425-1605049382f1"
+Parent: "4a6b2f3e-8c5d-4ba2-9e4f-7d9a1b2c3d4e"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplist/Strategy Droplist/Strategy DropList 3x
+Signature: PWIu4/J8BGLoIJ89qkqxFV274YgoUQcacH5AhtExPGo=
+Modified: 639254301613955195
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tag List\Strategy Tag List\Strategy Tag List 0x.yml
+ID: "d4e5f607-8192-4ca3-8db4-4e5f60718293"
+Parent: "c3d4e5f6-7081-4b92-8ca3-3d4e5f607182"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tag List/Strategy Tag List/Strategy Tag List 0x
+Signature: Dmlm/VjAQbqNf9huIRmK+DMrJhDceygNBzeMXeJbAU4=
+Modified: 639254330745200346
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tag List\Strategy Tag List\Strategy Tag List 10x.yml
+ID: "07182930-b4c5-4fd6-8ae7-718293a4b5c6"
+Parent: "c3d4e5f6-7081-4b92-8ca3-3d4e5f607182"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tag List/Strategy Tag List/Strategy Tag List 10x
+Signature: V2h1oPhybvDQ5eqsg6NOpEFu3Dmfc4ZMMd+AifoLTE4=
+Modified: 639254330751362581
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tag List\Strategy Tag List\Strategy Tag List 3x.yml
+ID: "f6071829-a3b4-4ec5-8fd6-60718293a4b5"
+Parent: "c3d4e5f6-7081-4b92-8ca3-3d4e5f607182"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tag List/Strategy Tag List/Strategy Tag List 3x
+Signature: diMpluq8cwy9Q11RTPTNx5Mj9R6ucIbFTti6d7CBtvw=
+Modified: 639254330749340883
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplink\Strategy Droplink\Strategy DropLink 0x.yml
+ID: "d7fe6e87-7fb2-4ef0-9696-e4aa57709dee"
+Parent: "7b54ca73-60d1-4df8-a171-6850dd217831"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplink/Strategy Droplink/Strategy DropLink 0x
+Signature: RS7Hn5jdHyN91rFpyu+9zHAFtXkVlFxIPL7zFBLIjFc=
+Modified: 639254294924955382
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplink\Strategy Droplink\Strategy DropLink 1x.yml
+ID: "c9f6fc88-25fa-406c-a4b3-486841e070fd"
+Parent: "7b54ca73-60d1-4df8-a171-6850dd217831"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplink/Strategy Droplink/Strategy DropLink 1x
+Signature: s1cNV1DEijql8UVWqKIn/HKlE7nLjU7R3/5AlNjDeY0=
+Modified: 639254294924955382
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplist\Strategy Droplist\Strategy DropList 0x.yml
+ID: "d9c8b7a6-9584-4756-8647-3827160504f3"
+Parent: "4a6b2f3e-8c5d-4ba2-9e4f-7d9a1b2c3d4e"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplist/Strategy Droplist/Strategy DropList 0x
+Signature: 3tAoz7E45Ys14wNTLnxfbpvsLaAi9/CW+ZO0vJKag8Y=
+Modified: 639254301613945191
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplist\Strategy Droplist\Strategy DropList 10x.yml
+ID: "a6958473-6251-4423-8314-0504938271f0"
+Parent: "4a6b2f3e-8c5d-4ba2-9e4f-7d9a1b2c3d4e"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplist/Strategy Droplist/Strategy DropList 10x
+Signature: 5EWU+2doQZU/fS60/Pab5N+OPk+cYPB3GiCCjcU0Bk4=
+Modified: 639254301613955195
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droptree\Strategy Droptree\Strategy DropTree 0x.yml
+ID: "5c6d7e8f-9a0b-4c1d-8e2f-4a5b6c7d8e9f"
+Parent: "3a4b5c6d-7e8f-4a9b-8c0d-2e3f4a5b6c7d"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droptree/Strategy Droptree/Strategy DropTree 0x
+Signature: R7cNwcZVL4Tgxwzijs5PNMg2I17k2QnZsyWVa/GXHXY=
+Modified: 639254308961629924
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tag List\Strategy Tag List\Strategy Tag List 1x.yml
+ID: "e5f60718-92a3-4db4-8ec5-5f6071829304"
+Parent: "c3d4e5f6-7081-4b92-8ca3-3d4e5f607182"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tag List/Strategy Tag List/Strategy Tag List 1x
+Signature: g8PORg4GubLGpL4nUVlC2dJudk371e9OtI1IELTt8kE=
+Modified: 639254330747022209
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tree List\Strategy Tree List\Strategy Tree List 0x.yml
+ID: "b7324d5e-6576-4e81-8f92-2c3d4e5f6071"
+Parent: "a6213c4d-5465-4d70-8e81-1b2c3d4e5f60"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tree List/Strategy Tree List/Strategy Tree List 0x
+Signature: qZY1GuuAJHRW4xeT9FlTwp0wkF7Ll65AtPBhO0BFqHM=
+Modified: 639254331324789350
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tree List\Strategy Tree List\Strategy Tree List 10x.yml
+ID: "ea65718b-98a9-4b14-8c25-5f6071829304"
+Parent: "a6213c4d-5465-4d70-8e81-1b2c3d4e5f60"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tree List/Strategy Tree List/Strategy Tree List 10x
+Signature: RdTrIaJESs8ylOCJ2Pv2LuoDUtFpWlL5BxPOA1ze2E0=
+Modified: 639254331329063742
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tree List\Strategy Tree List\Strategy Tree List 1x.yml
+ID: "c8435e6f-7687-4f92-8a03-3d4e5f607182"
+Parent: "a6213c4d-5465-4d70-8e81-1b2c3d4e5f60"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tree List/Strategy Tree List/Strategy Tree List 1x
+Signature: teMhUj6LTDd0JI14XXu66HzJpcl9MROhaKBvMkyxA2Q=
+Modified: 639254331325914728
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Tree List\Strategy Tree List\Strategy Tree List 3x.yml
+ID: "d954607a-8798-4a03-8b14-4e5f60718293"
+Parent: "a6213c4d-5465-4d70-8e81-1b2c3d4e5f60"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tree List/Strategy Tree List/Strategy Tree List 3x
+Signature: /unKWmEzxrt/eCxbSDthtg5ux8wV5iBeCDGiXrYFS/Q=
+Modified: 639254331327701316
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droptree\Strategy Droptree.yml
+ID: "3a4b5c6d-7e8f-4a9b-8c0d-2e3f4a5b6c7d"
+Parent: "1e2f3a4b-5c6d-4e7f-8a9b-0c1d2e3f4a5b"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droptree/Strategy Droptree
+Signature: c7HlUigHrK3L6cXB+o9E7M3yPGyFg0E7K8khQof36F0=
+Modified: 639254308961629924
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Treelist Ex\Strategy Treelist Ex\Strategy Treelist Ex 0x.yml
+ID: "9510ad3d-4354-4c70-8d81-a2b3c4d5e6f7"
+Parent: "84091c2c-3243-4b6f-8c70-91a2b3c4d5e6"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Treelist Ex/Strategy Treelist Ex/Strategy Treelist Ex 0x
+Signature: RPlAnrcZUcT1JXWR5WHyqrBLdroVotIr+SNALd78BFo=
+Modified: 639254331856535732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy File\Strategy File.yml
+ID: "5b6c7d8e-9fa0-4b1c-8d2e-3f4a5b6c7d8f"
+Parent: "4a5b6c7d-8e9f-4a0b-8c1d-2e3f4a5b6c7e"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy File/Strategy File
+Signature: 4rCn9JTSN9v+ZQoNtMgZ8BBZLf0eXxaOUh7vEVTi03I=
+Modified: 639254311410940163
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Treelist Ex\Strategy Treelist Ex\Strategy Treelist Ex 10x.yml
+ID: "c843d060-7687-4fa3-8ab4-d5e6f708192a"
+Parent: "84091c2c-3243-4b6f-8c70-91a2b3c4d5e6"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Treelist Ex/Strategy Treelist Ex/Strategy Treelist Ex 10x
+Signature: Yaql+rDpBpgkskH6eV9Tg1B6rGgpY32Pphknaaoo0WE=
+Modified: 639254331860887486
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy General Link\Strategy General Link.yml
+ID: "f5a6b7c8-d9e0-4f1a-8b2c-d3e4f5a6b7c9"
+Parent: "e4f5a6b7-c8d9-4e0f-8a1b-c2d3e4f5a6b8"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy General Link/Strategy General Link
+Signature: X3XFg7nWEA2ZxZGu7//S2Zv7NKtSuIEufxc/XjB3R70=
+Modified: 639254321826938428
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Treelist Ex\Strategy Treelist Ex\Strategy Treelist Ex 3x.yml
+ID: "b732cf5f-6576-4e92-8fa3-c4d5e6f70819"
+Parent: "84091c2c-3243-4b6f-8c70-91a2b3c4d5e6"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Treelist Ex/Strategy Treelist Ex/Strategy Treelist Ex 3x
+Signature: 7xr7whn6Nlaj70OD44q+5l59YmDlm56Llhhfrc2JaQY=
+Modified: 639254331859334965
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Icon\Strategy Icon.yml
+ID: "b5c6d7e8-f9a0-4b1c-8d2e-3f4a5b6c7d8a"
+Parent: "a4b5c6d7-e8f9-4a0b-8c1d-2e3f4a5b6c7f"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Icon/Strategy Icon
+Signature: zRxpirpK0zto4kK/B7+TixJ8R7+0MqmT4bzi+CUVkzg=
+Modified: 639254328956017732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy General Link\Strategy General Link\Strategy General Link Email.yml
+ID: "d0e1f2a3-b4c5-4d6e-8f7a-b8c9d0e1f2a4"
+Parent: "f5a6b7c8-d9e0-4f1a-8b2c-d3e4f5a6b7c9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy General Link/Strategy General Link/Strategy General Link Email
+Signature: ANWZxVFoSuzAkA13Ss4KIfl+FlkHKyMg75dYReVHyn8=
+Modified: 639254328956017732
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy General Link\Strategy General Link\Strategy General Link Internal.yml
+ID: "b7c8d9e0-f1a2-4b3c-8d4e-f5a6b7c8d9e1"
+Parent: "f5a6b7c8-d9e0-4f1a-8b2c-d3e4f5a6b7c9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy General Link/Strategy General Link/Strategy General Link Internal
+Signature: /i7dOy6gokVw6JMFbV//j9DWVfqfTdPpuJ7lY1zcVIs=
+Modified: 639254328956003806
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy General Link\Strategy General Link\Strategy General Link Media.yml
+ID: "f6a7b8c9-d0e1-4f2a-8b3c-d4e5f6a7b8c0"
+Parent: "f5a6b7c8-d9e0-4f1a-8b2c-d3e4f5a6b7c9"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy General Link/Strategy General Link/Strategy General Link Media
+Signature: w62uzDY8ObORIwlXiletk1Os8xQPnlmu4oqTSCHCNik=
+Modified: 639254328956003806
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Treelist Ex.yml
+ID: "73f8091b-2132-4a5e-8b6f-8091a2b3c4d5"
+Parent: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Treelist Ex
+Signature: EKfrH9Gbde6RKk1MibNMvblfyRSQggVB5hsXRJvbPyQ=
+Modified: 639254331851693969
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing.yml
+ID: "827fbd69-ae75-4459-9522-71d6a72d5f26"
+Parent: "e6904c9a-3ace-4b53-b465-4c05c6b1f1cc"
+Template: "0437fee2-44c9-46a6-abe9-28858d9fee8c"
+Path: /sitecore/templates/Modules/Fobles Testing
+Signature: Q9ZzUdT64ginOQ97WqGnl7eIJx4TdngcQqCxfQ15kz8=
+Modified: 639254277418454205
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Fobles Data Item\Data Value.yml
+ID: "8c3be2eb-b202-4b88-b685-53293f11b225"
+Parent: "0e2e40ba-308c-4484-a31a-bfd647d78312"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Fobles Data Item/Data Value
+Signature: 9u6jmq0Ef5aitIj9y/YOoGLRtWAq+VsM8EZ2PIBWLtc=
+Modified: 639254289495679549
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droptree\Strategy Droptree\Strategy DropTree 10x.yml
+ID: "1c2d3e4f-5a6b-4c7d-8e8f-a0b1c2d3e4f5"
+Parent: "3a4b5c6d-7e8f-4a9b-8c0d-2e3f4a5b6c7d"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droptree/Strategy Droptree/Strategy DropTree 10x
+Signature: UM5yofQJ1yb4jvA3Ti97WutQpf/56F2AdgavE2Yz1/A=
+Modified: 639254308961649935
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplink\Strategy Droplink.yml
+ID: "7b54ca73-60d1-4df8-a171-6850dd217831"
+Parent: "d8301749-35ef-4a9b-b76e-eacd63a421c5"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplink/Strategy Droplink
+Signature: gqlUXAx1/imoOJVESkXrbYJXEFVVHMxMDxOWZ06D5Tg=
+Modified: 639254294924944195
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droptree\Strategy Droptree\Strategy DropTree 3x.yml
+ID: "9a0b1c2d-3e4f-4a5b-8c6d-8e9fa0b1c2d3"
+Parent: "3a4b5c6d-7e8f-4a9b-8c0d-2e3f4a5b6c7d"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droptree/Strategy Droptree/Strategy DropTree 3x
+Signature: UoX6BTgClk4xmHyUZ3bwxJb4JtzgpeVgXQ9Y/WDBneA=
+Modified: 639254308961639937
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy Droplist\Strategy Droplist.yml
+ID: "4a6b2f3e-8c5d-4ba2-9e4f-7d9a1b2c3d4e"
+Parent: "3f5a1e2d-7b4c-4a91-9d3e-6c8f0a1b2c3d"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Droplist/Strategy Droplist
+Signature: tFdVCVZkCJP30xcl5uLMFDY5+FTY1oTE8F3qm0Unyy0=
+Modified: 639254301613945191
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy File\Strategy File\Strategy File Empty.yml
+ID: "c2d3e4f5-a6b7-4c8d-8e9f-a0b1c2d3e4f6"
+Parent: "5b6c7d8e-9fa0-4b1c-8d2e-3f4a5b6c7d8f"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy File/Strategy File/Strategy File Empty
+Signature: r0f6O2iJaKj3FUZ9iIJFEpFYkbJ2g8yWm9O/RI5HgVU=
+Modified: 639254338529346165
+---
+File: |
+  C:\Projects\fobles\authoring\items-folbles\serialization\fobles.templates.modules.fobles\Fobles Testing\Strategy File\Strategy File\Strategy File Set.yml
+ID: "6c7d8e9f-a0b1-4c2d-8e3f-4a5b6c7d8e90"
+Parent: "5b6c7d8e-9fa0-4b1c-8d2e-3f4a5b6c7d8f"
+Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy File/Strategy File/Strategy File Set
+Signature: zMuBMRI1XagdpGmRKk+gYfthhwgwW8KFh3Mj8F/0Big=
+Modified: 639254338529356193

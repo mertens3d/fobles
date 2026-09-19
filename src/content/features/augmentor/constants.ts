@@ -49,6 +49,7 @@ export const FOBLES = {
     WRAPPERS: {
       BASE: "fobles-wrapper",
       DROP_LINK: "fobles-wrapper--drop-link",
+      DROP_TREE: "fobles-wrapper--drop-tree",
       FILE: "fobles-wrapper--file",
       GENERAL_LINK: "fobles-wrapper--general-link",
       IMAGE: "fobles-wrapper--image",

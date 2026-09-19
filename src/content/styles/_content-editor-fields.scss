@@ -77,6 +77,16 @@
     vertical-align: middle;
   }
 
+  // Mimics Sitecore's own input chrome (not a Fobles design token) so the wrapper reads as a
+  // drop-in replacement for the input it hides. Square right corners since the dropdown arrow sits there.
+  &--drop-tree {
+    height: 35px;
+    background: #ffffff;
+    border: 1px solid #cccccc;
+    border-top-right-radius: 0;
+    border-bottom-right-radius: 0;
+  }
+
   &--multilist,
   &--multilist-with-search,
   &--tree-list,

@@ -6,8 +6,22 @@
   "items": {
     "includes": [
       {
+        "name": "fobles.templates.modules.fobles",
+        "path": "/sitecore/templates/Modules/Fobles Testing",
+        "database": "master",
+        "allowedPushOperations": "CreateAndUpdate",
+        "scope": "ItemAndDescendants"
+      },
+      {
         "name": "fobles.system.modules.fobles",
         "path": "/sitecore/system/Modules/Fobles Testing",
+        "database": "master",
+        "allowedPushOperations": "CreateAndUpdate",
+        "scope": "ItemAndDescendants"
+      },
+      {
+        "name": "fobles.media.library.fobles",
+        "path": "/sitecore/media library/Fobles Testing",
         "database": "master",
         "allowedPushOperations": "CreateAndUpdate",
         "scope": "ItemAndDescendants"

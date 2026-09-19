@@ -1,0 +1,34 @@
+---
+ID: "5e6f7081-92a3-4eb4-8fc5-d6e7f8091a2b"
+Parent: "b9f711a4-10ff-419e-af9a-be9e6c360a8b"
+Template: "1a2b3c4d-5e6f-4a70-8b81-92a3b4c5d6e7"
+Path: /sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy internal link
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260919T171000Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "a3b4c5d6-e7f8-4a3b-8c4d-2b3c4d5e6f70"
+    - ID: "4d5e6f70-8192-4da3-8eb4-c5d6e7f8091a"
+      Hint: Strategy Internal Link Set
+      Value: "/sitecore/system/Modules/Fobles Testing"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260919T171000Z
