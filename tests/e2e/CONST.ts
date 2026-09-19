@@ -47,14 +47,14 @@ export const CONST = {
   ENVIRONMENT: {
     ENV_VAR: "SITECORE_TEST_ENVIRONMENTS",
     AUTH_DIR_ENV_VAR: "PLAYWRIGHT_AUTH_DIR",
-    AUTH_DIR: "./test-artifacts/auth",
+    AUTH_DIR: "./tests/test-artifacts/auth",
   },
   SITECORE: {
     SELECTORS: {
-      TOOLBAR: "[data-foble-nav]",
-      QUICK_MENU_TRIGGER: "[data-foble-nav-owner='1']",
+      TOOLBAR: "[data-fobles-nav]",
+      QUICK_MENU_TRIGGER: "[data-fobles-nav-owner='1']",
       QUICK_MENU: ".fobles-quick-menu",
-      TOOLBAR_TOGGLE_BUTTON: "button[title='Toggle Foble navigation']",
+      TOOLBAR_TOGGLE_BUTTON: "button[title='Toggle Fobles navigation']",
       MENU_TRIGGER: ".fobles-quick-menu-trigger",
     },
     LABELS: {

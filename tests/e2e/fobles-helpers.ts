@@ -1,6 +1,6 @@
 import { expect, type Frame, type Page } from "./fixtures/playwright";
 import { openSitecorePage } from "./fixtures/sitecore";
-import type { FobleExpectation } from "./scenarios";
+import type { FoblesExpectation } from "./scenarios";
 import { showMouseMarker, verifyMouseMarker } from "./mouse-proxy";
 
 export async function findFrameWithSelector(
@@ -17,15 +17,15 @@ export async function findFrameWithSelector(
 async function logActivationState(frame: Frame, message: string): Promise<void> {
   const state = await frame.evaluate(() => ({
     persistedState: localStorage.getItem("fobles_state"),
-    fobleButtons: document.querySelectorAll("[data-is-foble-button='1']").length,
-    fobleWrappers: document.querySelectorAll("[data-foble-wrapper]").length,
+    foblesButtons: document.querySelectorAll("[data-is-fobles-button='1']").length,
+    foblesWrappers: document.querySelectorAll("[data-fobles-wrapper]").length,
   }));
   console.log(`${message}: ${JSON.stringify(state)}`);
 }
 
 export async function activateFobles(
   page: Page,
-  scenario: FobleExpectation,
+  scenario: FoblesExpectation,
 ): Promise<Frame> {
   console.log(`[fobles] Opening ${scenario.url}`);
   await openSitecorePage(page, scenario.url);
@@ -54,13 +54,13 @@ export async function activateFobles(
 
   const foblesFrame = await findFrameWithSelector(
     page,
-    "button.foble-nav-feature-button",
+    "button.fobles-nav-feature-button",
     "Fobles feature button",
   );
   await logActivationState(foblesFrame, "[fobles] LBolt setup before click");
   await showMouseMarker(foblesFrame);
   const featureButton = foblesFrame
-    .locator("button.foble-nav-feature-button")
+    .locator("button.fobles-nav-feature-button")
     .first();
   await expect(featureButton).toBeVisible();
   await featureButton.click();
@@ -72,7 +72,7 @@ export async function activateFobles(
 
 export async function activateFoblesForJumpTest(
   page: Page,
-  scenario: FobleExpectation,
+  scenario: FoblesExpectation,
 ): Promise<Frame> {
   console.log(`[fobles] Opening ${scenario.url}`);
   await openSitecorePage(page, scenario.url);
@@ -82,13 +82,13 @@ export async function activateFoblesForJumpTest(
 
   const foblesFrame = await findFrameWithSelector(
     page,
-    "button.foble-nav-feature-button",
+    "button.fobles-nav-feature-button",
     "Fobles feature button",
   );
   await logActivationState(foblesFrame, "[fobles] Jump setup before LBolt click");
   await showMouseMarker(foblesFrame);
   const featureButton = foblesFrame
-    .locator("button.foble-nav-feature-button")
+    .locator("button.fobles-nav-feature-button")
     .first();
   await expect(featureButton).toBeVisible();
   await featureButton.click();

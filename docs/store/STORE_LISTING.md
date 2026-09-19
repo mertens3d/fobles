@@ -13,7 +13,7 @@ Features:
 - Quick Jump shortcuts for common Sitecore paths
 - Admin page shortcuts for common Sitecore tools and utilities
 - AI Pages mapping tools for faster content navigation
-- Toggleable Foble navigation helpers for the Sitecore UI
+- Toggleable Fobles navigation helpers for the Sitecore UI
 - Lightweight, local-only browser extension behavior
 
 This extension is designed for Sitecore users who want to move more quickly through common editorial tasks without leaving the browser.

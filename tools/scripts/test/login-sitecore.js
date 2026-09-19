@@ -17,7 +17,7 @@ dotenv.config({
 const extensionPath = path.join(projectRoot, "dist", "unpacked");
 const profileDir = path.resolve(
   process.env.PLAYWRIGHT_PROFILE_DIR ??
-    path.join(projectRoot, "test-artifacts/browser-profile"),
+    path.join(projectRoot, "tests/test-artifacts/browser-profile"),
 );
 
 function getSitecoreRoot() {

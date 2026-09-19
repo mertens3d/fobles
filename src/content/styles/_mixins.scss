@@ -1,0 +1,42 @@
+@use "tokens" as *;
+
+@mixin fobles-button-base {
+  appearance: none;
+  border: 1px solid rgba($fobles-blue, 0.2);
+  background: linear-gradient(180deg, $fobles-blue 0%, $fobles-blue-dark 100%);
+  color: $fobles-white;
+  border-radius: 6px;
+  padding: 4px 10px;
+  margin-left: 0;
+  font-size: 12px;
+  font-weight: 400;
+  line-height: 1.2;
+  font-family: "Open Sans", Arial, sans-serif;
+  text-transform: none;
+  cursor: pointer;
+  box-shadow: 0 3px 8px rgba($fobles-blue, 0.18);
+  z-index: 2147483647;
+  transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
+}
+
+@mixin fobles-menu-panel {
+  --fobles-height: #{$fobles-height};
+  position: absolute;
+  top: calc(100% + 8px);
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+  min-width: 184px;
+  padding: 6px;
+  border: 1px solid rgba($fobles-blue, 0.62);
+  border-radius: 6px;
+  background: $fobles-white;
+  box-shadow: 0 10px 22px $fobles-shadow-panel;
+  z-index: 1000;
+  opacity: 0;
+  pointer-events: none;
+  transform: translateX(-8px);
+  transform-origin: top left;
+  transition: opacity 0.15s ease, transform 0.15s ease;
+}

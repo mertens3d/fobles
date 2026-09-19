@@ -5,7 +5,7 @@ import path from "node:path";
 dotenv.config({ path: [".env.local", ".env"] });
 
 const extensionPath = path.resolve(process.cwd(), "dist/unpacked");
-const testArtifactsDir = path.resolve(process.cwd(), "test-artifacts");
+const testArtifactsDir = path.resolve(process.cwd(), "tests/test-artifacts");
 
 export default defineConfig({
   testDir: "./e2e",

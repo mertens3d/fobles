@@ -27,7 +27,7 @@ run(process.execPath, [join(projectRoot, "tools/scripts/dev/check-node-version.j
 run(process.execPath, [join(projectRoot, "tools/scripts/build/write-build-info.js")]);
 run(process.execPath, [
   "node_modules/sass/sass.js",
-  "src/styles/fobles-extension.scss",
+  "src/content/styles/fobles-extension.scss",
   "dist/unpacked/fobles.css",
   "--no-source-map",
 ]);
@@ -35,11 +35,11 @@ run(process.execPath, [
   "node_modules/typescript/bin/tsc",
   "--noEmit",
   "-p",
-  "tsconfig.extension.json",
+  "tsconfig.json",
 ]);
 run(process.execPath, [
   "node_modules/esbuild/bin/esbuild",
-  "src/extension/content.ts",
+  "src/content/index.ts",
   "--bundle",
   "--platform=browser",
   "--format=iife",
@@ -47,7 +47,7 @@ run(process.execPath, [
 ]);
 run(process.execPath, [
   "node_modules/esbuild/bin/esbuild",
-  "src/extension/background.ts",
+  "src/background/index.ts",
   "--bundle",
   "--platform=browser",
   "--format=esm",
@@ -55,11 +55,19 @@ run(process.execPath, [
 ]);
 run(process.execPath, [
   "node_modules/esbuild/bin/esbuild",
-  "src/extension/options.ts",
+  "src/options/index.ts",
   "--bundle",
   "--platform=browser",
   "--format=iife",
   "--outfile=dist/unpacked/options.js",
+]);
+run(process.execPath, [
+  "node_modules/esbuild/bin/esbuild",
+  "src/popup/index.ts",
+  "--bundle",
+  "--platform=browser",
+  "--format=iife",
+  "--outfile=dist/unpacked/popup.js",
 ]);
 run(process.execPath, [
   join(projectRoot, "tools/scripts/build/add-generated-banner.js"),

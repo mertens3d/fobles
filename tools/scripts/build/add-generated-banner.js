@@ -14,7 +14,7 @@ const buildStamp = await readFile(stampPath, "utf8").catch(
 const banner = [
   "// =============================================================",
   "// AUTO-GENERATED FILE - DO NOT EDIT",
-  "// Source of truth: src/extension",
+  "// Source of truth: src/",
   `// Build: ${buildStamp}`,
   "// Regenerate with: npm run build:extension",
   "// =============================================================",
@@ -22,20 +22,19 @@ const banner = [
 ].join("\n");
 
 const generatedFiles = ["background.js", "content.js"];
-const iconSourcePath = join(projectRoot, "src", "extension", "foble_icon.png");
-const iconOutputPath = join(projectRoot, "dist", "unpacked", "foble_icon.png");
+const iconSourcePath = join(projectRoot, "src", "public", "fobles_icon.png");
+const iconOutputPath = join(projectRoot, "dist", "unpacked", "fobles_icon.png");
 const maintainedFiles = [
   "manifest.json",
   "options.html",
   "popup.html",
-  "popup.js",
 ];
 
 async function applyBannerToGeneratedFiles() {
   await copyFile(iconSourcePath, iconOutputPath);
 
   for (const fileName of maintainedFiles) {
-    const sourcePath = join(projectRoot, "src", "extension", fileName);
+    const sourcePath = join(projectRoot, "src", "public", fileName);
     const outputPath = join(projectRoot, "dist", "unpacked", fileName);
     const content = await readFile(sourcePath, "utf8");
     await writeFile(outputPath, content.replaceAll("__BUILD_STAMP__", buildStamp));

@@ -12,7 +12,7 @@ dist/packed/*
 !.env.example
 
 # Playwright state, profiles, reports, and test artifacts
-test-artifacts/
+tests/test-artifacts/
 tests/.auth/
 .auth/
 storage-state*.json
@@ -23,3 +23,6 @@ auth*.json
 *.pem
 *.p12
 *.pfx
+.sitecore/package-cache/nuget/
+.sitecore/user.json
+.sitecore/.cache/

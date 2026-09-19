@@ -1,0 +1,29 @@
+{
+  "$schema": "./.sitecore/schemas/RootConfigurationFile.schema.json",
+  "modules": [
+    "./TODO/*.module.json"
+  ],
+  "plugins": [
+    "Sitecore.DevEx.Extensibility.Serialization@7.0.24",
+    "Sitecore.DevEx.Extensibility.Publishing@7.0.24",
+    "Sitecore.DevEx.Extensibility.Indexing@7.0.24",
+    "Sitecore.DevEx.Extensibility.ResourcePackage@7.0.24",
+    "Sitecore.DevEx.Extensibility.Database@7.0.24"
+  ],
+  "serialization": {
+    "defaultMaxRelativeItemPathLength": 100,
+    "defaultModuleRelativeSerializationPath": "serialization",
+    "removeOrphansForRoles": true,
+    "removeOrphansForUsers": true,
+    "continueOnItemFailure": false,
+    "excludedFields": [],
+    "maxRequestSizeMB": 50,
+    "progressiveMetadataPull": false
+  },
+  "settings": {
+    "telemetryEnabled": true,
+    "cacheAuthenticationToken": true,
+    "versionComparisonEnabled": true,
+    "apiClientTimeoutInMinutes": 5
+  }
+}

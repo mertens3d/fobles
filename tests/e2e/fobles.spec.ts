@@ -21,7 +21,7 @@ test.describe("Fobles browser integration", () => {
     test.skip(`${scenario.name} creates expected Fobles`, async ({ page }) => {
       await activateFobles(page, scenario);
       const featureButton = page
-        .locator("button.foble-nav-feature-button")
+        .locator("button.fobles-nav-feature-button")
         .first();
       const editorTabs = page.locator("#EditorTabs");
       await expect(editorTabs).toBeVisible();
@@ -55,14 +55,14 @@ test.describe("Fobles browser integration", () => {
         "Menu away",
       );
       await editorTabs.click();
-      console.log("[fobles] Non-Foble #EditorTabs target clicked");
+      console.log("[fobles] Non-Fobles #EditorTabs target clicked");
 
       for (const buttonName of scenario.expectedQuickInfoButtons) {
         await expect(
           page.getByRole("button", { name: buttonName, exact: true }).first(),
         ).toBeHidden();
       }
-      console.log("[fobles] Quick-info Foble buttons dismissed");
+      console.log("[fobles] Quick-info Fobles buttons dismissed");
     });
   }
 
@@ -82,9 +82,9 @@ test.describe("Fobles browser integration", () => {
     console.log(
       "[fobles] About to look for tree-jump buttons in the open Menu flyout",
     );
-    const treeJumpButtons = foblesFrame.locator("[data-foble-tree-jump-path]");
+    const treeJumpButtons = foblesFrame.locator("[data-fobles-tree-jump-path]");
     const treeJumpPaths = await treeJumpButtons.evaluateAll((buttons) =>
-      buttons.map((button) => button.getAttribute("data-foble-tree-jump-path")),
+      buttons.map((button) => button.getAttribute("data-fobles-tree-jump-path")),
     );
     const paths = treeJumpPaths.filter((path): path is string => path !== null);
     expect(paths.length).toBeGreaterThan(0);
@@ -104,7 +104,7 @@ test.describe("Fobles browser integration", () => {
         }
 
         const jumpButton = foblesFrame
-          .locator("[data-foble-tree-jump-path]")
+          .locator("[data-fobles-tree-jump-path]")
           .nth(index);
         await expect(jumpButton).toBeVisible();
         await jumpButton.scrollIntoViewIfNeeded();
@@ -158,10 +158,10 @@ test.describe("Fobles browser integration", () => {
     await page.waitForTimeout(STEP_WAIT_MS);
     await expect(menuFlyout).toHaveAttribute("data-visible", "true");
 
-    const treeJumpButtons = foblesFrame.locator("[data-foble-tree-jump-path]");
+    const treeJumpButtons = foblesFrame.locator("[data-fobles-tree-jump-path]");
     const paths = await treeJumpButtons.evaluateAll((buttons) =>
       buttons
-        .map((button) => button.getAttribute("data-foble-tree-jump-path"))
+        .map((button) => button.getAttribute("data-fobles-tree-jump-path"))
         .filter((path): path is string => path !== null),
     );
     expect(paths.length).toBeGreaterThan(0);
@@ -170,7 +170,7 @@ test.describe("Fobles browser integration", () => {
       const path = paths[index];
       await test.step(`Ctrl+Click "${path}"`, async () => {
         const jumpButton = foblesFrame
-          .locator("[data-foble-tree-jump-path]")
+          .locator("[data-fobles-tree-jump-path]")
           .nth(index);
 
         await jumpButton.scrollIntoViewIfNeeded();
@@ -230,11 +230,11 @@ test.describe("Fobles browser integration", () => {
     await page.waitForTimeout(STEP_WAIT_MS);
     await expect(menuFlyout).toHaveAttribute("data-visible", "true");
 
-    const menuButtons = foblesFrame.locator("[data-foble-menu-url]");
+    const menuButtons = foblesFrame.locator("[data-fobles-menu-url]");
     const targets = await menuButtons.evaluateAll((buttons) =>
       buttons.map((button) => ({
         label: button.textContent?.trim() ?? "",
-        url: button.getAttribute("data-foble-menu-url") ?? "",
+        url: button.getAttribute("data-fobles-menu-url") ?? "",
       })),
     );
     expect(targets.length).toBeGreaterThan(0);
@@ -267,7 +267,7 @@ test.describe("Fobles browser integration", () => {
               }
 
               const button = foblesFrame
-                .locator("[data-foble-menu-url]")
+                .locator("[data-fobles-menu-url]")
                 .nth(index);
               await expect(button).toBeVisible();
               await button.scrollIntoViewIfNeeded();

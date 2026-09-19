@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 export const diagnosticLogPath = path.resolve(
-  "./test-artifacts/logs/test-run.log",
+  "./tests/test-artifacts/logs/test-run.log",
 );
 
 const originalConsole = {
