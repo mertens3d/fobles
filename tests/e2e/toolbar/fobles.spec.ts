@@ -2,15 +2,16 @@ import {
   expect,
   test,
   type Page,
-} from "./fixtures/playwright";
-import { CONST } from "./CONST";
+} from "../fixtures/playwright";
+import { CONST } from "../CONST";
 import {
   moveMouseOutsideHoverArea,
   moveMouseTo,
-} from "./mouse-proxy";
-import { activateFobles, activateFoblesForJumpTest } from "./fobles-helpers";
-import { hoverAndGrow, hoverAndSlideOut } from "./hover-helpers";
-import { showMouseMarker } from "./mouse-proxy";
+  pulseMouseMarkerClick,
+} from "../mouse-proxy";
+import { activateFobles, activateFoblesForJumpTest, attachItemPathScreenshot, createStep } from "../fobles-helpers";
+import { hoverAndGrow, hoverAndSlideOut } from "../hover-helpers";
+import { showMouseMarker } from "../mouse-proxy";
 
 const STEP_WAIT_MS =
   CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
@@ -20,8 +21,8 @@ test.describe("Fobles browser integration", () => {
   for (const scenario of CONST.SCENARIOS) {
     test.skip(`${scenario.name} creates expected Fobles`, async ({ page }) => {
       await activateFobles(page, scenario);
-      const featureButton = page
-        .locator("button.fobles-nav-feature-button")
+      const lboltButton = page
+        .locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON)
         .first();
       const editorTabs = page.locator("#EditorTabs");
       await expect(editorTabs).toBeVisible();
@@ -34,9 +35,9 @@ test.describe("Fobles browser integration", () => {
 
       await hoverAndGrow(page, {
         name: "LBolt",
-        hoverTarget: featureButton,
-        measureTarget: featureButton,
-        moveAwayTargets: featureButton,
+        hoverTarget: lboltButton,
+        measureTarget: lboltButton,
+        moveAwayTargets: lboltButton,
         mousePosition,
       });
 
@@ -66,7 +67,7 @@ test.describe("Fobles browser integration", () => {
     });
   }
 
-  test("tree jump buttons navigate in the current tab", async ({ page }) => {
+  test("tree jump buttons navigate in the current tab", async ({ page }, testInfo) => {
     test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
     const scenario = TEST_CASES[0];
     let foblesFrame = await activateFoblesForJumpTest(page, scenario);
@@ -76,6 +77,7 @@ test.describe("Fobles browser integration", () => {
     const mousePosition = { x: 0, y: 0 };
 
     await moveMouseTo(page, menuButton, mousePosition, "Tree jump menu");
+    await menuButton.click();
     await page.waitForTimeout(STEP_WAIT_MS);
     await expect(menuFlyout).toHaveAttribute("data-visible", "true");
 
@@ -88,10 +90,11 @@ test.describe("Fobles browser integration", () => {
     );
     const paths = treeJumpPaths.filter((path): path is string => path !== null);
     expect(paths.length).toBeGreaterThan(0);
+    const step = createStep(page, testInfo, page, "Tree Jump");
 
     for (let index = 0; index < paths.length; index += 1) {
       const path = paths[index];
-      await test.step(`Click "${path}"`, async () => {
+      await step(`Click: navigates to "${path}"`, async () => {
         if (index > 0) {
           foblesFrame = await activateFoblesForJumpTest(page, scenario);
           menuButton = foblesFrame
@@ -99,6 +102,7 @@ test.describe("Fobles browser integration", () => {
             .first();
           menuFlyout = foblesFrame.locator(".fobles-quick-menu").first();
           await moveMouseTo(page, menuButton, mousePosition, "Tree jump menu");
+          await menuButton.click();
           await page.waitForTimeout(STEP_WAIT_MS);
           await expect(menuFlyout).toHaveAttribute("data-visible", "true");
         }
@@ -115,6 +119,7 @@ test.describe("Fobles browser integration", () => {
           `Tree jump ${index + 1}`,
         );
         await page.waitForTimeout(STEP_WAIT_MS);
+        await pulseMouseMarkerClick(page);
         await jumpButton.click();
 
         const confirmationDialog = foblesFrame.getByRole("dialog");
@@ -133,18 +138,19 @@ test.describe("Fobles browser integration", () => {
         console.log(
           `[fobles] URL assertion: expected to contain ${path}; actual ${actualUrl}`,
         );
+        await attachItemPathScreenshot(page, testInfo, path);
         await page.waitForTimeout(
           CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS *
             CONST.NAVIGATION.HOLD_MULTIPLIER,
         );
-      });
+      }, { screenshot: false });
     }
   });
 
   test("tree jump buttons open their target URL in a new tab with Ctrl+Click", async ({
-    browserContext,
+    sharedBrowserContext,
     page,
-  }) => {
+  }, testInfo) => {
     test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
     const scenario = TEST_CASES[0];
     const foblesFrame = await activateFoblesForJumpTest(page, scenario);
@@ -155,6 +161,7 @@ test.describe("Fobles browser integration", () => {
     const mousePosition = { x: 0, y: 0 };
 
     await moveMouseTo(page, menuButton, mousePosition, "Ctrl-click jump menu");
+    await menuButton.click();
     await page.waitForTimeout(STEP_WAIT_MS);
     await expect(menuFlyout).toHaveAttribute("data-visible", "true");
 
@@ -165,10 +172,11 @@ test.describe("Fobles browser integration", () => {
         .filter((path): path is string => path !== null),
     );
     expect(paths.length).toBeGreaterThan(0);
+    const step = createStep(page, testInfo, page, "Ctrl+Click Jump");
 
     for (let index = 0; index < paths.length; index += 1) {
       const path = paths[index];
-      await test.step(`Ctrl+Click "${path}"`, async () => {
+      await step(`Ctrl+Click: opens "${path}" in a new tab`, async () => {
         const jumpButton = foblesFrame
           .locator("[data-fobles-tree-jump-path]")
           .nth(index);
@@ -182,7 +190,8 @@ test.describe("Fobles browser integration", () => {
         );
         await page.waitForTimeout(STEP_WAIT_MS);
 
-        const newTabPromise = browserContext.waitForEvent("page");
+        const newTabPromise = sharedBrowserContext.waitForEvent("page");
+        await pulseMouseMarkerClick(page);
         await jumpButton.click({ modifiers: ["Control"] });
         const newTab = await newTabPromise;
         await newTab
@@ -199,6 +208,7 @@ test.describe("Fobles browser integration", () => {
         console.log(
           `[fobles] URL assertion: expected new tab to contain ${path}; actual ${actualUrl}`,
         );
+        await attachItemPathScreenshot(newTab, testInfo, path);
         await newTab.bringToFront();
         await newTab.waitForTimeout(newTabHoldMs);
         await page.bringToFront();
@@ -210,23 +220,26 @@ test.describe("Fobles browser integration", () => {
           mousePosition,
           "Ctrl-click jump menu",
         );
+        await menuButton.click();
         await page.waitForTimeout(STEP_WAIT_MS);
         await expect(menuFlyout).toHaveAttribute("data-visible", "true");
-      });
+      }, { screenshot: false });
     }
   });
 
   test("other menu buttons navigate to their configured URLs", async ({
     page,
-  }) => {
+  }, testInfo) => {
     test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
     const scenario = TEST_CASES[0];
     let foblesFrame = await activateFoblesForJumpTest(page, scenario);
     let menuButton = foblesFrame.locator(".fobles-quick-menu-trigger").first();
     let menuFlyout = foblesFrame.locator(".fobles-quick-menu").first();
     const mousePosition = { x: 0, y: 0 };
+    const step = createStep(page, testInfo, page, "Menu Button");
 
     await moveMouseTo(page, menuButton, mousePosition, "Other menu buttons");
+    await menuButton.click();
     await page.waitForTimeout(STEP_WAIT_MS);
     await expect(menuFlyout).toHaveAttribute("data-visible", "true");
 
@@ -243,8 +256,8 @@ test.describe("Fobles browser integration", () => {
     for (let index = 0; index < targets.length; index += 1) {
       const target = targets[index];
       try {
-        await test.step(
-          `Click "${target.label}"\nexpect URL to contain "${target.url}"`,
+        await step(
+          `Click "${target.label}": URL contains "${target.url}"`,
           async () => {
             try {
               if (index > 0) {
@@ -259,6 +272,7 @@ test.describe("Fobles browser integration", () => {
                   mousePosition,
                   "Other menu buttons",
                 );
+                await menuButton.click();
                 await page.waitForTimeout(STEP_WAIT_MS);
                 await expect(menuFlyout).toHaveAttribute(
                   "data-visible",
@@ -278,6 +292,7 @@ test.describe("Fobles browser integration", () => {
                 `Menu ${target.label}`,
               );
               await page.waitForTimeout(STEP_WAIT_MS);
+              await pulseMouseMarkerClick(page);
               await button.click();
 
               const dialog = foblesFrame.getByRole("dialog");

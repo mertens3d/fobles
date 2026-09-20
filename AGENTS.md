@@ -2,6 +2,8 @@
 
 ## Source And Runtime
 
+- Sitecore test-data serialization: `tests/items-folbles/` (moved from a former top-level `authoring/` — it's e2e test fixture data only, owned by the tests that consume it). `sitecore.json`'s `modules` glob points there; don't reintroduce a root-level `authoring/` folder.
+
 - TypeScript source of truth: `src/`. There is no longer a `src/extension/` wrapper, `src/features/`, or `src/styles/` — every surface is a direct child of `src/` (see architecture below).
 - Runtime unpacked extension: `dist/unpacked/`.
 - Do not edit generated `dist/unpacked/content.js`, `dist/unpacked/background.js`, `dist/unpacked/options.js`, `dist/unpacked/popup.js`, or `dist/unpacked/fobles.css` directly.

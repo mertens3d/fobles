@@ -8,6 +8,13 @@ import {
 
 export type MousePosition = { x: number; y: number };
 
+// SPRINT mode is for verification runs nobody is watching - skip the marker graphic, click flash,
+// and stepped movement animation entirely, since they're purely cosmetic and only exist to make
+// the mouse's path/clicks visible to a human observer.
+function isSprintMode(): boolean {
+  return CONST.SPEED.SELECTED === "SPRINT";
+}
+
 export async function getButtonSize(
   button: Locator,
 ): Promise<{ width: number; height: number }> {
@@ -17,6 +24,7 @@ export async function getButtonSize(
 }
 
 export async function showMouseMarker(page: Page | Frame): Promise<void> {
+  if (isSprintMode()) return;
   await page.evaluate((markerConfig) => {
     if (document.getElementById(markerConfig.ID)) return;
 
@@ -27,15 +35,15 @@ export async function showMouseMarker(page: Page | Frame): Promise<void> {
   }, CONST.MARKER);
 }
 
-async function updateMouseMarkers(
+// Shared by marker-position updates and the click ripple - a page-level (x, y) needs translating
+// into each frame's own local coordinates before it means anything inside that frame's document.
+async function forEachFrameWithLocalPosition(
   page: Page,
   x: number,
   y: number,
+  callback: (frame: Frame, localX: number, localY: number) => Promise<void>,
 ): Promise<void> {
   for (const frame of page.frames()) {
-    const marker = frame.locator("#playwright-mouse-marker");
-    if ((await marker.count()) === 0) continue;
-
     let localX = x;
     let localY = y;
     if (frame !== page.mainFrame()) {
@@ -44,6 +52,18 @@ async function updateMouseMarkers(
       localX -= frameBox.x;
       localY -= frameBox.y;
     }
+    await callback(frame, localX, localY);
+  }
+}
+
+async function updateMouseMarkers(
+  page: Page,
+  x: number,
+  y: number,
+): Promise<void> {
+  await forEachFrameWithLocalPosition(page, x, y, async (frame, localX, localY) => {
+    const marker = frame.locator("#playwright-mouse-marker");
+    if ((await marker.count()) === 0) return;
 
     await marker.evaluate(
       (element, coordinates) => {
@@ -52,10 +72,50 @@ async function updateMouseMarkers(
       },
       { x: localX, y: localY },
     );
-  }
+  });
+}
+
+// A brief color flash on the (already-visible) marker itself, fired right before a simulated
+// click - simpler and more reliably visible than a separate animated ring element. Waits out the
+// flash before returning so callers see it land before the click. This is purely cosmetic, so a
+// frame that's mid-navigation/detaching must never be allowed to hang the real test - bound each
+// frame's work with a timeout and swallow errors instead of propagating them.
+export async function pulseMouseMarkerClick(page: Page): Promise<void> {
+  if (isSprintMode()) return;
+  await Promise.all(
+    page.frames().map(async (frame) => {
+      const flashInFrame = async () => {
+        const marker = frame.locator(`#${CONST.MARKER.ID}`);
+        if ((await marker.count()) === 0) return;
+
+        await marker.evaluate((element, config) => {
+          const el = element as HTMLElement;
+          const originalBackground = el.style.background;
+          el.style.background = config.COLOR;
+          setTimeout(() => {
+            el.style.background = originalBackground;
+          }, config.DURATION_MS);
+        }, CONST.CLICK_FLASH);
+      };
+
+      try {
+        await Promise.race([
+          flashInFrame(),
+          new Promise((resolve) => setTimeout(resolve, 1_000)),
+        ]);
+      } catch {
+        // Frame may be navigating/detaching - the flash is cosmetic only, never worth failing over.
+      }
+    }),
+  );
+  await page.waitForTimeout(CONST.CLICK_FLASH.DURATION_MS);
 }
 
 export async function verifyMouseMarker(page: Page): Promise<void> {
+  if (isSprintMode()) {
+    console.log("[fobles] Mouse preflight skipped (SPRINT mode - no marker in use)");
+    return;
+  }
   const markerState = await page
     .locator(`#${CONST.MARKER.ID}`)
     .evaluate((marker) => {
@@ -132,6 +192,13 @@ export async function moveMouseToPosition(
   position: MousePosition,
   label: string,
 ): Promise<void> {
+  if (isSprintMode()) {
+    await page.mouse.move(targetPosition.x, targetPosition.y);
+    position.x = targetPosition.x;
+    position.y = targetPosition.y;
+    return;
+  }
+
   const startPosition = { ...position };
   const distance = Math.hypot(
     targetPosition.x - position.x,

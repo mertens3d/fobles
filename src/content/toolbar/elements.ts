@@ -86,9 +86,9 @@ export function createProxyButtonsTrigger(context: ToolbarContext): HTMLDivEleme
   });
 }
 
-export function createFeatureButton(context: ToolbarContext): HTMLButtonElement {
+export function createLboltButton(context: ToolbarContext): HTMLButtonElement {
   return createFoblesNavButton(context, {
-    className: CLASS.TOOLBAR_FEATURE_BUTTON,
+    className: CLASS.TOOLBAR_LBOLT_BUTTON,
     text: SYMBOLS.LIGHTNING,
     title: TEXT.TOGGLE_FEATURES,
     onClick: context.onToggleFeatures,

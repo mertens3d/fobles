@@ -1,18 +1,18 @@
----
-ID: "4f607182-93a4-4cb5-8dc6-d7e8f92a3b4c"
+﻿---
+ID: "60718293-a4b5-4dc6-8ed7-e8f92a3b4c5d"
 Parent: "3e4f6071-8293-4ba4-8cb5-c6d7e8f92a3b"
 Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
-Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist Search/Strategy Multilist Search/Strategy Multilist Search 0x
+Path: /sitecore/templates/Modules/Fobles Testing/Strategy Multilist Search/Strategy Multilist Search/Strategy Multilist Search 1x
 SharedFields:
 - ID: "1eb8ae32-e190-44a6-968d-ed904c794ebf"
   Hint: Source
-  Value: "{7FE5F022-9379-44BB-B192-A07ECE555032}"
+  Value: "{30259E3A-3197-483B-8817-23A0FCB855D9}"
 - ID: "ab162cc0-dc80-4abf-8871-998ee5d7ba32"
   Hint: Type
-  Value: Multilist Search
+  Value: Multilist with Search
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
-  Value: 100
+  Value: 200
 Languages:
 - Language: en
   Versions:
@@ -23,11 +23,11 @@ Languages:
       Value: 20260919T174000Z
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "c6374859-0a1b-4d2c-8e3d-d6e7f8091a2b"
+      Value: "1a6edbad-a34d-4535-a2a9-80d3b21e7424"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20260919T174000Z
+      Value: 20260920T022519Z

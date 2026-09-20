@@ -26,3 +26,4 @@ auth*.json
 .sitecore/package-cache/nuget/
 .sitecore/user.json
 .sitecore/.cache/
+.scindex

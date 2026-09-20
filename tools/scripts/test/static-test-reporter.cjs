@@ -1,5 +1,6 @@
 const fs = require("node:fs");
 const path = require("node:path");
+const { exec } = require("node:child_process");
 
 class StaticTestReporter {
   constructor(options = {}) {
@@ -8,15 +9,48 @@ class StaticTestReporter {
     );
     this.startedAt = new Date();
     this.results = [];
+    this.loginAlertUrl = null;
+    this.lastFullResult = { status: "running" };
+    this.totalTests = 0;
+  }
+
+  onBegin(config, suite) {
+    this.totalTests = suite.allTests().length;
+    printStopSafelyWarning();
+    this.writeReport({ status: "running" });
+    openInBrowser(this.outputFile);
+  }
+
+  onStdOut(chunk) {
+    const text = chunk.toString();
+    const loginMatch = text.match(/LOGIN NEEDED at (\S+)/);
+    if (loginMatch) {
+      this.loginAlertUrl = loginMatch[1];
+      this.writeReport(this.lastFullResult);
+    } else if (this.loginAlertUrl && text.includes("[sitecore preflight] Looking for Fobles menu")) {
+      this.loginAlertUrl = null;
+      this.writeReport(this.lastFullResult);
+    }
   }
 
   onTestEnd(test, result) {
+    const screenshots = (result.attachments ?? [])
+      .filter((attachment) => attachment.path && attachment.contentType?.startsWith("image/"))
+      .map((attachment) => ({
+        name: attachment.name,
+        href: toReportRelativeHref(attachment.path, this.outputFile),
+      }));
+    const steps = flattenSteps(result.steps ?? []);
+    const remainingScreenshots = matchScreenshotsToSteps(screenshots, steps);
+
     this.results.push({
+      index: this.results.length + 1,
       title: test.titlePath().join(" "),
       status: result.status,
       duration: result.duration,
       error: stripAnsi(result.error?.message ?? ""),
-      steps: flattenSteps(result.steps ?? []),
+      steps,
+      screenshots: remainingScreenshots,
     });
     this.writeReport({ status: "running" });
   }
@@ -26,6 +60,7 @@ class StaticTestReporter {
   }
 
   writeReport(fullResult) {
+    this.lastFullResult = fullResult;
     const finishedAt = new Date();
     const timestamp = finishedAt.toLocaleString();
     const duration = finishedAt.getTime() - this.startedAt.getTime();
@@ -36,28 +71,22 @@ class StaticTestReporter {
     }, {});
     const passed = fullResult.status === "passed";
     const running = fullResult.status === "running";
-    const reportStatus = running
-      ? "Run in progress"
-      : passed
-        ? "All tests passed"
-        : `Run ${formatStatus(fullResult.status).toLowerCase()}`;
-    const rows = this.results
+    const failedCount = counts.failed ?? 0;
+    const rows = [...this.results]
       .map((result) => {
         const testRow = `
         <tr class="test-row ${escapeHtml(result.status)}">
-          <td><span class="badge badge-${escapeHtml(result.status)}">${escapeHtml(formatStatus(result.status))}</span></td>
-          <td><strong>${escapeHtml(result.title)}</strong></td>
-          <td>${escapeHtml(formatDuration(result.duration))}</td>
-          <td>${renderTestDetails(result)}</td>
+          <td class="test-step-col"><span class="row-kind row-kind-test">Test</span><span class="test-index">${result.index}:${this.totalTests}</span> - <strong>${escapeHtml(result.title)}</strong></td>
+          <td class="result-col"><span class="badge badge-${escapeHtml(result.status)}">${escapeHtml(formatStatus(result.status))}</span><span class="duration">${escapeHtml(formatDuration(result.duration))}</span></td>
+          <td class="details-col">${renderTestDetails(result)}</td>
         </tr>`;
         const stepRows = result.steps
           .map(
             (step) => `
         <tr class="step-row ${escapeHtml(step.status)}">
-          <td><span class="badge badge-${escapeHtml(step.status)}">${escapeHtml(formatStatus(step.status))}</span></td>
-          <td class="step-title">${escapeHtml(step.title)}</td>
-          <td>${escapeHtml(formatDuration(step.duration))}</td>
-          <td>${renderDetails(step.error)}</td>
+          <td class="step-title test-step-col"><span class="row-kind row-kind-step">Step</span>${renderStepTitle(step.title)}</td>
+          <td class="result-col"><span class="badge badge-${escapeHtml(step.status)}">${escapeHtml(formatStatus(step.status))}</span><span class="duration">${escapeHtml(formatDuration(step.duration))}</span></td>
+          <td class="details-col">${renderDetails(step.error, step.screenshots)}</td>
         </tr>`,
           )
           .join("");
@@ -72,45 +101,81 @@ class StaticTestReporter {
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Playwright Test Report</title>
   <style>
-    body { color: #1f2933; font: 16px system-ui, sans-serif; margin: 1rem 2rem; }
-    h1 { margin-bottom: .25rem; }
-    body { background: #f7f9fb; }
+    body { color: #1f2933; font: 16px system-ui, sans-serif; margin: .5rem 1.5rem; background: #f7f9fb; }
     main { width: 100%; }
-    .status { color: ${running ? "#b26a00" : passed ? "#087f5b" : "#c92a2a"}; font-size: 1.2rem; font-weight: 700; }
-    .meta { color: #52606d; }
-    .summary { display: flex; flex-wrap: wrap; gap: .75rem; margin: 1.5rem 0; }
-    .summary-card { background: #fff; border: 1px solid #d9e2ec; border-radius: 6px; min-width: 120px; padding: .85rem 1rem; }
-    .summary-card strong { display: block; font-size: 1.35rem; }
-    table { background: #fff; border-collapse: collapse; margin-top: 1.5rem; width: 100%; }
+    header.report-header { align-items: baseline; display: flex; flex-wrap: wrap; gap: .6rem; }
+    h1 { font-size: 1.05rem; margin: 0; }
+    .meta-inline { color: ${running ? "#b26a00" : "#52606d"}; font-size: .85rem; }
+    .summary { display: flex; flex-wrap: wrap; gap: .5rem; margin: .5rem 0; }
+    .summary-card { background: #fff; border: 1px solid #d9e2ec; border-radius: 6px; min-width: 90px; padding: .4rem .7rem; }
+    .summary-card strong { display: block; font-size: 1.1rem; }
+    .summary-card.alert { background: #ffe3e3; border-color: #ffa8a8; color: #c92a2a; }
+    .summary-card.success { background: #d3f9d8; border-color: #8ce99a; color: #087f5b; }
+    table { background: #fff; border-collapse: collapse; margin-top: .5rem; table-layout: fixed; width: 100%; }
     th, td { border: 1px solid #d9e2ec; padding: .6rem; text-align: left; vertical-align: top; }
     th { background: #f0f4f8; }
+    .test-step-col { overflow-wrap: break-word; width: 400px; }
+    .result-col { width: 90px; }
+    .details-col { width: 500px; }
     tr.failed, tr.timedOut { background: #fff5f5; }
     tr.skipped { color: #52606d; }
+    .test-row { background: #eef3f8; }
     .step-row { background: #fbfcfe; }
     .step-title { padding-left: 2rem; white-space: pre-wrap; }
+    .step-expects { color: #52606d; display: block; font-size: .9rem; padding-left: 1.2rem; }
+    .test-index { color: #52606d; font-variant-numeric: tabular-nums; white-space: nowrap; }
+    .duration { color: #52606d; display: block; font-size: .8rem; margin-top: .2rem; white-space: nowrap; }
+    .row-kind { border-radius: 4px; display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .04em; margin-right: .5rem; padding: .1rem .4rem; text-transform: uppercase; vertical-align: middle; }
+    .row-kind-test { background: #d0ebff; color: #1864ab; }
+    .row-kind-step { background: #e5dbff; color: #5f3dc4; }
+    .screenshot-links { line-height: 1.7; }
+    .screenshot-link { color: inherit; display: inline-block; text-decoration: none; vertical-align: top; }
+    .screenshot-link span { color: #1864ab; display: block; font-size: .8rem; text-decoration: underline; }
+    .screenshot-thumb { background: #fff; border: 1px solid #d9e2ec; border-radius: 4px; display: block; max-height: 320px; max-width: 480px; object-fit: contain; }
     .badge { border-radius: 999px; display: inline-block; font-size: .8rem; font-weight: 700; padding: .2rem .55rem; }
     .badge-passed { background: #d3f9d8; color: #087f5b; }
     .badge-failed, .badge-timedOut { background: #ffe3e3; color: #c92a2a; }
     .badge-skipped { background: #e9ecef; color: #52606d; }
     pre { margin: .75rem 0 0; white-space: pre-wrap; }
+    .login-alert { background: #fab005; border-radius: 6px; color: #1f2933; font-weight: 700; margin-bottom: .5rem; padding: .6rem 1rem; position: sticky; top: 0; z-index: 1; }
+    .login-alert a { color: #1f2933; }
   </style>
 </head>
 <body>
   <main>
-    <h1>Browser Test Report</h1>
-    <p class="status">${reportStatus}</p>
-    <p class="meta">${running ? "Updated" : "Completed"} ${escapeHtml(timestamp)} · Total duration ${escapeHtml(formatDuration(duration))}</p>
+    ${this.loginAlertUrl ? `<div class="login-alert">Login needed - switch to the browser window and log in, then click "Resume" in the Playwright Inspector. (<a href="${escapeHtml(this.loginAlertUrl)}" target="_blank">${escapeHtml(toDisplayUrl(this.loginAlertUrl))}</a>)</div>` : ""}
+    <header class="report-header">
+      <h1>Browser Test Report</h1>
+      <span class="meta-inline">${running ? "Run in progress · " : ""}${escapeHtml(timestamp)} · ${escapeHtml(formatDuration(duration))}${!running && !passed ? ` · ${escapeHtml(formatStatus(fullResult.status))}` : ""}${running ? ` · <span id="refresh-countdown"></span>` : ""}</span>
+    </header>
     <section class="summary">
-      <div class="summary-card"><strong>${counts.passed ?? 0}</strong>Checks passed</div>
-      <div class="summary-card"><strong>${counts.failed ?? 0}</strong>Checks failed</div>
+      <div class="summary-card${failedCount === 0 && (counts.passed ?? 0) > 0 ? " success" : ""}"><strong>${counts.passed ?? 0}</strong>Checks passed</div>
+      <div class="summary-card${failedCount > 0 ? " alert" : ""}"><strong>${failedCount}</strong>Checks failed</div>
       <div class="summary-card"><strong>${counts.skipped ?? 0}</strong>Checks skipped</div>
       <div class="summary-card"><strong>${checks.length}</strong>Checks total</div>
     </section>
     <table>
-      <thead><tr><th>Result</th><th>Test step</th><th>Duration</th><th>Details</th></tr></thead>
+      <thead><tr><th class="test-step-col">Test step</th><th class="result-col">Result</th><th class="details-col">Details</th></tr></thead>
       <tbody>${rows}</tbody>
     </table>
   </main>
+  ${
+    running
+      ? `<script>
+  (function () {
+    var secondsLeft = 2;
+    var el = document.getElementById("refresh-countdown");
+    function tick() {
+      if (el) el.textContent = "refreshing in " + secondsLeft + "s";
+      if (secondsLeft <= 0) { location.reload(); return; }
+      secondsLeft -= 1;
+      setTimeout(tick, 1000);
+    }
+    tick();
+  })();
+</script>`
+      : ""
+  }
 </body>
 </html>
 `;
@@ -148,10 +213,58 @@ function flattenSteps(steps) {
   });
 }
 
-function renderDetails(error) {
-  return error
-    ? `<details><summary>View failure</summary><pre>${escapeHtml(error)}</pre></details>`
-    : "-";
+// Raw attachment names are sanitized filenames (e.g. "item-path-sitecore-layout-Renderings.png",
+// "step-Click-sitecore-layout-Renderings-png-<hash>.png") - not great as link text. Show a short
+// human label instead, keeping the raw name as smaller gray detail alongside it.
+function aliasScreenshotName(name) {
+  const lower = name.toLowerCase();
+  if (lower.startsWith("data-section-")) return "Data section";
+  if (lower.startsWith("item-path-")) return "Item path";
+  if (lower.startsWith("step-")) return "Step screenshot";
+  if (lower === "screenshot" || lower.startsWith("screenshot")) return "Full page";
+  return "Screenshot";
+}
+
+function renderScreenshotLinks(screenshots) {
+  if (!screenshots?.length) return "";
+  const links = screenshots
+    .map(
+      (shot) => `
+      <a href="${escapeHtml(shot.href)}" target="_blank" class="screenshot-link" title="${escapeHtml(shot.name)}">
+        <img src="${escapeHtml(shot.href)}" alt="${escapeHtml(aliasScreenshotName(shot.name))}" class="screenshot-thumb" loading="lazy">
+        <span>${escapeHtml(aliasScreenshotName(shot.name))}</span>
+      </a>`,
+    )
+    .join("<br>");
+  return `<div class="screenshot-links">${links}</div>`;
+}
+
+function renderDetails(error, screenshots) {
+  const parts = [];
+  if (error) parts.push(`<details><summary>View failure</summary><pre>${escapeHtml(error)}</pre></details>`);
+  const screenshotLinks = renderScreenshotLinks(screenshots);
+  if (screenshotLinks) parts.push(screenshotLinks);
+  return parts.length ? parts.join("") : "-";
+}
+
+// createStep (tests/e2e/fobles-helpers.ts) joins its titlePrefix onto the step title as
+// "prefix: title" - bold just that leading "prefix:" so the strategy name stands out from the
+// step's own wording. If the remaining title itself has a further "action: expectation" colon
+// (e.g. "Toggle Fobles off: the field returns to its original shape"), break the expectation onto
+// its own indented "expects:" line for scannability.
+function renderStepTitle(title) {
+  const separatorIndex = title.indexOf(": ");
+  if (separatorIndex === -1) return escapeHtml(title);
+  const prefix = title.slice(0, separatorIndex);
+  const afterPrefix = title.slice(separatorIndex + 2);
+
+  const expectsSeparatorIndex = afterPrefix.indexOf(": ");
+  if (expectsSeparatorIndex === -1) {
+    return `<strong>${escapeHtml(prefix)}:</strong> ${escapeHtml(afterPrefix)}`;
+  }
+  const action = afterPrefix.slice(0, expectsSeparatorIndex);
+  const expectation = afterPrefix.slice(expectsSeparatorIndex + 2);
+  return `<strong>${escapeHtml(prefix)}:</strong> ${escapeHtml(action)}<span class="step-expects">expects: ${escapeHtml(expectation)}</span>`;
 }
 
 function renderTestDetails(result) {
@@ -163,9 +276,15 @@ function renderTestDetails(result) {
     );
   }
   if (result.error) details.push(result.error);
-  return details.length
-    ? `<details open><summary>What happened</summary><pre>${escapeHtml(details.join("\n\n"))}</pre></details>`
-    : "-";
+  const parts = [];
+  if (details.length) {
+    parts.push(
+      `<details><summary>What happened</summary><pre>${escapeHtml(details.join("\n\n"))}</pre></details>`,
+    );
+  }
+  const screenshotLinks = renderScreenshotLinks(result.screenshots);
+  if (screenshotLinks) parts.push(screenshotLinks);
+  return parts.length ? parts.join("") : "-";
 }
 
 function escapeHtml(value) {
@@ -182,6 +301,83 @@ function stripAnsi(value) {
     /[\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[-a-zA-Z\d\/#&.:=?%@~_]+)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))/g,
     "",
   );
+}
+
+function openInBrowser(filePath) {
+  const url = `file://${filePath.replace(/\\/g, "/")}`;
+  const command =
+    process.platform === "win32"
+      ? `start "" "${url}"`
+      : process.platform === "darwin"
+        ? `open "${url}"`
+        : `xdg-open "${url}"`;
+  exec(command, (error) => {
+    if (error) console.warn(`Could not auto-open test report: ${error.message}`);
+  });
+}
+
+function printStopSafelyWarning() {
+  const banner = "=".repeat(70);
+  // Amber background, black text - matches the login-needed banner in fixtures/sitecore.ts.
+  const ansiAmber = "\x1b[43m\x1b[30m";
+  const ansiReset = "\x1b[0m";
+  console.log(
+    `\n${ansiAmber}${banner}${ansiReset}\n${ansiAmber}Stopping this run mid-test leaves the Sitecore session logged in and its${ansiReset}\n${ansiAmber}active-user slot occupied. To stop cleanly, press Ctrl+C ONCE and let it${ansiReset}\n${ansiAmber}finish tearing down (that's what logs the session out) - don't press Ctrl+C${ansiReset}\n${ansiAmber}again or close the terminal, or the session will stay logged in.${ansiReset}\n${ansiAmber}${banner}${ansiReset}\n`,
+  );
+}
+
+function toReportRelativeHref(attachmentPath, reportFile) {
+  const relative = path.relative(path.dirname(reportFile), attachmentPath);
+  return relative.replace(/\\/g, "/");
+}
+
+function toDisplayUrl(url) {
+  try {
+    const parsed = new URL(url);
+    return `${parsed.origin}${parsed.pathname}`;
+  } catch {
+    return url;
+  }
+}
+
+// Sanitized the same way test code sanitizes names into screenshot filenames, so the two can be
+// matched up without the reporter needing to know anything about how tests name their files.
+function sanitizeForMatch(value) {
+  return value.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "");
+}
+
+// A step can be identified by its full title (the default `createStep` screenshot naming) or by
+// a quoted path/label within it (e.g. `Click "/sitecore/media library"`, used by more specific
+// screenshots like the item-path ones) - check both. Both keys are truncated to match
+// createStep's MAX_STEP_SCREENSHOT_NAME_LENGTH (tests/e2e/fobles-helpers.ts) - screenshot
+// filenames are capped there to avoid exceeding Windows' MAX_PATH, so a full-length key would
+// never be found inside the (shorter) filename.
+const STEP_SCREENSHOT_NAME_MATCH_LENGTH = 40;
+
+function extractStepMatchKeys(title) {
+  const keys = [sanitizeForMatch(title).slice(0, STEP_SCREENSHOT_NAME_MATCH_LENGTH)];
+  const quoted = title.match(/"([^"]+)"/);
+  if (quoted) keys.push(sanitizeForMatch(quoted[1]).slice(0, STEP_SCREENSHOT_NAME_MATCH_LENGTH));
+  return keys.filter(Boolean);
+}
+
+// Assigns each screenshot to whichever step(s) it matches, mutating `steps` in place, and returns
+// whichever screenshots matched no step - those stay on the test row as a fallback (e.g. the
+// automatic whole-test "screenshot" attachment).
+function matchScreenshotsToSteps(screenshots, steps) {
+  const remaining = [...screenshots];
+  for (const step of steps) {
+    const keys = extractStepMatchKeys(step.title);
+    const matched = [];
+    for (let i = remaining.length - 1; i >= 0; i -= 1) {
+      const shotKey = remaining[i].name.toLowerCase();
+      if (!keys.some((key) => shotKey.includes(key))) continue;
+      matched.unshift(remaining[i]);
+      remaining.splice(i, 1);
+    }
+    if (matched.length) step.screenshots = matched;
+  }
+  return remaining;
 }
 
 module.exports = StaticTestReporter;

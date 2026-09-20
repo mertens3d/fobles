@@ -7,7 +7,19 @@ import type {
   TestEnvironment,
 } from "../types";
 
+const ENV_FILE_NAMES = [".env.local", ".env"] as const;
+
+function assertEnvFileExists(): void {
+  const found = ENV_FILE_NAMES.some((name) => fs.existsSync(path.resolve(name)));
+  if (!found) {
+    throw new Error(
+      `No ${ENV_FILE_NAMES.join(" or ")} file found at the repo root. Copy .env.example to .env and configure ${CONST.ENVIRONMENT.ENV_VAR}.`,
+    );
+  }
+}
+
 export function parseSitecoreEnvironments(): SitecoreEnvironment[] {
+  assertEnvFileExists();
   const raw = process.env[CONST.ENVIRONMENT.ENV_VAR]?.trim();
 
   if (!raw) {

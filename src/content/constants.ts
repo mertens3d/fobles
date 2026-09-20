@@ -59,8 +59,8 @@ export const CLASS = {
   TOOLBAR_CLOSE_ICON: "fobles-toolbar-close-icon",
   TOOLBAR_CONTAINER: "fobles-toolbar-container",
   TOOLBAR_DRAGGING: "fobles-toolbar-dragging",
-  TOOLBAR_FEATURE_BUTTON: "fobles-nav-button fobles-nav-feature-button",
   TOOLBAR_GRIP: "fobles-toolbar-grip",
+  TOOLBAR_LBOLT_BUTTON: "fobles-nav-button fobles-nav-lbolt-button",
   TOOLBAR_RESIZING: "fobles-toolbar-resizing",
   TOOLBAR_SET_ISE_TITLE_BUTTON: "fobles-nav-set-ise-title-button",
 } as const;
@@ -77,8 +77,8 @@ export const SELECTORS = {
   TOOLBAR_BODY: ".fobles-toolbar-body",
   TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",
   TOOLBAR_CONTAINER: ".fobles-toolbar-container",
-  TOOLBAR_FEATURE_BUTTON: ".fobles-nav-feature-button",
   TOOLBAR_GRIP: ".fobles-toolbar-grip",
+  TOOLBAR_LBOLT_BUTTON: ".fobles-nav-lbolt-button",
   TOOLBAR_SET_ISE_TITLE_BUTTON: ".fobles-nav-set-ise-title-button",
 } as const;
 

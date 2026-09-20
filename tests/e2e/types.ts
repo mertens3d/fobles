@@ -1,4 +1,4 @@
-export type TestSpeed = "CRAWL" | "WALK" | "RUN";
+export type TestSpeed = "CRAWL" | "WALK" | "SPRINT";
 
 export type SitecoreVersion = "xm" | "xp" | "sitecoreai";
 

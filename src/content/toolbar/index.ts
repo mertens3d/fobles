@@ -7,7 +7,7 @@ import {
 import { setQuickMenuVisible } from "./quick-menu";
 import { setProxyButtonsVisible } from "./proxy-buttons";
 import {
-  createFeatureButton,
+  createLboltButton,
   createProxyButtonsTrigger,
   createQuickMenuTrigger,
   createSetIseTabTitleButton,
@@ -48,8 +48,8 @@ export function injectToolbar(context: ToolbarContext): void {
 
   const isCompactToolbar = isSelectRenderingDialog(context.win.location);
 
-  if (!body.querySelector(`.${CLASS.TOOLBAR_FEATURE_BUTTON.split(" ").join(".")}`)) {
-    body.appendChild(createFeatureButton(context));
+  if (!body.querySelector(`.${CLASS.TOOLBAR_LBOLT_BUTTON.split(" ").join(".")}`)) {
+    body.appendChild(createLboltButton(context));
   }
 
   if (isCompactToolbar) {

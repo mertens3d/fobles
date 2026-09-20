@@ -24,7 +24,7 @@
   font-family: system-ui, "Segoe UI", Arial, sans-serif;
   cursor: grab;
   touch-action: none;
-  z-index: 2147483647;
+  z-index: $fobles-toolbar-z-index;
 
   &::before {
     content: "";
@@ -342,13 +342,13 @@
   font-size: 11px;
 }
 
-.fobles-nav-feature-button {
+.fobles-nav-lbolt-button {
   position: relative;
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: $fobles-feature-button-width;
-  min-width: $fobles-feature-button-width;
+  width: $fobles-lbolt-button-width;
+  min-width: $fobles-lbolt-button-width;
   height: $fobles-toolbar-control-size;
   min-height: $fobles-toolbar-control-size;
   padding: 0;
