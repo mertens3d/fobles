@@ -88,6 +88,7 @@ which every item already has. Any existing scenario item exercises them.
 - [x] multilist-with-search
 - [x] quick-info-section (no dedicated item needed - see note above)
 - [x] reference-links (no dedicated item needed - see note above; has its own spec under `tests/e2e/editor/`, unlike quick-info-section/template-path)
+- [ ] style-checklist (new - operates on Presentation Details -> Controls -> Edit's "Styles" checkbox widget, not a regular content item field; no test yet)
 - [x] tag-list
 - [x] template-path (no dedicated item needed - see note above)
 - [x] tree-list
@@ -103,5 +104,6 @@ Sitecore interaction (a ribbon click, a gallery open), so Fobles is toggled on l
 already present for it to decorate.
 
 - [x] reference-links
-- [ ] quick-info-section
+- [x] quick-info-section (exception to the toggle-last rule above - its Quick Info panel target is
+  always present in the DOM already, so it toggles Fobles on first like `strategies/*.spec.ts` does)
 - [ ] template-path

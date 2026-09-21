@@ -114,34 +114,109 @@ export const CSS_PROPERTIES = {
   TOOLBAR_BACKGROUND: "--fobles-toolbar-background",
 } as const;
 
-// Shell pages considered eligible for the toolbar based on pathname alone (see isMenuPathAllowed).
-export const ALLOWED_PATHS = [
-  SITECORE.RELATIVE_PATHS.TEMPLATE_MANAGER,
-  SITECORE.RELATIVE_PATHS.CONTENT_EDITOR_MODERN,
-  SITECORE.RELATIVE_PATHS.CONTENT_EDITOR,
-  SITECORE.RELATIVE_PATHS.CONTENT_MANAGER,
-  SITECORE.RELATIVE_PATHS.POWERSHELL_ISE,
-  SITECORE.RELATIVE_PATHS.KICK_USERS,
-] as const;
+// Every shell page/dialog Fobles is eligible on, in one place, replacing three previously
+// separate lists (path-only pages, xmlcontrol-only dialogs, and which of those get a compact
+// toolbar). matchStrings are checked as plain substrings against the page's own decoded, lowercased
+// "pathname + search" (see findAllowedPage, src/content/guard.ts) - a path like "/sitecore/shell/
+// Applications/Content Editor.aspx" and a query fragment like "xmlcontrol=fileexplorer" are both
+// just substrings of that same string, so no separate matching mode is needed for either kind.
+// id is also this page's placement storage key suffix (see toolbar-placement.ts) - one sync key
+// per page, created only once a user actually drags the toolbar on that particular page.
+// defaultPlacement is that page's own fallback until then; omit it to just use the shared
+// DEFAULT_TOOLBAR_PLACEMENT below instead.
+export type ToolbarPageKind = "full" | "compact";
 
-// default.aspx?xmlcontrol=... pages allowlisted as eligible for the toolbar (see isMenuPathAllowed).
-export const ALLOWED_XML_CONTROLS = [
-  SITECORE.XML_CONTROLS.ADD_FROM_TEMPLATE,
-  SITECORE.XML_CONTROLS.DEVICE_EDITOR,
-  SITECORE.XML_CONTROLS.FILE_EXPLORER,
-  SITECORE.XML_CONTROLS.GALLERY_FAVORITES,
-  SITECORE.XML_CONTROLS.GALLERY_SUBITEMS,
-  SITECORE.XML_CONTROLS.SELECT_RENDERING,
-  SITECORE.XML_CONTROLS.TREE_LIST_EX_EDITOR,
-] as const;
+export type AllowedPage = {
+  id: string;
+  friendlyName: string;
+  matchStrings: readonly string[];
+  toolbarType: ToolbarPageKind;
+  defaultPlacement?: ToolbarPlacement;
+  // Kept in the list for reference/tracking even though Fobles shouldn't currently activate on
+  // it - findAllowedPage (src/content/guard.ts) skips these. Omit to mean true.
+  eligible?: boolean;
+};
 
-// Of the above, these render only inside a small dialog/gallery frame with no room for the full
-// toolbar (quick menu, proxy buttons, ISE title button) - see isCompactToolbarPage (src/content/
-// guard.ts), which gates injectToolbar's (src/content/toolbar/index.ts) compact-vs-full layout.
-export const COMPACT_TOOLBAR_XML_CONTROLS = [
-  SITECORE.XML_CONTROLS.DEVICE_EDITOR,
-  SITECORE.XML_CONTROLS.GALLERY_FAVORITES,
-  SITECORE.XML_CONTROLS.GALLERY_SUBITEMS,
-  SITECORE.XML_CONTROLS.SELECT_RENDERING,
-  SITECORE.XML_CONTROLS.TREE_LIST_EX_EDITOR,
+export const FOBLES_PAGES: readonly AllowedPage[] = [
+  {
+    id: "ContentEditor",
+    friendlyName: "Content Editor",
+    matchStrings: [SITECORE.RELATIVE_PATHS.CONTENT_EDITOR_MODERN, SITECORE.RELATIVE_PATHS.CONTENT_EDITOR],
+    toolbarType: "full",
+  },
+  {
+    id: "TemplateManager",
+    friendlyName: "Template Manager",
+    matchStrings: [SITECORE.RELATIVE_PATHS.TEMPLATE_MANAGER],
+    toolbarType: "full",
+  },
+  {
+    id: "ContentManager",
+    friendlyName: "Content Manager",
+    matchStrings: [SITECORE.RELATIVE_PATHS.CONTENT_MANAGER],
+    toolbarType: "full",
+  },
+  {
+    id: "PowerShellIse",
+    friendlyName: "PowerShell ISE",
+    matchStrings: [SITECORE.RELATIVE_PATHS.POWERSHELL_ISE],
+    toolbarType: "full",
+  },
+  {
+    id: "KickUsers",
+    friendlyName: "Kick User",
+    matchStrings: [SITECORE.RELATIVE_PATHS.KICK_USERS],
+    toolbarType: "full",
+  },
+  {
+    id: "FileExplorer",
+    friendlyName: "File Explorer",
+    matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.FILE_EXPLORER}`],
+    toolbarType: "full",
+  },
+  {
+    id: "AddFromTemplate",
+    friendlyName: "Add From Template",
+    matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.ADD_FROM_TEMPLATE}`],
+    toolbarType: "full",
+    defaultPlacement: { corner: "upper-right", offsetX: 15, offsetY: 65 },
+  },
+  {
+    id: "GallerySubitems",
+    friendlyName: "Gallery: Subitems",
+    matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.GALLERY_SUBITEMS}`],
+    toolbarType: "compact",
+  },
+  {
+    id: "GalleryFavorites",
+    friendlyName: "Gallery: Favorites",
+    matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.GALLERY_FAVORITES}`],
+    toolbarType: "compact",
+  },
+  {
+    id: "TreeListExEditor",
+    friendlyName: "TreeListEx Editor",
+    matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.TREE_LIST_EX_EDITOR}`],
+    toolbarType: "compact",
+  },
+  {
+    id: "DeviceEditor",
+    friendlyName: "Device Editor",
+    matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.DEVICE_EDITOR}`],
+    toolbarType: "compact",
+    eligible: false,
+  },
+  {
+    id: "SelectRendering",
+    friendlyName: "Select Rendering",
+    matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.SELECT_RENDERING}`],
+    toolbarType: "compact",
+    defaultPlacement: { corner: "upper-right", offsetX: 16, offsetY: 70 },
+  },
+  {
+    id: "FieldEditor",
+    friendlyName: "Field Editor",
+    matchStrings: [`${SITECORE.RELATIVE_PATHS.FIELD_EDITOR}?mo=mini`],
+    toolbarType: "compact",
+  },
 ] as const;

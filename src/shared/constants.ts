@@ -3,7 +3,6 @@ export const STORAGE = {
     AI_PAGES_MAPPINGS: "aiPagesMappings",
     DEBUG_LOGGING: "debugLogging",
     FOBLES_NAV_POSITION: "foblesNavPosition",
-    FOBLES_NAV_POSITION_SELECT_RENDERING: "foblesNavPosition_SelectRendering",
     FOBLES_NAV_VISIBLE: "foblesNavVisible",
     FOBLES_NAV_WARNING_VISIBLE: "foblesNavWarningVisible",
     FOBLES_STATE: "fobles_state",

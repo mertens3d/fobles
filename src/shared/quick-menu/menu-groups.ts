@@ -12,9 +12,8 @@ export const TREE_JUMP_GROUP: readonly MenuGroup[] = [
     groupMembers: [
       { id: QUICK_MENU_BUTTON_ID.LAYOUT_RENDERINGS, label: "/Layout /Renderings", path: "/sitecore/layout/Renderings", icon: "/-/icon/software/48x48/elements1.png", isXPOnly: false, isAIOnly: false },
       { id: QUICK_MENU_BUTTON_ID.LAYOUT_PLACEHOLDERS, label: "/Layout /Placeholders", path: "/sitecore/layout/Placeholder Settings", icon: "/-/icon/business/48x48/table_selection_block.png", isXPOnly: false, isAIOnly: false },
-      { id: QUICK_MENU_BUTTON_ID.MEDIA_LIBRARY, label: "/Media library", path: "/sitecore/media library", icon: "/-/icon/applications/48x48/photo_scenery.png", isXPOnly: false, isAIOnly: false },
+      { id: QUICK_MENU_BUTTON_ID.MEDIA_LIBRARY, label: "/media", path: "/sitecore/media library", icon: "/-/icon/applications/48x48/photo_scenery.png", isXPOnly: false, isAIOnly: false },
       { id: QUICK_MENU_BUTTON_ID.POWERSHELL_SCRIPT_LIBRARY, label: "/System /PowerShell", path: SITECORE.RELATIVE_PATHS.POWERSHELL_SCRIPT_LIBRARY, icon: "/-/icon//powershell/48x48/spe.png", isXPOnly: false, isAIOnly: false },
-      { id: QUICK_MENU_BUTTON_ID.MEDIA_PROJECT, label: "/Media /Project", path: "/sitecore/media library/Project", icon: "/-/icon/Applications/48x48/folder_window.png", isXPOnly: false, isAIOnly: false },
       { id: QUICK_MENU_BUTTON_ID.TEMPLATES, label: "/Templates", path: "/sitecore/templates", icon: "/-/icon/Applications/48x48/folder_cubes.png", isXPOnly: false, isAIOnly: false },
     ],
   },

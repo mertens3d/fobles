@@ -51,7 +51,7 @@
 
 - Browser Site Access controls are authoritative; do not add a custom domain allowlist or dynamic content-script registration.
 - Content scripts are registered for HTTP/HTTPS pages and decide eligibility using `src/content/guard.ts`.
-- Sitecore `default.aspx?xmlcontrol=...` pages must be explicitly allowlisted in `ALLOWED_XML_CONTROLS`.
+- Sitecore `default.aspx?xmlcontrol=...` pages must be explicitly allowlisted in `FOBLES_PAGES` (`src/content/constants.ts`).
 - Preserve Sitecore layout when hiding an original control by using the existing Fobles spacer helpers.
 - Fobles navigation targets the top-level tab for same-tab actions.
 

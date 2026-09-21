@@ -1,6 +1,6 @@
 import { expect, type Frame, type Locator, type Page } from "./fixtures/playwright";
 import { CONST } from "./CONST";
-import { moveMouseTo, pulseMouseMarkerClick } from "./mouse-proxy";
+import { moveMouseTo, moveMouseToPosition, pulseMouseMarkerClick, type MousePosition } from "./mouse-proxy";
 
 // Reusable stock Sitecore Content Editor UI interactions (ribbon tabs, galleries), plus Fobles'
 // own toolbar toggle since it's just as much a canned click sequence any spec reuses - kept
@@ -76,5 +76,25 @@ export async function clickLboltButton(
   await moveMouseTo(page, lboltButton, { x: 0, y: 0 }, "LBolt button");
   await pulseMouseMarkerClick(page);
   await lboltButton.click();
+  await page.waitForTimeout(CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS);
+}
+
+// Drags the toolbar container to a target screen position via a real pointerdown -> pointermove
+// -> pointerup sequence - the same gesture wireContainerDragging (src/content/toolbar/drag.ts)
+// listens for, so this exercises the actual drag code path rather than just setting the
+// container's position directly. Must start the gesture on the grip (not just anywhere in the
+// container) since isInteractiveTarget's exclusions aside, any non-grip drag start still works in
+// the real UI - the grip is used here only because it's guaranteed to be the non-interactive
+// drag handle regardless of which toolbar buttons happen to be showing.
+export async function dragToolbarTo(
+  page: Page,
+  grip: Locator,
+  targetPosition: MousePosition,
+): Promise<void> {
+  const mousePosition: MousePosition = { x: 0, y: 0 };
+  await moveMouseTo(page, grip, mousePosition, "Toolbar grip");
+  await page.mouse.down();
+  await moveMouseToPosition(page, targetPosition, mousePosition, "Toolbar drag");
+  await page.mouse.up();
   await page.waitForTimeout(CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS);
 }

@@ -22,8 +22,13 @@ const reportSuiteName = argsText.includes("tests/e2e/toolbar")
     ? "strategies"
     : argsText.includes("tests/e2e/editor")
       ? "editor"
-      : null;
+      : argsText.includes("tests/e2e/promoVideo")
+        ? "promoVideo"
+        : null;
 const reportFileName = reportSuiteName ? `test-report-${reportSuiteName}.html` : "test-report.html";
+// The promoVideo suite (tests/e2e/promoVideo) exists to record a store-listing demo video, not to
+// assert regressions - every run's video is wanted, not just failures.
+const isPromoVideoRecording = argsText.includes("tests/e2e/promoVideo");
 
 export default defineConfig({
   testDir: "./e2e",
@@ -60,7 +65,7 @@ export default defineConfig({
     // Playwright's own whole-page auto-screenshot was just showing up as an extra, unwanted
     // attachment on the test-level row.
     screenshot: "off",
-    video: "retain-on-failure",
+    video: isPromoVideoRecording ? "on" : "retain-on-failure",
   },
   projects: [
     {

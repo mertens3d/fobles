@@ -6,6 +6,24 @@ This folder contains draft materials for a Chrome Web Store and Microsoft Edge A
 
 - STORE_LISTING.md: short and long description text, keywords, category, and support/privacy URLs
 - PRIVACY_POLICY.md: privacy policy draft for the extension
+- images/: final icon/screenshot/promo assets, once created (see Image assets below) - empty for now
+
+## Image assets
+
+Not created yet - this is the naming/dimension convention to follow once real assets exist, so
+Chrome and Edge can reuse the exact same files (both stores accept the same dimensions). Store
+everything under `docs/store/images/`, PNG only, no padding beyond what each spec calls for.
+
+| File | Dimensions | Required by |
+| --- | --- | --- |
+| `icon-128.png` | 128x128 (artwork ~96x96, transparent padding to fill) | Chrome, Edge |
+| `logo-300.png` | 300x300 (min 128x128), 1:1 | Edge (its own "Extension logo" field) |
+| `promo-small-440x280.png` | 440x280 | Chrome (required), Edge (optional) |
+| `promo-marquee-1400x560.png` | 1400x560 | Chrome (optional, for featured placement), Edge (optional "Large promotional tile") |
+| `screenshot-1-1280x800.png` ... `screenshot-5-1280x800.png` | 1280x800 (or 640x400/640x480), full-bleed, no rounded corners | Chrome (1-5), Edge (up to 6) |
+
+Suggested screenshot subjects, in order: extension popup, admin menu / quick-jump menu, Sitecore
+Content Editor with injected UI, AI Pages mapping screen.
 
 ## Recommended submission checklist
 

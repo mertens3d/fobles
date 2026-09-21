@@ -11,6 +11,7 @@ export type FoblesStrategy =
   | "multilist-with-search"
   | "quick-info-section"
   | "reference-links"
+  | "style-checklist"
   | "tag-list"
   | "template-path"
   | "tree-list"
@@ -28,6 +29,7 @@ export type MultilistOptionsFoblesStrategy = Extract<FoblesStrategy, "multilist-
 export type MultilistWithSearchFoblesStrategy = Extract<FoblesStrategy, "multilist-with-search">;
 export type QuickInfoSectionFoblesStrategy = Extract<FoblesStrategy, "quick-info-section">;
 export type ReferenceLinksFoblesStrategy = Extract<FoblesStrategy, "reference-links">;
+export type StyleChecklistFoblesStrategy = Extract<FoblesStrategy, "style-checklist">;
 export type TagListFoblesStrategy = Extract<FoblesStrategy, "tag-list">;
 export type TemplatePathFoblesStrategy = Extract<FoblesStrategy, "template-path">;
 export type TreeListFoblesStrategy = Extract<FoblesStrategy, "tree-list">;
@@ -87,6 +89,8 @@ export type QuickInfoSectionFobles = FoblesConfigBase<QuickInfoSectionFoblesStra
 
 export type ReferenceLinksFobles = FoblesConfigBase<ReferenceLinksFoblesStrategy>;
 
+export type StyleChecklistFobles = FoblesConfigBase<StyleChecklistFoblesStrategy>;
+
 export type TagListFobles = FoblesConfigBase<TagListFoblesStrategy>;
 
 export type TemplatePathFobles = FoblesConfigBase<TemplatePathFoblesStrategy>;
@@ -108,6 +112,7 @@ export type FoblesConfig =
   | MultilistWithSearchFobles
   | QuickInfoSectionFobles
   | ReferenceLinksFobles
+  | StyleChecklistFobles
   | TagListFobles
   | TemplatePathFobles
   | TreeListFobles

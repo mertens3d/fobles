@@ -1,28 +1,20 @@
 import {
-  ALLOWED_PATHS,
-  ALLOWED_XML_CONTROLS,
+  type AllowedPage,
   DEFAULT_TOOLBAR_PLACEMENT,
   SELECTORS,
   TOOLBAR_CORNERS,
 } from "./constants";
 import { MESSAGE, STORAGE } from "../shared/constants";
-import { SITECORE } from "./sitecore";
 import type { ToolbarPlacement } from "./toolbar.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";
 import { getDebugSettings } from "../shared/debug-settings";
-import {
-  getFoblesNavPlacement,
-  getSelectRenderingFoblesNavPlacement,
-  setFoblesNavPlacement,
-  setSelectRenderingFoblesNavPlacement,
-} from "./toolbar-placement";
+import { getPlacementForPage, setPlacementForPage } from "./toolbar-placement";
 import { getFoblesNavVisible } from "../shared/nav-settings";
 import { getFoblesState, setFoblesState as setPersistedFoblesState } from "./state";
 import type { MessageRequest } from "./content.types";
 import {
+  findAllowedPage,
   isKickUsersPath,
-  isMenuPathAllowed,
-  isSelectRenderingDialog,
 } from "./guard";
 import { resumeKickAllUsers } from "./features/quick-menu";
 import {
@@ -38,6 +30,7 @@ let foblesUiActive = false;
 let foblesNavPlacement: ToolbarPlacement = DEFAULT_TOOLBAR_PLACEMENT;
 let foblesNavVisible = true;
 let pageEligible = false;
+let currentAllowedPage: AllowedPage | null = null;
 let toggleMessagesListening = false;
 
 function getToolbarContext(): ToolbarContext {
@@ -47,11 +40,7 @@ function getToolbarContext(): ToolbarContext {
     placement: foblesNavPlacement,
     setPlacement: (placement) => {
       foblesNavPlacement = placement;
-      if (isSelectRenderingDialog(window.location)) {
-        void setSelectRenderingFoblesNavPlacement(placement);
-      } else {
-        void setFoblesNavPlacement(placement);
-      }
+      if (currentAllowedPage) void setPlacementForPage(currentAllowedPage.id, placement);
     },
     setVisible: (visible) => {
       foblesNavVisible = visible;
@@ -129,9 +118,8 @@ function listenForStorageChanges(): void {
       setToolbarVisible(getToolbarContext(), change.newValue);
     }
 
-    const positionKey = isSelectRenderingDialog(window.location)
-      ? STORAGE.KEY.FOBLES_NAV_POSITION_SELECT_RENDERING
-      : STORAGE.KEY.FOBLES_NAV_POSITION;
+    if (!currentAllowedPage) return;
+    const positionKey = `${STORAGE.KEY.FOBLES_NAV_POSITION}_${currentAllowedPage.id}`;
     const positionChange = changes[positionKey];
     const placement = positionChange?.newValue as ToolbarPlacement | undefined;
     if (
@@ -149,30 +137,17 @@ async function reconcileCurrentPage(): Promise<void> {
   const debug = await getDebugSettings();
   setExtensionDebugEnabled(debug.debugLogging);
 
-  const pathAllowed = isMenuPathAllowed(window.location);
-  pageEligible = pathAllowed;
+  const allowedPage = findAllowedPage(window.location);
+  currentAllowedPage = allowedPage;
+  pageEligible = allowedPage !== null;
   const currentUrl = new URL(window.location.href);
-  const normalizedPath = (() => {
-    try {
-      return decodeURIComponent(window.location.pathname).toLowerCase();
-    } catch {
-      return window.location.pathname.toLowerCase();
-    }
-  })();
-  const matchingMenuPath = ALLOWED_PATHS.find((configuredPath) =>
-    normalizedPath.includes(configuredPath.toLowerCase()),
-  ) ?? null;
   const kickUsersPath = isKickUsersPath(window.location.pathname);
 
   extensionLog.debug("Fobles menu eligibility decision", {
     href: currentUrl.href,
     host: currentUrl.host,
     pathname: window.location.pathname,
-    normalizedPath,
-    matchingMenuPath,
-    xmlControl: currentUrl.searchParams.get(SITECORE.QUERY_PARAMS.XML_CONTROL),
-    allowedXmlControls: ALLOWED_XML_CONTROLS,
-    pathAllowed,
+    matchedPage: allowedPage,
     pageEligible,
     kickUsersPath,
     debugLogging: debug.debugLogging,
@@ -180,12 +155,9 @@ async function reconcileCurrentPage(): Promise<void> {
     existingMenuTrigger: Boolean(document.querySelector(SELECTORS.QUICK_MENU_TRIGGER)),
   });
 
-  if (!pageEligible) {
+  if (!allowedPage) {
     extensionLog.debug("Fobles menu not shown: page is not eligible", {
       href: currentUrl.href,
-      matchingMenuPath,
-      allowedXmlControls: ALLOWED_XML_CONTROLS,
-      xmlControl: currentUrl.searchParams.get(SITECORE.QUERY_PARAMS.XML_CONTROL),
     });
     document.querySelector(SELECTORS.TOOLBAR_CONTAINER)?.remove();
     return;
@@ -195,12 +167,9 @@ async function reconcileCurrentPage(): Promise<void> {
   notifyCurrentPageReady();
 
   listenForToggleMessages();
-  const getCurrentPageToolbarPlacement = isSelectRenderingDialog(window.location)
-    ? getSelectRenderingFoblesNavPlacement
-    : getFoblesNavPlacement;
   [foblesNavVisible, foblesNavPlacement] = await Promise.all([
     getFoblesNavVisible(),
-    getCurrentPageToolbarPlacement(),
+    getPlacementForPage(allowedPage.id, allowedPage.defaultPlacement),
   ]);
   const shouldInitialize = getFoblesState();
 

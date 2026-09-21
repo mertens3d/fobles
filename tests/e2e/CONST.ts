@@ -45,8 +45,10 @@ export const CONST = {
     ],
   },
   CLICK_FLASH: {
-    // Dark red - marker's normal pink (#d6336c = 214,51,108) blended 2/3 of the way to black.
-    COLOR: "#471124",
+    // Dark red - marker's normal pink (#d6336c = 214,51,108) blended 2/3 of the way to black
+    // (#471124), then shifted 1/3 of the way from that toward pure red (#ff0000) since #471124
+    // read as near-black on screen.
+    COLOR: "#840b18",
     DURATION_MS: 400,
   },
   ENVIRONMENT: {

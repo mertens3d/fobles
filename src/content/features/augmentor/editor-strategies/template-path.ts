@@ -28,6 +28,7 @@ export function applyTemplatePathStrategy(
       ],
     }));
 
+    element.classList.add(FOBLES.CLASSES.HIDDEN);
     element.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");
     element.after(wrapper);
   });

@@ -70,7 +70,7 @@ async function attachActualFoValueNote(
   matchKey: string,
 ): Promise<void> {
   const actualFo = new URL(actualUrl).searchParams.get("fo") ?? "(none)";
-  const safeName = toSafeFileName(matchKey).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+  const safeName = buildStepMatchKey(matchKey);
   await testInfo.attach(`actual-fo-${safeName}.txt`, {
     body: Buffer.from(`actual: fo=${actualFo}`),
     contentType: "text/plain",
@@ -86,7 +86,7 @@ export async function attachUiPathNote(
   uiPath: string,
   matchKey: string,
 ): Promise<void> {
-  const safeName = toSafeFileName(matchKey).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+  const safeName = buildStepMatchKey(matchKey);
   await testInfo.attach(`ui-path-${safeName}.txt`, {
     body: Buffer.from(`ui path: ${uiPath}`),
     contentType: "text/plain",
@@ -210,10 +210,23 @@ async function getSensitiveAutoMasks(target: Screenshottable): Promise<Locator[]
   const page = getOwningPage(target);
   const masks: Locator[] = [];
 
-  // Sitecore's shell chrome shows the logged-in username in the upper-right corner
-  // (ul.sc-accountInformation's second <li>) on every authenticated page.
-  for (const frame of await framesWithSelector(page, CONST.SITECORE.SELECTORS.ACCOUNT_INFO)) {
-    masks.push(frame.locator(CONST.SITECORE.SELECTORS.ACCOUNT_INFO).first().locator("li").last());
+  // Sitecore's shell chrome shows the logged-in admin username next to their portrait image -
+  // once in the visible header bar itself, and again inside ul.sc-accountInformation's own hover
+  // dropdown (a second copy of the same li, sharing the same portrait id) - mask every occurrence
+  // via the portrait image both copies share, rather than relying on the dropdown's li order
+  // (ACCOUNT_INFO's last() alone missed the visible header copy entirely).
+  const userPortraitLi = "li:has(img#globalHeaderUserPortrait)";
+  for (const frame of await framesWithSelector(page, userPortraitLi)) {
+    masks.push(frame.locator(userPortraitLi));
+  }
+
+  // Content Editor's Quick Info panel shows the item's owner as a domain\username (e.g.
+  // "sitecore\admin") - same sensitivity as the account info username above. Scoped to the row
+  // itself (not just input.scEditorHeaderQuickInfoInputID, which the Template row's id input also
+  // uses) so only this value is masked.
+  const itemOwnerRow = "tr:has(td:text-is('Item owner:'))";
+  for (const frame of await framesWithSelector(page, itemOwnerRow)) {
+    masks.push(frame.locator(itemOwnerRow).locator("input"));
   }
 
   // The browser's built-in XML viewer (e.g. /sitecore/admin/showconfig.aspx, reached via the
@@ -323,6 +336,23 @@ export function toSafeFileName(value: string): string {
 // own portion of the name well short of that, independent of how long the actual step title is.
 const MAX_STEP_SCREENSHOT_NAME_LENGTH = 40;
 
+// Blindly truncating a step's full title from the start can erase its only differentiating part -
+// confirmed live: two "tree jump" steps under the same long shared prefix ("Tree Jump: Click:
+// navigates to \"...\"") collided into an identical key once that shared prefix alone approached
+// MAX_STEP_SCREENSHOT_NAME_LENGTH, since the quoted value (the only thing that actually differed)
+// never survived the truncation. Preferring the quoted value, plus just enough of the action text
+// immediately before it to still tell e.g. Ctrl+click apart from a plain click on the same value,
+// keeps whichever part actually differs. static-test-reporter.cjs's extractStepMatchKeys must stay
+// in sync with this.
+function buildStepMatchKey(matchKey: string): string {
+  const quoted = matchKey.match(/"([^"]+)"/);
+  if (!quoted) return toSafeFileName(matchKey).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+
+  const action = toSafeFileName(matchKey.slice(0, quoted.index)).slice(-15);
+  const value = toSafeFileName(quoted[1]);
+  return `${action}-${value}`.slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+}
+
 // A step whose body navigates away (e.g. a Fobles button's plain click) leaves screenshotTarget
 // pointing at a now-detached frame - screenshotting a detached element can hang indefinitely
 // instead of erroring, which a plain .catch() never protects against. Bound it so a bad
@@ -383,9 +413,9 @@ export function createStep(
           // Attached unconditionally (pass or fail) so every step shows which page it ran
           // against, not just failed ones - named after fullTitle so the report matches it to
           // this exact step (see attachActualFoValueNote for why a shared value can't be used).
-          const safeName = toSafeFileName(fullTitle).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+          const safeName = buildStepMatchKey(fullTitle);
           await testInfo.attach(`page-url-${safeName}.txt`, {
-            body: Buffer.from(`page: ${relativeUrl(page)}`),
+            body: Buffer.from(`test page: ${relativeUrl(page)}`),
             contentType: "text/plain",
           }).catch(() => {
             // Best-effort - never mask the step's real pass/fail outcome.
@@ -438,7 +468,7 @@ export async function attachItemPathScreenshot(
     })
     .first();
   await expect(itemPathRow).toBeVisible();
-  const safeName = toSafeFileName(matchKey).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+  const safeName = buildStepMatchKey(matchKey);
   await attachScreenshot(testInfo, itemPathRow, `item-path-${safeName}.png`);
 }
 

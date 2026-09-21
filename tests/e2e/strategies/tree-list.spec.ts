@@ -27,6 +27,9 @@ test.describe("Strategy scenario: tree list", () => {
       SCENARIO.fieldLabel,
     );
     const selectedPane = fieldTable.locator(".scContentControlSelectedList").first();
+    const selectedPaneButton = fieldTable
+      .locator(`.scContentControlSelectedList + ${FOBLES.SELECTORS.WRAPPER} ${FOBLES.SELECTORS.BUTTON}`)
+      .first();
     const step = createStep(page, testInfo, getEditorSectionLocator(fieldTable), "Tree List");
 
     await step("Default stage: field renders as a plain Sitecore tree list", async () => {
@@ -39,14 +42,15 @@ test.describe("Strategy scenario: tree list", () => {
       await clickLboltButton(page, lboltButton);
       await expect(selectedPane).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
 
-      const selectedPaneButton = fieldTable
-        .locator(`.scContentControlSelectedList + ${FOBLES.SELECTORS.WRAPPER} ${FOBLES.SELECTORS.BUTTON}`)
-        .first();
       await expect(selectedPaneButton).toBeVisible();
       await expect(selectedPaneButton).toHaveText(SCENARIO.expectedButtonText);
       await page.waitForTimeout(STEP_WAIT_MS);
     });
 
-    await runClickNavigationSteps(step, page, testInfo, fieldTable, lboltButton, selectedPane, SCENARIO);
+    // Explicit navigationButton - the "all items" tree pane can render more than one Fobles
+    // button (one per browsable node, including ancestor folders), so fieldTable's default
+    // first-button lookup isn't reliable here; the selected pane's own button is the field's
+    // actual value.
+    await runClickNavigationSteps(step, page, testInfo, fieldTable, lboltButton, selectedPane, SCENARIO, undefined, selectedPaneButton);
   });
 });

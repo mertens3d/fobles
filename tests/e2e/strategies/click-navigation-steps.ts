@@ -14,6 +14,12 @@ import type { NavigableStrategyScenarioData } from "./scenario.types";
 // the scenario's own expected values and the field-specific locator to assert against differ.
 // onToggledOff is an escape hatch for specs with extra toggle-off assertions of their own (e.g.
 // droplink's toHaveScreenshot visual-regression check) that the shared tail doesn't otherwise do.
+// navigationButton is an escape hatch for specs whose field can render more than one Fobles button
+// in fieldTable (e.g. Tree List's "all items" tree pane renders one button per browsable node,
+// including ancestor folders, not just the actual selected value) - fieldTable.locator(BUTTON)
+// .first() would then click whichever button happens to come first in the DOM, not necessarily
+// the scenario's own expected value. Defaults to that same fieldTable-wide lookup for every other
+// strategy, which only ever renders the one button it needs.
 export async function runClickNavigationSteps(
   step: ReturnType<typeof createStep>,
   page: Page,
@@ -23,11 +29,13 @@ export async function runClickNavigationSteps(
   fieldLocator: Locator,
   scenario: NavigableStrategyScenarioData,
   onToggledOff?: () => Promise<void>,
+  navigationButton?: Locator,
 ): Promise<void> {
+  const foblesButton = navigationButton ?? fieldTable.locator(FOBLES.SELECTORS.BUTTON).first();
+
   await step(
     `Ctrl+click: opens the target item in a new tab: "${scenario.expectedFoValue}"`,
     async (fullTitle) => {
-      const foblesButton = fieldTable.locator(FOBLES.SELECTORS.BUTTON).first();
       await expectFoblesButtonNewTabNavigation(page, testInfo, foblesButton, scenario.expectedFoValue, fullTitle);
     },
     { screenshot: false },
@@ -48,7 +56,6 @@ export async function runClickNavigationSteps(
   await step(
     `Click navigates to the target item: "${scenario.expectedFoValue}"`,
     async (fullTitle) => {
-      const foblesButton = fieldTable.locator(FOBLES.SELECTORS.BUTTON).first();
       await expectFoblesButtonSameTabNavigation(page, testInfo, foblesButton, scenario.expectedFoValue, fullTitle);
     },
     { screenshot: false },

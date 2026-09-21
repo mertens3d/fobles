@@ -379,10 +379,22 @@ function sanitizeForMatch(value) {
 // never be found inside the (shorter) filename.
 const STEP_SCREENSHOT_NAME_MATCH_LENGTH = 40;
 
+// Must stay in sync with buildStepMatchKey (tests/e2e/fobles-helpers.ts): when a quoted value is
+// present, that helper prefers the value plus just the last 15 characters of the action text
+// before it, rather than the full title truncated from the start - confirmed live, two different
+// jump targets sharing the same long "Tree Jump: Click: navigates to ..." prefix produced an
+// identical key once that prefix alone approached STEP_SCREENSHOT_NAME_MATCH_LENGTH, erasing the
+// only part that actually differed. Kept alongside the older two keys for attachments generated
+// before this change.
 function extractStepMatchKeys(title) {
   const keys = [sanitizeForMatch(title).slice(0, STEP_SCREENSHOT_NAME_MATCH_LENGTH)];
   const quoted = title.match(/"([^"]+)"/);
-  if (quoted) keys.push(sanitizeForMatch(quoted[1]).slice(0, STEP_SCREENSHOT_NAME_MATCH_LENGTH));
+  if (quoted) {
+    const value = sanitizeForMatch(quoted[1]);
+    keys.push(value.slice(0, STEP_SCREENSHOT_NAME_MATCH_LENGTH));
+    const action = sanitizeForMatch(title.slice(0, quoted.index)).slice(-15);
+    keys.push(`${action}-${value}`.slice(0, STEP_SCREENSHOT_NAME_MATCH_LENGTH));
+  }
   return keys.filter(Boolean);
 }
 

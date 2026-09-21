@@ -13,11 +13,12 @@ export const SITECORE = {
     ITEM_ID: "id",
     XML_CONTROL: "xmlcontrol",
   },
-  // Named so every path used to build ALLOWED_PATHS has an identifier, not just a bare literal.
+  // Named so every path used to build FOBLES_PAGES has an identifier, not just a bare literal.
   RELATIVE_PATHS: {
     CONTENT_EDITOR: "/sitecore/shell/Applications/Content Editor.aspx",
     CONTENT_EDITOR_MODERN: "/sitecore/shell/Applications/Content-Editor",
     CONTENT_MANAGER: "/sitecore/shell/Applications/Content Manager/default.aspx",
+    FIELD_EDITOR: "/sitecore/shell/Applications/Field Editor.aspx",
     KICK_USERS: "/sitecore/client/Applications/LicenseOptions/KickUser.aspx",
     // Sitecore's media request virtual path; can appear nested after another page's path segment
     // (e.g. behind Content Editor.aspx) but is never itself a page eligible for the toolbar.
@@ -54,7 +55,12 @@ export const SITECORE = {
     TREE_NODE_LINK: "a[id^='Tree_Node_']",
     TREE_NODE_TITLE: ".scContentTreeNodeTitle",
     TREE_NODES_WITH_ID: ".scContentTreeNode[id]",
-    TREE_ROOT: "#ContentTreeInnerPanel, #Treeview",
+    // #ContentTreeInnerPanel/#Treeview cover the two ids already confirmed; the attribute
+    // selector is Sitecore's own generic Treeview webcontrol root marker (every tree panel wires
+    // its root's onclick to this same handler), so it also catches trees with other container
+    // ids - e.g. Add From Template's own "Templates" tree root - without needing one hardcoded id
+    // per dialog.
+    TREE_ROOT: "#ContentTreeInnerPanel, #Treeview, [onclick*='Sitecore.Treeview.onTreeClick']",
     URI_ELEMENT: "[onfocus*='sitecore://'], [onblur*='sitecore://']",
   },
   TREE_ID_PREFIXES: {
