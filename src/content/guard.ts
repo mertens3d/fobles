@@ -1,4 +1,4 @@
-import { ALLOWED_PATHS, ALLOWED_XML_CONTROLS } from "./constants";
+import { ALLOWED_PATHS, ALLOWED_XML_CONTROLS, COMPACT_TOOLBAR_XML_CONTROLS } from "./constants";
 import { SITECORE } from "./sitecore";
 
 function normalizePath(pathname: string): string {
@@ -81,11 +81,21 @@ export function isPowerShellIsePath(pathname: string): boolean {
   );
 }
 
-export function isSelectRenderingDialog(location: Location): boolean {
+function hasXmlControl(location: Location, xmlControl: string): boolean {
   const url = new URL(location.href);
   return normalizePath(location.pathname) === SITECORE.RELATIVE_PATHS.SHELL_DEFAULT &&
-    url.searchParams.get(SITECORE.QUERY_PARAMS.XML_CONTROL) ===
-      SITECORE.XML_CONTROLS.SELECT_RENDERING;
+    url.searchParams.get(SITECORE.QUERY_PARAMS.XML_CONTROL) === xmlControl;
+}
+
+export function isSelectRenderingDialog(location: Location): boolean {
+  return hasXmlControl(location, SITECORE.XML_CONTROLS.SELECT_RENDERING);
+}
+
+// Dialog/gallery xmlcontrol pages with no room for the full toolbar (see
+// COMPACT_TOOLBAR_XML_CONTROLS, src/content/constants.ts) - gates injectToolbar's
+// compact-vs-full layout (src/content/toolbar/index.ts).
+export function isCompactToolbarPage(location: Location): boolean {
+  return COMPACT_TOOLBAR_XML_CONTROLS.some((xmlControl) => hasXmlControl(location, xmlControl));
 }
 
 export function isKickUsersPath(pathname: string): boolean {

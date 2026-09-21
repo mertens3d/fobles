@@ -12,6 +12,7 @@ import {
 import { activateFobles, activateFoblesForJumpTest, attachItemPathScreenshot, createStep } from "../fobles-helpers";
 import { hoverAndGrow, hoverAndSlideOut } from "../hover-helpers";
 import { showMouseMarker } from "../mouse-proxy";
+import { clickRibbonTab, findFrameWithSelector } from "../sitecore-macros";
 
 const STEP_WAIT_MS =
   CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
@@ -259,74 +260,75 @@ test.describe("Fobles browser integration", () => {
         await step(
           `Click "${target.label}": URL contains "${target.url}"`,
           async () => {
-            try {
-              if (index > 0) {
-                foblesFrame = await activateFoblesForJumpTest(page, scenario);
-                menuButton = foblesFrame
-                  .locator(".fobles-quick-menu-trigger")
-                  .first();
-                menuFlyout = foblesFrame.locator(".fobles-quick-menu").first();
-                await moveMouseTo(
-                  page,
-                  menuButton,
-                  mousePosition,
-                  "Other menu buttons",
-                );
-                await menuButton.click();
-                await page.waitForTimeout(STEP_WAIT_MS);
-                await expect(menuFlyout).toHaveAttribute(
-                  "data-visible",
-                  "true",
-                );
-              }
-
-              const button = foblesFrame
-                .locator("[data-fobles-menu-url]")
-                .nth(index);
-              await expect(button).toBeVisible();
-              await button.scrollIntoViewIfNeeded();
+            if (index > 0) {
+              foblesFrame = await activateFoblesForJumpTest(page, scenario);
+              menuButton = foblesFrame
+                .locator(".fobles-quick-menu-trigger")
+                .first();
+              menuFlyout = foblesFrame.locator(".fobles-quick-menu").first();
               await moveMouseTo(
                 page,
-                button,
+                menuButton,
                 mousePosition,
-                `Menu ${target.label}`,
+                "Other menu buttons",
               );
+              await menuButton.click();
               await page.waitForTimeout(STEP_WAIT_MS);
-              await pulseMouseMarkerClick(page);
-              await button.click();
-
-              const dialog = foblesFrame.getByRole("dialog");
-              if (await dialog.isVisible().catch(() => false)) {
-                await dialog.getByRole("button", { name: "Continue" }).click();
-              }
-
-              await page.waitForURL(
-                (url) => url.toString().includes(encodeURI(target.url)),
-                { timeout: CONST.TIMEOUTS.URL_WAIT_MS },
-              );
-              const actualUrl = page.url();
-              await test.step(`actual: ${actualUrl}`, async () => {});
-              expect(
-                actualUrl,
-                `Expected current URL to contain ${target.url}`,
-              ).toContain(encodeURI(target.url));
-              console.log(
-                `[fobles] URL assertion: expected ${target.url}; actual ${actualUrl}`,
-              );
-              await page.waitForTimeout(
-                CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS *
-                  CONST.NAVIGATION.HOLD_MULTIPLIER,
-              );
-            } catch (error) {
-              const message =
-                error instanceof Error ? error.message : String(error);
-              failures.push(
-                `${target.label}\nexpect: ${target.url}\nactual: ${page.url()}\nerror: ${message}`,
-              );
-              console.error(
-                `[fobles] Menu target failed; continuing: ${failures.at(-1)}`,
+              await expect(menuFlyout).toHaveAttribute(
+                "data-visible",
+                "true",
               );
             }
+
+            const button = foblesFrame
+              .locator("[data-fobles-menu-url]")
+              .nth(index);
+            await expect(button).toBeVisible();
+            await button.scrollIntoViewIfNeeded();
+            await moveMouseTo(
+              page,
+              button,
+              mousePosition,
+              `Menu ${target.label}`,
+            );
+            await page.waitForTimeout(STEP_WAIT_MS);
+            await pulseMouseMarkerClick(page);
+            await button.click();
+
+            const dialog = foblesFrame.getByRole("dialog");
+            if (await dialog.isVisible().catch(() => false)) {
+              await dialog.getByRole("button", { name: "Continue" }).click();
+            }
+
+            await page.waitForURL(
+              (url) => url.toString().includes(encodeURI(target.url)),
+              { timeout: CONST.TIMEOUTS.URL_WAIT_MS },
+            );
+            // waitForURL only confirms the URL changed, not that the new page has actually
+            // painted - without this, the step's auto screenshot can capture a stale composited
+            // frame from the page being navigated away from instead of the new one.
+            await page.waitForLoadState("load").catch(() => undefined);
+
+            // Content Editor's ribbon can be left on whatever tab a previous session used -
+            // normalize to Home before the screenshot so it's consistent regardless.
+            if (target.label === "Content Editor") {
+              await findFrameWithSelector(page, 'a[accesskey="H"]', "Content Editor Home ribbon tab")
+                .then((frame) => clickRibbonTab(page, frame, "H"))
+                .catch(() => undefined);
+            }
+
+            const actualUrl = page.url();
+            expect(
+              actualUrl,
+              `Expected current URL to contain ${target.url}`,
+            ).toContain(encodeURI(target.url));
+            console.log(
+              `[fobles] URL assertion: expected ${target.url}; actual ${actualUrl}`,
+            );
+            await page.waitForTimeout(
+              CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS *
+                CONST.NAVIGATION.HOLD_MULTIPLIER,
+            );
           },
           { timeout: CONST.TIMEOUTS.STEP_TIMEOUT_MS },
         );

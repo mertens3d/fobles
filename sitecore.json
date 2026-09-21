@@ -1,7 +1,7 @@
 {
   "$schema": "./.sitecore/schemas/RootConfigurationFile.schema.json",
   "modules": [
-    "./tests/items-folbles/*.module.json"
+    "./tests/items-fobles/*.module.json"
   ],
   "plugins": [
     "Sitecore.DevEx.Extensibility.Serialization@7.0.24",

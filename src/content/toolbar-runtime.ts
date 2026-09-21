@@ -48,9 +48,9 @@ function getToolbarContext(): ToolbarContext {
     setPlacement: (placement) => {
       foblesNavPlacement = placement;
       if (isSelectRenderingDialog(window.location)) {
-        void setSelectRenderingFoblesNavPlacement(window.location.origin, placement);
+        void setSelectRenderingFoblesNavPlacement(placement);
       } else {
-        void setFoblesNavPlacement(window.location.origin, placement);
+        void setFoblesNavPlacement(placement);
       }
     },
     setVisible: (visible) => {
@@ -130,13 +130,10 @@ function listenForStorageChanges(): void {
     }
 
     const positionKey = isSelectRenderingDialog(window.location)
-      ? STORAGE.KEY.SELECT_RENDERING_FOBLES_NAV_POSITION
+      ? STORAGE.KEY.FOBLES_NAV_POSITION_SELECT_RENDERING
       : STORAGE.KEY.FOBLES_NAV_POSITION;
     const positionChange = changes[positionKey];
-    const placementsByOrigin = positionChange?.newValue as
-      | Record<string, ToolbarPlacement>
-      | undefined;
-    const placement = placementsByOrigin?.[window.location.origin];
+    const placement = positionChange?.newValue as ToolbarPlacement | undefined;
     if (
       placement &&
       TOOLBAR_CORNERS.includes(placement.corner) &&
@@ -203,7 +200,7 @@ async function reconcileCurrentPage(): Promise<void> {
     : getFoblesNavPlacement;
   [foblesNavVisible, foblesNavPlacement] = await Promise.all([
     getFoblesNavVisible(),
-    getCurrentPageToolbarPlacement(window.location.origin),
+    getCurrentPageToolbarPlacement(),
   ]);
   const shouldInitialize = getFoblesState();
 

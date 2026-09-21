@@ -4,7 +4,7 @@ import type { TestSpeed } from "./types";
 export const CONST = {
   SCENARIOS: scenarios,
   SPEED: {
-    SELECTED: "SPRINT" as TestSpeed,
+    SELECTED: "WALK" as TestSpeed,
     SETTINGS: {
       CRAWL: { STEP_WAIT_MS: 3_000, MOUSE_PX_PER_SECOND: 800 },
       WALK: { STEP_WAIT_MS: 1_000, MOUSE_PX_PER_SECOND: 2_000 },
@@ -61,11 +61,13 @@ export const CONST = {
       IDENTITY_AUTHORIZE: "/connect/authorize",
     },
     SELECTORS: {
-      TOOLBAR: "[data-fobles-nav]",
+      TOOLBAR_CONTAINER: ".fobles-toolbar-container",
       QUICK_MENU_TRIGGER: "[data-fobles-nav-owner='1']",
       QUICK_MENU: ".fobles-quick-menu",
       TOOLBAR_TOGGLE_BUTTON: "button[title='Toggle Fobles navigation']",
       MENU_TRIGGER: ".fobles-quick-menu-trigger",
+      PROXY_BUTTONS_TRIGGER: ".fobles-proxy-buttons-trigger",
+      TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",
       LBOLT_BUTTON: "button.fobles-nav-lbolt-button",
       CONTENT_TAB: "span.scEditorTabHeaderNormal",
       QUICK_INFO_TABLE: ".scEditorQuickInfo",
@@ -84,6 +86,9 @@ export const CONST = {
     MENU_TRIGGER_VISIBLE_MS: 30_000,
     URL_WAIT_MS: 30_000,
     TEST_SUITE_MS: 10 * 60 * 1_000,
-    STEP_TIMEOUT_MS: 25_000,
+    // Was 25_000 - shorter than URL_WAIT_MS itself, so a slow-to-render page (e.g. showconfig.aspx,
+    // which dumps the whole live web.config and can take a while to build the XML viewer tree)
+    // could exceed the step's own budget before its URL wait even finished.
+    STEP_TIMEOUT_MS: 45_000,
   },
 } as const;

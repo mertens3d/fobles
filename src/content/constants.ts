@@ -90,9 +90,9 @@ export const TOOLBAR_CORNERS = [
 ] as const;
 
 export const DEFAULT_TOOLBAR_PLACEMENT: ToolbarPlacement = {
-  corner: "upper-left",
-  offsetX: 70,
-  offsetY: 3,
+  corner: "upper-right",
+  offsetX: 15,
+  offsetY: 105,
 };
 
 export const ATTRIBUTE = {
@@ -126,6 +126,22 @@ export const ALLOWED_PATHS = [
 
 // default.aspx?xmlcontrol=... pages allowlisted as eligible for the toolbar (see isMenuPathAllowed).
 export const ALLOWED_XML_CONTROLS = [
+  SITECORE.XML_CONTROLS.ADD_FROM_TEMPLATE,
+  SITECORE.XML_CONTROLS.DEVICE_EDITOR,
   SITECORE.XML_CONTROLS.FILE_EXPLORER,
+  SITECORE.XML_CONTROLS.GALLERY_FAVORITES,
+  SITECORE.XML_CONTROLS.GALLERY_SUBITEMS,
   SITECORE.XML_CONTROLS.SELECT_RENDERING,
+  SITECORE.XML_CONTROLS.TREE_LIST_EX_EDITOR,
+] as const;
+
+// Of the above, these render only inside a small dialog/gallery frame with no room for the full
+// toolbar (quick menu, proxy buttons, ISE title button) - see isCompactToolbarPage (src/content/
+// guard.ts), which gates injectToolbar's (src/content/toolbar/index.ts) compact-vs-full layout.
+export const COMPACT_TOOLBAR_XML_CONTROLS = [
+  SITECORE.XML_CONTROLS.DEVICE_EDITOR,
+  SITECORE.XML_CONTROLS.GALLERY_FAVORITES,
+  SITECORE.XML_CONTROLS.GALLERY_SUBITEMS,
+  SITECORE.XML_CONTROLS.SELECT_RENDERING,
+  SITECORE.XML_CONTROLS.TREE_LIST_EX_EDITOR,
 ] as const;

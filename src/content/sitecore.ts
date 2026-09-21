@@ -63,7 +63,12 @@ export const SITECORE = {
     SELECT_RENDERING: "Treeview_",
   },
   XML_CONTROLS: {
+    ADD_FROM_TEMPLATE: "AddFromTemplate",
+    DEVICE_EDITOR: "DeviceEditor",
     FILE_EXPLORER: "FileExplorer",
+    GALLERY_FAVORITES: "Gallery.Favorites",
+    GALLERY_SUBITEMS: "Gallery.Subitems",
     SELECT_RENDERING: "Sitecore.Shell.Applications.Dialogs.SelectRendering",
+    TREE_LIST_EX_EDITOR: "TreeListExEditor",
   },
 } as const;

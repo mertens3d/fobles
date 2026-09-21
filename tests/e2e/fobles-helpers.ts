@@ -3,24 +3,10 @@ import { openSitecorePage } from "./fixtures/sitecore";
 import type { FoblesExpectation } from "./scenarios";
 import { moveMouseTo, pulseMouseMarkerClick, showMouseMarker, verifyMouseMarker } from "./mouse-proxy";
 import { CONST } from "./CONST";
+import { clickLboltButton, findFrameWithSelector } from "./sitecore-macros";
 import type { TestInfo } from "@playwright/test";
 
 type Screenshottable = Pick<Locator, "screenshot">;
-
-export async function findFrameWithSelector(
-  page: Page,
-  selector: string,
-  description: string,
-): Promise<Frame> {
-  console.log(`[fobles] Looking for frame with selector "${selector}"`);
-  for (const frame of page.frames()) {
-    if ((await frame.locator(selector).count()) > 0) {
-      console.log(`[fobles] Frame with selector "${selector}" found`);
-      return frame;
-    }
-  }
-  throw new Error(`Could not find ${description} in any frame: ${selector}`);
-}
 
 // Shared by every field-strategy test (strategies/*.spec.ts) - navigates to the scenario item,
 // shows the mouse marker (matching the toolbar suite's visual style), and locates the field's
@@ -54,19 +40,6 @@ export async function activateFoblesForFieldStrategy(
   return { foblesFrame, fieldTable, lboltButton };
 }
 
-// Moves the mouse marker to the LBolt button, flashes it, then clicks - the same
-// move-then-click pattern the toolbar suite uses, instead of a plain locator.click(). Pauses
-// afterward so the click's effect is visible on screen before the next interaction fires.
-export async function clickLboltButton(
-  page: Page,
-  lboltButton: Locator,
-): Promise<void> {
-  await moveMouseTo(page, lboltButton, { x: 0, y: 0 }, "LBolt button");
-  await pulseMouseMarkerClick(page);
-  await lboltButton.click();
-  await page.waitForTimeout(CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS);
-}
-
 // Sitecore's own "fo" query param is either a bare GUID (braces stripped by Fobles'
 // normalizeFoblesValue before building the URL) or a content path (e.g.
 // "/sitecore/system/Modules/Fobles Testing") - callers may still pass a braced GUID (matching how
@@ -84,45 +57,100 @@ function assertFoblesTargetUrl(actualUrl: string, expectedFoValue: string): void
   );
 }
 
+// Named after matchKey - the enclosing step's own full title - rather than expectedFoValue,
+// since two different steps in the same test (e.g. Ctrl+click and a later plain click) can share
+// the identical expectedFoValue; naming after the shared value would make the reporter's
+// suffix-based step matching attach both notes to whichever step it visits first and leave the
+// other with none. Attached before the assertion runs so it still shows up if that assertion then
+// throws.
+async function attachActualFoValueNote(
+  testInfo: TestInfo,
+  expectedFoValue: string,
+  actualUrl: string,
+  matchKey: string,
+): Promise<void> {
+  const actualFo = new URL(actualUrl).searchParams.get("fo") ?? "(none)";
+  const safeName = toSafeFileName(matchKey).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+  await testInfo.attach(`actual-fo-${safeName}.txt`, {
+    body: Buffer.from(`actual: fo=${actualFo}`),
+    contentType: "text/plain",
+  });
+}
+
+// Records the real click-path a user would take to reach the page under test (e.g. "CE -> Navigate
+// -> Links") - a bare relative URL alone doesn't say how you'd actually get there through the UI,
+// especially for tests that navigate straight to a URL instead of clicking through it. matchKey -
+// see attachActualFoValueNote.
+export async function attachUiPathNote(
+  testInfo: TestInfo,
+  uiPath: string,
+  matchKey: string,
+): Promise<void> {
+  const safeName = toSafeFileName(matchKey).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+  await testInfo.attach(`ui-path-${safeName}.txt`, {
+    body: Buffer.from(`ui path: ${uiPath}`),
+    contentType: "text/plain",
+  });
+}
+
+// Fobles' own "Open Items in Same Tab" confirmation dialog renders inside whichever frame the
+// clicked button itself lives in (e.g. a Content Editor gallery's own frame), not necessarily
+// page's main frame - search every frame, not just page.locator(...), or the dialog can go
+// unnoticed and unclicked, silently stalling the navigation it's meant to confirm.
+async function dismissFoblesConfirmDialogIfPresent(page: Page): Promise<void> {
+  const deadline = Date.now() + 3_000;
+  do {
+    for (const frame of page.frames()) {
+      const dialog = frame.locator(".fobles-confirm-dialog").first();
+      if (await dialog.isVisible().catch(() => false)) {
+        await dialog.locator(".fobles-confirm-dialog-continue").click();
+        return;
+      }
+    }
+    await page.waitForTimeout(150);
+  } while (Date.now() < deadline);
+  // No confirmation configured (warning setting off) - navigation already proceeded.
+}
+
 // A Fobles item button's plain click navigates the current tab - Sitecore's own eligibility is
 // not our concern (per AGENTS.md scope: Fobles' job ends at sending the right URL), so this only
 // asserts the URL we land on, not what Content Editor does with it. Fobles shows a same-tab
 // navigation confirmation dialog by default (fresh profile, FOBLES_NAV_WARNING_VISIBLE defaults to
 // true) - click through it if it appears. expectedFoValue is whatever the "fo" query param should
-// be - a bare GUID for most strategies, or a content path for Internal Link. Also attaches a
-// Quick Info "Item path" screenshot of the landed-on item, for visual confirmation alongside the
-// URL assertion.
+// be - a bare GUID for most strategies, or a content path for Internal Link. stepTitle must be the
+// exact title of the enclosing step (see attachActualFoValueNote) so the report attaches this call's
+// note/screenshot to the right step even when another step in the same test shares expectedFoValue.
+// Also attaches a Quick Info "Item path" screenshot of the landed-on item, for visual confirmation
+// alongside the URL assertion.
 export async function expectFoblesButtonSameTabNavigation(
   page: Page,
   testInfo: TestInfo,
   button: Locator,
   expectedFoValue: string,
+  stepTitle: string,
 ): Promise<void> {
   await moveMouseTo(page, button, { x: 0, y: 0 }, "Fobles item button");
   await pulseMouseMarkerClick(page);
   await button.click();
 
-  const confirmDialog = page.locator(".fobles-confirm-dialog").first();
-  await confirmDialog.waitFor({ state: "visible", timeout: 3_000 }).catch(() => {
-    // No confirmation configured (warning setting off) - navigation already proceeded.
-  });
-  if (await confirmDialog.isVisible().catch(() => false)) {
-    await confirmDialog.locator(".fobles-confirm-dialog-continue").click();
-  }
+  await dismissFoblesConfirmDialogIfPresent(page);
 
   await page.waitForURL((url) => url.searchParams.has("fo"));
+  await attachActualFoValueNote(testInfo, expectedFoValue, page.url(), stepTitle);
   assertFoblesTargetUrl(page.url(), expectedFoValue);
-  await attachItemPathScreenshot(page, testInfo, expectedFoValue);
+  await attachItemPathScreenshot(page, testInfo, stepTitle);
 }
 
 // A Fobles item button's Ctrl/Cmd-click opens the target in a new tab, leaving the current page
-// untouched - verify the popup's URL, then close it without disturbing the rest of the test. Also
-// attaches a Quick Info "Item path" screenshot of the popup before closing it.
+// untouched - verify the popup's URL, then close it without disturbing the rest of the test.
+// stepTitle - see expectFoblesButtonSameTabNavigation. Also attaches a Quick Info "Item path"
+// screenshot of the popup before closing it.
 export async function expectFoblesButtonNewTabNavigation(
   page: Page,
   testInfo: TestInfo,
   button: Locator,
   expectedFoValue: string,
+  stepTitle: string,
 ): Promise<void> {
   await moveMouseTo(page, button, { x: 0, y: 0 }, "Fobles item button");
   await pulseMouseMarkerClick(page);
@@ -132,8 +160,9 @@ export async function expectFoblesButtonNewTabNavigation(
     button.click({ modifiers: ["Control"] }),
   ]);
   await popup.waitForLoadState("domcontentloaded");
+  await attachActualFoValueNote(testInfo, expectedFoValue, popup.url(), stepTitle);
   assertFoblesTargetUrl(popup.url(), expectedFoValue);
-  await attachItemPathScreenshot(popup, testInfo, expectedFoValue);
+  await attachItemPathScreenshot(popup, testInfo, stepTitle);
   await popup.close();
 }
 
@@ -222,22 +251,60 @@ async function getSensitiveAutoMasks(target: Screenshottable): Promise<Locator[]
   }
 
   // stats.aspx ("Stats" quick-menu button) lists rendering/item stats in plain, unstyled
-  // <table>s scoped to its own #form1 - mask every table in it.
+  // <table>s scoped to its own #form1 - the first one is enough to obscure the data without
+  // blacking out the whole page.
   for (const frame of await framesWithSelector(page, "#form1 table")) {
-    masks.push(frame.locator("#form1 table"));
+    masks.push(frame.locator("#form1 table").first());
   }
 
   // dbbrowser.aspx ("DB Browser" quick-menu button) shows a full item tree in div.content - scope
   // to a .content that actually contains the tree browser (#tree), since ".content" alone is too
-  // generic to safely mask on every page.
+  // generic to safely mask on every page. #dataBases (the master/web/filesystem/core database
+  // tabs above the tree) is a sibling, not a descendant, so it needs its own entry.
   for (const frame of await framesWithSelector(page, "div.content:has(#tree)")) {
     masks.push(frame.locator("div.content:has(#tree)"));
+  }
+  for (const frame of await framesWithSelector(page, "#dataBases")) {
+    masks.push(frame.locator("#dataBases"));
   }
 
   // Installation Wizard ("Installation Wizard" quick-menu button, a shell application likely
   // rendered inside a nested frame) shows the selected package's filename in #PackageFile.
   for (const frame of await framesWithSelector(page, "#PackageFile")) {
     masks.push(frame.locator("#PackageFile"));
+  }
+
+  // Kick User/Control Panel/Launchpad ("Kick User"/"Control Panel"/"Launchpad" quick-menu
+  // buttons) are all Sitecore client (SPA-shell) applications sharing the same main-content
+  // region class, regardless of which application it is.
+  for (const frame of await framesWithSelector(page, ".sc-applicationContent-main")) {
+    masks.push(frame.locator(".sc-applicationContent-main"));
+  }
+
+  // File Explorer ("File Explorer" quick-menu button, xmlcontrol=FileExplorer) has no id/class of
+  // its own on the layout table holding the actual folder/file listing - find it relative to
+  // #FoldersAction (unique to this page) instead, and mask just its third row (the listing itself,
+  // not the toolbar rows above it).
+  const fileExplorerRow = "#FoldersAction ~ table[width='100%'][height='100%'] tr:nth-child(3)";
+  for (const frame of await framesWithSelector(page, fileExplorerRow)) {
+    masks.push(frame.locator(fileExplorerRow));
+  }
+
+  // Content Editor's own content tree and ribbon tab buttons.
+  for (const frame of await framesWithSelector(page, ".scContentTreeContainer")) {
+    masks.push(frame.locator(".scContentTreeContainer"));
+  }
+  for (const frame of await framesWithSelector(page, ".scRibbonNavigatorButtonsGroup")) {
+    masks.push(frame.locator(".scRibbonNavigatorButtonsGroup"));
+  }
+
+  // Desktop ("Desktop" quick-menu button) shows the current database name and a user's saved
+  // desktop shortcuts.
+  for (const frame of await framesWithSelector(page, "#DatabaseSelector")) {
+    masks.push(frame.locator("#DatabaseSelector"));
+  }
+  for (const frame of await framesWithSelector(page, "#DesktopLinks")) {
+    masks.push(frame.locator("#DesktopLinks"));
   }
 
   return masks;
@@ -269,6 +336,19 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T
   ]);
 }
 
+// The relative URL (path + query, no origin) of the page being tested - reports commit screenshots
+// to a public repo, so the actual hostname must never appear in report text. page.url() can throw
+// on a closed/mid-navigation page; "(unknown)" is a safe fallback rather than letting that mask
+// whatever the step body itself threw.
+function relativeUrl(page: Page): string {
+  try {
+    const url = new URL(page.url());
+    return `${url.pathname}${url.search}`;
+  } catch {
+    return "(unknown)";
+  }
+}
+
 // Every check (test.step) should have a screenshot by default, without each call site remembering
 // to take one - wraps test.step so a screenshot is always attached, pass or fail. Named after the
 // step title itself so the report can match it back to the exact step it belongs to. Defaults to
@@ -277,7 +357,10 @@ async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T
 // needing to cross-reference the parent test row. Pass { screenshot: false } for steps that
 // already attach their own, more meaningful screenshot (e.g. click-navigation steps attach the
 // landed-on page's Quick Info panel instead) - screenshotTarget would otherwise still capture the
-// original page, which adds a redundant, less useful image.
+// original page, which adds a redundant, less useful image. body receives this step's own full
+// (prefixed) title, so a body that attaches its own named screenshot/note (e.g.
+// attachItemPathScreenshot, expectFoblesButtonSameTabNavigation/NewTabNavigation) can name it after
+// that instead of a value another step in the same test might share.
 export function createStep(
   page: Page,
   testInfo: TestInfo,
@@ -285,7 +368,7 @@ export function createStep(
   titlePrefix?: string,
 ): (
   title: string,
-  body: () => Promise<void>,
+  body: (fullTitle: string) => Promise<void>,
   options?: { timeout?: number; screenshot?: boolean },
 ) => Promise<void> {
   return async (title, body, options) => {
@@ -295,10 +378,20 @@ export function createStep(
       fullTitle,
       async () => {
         try {
-          await body();
+          await body(fullTitle);
         } finally {
+          // Attached unconditionally (pass or fail) so every step shows which page it ran
+          // against, not just failed ones - named after fullTitle so the report matches it to
+          // this exact step (see attachActualFoValueNote for why a shared value can't be used).
+          const safeName = toSafeFileName(fullTitle).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+          await testInfo.attach(`page-url-${safeName}.txt`, {
+            body: Buffer.from(`page: ${relativeUrl(page)}`),
+            contentType: "text/plain",
+          }).catch(() => {
+            // Best-effort - never mask the step's real pass/fail outcome.
+          });
+
           if (options?.screenshot !== false) {
-            const safeName = toSafeFileName(fullTitle).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
             await withTimeout(
               attachScreenshot(testInfo, screenshotTarget, `step-${safeName}.png`),
               STEP_SCREENSHOT_TIMEOUT_MS,
@@ -316,11 +409,13 @@ export function createStep(
 
 // Screenshots just the "Item path" row of Content Editor's quick-info panel (switching to the
 // Content tab first if needed) - shows which item a jump landed on without the full-page noise,
-// and without the Item owner row a whole-quick-info screenshot would also expose.
+// and without the Item owner row a whole-quick-info screenshot would also expose. matchKey should
+// be the enclosing step's own full title (see attachActualFoValueNote) so this screenshot attaches
+// to the right step even when another step in the same test targets the same item/value.
 export async function attachItemPathScreenshot(
   page: Page,
   testInfo: TestInfo,
-  jumpTargetPath: string,
+  matchKey: string,
 ): Promise<void> {
   const frame = await findFrameWithSelector(
     page,
@@ -343,7 +438,7 @@ export async function attachItemPathScreenshot(
     })
     .first();
   await expect(itemPathRow).toBeVisible();
-  const safeName = toSafeFileName(jumpTargetPath).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+  const safeName = toSafeFileName(matchKey).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
   await attachScreenshot(testInfo, itemPathRow, `item-path-${safeName}.png`);
 }
 

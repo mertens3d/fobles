@@ -1,8 +1,8 @@
 import { CLASS, SELECTORS, TEXT } from "../constants";
 import type { ToolbarPlacement } from "../toolbar.types";
 import {
+  isCompactToolbarPage,
   isPowerShellIsePath,
-  isSelectRenderingDialog,
 } from "../guard";
 import { setQuickMenuVisible } from "./quick-menu";
 import { setProxyButtonsVisible } from "./proxy-buttons";
@@ -46,7 +46,7 @@ export function injectToolbar(context: ToolbarContext): void {
 
   wireContainerDragging(context, container);
 
-  const isCompactToolbar = isSelectRenderingDialog(context.win.location);
+  const isCompactToolbar = isCompactToolbarPage(context.win.location);
 
   if (!body.querySelector(`.${CLASS.TOOLBAR_LBOLT_BUTTON.split(" ").join(".")}`)) {
     body.appendChild(createLboltButton(context));

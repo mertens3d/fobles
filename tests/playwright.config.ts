@@ -10,6 +10,20 @@ const testArtifactsDir = path.resolve(process.cwd(), "tests/test-artifacts");
 // otherwise overwrite test-report.html with an empty "0 tests" snapshot on top of a real run's
 // live results, since both invocations write to the same file.
 const isListOnly = process.argv.includes("--list");
+// Each test set (toolbar/strategies/editor) gets its own report file, so running one doesn't
+// wipe out the others' - detected from the file/dir arguments already on the command line (see
+// package.json's test:e2e:toolbar/test:e2e:strategies/test:e2e:editor), not a separate flag to
+// keep in sync. Anything else (a full test:e2e run, or an ad-hoc single-file command outside any
+// of them) falls back to the original shared "test-report.html" name.
+const argsText = process.argv.join(" ");
+const reportSuiteName = argsText.includes("tests/e2e/toolbar")
+  ? "toolbar"
+  : argsText.includes("tests/e2e/strategies")
+    ? "strategies"
+    : argsText.includes("tests/e2e/editor")
+      ? "editor"
+      : null;
+const reportFileName = reportSuiteName ? `test-report-${reportSuiteName}.html` : "test-report.html";
 
 export default defineConfig({
   testDir: "./e2e",
@@ -36,7 +50,7 @@ export default defineConfig({
             process.cwd(),
             "tools/scripts/test/static-test-reporter.cjs",
           ),
-          { outputFile: path.join(testArtifactsDir, "reports/test-report.html") },
+          { outputFile: path.join(testArtifactsDir, "reports", reportFileName) },
         ],
       ],
   use: {

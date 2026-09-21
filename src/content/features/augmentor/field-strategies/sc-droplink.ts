@@ -2,15 +2,16 @@ import { FOBLES } from "../constants";
 import type { DroplinkFobles as DroplinkConfig } from "../fobles.types";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
-import { extractGuid } from "../shared/guid";
+import { extractGuid, hasAnyGuidLikeOption } from "../shared/guid";
 
-// The Content Editor tags Drop Link selects with an aria-label; the Field Editor dialog
-// doesn't render that attribute at all, so fall back to treating unlabeled selects as
-// candidates too (extractGuid downstream guards against non-Droplink selected values).
+// Content Editor doesn't render an aria-label on either Drop Link's or Droplist's select at all
+// (both share the same select.scContentControl.scCombobox markup), so distinguish them by the
+// option list's value shape instead (see hasAnyGuidLikeOption/sc-droplist.ts).
 const isDroplink = (select: HTMLSelectElement): boolean => {
   const ariaLabel = select.getAttribute("aria-label");
-  if (!ariaLabel) return true;
-  return /\bdroplink\s+field\b/i.test(ariaLabel);
+  if (ariaLabel) return /\bdroplink\s+field\b/i.test(ariaLabel);
+
+  return hasAnyGuidLikeOption(select);
 };
 
 const createWrapper = (doc: Document): HTMLElement =>

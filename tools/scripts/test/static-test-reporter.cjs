@@ -40,17 +40,25 @@ class StaticTestReporter {
         name: attachment.name,
         href: toReportRelativeHref(attachment.path, this.outputFile),
       }));
+    const notes = (result.attachments ?? [])
+      .filter((attachment) => attachment.contentType === "text/plain" && attachment.body)
+      .map((attachment) => ({
+        name: attachment.name,
+        text: attachment.body.toString("utf8"),
+      }));
     const steps = flattenSteps(result.steps ?? []);
-    const remainingScreenshots = matchScreenshotsToSteps(screenshots, steps);
+    const remainingScreenshots = matchAttachmentsToSteps(screenshots, steps, "screenshots");
+    const remainingNotes = matchAttachmentsToSteps(notes, steps, "notes");
 
     this.results.push({
       index: this.results.length + 1,
-      title: test.titlePath().join(" "),
+      titlePath: test.titlePath(),
       status: result.status,
       duration: result.duration,
       error: stripAnsi(result.error?.message ?? ""),
       steps,
       screenshots: remainingScreenshots,
+      notes: remainingNotes,
     });
     this.writeReport({ status: "running" });
   }
@@ -76,7 +84,7 @@ class StaticTestReporter {
       .map((result) => {
         const testRow = `
         <tr class="test-row ${escapeHtml(result.status)}">
-          <td class="test-step-col"><span class="row-kind row-kind-test">Test</span><span class="test-index">${result.index}:${this.totalTests}</span> - <strong>${escapeHtml(result.title)}</strong></td>
+          <td class="test-step-col"><span class="row-kind row-kind-test">Test</span><span class="test-index">${result.index}:${this.totalTests}</span> - ${renderTestTitle(result)}</td>
           <td class="result-col"><span class="badge badge-${escapeHtml(result.status)}">${escapeHtml(formatStatus(result.status))}</span><span class="duration">${escapeHtml(formatDuration(result.duration))}</span></td>
           <td class="details-col">${renderTestDetails(result)}</td>
         </tr>`;
@@ -84,7 +92,7 @@ class StaticTestReporter {
           .map(
             (step) => `
         <tr class="step-row ${escapeHtml(step.status)}">
-          <td class="step-title test-step-col"><span class="row-kind row-kind-step">Step</span>${renderStepTitle(step.title)}</td>
+          <td class="step-title test-step-col"><span class="row-kind row-kind-step">Step</span>${renderStepTitle(step.title, step.notes)}</td>
           <td class="result-col"><span class="badge badge-${escapeHtml(step.status)}">${escapeHtml(formatStatus(step.status))}</span><span class="duration">${escapeHtml(formatDuration(step.duration))}</span></td>
           <td class="details-col">${renderDetails(step.error, step.screenshots)}</td>
         </tr>`,
@@ -122,7 +130,8 @@ class StaticTestReporter {
     .test-row { background: #eef3f8; }
     .step-row { background: #fbfcfe; }
     .step-title { padding-left: 2rem; white-space: pre-wrap; }
-    .step-expects { color: #52606d; display: block; font-size: .9rem; padding-left: 1.2rem; }
+    .step-expects { color: #37424c; display: block; font-size: .9rem; padding-left: 1.2rem; }
+    .actual-note { color: #37424c; font-size: .9rem; margin-bottom: .4rem; padding-left: 1.2rem; }
     .test-index { color: #52606d; font-variant-numeric: tabular-nums; white-space: nowrap; }
     .duration { color: #52606d; display: block; font-size: .8rem; margin-top: .2rem; white-space: nowrap; }
     .row-kind { border-radius: 4px; display: inline-block; font-size: .68rem; font-weight: 700; letter-spacing: .04em; margin-right: .5rem; padding: .1rem .4rem; text-transform: uppercase; vertical-align: middle; }
@@ -130,7 +139,6 @@ class StaticTestReporter {
     .row-kind-step { background: #e5dbff; color: #5f3dc4; }
     .screenshot-links { line-height: 1.7; }
     .screenshot-link { color: inherit; display: inline-block; text-decoration: none; vertical-align: top; }
-    .screenshot-link span { color: #1864ab; display: block; font-size: .8rem; text-decoration: underline; }
     .screenshot-thumb { background: #fff; border: 1px solid #d9e2ec; border-radius: 4px; display: block; max-height: 320px; max-width: 480px; object-fit: contain; }
     .badge { border-radius: 999px; display: inline-block; font-size: .8rem; font-weight: 700; padding: .2rem .55rem; }
     .badge-passed { background: #d3f9d8; color: #087f5b; }
@@ -232,11 +240,16 @@ function renderScreenshotLinks(screenshots) {
       (shot) => `
       <a href="${escapeHtml(shot.href)}" target="_blank" class="screenshot-link" title="${escapeHtml(shot.name)}">
         <img src="${escapeHtml(shot.href)}" alt="${escapeHtml(aliasScreenshotName(shot.name))}" class="screenshot-thumb" loading="lazy">
-        <span>${escapeHtml(aliasScreenshotName(shot.name))}</span>
       </a>`,
     )
     .join("<br>");
   return `<div class="screenshot-links">${links}</div>`;
+}
+
+function renderNotes(notes) {
+  if (!notes?.length) return "";
+  const lines = notes.map((note) => `<div class="actual-note">${escapeHtml(note.text)}</div>`).join("");
+  return lines;
 }
 
 function renderDetails(error, screenshots) {
@@ -251,20 +264,32 @@ function renderDetails(error, screenshots) {
 // "prefix: title" - bold just that leading "prefix:" so the strategy name stands out from the
 // step's own wording. If the remaining title itself has a further "action: expectation" colon
 // (e.g. "Toggle Fobles off: the field returns to its original shape"), break the expectation onto
-// its own indented "expects:" line for scannability.
-function renderStepTitle(title) {
+// its own indented "expects:" line for scannability. "actual: ..." notes (fobles-helpers.ts'
+// expectFoblesButtonSameTabNavigation/NewTabNavigation) render the same way, right underneath.
+function renderStepTitle(title, notes) {
   const separatorIndex = title.indexOf(": ");
-  if (separatorIndex === -1) return escapeHtml(title);
+  const notesHtml = renderNotes(notes);
+  if (separatorIndex === -1) return escapeHtml(title) + notesHtml;
   const prefix = title.slice(0, separatorIndex);
   const afterPrefix = title.slice(separatorIndex + 2);
 
   const expectsSeparatorIndex = afterPrefix.indexOf(": ");
   if (expectsSeparatorIndex === -1) {
-    return `<strong>${escapeHtml(prefix)}:</strong> ${escapeHtml(afterPrefix)}`;
+    return `<strong>${escapeHtml(prefix)}:</strong> ${escapeHtml(afterPrefix)}${notesHtml}`;
   }
   const action = afterPrefix.slice(0, expectsSeparatorIndex);
   const expectation = afterPrefix.slice(expectsSeparatorIndex + 2);
-  return `<strong>${escapeHtml(prefix)}:</strong> ${escapeHtml(action)}<span class="step-expects">expects: ${escapeHtml(expectation)}</span>`;
+  return `<strong>${escapeHtml(prefix)}:</strong> ${escapeHtml(action)}<span class="step-expects">expects: ${escapeHtml(expectation)}</span>${notesHtml}`;
+}
+
+// test.titlePath() is ["", project, file, ...describe blocks, test name] for every spec in this
+// repo (a leading empty root-suite title, then one describe wrapping one test) - drop that leading
+// "" and break the rest onto two lines: project+file, then the rest, since the flat space-joined
+// string was unreadably long on one line.
+function renderTestTitle(result) {
+  const [, project, file, ...rest] = result.titlePath;
+  const notesHtml = renderNotes(result.notes);
+  return `<strong>${escapeHtml(`${project} ${file}`)}</strong><span class="step-expects">${escapeHtml(rest.join(" "))}</span>${notesHtml}`;
 }
 
 function renderTestDetails(result) {
@@ -361,21 +386,27 @@ function extractStepMatchKeys(title) {
   return keys.filter(Boolean);
 }
 
-// Assigns each screenshot to whichever step(s) it matches, mutating `steps` in place, and returns
-// whichever screenshots matched no step - those stay on the test row as a fallback (e.g. the
-// automatic whole-test "screenshot" attachment).
-function matchScreenshotsToSteps(screenshots, steps) {
-  const remaining = [...screenshots];
+// Assigns each attachment (screenshot or text note) to whichever step(s) it matches, mutating
+// `steps[field]` in place, and returns whichever attachments matched no step - those stay on the
+// test row as a fallback (e.g. the automatic whole-test "screenshot" attachment). Every attachment
+// name places its match key immediately before its own extension (step-<key>.png,
+// item-path-<key>.png, actual-fo-<key>.txt) - requiring that exact suffix, not just "contains",
+// matters because one step's quoted value can be a path-prefix of another's (e.g.
+// "/sitecore/media library" vs "/sitecore/media library/Project") - a loose substring check let
+// the shorter step steal the longer step's attachment too.
+function matchAttachmentsToSteps(items, steps, field) {
+  const remaining = [...items];
   for (const step of steps) {
     const keys = extractStepMatchKeys(step.title);
     const matched = [];
     for (let i = remaining.length - 1; i >= 0; i -= 1) {
-      const shotKey = remaining[i].name.toLowerCase();
-      if (!keys.some((key) => shotKey.includes(key))) continue;
+      const itemKey = remaining[i].name.toLowerCase();
+      const extension = itemKey.slice(itemKey.lastIndexOf("."));
+      if (!keys.some((key) => itemKey.endsWith(`${key}${extension}`))) continue;
       matched.unshift(remaining[i]);
       remaining.splice(i, 1);
     }
-    if (matched.length) step.screenshots = matched;
+    if (matched.length) step[field] = matched;
   }
   return remaining;
 }

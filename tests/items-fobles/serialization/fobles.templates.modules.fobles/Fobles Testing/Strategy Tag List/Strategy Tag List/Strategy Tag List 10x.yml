@@ -6,10 +6,10 @@ Path: /sitecore/templates/Modules/Fobles Testing/Strategy Tag List/Strategy Tag 
 SharedFields:
 - ID: "1eb8ae32-e190-44a6-968d-ed904c794ebf"
   Hint: Source
-  Value: "{4BA72740-326C-482C-AD43-5362964677AF}"
+  Value: 
 - ID: "ab162cc0-dc80-4abf-8871-998ee5d7ba32"
   Hint: Type
-  Value: Taglist
+  Value: Multilist
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
   Value: 400
@@ -23,11 +23,11 @@ Languages:
       Value: 20260919T175000Z
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "d3c870c4-6de6-4de1-8c50-90b404af3487"
+      Value: "3e6c5a3e-c9be-4c70-9605-8b443c31de1c"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
         sitecore\Admin
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20260920T022746Z
+      Value: 20260920T022927Z

@@ -12,6 +12,7 @@
     "test:e2e": "playwright test -c tests/playwright.config.ts --retries=0",
     "test:e2e:toolbar": "playwright test -c tests/playwright.config.ts --retries=0 tests/e2e/00-session-start.spec.ts tests/e2e/toolbar tests/e2e/zz-session-end.spec.ts",
     "test:e2e:strategies": "playwright test -c tests/playwright.config.ts --retries=0 tests/e2e/00-session-start.spec.ts tests/e2e/strategies tests/e2e/zz-session-end.spec.ts",
+    "test:e2e:editor": "playwright test -c tests/playwright.config.ts --retries=0 tests/e2e/00-session-start.spec.ts tests/e2e/editor tests/e2e/zz-session-end.spec.ts",
     "test:e2e:list": "playwright test -c tests/playwright.config.ts --project=edge --list",
     "test:e2e:debug": "playwright test -c tests/playwright.config.ts --debug",
     "test:e2e:unlock": "node tools/scripts/test/unlock-browser-profile.js",

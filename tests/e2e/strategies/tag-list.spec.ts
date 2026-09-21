@@ -2,31 +2,28 @@ import { expect, test } from "../fixtures/playwright";
 import { CONST } from "../CONST";
 import {
   activateFoblesForFieldStrategy,
-  clickLboltButton,
   createStep,
   getEditorSectionLocator,
 } from "../fobles-helpers";
+import { clickLboltButton } from "../sitecore-macros";
 import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
+import { STRATEGY_SCENARIOS } from "./strategy-scenarios";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
-// "Strategy tag list" test content item (tests/items-folbles) - Strategy Tag List 1x field,
-// referencing the shared "Fobles Data Item A" item. Tag List replaces TWO panes independently
-// (src/content/features/augmentor/field-strategies/sc-taglist.ts): the "all items" tree pane and
-// the "selected items" select pane, each getting its own [data-fobles-wrapper]. This test focuses
-// on the selected-items pane (the field's actual stored value) and only sanity-checks that the
-// all-items pane also gets wrapped.
-const TAG_LIST_ITEM_ID = "84091a2b-3243-4b5e-8c6f-f90a1b2c3d4e";
-const TAG_LIST_FIELD_LABEL = "Strategy Tag List 1x";
-const EXPECTED_FOBLES_BUTTON_TEXT = "Fobles Data Item A";
+// Tag List replaces TWO panes independently (src/content/features/augmentor/field-strategies
+// /sc-taglist.ts): the "all items" tree pane and the "selected items" select pane, each getting
+// its own [data-fobles-wrapper]. This test focuses on the selected-items pane (the field's actual
+// stored value) and only sanity-checks that the all-items pane also gets wrapped.
+const SCENARIO = STRATEGY_SCENARIOS.TAG_LIST;
 
 // Skipped - see docs/TODO.md "Strategy Tag List field doesn't render the real Tag List widget".
 test.describe.skip("Strategy scenario: tag list", () => {
   test("toggling Fobles decorates and restores the tag list field", async ({ page }, testInfo) => {
     const { fieldTable, lboltButton } = await activateFoblesForFieldStrategy(
       page,
-      TAG_LIST_ITEM_ID,
-      TAG_LIST_FIELD_LABEL,
+      SCENARIO.itemId,
+      SCENARIO.fieldLabel,
     );
     const selectedPane = fieldTable.locator("select.scContentControlMultilistBox").first();
     const step = createStep(page, testInfo, getEditorSectionLocator(fieldTable), "Tag List");
@@ -46,7 +43,7 @@ test.describe.skip("Strategy scenario: tag list", () => {
         .locator(`select.scContentControlMultilistBox + ${FOBLES.SELECTORS.WRAPPER} ${FOBLES.SELECTORS.BUTTON}`)
         .first();
       await expect(selectedPaneButton).toBeVisible();
-      await expect(selectedPaneButton).toHaveText(EXPECTED_FOBLES_BUTTON_TEXT);
+      await expect(selectedPaneButton).toHaveText(SCENARIO.expectedButtonText);
       await page.waitForTimeout(STEP_WAIT_MS);
     });
 

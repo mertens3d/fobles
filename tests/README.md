@@ -52,10 +52,21 @@ teardown can run.
 ## Strategy Scenario Coverage
 
 Sitecore test data for each field strategy lives under `/sitecore/system/Modules/Fobles Testing/Strategy Scenarios`
-(serialized in `tests/items-folbles/`), one content item per strategy with `0x`/`1x`/`3x`/`10x`
+(serialized in `tests/items-fobles/`), one content item per strategy with `0x`/`1x`/`3x`/`10x`
 fields to exercise different source-list sizes. Quick-review checklist only — not the source of
 truth; check the serialized items themselves for what actually exists, and whether a Playwright
 spec actually consumes each one yet.
+
+### Hardcoded Expected Values
+
+Each `strategies/*.spec.ts` file hardcodes its own expected values (item GUIDs, resolved paths,
+button text) as consts rather than reading them from the serialized YAML at runtime - tests
+should assert against a fixed, independent expectation, not "whatever the data currently says"
+(otherwise a real regression could pass silently). These consts were harvested by hand by looking
+up the relevant item's own YAML file under `tests/items-fobles/serialization/` and reading its
+`Path:`/`ID:` value directly. If the underlying test data changes (an item is renamed, moved, or
+re-pulled), the consts don't update automatically - re-harvest them the same way and update the
+spec file.
 
 General approach per field type: one field instance with no value, one with a single value, and
 — only for field types that actually support multiple selections (lists) — additional variations
@@ -76,8 +87,21 @@ which every item already has. Any existing scenario item exercises them.
 - [x] multilist-options
 - [x] multilist-with-search
 - [x] quick-info-section (no dedicated item needed - see note above)
-- [x] reference-links (no dedicated item needed - see note above)
+- [x] reference-links (no dedicated item needed - see note above; has its own spec under `tests/e2e/editor/`, unlike quick-info-section/template-path)
 - [x] tag-list
 - [x] template-path (no dedicated item needed - see note above)
 - [x] tree-list
 - [x] treelist-ex
+
+## Editor Scenario Coverage
+
+`tests/e2e/editor/` tests the editor-strategies (`src/content/features/augmentor/editor-
+strategies/`) - these decorate a piece of Content Editor's own UI chrome rather than a single
+Sitecore field, so unlike `strategies/*.spec.ts` they don't toggle Fobles on before locating their
+target: that UI chrome (e.g. the "Links" gallery) often only exists in the DOM *after* an extra
+Sitecore interaction (a ribbon click, a gallery open), so Fobles is toggled on last, once it's
+already present for it to decorate.
+
+- [x] reference-links
+- [ ] quick-info-section
+- [ ] template-path
