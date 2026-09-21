@@ -5,6 +5,7 @@ import {
 } from "../fixtures/playwright";
 import { CONST } from "../CONST";
 import {
+  getLastKnownMousePosition,
   moveMouseOutsideHoverArea,
   moveMouseTo,
   pulseMouseMarkerClick,
@@ -32,7 +33,7 @@ test.describe("Fobles browser integration", () => {
       const menuButton = page.locator(".fobles-quick-menu-trigger").first();
       await expect(menuButton).toBeVisible();
       const menuFlyout = page.locator(".fobles-quick-menu").first();
-      const mousePosition = { x: 0, y: 0 };
+      const mousePosition = getLastKnownMousePosition();
 
       await hoverAndGrow(page, {
         name: "LBolt",
@@ -75,7 +76,7 @@ test.describe("Fobles browser integration", () => {
 
     let menuButton = foblesFrame.locator(".fobles-quick-menu-trigger").first();
     let menuFlyout = foblesFrame.locator(".fobles-quick-menu").first();
-    const mousePosition = { x: 0, y: 0 };
+    const mousePosition = getLastKnownMousePosition();
 
     await moveMouseTo(page, menuButton, mousePosition, "Tree jump menu");
     await menuButton.click();
@@ -159,7 +160,7 @@ test.describe("Fobles browser integration", () => {
       .locator(".fobles-quick-menu-trigger")
       .first();
     const menuFlyout = foblesFrame.locator(".fobles-quick-menu").first();
-    const mousePosition = { x: 0, y: 0 };
+    const mousePosition = getLastKnownMousePosition();
 
     await moveMouseTo(page, menuButton, mousePosition, "Ctrl-click jump menu");
     await menuButton.click();
@@ -236,7 +237,7 @@ test.describe("Fobles browser integration", () => {
     let foblesFrame = await activateFoblesForJumpTest(page, scenario);
     let menuButton = foblesFrame.locator(".fobles-quick-menu-trigger").first();
     let menuFlyout = foblesFrame.locator(".fobles-quick-menu").first();
-    const mousePosition = { x: 0, y: 0 };
+    const mousePosition = getLastKnownMousePosition();
     const step = createStep(page, testInfo, page, "Menu Button");
 
     await moveMouseTo(page, menuButton, mousePosition, "Other menu buttons");

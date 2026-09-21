@@ -1,6 +1,6 @@
 import { expect, type Frame, type Locator, type Page } from "./fixtures/playwright";
 import { CONST } from "./CONST";
-import { moveMouseTo, moveMouseToPosition, pulseMouseMarkerClick, type MousePosition } from "./mouse-proxy";
+import { getLastKnownMousePosition, moveMouseTo, moveMouseToPosition, pulseMouseMarkerClick, type MousePosition } from "./mouse-proxy";
 
 // Reusable stock Sitecore Content Editor UI interactions (ribbon tabs, galleries), plus Fobles'
 // own toolbar toggle since it's just as much a canned click sequence any spec reuses - kept
@@ -37,7 +37,7 @@ export async function findFrameWithSelector(
 // pattern every other interactive click in these suites uses, instead of a plain locator.click().
 // Pauses afterward so the click's effect is visible on screen before the next interaction fires.
 async function moveAndClick(page: Page, target: Locator, description: string): Promise<void> {
-  await moveMouseTo(page, target, { x: 0, y: 0 }, description);
+  await moveMouseTo(page, target, getLastKnownMousePosition(), description);
   await pulseMouseMarkerClick(page);
   await target.click();
   await page.waitForTimeout(STEP_WAIT_MS);
@@ -73,7 +73,7 @@ export async function clickLboltButton(
   page: Page,
   lboltButton: Locator,
 ): Promise<void> {
-  await moveMouseTo(page, lboltButton, { x: 0, y: 0 }, "LBolt button");
+  await moveMouseTo(page, lboltButton, getLastKnownMousePosition(), "LBolt button");
   await pulseMouseMarkerClick(page);
   await lboltButton.click();
   await page.waitForTimeout(CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS);
@@ -91,7 +91,7 @@ export async function dragToolbarTo(
   grip: Locator,
   targetPosition: MousePosition,
 ): Promise<void> {
-  const mousePosition: MousePosition = { x: 0, y: 0 };
+  const mousePosition: MousePosition = getLastKnownMousePosition();
   await moveMouseTo(page, grip, mousePosition, "Toolbar grip");
   await page.mouse.down();
   await moveMouseToPosition(page, targetPosition, mousePosition, "Toolbar drag");

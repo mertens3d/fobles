@@ -1,7 +1,7 @@
 import { expect, test, type Frame, type Locator, type Page } from "./fixtures/playwright";
 import { openSitecorePage } from "./fixtures/sitecore";
 import type { FoblesExpectation } from "./scenarios";
-import { moveMouseTo, pulseMouseMarkerClick, showMouseMarker, verifyMouseMarker } from "./mouse-proxy";
+import { getLastKnownMousePosition, moveMouseTo, pulseMouseMarkerClick, showMouseMarker } from "./mouse-proxy";
 import { CONST } from "./CONST";
 import { clickLboltButton, findFrameWithSelector } from "./sitecore-macros";
 import type { TestInfo } from "@playwright/test";
@@ -129,7 +129,7 @@ export async function expectFoblesButtonSameTabNavigation(
   expectedFoValue: string,
   stepTitle: string,
 ): Promise<void> {
-  await moveMouseTo(page, button, { x: 0, y: 0 }, "Fobles item button");
+  await moveMouseTo(page, button, getLastKnownMousePosition(), "Fobles item button");
   await pulseMouseMarkerClick(page);
   await button.click();
 
@@ -152,7 +152,7 @@ export async function expectFoblesButtonNewTabNavigation(
   expectedFoValue: string,
   stepTitle: string,
 ): Promise<void> {
-  await moveMouseTo(page, button, { x: 0, y: 0 }, "Fobles item button");
+  await moveMouseTo(page, button, getLastKnownMousePosition(), "Fobles item button");
   await pulseMouseMarkerClick(page);
 
   const [popup] = await Promise.all([
@@ -546,7 +546,6 @@ export async function activateFoblesForJumpTest(
   await openSitecorePage(page, scenario.url);
   console.log(`[fobles] Navigation finished at ${page.url()}`);
   await showMouseMarker(page);
-  await verifyMouseMarker(page);
 
   const foblesFrame = await findFrameWithSelector(
     page,

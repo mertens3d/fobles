@@ -6,16 +6,29 @@ import {
   type Page,
   test as base,
 } from "@playwright/test";
+import fs from "node:fs";
 import path from "node:path";
 import { installConsoleLogging, logDiagnostic } from "./logging";
 import { logoutCurrentSitecoreSession } from "./sitecore";
 import { CONST } from "../CONST";
+import { RECORD_VIDEO } from "./VideoSwitch";
 
 const profileDir = path.resolve(
   process.env.PLAYWRIGHT_PROFILE_DIR ??
     "./tests/test-artifacts/browser-profile",
 );
 const extensionPath = path.resolve("./dist/unpacked");
+
+// launchPersistentContext (below) bypasses Playwright's own context/page fixtures entirely, so
+// playwright.config.ts's `use.video` setting is never actually consulted - recordVideo has to be
+// requested here directly instead. A separate fixtures module per suite and every dynamic-gating
+// attempt (process.argv, a process.env mutation at playwright.config.ts's own load time, a marker
+// file, a Playwright "option fixture") all turned out to be more trouble than they were worth here
+// - flip the RECORD_VIDEO constant in ./VideoSwitch by hand instead when you actually want a
+// recording, and flip it back to false afterward. Every other suite shares this same one
+// persistent context/session for its whole run, so a video would cover the entire run, not one
+// clip per test - only turn this on for a deliberate promoVideo recording session.
+const promoVideoDir = path.resolve("./tests/test-artifacts/playwright-results/promo-video");
 
 installConsoleLogging();
 
@@ -62,6 +75,9 @@ type WorkerFixtures = {
 export const test = base.extend<{}, WorkerFixtures>({
   sharedBrowserContext: [
     async ({}, use) => {
+      if (RECORD_VIDEO) {
+        fs.mkdirSync(promoVideoDir, { recursive: true });
+      }
       const context = await chromium.launchPersistentContext(profileDir, {
         headless: false,
         // Without an explicit viewport, a persistent context defaults to the real OS window size
@@ -69,6 +85,7 @@ export const test = base.extend<{}, WorkerFixtures>({
         // sections, Quick Info, etc.), making every screenshot unnecessarily wide. 1280 (Playwright's
         // own standard "Desktop Chrome" default) still left them wider than needed, so use 800.
         viewport: { width: 800, height: 720 },
+        ...(RECORD_VIDEO ? { recordVideo: { dir: promoVideoDir, size: { width: 800, height: 720 } } } : {}),
         args: [
           `--disable-extensions-except=${extensionPath}`,
           `--load-extension=${extensionPath}`,

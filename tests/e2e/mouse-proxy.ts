@@ -8,6 +8,19 @@ import {
 
 export type MousePosition = { x: number; y: number };
 
+// The real (virtual) mouse cursor stays wherever it physically was after a same-tab page
+// navigation - only our own tracking variables reset. Callers used to always restart a fresh
+// step's tracking position at a hardcoded {x:0, y:0}, which made the very next moveMouseTo/
+// moveMouseToPosition animate a long diagonal sweep from the corner instead of a short move from
+// wherever the mouse actually last was (typically whatever was just clicked to trigger the
+// reload). Updated at the end of every real move below; getLastKnownMousePosition() lets a new
+// step start tracking from there instead of guessing (0, 0).
+let lastKnownMousePosition: MousePosition = { x: 0, y: 0 };
+
+export function getLastKnownMousePosition(): MousePosition {
+  return { ...lastKnownMousePosition };
+}
+
 // SPRINT mode is for verification runs nobody is watching - skip the marker graphic, click flash,
 // and stepped movement animation entirely, since they're purely cosmetic and only exist to make
 // the mouse's path/clicks visible to a human observer.
@@ -111,6 +124,12 @@ export async function pulseMouseMarkerClick(page: Page): Promise<void> {
   await page.waitForTimeout(CONST.CLICK_FLASH.DURATION_MS);
 }
 
+// A one-time diagnostic sanity check that the marker element actually exists and responds to
+// position updates - NOT meant to run on every navigation/activation. It hard-jumps the real
+// mouse and force-sets the marker's CSS position directly (bypassing moveMouseToPosition's
+// animation and lastKnownMousePosition tracking entirely), so calling it more than once per test
+// run produces a jarring, out-of-place jump - confirmed live when it was previously called inside
+// activateFoblesForJumpTest (tests/e2e/fobles-helpers.ts) on every tree-jump re-navigation.
 export async function verifyMouseMarker(page: Page): Promise<void> {
   if (isSprintMode()) {
     console.log("[fobles] Mouse preflight skipped (SPRINT mode - no marker in use)");
@@ -196,6 +215,7 @@ export async function moveMouseToPosition(
     await page.mouse.move(targetPosition.x, targetPosition.y);
     position.x = targetPosition.x;
     position.y = targetPosition.y;
+    lastKnownMousePosition = { ...position };
     return;
   }
 
@@ -226,6 +246,7 @@ export async function moveMouseToPosition(
 
   position.x = targetPosition.x;
   position.y = targetPosition.y;
+  lastKnownMousePosition = { ...position };
   console.log(
     `[fobles] Mouse move ${label} ended at (${position.x.toFixed(1)}, ${position.y.toFixed(1)})`,
   );

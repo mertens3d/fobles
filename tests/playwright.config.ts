@@ -26,9 +26,8 @@ const reportSuiteName = argsText.includes("tests/e2e/toolbar")
         ? "promoVideo"
         : null;
 const reportFileName = reportSuiteName ? `test-report-${reportSuiteName}.html` : "test-report.html";
-// The promoVideo suite (tests/e2e/promoVideo) exists to record a store-listing demo video, not to
-// assert regressions - every run's video is wanted, not just failures.
-const isPromoVideoRecording = argsText.includes("tests/e2e/promoVideo");
+// Video recording is a hardcoded RECORD_VIDEO constant in tests/e2e/fixtures/playwright.ts, not
+// anything computed here - flip it by hand before/after a promoVideo recording session.
 
 export default defineConfig({
   testDir: "./e2e",
@@ -65,7 +64,10 @@ export default defineConfig({
     // Playwright's own whole-page auto-screenshot was just showing up as an extra, unwanted
     // attachment on the test-level row.
     screenshot: "off",
-    video: isPromoVideoRecording ? "on" : "retain-on-failure",
+    // video (Playwright's own built-in option) has no effect here - sharedBrowserContext
+    // (tests/e2e/fixtures/playwright.ts) calls launchPersistentContext directly, bypassing the
+    // context/page fixtures this setting normally configures. That fixture's own RECORD_VIDEO
+    // constant controls recording instead (see its own comment for why).
   },
   projects: [
     {
