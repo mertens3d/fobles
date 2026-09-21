@@ -16,6 +16,14 @@ const getInternalTarget = (value: string): string | null => {
     return ensurePathShape(trimmed, "content");
   }
 
+  // General Link's Media picker resolves to a path relative to the media library root (e.g.
+  // "/Fobles Testing/Jpeg A"), omitting the "/sitecore/media library" prefix every other link
+  // type's resolved value includes - the other link types (External/Anchor/Email/JavaScript)
+  // never render as a bare leading-slash path, so this is unambiguous.
+  if (/^\//.test(trimmed)) {
+    return ensurePathShape(trimmed, "media");
+  }
+
   return null;
 };
 

@@ -47,3 +47,12 @@ export async function getAllStorageValues(): Promise<{
   ]);
   return { sync, local };
 }
+
+// Wipes every Fobles setting across both storage areas - a full reset for the options page's
+// debug section, e.g. to clear out corrupted/stale entries left behind by an older data shape.
+export async function clearAllStorageValues(): Promise<void> {
+  await Promise.all([
+    chrome.storage?.sync?.clear(),
+    chrome.storage?.local?.clear(),
+  ]);
+}

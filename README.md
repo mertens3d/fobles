@@ -47,12 +47,11 @@ After rebuilding, select **Reload** for the extension and refresh affected Sitec
 ```text
 npm run build:extension
 npm run typecheck:extension
-npm run test:e2e:login
 npm run test:e2e
 npm run test:e2e:debug
 ```
 
-`test:e2e:login` opens a browser for manual Sitecore login and saves the local persistent profile under `tests/test-artifacts/`.
+If a test hits a Sitecore login form, it pauses (Playwright Inspector) so you can log in manually in that same browser window, then resume.
 
 To verify Playwright configuration and test discovery without opening a browser or contacting Sitecore:
 

@@ -1,4 +1,4 @@
-import { ALLOWED_PATHS, ALLOWED_XML_CONTROLS } from "./constants";
+import { type AllowedPage, FOBLES_PAGES } from "./constants";
 import { SITECORE } from "./sitecore";
 
 function normalizePath(pathname: string): string {
@@ -22,34 +22,44 @@ function toUrl(value: string | Location | URL, baseUrl?: string): URL | null {
   }
 }
 
+// The page's own decoded, lowercased pathname + search - matchStrings (FOBLES_PAGES,
+// src/content/constants.ts) are checked as plain substrings against this single string, whether
+// they're really a path fragment or an "xmlcontrol=..." query fragment.
+function normalizedHref(url: URL): string {
+  const raw = `${url.pathname}${url.search}`;
+  try {
+    return decodeURIComponent(raw).toLowerCase();
+  } catch {
+    return raw.toLowerCase();
+  }
+}
+
+export function findAllowedPage(
+  value: string | Location | URL,
+  baseUrl?: string,
+): AllowedPage | null {
+  const url = toUrl(value, baseUrl);
+  if (!url) return null;
+
+  const href = normalizedHref(url);
+  // A media request path can appear nested behind another page's path (e.g. Content Editor.aspx)
+  // but is always a media resource, never a real shell page eligible for the toolbar.
+  if (href.includes(SITECORE.RELATIVE_PATHS.MEDIA_REQUEST_SEGMENT.toLowerCase())) return null;
+
+  return (
+    FOBLES_PAGES.find(
+      (page) =>
+        page.eligible !== false &&
+        page.matchStrings.some((matchString) => href.includes(matchString.toLowerCase())),
+    ) ?? null
+  );
+}
+
 export function isMenuPathAllowed(
   value: string | Location | URL,
   baseUrl?: string,
 ): boolean {
-  const url = toUrl(value, baseUrl);
-  if (!url) return false;
-
-  const path = normalizePath(url.pathname);
-  // A media request path can appear nested behind another page's path (e.g. Content Editor.aspx)
-  // but is always a media resource, never a real shell page eligible for the toolbar.
-  if (path.includes(SITECORE.RELATIVE_PATHS.MEDIA_REQUEST_SEGMENT.toLowerCase())) return false;
-
-  if (
-    ALLOWED_PATHS.some((allowedPath) =>
-      path.includes(allowedPath.toLowerCase()),
-    )
-  ) return true;
-
-  if (path !== SITECORE.RELATIVE_PATHS.SHELL_DEFAULT.toLowerCase()) return false;
-
-  const xmlControl = url.searchParams
-    .get(SITECORE.QUERY_PARAMS.XML_CONTROL)
-    ?.trim();
-  if (!xmlControl) return false;
-
-  return ALLOWED_XML_CONTROLS.some(
-    (allowedControl) => allowedControl.toLowerCase() === xmlControl.toLowerCase(),
-  );
+  return findAllowedPage(value, baseUrl) !== null;
 }
 
 export function isContentEditorPath(pathname: string): boolean {
@@ -81,11 +91,11 @@ export function isPowerShellIsePath(pathname: string): boolean {
   );
 }
 
-export function isSelectRenderingDialog(location: Location): boolean {
-  const url = new URL(location.href);
-  return normalizePath(location.pathname) === SITECORE.RELATIVE_PATHS.SHELL_DEFAULT &&
-    url.searchParams.get(SITECORE.QUERY_PARAMS.XML_CONTROL) ===
-      SITECORE.XML_CONTROLS.SELECT_RENDERING;
+// Dialog/gallery pages with no room for the full toolbar (see FOBLES_PAGES's toolbarType,
+// src/content/constants.ts) - gates injectToolbar's compact-vs-full layout (src/content/toolbar/
+// index.ts).
+export function isCompactToolbarPage(location: Location): boolean {
+  return findAllowedPage(location)?.toolbarType === "compact";
 }
 
 export function isKickUsersPath(pathname: string): boolean {

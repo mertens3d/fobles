@@ -8,6 +8,26 @@ import {
 
 export type MousePosition = { x: number; y: number };
 
+// The real (virtual) mouse cursor stays wherever it physically was after a same-tab page
+// navigation - only our own tracking variables reset. Callers used to always restart a fresh
+// step's tracking position at a hardcoded {x:0, y:0}, which made the very next moveMouseTo/
+// moveMouseToPosition animate a long diagonal sweep from the corner instead of a short move from
+// wherever the mouse actually last was (typically whatever was just clicked to trigger the
+// reload). Updated at the end of every real move below; getLastKnownMousePosition() lets a new
+// step start tracking from there instead of guessing (0, 0).
+let lastKnownMousePosition: MousePosition = { x: 0, y: 0 };
+
+export function getLastKnownMousePosition(): MousePosition {
+  return { ...lastKnownMousePosition };
+}
+
+// SPRINT mode is for verification runs nobody is watching - skip the marker graphic, click flash,
+// and stepped movement animation entirely, since they're purely cosmetic and only exist to make
+// the mouse's path/clicks visible to a human observer.
+function isSprintMode(): boolean {
+  return CONST.SPEED.SELECTED === "SPRINT";
+}
+
 export async function getButtonSize(
   button: Locator,
 ): Promise<{ width: number; height: number }> {
@@ -17,6 +37,7 @@ export async function getButtonSize(
 }
 
 export async function showMouseMarker(page: Page | Frame): Promise<void> {
+  if (isSprintMode()) return;
   await page.evaluate((markerConfig) => {
     if (document.getElementById(markerConfig.ID)) return;
 
@@ -27,15 +48,15 @@ export async function showMouseMarker(page: Page | Frame): Promise<void> {
   }, CONST.MARKER);
 }
 
-async function updateMouseMarkers(
+// Shared by marker-position updates and the click ripple - a page-level (x, y) needs translating
+// into each frame's own local coordinates before it means anything inside that frame's document.
+async function forEachFrameWithLocalPosition(
   page: Page,
   x: number,
   y: number,
+  callback: (frame: Frame, localX: number, localY: number) => Promise<void>,
 ): Promise<void> {
   for (const frame of page.frames()) {
-    const marker = frame.locator("#playwright-mouse-marker");
-    if ((await marker.count()) === 0) continue;
-
     let localX = x;
     let localY = y;
     if (frame !== page.mainFrame()) {
@@ -44,6 +65,18 @@ async function updateMouseMarkers(
       localX -= frameBox.x;
       localY -= frameBox.y;
     }
+    await callback(frame, localX, localY);
+  }
+}
+
+async function updateMouseMarkers(
+  page: Page,
+  x: number,
+  y: number,
+): Promise<void> {
+  await forEachFrameWithLocalPosition(page, x, y, async (frame, localX, localY) => {
+    const marker = frame.locator("#playwright-mouse-marker");
+    if ((await marker.count()) === 0) return;
 
     await marker.evaluate(
       (element, coordinates) => {
@@ -52,10 +85,56 @@ async function updateMouseMarkers(
       },
       { x: localX, y: localY },
     );
-  }
+  });
 }
 
+// A brief color flash on the (already-visible) marker itself, fired right before a simulated
+// click - simpler and more reliably visible than a separate animated ring element. Waits out the
+// flash before returning so callers see it land before the click. This is purely cosmetic, so a
+// frame that's mid-navigation/detaching must never be allowed to hang the real test - bound each
+// frame's work with a timeout and swallow errors instead of propagating them.
+export async function pulseMouseMarkerClick(page: Page): Promise<void> {
+  if (isSprintMode()) return;
+  await Promise.all(
+    page.frames().map(async (frame) => {
+      const flashInFrame = async () => {
+        const marker = frame.locator(`#${CONST.MARKER.ID}`);
+        if ((await marker.count()) === 0) return;
+
+        await marker.evaluate((element, config) => {
+          const el = element as HTMLElement;
+          const originalBackground = el.style.background;
+          el.style.background = config.COLOR;
+          setTimeout(() => {
+            el.style.background = originalBackground;
+          }, config.DURATION_MS);
+        }, CONST.CLICK_FLASH);
+      };
+
+      try {
+        await Promise.race([
+          flashInFrame(),
+          new Promise((resolve) => setTimeout(resolve, 1_000)),
+        ]);
+      } catch {
+        // Frame may be navigating/detaching - the flash is cosmetic only, never worth failing over.
+      }
+    }),
+  );
+  await page.waitForTimeout(CONST.CLICK_FLASH.DURATION_MS);
+}
+
+// A one-time diagnostic sanity check that the marker element actually exists and responds to
+// position updates - NOT meant to run on every navigation/activation. It hard-jumps the real
+// mouse and force-sets the marker's CSS position directly (bypassing moveMouseToPosition's
+// animation and lastKnownMousePosition tracking entirely), so calling it more than once per test
+// run produces a jarring, out-of-place jump - confirmed live when it was previously called inside
+// activateFoblesForJumpTest (tests/e2e/fobles-helpers.ts) on every tree-jump re-navigation.
 export async function verifyMouseMarker(page: Page): Promise<void> {
+  if (isSprintMode()) {
+    console.log("[fobles] Mouse preflight skipped (SPRINT mode - no marker in use)");
+    return;
+  }
   const markerState = await page
     .locator(`#${CONST.MARKER.ID}`)
     .evaluate((marker) => {
@@ -132,6 +211,14 @@ export async function moveMouseToPosition(
   position: MousePosition,
   label: string,
 ): Promise<void> {
+  if (isSprintMode()) {
+    await page.mouse.move(targetPosition.x, targetPosition.y);
+    position.x = targetPosition.x;
+    position.y = targetPosition.y;
+    lastKnownMousePosition = { ...position };
+    return;
+  }
+
   const startPosition = { ...position };
   const distance = Math.hypot(
     targetPosition.x - position.x,
@@ -159,6 +246,7 @@ export async function moveMouseToPosition(
 
   position.x = targetPosition.x;
   position.y = targetPosition.y;
+  lastKnownMousePosition = { ...position };
   console.log(
     `[fobles] Mouse move ${label} ended at (${position.x.toFixed(1)}, ${position.y.toFixed(1)})`,
   );

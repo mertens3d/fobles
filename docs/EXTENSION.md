@@ -44,7 +44,6 @@ After changing source files, run `npm run build:extension`, then select **Reload
 ## Testing
 
 ```text
-npm run test:e2e:login
 npm run test:e2e
 ```
 

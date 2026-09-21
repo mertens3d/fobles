@@ -8,7 +8,6 @@ export const STORAGE = {
     FOBLES_STATE: "fobles_state",
     KICK_ALL_USERS: "fobles_kick_all_users",
     QUICK_MENU_BUTTON_SETTINGS: "quickMenuButtonSettings",
-    SELECT_RENDERING_FOBLES_NAV_POSITION: "selectRenderingFoblesNavPosition",
     SHOW_RELOAD_EXTENSION_BUTTON: "showReloadExtensionButton",
     TURN_OFF_FOBLES_AFTER_NAVIGATION: "turnOffFoblesAfterNavigation",
   },

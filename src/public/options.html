@@ -234,6 +234,16 @@
         border-bottom: 1px solid var(--border);
         margin-bottom: 14px;
       }
+
+      .button-row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+      }
+
+      .settings-button {
+        min-width: 200px;
+      }
     </style>
   </head>
   <body>
@@ -252,14 +262,27 @@
         <input id="show-reload-extension-button" type="checkbox" />
         <span>Show Reload Extension button</span>
       </label>
-      <button id="save-debug-settings" type="button">
+      <button id="save-debug-settings" type="button" class="settings-button">
         Save developer settings
       </button>
       <p id="debug-status" role="status"></p>
-      <button id="view-stored-settings" type="button">
-        View stored settings
-      </button>
+    </details>
+    <details class="settings-section">
+      <summary>Storage</summary>
+      <p>
+        View or clear everything Fobles has stored for you - not just developer
+        settings.
+      </p>
+      <div class="button-row">
+        <button id="view-stored-settings" type="button" class="settings-button">
+          View Fobles Storage
+        </button>
+        <button id="clear-stored-settings" type="button" class="settings-button">
+          Clear all stored settings
+        </button>
+      </div>
       <pre id="stored-settings-output" hidden></pre>
+      <p id="clear-stored-settings-status" role="status"></p>
     </details>
     <details class="settings-section">
       <summary>Quick Menu Buttons</summary>

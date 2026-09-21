@@ -24,6 +24,12 @@ The extension runs locally in your browser and does not require any remote servi
 
 Sitecore, Content Editor, productivity, admin, navigation, quick jump, AI Pages
 
+## Search terms (Edge) - NEEDS REVIEW
+
+Edge's own "Search terms" field (max 7 terms, 30 characters each, 21 words total) - draft, not yet confirmed:
+
+Sitecore, Sitecore AI, Content Editor, Sitecore Developer, Quick Jump, Sitecore Extension, Sitecore Productivity
+
 ## Category
 
 Productivity

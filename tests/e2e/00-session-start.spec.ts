@@ -1,0 +1,19 @@
+import { expect, test } from "./fixtures/playwright";
+import { openSitecorePage } from "./fixtures/sitecore";
+import { attachScreenshot } from "./fobles-helpers";
+import { CONST } from "./CONST";
+
+// Filename sorts before "strategies/" and "toolbar/" so this always runs first across the whole
+// suite - openSitecorePage already pauses for interactive login if needed (fixtures/sitecore.ts).
+test.describe("Session", () => {
+  test("IsLoggedIn", async ({ page }, testInfo) => {
+    await openSitecorePage(page, CONST.SITECORE.PATHS.CONTENT_EDITOR);
+    await expect(page.locator("input[type='password']")).toHaveCount(0);
+
+    const accountInfo = page.locator(CONST.SITECORE.SELECTORS.ACCOUNT_INFO).first();
+    await expect(accountInfo).toBeVisible();
+    // attachScreenshot masks the account-info username itself now (fobles-helpers.ts), so no
+    // explicit mask is needed here.
+    await attachScreenshot(testInfo, accountInfo, "account-info.png");
+  });
+});

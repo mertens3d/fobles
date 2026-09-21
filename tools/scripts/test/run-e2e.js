@@ -54,8 +54,28 @@ const logFile = path.join(testArtifactsDir, "test-run.log");
 fs.mkdirSync(path.dirname(logFile), { recursive: true });
 const logStream = fs.createWriteStream(logFile, { flags: "w" });
 
+const timestampFormatter = new Intl.DateTimeFormat("en-CA", {
+  timeZone: "America/Chicago",
+  year: "numeric",
+  month: "2-digit",
+  day: "2-digit",
+  hour: "2-digit",
+  minute: "2-digit",
+  second: "2-digit",
+  hour12: false,
+  timeZoneName: "short",
+});
+
+const formatCentralTimestamp = (date) => {
+  const parts = Object.fromEntries(
+    timestampFormatter.formatToParts(date).map((part) => [part.type, part.value]),
+  );
+  const milliseconds = String(date.getMilliseconds()).padStart(3, "0");
+  return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}.${milliseconds} ${parts.timeZoneName}`;
+};
+
 const log = (message) => {
-  const line = `[${new Date().toISOString()}] ${message}\n`;
+  const line = `[${formatCentralTimestamp(new Date())}] ${message}\n`;
   process.stdout.write(line);
   logStream.write(line);
 };

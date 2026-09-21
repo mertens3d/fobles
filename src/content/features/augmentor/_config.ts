@@ -113,6 +113,14 @@ export const fieldConfigs: FoblesConfig[] = [
     FoblesTopSelector: "#Links a.scLink[onclick*='item:load']",
   },
   {
+    // Presentation Details -> Controls -> Edit's "Styles" checklist - each checkbox references
+    // a real Sitecore style item via its own styleid attribute. Unlike every other strategy, the
+    // checkboxes stay fully interactive (checking one still has to work), so this only adds a
+    // button alongside each one rather than hiding/replacing it.
+    strategy: "style-checklist",
+    FoblesTopSelector: ".style-field .style-selector input[type='checkbox'][styleid]",
+  },
+  {
     strategy: "template-path",
     FoblesTopSelector: "a.scTemplate span.scTemplatePath",
   },

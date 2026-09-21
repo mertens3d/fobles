@@ -1,10 +1,14 @@
 $fobles-height: 24px;
 $fobles-list-height: 150px;
 $fobles-toolbar-control-size: 24px;
-$fobles-feature-button-width: 48px;
+$fobles-lbolt-button-width: 48px;
 $fobles-tree-button-size: 18px;
 $fobles-quick-menu-width: 560px;
 $fobles-radius-small: 3px;
+
+// Sitecore's own Template Manager dialog renders at z-index 10001 - stay below that so it can
+// still appear on top of our toolbar instead of being hidden behind it.
+$fobles-toolbar-z-index: 9999;
 
 $fobles-white: #ffffff;
 $fobles-blue: #2f6fed;

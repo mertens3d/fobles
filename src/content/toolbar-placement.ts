@@ -13,51 +13,36 @@ function isValidPlacement(value: unknown): value is ToolbarPlacement {
   );
 }
 
-async function getPlacementForOrigin(
+// One placement per page, shared across every Sitecore instance the user visits - not per-origin.
+// Per-origin storage previously stored the user's real business domain names in chrome.storage.
+// sync (synced across their whole browser profile/devices), which is unnecessary exposure for a
+// value that's purely cosmetic (where the draggable toolbar sits on screen). Each FOBLES_PAGES
+// entry (src/content/constants.ts) gets its own sync key, created only once the user actually
+// drags the toolbar on that particular page - until then it falls back to the shared default.
+function storageKeyForPage(pageId: string): string {
+  return `${STORAGE.KEY.FOBLES_NAV_POSITION}_${pageId}`;
+}
+
+export function getPlacementForPage(
+  pageId: string,
+  fallback: ToolbarPlacement = DEFAULT_TOOLBAR_PLACEMENT,
+): Promise<ToolbarPlacement> {
+  return getPlacement(storageKeyForPage(pageId), fallback);
+}
+
+export function setPlacementForPage(pageId: string, placement: ToolbarPlacement): Promise<void> {
+  return setPlacement(storageKeyForPage(pageId), placement);
+}
+
+async function getPlacement(
   storageKey: string,
-  origin: string,
+  fallback: ToolbarPlacement,
 ): Promise<ToolbarPlacement> {
   const result = await getStorageValue([storageKey]);
-  const placementsByOrigin = result[storageKey];
-  const value = (placementsByOrigin as Record<string, unknown> | undefined)?.[origin];
-  return isValidPlacement(value) ? value : DEFAULT_TOOLBAR_PLACEMENT;
+  const value = result[storageKey];
+  return isValidPlacement(value) ? value : fallback;
 }
 
-async function setPlacementForOrigin(
-  storageKey: string,
-  origin: string,
-  placement: ToolbarPlacement,
-): Promise<void> {
-  const result = await getStorageValue([storageKey]);
-  const placementsByOrigin =
-    (result[storageKey] as Record<string, ToolbarPlacement> | undefined) ?? {};
-  await setStorageValue({
-    [storageKey]: { ...placementsByOrigin, [origin]: placement },
-  });
-}
-
-export function getFoblesNavPlacement(origin: string): Promise<ToolbarPlacement> {
-  return getPlacementForOrigin(STORAGE.KEY.FOBLES_NAV_POSITION, origin);
-}
-
-export function setFoblesNavPlacement(
-  origin: string,
-  placement: ToolbarPlacement,
-): Promise<void> {
-  return setPlacementForOrigin(STORAGE.KEY.FOBLES_NAV_POSITION, origin, placement);
-}
-
-export function getSelectRenderingFoblesNavPlacement(origin: string): Promise<ToolbarPlacement> {
-  return getPlacementForOrigin(STORAGE.KEY.SELECT_RENDERING_FOBLES_NAV_POSITION, origin);
-}
-
-export function setSelectRenderingFoblesNavPlacement(
-  origin: string,
-  placement: ToolbarPlacement,
-): Promise<void> {
-  return setPlacementForOrigin(
-    STORAGE.KEY.SELECT_RENDERING_FOBLES_NAV_POSITION,
-    origin,
-    placement,
-  );
+async function setPlacement(storageKey: string, placement: ToolbarPlacement): Promise<void> {
+  await setStorageValue({ [storageKey]: placement });
 }

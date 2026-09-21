@@ -16,12 +16,13 @@ import { applyImageStrategy } from "./field-strategies/sc-image";
 import { applyInternalLinkStrategy } from "./field-strategies/sc-internallink";
 import { applyMultilistStrategy } from "./field-strategies/sc-multilist";
 import { applyMultilistWithSearchStrategy } from "./field-strategies/sc-multilistwithsearch";
-import { applyQuickInfoSectionStrategy } from "./field-strategies/quick-info-section";
 import { applyTagListStrategy } from "./field-strategies/sc-taglist";
 import { applyTreeListStrategy } from "./field-strategies/sc-treelist";
 import { applyTreelistExStrategy } from "./field-strategies/sc-treelistex";
-import { applyReferenceLinksStrategy } from "./section-strategies/reference-links";
-import { applyTemplatePathStrategy } from "./section-strategies/template-path";
+import { applyQuickInfoSectionStrategy } from "./editor-strategies/quick-info-section";
+import { applyReferenceLinksStrategy } from "./editor-strategies/reference-links";
+import { applyTemplatePathStrategy } from "./editor-strategies/template-path";
+import { applyStyleChecklistStrategy } from "./field-strategies/sc-style-checklist";
 import { removeFoblesTooltips } from "./shared/fobles-tooltip";
 
 const foblesDismissListeners = new WeakSet<Document>();
@@ -107,6 +108,10 @@ function applyStrategy(
     case "reference-links":
       if (config.strategy !== "reference-links") return;
       applyReferenceLinksStrategy(doc, config);
+      return;
+    case "style-checklist":
+      if (config.strategy !== "style-checklist") return;
+      applyStyleChecklistStrategy(doc, config);
       return;
     case "tag-list":
       if (config.strategy !== "tag-list") return;
