@@ -213,6 +213,58 @@
         min-height: 26px;
       }
 
+      .user-tree-jump-section {
+        margin-top: 10px;
+        padding-top: 10px;
+        border-top: 1px solid var(--border);
+      }
+
+      .user-tree-jump-heading {
+        margin-bottom: 6px;
+        color: var(--text);
+        font-size: 13px;
+        font-weight: 700;
+      }
+
+      .user-tree-jump-row {
+        display: grid;
+        grid-template-columns: 20px minmax(120px, 200px) auto minmax(140px, 1fr) minmax(140px, 220px) 24px;
+        align-items: center;
+        column-gap: 8px;
+        padding: 6px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .user-tree-jump-row input[type="checkbox"] {
+        width: 16px;
+        height: 16px;
+      }
+
+      .user-tree-jump-root {
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .user-tree-jump-remove {
+        padding: 0;
+        border: none;
+        background: none;
+        color: var(--muted);
+        font-size: 16px;
+        line-height: 1;
+        cursor: pointer;
+      }
+
+      .user-tree-jump-add {
+        margin-top: 8px;
+      }
+
+      .user-tree-jump-limit-status {
+        margin: 4px 0 0;
+        color: var(--muted);
+        font-size: 12px;
+      }
+
       .settings-section {
         margin: 0 0 14px;
         padding: 4px 16px 16px;
@@ -288,7 +340,8 @@
       <summary>Quick Menu Buttons</summary>
       <p>
         Toggle buttons on or off, and optionally add a sub-path suffix to a
-        Tree Jump button's base path.
+        Tree Jump button's base path. Under Tree Jumps, add your own User
+        Tree Jumps too - each is rooted at /sitecore/, up to 30.
       </p>
       <div id="quick-menu-buttons"></div>
       <button id="save-quick-menu-buttons" type="button">

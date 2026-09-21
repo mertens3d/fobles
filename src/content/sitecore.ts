@@ -25,6 +25,8 @@ export const SITECORE = {
     MEDIA_REQUEST_SEGMENT: "/sitecore/shell/applications/-/media/",
     POWERSHELL_ISE: "/sitecore/shell/Applications/PowerShell/PowerShellIse",
     POWERSHELL_SCRIPT_LIBRARY: "/sitecore/system/Modules/PowerShell/Script Library",
+    // Required root for user-defined Tree Jumps (src/shared/quick-menu/user-tree-jump-constants.ts).
+    ROOT: "/sitecore",
     SHELL_DEFAULT: "/sitecore/shell/default.aspx",
     TEMPLATE_MANAGER: "/sitecore/shell/Applications/Templates/Template-Manager",
   },

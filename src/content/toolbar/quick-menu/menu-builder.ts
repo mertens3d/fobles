@@ -5,6 +5,7 @@ import {
   scheduleCloseQuickMenuOnHover,
 } from "./handlers";
 import { createMenuColumn } from "./column-builder";
+import { initUserTreeJumpGroup } from "./user-tree-jump-group";
 import {
   ADMIN_PAGE_GROUP,
   AI_GROUP,
@@ -20,7 +21,9 @@ function createQuickMenu(doc: Document, closeMenu: () => void): HTMLDivElement {
 
   const columns = doc.createElement("div");
   columns.className = CLASS.QUICK_MENU_COLUMNS;
-  columns.appendChild(createMenuColumn(doc, TEXT.GROUP_NAME.TREE_JUMPS, TREE_JUMP_GROUP, closeMenu));
+  const treeJumpsColumn = createMenuColumn(doc, TEXT.GROUP_NAME.TREE_JUMPS, TREE_JUMP_GROUP, closeMenu);
+  initUserTreeJumpGroup(doc, treeJumpsColumn, closeMenu);
+  columns.appendChild(treeJumpsColumn);
   columns.appendChild(
     createMenuColumn(
       doc,
