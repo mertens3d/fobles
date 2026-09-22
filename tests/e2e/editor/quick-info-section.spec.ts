@@ -7,7 +7,7 @@ import {
   expectFoblesButtonSameTabNavigation,
 } from "../fobles-helpers";
 import { showMouseMarker } from "../mouse-proxy";
-import { clickLboltButton, findFrameWithSelector } from "../sitecore-macros";
+import { clickLboltButton, findFoblesFrame } from "../sitecore-macros";
 import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
 
@@ -26,11 +26,7 @@ test.describe("Editor scenario: quick info section", () => {
     await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`);
     await showMouseMarker(page);
 
-    const foblesFrame = await findFrameWithSelector(
-      page,
-      CONST.SITECORE.SELECTORS.LBOLT_BUTTON,
-      "LBolt button",
-    );
+    const foblesFrame = await findFoblesFrame(page);
     await showMouseMarker(foblesFrame);
 
     const quickInfoTable = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE).first();

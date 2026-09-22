@@ -10,28 +10,47 @@ function createEmptyUserTreeJump(): UserTreeJump {
   return { id: createUserTreeJumpId(), label: "", enabled: true, icon: "", pathSuffix: "" };
 }
 
+// Mirrors the Tree Jump catalog's row layout (see createQuickMenuButtonRow in
+// quick-menu-buttons.ts): a title row, then a fields row of checkbox | hardcoded prefix |
+// suffix - plus an icon input, which only user-defined entries have.
 function createUserTreeJumpRow(entry: UserTreeJump): HTMLDivElement {
   const row = document.createElement("div");
-  row.className = "user-tree-jump-row";
+  row.className = "quick-menu-entry user-tree-jump-row";
   row.dataset.userTreeJumpId = entry.id;
 
-  const enabledInput = document.createElement("input");
-  enabledInput.type = "checkbox";
-  enabledInput.name = "enabled";
-  enabledInput.checked = entry.enabled;
-  row.appendChild(enabledInput);
+  const titleRow = document.createElement("div");
+  titleRow.className = "quick-menu-entry-title";
 
   const labelInput = document.createElement("input");
   labelInput.type = "text";
   labelInput.name = "label";
   labelInput.placeholder = "Label";
   labelInput.value = entry.label;
-  row.appendChild(labelInput);
+  titleRow.appendChild(labelInput);
 
-  const rootLabel = document.createElement("span");
-  rootLabel.className = "user-tree-jump-root";
-  rootLabel.textContent = "/sitecore/";
-  row.appendChild(rootLabel);
+  const removeButton = document.createElement("button");
+  removeButton.type = "button";
+  removeButton.className = "user-tree-jump-remove";
+  removeButton.textContent = "\u00d7";
+  removeButton.title = "Remove this Tree Jump";
+  removeButton.addEventListener("click", () => row.remove());
+  titleRow.appendChild(removeButton);
+
+  row.appendChild(titleRow);
+
+  const fieldsRow = document.createElement("div");
+  fieldsRow.className = "quick-menu-entry-fields";
+
+  const enabledInput = document.createElement("input");
+  enabledInput.type = "checkbox";
+  enabledInput.name = "enabled";
+  enabledInput.checked = entry.enabled;
+  fieldsRow.appendChild(enabledInput);
+
+  const prefix = document.createElement("span");
+  prefix.className = "quick-menu-entry-prefix";
+  prefix.textContent = "/sitecore/";
+  fieldsRow.appendChild(prefix);
 
   const pathSuffixInput = document.createElement("input");
   pathSuffixInput.type = "text";
@@ -41,7 +60,7 @@ function createUserTreeJumpRow(entry: UserTreeJump): HTMLDivElement {
   pathSuffixInput.addEventListener("blur", () => {
     pathSuffixInput.value = sanitizeQuickMenuPathSuffix(pathSuffixInput.value);
   });
-  row.appendChild(pathSuffixInput);
+  fieldsRow.appendChild(pathSuffixInput);
 
   const iconInput = document.createElement("input");
   iconInput.type = "text";
@@ -52,16 +71,9 @@ function createUserTreeJumpRow(entry: UserTreeJump): HTMLDivElement {
   iconInput.addEventListener("blur", () => {
     iconInput.value = normalizeUserTreeJumpIconPath(iconInput.value);
   });
-  row.appendChild(iconInput);
+  fieldsRow.appendChild(iconInput);
 
-  const removeButton = document.createElement("button");
-  removeButton.type = "button";
-  removeButton.className = "user-tree-jump-remove";
-  removeButton.textContent = "\u00d7";
-  removeButton.title = "Remove this Tree Jump";
-  removeButton.addEventListener("click", () => row.remove());
-  row.appendChild(removeButton);
-
+  row.appendChild(fieldsRow);
   return row;
 }
 

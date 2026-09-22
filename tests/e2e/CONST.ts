@@ -1,10 +1,11 @@
 import { scenarios } from "./scenarios";
+import { SELECTED_SPEED } from "../settings/test-speed";
 import type { TestSpeed } from "./types";
 
 export const CONST = {
   SCENARIOS: scenarios,
   SPEED: {
-    SELECTED: "WALK" as TestSpeed,
+    SELECTED: SELECTED_SPEED,
     SETTINGS: {
       CRAWL: { STEP_WAIT_MS: 3_000, MOUSE_PX_PER_SECOND: 800 },
       WALK: { STEP_WAIT_MS: 1_000, MOUSE_PX_PER_SECOND: 2_000 },
@@ -74,11 +75,16 @@ export const CONST = {
       CONTENT_TAB: "span.scEditorTabHeaderNormal",
       QUICK_INFO_TABLE: ".scEditorQuickInfo",
       ACCOUNT_INFO: "ul.sc-accountInformation",
+      TREE_JUMP_BUTTON: "[data-fobles-tree-jump-path]",
+    },
+    ATTRIBUTES: {
+      MENU_VISIBLE: "data-visible",
     },
     LABELS: {
       TOGGLE_FOBLES: /toggle fobles/i,
       CONTENT_TAB: "Content",
       ITEM_PATH: "Item path:",
+      CONTINUE_BUTTON: "Continue",
     },
   },
   TIMEOUTS: {

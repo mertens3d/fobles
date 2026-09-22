@@ -27,41 +27,56 @@ function createQuickMenuButtonRow(
   descriptor: QuickMenuButtonDescriptor,
   userSettings: QuickMenuButtonSettings,
 ): HTMLDivElement {
-  const row = document.createElement("div");
-  row.className = "quick-menu-button-row";
-  if (!descriptor.supportsPathSuffix) {
-    row.classList.add("quick-menu-button-row--no-suffix");
-  }
-
   const enabledInput = document.createElement("input");
   enabledInput.type = "checkbox";
   enabledInput.name = "enabled";
   enabledInput.dataset.buttonId = descriptor.id;
   enabledInput.checked = userSettings[descriptor.id]?.enabled !== false;
-  row.appendChild(enabledInput);
 
-  const label = document.createElement("span");
-  label.className = "quick-menu-button-label";
-  label.textContent = descriptor.label;
-  if (descriptor.basePath) {
-    label.title = descriptor.basePath;
-  }
-  row.appendChild(label);
+  // Tree Jump buttons get the title-row + fields-row layout shared with User Tree Jumps (see
+  // user-tree-jump-editor.ts); every other button has neither a base path nor a suffix to show, so
+  // it stays a single compact row.
+  if (!descriptor.supportsPathSuffix) {
+    const row = document.createElement("div");
+    row.className = "quick-menu-button-row quick-menu-button-row--no-suffix";
+    row.appendChild(enabledInput);
 
-  if (descriptor.supportsPathSuffix) {
-    const suffixInput = document.createElement("input");
-    suffixInput.type = "text";
-    suffixInput.name = "pathSuffix";
-    suffixInput.dataset.buttonId = descriptor.id;
-    suffixInput.placeholder = "optional sub-path";
-    suffixInput.title = `Appended after ${descriptor.basePath}`;
-    suffixInput.value = userSettings[descriptor.id]?.pathSuffix ?? "";
-    suffixInput.addEventListener("blur", () => {
-      suffixInput.value = sanitizeQuickMenuPathSuffix(suffixInput.value);
-    });
-    row.appendChild(suffixInput);
+    const label = document.createElement("span");
+    label.className = "quick-menu-button-label";
+    label.textContent = descriptor.label;
+    row.appendChild(label);
+    return row;
   }
 
+  const row = document.createElement("div");
+  row.className = "quick-menu-entry";
+
+  const titleRow = document.createElement("div");
+  titleRow.className = "quick-menu-entry-title";
+  titleRow.textContent = descriptor.label;
+  row.appendChild(titleRow);
+
+  const fieldsRow = document.createElement("div");
+  fieldsRow.className = "quick-menu-entry-fields";
+  fieldsRow.appendChild(enabledInput);
+
+  const prefix = document.createElement("span");
+  prefix.className = "quick-menu-entry-prefix";
+  prefix.textContent = descriptor.basePath ?? "";
+  fieldsRow.appendChild(prefix);
+
+  const suffixInput = document.createElement("input");
+  suffixInput.type = "text";
+  suffixInput.name = "pathSuffix";
+  suffixInput.dataset.buttonId = descriptor.id;
+  suffixInput.placeholder = "optional sub-path";
+  suffixInput.value = userSettings[descriptor.id]?.pathSuffix ?? "";
+  suffixInput.addEventListener("blur", () => {
+    suffixInput.value = sanitizeQuickMenuPathSuffix(suffixInput.value);
+  });
+  fieldsRow.appendChild(suffixInput);
+
+  row.appendChild(fieldsRow);
   return row;
 }
 

@@ -3,6 +3,7 @@ import { getTestEnvironment } from "./fixtures/environment";
 import { attachScreenshot } from "./fobles-helpers";
 import { logoutCurrentSitecoreSession } from "./fixtures/sitecore";
 import { CONST } from "./CONST";
+import { RECORD_VIDEO } from "../settings/VideoSwitch";
 
 // Filename sorts after "strategies/" and "toolbar/" so this always runs last across the whole
 // suite. Logs out itself rather than relying on the worker-teardown cleanup (fixtures/playwright.ts),
@@ -29,8 +30,11 @@ test.describe("Session", () => {
     // password input in isolation, since it identifies the whole login page context unambiguously.
     const loginPage = page.locator(".login-page").first();
     await expect(loginPage).toBeVisible();
-    await attachScreenshot(testInfo, page, "login-page.png", {
-      mask: [page.locator("#Username"), page.locator("#Password")],
-    });
+    // Skipped during a promoVideo recording session - see 00-session-start.spec.ts's own check.
+    if (!RECORD_VIDEO) {
+      await attachScreenshot(testInfo, page, "login-page.png", {
+        mask: [page.locator("#Username"), page.locator("#Password")],
+      });
+    }
   });
 });

@@ -7,7 +7,7 @@ import {
   createStep,
   getEditorSectionLocator,
 } from "../fobles-helpers";
-import { clickLboltButton, findFrameWithSelector } from "../sitecore-macros";
+import { clickLboltButton, findFoblesFrame } from "../sitecore-macros";
 import { getLastKnownMousePosition, moveMouseTo, pulseMouseMarkerClick, showMouseMarker } from "../mouse-proxy";
 import { FOBLES } from "../strategies/CONST";
 import { STRATEGY_SCENARIOS } from "../strategies/strategy-scenarios";
@@ -17,6 +17,13 @@ const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 // Longer than STEP_WAIT_MS on purpose - that constant is tuned for functional-test pacing, not for
 // a human watching the recording to actually register each scene before the next one starts.
 const SCENE_PAUSE_MS = 2_500;
+// Narration labels for this script's own mouse-move logging - not reused outside this file, unlike
+// the shared CONST.SITECORE.SELECTORS/LABELS entries below.
+const MOUSE_MOVE_LABEL = {
+  MENU_TRIGGER: "Quick menu trigger",
+  TREE_JUMP: "Tree jump",
+  TREE_JUMP_CTRL_CLICK: "Tree jump (Ctrl+click)",
+} as const;
 
 // A single, deliberately short walkthrough for recording a store-listing promo video (not part of
 // the normal regression suite's assertions-first style) - runs through a couple of field
@@ -67,11 +74,7 @@ test.describe("Promo: short feature walkthrough", () => {
       await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${quickInfo.itemId}`);
       await showMouseMarker(page);
 
-      const foblesFrame = await findFrameWithSelector(
-        page,
-        CONST.SITECORE.SELECTORS.LBOLT_BUTTON,
-        "LBolt button",
-      );
+      const foblesFrame = await findFoblesFrame(page);
       await showMouseMarker(foblesFrame);
       const lboltButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON).first();
       await clickLboltButton(page, lboltButton);
@@ -84,42 +87,42 @@ test.describe("Promo: short feature walkthrough", () => {
     const jumpScenario = CONST.SCENARIOS[0];
     await step("Tree jump: plain click navigates in the current tab", async () => {
       const foblesFrame = await activateFoblesForJumpTest(page, jumpScenario);
-      const menuButton = foblesFrame.locator(".fobles-quick-menu-trigger").first();
-      const menuFlyout = foblesFrame.locator(".fobles-quick-menu").first();
+      const menuButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER).first();
+      const menuFlyout = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_MENU).first();
       const mousePosition = getLastKnownMousePosition();
 
-      await moveMouseTo(page, menuButton, mousePosition, "Quick menu trigger");
+      await moveMouseTo(page, menuButton, mousePosition, MOUSE_MOVE_LABEL.MENU_TRIGGER);
       await menuButton.click();
       await page.waitForTimeout(STEP_WAIT_MS);
-      await expect(menuFlyout).toHaveAttribute("data-visible", "true");
+      await expect(menuFlyout).toHaveAttribute(CONST.SITECORE.ATTRIBUTES.MENU_VISIBLE, "true");
 
-      const jumpButton = foblesFrame.locator("[data-fobles-tree-jump-path]").first();
+      const jumpButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.TREE_JUMP_BUTTON).first();
       await expect(jumpButton).toBeVisible();
-      await moveMouseTo(page, jumpButton, mousePosition, "Tree jump");
+      await moveMouseTo(page, jumpButton, mousePosition, MOUSE_MOVE_LABEL.TREE_JUMP);
       await pulseMouseMarkerClick(page);
       await jumpButton.click();
 
       const confirmationDialog = foblesFrame.getByRole("dialog");
       if (await confirmationDialog.isVisible().catch(() => false)) {
-        await confirmationDialog.getByRole("button", { name: "Continue" }).click();
+        await confirmationDialog.getByRole("button", { name: CONST.SITECORE.LABELS.CONTINUE_BUTTON }).click();
       }
       await page.waitForTimeout(SCENE_PAUSE_MS);
     }, { screenshot: false });
 
     await step("Tree jump: Ctrl+click opens the target in a new tab", async () => {
       const foblesFrame = await activateFoblesForJumpTest(page, jumpScenario);
-      const menuButton = foblesFrame.locator(".fobles-quick-menu-trigger").first();
-      const menuFlyout = foblesFrame.locator(".fobles-quick-menu").first();
+      const menuButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER).first();
+      const menuFlyout = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_MENU).first();
       const mousePosition = getLastKnownMousePosition();
 
-      await moveMouseTo(page, menuButton, mousePosition, "Quick menu trigger");
+      await moveMouseTo(page, menuButton, mousePosition, MOUSE_MOVE_LABEL.MENU_TRIGGER);
       await menuButton.click();
       await page.waitForTimeout(STEP_WAIT_MS);
-      await expect(menuFlyout).toHaveAttribute("data-visible", "true");
+      await expect(menuFlyout).toHaveAttribute(CONST.SITECORE.ATTRIBUTES.MENU_VISIBLE, "true");
 
-      const jumpButton = foblesFrame.locator("[data-fobles-tree-jump-path]").nth(1);
+      const jumpButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.TREE_JUMP_BUTTON).nth(1);
       await expect(jumpButton).toBeVisible();
-      await moveMouseTo(page, jumpButton, mousePosition, "Tree jump (Ctrl+click)");
+      await moveMouseTo(page, jumpButton, mousePosition, MOUSE_MOVE_LABEL.TREE_JUMP_CTRL_CLICK);
 
       const newTabPromise = page.context().waitForEvent("page");
       await pulseMouseMarkerClick(page);

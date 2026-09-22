@@ -16,7 +16,7 @@
         box-sizing: border-box;
       }
       body {
-        max-width: 960px;
+        max-width: 1024px;
         margin: 32px auto;
         padding: 0 24px;
         background: var(--surface);
@@ -126,7 +126,7 @@
         color: var(--muted);
       }
       details {
-        max-width: 680px;
+        max-width: 100%;
         color: var(--muted);
       }
       code {
@@ -213,6 +213,52 @@
         min-height: 26px;
       }
 
+      .quick-menu-entry {
+        padding: 8px 0;
+        border-bottom: 1px solid var(--border);
+      }
+
+      .quick-menu-entry-title {
+        display: flex;
+        width: 200px;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 6px;
+        color: var(--text);
+        font-weight: 700;
+      }
+
+      .quick-menu-entry-title input[type="text"] {
+        flex: 1;
+        font-weight: 700;
+      }
+
+      .quick-menu-entry-fields {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+      }
+
+      .quick-menu-entry-fields input[type="checkbox"] {
+        flex: 0 0 auto;
+        width: 16px;
+        height: 16px;
+      }
+
+      .quick-menu-entry-prefix {
+        flex: 0 0 auto;
+        color: var(--muted);
+        white-space: nowrap;
+      }
+
+      .quick-menu-entry-fields input[name="pathSuffix"],
+      .quick-menu-entry-fields input[name="icon"] {
+        flex: 1;
+        min-height: 26px;
+        min-width: 0;
+      }
+
       .user-tree-jump-section {
         margin-top: 10px;
         padding-top: 10px;
@@ -226,27 +272,8 @@
         font-weight: 700;
       }
 
-      .user-tree-jump-row {
-        display: grid;
-        grid-template-columns: 20px minmax(120px, 200px) auto minmax(140px, 1fr) minmax(140px, 220px) 24px;
-        align-items: center;
-        column-gap: 8px;
-        padding: 6px 0;
-        border-bottom: 1px solid var(--border);
-      }
-
-      .user-tree-jump-row input[type="checkbox"] {
-        width: 16px;
-        height: 16px;
-      }
-
-      .user-tree-jump-root {
-        color: var(--muted);
-        white-space: nowrap;
-      }
-
       .user-tree-jump-remove {
-        padding: 0;
+        padding: 0 4px;
         border: none;
         background: none;
         color: var(--muted);
