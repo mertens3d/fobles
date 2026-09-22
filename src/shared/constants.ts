@@ -10,6 +10,7 @@ export const STORAGE = {
     QUICK_MENU_BUTTON_SETTINGS: "quickMenuButtonSettings",
     SHOW_RELOAD_EXTENSION_BUTTON: "showReloadExtensionButton",
     TURN_OFF_FOBLES_AFTER_NAVIGATION: "turnOffFoblesAfterNavigation",
+    USER_TREE_JUMPS: "userTreeJumps",
   },
 } as const;
 

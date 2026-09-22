@@ -16,3 +16,14 @@ export type QuickMenuButtonDescriptor = {
   group?: string;
   basePath?: string;
 };
+
+// A user-defined Tree Jump shortcut (src/shared/quick-menu/user-tree-jump-settings.ts) - unlike
+// QuickMenuButtonDescriptor, these aren't a fixed catalog entry; the user creates any number of
+// them (up to USER_TREE_JUMP.MAX_ENTRIES), each rooted at SITECORE.RELATIVE_PATHS.ROOT.
+export type UserTreeJump = {
+  id: string;
+  label: string;
+  enabled: boolean;
+  icon: string;
+  pathSuffix: string;
+};

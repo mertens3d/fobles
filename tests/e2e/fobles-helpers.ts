@@ -3,7 +3,7 @@ import { openSitecorePage } from "./fixtures/sitecore";
 import type { FoblesExpectation } from "./scenarios";
 import { getLastKnownMousePosition, moveMouseTo, pulseMouseMarkerClick, showMouseMarker } from "./mouse-proxy";
 import { CONST } from "./CONST";
-import { clickLboltButton, findFrameWithSelector } from "./sitecore-macros";
+import { clickLboltButton, findFoblesFrame, findFrameWithSelector } from "./sitecore-macros";
 import type { TestInfo } from "@playwright/test";
 
 type Screenshottable = Pick<Locator, "screenshot">;
@@ -22,11 +22,7 @@ export async function activateFoblesForFieldStrategy(
   await showMouseMarker(page);
 
   console.log(`[fobles] Looking for the LBolt button in a frame`);
-  const foblesFrame = await findFrameWithSelector(
-    page,
-    CONST.SITECORE.SELECTORS.LBOLT_BUTTON,
-    "LBolt button",
-  );
+  const foblesFrame = await findFoblesFrame(page);
   console.log(`[fobles] LBolt button frame found`);
   await showMouseMarker(foblesFrame);
 
@@ -520,11 +516,7 @@ export async function activateFobles(
   );
   await treeFrame.locator(`#${scenario.treeNodeId}`).click();
 
-  const foblesFrame = await findFrameWithSelector(
-    page,
-    CONST.SITECORE.SELECTORS.LBOLT_BUTTON,
-    "LBolt button",
-  );
+  const foblesFrame = await findFoblesFrame(page);
   await logActivationState(foblesFrame, "[fobles] LBolt setup before click");
   await showMouseMarker(foblesFrame);
   const lboltButton = foblesFrame
@@ -547,11 +539,7 @@ export async function activateFoblesForJumpTest(
   console.log(`[fobles] Navigation finished at ${page.url()}`);
   await showMouseMarker(page);
 
-  const foblesFrame = await findFrameWithSelector(
-    page,
-    CONST.SITECORE.SELECTORS.LBOLT_BUTTON,
-    "LBolt button",
-  );
+  const foblesFrame = await findFoblesFrame(page);
   await logActivationState(foblesFrame, "[fobles] Jump setup before LBolt click");
   await showMouseMarker(foblesFrame);
   const lboltButton = foblesFrame

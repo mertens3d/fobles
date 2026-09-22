@@ -7,7 +7,7 @@ import {
   expectFoblesButtonSameTabNavigation,
 } from "../fobles-helpers";
 import { showMouseMarker } from "../mouse-proxy";
-import { clickLboltButton, findFrameWithSelector, openLinksGallery } from "../sitecore-macros";
+import { clickLboltButton, findFoblesFrame, openLinksGallery } from "../sitecore-macros";
 import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
 
@@ -27,11 +27,7 @@ test.describe("Editor scenario: reference links", () => {
     await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`);
     await showMouseMarker(page);
 
-    const foblesFrame = await findFrameWithSelector(
-      page,
-      CONST.SITECORE.SELECTORS.LBOLT_BUTTON,
-      "LBolt button",
-    );
+    const foblesFrame = await findFoblesFrame(page);
     await showMouseMarker(foblesFrame);
 
     const linksPanel = await openLinksGallery(page, foblesFrame);

@@ -33,6 +33,12 @@ export async function findFrameWithSelector(
   throw new Error(`Could not find ${description} in any frame: ${selector}`);
 }
 
+// The frame holding Fobles' own LBolt toggle button - every scenario that activates Fobles needs
+// this same lookup first, regardless of what it does with the frame afterward.
+export async function findFoblesFrame(page: Page): Promise<Frame> {
+  return findFrameWithSelector(page, CONST.SITECORE.SELECTORS.LBOLT_BUTTON, "LBolt button");
+}
+
 // Moves the mouse marker to the target, flashes it, then clicks - the same move-then-click
 // pattern every other interactive click in these suites uses, instead of a plain locator.click().
 // Pauses afterward so the click's effect is visible on screen before the next interaction fires.
