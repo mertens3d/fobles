@@ -40,6 +40,7 @@ function createFoblesNavButton(
   context: ToolbarContext,
   options: {
     className: string;
+    role?: string;
     text: string;
     title: string;
     onClick: (event: MouseEvent) => void;
@@ -54,6 +55,9 @@ function createFoblesNavButton(
     ATTRIBUTE.DATA.KEY.FOBLES_NAV_OWNER,
     ATTRIBUTE.DATA.VALUE.PERSISTENT,
   );
+  if (options.role) {
+    button.setAttribute(ATTRIBUTE.DATA.KEY.NAV_BUTTON_ROLE, options.role);
+  }
   button.addEventListener("click", options.onClick);
   return button;
 }
@@ -61,6 +65,7 @@ function createFoblesNavButton(
 export function createQuickMenuTrigger(context: ToolbarContext): HTMLDivElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.FOBLES_NAV_BUTTON,
+    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.QUICK_MENU_TRIGGER,
     text: TEXT.QUICK_MENU,
     title: TEXT.QUICK_MENU_TITLE,
     onClick: () => toggleQuickMenu(context),
@@ -75,6 +80,7 @@ export function createQuickMenuTrigger(context: ToolbarContext): HTMLDivElement 
 export function createProxyButtonsTrigger(context: ToolbarContext): HTMLDivElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.FOBLES_NAV_BUTTON,
+    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.PROXY_BUTTONS_TRIGGER,
     text: TEXT.VIEW,
     title: TEXT.VIEW_TITLE,
     onClick: () => toggleProxyButtons(context),
@@ -89,6 +95,7 @@ export function createProxyButtonsTrigger(context: ToolbarContext): HTMLDivEleme
 export function createLboltButton(context: ToolbarContext): HTMLButtonElement {
   return createFoblesNavButton(context, {
     className: CLASS.TOOLBAR_LBOLT_BUTTON,
+    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.LBOLT,
     text: SYMBOLS.LIGHTNING,
     title: TEXT.TOGGLE_FEATURES,
     onClick: context.onToggleFeatures,

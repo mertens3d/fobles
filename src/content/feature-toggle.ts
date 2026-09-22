@@ -1,6 +1,7 @@
 import { clearTreeButtons, toggleTreeButtons as toggleTreeButtonsFeature } from "./features/augmentor/treeNodeFobles/index";
 import { clearFobles, setFoblesDismissHandler, triggerFobles } from "./features/augmentor";
 import { setAfterFoblesNavigationHandler } from "./features/augmentor/helper";
+import { resetFoblesItemIdCounts } from "./features/augmentor/shared/fobles-item-id";
 
 let lightningBoltActive = false;
 let foblesActive = false;
@@ -40,6 +41,7 @@ setFoblesDismissHandler(() => {
 export function toggleLightningBolt(): void {
   const nextState = !lightningBoltActive;
   lightningBoltActive = nextState;
+  resetFoblesItemIdCounts();
 
   if (nextState) {
     setTreeButtonState(true);

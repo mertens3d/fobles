@@ -9,7 +9,7 @@ export async function getExtensionId(context: BrowserContext): Promise<string> {
 }
 
 // Options/popup pages are genuine extension contexts (unlike the injected Sitecore content
-// script), so they're the only place tests can read/write chrome.storage directly.
+// script), so they're the only place tests can reach the extension's own settings UI directly.
 export async function openExtensionPage(
   context: BrowserContext,
   extensionId: string,
@@ -18,4 +18,20 @@ export async function openExtensionPage(
   const extensionPage = await context.newPage();
   await extensionPage.goto(`chrome-extension://${extensionId}/${page}.html`);
   return extensionPage;
+}
+
+// Sets the popup's "Warn before same-tab Fobles navigation" checkbox via a real click (it saves
+// on change, no separate Save button) rather than writing chrome.storage directly - tests should
+// only ever reach this setting the same way a real user would.
+export async function setFoblesNavWarningVisible(
+  context: BrowserContext,
+  extensionId: string,
+  visible: boolean,
+): Promise<void> {
+  const popupPage = await openExtensionPage(context, extensionId, "popup");
+  const checkbox = popupPage.locator("#fobles-nav-warning-visible");
+  if ((await checkbox.isChecked()) !== visible) {
+    await checkbox.click();
+  }
+  await popupPage.close();
 }

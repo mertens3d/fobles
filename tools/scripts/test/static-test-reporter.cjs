@@ -7,6 +7,7 @@ class StaticTestReporter {
     this.outputFile = path.resolve(
       options.outputFile ?? path.resolve(__dirname, "../../../tests/test-artifacts/reports/test-report.html"),
     );
+    this.autoOpenInBrowser = options.autoOpenInBrowser ?? true;
     this.startedAt = new Date();
     this.results = [];
     this.loginAlertUrl = null;
@@ -18,7 +19,7 @@ class StaticTestReporter {
     this.totalTests = suite.allTests().length;
     printStopSafelyWarning();
     this.writeReport({ status: "running" });
-    openInBrowser(this.outputFile);
+    if (this.autoOpenInBrowser) openInBrowser(this.outputFile);
   }
 
   onStdOut(chunk) {

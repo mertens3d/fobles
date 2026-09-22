@@ -1,138 +1,85 @@
-import { expect, test } from "../fixtures/playwright";
-import { openSitecorePage } from "../fixtures/sitecore";
+import { test } from "../fixtures/playwright";
 import { CONST } from "../CONST";
-import {
-  activateFoblesForFieldStrategy,
-  activateFoblesForJumpTest,
-  createStep,
-  getEditorSectionLocator,
-} from "../fobles-helpers";
-import { clickLboltButton, findFoblesFrame } from "../sitecore-macros";
-import { getLastKnownMousePosition, moveMouseTo, pulseMouseMarkerClick, showMouseMarker } from "../mouse-proxy";
-import { FOBLES } from "../strategies/CONST";
-import { STRATEGY_SCENARIOS } from "../strategies/strategy-scenarios";
-import { EDITOR_SCENARIOS } from "../editor/editor-scenarios";
+import { RECORD_VIDEO } from "../../settings/VideoSwitch";
+import { openSitecorePage } from "../fixtures/sitecore";
+import { showMouseMarker } from "../mouse-proxy";
+import { clickLbolt, clickTreeFoblesButton, clickTreeJump, highlightQuickInfoPath, scrollTreeContainer, setTreePanelWidth } from "../sitecore-macros";
+import { showSpeakBubble, hideSpeakBubble } from "../speak-bubble";
+import { getExtensionId, setFoblesNavWarningVisible } from "../fixtures/extension";
 
-const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
-// Longer than STEP_WAIT_MS on purpose - that constant is tuned for functional-test pacing, not for
-// a human watching the recording to actually register each scene before the next one starts.
 const SCENE_PAUSE_MS = 2_500;
-// Narration labels for this script's own mouse-move logging - not reused outside this file, unlike
-// the shared CONST.SITECORE.SELECTORS/LABELS entries below.
-const MOUSE_MOVE_LABEL = {
-  MENU_TRIGGER: "Quick menu trigger",
-  TREE_JUMP: "Tree jump",
-  TREE_JUMP_CTRL_CLICK: "Tree jump (Ctrl+click)",
-} as const;
 
-// A single, deliberately short walkthrough for recording a store-listing promo video (not part of
-// the normal regression suite's assertions-first style) - runs through a couple of field
-// strategies, the Quick Info panel, and a tree-jump click and Ctrl+click. Run with
-// `npm run test:e2e:promoVideo` (playwright.config.ts turns video recording on for anything under
-// tests/e2e/promoVideo, since the normal suite only keeps failure videos). Target runtime: under
-// 1:45 - trim clips in an editor afterward rather than padding this script out.
-// Toolbar drag is deliberately left out for now - it was hanging live (see toolbar-drag.spec.ts
-// for the real regression test) and isn't worth blocking a first working recording on; add it back
-// once that's root-caused.
-// ASK AGAIN: should the strict expect(...) calls below (toBeVisible/toHaveText/etc.) become
-// non-fatal waits instead, so a scenario-data mismatch doesn't abort the whole recording? Left as
-// strict assertions for now - revisit with the user.
 test.describe("Promo: short feature walkthrough", () => {
-  test("field strategies, Quick Info, and tree jumps", async ({ page }, testInfo) => {
+  test("field strategies, Quick Info, and tree jumps", async ({ page: sharedPage, sharedBrowserContext }) => {
     test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
-    const step = createStep(page, testInfo, page, "Promo");
+    // const extensionId = await getExtensionId(sharedBrowserContext);
+    let testError: unknown;
 
-    const dropLink = STRATEGY_SCENARIOS.DROP_LINK;
-    await step("Drop Link: toggling Fobles decorates the field", async () => {
-      const { fieldTable, lboltButton } = await activateFoblesForFieldStrategy(
+    // 00-session-start.spec.ts already ran on sharedPage and handled any interactive login wait -
+    // recording on a fresh page created only now means that dead time never ends up in the video.
+    const page = RECORD_VIDEO ? await sharedBrowserContext.newPage() : sharedPage;
+
+    try {
+      await setTreePanelWidth(page, 250);
+      await openSitecorePage(
         page,
-        dropLink.itemId,
-        dropLink.fieldLabel,
+        "/sitecore/shell/Applications/Content Editor.aspx?sc_bw=1&fo=E1AF4AA3-3B5D-4611-8C71-959AD261E5B7",
       );
-      await clickLboltButton(page, lboltButton);
-      const foblesButton = fieldTable.locator(FOBLES.SELECTORS.BUTTON).first();
-      await expect(foblesButton).toBeVisible();
-      await expect(foblesButton).toHaveText(dropLink.expectedButtonText);
-      await page.waitForTimeout(SCENE_PAUSE_MS);
-    }, { screenshot: false });
-
-    const multilist = STRATEGY_SCENARIOS.MULTILIST_OPTIONS;
-    await step("Multilist: toggling Fobles decorates the field", async () => {
-      const { fieldTable, lboltButton } = await activateFoblesForFieldStrategy(
-        page,
-        multilist.itemId,
-        multilist.fieldLabel,
-      );
-      await clickLboltButton(page, lboltButton);
-      const foblesButtons = getEditorSectionLocator(fieldTable).locator(FOBLES.SELECTORS.BUTTON);
-      await expect(foblesButtons.first()).toBeVisible();
-      await page.waitForTimeout(SCENE_PAUSE_MS);
-    }, { screenshot: false });
-
-    const quickInfo = EDITOR_SCENARIOS.QUICK_INFO_SECTION;
-    await step("Quick Info: toggling Fobles decorates the panel", async () => {
-      await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${quickInfo.itemId}`);
       await showMouseMarker(page);
 
-      const foblesFrame = await findFoblesFrame(page);
-      await showMouseMarker(foblesFrame);
-      const lboltButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON).first();
-      await clickLboltButton(page, lboltButton);
+      await scrollTreeContainer(page, 400);
+      await showSpeakBubble(page, "Click LBolt to turn Fobles on for this item", { xPercent: 50, yPercent: 90 });
+      await clickLbolt(page);
+      await hideSpeakBubble(page);
 
-      const quickInfoTable = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE).first();
-      await expect(quickInfoTable.locator(FOBLES.SELECTORS.WRAPPER).first()).toBeVisible();
+      await showSpeakBubble(page, "Click the Fobles button to jump straight to that item", { xPercent: 50, yPercent: 90 });
+      await clickTreeFoblesButton(page, "CDD3F21381BB47708FEC4E1DD65EAA66", { turnOffWarning: true });
+      await hideSpeakBubble(page);
+      await highlightQuickInfoPath(page);
+
+      console.log(`[fobles] Scene pause: waiting ${SCENE_PAUSE_MS}ms`);
       await page.waitForTimeout(SCENE_PAUSE_MS);
-    }, { screenshot: false });
 
-    const jumpScenario = CONST.SCENARIOS[0];
-    await step("Tree jump: plain click navigates in the current tab", async () => {
-      const foblesFrame = await activateFoblesForJumpTest(page, jumpScenario);
-      const menuButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER).first();
-      const menuFlyout = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_MENU).first();
-      const mousePosition = getLastKnownMousePosition();
+      await showSpeakBubble(page, "Click opens the tree jump path in the same tab", { xPercent: 50, yPercent: 90 });
+      await clickTreeJump(page, CONST.SITECORE.TREE_JUMP_PATHS.LAYOUT_RENDERINGS, {
+        turnOffWarning: true,
+      });
+      await hideSpeakBubble(page);
+      await highlightQuickInfoPath(page);
 
-      await moveMouseTo(page, menuButton, mousePosition, MOUSE_MOVE_LABEL.MENU_TRIGGER);
-      await menuButton.click();
-      await page.waitForTimeout(STEP_WAIT_MS);
-      await expect(menuFlyout).toHaveAttribute(CONST.SITECORE.ATTRIBUTES.MENU_VISIBLE, "true");
-
-      const jumpButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.TREE_JUMP_BUTTON).first();
-      await expect(jumpButton).toBeVisible();
-      await moveMouseTo(page, jumpButton, mousePosition, MOUSE_MOVE_LABEL.TREE_JUMP);
-      await pulseMouseMarkerClick(page);
-      await jumpButton.click();
-
-      const confirmationDialog = foblesFrame.getByRole("dialog");
-      if (await confirmationDialog.isVisible().catch(() => false)) {
-        await confirmationDialog.getByRole("button", { name: CONST.SITECORE.LABELS.CONTINUE_BUTTON }).click();
-      }
+      console.log(`[fobles] Scene pause: waiting ${SCENE_PAUSE_MS}ms`);
       await page.waitForTimeout(SCENE_PAUSE_MS);
-    }, { screenshot: false });
 
-    await step("Tree jump: Ctrl+click opens the target in a new tab", async () => {
-      const foblesFrame = await activateFoblesForJumpTest(page, jumpScenario);
-      const menuButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER).first();
-      const menuFlyout = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_MENU).first();
-      const mousePosition = getLastKnownMousePosition();
+      await showSpeakBubble(page, "Ctrl + Click opens the tree jump path in a new tab", { xPercent: 50, yPercent: 90 });
+      await clickTreeJump(page, CONST.SITECORE.TREE_JUMP_PATHS.MEDIA_LIBRARY, {
+        turnOffWarning: true,
+      });
+      await hideSpeakBubble(page);
+      await highlightQuickInfoPath(page);
 
-      await moveMouseTo(page, menuButton, mousePosition, MOUSE_MOVE_LABEL.MENU_TRIGGER);
-      await menuButton.click();
-      await page.waitForTimeout(STEP_WAIT_MS);
-      await expect(menuFlyout).toHaveAttribute(CONST.SITECORE.ATTRIBUTES.MENU_VISIBLE, "true");
+      console.log(`[fobles] Scene pause: waiting ${SCENE_PAUSE_MS}ms`);
+      await page.waitForTimeout(SCENE_PAUSE_MS);
 
-      const jumpButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.TREE_JUMP_BUTTON).nth(1);
-      await expect(jumpButton).toBeVisible();
-      await moveMouseTo(page, jumpButton, mousePosition, MOUSE_MOVE_LABEL.TREE_JUMP_CTRL_CLICK);
+      await openSitecorePage(
+        page,
+        "/sitecore/shell/Applications/Content Editor.aspx?sc_bw=1&fo=75D27C2B-5F88-4CC8-B1DE-8412A1628408&sc_lang=en",
+      );
+      await showMouseMarker(page);
+      await showSpeakBubble(page, "Click LBolt to turn Fobles on for this item", { xPercent: 50, yPercent: 90 });
+      await clickLbolt(page);
+      await hideSpeakBubble(page);
+    } catch (error) {
+      testError = error;
+      console.log(
+        `[fobles] Promo video scene failed: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}`,
+      );
+    }
 
-      const newTabPromise = page.context().waitForEvent("page");
-      await pulseMouseMarkerClick(page);
-      await jumpButton.click({ modifiers: ["Control"] });
-      const newTab = await newTabPromise;
-      await newTab.waitForLoadState("domcontentloaded").catch(() => undefined);
-      await newTab.bringToFront();
-      await newTab.waitForTimeout(SCENE_PAUSE_MS);
-      await page.bringToFront();
-      await newTab.close();
-    }, { screenshot: false });
+    // Closes the recording promptly instead of leaving it open (and recording an idle tail) until
+    // the whole worker's context.close() runs, which happens after zz-session-end.spec.ts too.
+    if (RECORD_VIDEO) await page.close();
+
+    // await setFoblesNavWarningVisible(sharedBrowserContext, extensionId, true);
+    // if (testError) throw testError;
   });
 });

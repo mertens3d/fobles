@@ -6,6 +6,7 @@ import {
   openFoblesUrl,
 } from "../helper";
 import { attachFoblesTooltip } from "../shared/fobles-tooltip";
+import { assignFoblesItemId } from "../shared/fobles-item-id";
 import { formatFoId } from "../shared/guid";
 import { forEachFrameDocument } from "../shared/frame-documents";
 
@@ -100,6 +101,7 @@ export function toggleTreeButtons(): void {
     button.type = "button";
     button.className = buttonClass;
     button.textContent = FOBLES.SYMBOLS.TREE_BUTTON;
+    assignFoblesItemId(button, itemId);
     attachFoblesTooltip(button);
     button.onclick = (event) => {
       event.preventDefault();

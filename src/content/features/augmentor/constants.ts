@@ -2,6 +2,7 @@
 export const FOBLES = {
   ATTRIBUTES: {
     BUTTON: "data-is-fobles-button",
+    ITEM_ID: "data-fobles-item-id",
     MARKER: "data-fobles-processed",
     STRATEGY: "data-field-strategy",
     TEMPLATE_BUTTON: "data-template-button",

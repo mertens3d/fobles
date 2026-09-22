@@ -100,6 +100,7 @@ export const ATTRIBUTE = {
   DATA: {
     KEY: {
       FOBLES_NAV_OWNER: "data-fobles-nav-owner",
+      NAV_BUTTON_ROLE: "data-fobles-nav-button-role",
       PROXY_BUTTONS: "data-proxy-buttons",
       QUICK_MENU: "data-quick-menu",
       TEMPLATE_BUTTON: "data-template-button",
@@ -107,6 +108,14 @@ export const ATTRIBUTE = {
     },
     VALUE: {
       PERSISTENT: "persistent",
+    },
+    // Identifies which specific toolbar button an element is, independent of its (shared, purely
+    // visual) CSS classes - so a test can select exactly one button without relying on class
+    // reuse, DOM position, or a locator's first()/nth() to happen to land on the right one.
+    NAV_BUTTON_ROLE: {
+      LBOLT: "lbolt",
+      PROXY_BUTTONS_TRIGGER: "proxy-buttons-trigger",
+      QUICK_MENU_TRIGGER: "quick-menu-trigger",
     },
   },
 } as const;

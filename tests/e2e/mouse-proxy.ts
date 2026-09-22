@@ -24,9 +24,14 @@ export function getLastKnownMousePosition(): MousePosition {
 // SPRINT mode is for verification runs nobody is watching - skip the marker graphic, click flash,
 // and stepped movement animation entirely, since they're purely cosmetic and only exist to make
 // the mouse's path/clicks visible to a human observer.
-function isSprintMode(): boolean {
+export function isSprintMode(): boolean {
   return CONST.SPEED.SELECTED === "SPRINT";
 }
+
+// clickWithMouseMarker's own post-click pause - lets a human watching see the click's effect land
+// before the next action fires. Tied to the selected speed like every other pacing pause in these
+// suites (0 for SPRINT, so verification-only runs stay fast).
+const POST_CLICK_PAUSE_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
 export async function getButtonSize(
   button: Locator,
@@ -80,6 +85,17 @@ async function updateMouseMarkers(
 
     await marker.evaluate(
       (element, coordinates) => {
+        // A native <dialog> shown via showModal() (e.g. Fobles' own confirm dialog) paints in the
+        // browser's "top layer", which renders above every normal element regardless of z-index -
+        // no z-index value on the marker itself can win against that. Reparenting the marker
+        // inside the open dialog puts it in that same top layer so it stays visible; move it back
+        // to <html> once the dialog closes.
+        const openDialog = document.querySelector("dialog[open]");
+        if (openDialog && element.parentElement !== openDialog) {
+          openDialog.appendChild(element);
+        } else if (!openDialog && element.parentElement !== document.documentElement) {
+          document.documentElement.appendChild(element);
+        }
         element.style.left = `${coordinates.x}px`;
         element.style.top = `${coordinates.y}px`;
       },
@@ -103,6 +119,12 @@ export async function pulseMouseMarkerClick(page: Page): Promise<void> {
 
         await marker.evaluate((element, config) => {
           const el = element as HTMLElement;
+          // See updateMouseMarkers - keeps the flash visible even if the click landed inside a
+          // dialog opened since the marker's last move (e.g. a click with no move beforehand).
+          const openDialog = document.querySelector("dialog[open]");
+          if (openDialog && el.parentElement !== openDialog) {
+            openDialog.appendChild(el);
+          }
           const originalBackground = el.style.background;
           el.style.background = config.COLOR;
           setTimeout(() => {
@@ -122,6 +144,31 @@ export async function pulseMouseMarkerClick(page: Page): Promise<void> {
     }),
   );
   await page.waitForTimeout(CONST.CLICK_FLASH.DURATION_MS);
+}
+
+// The single entry point every interactive click in these suites should use: moves the marker to
+// the target, flashes it, then clicks - so no call site has to remember/repeat that 3-step
+// sequence itself, and every click leaves the same pacing pause behind it. Only skip this for
+// clicks that genuinely never appear on screen (e.g. against a page the marker was never shown on).
+export async function clickWithMouseMarker(
+  page: Page,
+  target: Locator,
+  label: string,
+  options?: {
+    modifiers?: Array<"Alt" | "Control" | "Meta" | "Shift">;
+    clickCount?: number;
+    corner?: "center" | "top-left";
+  },
+): Promise<void> {
+  const corner = options?.corner ?? "center";
+  await moveMouseTo(page, target, getLastKnownMousePosition(), label, corner);
+  await pulseMouseMarkerClick(page);
+  await target.click({
+    modifiers: options?.modifiers,
+    clickCount: options?.clickCount,
+    position: corner === "top-left" ? { x: 0, y: 0 } : undefined,
+  });
+  await page.waitForTimeout(POST_CLICK_PAUSE_MS);
 }
 
 // A one-time diagnostic sanity check that the marker element actually exists and responds to
@@ -189,20 +236,17 @@ export async function moveMouseTo(
   target: Locator,
   position: MousePosition,
   label: string,
+  corner: "center" | "top-left" = "center",
 ): Promise<void> {
   const box = await target.boundingBox();
   if (!box) throw new Error("Could not locate mouse target");
 
   console.log(`[fobles] Mouse target ${label}: ${JSON.stringify(box)}`);
-  await moveMouseToPosition(
-    page,
-    {
-      x: box.x + box.width / 2,
-      y: box.y + box.height / 2,
-    },
-    position,
-    label,
-  );
+  const targetPosition =
+    corner === "top-left"
+      ? { x: box.x, y: box.y }
+      : { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  await moveMouseToPosition(page, targetPosition, position, label);
 }
 
 export async function moveMouseToPosition(

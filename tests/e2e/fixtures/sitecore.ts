@@ -198,7 +198,7 @@ export async function logoutCurrentSitecoreSession(page: Page): Promise<boolean>
 
 export async function enableFobles(page: Page): Promise<void> {
   const menuTrigger = page
-    .locator(CONST.SITECORE.SELECTORS.QUICK_MENU_TRIGGER)
+    .locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER)
     .first();
   await expect(menuTrigger).toBeVisible({
     timeout: CONST.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS,

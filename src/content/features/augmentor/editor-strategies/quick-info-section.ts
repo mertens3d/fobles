@@ -6,6 +6,7 @@ import type {
 } from "../fobles.types";
 import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
+import { assignFoblesItemId } from "../shared/fobles-item-id";
 import { extractGuid } from "../shared/guid";
 
 const startsWithLabel = (value: string, candidate: string): boolean =>
@@ -57,6 +58,7 @@ const replaceSource = (
         : "",
     ].filter(Boolean),
   });
+  assignFoblesItemId(button, target);
   wrapper.appendChild(button);
 
   element.classList.add(FOBLES.CLASSES.HIDDEN);

@@ -3,7 +3,8 @@ import { openSitecorePage } from "../fixtures/sitecore";
 import { CONST } from "../CONST";
 import { createStep } from "../fobles-helpers";
 import { showMouseMarker } from "../mouse-proxy";
-import { dragToolbarTo, findFrameWithSelector } from "../sitecore-macros";
+import { dragToolbarTo } from "../sitecore-macros";
+import { findFrameWithSelector } from "../frame-finder";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 

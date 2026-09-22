@@ -1,9 +1,10 @@
 import { expect, test, type Frame, type Locator, type Page } from "./fixtures/playwright";
 import { openSitecorePage } from "./fixtures/sitecore";
 import type { FoblesExpectation } from "./scenarios";
-import { getLastKnownMousePosition, moveMouseTo, pulseMouseMarkerClick, showMouseMarker } from "./mouse-proxy";
+import { clickWithMouseMarker, showMouseMarker } from "./mouse-proxy";
 import { CONST } from "./CONST";
-import { clickLboltButton, findFoblesFrame, findFrameWithSelector } from "./sitecore-macros";
+import { dismissFoblesConfirmDialogIfPresent } from "./sitecore-macros";
+import { findFoblesFrame, findFrameWithSelector } from "./frame-finder";
 import type { TestInfo } from "@playwright/test";
 
 type Screenshottable = Pick<Locator, "screenshot">;
@@ -89,25 +90,6 @@ export async function attachUiPathNote(
   });
 }
 
-// Fobles' own "Open Items in Same Tab" confirmation dialog renders inside whichever frame the
-// clicked button itself lives in (e.g. a Content Editor gallery's own frame), not necessarily
-// page's main frame - search every frame, not just page.locator(...), or the dialog can go
-// unnoticed and unclicked, silently stalling the navigation it's meant to confirm.
-async function dismissFoblesConfirmDialogIfPresent(page: Page): Promise<void> {
-  const deadline = Date.now() + 3_000;
-  do {
-    for (const frame of page.frames()) {
-      const dialog = frame.locator(".fobles-confirm-dialog").first();
-      if (await dialog.isVisible().catch(() => false)) {
-        await dialog.locator(".fobles-confirm-dialog-continue").click();
-        return;
-      }
-    }
-    await page.waitForTimeout(150);
-  } while (Date.now() < deadline);
-  // No confirmation configured (warning setting off) - navigation already proceeded.
-}
-
 // A Fobles item button's plain click navigates the current tab - Sitecore's own eligibility is
 // not our concern (per AGENTS.md scope: Fobles' job ends at sending the right URL), so this only
 // asserts the URL we land on, not what Content Editor does with it. Fobles shows a same-tab
@@ -125,9 +107,7 @@ export async function expectFoblesButtonSameTabNavigation(
   expectedFoValue: string,
   stepTitle: string,
 ): Promise<void> {
-  await moveMouseTo(page, button, getLastKnownMousePosition(), "Fobles item button");
-  await pulseMouseMarkerClick(page);
-  await button.click();
+  await clickWithMouseMarker(page, button, "Fobles item button");
 
   await dismissFoblesConfirmDialogIfPresent(page);
 
@@ -148,12 +128,9 @@ export async function expectFoblesButtonNewTabNavigation(
   expectedFoValue: string,
   stepTitle: string,
 ): Promise<void> {
-  await moveMouseTo(page, button, getLastKnownMousePosition(), "Fobles item button");
-  await pulseMouseMarkerClick(page);
-
   const [popup] = await Promise.all([
     page.context().waitForEvent("page"),
-    button.click({ modifiers: ["Control"] }),
+    clickWithMouseMarker(page, button, "Fobles item button", { modifiers: ["Control"] }),
   ]);
   await popup.waitForLoadState("domcontentloaded");
   await attachActualFoValueNote(testInfo, expectedFoValue, popup.url(), stepTitle);
@@ -455,7 +432,7 @@ export async function attachItemPathScreenshot(
     })
     .first();
   if (await contentTab.isVisible().catch(() => false)) {
-    await contentTab.click();
+    await clickWithMouseMarker(page, contentTab, "Content Editor tab header");
   }
 
   const itemPathRow = frame
@@ -514,7 +491,7 @@ export async function activateFobles(
     `#${scenario.treeNodeId}`,
     `tree node #${scenario.treeNodeId}`,
   );
-  await treeFrame.locator(`#${scenario.treeNodeId}`).click();
+  await clickWithMouseMarker(page, treeFrame.locator(`#${scenario.treeNodeId}`), "Tree node");
 
   const foblesFrame = await findFoblesFrame(page);
   await logActivationState(foblesFrame, "[fobles] LBolt setup before click");
@@ -523,14 +500,17 @@ export async function activateFobles(
     .locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON)
     .first();
   await expect(lboltButton).toBeVisible();
-  await lboltButton.click();
+  await clickWithMouseMarker(page, lboltButton, "LBolt button");
   console.log(
     `[fobles] LBolt clicked; persisted state now ${await foblesFrame.evaluate(() => localStorage.getItem("fobles_state"))}`,
   );
   return foblesFrame;
 }
 
-export async function activateFoblesForJumpTest(
+// Navigates to the scenario item and locates the fobles toolbar frame - shared by anything that
+// just needs the toolbar findable/visible (jump tests, the promo video), unlike activateFobles
+// which also toggles the LBolt/augmentor feature for field-decoration tests.
+export async function openSitecorePageAndFindFoblesFrame(
   page: Page,
   scenario: FoblesExpectation,
 ): Promise<Frame> {
@@ -540,15 +520,6 @@ export async function activateFoblesForJumpTest(
   await showMouseMarker(page);
 
   const foblesFrame = await findFoblesFrame(page);
-  await logActivationState(foblesFrame, "[fobles] Jump setup before LBolt click");
   await showMouseMarker(foblesFrame);
-  const lboltButton = foblesFrame
-    .locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON)
-    .first();
-  await expect(lboltButton).toBeVisible();
-  await clickLboltButton(page, lboltButton);
-  console.log(
-    `[fobles] LBolt clicked for jump test; persisted state now ${await foblesFrame.evaluate(() => localStorage.getItem("fobles_state"))}`,
-  );
   return foblesFrame;
 }

@@ -7,7 +7,8 @@ import {
   expectFoblesButtonSameTabNavigation,
 } from "../fobles-helpers";
 import { showMouseMarker } from "../mouse-proxy";
-import { clickLboltButton, findFoblesFrame } from "../sitecore-macros";
+import { clickLboltButton } from "../sitecore-macros";
+import { findFoblesFrame } from "../frame-finder";
 import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
 

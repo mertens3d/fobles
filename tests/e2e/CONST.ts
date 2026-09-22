@@ -7,8 +7,8 @@ export const CONST = {
   SPEED: {
     SELECTED: SELECTED_SPEED,
     SETTINGS: {
-      CRAWL: { STEP_WAIT_MS: 3_000, MOUSE_PX_PER_SECOND: 800 },
-      WALK: { STEP_WAIT_MS: 1_000, MOUSE_PX_PER_SECOND: 2_000 },
+      CRAWL: { STEP_WAIT_MS: 1_000, MOUSE_PX_PER_SECOND: 2_000 },
+      WALK: { STEP_WAIT_MS: 500, MOUSE_PX_PER_SECOND: 3_000 },
       SPRINT: { STEP_WAIT_MS: 0, MOUSE_PX_PER_SECOND: 4_000 },
     } satisfies Record<
       TestSpeed,
@@ -52,6 +52,27 @@ export const CONST = {
     COLOR: "#840b18",
     DURATION_MS: 400,
   },
+  SPEAK_BUBBLE: {
+    ID: "playwright-speak-bubble",
+    STYLE_ID: "playwright-speak-bubble-style",
+    STYLE_CSS: `
+      #playwright-speak-bubble {
+        position: fixed;
+        z-index: 2147483647;
+        max-width: 480px;
+        padding: 14px 22px;
+        background: #fff;
+        border: 3px solid #111;
+        border-radius: 18px;
+        font: 700 19px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #111;
+        text-align: center;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, .35);
+        pointer-events: none;
+        display: none;
+      }
+    `,
+  },
   ENVIRONMENT: {
     ENV_VAR: "SITECORE_TEST_ENVIRONMENTS",
     AUTH_DIR_ENV_VAR: "PLAYWRIGHT_AUTH_DIR",
@@ -65,20 +86,36 @@ export const CONST = {
     },
     SELECTORS: {
       TOOLBAR_CONTAINER: ".fobles-toolbar-container",
-      QUICK_MENU_TRIGGER: "[data-fobles-nav-owner='1']",
       QUICK_MENU: ".fobles-quick-menu",
       TOOLBAR_TOGGLE_BUTTON: "button[title='Toggle Fobles navigation']",
-      MENU_TRIGGER: ".fobles-quick-menu-trigger",
-      PROXY_BUTTONS_TRIGGER: ".fobles-proxy-buttons-trigger",
+      // Targets the actual <button> by its own unique role attribute (see
+      // ATTRIBUTE.DATA.KEY.NAV_BUTTON_ROLE in src/content/constants.ts) rather than a CSS class or
+      // the wrapping wrapper <div> - every persistent nav button (LBolt, this, Proxy Buttons)
+      // shares the same "data-fobles-nav-owner" attribute and "fobles-nav-button" class, so either
+      // of those alone can't tell them apart.
+      MENU_TRIGGER: "[data-fobles-nav-button-role='quick-menu-trigger']",
+      PROXY_BUTTONS_TRIGGER: "[data-fobles-nav-button-role='proxy-buttons-trigger']",
       TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",
-      LBOLT_BUTTON: "button.fobles-nav-lbolt-button",
+      LBOLT_BUTTON: "[data-fobles-nav-button-role='lbolt']",
       CONTENT_TAB: "span.scEditorTabHeaderNormal",
       QUICK_INFO_TABLE: ".scEditorQuickInfo",
       ACCOUNT_INFO: "ul.sc-accountInformation",
       TREE_JUMP_BUTTON: "[data-fobles-tree-jump-path]",
+      TREE_FOBLES_BUTTON: ".tree-fobles-button",
+      CONFIRM_DIALOG: ".fobles-confirm-dialog",
+      CONFIRM_DIALOG_CONTINUE: ".fobles-confirm-dialog-continue",
+      CONFIRM_DIALOG_SETTING: ".fobles-confirm-dialog-setting",
     },
     ATTRIBUTES: {
       MENU_VISIBLE: "data-visible",
+    },
+    // Real paths from the fixed Tree Jump catalog (src/shared/quick-menu/menu-groups.ts) - named
+    // so a spec can target one specific tree jump without a magic string or an opaque index.
+    TREE_JUMP_PATHS: {
+      LAYOUT_PLACEHOLDERS: "/sitecore/layout/Placeholder Settings",
+      LAYOUT_RENDERINGS: "/sitecore/layout/Renderings",
+      MEDIA_LIBRARY: "/sitecore/media library",
+      TEMPLATES: "/sitecore/templates",
     },
     LABELS: {
       TOGGLE_FOBLES: /toggle fobles/i,

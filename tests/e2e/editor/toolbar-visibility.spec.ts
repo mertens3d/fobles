@@ -3,7 +3,7 @@ import { openSitecorePage } from "../fixtures/sitecore";
 import { CONST } from "../CONST";
 import { attachUiPathNote, createStep } from "../fobles-helpers";
 import { FOBLES_YML } from "../strategies/fobles-yml";
-import { findFrameWithSelector } from "../sitecore-macros";
+import { findFrameWithSelector } from "../frame-finder";
 
 // The dialog/gallery `default.aspx?xmlcontrol=...` pages tracked in docs/TODO.md - each one only
 // ever renders inside a small iframe/dialog (never a full Content Editor page), so Fobles' own

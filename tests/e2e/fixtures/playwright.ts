@@ -29,11 +29,27 @@ const extensionPath = path.resolve("./dist/unpacked");
 // persistent context/session for its whole run, so a video would cover the entire run, not one
 // clip per test - only turn this on for a deliberate promoVideo recording session.
 const promoVideoDir = path.resolve("./tests/test-artifacts/playwright-results/promo-video");
-// The wider 1000 reads better in a recorded promo video; regular suites stay narrower (see the
+// The wider 1100 reads better in a recorded promo video; regular suites stay narrower (see the
 // launchPersistentContext call below) so Sitecore's percentage-width panels don't stretch.
-const VIEWPORT_SIZE = RECORD_VIDEO ? { width: 1000, height: 720 } : { width: 800, height: 720 };
+const VIEWPORT_SIZE = RECORD_VIDEO ? { width: 1100, height: 720 } : { width: 800, height: 720 };
 
-installConsoleLogging();
+// See tests/README.md's Promo Video section for why this renames files and how it orders them.
+function renamePromoVideoFiles(): void {
+  const files = fs
+    .readdirSync(promoVideoDir)
+    .filter((name) => name.endsWith(".webm"))
+    .map((name) => {
+      const fullPath = path.join(promoVideoDir, name);
+      return { fullPath, sizeBytes: fs.statSync(fullPath).size };
+    })
+    .sort((a, b) => a.sizeBytes - b.sizeBytes);
+
+  files.forEach((file, index) => {
+    const isMainVideo = index === files.length - 1;
+    const newName = isMainVideo ? "main.webm" : `secondary-${index + 1}.webm`;
+    fs.renameSync(file.fullPath, path.join(promoVideoDir, newName));
+  });
+}
 
 // Sitecore's own UI references icons this environment doesn't have (chart.png, database.png,
 // cd.png, etc. under /-/icon/) - these 404 on every navigation and are unrelated to Fobles, so
@@ -78,7 +94,11 @@ type WorkerFixtures = {
 export const test = base.extend<{}, WorkerFixtures>({
   sharedBrowserContext: [
     async ({}, use) => {
+      // Installed here (not at module load) since this module gets imported for test discovery
+      // and listing too, which would otherwise wipe the real log right after an actual run.
+      installConsoleLogging();
       if (RECORD_VIDEO) {
+        fs.rmSync(promoVideoDir, { recursive: true, force: true });
         fs.mkdirSync(promoVideoDir, { recursive: true });
       }
       const context = await chromium.launchPersistentContext(profileDir, {
@@ -138,6 +158,7 @@ export const test = base.extend<{}, WorkerFixtures>({
       await new Promise((resolve) => setTimeout(resolve, 10_000));
       await logoutSitecoreSessions(context);
       await context.close();
+      if (RECORD_VIDEO) renamePromoVideoFiles();
     },
     { scope: "worker" },
   ],
