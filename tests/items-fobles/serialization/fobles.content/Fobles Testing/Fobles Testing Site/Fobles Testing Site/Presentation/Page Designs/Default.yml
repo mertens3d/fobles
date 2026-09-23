@@ -1,0 +1,35 @@
+﻿---
+ID: "669fe27e-ebbf-4eab-91be-9815398d855f"
+Parent: "32bc138d-e096-4b40-b252-581c68847ccb"
+Template: "a03d8ec6-3290-4cf2-b4a9-2c194b6942c1"
+Path: /sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Presentation/Page Designs/Default
+SharedFields:
+- ID: "0966b999-0d0e-4278-acc9-9da69d461fe6"
+  Hint: PartialDesigns
+  Value: "{B88C48FB-9774-4936-AE78-2A088802FFBD}|{D5D3D286-614C-436A-B9D0-E759F2E5EA26}"
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260923T014703Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "ff1dfdc1-8c07-4985-902e-76c56ea4afef"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260923T014704Z

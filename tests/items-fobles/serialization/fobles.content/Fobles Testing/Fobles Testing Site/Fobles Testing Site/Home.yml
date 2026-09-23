@@ -1,0 +1,56 @@
+﻿---
+ID: "58291ae1-ff44-4172-bbb8-431fd7ca618a"
+Parent: "a3022086-43b8-4c4b-b354-c99ec832401c"
+Template: "987c4232-9556-4396-97f3-c6c3a3f2894d"
+Path: /sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Home
+BranchID: "b90549b5-c997-4d6b-b102-c9ab82528974"
+SharedFields:
+- ID: "24171bf1-c0e1-480e-be76-4c0a1876f916"
+  Hint: Page Design
+  Value: "{711CAF15-FA04-45EB-A80B-19FF1007FB34}"
+- ID: "f6d8a61c-2f84-4401-bd24-52d2068172bc"
+  Hint: __Originator
+  Value: "{92EB9EFB-88D4-4089-82BE-AAD92D4FA24E}"
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "04bf00db-f5fb-41f7-8ab7-22408372a981"
+      Hint: __Final Renderings
+      Value: |
+        <r xmlns:p="p" xmlns:s="s"
+          p:p="1">
+          <d
+            id="{FE5D7FDF-89C0-4D99-9AA3-B5FBD009C9F3}">
+            <r
+              uid="{42C6816A-5BFD-4E6D-A12B-DF60F70B03B3}"
+              s:id="{E82609B8-F10B-47FE-8D6D-785BB1FF49EB}"
+              s:par="CacheClearingBehavior=Clear%20on%20publish"
+              s:ph="main" />
+          </d>
+        </r>
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260923T014602Z
+    - ID: "4f5be929-9e7f-4e35-aa43-b6855ba24543"
+      Hint: Title
+      Value: Fobles Testing Site
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\Admin
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\Admin
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "4b40210d-f28f-407c-b8b4-ff390f66919b"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260923T021010Z

@@ -1,0 +1,18 @@
+{
+  "$schema": "../../.sitecore/schemas/ModuleFile.schema.json",
+  "namespace": "fobles.content",
+  "description": "fobles.content",
+  "references": [],
+  "items": {
+    "includes": [
+      {
+        "name": "fobles.content",
+        "path": "/sitecore/Content/Fobles Testing",
+        "database": "master",
+        "allowedPushOperations": "CreateUpdateAndDelete",
+        "scope": "ItemAndDescendants"
+      }
+     
+    ]
+  }
+}

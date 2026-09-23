@@ -20,6 +20,7 @@
     "test:e2e:debug": "playwright test -c tests/playwright.config.ts --debug",
     "test:e2e:unlock": "node tools/scripts/test/unlock-browser-profile.js",
     "typecheck:extension": "tsc --noEmit -p tsconfig.json",
+    "typecheck:tests": "tsc --noEmit -p tests/tsconfig.json",
     "build:scss": "sass src/content/styles/fobles-extension.scss dist/unpacked/fobles.css --no-source-map"
   },
   "devDependencies": {

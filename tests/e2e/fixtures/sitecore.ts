@@ -37,6 +37,35 @@ function assertLicenseAvailable(page: Page): void {
   }
 }
 
+// Sitecore Identity Server's login form (identityserver/Account/Login) - a plain HTML form POST,
+// not a SPA, so a fill + click is enough. Absent on any other login variant (e.g. /sitecore/admin/
+// login.aspx), so attemptAutoLogin harmlessly no-ops there and falls back to the manual wait.
+const LOGIN_SELECTORS = {
+  USERNAME: "#Username",
+  PASSWORD: "#Password",
+  SUBMIT: "button[value='login']",
+};
+
+// Only runs when both SITECORE_TEST_USER_NAME/SITECORE_TEST_USER_PASSWORD are configured (see
+// .env.example) - without them, behavior is unchanged from the manual-login banner below.
+async function attemptAutoLogin(page: Page): Promise<boolean> {
+  const username = process.env.SITECORE_TEST_USER_NAME?.trim();
+  const password = process.env.SITECORE_TEST_USER_PASSWORD;
+  console.log(
+    `[sitecore preflight] SITECORE_TEST_USER_NAME/SITECORE_TEST_USER_PASSWORD ${username && password ? "found" : "not found"}`,
+  );
+  if (!username || !password) return false;
+
+  const usernameField = page.locator(LOGIN_SELECTORS.USERNAME);
+  if ((await usernameField.count()) === 0) return false;
+
+  console.log("[sitecore preflight] Login form detected - submitting SITECORE_TEST_USER_NAME/SITECORE_TEST_USER_PASSWORD");
+  await usernameField.fill(username);
+  await page.locator(LOGIN_SELECTORS.PASSWORD).fill(password);
+  await page.locator(LOGIN_SELECTORS.SUBMIT).click();
+  return true;
+}
+
 // A password field means Sitecore redirected to login instead of the requested page. Sitecore's
 // auth cookies appear to be session-only, so they never survive closing the browser between a
 // separate login step and the actual test run - the only thing that works is staying logged in
@@ -45,7 +74,20 @@ function assertLicenseAvailable(page: Page): void {
 // Inspector, which then keeps highlighting every later locator/action for the rest of the run.
 async function assertLoggedIn(page: Page): Promise<void> {
   const loginForm = page.locator("input[type='password']").first();
-  if ((await loginForm.count()) === 0) return;
+  const loginFormPresent = await loginForm
+    .waitFor({ state: "attached", timeout: CONST.TIMEOUTS.LOGIN_FORM_DETECT_MS })
+    .then(() => true)
+    .catch(() => false);
+  if (!loginFormPresent) return;
+
+  if (await attemptAutoLogin(page)) {
+    try {
+      await expect(loginForm).toHaveCount(0, { timeout: CONST.TIMEOUTS.AUTO_LOGIN_WAIT_MS });
+      return;
+    } catch {
+      console.log("[sitecore preflight] Automatic login did not complete - falling back to the manual login wait");
+    }
+  }
 
   // Interleaved browser console/network noise buries a plain console.warn - use a banner so it's
   // unmistakable even scrolling past dozens of unrelated log lines. The full URL (OAuth query
@@ -160,16 +202,18 @@ export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   // always navigates via window.location.assign() from inside a button's onclick (helper.ts's
   // openFoblesUrl) - a renderer-initiated navigation with a real referrer and gesture context.
   // Match that here in case IdentityServer's session/silent-renewal handling is sensitive to it.
-  await Promise.all([
-    page.waitForLoadState("domcontentloaded"),
-    page
-      .evaluate((targetUrl) => {
-        window.location.assign(targetUrl);
-      }, url)
-      .catch(() => {
-        // Navigating away can destroy the execution context mid-evaluate - expected, ignore.
-      }),
-  ]);
+  // Must await the navigation before waitForLoadState, not race them with Promise.all - racing
+  // lets waitForLoadState resolve instantly against the pre-navigation document (e.g. about:blank,
+  // which is already "domcontentloaded"), so downstream login/menu checks run too early and never
+  // see the real page.
+  await page
+    .evaluate((targetUrl) => {
+      window.location.assign(targetUrl);
+    }, url)
+    .catch(() => {
+      // Navigating away can destroy the execution context mid-evaluate - expected, ignore.
+    });
+  await page.waitForLoadState("domcontentloaded");
   await ensureAuthenticatedUrl(page);
 }
 

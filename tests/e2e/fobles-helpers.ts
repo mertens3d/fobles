@@ -3,7 +3,7 @@ import { openSitecorePage } from "./fixtures/sitecore";
 import type { FoblesExpectation } from "./scenarios";
 import { clickWithMouseMarker, showMouseMarker } from "./mouse-proxy";
 import { CONST } from "./CONST";
-import { dismissFoblesConfirmDialogIfPresent } from "./sitecore-macros";
+import { dismissFoblesConfirmDialogIfPresent, clickContentTabIfPresent } from "./sitecore-macros";
 import { findFoblesFrame, findFrameWithSelector } from "./frame-finder";
 import type { TestInfo } from "@playwright/test";
 
@@ -194,12 +194,15 @@ async function getSensitiveAutoMasks(target: Screenshottable): Promise<Locator[]
   }
 
   // Content Editor's Quick Info panel shows the item's owner as a domain\username (e.g.
-  // "sitecore\admin") - same sensitivity as the account info username above. Scoped to the row
-  // itself (not just input.scEditorHeaderQuickInfoInputID, which the Template row's id input also
-  // uses) so only this value is masked.
+  // "sitecore\admin") - same sensitivity as the account info username above. Item path and Item
+  // owner render as cell pairs on the same <tr>, so masking the whole row's "input" would also
+  // mask Item path's own value - scope to the <td> immediately after the "Item owner:" label cell
+  // instead, so only that value is masked.
   const itemOwnerRow = "tr:has(td:text-is('Item owner:'))";
   for (const frame of await framesWithSelector(page, itemOwnerRow)) {
-    masks.push(frame.locator(itemOwnerRow).locator("input"));
+    masks.push(
+      frame.locator(itemOwnerRow).locator('td:text-is("Item owner:") + td').locator("input"),
+    );
   }
 
   // The browser's built-in XML viewer (e.g. /sitecore/admin/showconfig.aspx, reached via the
@@ -426,14 +429,7 @@ export async function attachItemPathScreenshot(
     "Content Editor tab header",
   );
 
-  const contentTab = frame
-    .locator(CONST.SITECORE.SELECTORS.CONTENT_TAB, {
-      hasText: CONST.SITECORE.LABELS.CONTENT_TAB,
-    })
-    .first();
-  if (await contentTab.isVisible().catch(() => false)) {
-    await clickWithMouseMarker(page, contentTab, "Content Editor tab header");
-  }
+  await clickContentTabIfPresent(page);
 
   const itemPathRow = frame
     .locator(`${CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, {

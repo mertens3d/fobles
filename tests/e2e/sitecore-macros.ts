@@ -21,6 +21,21 @@ export async function clickRibbonTab(page: Page, frame: Frame, accessKey: string
   await clickWithMouseMarker(page, frame.locator(`a[accesskey="${accessKey}"]`).first(), `ribbon tab (${accessKey})`);
 }
 
+// Switches to Content Editor's "Content" tab if it's showing - idempotent no-op when the item
+// has no tabs, or the Content tab is already selected. Finds its own fobles frame fresh (see
+// clickTreeJump) rather than accepting one from the caller.
+export async function clickContentTabIfPresent(page: Page): Promise<void> {
+  console.log("[Macro: clickContentTabIfPresent] - Start");
+  const foblesFrame = await findFoblesFrame(page);
+  const contentTab = foblesFrame
+    .locator(CONST.SITECORE.SELECTORS.CONTENT_TAB, { hasText: CONST.SITECORE.LABELS.CONTENT_TAB })
+    .first();
+  console.log(`[fobles] Checking for a visible Content tab (selector: ${CONST.SITECORE.SELECTORS.CONTENT_TAB})`);
+  if (await contentTab.isVisible().catch(() => false)) {
+    await clickWithMouseMarker(page, contentTab, "Content Editor tab header");
+  }
+}
+
 // Idempotent - only clicks the trigger if the flyout isn't already visible, since it's a toggle
 // button (clicking it while already open would close it instead).
 export async function openQuickMenu(page: Page, foblesFrame: Frame): Promise<void> {
@@ -78,7 +93,7 @@ export async function clickTreeJump(
 
   if (newTabPromise) return { jumpButton, newTab: await newTabPromise };
   if (!options?.skipDialogDismiss) {
-    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning });
+    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
   }
   return { jumpButton, newTab: null };
 }
@@ -91,13 +106,7 @@ export async function highlightQuickInfoPath(page: Page): Promise<void> {
   const foblesFrame = await findFoblesFrame(page);
   await showMouseMarker(page);
   await showMouseMarker(foblesFrame);
-  const contentTab = foblesFrame
-    .locator(CONST.SITECORE.SELECTORS.CONTENT_TAB, { hasText: CONST.SITECORE.LABELS.CONTENT_TAB })
-    .first();
-  console.log(`[fobles] Checking for a visible Content tab (selector: ${CONST.SITECORE.SELECTORS.CONTENT_TAB})`);
-  if (await contentTab.isVisible().catch(() => false)) {
-    await clickWithMouseMarker(page, contentTab, "Content Editor tab header");
-  }
+  await clickContentTabIfPresent(page);
 
   const itemPathRow = foblesFrame
     .locator(`${CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, { hasText: CONST.SITECORE.LABELS.ITEM_PATH })
@@ -106,7 +115,7 @@ export async function highlightQuickInfoPath(page: Page): Promise<void> {
   console.log(
     `[fobles] Waiting for the Item path value (selector: ${CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr input, text: "${CONST.SITECORE.LABELS.ITEM_PATH}")`,
   );
-  await itemPathValue.waitFor({ state: "visible" });
+  await itemPathValue.waitFor({ state: "visible", timeout: CONST.TIMEOUTS.QUICK_INFO_VISIBLE_MS });
   await clickWithMouseMarker(page, itemPathValue, "Item path", { clickCount: 3, corner: "top-left" });
 }
 
@@ -233,7 +242,7 @@ export async function clickTreeFoblesButton(
   await button.waitFor({ state: "visible" });
   await clickWithMouseMarker(page, button, "Tree fobles button");
   if (!options?.skipDialogDismiss) {
-    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning });
+    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
   }
 }
 

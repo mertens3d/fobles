@@ -24,6 +24,11 @@ export const CONST = {
     UPDATE_HZ: 60,
     HOVER_CLEARANCE_PX: 24,
   },
+  TOOLBAR_DRAG_POSITIONS: {
+    DEFAULT: { corner: "upper-right", offsetX: 80, offsetY: 80 },
+    POSITION_2: { corner: "bottom-right", offsetX: 66.78125, offsetY: 66.609375 },
+    POSITION_3: { corner: "bottom-right", offsetX: 66.78125, offsetY: 66.609375 },
+  },
   MARKER: {
     ID: "playwright-mouse-marker",
     CSS_TEXT: [
@@ -86,6 +91,7 @@ export const CONST = {
     },
     SELECTORS: {
       TOOLBAR_CONTAINER: ".fobles-toolbar-container",
+      TOOLBAR_GRIP: ".fobles-toolbar-grip",
       QUICK_MENU: ".fobles-quick-menu",
       TOOLBAR_TOGGLE_BUTTON: "button[title='Toggle Fobles navigation']",
       // Targets the actual <button> by its own unique role attribute (see
@@ -117,6 +123,10 @@ export const CONST = {
       MEDIA_LIBRARY: "/sitecore/media library",
       TEMPLATES: "/sitecore/templates",
     },
+    ITEMS: {
+      // /sitecore/layout/Renderings/System/FieldRenderer
+      FIELD_RENDERER: "E1AF4AA3-3B5D-4611-8C71-959AD261E5B7",
+    },
     LABELS: {
       TOGGLE_FOBLES: /toggle fobles/i,
       CONTENT_TAB: "Content",
@@ -126,9 +136,16 @@ export const CONST = {
   },
   TIMEOUTS: {
     DISCOVERY_MS: 30_000,
+    AUTO_LOGIN_WAIT_MS: 20_000,
+    // Redirect to the login page after openSitecorePage's navigate is asynchronous (observed
+    // ~1-2s) - a plain instant count() check for the login form races that redirect and wrongly
+    // concludes "already logged in". Bounded wait long enough to cover the redirect, short enough
+    // not to delay the common already-authenticated case.
+    LOGIN_FORM_DETECT_MS: 5_000,
     LOGIN_WAIT_MS: 10 * 60 * 1_000,
     MENU_VISIBLE_MS: 15_000,
     MENU_TRIGGER_VISIBLE_MS: 30_000,
+    QUICK_INFO_VISIBLE_MS: 15_000,
     URL_WAIT_MS: 30_000,
     TEST_SUITE_MS: 10 * 60 * 1_000,
     // Was 25_000 - shorter than URL_WAIT_MS itself, so a slow-to-render page (e.g. showconfig.aspx,

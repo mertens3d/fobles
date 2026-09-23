@@ -60,6 +60,14 @@ function isIgnorableDiagnosticUrl(url: string): boolean {
   return IGNORED_DIAGNOSTIC_URL_PATTERN.test(url);
 }
 
+// Chromium logs this on every Sitecore iframe navigation regardless of Fobles - always the same
+// text, never actionable, and floods the log enough to bury real warnings.
+const IGNORED_CONSOLE_WARNING_PATTERN = /has both allow-scripts and allow-same-origin/i;
+
+function isIgnorableConsoleMessage(type: string, text: string): boolean {
+  return type === "warning" && IGNORED_CONSOLE_WARNING_PATTERN.test(text);
+}
+
 async function logoutSitecoreSessions(
   context: import("@playwright/test").BrowserContext,
 ): Promise<void> {
@@ -121,6 +129,7 @@ export const test = base.extend<{}, WorkerFixtures>({
         page.on("console", (message) => {
           const location = message.location().url;
           if (location && isIgnorableDiagnosticUrl(location)) return;
+          if (isIgnorableConsoleMessage(message.type(), message.text())) return;
           const label = `[browser console:${message.type()}]`;
           logDiagnostic(
             `${label} ${message.text()}${location ? ` (${location})` : ""}`,
@@ -145,7 +154,7 @@ export const test = base.extend<{}, WorkerFixtures>({
         // regardless of which test step is running when it occurs.
         page.on("framenavigated", (frame) => {
           const kind = frame === page.mainFrame() ? "main frame" : "iframe";
-          logDiagnostic(`[browser framenavigated:${kind}] ${frame.url()}`);
+          // logDiagnostic(`[browser framenavigated:${kind}] ${frame.url()}`);
         });
         page.on("crash", () => {
           logDiagnostic(`[browser crash] page render process crashed at ${page.url()}`);
@@ -179,4 +188,4 @@ export const test = base.extend<{}, WorkerFixtures>({
 });
 
 export { expect } from "@playwright/test";
-export type { Frame, Locator, Page } from "@playwright/test";
+export type { Frame, Locator, Page, TestInfo } from "@playwright/test";

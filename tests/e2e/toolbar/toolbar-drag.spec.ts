@@ -2,7 +2,7 @@ import { expect, test } from "../fixtures/playwright";
 import { openSitecorePage } from "../fixtures/sitecore";
 import { CONST } from "../CONST";
 import { createStep } from "../fobles-helpers";
-import { showMouseMarker } from "../mouse-proxy";
+import { resolveCornerPosition, showMouseMarker } from "../mouse-proxy";
 import { dragToolbarTo } from "../sitecore-macros";
 import { findFrameWithSelector } from "../frame-finder";
 
@@ -43,11 +43,26 @@ test.describe("Toolbar: drag to reposition", () => {
       await page.waitForTimeout(STEP_WAIT_MS);
     });
 
+    await step("Drag: toolbar snaps to the bottom-right corner", async () => {
+      const viewport = page.viewportSize();
+      if (!viewport) throw new Error("Could not read viewport size");
+
+      await dragToolbarTo(page, grip, resolveCornerPosition(viewport, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_2));
+      await expect(container).not.toHaveClass(/fobles-toolbar-dragging/);
+      await expect(container).toHaveAttribute("data-position", "bottom-right");
+      await page.waitForTimeout(STEP_WAIT_MS);
+
+      await dragToolbarTo(page, grip, resolveCornerPosition(viewport, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_3));
+      await expect(container).not.toHaveClass(/fobles-toolbar-dragging/);
+      await expect(container).toHaveAttribute("data-position", "bottom-right");
+      await page.waitForTimeout(STEP_WAIT_MS);
+    });
+
     await step("Drag back: toolbar returns to its default corner", async () => {
       const viewport = page.viewportSize();
       if (!viewport) throw new Error("Could not read viewport size");
 
-      await dragToolbarTo(page, grip, { x: viewport.width - 80, y: 80 });
+      await dragToolbarTo(page, grip, resolveCornerPosition(viewport, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT));
       await expect(container).toHaveAttribute("data-position", "upper-right");
     });
   });

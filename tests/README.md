@@ -127,11 +127,13 @@ clips in an editor afterward rather than padding the script out.
 - Deliberately no `expect()`/assertions and no `test.step()` breakdown - this is a recording, not
   a regression test, and neither one changes what ends up in the video. If a recording starts
   failing, add `console.log` narration to narrow it down rather than reintroducing assertions.
-- The tree-jump scene unchecks the confirm dialog's warning checkbox as a visual flourish
-  (`clickTreeJump(..., { turnOffWarning: true })`) - regular regression tests never pass that,
-  since they rely on the dialog reappearing on every navigation. The test restores the setting to
-  on afterward (via the real popup UI, in a `finally`) so it never leaks into other suites sharing
-  the same persistent browser profile.
+- `clickTreeJump`/`clickTreeFoblesButton` turn the confirm dialog's warning checkbox off by
+  default (dismiss it if present, and don't show it again) - pass `{ turnOffWarning: false }` to
+  keep the dialog reappearing on every navigation (e.g. `fobles.spec.ts`'s dialog-visibility test
+  drives the dialog directly instead, without going through these macros). The promo video test
+  restores the setting to on afterward regardless of outcome (via the real popup UI, in a
+  `finally`) so a recording session never leaks into other suites sharing the same persistent
+  browser profile.
 - A tree-jump click navigates the page away, so any frame reference captured before the click is
   stale afterward - `clickTreeJump`/`highlightQuickInfoPath` each re-find their own fobles frame
   internally (`findFoblesFrame`) rather than accepting one from the caller, so a spec never has to

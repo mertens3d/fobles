@@ -8,6 +8,25 @@ import {
 
 export type MousePosition = { x: number; y: number };
 
+export type ToolbarCorner = "upper-left" | "upper-right" | "bottom-right" | "bottom-left";
+
+export type CornerPosition = {
+  corner: ToolbarCorner;
+  offsetX: number;
+  offsetY: number;
+};
+
+// Resolves a viewport-corner-relative position (see CONST.TOOLBAR_DRAG_POSITIONS) into an
+// absolute page position a real mouse move/drag can target.
+export function resolveCornerPosition(
+  viewport: { width: number; height: number },
+  position: CornerPosition,
+): MousePosition {
+  const x = position.corner.endsWith("right") ? viewport.width - position.offsetX : position.offsetX;
+  const y = position.corner.startsWith("bottom") ? viewport.height - position.offsetY : position.offsetY;
+  return { x, y };
+}
+
 // The real (virtual) mouse cursor stays wherever it physically was after a same-tab page
 // navigation - only our own tracking variables reset. Callers used to always restart a fresh
 // step's tracking position at a hardcoded {x:0, y:0}, which made the very next moveMouseTo/

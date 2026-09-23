@@ -1,0 +1,23 @@
+﻿---
+ID: "b8279074-f375-45a7-b177-dcadaa986a2f"
+Parent: "df52ad08-6ef7-4e67-8a1a-4e87e069f67d"
+Template: "0339bac0-78c1-43c1-b930-f8c26a5fdf80"
+Path: /sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Presentation/Placeholder Settings
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260923T014613Z
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "c72c8941-e7db-4d00-90d3-d15986808725"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260923T014613Z
