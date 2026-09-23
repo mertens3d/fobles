@@ -5,16 +5,9 @@ import {
   type Locator,
   type Page,
 } from "./fixtures/playwright";
+import type { CornerPosition, MousePosition } from "./mouse-proxy.types";
 
-export type MousePosition = { x: number; y: number };
 
-export type ToolbarCorner = "upper-left" | "upper-right" | "bottom-right" | "bottom-left";
-
-export type CornerPosition = {
-  corner: ToolbarCorner;
-  offsetX: number;
-  offsetY: number;
-};
 
 // Resolves a viewport-corner-relative position (see CONST.TOOLBAR_DRAG_POSITIONS) into an
 // absolute page position a real mouse move/drag can target.

@@ -3,7 +3,7 @@ import { getTestEnvironment } from "./fixtures/environment";
 import { attachScreenshot } from "./fobles-helpers";
 import { logoutCurrentSitecoreSession } from "./fixtures/sitecore";
 import { CONST } from "./CONST";
-import { RECORD_VIDEO } from "../settings/VideoSwitch";
+import { RECORD_VIDEO } from "../settings/settings";
 
 // Filename sorts after "strategies/" and "toolbar/" so this always runs last across the whole
 // suite. Logs out itself rather than relying on the worker-teardown cleanup (fixtures/playwright.ts),

@@ -2,7 +2,7 @@ import { expect, test } from "./fixtures/playwright";
 import { openSitecorePage } from "./fixtures/sitecore";
 import { attachScreenshot } from "./fobles-helpers";
 import { CONST } from "./CONST";
-import { RECORD_VIDEO } from "../settings/VideoSwitch";
+import { RECORD_VIDEO } from "../settings/settings";
 
 // Filename sorts before "strategies/" and "toolbar/" so this always runs first across the whole
 // suite - openSitecorePage already pauses for interactive login if needed (fixtures/sitecore.ts).

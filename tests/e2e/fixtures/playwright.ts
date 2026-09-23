@@ -11,7 +11,7 @@ import path from "node:path";
 import { installConsoleLogging, logDiagnostic } from "./logging";
 import { logoutCurrentSitecoreSession } from "./sitecore";
 import { CONST } from "../CONST";
-import { RECORD_VIDEO } from "../../settings/VideoSwitch";
+import { RECORD_VIDEO } from "../../settings/settings";
 
 const profileDir = path.resolve(
   process.env.PLAYWRIGHT_PROFILE_DIR ??

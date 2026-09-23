@@ -7,9 +7,9 @@ import {
   moveMouseTo,
   moveMouseToPosition,
   showMouseMarker,
-  type MousePosition,
 } from "./mouse-proxy";
 import { findFoblesFrame, findFrameWithSelector } from "./frame-finder";
+import type { MousePosition } from "./mouse-proxy.types";
 
 // Reusable stock Sitecore Content Editor UI interactions (ribbon tabs, galleries), plus Fobles'
 // own toolbar toggle since it's just as much a canned click sequence any spec reuses - kept

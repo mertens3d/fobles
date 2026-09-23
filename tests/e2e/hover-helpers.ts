@@ -3,9 +3,9 @@ import {
   getButtonSize,
   moveMouseOutsideHoverArea,
   moveMouseTo,
-  type MousePosition,
 } from "./mouse-proxy";
 import { CONST } from "./CONST";
+import type { MousePosition } from "./mouse-proxy.types";
 
 const STEP_WAIT_MS =
   CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;

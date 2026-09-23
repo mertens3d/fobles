@@ -1,5 +1,5 @@
 import { scenarios } from "./scenarios";
-import { SELECTED_SPEED } from "../settings/test-speed";
+import { SELECTED_SPEED } from "../settings/settings";
 import type { TestSpeed } from "./types";
 
 export const CONST = {

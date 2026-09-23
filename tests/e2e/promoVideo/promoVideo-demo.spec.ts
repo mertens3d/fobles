@@ -1,6 +1,5 @@
 import { test, type Page } from "../fixtures/playwright";
 import { CONST } from "../CONST";
-import { RECORD_VIDEO } from "../../settings/VideoSwitch";
 import { openSitecorePage } from "../fixtures/sitecore";
 import { clickLbolt, clickTreeFoblesButton, clickTreeJump, dragToolbarTo, scrollTreeContainer } from "../sitecore-macros";
 import { resolveCornerPosition, showMouseMarker } from "../mouse-proxy";
@@ -8,6 +7,7 @@ import { findFrameWithSelector } from "../frame-finder";
 import { getExtensionId, setFoblesNavWarningVisible } from "../fixtures/extension";
 import { playDemoBeat } from "./demo-beat";
 import { videoTestSetup } from "./video-test-setup";
+import { RECORD_VIDEO } from "../../settings/settings";
 
 test.describe("Promo Video", () => {
   test("promo video", async ({ page: sharedPage, sharedBrowserContext }) => {
