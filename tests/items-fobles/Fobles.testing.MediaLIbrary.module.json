@@ -1,13 +1,13 @@
 {
   "$schema": "../../.sitecore/schemas/ModuleFile.schema.json",
-  "namespace": "Fobles.system.modules",
-  "description": "Fobles System Modules",
+  "namespace": "fobles.media",
+  "description": "fobles.media",
   "references": [],
   "items": {
     "includes": [
       {
-        "name": "fobles.system",
-        "path": "/sitecore/system/Modules/Fobles Testing",
+        "name": "fobles.media",
+        "path": "/sitecore/media library/Fobles Testing",
         "database": "master",
         "allowedPushOperations": "CreateAndUpdate",
         "scope": "ItemAndDescendants"

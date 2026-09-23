@@ -1,0 +1,36 @@
+﻿---
+ID: "0fedf960-0855-42e2-9830-114c1fddd990"
+Parent: "9731d80c-0bd3-424a-a559-089702709030"
+Template: "ab86861a-6030-46c5-b394-e8f99e8b87db"
+Path: /sitecore/templates/Project/Fobles Testing/Page Designs
+SharedFields:
+- ID: "06d5295c-ed2f-4a54-9bf2-26228d113318"
+  Hint: __Icon
+  Value: Office/32x32/document_chart.png
+- ID: "12c33f3f-86c5-43a5-aeb4-5598cec45116"
+  Hint: __Base template
+  Value: |
+    {4A27A071-4D99-408F-B97E-2C9852C8D137}
+    {CA64FCD7-7CA9-415A-824B-28B0FEAC1EF7}
+    {1479D1EC-DE94-4546-B02F-84636B2061C2}
+- ID: "f7d48a55-2158-4f02-9356-756654404f73"
+  Hint: __Standard values
+  Value: "{4F5D7012-55B8-46F0-B53A-8D2F29C50D69}"
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260923T014321Z
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "eed33373-3d42-4f31-b9f6-2bc297393b36"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260923T014329Z
