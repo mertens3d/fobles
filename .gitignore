@@ -27,3 +27,4 @@ auth*.json
 .sitecore/user.json
 .sitecore/.cache/
 .scindex
+test-artifacts/*

@@ -84,6 +84,9 @@ export const CONST = {
     AUTH_DIR: "./tests/test-artifacts/auth",
   },
   SITECORE: {
+    VERSIONS:{
+
+    },
     PATHS: {
       CONTENT_EDITOR: "/sitecore/shell/Applications/Content Editor.aspx?sc_bw=1",
       LICENSE_STARTPAGE: "/sitecore/client/Applications/LicenseOptions/StartPage",
