@@ -1,9 +1,6 @@
 import {
   chromium,
   type BrowserContext,
-  type Frame,
-  type Locator,
-  type Page,
   test as base,
 } from "@playwright/test";
 import fs from "node:fs";
@@ -12,6 +9,7 @@ import { installConsoleLogging, logDiagnostic } from "./logging";
 import { logoutCurrentSitecoreSession } from "./sitecore";
 import { CONST } from "../CONST";
 import { RECORD_VIDEO } from "../../settings/settings";
+import { logStepDividerStart, logTestDividerStart } from "../helpers/loggingHelper";
 
 const profileDir = path.resolve(
   process.env.PLAYWRIGHT_PROFILE_DIR ??
@@ -99,12 +97,17 @@ type WorkerFixtures = {
   sharedPage: import("@playwright/test").Page;
 };
 
+// eslint-disable-next-line @typescript-eslint/no-empty-object-type
 export const test = base.extend<{}, WorkerFixtures>({
   sharedBrowserContext: [
+    // eslint-disable-next-line no-empty-pattern
     async ({}, use) => {
       // Installed here (not at module load) since this module gets imported for test discovery
       // and listing too, which would otherwise wipe the real log right after an actual run.
       installConsoleLogging();
+
+      logTestDividerStart("Test Start");
+
       if (RECORD_VIDEO) {
         fs.rmSync(promoVideoDir, { recursive: true, force: true });
         fs.mkdirSync(promoVideoDir, { recursive: true });

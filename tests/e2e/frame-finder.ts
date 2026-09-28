@@ -1,5 +1,6 @@
 import type { Frame, Page } from "./fixtures/playwright";
 import { CONST } from "./CONST";
+import { highlightLocator } from "./mouse-proxy";
 
 // Retries across page.frames() since a frame (e.g. a Sitecore gallery) can load asynchronously
 // after this is first called. timeoutMs of 0 (default) is a single fail-fast pass.
@@ -14,6 +15,7 @@ export async function findFrameWithSelector(
   do {
     for (const frame of page.frames()) {
       if ((await frame.locator(selector).count()) > 0) {
+        await highlightLocator(frame.locator(selector), description);
         console.log(`[fobles] Found ${description} in frame ${frame.url()}`);
         return frame;
       }

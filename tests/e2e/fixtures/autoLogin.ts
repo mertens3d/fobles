@@ -1,6 +1,5 @@
 import { expect, type Page } from "@playwright/test";
 import { CONST } from "../CONST";
-import { getTestEnvironment } from "./environment";
 import { logDiagnostic } from "./logging";
 import type { AutoLoginContext } from "./autologin.type";
 
@@ -54,7 +53,7 @@ async function attemptAutoLogin(page: Page): Promise<boolean> {
     `[sitecore preflight] SITECORE_TEST_USER_NAME/SITECORE_TEST_USER_PASSWORD ${autoLoginContext.username && autoLoginContext.password ? "found" : "not found"}`,
   );
 
-  let success = await fillUserName(page, autoLoginContext);
+  const success = await fillUserName(page, autoLoginContext);
   if (success) {
     await fillPassword(page, autoLoginContext);
   }
@@ -129,10 +128,10 @@ async function assertLoggedIn(page: Page): Promise<void> {
   // unmistakable even scrolling past dozens of unrelated log lines. The full URL (OAuth query
   // string included) is hundreds of characters - trim to origin+pathname to keep the banner short.
 
-  printBanner();
+  printBanner(page);
   // The initial print scrolls out of view under later console/network noise while the browser
   // sits open waiting for you - repeat it periodically so it resurfaces.
-  const reprintInterval = setInterval(printBanner, 20_000);
+  const reprintInterval = setInterval(() => printBanner(page), 20_000);
   try {
     await expect(loginForm).toHaveCount(0, {
       timeout: CONST.TIMEOUTS.LOGIN_WAIT_MS,
@@ -142,7 +141,7 @@ async function assertLoggedIn(page: Page): Promise<void> {
   }
 }
 
-const printBanner = () => {
+const printBanner = (page: Page) => {
   const PAUSE_BANNER = "=".repeat(70);
   // Amber background, black text - ANSI SGR codes, reset at the end of each colored line.
   const ANSI_AMBER = "\x1b[43m\x1b[30m";

@@ -1,15 +1,12 @@
-import { type Frame, type Locator, type Page } from "./fixtures/playwright";
-import { CONST } from "./CONST";
-import { getTestEnvironment } from "./fixtures/environment";
+import { type Frame, type Locator, type Page } from "../fixtures/playwright";
+import { CONST } from "../CONST";
+import { getTestEnvironment } from "../fixtures/environment";
 import {
   clickWithMouseMarker,
-  getLastKnownMousePosition,
-  moveMouseTo,
-  moveMouseToPosition,
-  showMouseMarker,
-} from "./mouse-proxy";
-import { findFoblesFrame, findFrameWithSelector } from "./frame-finder";
-import type { MousePosition } from "./mouse-proxy.types";
+  ensureMouseMarkerExists,
+} from "../mouse-proxy";
+import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
+import { dismissFoblesConfirmDialogIfPresent, openQuickMenu } from "./fobles-macros";
 
 // Reusable stock Sitecore Content Editor UI interactions (ribbon tabs, galleries), plus Fobles'
 // own toolbar toggle since it's just as much a canned click sequence any spec reuses - kept
@@ -32,31 +29,9 @@ export async function clickContentTabIfPresent(page: Page): Promise<void> {
     .first();
   console.log(`[fobles] Checking for a visible Content tab (selector: ${CONST.SITECORE.SELECTORS.CONTENT_TAB})`);
   if (await contentTab.isVisible().catch(() => false)) {
+    // await moveMouseToLocator(page, contentTab,  "Content Editor tab header");
     await clickWithMouseMarker(page, contentTab, "Content Editor tab header");
   }
-}
-
-// Idempotent - only clicks the trigger if the flyout isn't already visible, since it's a toggle
-// button (clicking it while already open would close it instead).
-export async function openQuickMenu(page: Page, foblesFrame: Frame): Promise<void> {
-  console.log("[Macro: openQuickMenu] - Start");
-  console.log("[fobles] Checking whether the quick menu flyout is already visible");
-  const menuFlyout = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_MENU);
-  const isOpen =
-    (await menuFlyout.getAttribute(CONST.SITECORE.ATTRIBUTES.MENU_VISIBLE).catch(() => null)) === "true";
-  if (isOpen) {
-    console.log("[fobles] Quick menu already visible - skipping trigger click");
-    return;
-  }
-  const menuButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER);
-  console.log(`[fobles] Looking for menu trigger (selector: ${CONST.SITECORE.SELECTORS.MENU_TRIGGER})`);
-  await clickWithMouseMarker(page, menuButton, "Tree jump menu");
-  console.log(
-    `[fobles] Waiting for quick menu flyout's ${CONST.SITECORE.ATTRIBUTES.MENU_VISIBLE} attribute to become "true"`,
-  );
-  await foblesFrame
-    .locator(`${CONST.SITECORE.SELECTORS.QUICK_MENU}[${CONST.SITECORE.ATTRIBUTES.MENU_VISIBLE}="true"]`)
-    .waitFor({ state: "attached" });
 }
 
 // Opens the quick menu (if not already open) and clicks the tree jump button for the given path
@@ -79,8 +54,8 @@ export async function clickTreeJump(
 ): Promise<{ jumpButton: Locator; newTab: Page | null }> {
   console.log("[Macro: clickTreeJump] - Start");
   const foblesFrame = await findFoblesFrame(page);
-  await showMouseMarker(page);
-  await showMouseMarker(foblesFrame);
+  await ensureMouseMarkerExists(page);
+  await ensureMouseMarkerExists(foblesFrame);
   await openQuickMenu(page, foblesFrame);
   const jumpButtonSelector = `[data-fobles-tree-jump-path="${path}"]`;
   const jumpButton = foblesFrame.locator(jumpButtonSelector);
@@ -93,7 +68,8 @@ export async function clickTreeJump(
 
   if (newTabPromise) return { jumpButton, newTab: await newTabPromise };
   if (!options?.skipDialogDismiss) {
-    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
+    // await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
+    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
   }
   return { jumpButton, newTab: null };
 }
@@ -104,8 +80,8 @@ export async function clickTreeJump(
 export async function highlightQuickInfoPath(page: Page): Promise<void> {
   console.log("[Macro: highlightQuickInfoPath] - Start");
   const foblesFrame = await findFoblesFrame(page);
-  await showMouseMarker(page);
-  await showMouseMarker(foblesFrame);
+  await ensureMouseMarkerExists(page);
+  await ensureMouseMarkerExists(foblesFrame);
   await clickContentTabIfPresent(page);
 
   const itemPathRow = foblesFrame
@@ -117,42 +93,6 @@ export async function highlightQuickInfoPath(page: Page): Promise<void> {
   );
   await itemPathValue.waitFor({ state: "visible", timeout: CONST.TIMEOUTS.QUICK_INFO_VISIBLE_MS });
   await clickWithMouseMarker(page, itemPathValue, "Item path", { clickCount: 3, corner: "top-left" });
-}
-
-// Clicks through Fobles' own same-tab navigation confirmation dialog if it's showing (searches
-// every frame, since the dialog renders wherever the clicked button lives) - a no-op otherwise.
-// turnOffWarning also unchecks the dialog's warning checkbox first (see tests/README.md).
-export async function dismissFoblesConfirmDialogIfPresent(
-  page: Page,
-  options?: { turnOffWarning?: boolean },
-): Promise<void> {
-  console.log("[Macro: dismissFoblesConfirmDialogIfPresent] - Start");
-  console.log(
-    `[fobles] Polling up to 3000ms for a visible confirm dialog (selector: ${CONST.SITECORE.SELECTORS.CONFIRM_DIALOG})`,
-  );
-  const deadline = Date.now() + 3_000;
-  do {
-    for (const frame of page.frames()) {
-      const dialog = frame.locator(CONST.SITECORE.SELECTORS.CONFIRM_DIALOG).first();
-      if (await dialog.isVisible().catch(() => false)) {
-        console.log("[fobles] Confirm dialog found - dismissing");
-        if (options?.turnOffWarning) {
-          const warningCheckbox = dialog
-            .locator(CONST.SITECORE.SELECTORS.CONFIRM_DIALOG_SETTING)
-            .locator("input[type='checkbox']");
-          await clickWithMouseMarker(page, warningCheckbox, "Turn off same-tab navigation warning");
-        }
-        await clickWithMouseMarker(
-          page,
-          dialog.locator(CONST.SITECORE.SELECTORS.CONFIRM_DIALOG_CONTINUE),
-          "Confirm dialog Continue",
-        );
-        return;
-      }
-    }
-    await page.waitForTimeout(150);
-  } while (Date.now() < deadline);
-  console.log("[fobles] No confirm dialog appeared within 3000ms - treating as not shown");
 }
 
 // Opens Content Editor's "Links" gallery (Navigate ribbon tab > Links button), which lists every
@@ -175,26 +115,6 @@ export async function openLinksGallery(page: Page, frame: Frame): Promise<Locato
   return linksPanel;
 }
 
-// Clicks the LBolt button via clickWithMouseMarker, which already pauses afterward so the click's
-// effect is visible on screen before the next interaction fires.
-export async function clickLboltButton(
-  page: Page,
-  lboltButton: Locator,
-): Promise<void> {
-  console.log("[Macro: clickLboltButton] - Start");
-  await clickWithMouseMarker(page, lboltButton, "LBolt button");
-}
-
-// Self-sufficient variant of clickLboltButton - finds its own fobles frame and LBolt button
-// rather than accepting a pre-resolved locator from the caller (see clickTreeJump).
-export async function clickLbolt(page: Page): Promise<void> {
-  console.log("[Macro: clickLbolt] - Start");
-  const foblesFrame = await findFoblesFrame(page);
-  await showMouseMarker(page);
-  await showMouseMarker(foblesFrame);
-  const lboltButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON);
-  await clickWithMouseMarker(page, lboltButton, "LBolt button");
-}
 
 // Scrolls the tree panel (a native Sitecore element, present before Fobles/LBolt ever runs) to a
 // fixed scrollTop - called before clickLbolt so the target node is already in view once Fobles
@@ -222,47 +142,8 @@ export async function setTreePanelWidth(page: Page, widthPx: number): Promise<vo
   ]);
 }
 
-// Clicks the fobles button a specific tree node got decorated with, once LBolt is on. Scoped to
-// the tree button's own class plus the target item's id, since the id alone isn't guaranteed
-// unique (a field elsewhere could reference the same item) - .first() is safe here regardless,
-// since any such duplicate would still navigate to the same item. Dismisses Fobles' own confirm
-// dialog afterward, same as clickTreeJump.
-export async function clickTreeFoblesButton(
-  page: Page,
-  itemId: string,
-  options?: { turnOffWarning?: boolean; skipDialogDismiss?: boolean },
-): Promise<void> {
-  console.log("[Macro: clickTreeFoblesButton] - Start");
-  const buttonSelector = `${CONST.SITECORE.SELECTORS.TREE_FOBLES_BUTTON}[data-fobles-item-id="${itemId}"]`;
-  const treeFrame = await findFrameWithSelector(page, buttonSelector, "tree fobles button", 10_000);
-  await showMouseMarker(page);
-  await showMouseMarker(treeFrame);
-  const button = treeFrame.locator(buttonSelector).first();
-  console.log(`[fobles] Waiting for tree fobles button (selector: ${buttonSelector})`);
-  await button.waitFor({ state: "visible" });
-  await clickWithMouseMarker(page, button, "Tree fobles button");
-  if (!options?.skipDialogDismiss) {
-    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
-  }
-}
-
-// Drags the toolbar container to a target screen position via a real pointerdown -> pointermove
-// -> pointerup sequence - the same gesture wireContainerDragging (src/content/toolbar/drag.ts)
-// listens for, so this exercises the actual drag code path rather than just setting the
-// container's position directly. Must start the gesture on the grip (not just anywhere in the
-// container) since isInteractiveTarget's exclusions aside, any non-grip drag start still works in
-// the real UI - the grip is used here only because it's guaranteed to be the non-interactive
-// drag handle regardless of which toolbar buttons happen to be showing.
-export async function dragToolbarTo(
-  page: Page,
-  grip: Locator,
-  targetPosition: MousePosition,
-): Promise<void> {
-  console.log("[Macro: dragToolbarTo] - Start");
-  const mousePosition: MousePosition = getLastKnownMousePosition();
-  await moveMouseTo(page, grip, mousePosition, "Toolbar grip");
-  await page.mouse.down();
-  await moveMouseToPosition(page, targetPosition, mousePosition, "Toolbar drag");
-  await page.mouse.up();
-  await page.waitForTimeout(CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS);
+export async function ceRibbonOpenHome(page: Page) {
+  await findFrameWithSelector(page, 'a[accesskey="H"]', "Content Editor Home ribbon tab")
+    .then((frame) => clickRibbonTab(page, frame, "H"))
+    .catch(() => undefined);
 }

@@ -1,41 +1,31 @@
 import { expect, test, type Frame, type Locator, type Page } from "./fixtures/playwright";
-import { openSitecorePage } from "./fixtures/sitecore";
-import type { FoblesExpectation } from "./scenarios";
-import { clickWithMouseMarker, showMouseMarker } from "./mouse-proxy";
+import { openContentEditor, openSitecorePage } from "./fixtures/sitecore";
+import { clickWithMouseMarker, ensureMouseMarkerExists } from "./mouse-proxy";
 import { CONST } from "./CONST";
-import { dismissFoblesConfirmDialogIfPresent, clickContentTabIfPresent } from "./sitecore-macros";
+import { clickContentTabIfPresent } from "./macros/sitecore-macros";
 import { findFoblesFrame, findFrameWithSelector } from "./frame-finder";
 import type { TestInfo } from "@playwright/test";
+import { ClickLBoltButton, dismissFoblesConfirmDialogIfPresent, dragToolbarToCornerLocation } from "./macros/fobles-macros";
+import { expectLBoltButton } from "./expectSnippets/expectSnippets";
+import type { StrategyScenarioData, StrategyTestContext } from "./strategies/scenario.types";
+import type { FoblesTestStep } from "./types";
+import { logStepDividerStart } from "./helpers/loggingHelper";
 
 type Screenshottable = Pick<Locator, "screenshot">;
 
-// Shared by every field-strategy test (strategies/*.spec.ts) - navigates to the scenario item,
-// shows the mouse marker (matching the toolbar suite's visual style), and locates the field's
-// table by its label text plus the toolbar's feature button.
-export async function activateFoblesForFieldStrategy(
-  page: Page,
-  itemId: string,
-  fieldLabel: string,
-): Promise<{ foblesFrame: Frame; fieldTable: Locator; lboltButton: Locator }> {
-  console.log(`[fobles] Opening strategy item ${itemId}`);
-  await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${itemId}`);
+
+export async function setupContentEditorForTesting(page: Page, scenario: StrategyScenarioData) {
+  //return { page, fieldTable, locatorFirstResult, STEP_WAIT_MS, step, SCENARIO: scenario , testInfo };
+
+  console.log(`[fobles] Opening strategy item ${scenario.itemId}`);
+  await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${scenario.itemId}`);
+  // &fo=${scenario.itemId}`);
   console.log(`[fobles] Navigation finished at ${page.url()}`);
-  await showMouseMarker(page);
+  await ensureMouseMarkerExists(page);
 
-  console.log(`[fobles] Looking for the LBolt button in a frame`);
-  const foblesFrame = await findFoblesFrame(page);
-  console.log(`[fobles] LBolt button frame found`);
-  await showMouseMarker(foblesFrame);
-
-  console.log(`[fobles] Looking for field "${fieldLabel}"`);
-  const fieldTable = foblesFrame
-    .locator(`xpath=//*[contains(text(), '${fieldLabel}')]/ancestor::table[1]`)
-    .first();
-  const lboltButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON).first();
-  console.log(`[fobles] Strategy field activation setup complete`);
-
-  return { foblesFrame, fieldTable, lboltButton };
+  await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
 }
+
 
 // Sitecore's own "fo" query param is either a bare GUID (braces stripped by Fobles'
 // normalizeFoblesValue before building the URL) or a content path (e.g.
@@ -109,7 +99,7 @@ export async function expectFoblesButtonSameTabNavigation(
 ): Promise<void> {
   await clickWithMouseMarker(page, button, "Fobles item button");
 
-  await dismissFoblesConfirmDialogIfPresent(page);
+  await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
 
   await page.waitForURL((url) => url.searchParams.has("fo"));
   await attachActualFoValueNote(testInfo, expectedFoValue, page.url(), stepTitle);
@@ -122,20 +112,24 @@ export async function expectFoblesButtonSameTabNavigation(
 // stepTitle - see expectFoblesButtonSameTabNavigation. Also attaches a Quick Info "Item path"
 // screenshot of the popup before closing it.
 export async function expectFoblesButtonNewTabNavigation(
-  page: Page,
-  testInfo: TestInfo,
-  button: Locator,
-  expectedFoValue: string,
+  testContext: StrategyTestContext,
   stepTitle: string,
+  popup: Page,
 ): Promise<void> {
-  const [popup] = await Promise.all([
-    page.context().waitForEvent("page"),
-    clickWithMouseMarker(page, button, "Fobles item button", { modifiers: ["Control"] }),
-  ]);
+  console.log(`expectFoblesButtonNewTabNavigation s)`)
+
+  await popup.bringToFront();
+
   await popup.waitForLoadState("domcontentloaded");
-  await attachActualFoValueNote(testInfo, expectedFoValue, popup.url(), stepTitle);
-  assertFoblesTargetUrl(popup.url(), expectedFoValue);
-  await attachItemPathScreenshot(popup, testInfo, stepTitle);
+  await attachActualFoValueNote(testContext.testInfo, testContext.SCENARIO.expectedFoValue, popup.url(), stepTitle);
+  assertFoblesTargetUrl(popup.url(), testContext.SCENARIO.expectedFoValue);
+  await attachItemPathScreenshot(popup, testContext.testInfo, stepTitle);
+
+  const newTabHoldMs = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS *
+    CONST.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
+  await popup.waitForTimeout(newTabHoldMs);
+  await testContext.page.bringToFront();
+
   await popup.close();
 }
 
@@ -367,19 +361,20 @@ function relativeUrl(page: Page): string {
 // (prefixed) title, so a body that attaches its own named screenshot/note (e.g.
 // attachItemPathScreenshot, expectFoblesButtonSameTabNavigation/NewTabNavigation) can name it after
 // that instead of a value another step in the same test might share.
+
+
+
 export function createStep(
   page: Page,
   testInfo: TestInfo,
   screenshotTarget: Screenshottable = page,
   titlePrefix?: string,
-): (
-  title: string,
-  body: (fullTitle: string) => Promise<void>,
-  options?: { timeout?: number; screenshot?: boolean },
-) => Promise<void> {
+): FoblesTestStep {
   return async (title, body, options) => {
     const fullTitle = titlePrefix ? `${titlePrefix}: ${title}` : title;
+    console.log(`${CONST.LOG.STEP_DIVIDER}`);
     console.log(`[fobles] Step starting: ${fullTitle}`);
+    console.log(`${CONST.LOG.STEP_DIVIDER}`);
     await test.step(
       fullTitle,
       async () => {
@@ -410,6 +405,8 @@ export function createStep(
       },
       options,
     );
+    console.log(`[fobles] Step finished: ${titlePrefix ? `${titlePrefix}: ${title}` : title}`);
+    console.log(`${CONST.LOG.STEP_DIVIDER}`);
   };
 }
 
@@ -462,17 +459,15 @@ async function logActivationState(frame: Frame, message: string): Promise<void> 
 
 export async function activateFobles(
   page: Page,
-  scenario: FoblesExpectation,
 ): Promise<Frame> {
-  console.log(`[fobles] Opening ${scenario.url}`);
-  await openSitecorePage(page, scenario.url);
-  console.log(`[fobles] Navigation finished at ${page.url()}`);
+  await openContentEditor(page, CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID);
+
 
   await expect
     .poll(
       async () => {
         for (const frame of page.frames()) {
-          if ((await frame.locator(`#${scenario.treeNodeId}`).count()) > 0) {
+          if ((await frame.locator(`#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`).count()) > 0) {
             return true;
           }
         }
@@ -484,19 +479,18 @@ export async function activateFobles(
 
   const treeFrame = await findFrameWithSelector(
     page,
-    `#${scenario.treeNodeId}`,
-    `tree node #${scenario.treeNodeId}`,
+    `#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`,
+    `tree node #${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`,
   );
-  await clickWithMouseMarker(page, treeFrame.locator(`#${scenario.treeNodeId}`), "Tree node");
+  await clickWithMouseMarker(page, treeFrame.locator(`#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`), "Tree node");
 
   const foblesFrame = await findFoblesFrame(page);
   await logActivationState(foblesFrame, "[fobles] LBolt setup before click");
-  await showMouseMarker(foblesFrame);
-  const lboltButton = foblesFrame
-    .locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON)
-    .first();
-  await expect(lboltButton).toBeVisible();
-  await clickWithMouseMarker(page, lboltButton, "LBolt button");
+  await ensureMouseMarkerExists(foblesFrame);
+
+  await expectLBoltButton(foblesFrame);
+  await ClickLBoltButton(page, foblesFrame);
+
   console.log(
     `[fobles] LBolt clicked; persisted state now ${await foblesFrame.evaluate(() => localStorage.getItem("fobles_state"))}`,
   );
@@ -506,16 +500,11 @@ export async function activateFobles(
 // Navigates to the scenario item and locates the fobles toolbar frame - shared by anything that
 // just needs the toolbar findable/visible (jump tests, the promo video), unlike activateFobles
 // which also toggles the LBolt/augmentor feature for field-decoration tests.
-export async function openSitecorePageAndFindFoblesFrame(
-  page: Page,
-  scenario: FoblesExpectation,
-): Promise<Frame> {
-  console.log(`[fobles] Opening ${scenario.url}`);
-  await openSitecorePage(page, scenario.url);
-  console.log(`[fobles] Navigation finished at ${page.url()}`);
-  await showMouseMarker(page);
+export async function openSitecorePageAndFindFoblesFrame(page: Page): Promise<Frame> {
+  await openContentEditor(page, CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID)
+  await ensureMouseMarkerExists(page);
 
   const foblesFrame = await findFoblesFrame(page);
-  await showMouseMarker(foblesFrame);
+  await ensureMouseMarkerExists(foblesFrame);
   return foblesFrame;
 }

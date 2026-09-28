@@ -2,7 +2,6 @@ import {
   ATTRIBUTE,
   CLASS,
   ICONS,
-  SELECTORS,
   SYMBOLS,
   TEXT,
 } from "../constants";
@@ -123,7 +122,7 @@ export function createToolbarCloseButton(
 
 export function createToolbarGrip(context: ToolbarContext): SVGSVGElement {
   const svgNs = "http://www.w3.org/2000/svg";
-  const svg = context.doc.createElementNS(svgNs, "svg") as SVGSVGElement;
+  const svg = context.doc.createElementNS(svgNs, "svg");
   svg.setAttribute("class", CLASS.TOOLBAR_GRIP);
   svg.setAttribute("viewBox", "0 0 12 24");
   svg.setAttribute("aria-hidden", "true");

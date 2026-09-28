@@ -2,10 +2,10 @@ import { expect, type Locator, type Page } from "./fixtures/playwright";
 import {
   getButtonSize,
   moveMouseOutsideHoverArea,
-  moveMouseTo,
+  moveMouseToLocatorCenter,
 } from "./mouse-proxy";
 import { CONST } from "./CONST";
-import type { MousePosition } from "./mouse-proxy.types";
+import type { MouseCoordinates } from "./mouse-proxy.types";
 
 const STEP_WAIT_MS =
   CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
@@ -15,7 +15,7 @@ export type HoverAndGrowOptions = {
   hoverTarget: Locator;
   measureTarget: Locator;
   moveAwayTargets: Locator | Locator[];
-  mousePosition: MousePosition;
+  mousePosition: MouseCoordinates;
 };
 
 export async function hoverAndGrow(
@@ -26,7 +26,7 @@ export async function hoverAndGrow(
     await moveMouseOutsideHoverArea(page, options.moveAwayTargets, options.mousePosition, `${options.name} away`);
     await page.waitForTimeout(STEP_WAIT_MS);
     const originalSize = await getButtonSize(options.measureTarget);
-    await moveMouseTo(page, options.hoverTarget, options.mousePosition, options.name);
+    await moveMouseToLocatorCenter(page, options.hoverTarget, options.name); // options.mousePosition,
     await page.waitForTimeout(STEP_WAIT_MS);
     const hoveredSize = await getButtonSize(options.measureTarget);
     expect(hoveredSize.width).toBeGreaterThan(originalSize.width);
@@ -46,7 +46,7 @@ export type HoverAndSlideOutOptions = {
   hoverTarget: Locator;
   flyoutTarget: Locator;
   hoverRegion: Locator | Locator[];
-  mousePosition: MousePosition;
+  mousePosition: MouseCoordinates;
 };
 
 export async function hoverAndSlideOut(
@@ -56,7 +56,7 @@ export async function hoverAndSlideOut(
   for (let cycle = 1; cycle <= 3; cycle += 1) {
     await moveMouseOutsideHoverArea(page, options.hoverRegion, options.mousePosition, `${options.name} away`);
     await page.waitForTimeout(STEP_WAIT_MS);
-    await moveMouseTo(page, options.hoverTarget, options.mousePosition, options.name);
+    await moveMouseToLocatorCenter(page, options.hoverTarget, options.name); // options.mousePosition,
     await page.waitForTimeout(STEP_WAIT_MS);
     await expect(options.flyoutTarget).toHaveAttribute("data-visible", "true");
     console.log(`[fobles] ${options.name} flyout opened on hover, cycle ${cycle}`);

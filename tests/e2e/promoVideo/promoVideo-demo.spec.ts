@@ -1,13 +1,14 @@
 import { test, type Page } from "../fixtures/playwright";
 import { CONST } from "../CONST";
 import { openSitecorePage } from "../fixtures/sitecore";
-import { clickLbolt, clickTreeFoblesButton, clickTreeJump, dragToolbarTo, scrollTreeContainer } from "../sitecore-macros";
-import { resolveCornerPosition, showMouseMarker } from "../mouse-proxy";
+import {   clickTreeJump,  scrollTreeContainer } from "../macros/sitecore-macros";
+import { resolveCornerPosition, ensureMouseMarkerExists } from "../mouse-proxy";
 import { findFrameWithSelector } from "../frame-finder";
 import { getExtensionId, setFoblesNavWarningVisible } from "../fixtures/extension";
 import { playDemoBeat } from "./demo-beat";
 import { videoTestSetup } from "./video-test-setup";
 import { RECORD_VIDEO } from "../../settings/settings";
+import { clickLbolt, clickTreeFoblesButton, dragToolbarTo } from "../macros/fobles-macros";
 
 test.describe("Promo Video", () => {
   test("promo video", async ({ page: sharedPage, sharedBrowserContext }) => {
@@ -19,7 +20,7 @@ test.describe("Promo Video", () => {
     try {
       await videoTestSetup(page);
       await demoToolbarDrag(page);
-      await showMouseMarker(page);
+      await ensureMouseMarkerExists(page);
       await demoTreeFoblesClick(page);
       await demoTreeJumpMenu(page);
       await demoLBoltToggle(page);
@@ -46,7 +47,7 @@ async function demoLBoltToggle(page: Page) {
         page,
         `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=75D27C2B-5F88-4CC8-B1DE-8412A1628408&sc_lang=en`,
       );
-      await showMouseMarker(page);
+      await ensureMouseMarkerExists(page);
     },
     speechText: "Click LBolt to turn Fobles on for this item",
     action: () => clickLbolt(page),
@@ -85,17 +86,15 @@ async function demoTreeFoblesClick(page: Page) {
 async function demoToolbarDrag(page: Page) {
   const foblesFrame = await findFrameWithSelector(page, CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
   const toolbarGrip = foblesFrame.locator(CONST.SITECORE.SELECTORS.TOOLBAR_GRIP).first();
-  const viewport = page.viewportSize();
-  if (!viewport) throw new Error("Could not read viewport size");
 
   await playDemoBeat(page, {
     name: "demoToolbarDrag",
-    init: () => showMouseMarker(foblesFrame),
+    init: () => ensureMouseMarkerExists(foblesFrame),
     speechText: "Drag the toolbar anywhere on the page",
-    action: () => dragToolbarTo(page, toolbarGrip, resolveCornerPosition(viewport, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_2)),
+    action: () => dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_2)),
     highlightResult: false,
   });
 
-  await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(viewport, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_3));
-  await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(viewport, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT));
+  await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_3));
+  await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT));
 }

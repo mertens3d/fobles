@@ -23,7 +23,7 @@ const collectOptions = (select: HTMLSelectElement): MultilistOption[] => {
   const entries: MultilistOption[] = [];
 
   Array.from(select.options).forEach((option) => {
-    const value = (option as HTMLOptionElement).value?.trim() ?? "";
+    const value = (option).value?.trim() ?? "";
     const label = option.textContent?.trim() ?? value;
     if (!value || seen.has(value)) return;
 

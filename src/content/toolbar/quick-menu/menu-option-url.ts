@@ -1,4 +1,3 @@
-import { SELECTORS } from "../../constants";
 import { SITECORE } from "../../sitecore";
 import { getCurrentItemId } from "../../features/quick-menu/ai-pages";
 import { joinQuickMenuPath } from "../../../shared/quick-menu/button-settings";

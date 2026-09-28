@@ -5,18 +5,24 @@ import {
   type Locator,
   type Page,
 } from "./fixtures/playwright";
-import type { CornerPosition, MousePosition } from "./mouse-proxy.types";
+import { foblesWaitForTimeout } from "./helpers/waitHelpers";
+import type { CornerPosition, MouseCoordinates } from "./mouse-proxy.types";
 
 
 
 // Resolves a viewport-corner-relative position (see CONST.TOOLBAR_DRAG_POSITIONS) into an
 // absolute page position a real mouse move/drag can target.
-export function resolveCornerPosition(
-  viewport: { width: number; height: number },
-  position: CornerPosition,
-): MousePosition {
-  const x = position.corner.endsWith("right") ? viewport.width - position.offsetX : position.offsetX;
-  const y = position.corner.startsWith("bottom") ? viewport.height - position.offsetY : position.offsetY;
+export function resolveCornerPosition(page: Page, cornerPosition: CornerPosition
+  // viewport: { width: number; height: number },
+  // position: CornerPosition,
+): MouseCoordinates {
+
+  // const viewport = { width: window.innerWidth, height: window.innerHeight };
+  const viewport = page.viewportSize();
+  if (!viewport) throw new Error("Could not read viewport size");
+
+  const x = cornerPosition.corner.endsWith("right") ? viewport.width - cornerPosition.offsetX : cornerPosition.offsetX;
+  const y = cornerPosition.corner.startsWith("bottom") ? viewport.height - cornerPosition.offsetY : cornerPosition.offsetY;
   return { x, y };
 }
 
@@ -27,9 +33,9 @@ export function resolveCornerPosition(
 // wherever the mouse actually last was (typically whatever was just clicked to trigger the
 // reload). Updated at the end of every real move below; getLastKnownMousePosition() lets a new
 // step start tracking from there instead of guessing (0, 0).
-let lastKnownMousePosition: MousePosition = { x: 0, y: 0 };
+let lastKnownMousePosition: MouseCoordinates = { x: 0, y: 0 };
 
-export function getLastKnownMousePosition(): MousePosition {
+export function getLastKnownMousePosition(): MouseCoordinates {
   return { ...lastKnownMousePosition };
 }
 
@@ -53,16 +59,16 @@ export async function getButtonSize(
   return { width: box.width, height: box.height };
 }
 
-export async function showMouseMarker(page: Page | Frame): Promise<void> {
+export async function ensureMouseMarkerExists(page: Page | Frame): Promise<void> {
   if (isSprintMode()) return;
   await page.evaluate((markerConfig) => {
-    if (document.getElementById(markerConfig.ID)) return;
-
-    const marker = document.createElement("div");
-    marker.id = markerConfig.ID;
-    marker.style.cssText = markerConfig.CSS_TEXT.join(";");
-    document.documentElement.appendChild(marker);
-  }, CONST.MARKER);
+    if (!document.getElementById(markerConfig.ID)) {
+      const marker = document.createElement("div");
+      marker.id = markerConfig.ID;
+      marker.style.cssText = markerConfig.CSS_TEXT.join(";");
+      document.documentElement.appendChild(marker);
+    }
+  }, CONST.MOUSE_MARKER);
 }
 
 // Shared by marker-position updates and the click ripple - a page-level (x, y) needs translating
@@ -74,15 +80,29 @@ async function forEachFrameWithLocalPosition(
   callback: (frame: Frame, localX: number, localY: number) => Promise<void>,
 ): Promise<void> {
   for (const frame of page.frames()) {
+    // console.log(`[forEachFrameWithLocalPosition] Processing frame: ${frame.url()}`);
+
+    if (frame.url().includes("sitecore/shell/Applications/-/media")) {
+      // console.log(`[forEachFrameWithLocalPosition] Skipping frame: ${frame.url()}`);
+      continue;
+    }
+
     let localX = x;
     let localY = y;
-    if (frame !== page.mainFrame()) {
-      const frameBox = await frame.locator("html").boundingBox();
-      if (!frameBox) continue;
-      localX -= frameBox.x;
-      localY -= frameBox.y;
+    try {
+      if (frame !== page.mainFrame()) {
+        const frameBox = await frame.locator("html").boundingBox();
+        if (!frameBox) continue;
+
+
+
+        localX -= frameBox.x;
+        localY -= frameBox.y;
+      }
+      await callback(frame, localX, localY);
+    } catch (error) {
+      console.error(`[forEachFrameWithLocalPosition] Error processing frame: ${frame.url()}`, error);
     }
-    await callback(frame, localX, localY);
   }
 }
 
@@ -91,28 +111,33 @@ async function updateMouseMarkers(
   x: number,
   y: number,
 ): Promise<void> {
+
+  // console.log(`[updateMouseMarkers] Updating mouse marker to position: (${x}, ${y})`);
   await forEachFrameWithLocalPosition(page, x, y, async (frame, localX, localY) => {
     const marker = frame.locator("#playwright-mouse-marker");
-    if ((await marker.count()) === 0) return;
-
-    await marker.evaluate(
-      (element, coordinates) => {
-        // A native <dialog> shown via showModal() (e.g. Fobles' own confirm dialog) paints in the
-        // browser's "top layer", which renders above every normal element regardless of z-index -
-        // no z-index value on the marker itself can win against that. Reparenting the marker
-        // inside the open dialog puts it in that same top layer so it stays visible; move it back
-        // to <html> once the dialog closes.
-        const openDialog = document.querySelector("dialog[open]");
-        if (openDialog && element.parentElement !== openDialog) {
-          openDialog.appendChild(element);
-        } else if (!openDialog && element.parentElement !== document.documentElement) {
-          document.documentElement.appendChild(element);
-        }
-        element.style.left = `${coordinates.x}px`;
-        element.style.top = `${coordinates.y}px`;
-      },
-      { x: localX, y: localY },
-    );
+    if ((await marker.count()) === 0) {
+      // console.log("Mouse marker not found in frame");
+    } else {
+      // console.log(`[updateMouseMarkers] Callback`);
+      await marker.evaluate(
+        (element, coordinates) => {
+          // A native <dialog> shown via showModal() (e.g. Fobles' own confirm dialog) paints in the
+          // browser's "top layer", which renders above every normal element regardless of z-index -
+          // no z-index value on the marker itself can win against that. Reparenting the marker
+          // inside the open dialog puts it in that same top layer so it stays visible; move it back
+          // to <html> once the dialog closes.
+          const openDialog = document.querySelector("dialog[open]");
+          if (openDialog && element.parentElement !== openDialog) {
+            openDialog.appendChild(element);
+          } else if (!openDialog && element.parentElement !== document.documentElement) {
+            document.documentElement.appendChild(element);
+          }
+          element.style.left = `${coordinates.x}px`;
+          element.style.top = `${coordinates.y}px`;
+        },
+        { x: localX, y: localY },
+      );
+    }
   });
 }
 
@@ -126,7 +151,7 @@ export async function pulseMouseMarkerClick(page: Page): Promise<void> {
   await Promise.all(
     page.frames().map(async (frame) => {
       const flashInFrame = async () => {
-        const marker = frame.locator(`#${CONST.MARKER.ID}`);
+        const marker = frame.locator(`#${CONST.MOUSE_MARKER.ID}`);
         if ((await marker.count()) === 0) return;
 
         await marker.evaluate((element, config) => {
@@ -164,7 +189,7 @@ export async function pulseMouseMarkerClick(page: Page): Promise<void> {
 // clicks that genuinely never appear on screen (e.g. against a page the marker was never shown on).
 export async function clickWithMouseMarker(
   page: Page,
-  target: Locator,
+  targetLocator: Locator,
   label: string,
   options?: {
     modifiers?: Array<"Alt" | "Control" | "Meta" | "Shift">;
@@ -172,10 +197,27 @@ export async function clickWithMouseMarker(
     corner?: "center" | "top-left";
   },
 ): Promise<void> {
+
+  console.log(
+    `[fobles] clickWithMouseMarker '${label}' options: ${JSON.stringify(options)}`,
+  );
+
+  if (!page) {
+    console.error("Page is not defined");
+  }
+
+  if (!(await targetLocator.isVisible())) {
+    console.error(`Target is not visible for label: ${label}`);
+    throw new Error(`Target is not visible for label: ${label}`);
+  }
+
+  if (!label) {
+    console.error("Label is not defined");
+  }
   const corner = options?.corner ?? "center";
-  await moveMouseTo(page, target, getLastKnownMousePosition(), label, corner);
+  await moveMouseToBoundingBox(page, targetLocator, label, corner);
   await pulseMouseMarkerClick(page);
-  await target.click({
+  await targetLocator.click({
     modifiers: options?.modifiers,
     clickCount: options?.clickCount,
     position: corner === "top-left" ? { x: 0, y: 0 } : undefined,
@@ -195,7 +237,7 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
     return;
   }
   const markerState = await page
-    .locator(`#${CONST.MARKER.ID}`)
+    .locator(`#${CONST.MOUSE_MARKER.ID}`)
     .evaluate((marker) => {
       const style = getComputedStyle(marker);
       const box = marker.getBoundingClientRect();
@@ -224,7 +266,7 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
   await page.waitForTimeout(100);
 
   const movedState = await page
-    .locator(`#${CONST.MARKER.ID}`)
+    .locator(`#${CONST.MOUSE_MARKER.ID}`)
     .evaluate((marker) => {
       const box = marker.getBoundingClientRect();
       return {
@@ -243,75 +285,154 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
   expect(movedState.top).toBeGreaterThan(90);
 }
 
-export async function moveMouseTo(
+export async function moveMouseToBoundingBox(
   page: Page,
-  target: Locator,
-  position: MousePosition,
+  targetLocator: Locator,
   label: string,
   corner: "center" | "top-left" = "center",
 ): Promise<void> {
-  const box = await target.boundingBox();
-  if (!box) throw new Error("Could not locate mouse target");
+  console.log(`[fobles] S) moveMouseToBoundingBox '${label}'`);
 
-  console.log(`[fobles] Mouse target ${label}: ${JSON.stringify(box)}`);
+  if (!targetLocator) {
+    console.error(`no mouse target provided for '${label}'`);
+    throw new Error("no mouse target provided");
+  }
+
+  console.log(await targetLocator.count());
+  console.log(await targetLocator.isVisible());
+
+  const elementHandle = await targetLocator.elementHandle();
+  console.log(elementHandle);
+
+
+  if (!(await targetLocator.isVisible())) {
+    console.error(`Mouse target '${label}' is not visible`);
+    throw new Error("Mouse target is not visible");
+  }
+
+  await highlightLocator(targetLocator, label);
+
+  const box = await targetLocator.boundingBox();
+  if (!box) {
+    console.error(`Could not get bounding box for mouse target '${label}' `);
+    throw new Error("Could not locate mouse target");
+  }
+
+  console.log(`[fobles] Mouse target '${label}'`);
   const targetPosition =
     corner === "top-left"
       ? { x: box.x, y: box.y }
       : { x: box.x + box.width / 2, y: box.y + box.height / 2 };
-  await moveMouseToPosition(page, targetPosition, position, label);
+  await moveMouseToPosition(page, targetPosition, label);
+  console.log(`[fobles] E) Mouse move to '${label}' called`);
 }
+
+export async function highlightLocator(
+  target: Locator,
+  label: string,
+): Promise<void> {
+  console.log(`[fobles] Highlighting locator '${label}'`);
+
+  const original = await target.evaluate((element) => {
+    const el = element as HTMLElement;
+
+    return {
+      outline: el.style.outline,
+      outlineOffset: el.style.outlineOffset,
+      backgroundColor: el.style.backgroundColor,
+    };
+  });
+
+  await target.evaluate((element) => {
+    const el = element as HTMLElement;
+
+    el.style.outline = "5px solid red";
+    el.style.outlineOffset = "2px";
+    el.style.backgroundColor = "yellow";
+  });
+
+  await new Promise((resolve) => setTimeout(resolve, 2000));
+
+  await target.evaluate(
+    (element, originalStyles) => {
+      const el = element as HTMLElement;
+
+      el.style.outline = originalStyles.outline;
+      el.style.outlineOffset = originalStyles.outlineOffset;
+      el.style.backgroundColor = originalStyles.backgroundColor;
+    },
+    original,
+  );
+}
+
+export async function moveMouseToLocatorCenter(
+  page: Page,
+  targetLocator: Locator,
+  label: string,
+): Promise<void> {
+  await moveMouseToBoundingBox(page, targetLocator, label, "center");
+}
+
 
 export async function moveMouseToPosition(
   page: Page,
-  targetPosition: MousePosition,
-  position: MousePosition,
+  targetPosition: MouseCoordinates,
   label: string,
 ): Promise<void> {
+
+  console.log(`[fobles] S) Mouse move '${label}' `);
+  const initialPosition: MouseCoordinates = getLastKnownMousePosition();
+
   if (isSprintMode()) {
+    console.log(`[fobles] Mouse sprint mode: moving directly to (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`);
     await page.mouse.move(targetPosition.x, targetPosition.y);
-    position.x = targetPosition.x;
-    position.y = targetPosition.y;
-    lastKnownMousePosition = { ...position };
+    initialPosition.x = targetPosition.x;
+    initialPosition.y = targetPosition.y;
+    lastKnownMousePosition = { ...initialPosition };
     return;
+  } else {
+    console.log(`[fobles] Mouse normal mode: moving to (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`);
   }
 
-  const startPosition = { ...position };
+  const startPosition = { ...initialPosition };
   const distance = Math.hypot(
-    targetPosition.x - position.x,
-    targetPosition.y - position.y,
+    targetPosition.x - initialPosition.x,
+    targetPosition.y - initialPosition.y,
   );
   const durationMs =
     (distance /
       (CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].MOUSE_PX_PER_SECOND *
         CONST.MOUSE.SPEED_MULTIPLIER)) *
     1_000;
-  const stepDelay = 1_000 / CONST.MOUSE.UPDATE_HZ;
-  const steps = Math.max(1, Math.ceil(durationMs / stepDelay));
+  const mouseStepDelay = 1_000 / CONST.MOUSE.UPDATE_HZ;
+  const mouseSteps = Math.max(1, Math.ceil(durationMs / mouseStepDelay));
   console.log(
-    `[fobles] Mouse move ${label}: start=(${startPosition.x.toFixed(1)}, ${startPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${steps}`,
+    `[fobles] Mouse move '${label}': start=(${startPosition.x.toFixed(1)}, ${startPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${mouseSteps}`,
   );
 
-  for (let step = 1; step <= steps; step += 1) {
-    const progress = step / steps;
-    const x = position.x + (targetPosition.x - position.x) * progress;
-    const y = position.y + (targetPosition.y - position.y) * progress;
+  for (let mouseStep = 1; mouseStep <= mouseSteps; mouseStep += 1) {
+    // console.log(`[fobles] Mouse move '${label}': step ${mouseStep}/${mouseSteps}`);
+    const progress = mouseStep / mouseSteps;
+    const x = initialPosition.x + (targetPosition.x - initialPosition.x) * progress;
+    const y = initialPosition.y + (targetPosition.y - initialPosition.y) * progress;
     await page.mouse.move(x, y);
     await updateMouseMarkers(page, x, y);
-    await page.waitForTimeout(stepDelay);
+    await foblesWaitForTimeout(page, mouseStepDelay, true);
   }
+  // console.log(`Mouse markers done`);
 
-  position.x = targetPosition.x;
-  position.y = targetPosition.y;
-  lastKnownMousePosition = { ...position };
+  initialPosition.x = targetPosition.x;
+  initialPosition.y = targetPosition.y;
+  lastKnownMousePosition = { ...initialPosition };
   console.log(
-    `[fobles] Mouse move ${label} ended at (${position.x.toFixed(1)}, ${position.y.toFixed(1)})`,
+    `[fobles] E) Mouse move '${label}' ended at (${initialPosition.x.toFixed(1)}, ${initialPosition.y.toFixed(1)})`,
   );
 }
 
 export async function moveMouseOutsideHoverArea(
   page: Page,
   sources: Locator | Locator[],
-  position: MousePosition,
+  position: MouseCoordinates,
   label: string,
 ): Promise<void> {
   const sourceList = Array.isArray(sources) ? sources : [sources];
@@ -379,5 +500,5 @@ export async function moveMouseOutsideHoverArea(
   console.log(
     `[fobles] Hover boundary ${label}: outside ${JSON.stringify(sourceBox)} => (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`,
   );
-  await moveMouseToPosition(page, targetPosition, position, label);
+  await moveMouseToPosition(page, targetPosition, label);
 }

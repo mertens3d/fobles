@@ -6,11 +6,12 @@ import {
   expectFoblesButtonNewTabNavigation,
   expectFoblesButtonSameTabNavigation,
 } from "../fobles-helpers";
-import { showMouseMarker } from "../mouse-proxy";
-import { clickLboltButton, openLinksGallery } from "../sitecore-macros";
+import { ensureMouseMarkerExists } from "../mouse-proxy";
+import { openLinksGallery } from "../macros/sitecore-macros";
 import { findFoblesFrame } from "../frame-finder";
 import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
+import { clickLbolt } from "../macros/fobles-macros";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -26,10 +27,10 @@ const SCENARIO = EDITOR_SCENARIOS.REFERENCE_LINKS;
 test.describe("Editor scenario: reference links", () => {
   test("toggling Fobles decorates and restores the Links gallery", async ({ page }, testInfo) => {
     await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`);
-    await showMouseMarker(page);
+    await ensureMouseMarkerExists(page);
 
     const foblesFrame = await findFoblesFrame(page);
-    await showMouseMarker(foblesFrame);
+    await ensureMouseMarkerExists(foblesFrame);
 
     const linksPanel = await openLinksGallery(page, foblesFrame);
 
@@ -42,7 +43,7 @@ test.describe("Editor scenario: reference links", () => {
     });
 
     await step("Toggle Fobles on: every referenced/referring link gets a Fobles button", async () => {
-      await clickLboltButton(page, lboltButton);
+      await clickLbolt(page);
       await expect(linksPanel.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(
         SCENARIO.referringItems.length + 1,
       );
@@ -73,14 +74,13 @@ test.describe("Editor scenario: reference links", () => {
     );
 
     await step("Toggle Fobles off: the gallery returns to its original shape", async () => {
-      await clickLboltButton(page, lboltButton);
+      await clickLbolt(page);;
       await expect(linksPanel.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await expect(linksPanel.locator("a.scLink").first()).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
     });
 
-    // Toggle back on to reveal the button again for the click test below - no screenshot needed,
-    // already captured above.
-    await clickLboltButton(page, lboltButton);
+
+    await clickLbolt(page);
 
     await step(
       `Click navigates to the referring item: "${firstReferringItem.expectedFoValue}"`,

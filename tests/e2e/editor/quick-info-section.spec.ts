@@ -6,11 +6,12 @@ import {
   expectFoblesButtonNewTabNavigation,
   expectFoblesButtonSameTabNavigation,
 } from "../fobles-helpers";
-import { showMouseMarker } from "../mouse-proxy";
-import { clickLboltButton } from "../sitecore-macros";
+import { ensureMouseMarkerExists } from "../mouse-proxy";
+
 import { findFoblesFrame } from "../frame-finder";
 import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
+import { clickLbolt } from "../macros/fobles-macros";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -25,10 +26,10 @@ const SCENARIO = EDITOR_SCENARIOS.QUICK_INFO_SECTION;
 test.describe("Editor scenario: quick info section", () => {
   test("toggling Fobles decorates and restores the Quick Info panel", async ({ page }, testInfo) => {
     await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`);
-    await showMouseMarker(page);
+    await ensureMouseMarkerExists(page);
 
     const foblesFrame = await findFoblesFrame(page);
-    await showMouseMarker(foblesFrame);
+    await ensureMouseMarkerExists(foblesFrame);
 
     const quickInfoTable = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE).first();
     const lboltButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON).first();
@@ -41,7 +42,8 @@ test.describe("Editor scenario: quick info section", () => {
     });
 
     await step("Toggle Fobles on: Item ID, Item path, and Template each get a Fobles button", async () => {
-      await clickLboltButton(page, lboltButton);
+      await clickLbolt(page);
+
       await expect(quickInfoTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(4);
       for (const button of [
         SCENARIO.itemIdButton,
@@ -69,16 +71,14 @@ test.describe("Editor scenario: quick info section", () => {
     );
 
     await step("Toggle Fobles off: the panel returns to its original shape", async () => {
-      await clickLboltButton(page, lboltButton);
+      await clickLbolt(page);
       await expect(quickInfoTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await expect(quickInfoTable.locator("span.scEditorHeaderQuickInfoPath, input.scEditorHeaderQuickInfoInput").first()).not.toHaveClass(
         FOBLES_HIDDEN_CLASS_PATTERN,
       );
     });
 
-    // Toggle back on to reveal the button again for the click test below - no screenshot needed,
-    // already captured above.
-    await clickLboltButton(page, lboltButton);
+    await clickLbolt(page);
 
     const itemIdButton = quickInfoTable.locator(FOBLES.SELECTORS.BUTTON, {
       hasText: SCENARIO.itemIdButton.expectedButtonText,

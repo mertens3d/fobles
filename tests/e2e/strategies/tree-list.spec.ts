@@ -1,14 +1,16 @@
 import { expect, test } from "../fixtures/playwright";
 import { CONST } from "../CONST";
 import {
-  activateFoblesForFieldStrategy,
   createStep,
   getEditorSectionLocator,
 } from "../fobles-helpers";
-import { clickLboltButton } from "../sitecore-macros";
-import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
+
+import {  FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { STRATEGY_SCENARIOS } from "./strategy-scenarios";
+import { clickLbolt } from "../macros/fobles-macros";
+import type { StrategyTestContext } from "./scenario.types";
+import { factoryStrategyTestContext } from "../strategy-test-context";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -21,26 +23,26 @@ const SCENARIO = STRATEGY_SCENARIOS.TREE_LIST;
 
 test.describe("Strategy scenario: tree list", () => {
   test("toggling Fobles decorates and restores the tree list field", async ({ page }, testInfo) => {
-    const { fieldTable, lboltButton } = await activateFoblesForFieldStrategy(
+    const testContext: StrategyTestContext = await factoryStrategyTestContext(
       page,
-      SCENARIO.itemId,
-      SCENARIO.fieldLabel,
+      SCENARIO,
+      testInfo
     );
-    const selectedPane = fieldTable.locator(".scContentControlSelectedList").first();
-    const selectedPaneButton = fieldTable
-      .locator(`.scContentControlSelectedList + ${FOBLES.SELECTORS.WRAPPER} ${FOBLES.SELECTORS.BUTTON}`)
+    // const selectedPane = testContext.fieldTable.locator(CONST.SITECORE.SELECTORS.STRATEGIES.TREE_LIST).first();
+    const selectedPaneButton = testContext.fieldTable
+      .locator(`.scContentControlSelectedList + ${CONST.FOBLES.SELECTORS.WRAPPER} ${CONST.FOBLES.SELECTORS.BUTTON}`)
       .first();
-    const step = createStep(page, testInfo, getEditorSectionLocator(fieldTable), "Tree List");
+    const step = createStep(page, testInfo, getEditorSectionLocator(testContext.fieldTable), SCENARIO.friendlyName);
 
     await step("Default stage: field renders as a plain Sitecore tree list", async () => {
-      await expect(selectedPane).toBeVisible();
-      await expect(fieldTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+      await expect(testContext.locatorFirstResult).toBeVisible();
+      await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await page.waitForTimeout(STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: the selected pane gets a Fobles button", async () => {
-      await clickLboltButton(page, lboltButton);
-      await expect(selectedPane).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
+      await clickLbolt(page);
+      await expect(testContext.locatorFirstResult).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
 
       await expect(selectedPaneButton).toBeVisible();
       await expect(selectedPaneButton).toHaveText(SCENARIO.expectedButtonText);
@@ -51,6 +53,6 @@ test.describe("Strategy scenario: tree list", () => {
     // button (one per browsable node, including ancestor folders), so fieldTable's default
     // first-button lookup isn't reliable here; the selected pane's own button is the field's
     // actual value.
-    await runClickNavigationSteps(step, page, testInfo, fieldTable, lboltButton, selectedPane, SCENARIO, undefined, selectedPaneButton);
+    runClickNavigationSteps(step, page, testInfo, testContext.fieldTable,  testContext.locatorFirstResult, SCENARIO, undefined, selectedPaneButton);
   });
 });

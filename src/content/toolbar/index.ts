@@ -26,7 +26,7 @@ export function injectToolbar(context: ToolbarContext): void {
 
   let container = context.doc.querySelector(
     SELECTORS.TOOLBAR_CONTAINER,
-  ) as HTMLDivElement | null;
+  );
   if (!container) {
     container = context.doc.createElement("div");
     container.className = CLASS.TOOLBAR_CONTAINER;
@@ -37,7 +37,7 @@ export function injectToolbar(context: ToolbarContext): void {
     container.appendChild(createToolbarGrip(context));
   }
 
-  let body = container.querySelector(SELECTORS.TOOLBAR_BODY) as HTMLDivElement | null;
+  let body = container.querySelector(SELECTORS.TOOLBAR_BODY);
   if (!body) {
     body = context.doc.createElement("div");
     body.className = CLASS.TOOLBAR_BODY;

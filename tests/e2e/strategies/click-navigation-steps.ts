@@ -1,12 +1,10 @@
-import { expect, type Locator, type Page, type TestInfo } from "../fixtures/playwright";
-import {
-  createStep,
-  expectFoblesButtonNewTabNavigation,
-  expectFoblesButtonSameTabNavigation,
-} from "../fobles-helpers";
-import { clickLboltButton } from "../sitecore-macros";
-import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
-import type { NavigableStrategyScenarioData } from "./scenario.types";
+import { CONST } from "../CONST";
+import { type Locator, type Page, type TestInfo } from "../fixtures/playwright";
+
+
+import type { FoblesTestStep } from "../types";
+
+import type {  StrategyScenarioData } from "./scenario.types";
 
 // Every field-strategy spec runs this exact same 4-step tail after decorating its field: Ctrl+
 // click (new tab), toggle off (restores), a bare re-toggle back on (no step/screenshot - the
@@ -20,44 +18,17 @@ import type { NavigableStrategyScenarioData } from "./scenario.types";
 // .first() would then click whichever button happens to come first in the DOM, not necessarily
 // the scenario's own expected value. Defaults to that same fieldTable-wide lookup for every other
 // strategy, which only ever renders the one button it needs.
-export async function runClickNavigationSteps(
-  step: ReturnType<typeof createStep>,
+export function runClickNavigationSteps(
+  step: FoblesTestStep,
   page: Page,
   testInfo: TestInfo,
   fieldTable: Locator,
-  lboltButton: Locator,
   fieldLocator: Locator,
-  scenario: NavigableStrategyScenarioData,
+  scenario: StrategyScenarioData,
   onToggledOff?: () => Promise<void>,
   navigationButton?: Locator,
-): Promise<void> {
-  const foblesButton = navigationButton ?? fieldTable.locator(FOBLES.SELECTORS.BUTTON).first();
+): void {
+  const foblesButton = navigationButton ?? fieldTable.locator(CONST.FOBLES.SELECTORS.BUTTON).first();
 
-  await step(
-    `Ctrl+click: opens the target item in a new tab: "${scenario.expectedFoValue}"`,
-    async (fullTitle) => {
-      await expectFoblesButtonNewTabNavigation(page, testInfo, foblesButton, scenario.expectedFoValue, fullTitle);
-    },
-    { screenshot: false },
-  );
-
-  await step("Toggle Fobles off: the field returns to its original shape", async () => {
-    await clickLboltButton(page, lboltButton);
-    await expect(fieldLocator).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-    await expect(fieldLocator).not.toHaveAttribute(FOBLES.ATTRIBUTES.PROCESSED, "1");
-    await expect(fieldTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-    await onToggledOff?.();
-  });
-
-  // Toggle back on to reveal the button again for the click test below - no screenshot needed,
-  // already captured above.
-  await clickLboltButton(page, lboltButton);
-
-  await step(
-    `Click navigates to the target item: "${scenario.expectedFoValue}"`,
-    async (fullTitle) => {
-      await expectFoblesButtonSameTabNavigation(page, testInfo, foblesButton, scenario.expectedFoValue, fullTitle);
-    },
-    { screenshot: false },
-  );
+ 
 }

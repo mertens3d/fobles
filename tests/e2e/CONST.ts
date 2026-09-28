@@ -1,9 +1,34 @@
-import { scenarios } from "./scenarios";
 import { SELECTED_SPEED } from "../settings/settings";
 import type { TestSpeed } from "./types";
 
 export const CONST = {
-  SCENARIOS: scenarios,
+  FOBLES: {
+    ATTRIBUTES: {
+      MENU_URL: "data-fobles-menu-url",
+      BUTTON: "data-is-fobles-button",
+      PROCESSED: "data-fobles-processed",
+      WRAPPER: "data-fobles-wrapper"
+    },
+    LOCATORS: {
+      MENU_URL: "[data-fobles-menu-url]"
+    },
+    ADDITIONAL_SETTINGS: {
+      TEST_JUMP: {
+        label: "QA User Tree Jump",
+        pathSuffixRaw: "/content/Home",
+        iconRaw: "applicationsv2/32x32/bookmark_green.png",
+      },
+      TEST_JUMP_PATH: "/sitecore/content/Home",
+      TEST_JUMP_ICON_NORMALIZED: "/-/icon/applicationsv2/32x32/bookmark_green.png",
+    },
+    CLASSES: {
+      HIDDEN: "fobles-hidden",
+    },
+    SELECTORS: {
+      BUTTON: "[data-is-fobles-button='1']",
+      WRAPPER: "[data-fobles-wrapper]",
+    },
+  },
   SPEED: {
     SELECTED: SELECTED_SPEED,
     SETTINGS: {
@@ -29,7 +54,7 @@ export const CONST = {
     POSITION_2: { corner: "bottom-right", offsetX: 66.78125, offsetY: 66.609375 },
     POSITION_3: { corner: "bottom-right", offsetX: 66.78125, offsetY: 66.609375 },
   },
-  MARKER: {
+  MOUSE_MARKER: {
     ID: "playwright-mouse-marker",
     CSS_TEXT: [
       "position: fixed",
@@ -83,8 +108,18 @@ export const CONST = {
     AUTH_DIR_ENV_VAR: "PLAYWRIGHT_AUTH_DIR",
     AUTH_DIR: "./tests/test-artifacts/auth",
   },
+  DOM: {
+    SELECTORS: {
+      FRAMES: "iframe,frame",
+    }
+  },
+  LOG:{
+    STEP_DIVIDER: "--------------------------------------------------",
+    TEST_DIVIDER: "=================================================="
+  },
+
   SITECORE: {
-    VERSIONS:{
+    VERSIONS: {
 
     },
     PATHS: {
@@ -93,6 +128,18 @@ export const CONST = {
       IDENTITY_AUTHORIZE: "/connect/authorize",
     },
     SELECTORS: {
+      STRATEGIES: {
+        DROP_LINK: "select.scContentControl.scCombobox",
+        DROP_LIST: "select.scContentControl.scCombobox",
+        DROP_TREE: "input.scComboboxEdit[readonly]",
+        GENERAL_LINK: "input.scContentControl",
+        INTERNAL_LINK: "input.scContentControl",
+        MULTILIST_WITH_SEARCH: "select.scBucketListSelectedBox",
+        MULTILIST: "select.scContentControlMultilistBox[id$='_selected']",
+        TAG_LIST: "select.scContentControlMultilistBox",
+        TREE_LIST: ".scContentControlSelectedList",
+        TREELISTEX: "div.scContentControl.scTreelistEx",
+      },
       TOOLBAR_CONTAINER: ".fobles-toolbar-container",
       TOOLBAR_GRIP: ".fobles-toolbar-grip",
       QUICK_MENU: ".fobles-quick-menu",
@@ -129,6 +176,10 @@ export const CONST = {
     ITEMS: {
       // /sitecore/layout/Renderings/System/FieldRenderer
       FIELD_RENDERER: "E1AF4AA3-3B5D-4611-8C71-959AD261E5B7",
+      CONTENT_ITEM_ID: "0DE95AE4-41AB-4D01-9EB0-67441B7C2450"
+    },
+    DOM: {
+      SITECORE_CONTENT_TREE_NODE_ID: "Tree_Node_" + "0DE95AE4-41AB-4D01-9EB0-67441B7C2450",
     },
     LABELS: {
       TOGGLE_FOBLES: /toggle fobles/i,

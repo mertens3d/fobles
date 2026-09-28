@@ -2,7 +2,7 @@ import { expect, test, type Locator } from "../fixtures/playwright";
 import { getExtensionId, setFoblesNavWarningVisible } from "../fixtures/extension";
 import { CONST } from "../CONST";
 import { clickWithMouseMarker } from "../mouse-proxy";
-import { clickTreeJump } from "../sitecore-macros";
+import { clickTreeJump } from "../macros/sitecore-macros";
 import { openSitecorePageAndFindFoblesFrame, createStep } from "../fobles-helpers";
 
 test.describe("Same-tab navigation warning setting", () => {
@@ -11,7 +11,6 @@ test.describe("Same-tab navigation warning setting", () => {
     page,
   }, testInfo) => {
     test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
-    const scenario = CONST.SCENARIOS[0];
     const extensionId = await getExtensionId(sharedBrowserContext);
     const step = createStep(page, testInfo, page, "Nav Warning Setting");
 
@@ -19,7 +18,7 @@ test.describe("Same-tab navigation warning setting", () => {
     // jump test uses - then hands back whatever (if anything) shows up as a "dialog". Skips the
     // macro's own auto-dismiss since this test needs to inspect/click the dialog itself.
     const jumpAndGetDialog = async (): Promise<Locator> => {
-      const foblesFrame = await openSitecorePageAndFindFoblesFrame(page, scenario);
+      const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
       await clickTreeJump(page, CONST.SITECORE.TREE_JUMP_PATHS.TEMPLATES, {
         skipDialogDismiss: true,
       });

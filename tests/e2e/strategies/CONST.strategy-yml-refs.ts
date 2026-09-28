@@ -1,4 +1,4 @@
-import { FOBLES_YML } from "./fobles-yml";
+import { FOBLES_YML } from "./CONST.fobles-yml";
 
 // Wrapping/uppercasing to the "{GUID}" form already used throughout these specs is mechanical
 // formatting of an already-raw id, not inference.
@@ -13,60 +13,60 @@ function toBracedGuid(id: string): string {
 export const STRATEGY_YML_REFS = {
   DROP_LINK: {
     scenarioItemId: FOBLES_YML.CONTENT.STRATEGY_DROPLINK.id,
-    fieldLabel: FOBLES_YML.CONTENT.STRATEGY_DROPLINK.fieldHint,
+    scElemFieldLabel: FOBLES_YML.CONTENT.STRATEGY_DROPLINK.fieldHint,
     targetItemId: toBracedGuid(FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.id),
     targetItemPath: FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.path,
   },
   DROP_TREE: {
     scenarioItemId: FOBLES_YML.CONTENT.STRATEGY_DROPTREE.id,
-    fieldLabel: FOBLES_YML.CONTENT.STRATEGY_DROPTREE.fieldHint,
+    scElemFieldLabel: FOBLES_YML.CONTENT.STRATEGY_DROPTREE.fieldHint,
     targetItemId: toBracedGuid(FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.id),
     targetItemPath: FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.path,
   },
   DROPLIST: {
     scenarioItemId: FOBLES_YML.CONTENT.STRATEGY_DROPLIST.id,
-    fieldLabel: FOBLES_YML.CONTENT.STRATEGY_DROPLIST.fieldHint,
+    scElemFieldLabel: FOBLES_YML.CONTENT.STRATEGY_DROPLIST.fieldHint,
   },
   GENERAL_LINK: {
     scenarioItemId: FOBLES_YML.CONTENT.STRATEGY_GENERAL_LINK.id,
-    fieldLabel: FOBLES_YML.CONTENT.STRATEGY_GENERAL_LINK.fieldHint,
+    scElemFieldLabel: FOBLES_YML.CONTENT.STRATEGY_GENERAL_LINK.fieldHint,
     targetItemId: toBracedGuid(FOBLES_YML.CONTENT.FOBLES_TESTING_MODULE_ROOT.id),
     targetItemPath: FOBLES_YML.CONTENT.FOBLES_TESTING_MODULE_ROOT.path,
   },
   INTERNAL_LINK: {
     scenarioItemId: FOBLES_YML.CONTENT.STRATEGY_INTERNAL_LINK.id,
-    fieldLabel: FOBLES_YML.CONTENT.STRATEGY_INTERNAL_LINK.fieldHint,
+    scElemFieldLabel: FOBLES_YML.CONTENT.STRATEGY_INTERNAL_LINK.fieldHint,
     targetItemId: toBracedGuid(FOBLES_YML.CONTENT.FOBLES_TESTING_MODULE_ROOT.id),
     targetItemPath: FOBLES_YML.CONTENT.FOBLES_TESTING_MODULE_ROOT.path,
   },
   MULTILIST_OPTIONS: {
     scenarioItemId: FOBLES_YML.CONTENT.STRATEGY_MULTILIST.id,
-    fieldLabel: FOBLES_YML.CONTENT.STRATEGY_MULTILIST.fieldHint,
+    scElemFieldLabel: FOBLES_YML.CONTENT.STRATEGY_MULTILIST.fieldHint,
     targetItemId: toBracedGuid(FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.id),
     targetItemPath: FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.path,
   },
   MULTILIST_WITH_SEARCH: {
     scenarioItemId: FOBLES_YML.CONTENT.STRATEGY_MULTILIST_SEARCH.id,
-    fieldLabel: FOBLES_YML.CONTENT.STRATEGY_MULTILIST_SEARCH.fieldHint,
+    scElemFieldLabel: FOBLES_YML.CONTENT.STRATEGY_MULTILIST_SEARCH.fieldHint,
     targetItemId: toBracedGuid(FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.id),
     targetItemPath: FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.path,
     targetTemplatePath: FOBLES_YML.TEMPLATES.FOBLES_DATA_ITEM_TEMPLATE.path,
   },
   TAG_LIST: {
     scenarioItemId: FOBLES_YML.CONTENT.STRATEGY_TAG_LIST.id,
-    fieldLabel: FOBLES_YML.CONTENT.STRATEGY_TAG_LIST.fieldHint,
+    scElemFieldLabel: FOBLES_YML.CONTENT.STRATEGY_TAG_LIST.fieldHint,
     targetItemId: toBracedGuid(FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.id),
     targetItemPath: FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.path,
   },
   TREE_LIST: {
     scenarioItemId: FOBLES_YML.CONTENT.STRATEGY_TREE_LIST.id,
-    fieldLabel: FOBLES_YML.CONTENT.STRATEGY_TREE_LIST.fieldHint,
+    scElemFieldLabel: FOBLES_YML.CONTENT.STRATEGY_TREE_LIST.fieldHint,
     targetItemId: toBracedGuid(FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.id),
     targetItemPath: FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.path,
   },
   TREELIST_EX: {
     scenarioItemId: FOBLES_YML.CONTENT.STRATEGY_TREELIST_EX.id,
-    fieldLabel: FOBLES_YML.CONTENT.STRATEGY_TREELIST_EX.fieldHint,
+    scElemFieldLabel: FOBLES_YML.CONTENT.STRATEGY_TREELIST_EX.fieldHint,
     targetItemId: toBracedGuid(FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.id),
     targetItemPath: FOBLES_YML.CONTENT.FOBLES_DATA_ITEM_A.path,
   },

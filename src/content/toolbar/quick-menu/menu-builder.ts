@@ -43,7 +43,7 @@ export function getOrCreateQuickMenu(doc: Document, closeMenu: () => void): HTML
   const trigger = doc.querySelector(SELECTORS.QUICK_MENU_TRIGGER);
   if (!trigger) return null;
 
-  const existing = trigger.querySelector(SELECTORS.QUICK_MENU) as HTMLDivElement | null;
+  const existing = trigger.querySelector(SELECTORS.QUICK_MENU);
   if (existing) return existing;
 
   const menu = createQuickMenu(doc, closeMenu);

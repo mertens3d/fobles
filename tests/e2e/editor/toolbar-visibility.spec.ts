@@ -2,7 +2,7 @@ import { expect, test } from "../fixtures/playwright";
 import { openSitecorePage } from "../fixtures/sitecore";
 import { CONST } from "../CONST";
 import { attachUiPathNote, createStep } from "../fobles-helpers";
-import { FOBLES_YML } from "../strategies/fobles-yml";
+import { FOBLES_YML } from "../strategies/CONST.fobles-yml";
 import { findFrameWithSelector } from "../frame-finder";
 
 // The dialog/gallery `default.aspx?xmlcontrol=...` pages tracked in docs/TODO.md - each one only
@@ -109,7 +109,7 @@ const PAGES: ToolbarPageCase[] = [
 test.describe("Editor scenario: toolbar visibility on dialog/gallery pages", () => {
   for (const pageCase of PAGES) {
     const isEligible = pageCase.eligible !== false;
-    const runTest = pageCase.skip ? test.skip : test;
+    const runTest = pageCase.skip ? test.skip.bind(test ) : test.bind(test);
 
     runTest(`Fobles nav ${isEligible ? "appears" : "does not appear"} on ${pageCase.label}`, async ({ page }, testInfo) => {
       const step = createStep(page, testInfo, page);

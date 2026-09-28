@@ -1,13 +1,15 @@
 import { expect, test } from "../fixtures/playwright";
 import { CONST } from "../CONST";
 import {
-  activateFoblesForFieldStrategy,
   createStep,
   getEditorSectionLocator,
 } from "../fobles-helpers";
-import { clickLboltButton } from "../sitecore-macros";
-import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
+
+import {  FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { STRATEGY_SCENARIOS } from "./strategy-scenarios";
+import { clickLbolt } from "../macros/fobles-macros";
+import type { StrategyTestContext } from "./scenario.types";
+import { factoryStrategyTestContext } from "../strategy-test-context";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -20,27 +22,27 @@ const SCENARIO = STRATEGY_SCENARIOS.TAG_LIST;
 // Skipped - see docs/TODO.md "Strategy Tag List field doesn't render the real Tag List widget".
 test.describe.skip("Strategy scenario: tag list", () => {
   test("toggling Fobles decorates and restores the tag list field", async ({ page }, testInfo) => {
-    const { fieldTable, lboltButton } = await activateFoblesForFieldStrategy(
+    const testContext: StrategyTestContext = await factoryStrategyTestContext(
       page,
-      SCENARIO.itemId,
-      SCENARIO.fieldLabel,
+      SCENARIO,
+      testInfo
     );
-    const selectedPane = fieldTable.locator("select.scContentControlMultilistBox").first();
-    const step = createStep(page, testInfo, getEditorSectionLocator(fieldTable), "Tag List");
+    // const selectedPane = testContext.fieldTable.locator( CONST.SITECORE.SELECTORS.STRATEGIES.TAG_LIST).first();
+    const step = createStep(page, testInfo, getEditorSectionLocator(testContext.fieldTable), SCENARIO.friendlyName);
 
     await step("Default stage: field renders as a plain Sitecore tag list", async () => {
-      await expect(selectedPane).toBeVisible();
-      await expect(fieldTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+      await expect(testContext.locatorFirstResult).toBeVisible();
+      await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await page.waitForTimeout(STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: both panes get Fobles wrappers", async () => {
-      await clickLboltButton(page, lboltButton);
-      await expect(selectedPane).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-      await expect(fieldTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(2);
+      await clickLbolt(page);
+      await expect(testContext.locatorFirstResult).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
+      await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(2);
 
-      const selectedPaneButton = fieldTable
-        .locator(`select.scContentControlMultilistBox + ${FOBLES.SELECTORS.WRAPPER} ${FOBLES.SELECTORS.BUTTON}`)
+      const selectedPaneButton = testContext.fieldTable
+        .locator(`select.scContentControlMultilistBox + ${CONST.FOBLES.SELECTORS.WRAPPER} ${CONST.FOBLES.SELECTORS.BUTTON}`)
         .first();
       await expect(selectedPaneButton).toBeVisible();
       await expect(selectedPaneButton).toHaveText(SCENARIO.expectedButtonText);
@@ -48,9 +50,9 @@ test.describe.skip("Strategy scenario: tag list", () => {
     });
 
     await step("Toggle Fobles off: the field returns to its original shape", async () => {
-      await clickLboltButton(page, lboltButton);
-      await expect(selectedPane).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-      await expect(fieldTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+      await clickLbolt(page);
+      await expect(testContext.locatorFirstResult).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
+      await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
     });
   });
 });

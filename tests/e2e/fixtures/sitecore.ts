@@ -1,7 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { CONST } from "../CONST";
 import { getTestEnvironment } from "./environment";
-import { logDiagnostic } from "./logging";
 import { ensureAuthenticatedUrl } from "./autoLogin";
 
 
@@ -32,6 +31,12 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
   }
 }
 
+export async function openContentEditor(page: Page, foValue:string = ""): Promise<void> {
+  const path = CONST.SITECORE.PATHS.CONTENT_EDITOR + (foValue ? `?sc_bw=1&fo=${foValue}` : "");
+  await openSitecorePage(page, path);
+}
+
+
 export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   const { baseUrl } = getTestEnvironment();
   const url = new URL(path || baseUrl, baseUrl).toString();
@@ -44,6 +49,9 @@ export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   // lets waitForLoadState resolve instantly against the pre-navigation document (e.g. about:blank,
   // which is already "domcontentloaded"), so downstream login/menu checks run too early and never
   // see the real page.
+  
+  console.log(`[fobles] Opening ${url}`);
+  
   await page
     .evaluate((targetUrl) => {
       window.location.assign(targetUrl);
@@ -54,6 +62,8 @@ export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   await page.waitForLoadState("domcontentloaded");
   await ensureAuthenticatedUrl(page);
   await ensureRawValuesDisabled(page);
+
+  console.log(`[fobles] Navigation finished at ${page.url()}`);
 }
 
 // Used both by the worker-teardown cleanup and the final "IsLoggedOut" test - returns whether a
@@ -86,7 +96,8 @@ export async function enableFobles(page: Page): Promise<void> {
   await expect(menuTrigger).toBeVisible({
     timeout: CONST.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS,
   });
-  await menuTrigger.click();
+
+  await openFoblesMenu(page);
 
   const menu = page.locator(CONST.SITECORE.SELECTORS.QUICK_MENU).first();
   await expect(menu).toBeVisible({ timeout: CONST.TIMEOUTS.MENU_VISIBLE_MS });

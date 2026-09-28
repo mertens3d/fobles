@@ -1,14 +1,16 @@
 import { expect, test } from "../fixtures/playwright";
 import { CONST } from "../CONST";
+import { factoryStrategyTestContext } from "../strategy-test-context";
 import {
-  activateFoblesForFieldStrategy,
   createStep,
   getEditorSectionLocator,
 } from "../fobles-helpers";
-import { clickLboltButton } from "../sitecore-macros";
-import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
+
+import { FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { STRATEGY_SCENARIOS } from "./strategy-scenarios";
+import { clickLbolt } from "../macros/fobles-macros";
+import type { StrategyTestContext } from "./scenario.types";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -21,29 +23,29 @@ const SCENARIO = STRATEGY_SCENARIOS.TREELIST_EX;
 
 test.describe("Strategy scenario: treelist ex", () => {
   test("toggling Fobles decorates and restores the treelist ex field", async ({ page }, testInfo) => {
-    const { fieldTable, lboltButton } = await activateFoblesForFieldStrategy(
+    const testContext: StrategyTestContext = await factoryStrategyTestContext(
       page,
-      SCENARIO.itemId,
-      SCENARIO.fieldLabel,
+      SCENARIO,
+      testInfo
     );
-    const host = fieldTable.locator("div.scContentControl.scTreelistEx").first();
-    const step = createStep(page, testInfo, getEditorSectionLocator(fieldTable), "Treelist Ex");
+    // const host = testContext.fieldTable.locator(CONST.SITECORE.SELECTORS.STRATEGIES.TREELISTEX).first();
+    const step = createStep(page, testInfo, getEditorSectionLocator(testContext.fieldTable), SCENARIO.friendlyName);
 
     await step("Default stage: field renders as a plain Sitecore treelist ex", async () => {
-      await expect(host).toBeVisible();
-      await expect(fieldTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+      await expect(testContext.locatorFirstResult).toBeVisible();
+      await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await page.waitForTimeout(STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: the field gets a Fobles button", async () => {
-      await clickLboltButton(page, lboltButton);
-      await expect(host).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-      const foblesButton = fieldTable.locator(FOBLES.SELECTORS.BUTTON).first();
+      await clickLbolt(page);
+      await expect(testContext.locatorFirstResult).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
+      const foblesButton = testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.BUTTON).first();
       await expect(foblesButton).toBeVisible();
       await expect(foblesButton).toHaveText(SCENARIO.expectedButtonText);
       await page.waitForTimeout(STEP_WAIT_MS);
     });
 
-    await runClickNavigationSteps(step, page, testInfo, fieldTable, lboltButton, host, SCENARIO);
+    runClickNavigationSteps(step, page, testInfo, testContext.fieldTable,  testContext.locatorFirstResult, SCENARIO);
   });
 });

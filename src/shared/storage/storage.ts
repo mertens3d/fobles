@@ -5,7 +5,7 @@ export async function getStorageValue<T = unknown>(
   try {
     const storage = chrome.storage?.[area];
     if (!storage) return {};
-    return (await storage.get(keys)) as Record<string, T>;
+    return (await storage.get(keys));
   } catch {
     // The content script can outlive a reloaded extension context.
     return {};

@@ -28,8 +28,8 @@ function buildTreeButtonUrl(itemId: string): string {
 }
 
 function getTreeNodeItemId(node: Element): string | null {
-  const glyph = node.querySelector(SITECORE.SELECTORS.TREE_GLYPH) as HTMLImageElement | null;
-  const anchor = node.querySelector(SITECORE.SELECTORS.TREE_NODE_LINK) as HTMLAnchorElement | null;
+  const glyph = node.querySelector(SITECORE.SELECTORS.TREE_GLYPH);
+  const anchor = node.querySelector(SITECORE.SELECTORS.TREE_NODE_LINK);
 
   extensionLog.debug("tree node inspect", {
     nodeHtml: node.outerHTML.slice(0, 400),
@@ -80,7 +80,7 @@ function addTreeOpenButton(node: Element): void {
     return;
   }
 
-  const glyph = node.querySelector(SITECORE.SELECTORS.TREE_GLYPH) as HTMLImageElement | null;
+  const glyph = node.querySelector(SITECORE.SELECTORS.TREE_GLYPH);
   const glyphHeight = glyph
     ? Math.ceil(glyph.getBoundingClientRect().height || glyph.clientHeight || glyph.offsetHeight || 18)
     : 18;
