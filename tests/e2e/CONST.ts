@@ -28,6 +28,26 @@ export const CONST = {
       BUTTON: "[data-is-fobles-button='1']",
       WRAPPER: "[data-fobles-wrapper]",
     },
+    BILLBOARD: {
+      ID: "playwright-billboard",
+      STYLE_ID: "playwright-billboard-style",
+      STYLE_CSS: `
+      #playwright-billboard {
+        position: fixed;
+        z-index: 2147483647;
+        max-width: 480px;
+        padding: 14px 22px;
+        background: #fff;
+        border: 3px solid #111;
+        border-radius: 18px;
+        font: 700 19px/1.35 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        color: #111;
+        text-align: center;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, .35);
+        pointer-events: none;
+        display: none;
+      }`
+    }
   },
   SPEED: {
     SELECTED: SELECTED_SPEED,
@@ -113,7 +133,7 @@ export const CONST = {
       FRAMES: "iframe,frame",
     }
   },
-  LOG:{
+  LOG: {
     STEP_DIVIDER: "--------------------------------------------------",
     TEST_DIVIDER: "=================================================="
   },

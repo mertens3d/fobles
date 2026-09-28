@@ -285,6 +285,88 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
   expect(movedState.top).toBeGreaterThan(90);
 }
 
+export async function drawLineToCoord(
+  page: Page,
+  startPosition: MouseCoordinates,
+  targetPosition: MouseCoordinates,
+): Promise<void> {
+  await page.evaluate(
+    ({ startX, startY, endX, endY }) => {
+      const id = "__fobles-debug-line";
+
+      const existing = document.getElementById(id);
+
+      if (existing) {
+        existing.remove();
+      }
+
+      const svg = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "svg",
+      );
+
+      svg.id = id;
+      svg.style.position = "fixed";
+      svg.style.left = "0";
+      svg.style.top = "0";
+      svg.style.width = "100vw";
+      svg.style.height = "100vh";
+      svg.style.pointerEvents = "none";
+      svg.style.zIndex = "2147483647";
+
+      const line = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "line",
+      );
+
+      line.setAttribute("x1", String(startX));
+      line.setAttribute("y1", String(startY));
+      line.setAttribute("x2", String(endX));
+      line.setAttribute("y2", String(endY));
+      line.setAttribute("stroke", "red");
+      line.setAttribute("stroke-width", "3");
+
+      const endCircle = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "circle",
+      );
+
+      endCircle.setAttribute("cx", String(endX));
+      endCircle.setAttribute("cy", String(endY));
+      endCircle.setAttribute("r", "8");
+      endCircle.setAttribute("fill", "lime");
+
+      svg.appendChild(line);
+      svg.appendChild(endCircle);
+      document.documentElement.appendChild(svg);
+
+      svg.animate(
+        [
+          { opacity: 1 },
+          { opacity: 1, offset: 0.8 },
+          { opacity: 0 },
+        ],
+        {
+          duration: 3000,
+          fill: "forwards",
+        },
+      );
+
+      window.setTimeout(() => {
+        if (svg.parentNode) {
+          svg.remove();
+        }
+      }, 3000);
+    },
+    {
+      startX: startPosition.x,
+      startY: startPosition.y,
+      endX: targetPosition.x,
+      endY: targetPosition.y,
+    },
+  );
+}
+
 export async function moveMouseToBoundingBox(
   page: Page,
   targetLocator: Locator,
@@ -323,6 +405,8 @@ export async function moveMouseToBoundingBox(
     corner === "top-left"
       ? { x: box.x, y: box.y }
       : { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+
+
   await moveMouseToPosition(page, targetPosition, label);
   console.log(`[fobles] E) Mouse move to '${label}' called`);
 }
@@ -409,7 +493,7 @@ export async function moveMouseToPosition(
   console.log(
     `[fobles] Mouse move '${label}': start=(${startPosition.x.toFixed(1)}, ${startPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${mouseSteps}`,
   );
-
+  drawLineToCoord(page, startPosition, targetPosition);
   for (let mouseStep = 1; mouseStep <= mouseSteps; mouseStep += 1) {
     // console.log(`[fobles] Mouse move '${label}': step ${mouseStep}/${mouseSteps}`);
     const progress = mouseStep / mouseSteps;

@@ -6,10 +6,13 @@ import {
     resolveCornerPosition,
     ensureMouseMarkerExists,
     moveMouseToLocatorCenter,
+    highlightLocator,
+    moveMouseToBoundingBox,
 } from "../mouse-proxy";
 import type { CornerPosition, MouseCoordinates } from "../mouse-proxy.types";
 import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
 import { walkFrameDocuments } from "../helpers/framesHelper";
+import { showBillboard } from "../billboard";
 
 export async function ClickFoblesMenuButton(
     page: Page, foblesFrame: Frame, label: string) {
@@ -56,7 +59,8 @@ export async function dragToolbarTo(
     targetPosition: MouseCoordinates,
 ): Promise<void> {
     console.log("[Macro: dragToolbarTo] - Start");
-    await moveMouseToLocatorCenter(page, gripLocator, "Toolbar grip");
+    //await moveMouseToLocatorCenter(page, gripLocator, "Toolbar grip");
+    await moveMouseToBoundingBox(page, gripLocator, "Toolbar grip");
     await page.mouse.down();
     await moveMouseToPosition(page, targetPosition, "Toolbar drag");
     await page.mouse.up();
@@ -66,11 +70,19 @@ export async function dragToolbarTo(
 
 export async function dragToolbarToCornerLocation(page: Page, cornerPosition: CornerPosition) {
     console.log(`[macro] dragToolbarToCornerLocation ${cornerPosition.corner}`)
-    const foblesFrame = await findFrameWithSelector(page, CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
-    const toolbarGrip = foblesFrame.locator(CONST.SITECORE.SELECTORS.TOOLBAR_GRIP).first();
-    console.log(`[macro] Found toolbar grip`);
 
+    
+    await showBillboard(page, `Find Fobles toolbar`, { xPercent: 50, yPercent: 50 });
+    const foblesFrame = await findFrameWithSelector(page, CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
+    
+    await showBillboard(page, `Find Toolbar grip`, { xPercent: 50, yPercent: 50 });
+    const toolbarGrip = foblesFrame.locator(CONST.SITECORE.SELECTORS.TOOLBAR_GRIP).first();
+    highlightLocator(toolbarGrip, "Toolbar grip");
+    
+    console.log(`[macro] Found toolbar grip`);
+    
     await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, cornerPosition));
+    
 }
 
 

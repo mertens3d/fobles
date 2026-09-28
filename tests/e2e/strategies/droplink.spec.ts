@@ -6,12 +6,14 @@ import { STRATEGY_SCENARIOS } from "./strategy-scenarios";
 import type { StrategyTestContext } from "./scenario.types";
 import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./strategy-test-helper";
 import { factoryStrategyTestContext } from "../strategy-test-context";
+import { showBillboard } from "../billboard";
 
 test.describe("Strategy scenario: droplink", () => {
   test("toggling Fobles decorates and restores the droplink field", async ({ page }, testInfo) => {
     
     await setupContentEditorForTesting(page,STRATEGY_SCENARIOS.DROP_LINK);
     
+    await showBillboard(page, factoryStrategyTestContext.name, { xPercent: 50, yPercent: 50 });
     const testContext: StrategyTestContext = await factoryStrategyTestContext(page, STRATEGY_SCENARIOS.DROP_LINK, testInfo);
 
     await stepExpectSitecoreInitialConditions(testContext);

@@ -24,6 +24,8 @@ export async function setupContentEditorForTesting(page: Page, scenario: Strateg
   await ensureMouseMarkerExists(page);
 
   await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
+  await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_2);
+  await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
 }
 
 

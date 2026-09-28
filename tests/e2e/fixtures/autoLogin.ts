@@ -1,5 +1,6 @@
 import { expect, type Page } from "@playwright/test";
 import { CONST } from "../CONST";
+import { getTestEnvironment } from "./environment";
 import { logDiagnostic } from "./logging";
 import type { AutoLoginContext } from "./autologin.type";
 
@@ -35,10 +36,20 @@ function assertLicenseAvailable(page: Page): void {
 // Sitecore Identity Server's login form (identityserver/Account/Login) - a plain HTML form POST,
 // not a SPA, so a fill + click is enough. Absent on any other login variant (e.g. /sitecore/admin/
 // login.aspx), so attemptAutoLogin harmlessly no-ops there and falls back to the manual wait.
-const LOGIN_SELECTORS = {
+const XP_LOGIN_SELECTORS = {
   USERNAME: "#Username",
   PASSWORD: "#Password",
   SUBMIT: "button[value='login']",
+};
+
+// SitecoreAI's Auth0 Universal Login - two separate page navigations (identifier, then password),
+// unlike xp's single-page form. "_button-login-id"/"_button-login-password" are Auth0's stable
+// hook classes (the other hashed "c..." classes are regenerated per deploy).
+const AI_LOGIN_SELECTORS = {
+  USERNAME: "#username",
+  USERNAME_SUBMIT: "._button-login-id",
+  PASSWORD: "#password",
+  PASSWORD_SUBMIT: "._button-login-password",
 };
 
 // Only runs when both SITECORE_TEST_USER_NAME/SITECORE_TEST_USER_PASSWORD are configured (see
@@ -53,33 +64,68 @@ async function attemptAutoLogin(page: Page): Promise<boolean> {
     `[sitecore preflight] SITECORE_TEST_USER_NAME/SITECORE_TEST_USER_PASSWORD ${autoLoginContext.username && autoLoginContext.password ? "found" : "not found"}`,
   );
 
-  const success = await fillUserName(page, autoLoginContext);
+  if (getTestEnvironment().version === "ai") {
+    return attemptAiAutoLogin(page, autoLoginContext);
+  }
+
+  const success = await fillXpUsername(page, autoLoginContext);
   if (success) {
-    await fillPassword(page, autoLoginContext);
+    await fillXpPassword(page, autoLoginContext);
   }
 
   return true;
 }
 
-async function fillPassword(
+async function attemptAiAutoLogin(
+  page: Page,
+  autoLoginContext: AutoLoginContext,
+): Promise<boolean> {
+  const { username, password } = autoLoginContext;
+  if (!username || !password) return false;
+
+  const usernameField = page.locator(AI_LOGIN_SELECTORS.USERNAME);
+  if ((await usernameField.count()) > 0) {
+    console.log(
+      "[sitecore preflight] SitecoreAI identifier screen detected - submitting SITECORE_TEST_USER_NAME",
+    );
+    await usernameField.fill(username);
+    await page.locator(AI_LOGIN_SELECTORS.USERNAME_SUBMIT).click();
+    await page
+      .locator(AI_LOGIN_SELECTORS.PASSWORD)
+      .waitFor({ state: "attached", timeout: CONST.TIMEOUTS.AUTO_LOGIN_WAIT_MS })
+      .catch(() => {});
+  }
+
+  const passwordField = page.locator(AI_LOGIN_SELECTORS.PASSWORD);
+  if ((await passwordField.count()) === 0) return false;
+
+  console.log(
+    "[sitecore preflight] SitecoreAI password screen detected - submitting SITECORE_TEST_USER_PASSWORD",
+  );
+  await passwordField.fill(password);
+  await page.locator(AI_LOGIN_SELECTORS.PASSWORD_SUBMIT).click();
+  return true;
+}
+
+async function fillXpPassword(
   page: Page,
   autoLoginContext: AutoLoginContext,
 ): Promise<void> {
   const password = autoLoginContext.password;
   if (password) {
-    await page.locator(LOGIN_SELECTORS.PASSWORD).fill(password);
-    await page.locator(LOGIN_SELECTORS.SUBMIT).click();
+    await page.locator(XP_LOGIN_SELECTORS.PASSWORD).fill(password);
+    await page.locator(XP_LOGIN_SELECTORS.SUBMIT).click();
   }
 }
 
-async function fillUserName(
+async function fillXpUsername(
   page: Page,
   autoLoginContext: AutoLoginContext,
 ): Promise<boolean> {
   const username = autoLoginContext.username;
   let success = true;
   if (username) {
-    const usernameField = page.locator(LOGIN_SELECTORS.USERNAME);
+    const usernameField = page.locator(XP_LOGIN_SELECTORS.USERNAME);
     if ((await usernameField.count()) > 0) {
       console.log(
         "[sitecore preflight] Login form detected - submitting SITECORE_TEST_USER_NAME/SITECORE_TEST_USER_PASSWORD",
@@ -101,7 +147,12 @@ async function fillUserName(
 // page.pause()) so you can just log in by hand and continue - page.pause() attaches the Playwright
 // Inspector, which then keeps highlighting every later locator/action for the rest of the run.
 async function assertLoggedIn(page: Page): Promise<void> {
-  const loginForm = page.locator("input[type='password']").first();
+  // "input[type='password']" covers both xp's single-page form and the SitecoreAI password page;
+  // AI_LOGIN_SELECTORS.USERNAME additionally covers the SitecoreAI identifier page, which has no
+  // password field at all yet.
+  const loginForm = page
+    .locator(`input[type='password'], ${AI_LOGIN_SELECTORS.USERNAME}`)
+    .first();
   const loginFormPresent = await loginForm
     .waitFor({
       state: "attached",

@@ -8,6 +8,8 @@ import { fieldScreenshotName, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import type { StrategyTestContext } from "./scenario.types";
 import { LogDebugTestContext } from "../helpers/debugHelper";
 import { findFoblesFrame } from "../frame-finder";
+import { factoryStrategyTestContext } from "../strategy-test-context";
+import { showBillboard } from "../billboard";
 
 
 export async function stepExpectFoblesInitialConditions(testContext: StrategyTestContext) {
@@ -43,6 +45,7 @@ export async function stepExpectSitecoreInitialConditions(testContext: StrategyT
 
       logStepDividerStart(stepExpectSitecoreInitialConditions.name);
 
+      await showBillboard(testContext.page, stepExpectSitecoreInitialConditions.name, { xPercent: 50, yPercent: 50 });
       const fieldTable = await testContext.getFieldTable();
       await highlightLocator(fieldTable, "fieldTable");
       await expect(fieldTable).toBeVisible();

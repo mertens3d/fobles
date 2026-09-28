@@ -1,6 +1,6 @@
 export type TestSpeed = "CRAWL" | "WALK" | "SPRINT";
 
-export type SitecoreVersion = "xm" | "xp" | "sitecoreai";
+export type SitecoreVersion = "xm" | "xp" | "ai";
 
 export type SitecoreEnvironment = {
   endpoint: string;
