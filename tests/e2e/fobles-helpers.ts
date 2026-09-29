@@ -25,9 +25,9 @@ import { expectLBoltButton } from "./expectSnippets/expectSnippets";
 import type {
   StrategyScenarioData,
   StrategyTestContext,
-} from "./strategies/scenario.types";
+} from "./strategies/support/scenario.types";
 import type { FoblesTestStep } from "./types";
-import { logStepDividerStart } from "./helpers/loggingHelper";
+import { logStepDividerStart } from "./helpers/logging-helpers";
 
 type Screenshottable = Pick<Locator, "screenshot">;
 

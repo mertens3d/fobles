@@ -2,8 +2,8 @@
 // values) grouped into one object instead of scattered top-level consts, so it's visually clear
 // which values came from looking up the serialized test data versus other file-level constants
 
-import type { Locator, Page, TestInfo    } from "../fixtures/playwright";
-import type { FoblesTestStep } from "../types";
+import type { Locator, Page, TestInfo    } from "../../fixtures/playwright";
+import type { FoblesTestStep } from "../../types";
 
 // (e.g. STEP_WAIT_MS, SCREENSHOT_BASE_NAME).
 export type StrategyScenarioData = {

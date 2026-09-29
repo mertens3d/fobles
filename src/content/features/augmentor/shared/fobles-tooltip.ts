@@ -65,7 +65,7 @@ const listenForTooltipDismissal = (doc: Document): void => {
 
   doc.addEventListener("pointermove", (event) => {
     const target = event.target as Element | null;
-    if (!target?.closest(FOBLES.SELECTORS.BUTTON)) {
+    if (!target?.closest(CONST.FOBLES.SELECTORS.BUTTON)) {
       hideFoblesTooltip(doc);
     }
   });

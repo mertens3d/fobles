@@ -1,4 +1,4 @@
-import type { StrategyTestContext } from "../strategies/scenario.types";
+import type { StrategyTestContext } from "../strategies/support/scenario.types";
 
 export async function LogDebugTestContext(
   testContext: StrategyTestContext,

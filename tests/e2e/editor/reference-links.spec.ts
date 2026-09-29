@@ -1,6 +1,6 @@
 import { expect, test } from "../fixtures/playwright";
 import { openSitecorePage } from "../fixtures/sitecore";
-import { CONST } from "../CONST";
+import { CONST, FOBLES_HIDDEN_CLASS_PATTERN } from "../CONST";
 import {
   createStep,
   expectFoblesButtonNewTabNavigation,
@@ -9,10 +9,9 @@ import {
 import { ensureMouseMarkerExists } from "../mouse-proxy";
 import { openLinksGallery } from "../macros/sitecore-macros";
 import { findFoblesFrame } from "../frame-finder";
-import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
 import { clickLbolt } from "../macros/fobles-macros";
-import { foblesWaitForTimeout } from "../helpers/waitHelpers";
+import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -39,22 +38,22 @@ test.describe("Editor scenario: reference links", () => {
     const step = createStep(page, testInfo, linksPanel, "Reference Links");
 
     await step("Default stage: gallery renders as plain Sitecore links", async () => {
-      await expect(linksPanel.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+      await expect(linksPanel.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: every referenced/referring link gets a Fobles button", async () => {
       await clickLbolt(page);
-      await expect(linksPanel.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(
+      await expect(linksPanel.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(
         SCENARIO.referringItems.length + 1,
       );
       for (const referringItem of SCENARIO.referringItems) {
         await expect(
-          linksPanel.locator(FOBLES.SELECTORS.BUTTON, { hasText: referringItem.expectedButtonText }),
+          linksPanel.locator(CONST.FOBLES.SELECTORS.BUTTON, { hasText: referringItem.expectedButtonText }),
         ).toHaveText(referringItem.expectedButtonText);
       }
       await expect(
-        linksPanel.locator(FOBLES.SELECTORS.BUTTON, {
+        linksPanel.locator(CONST.FOBLES.SELECTORS.BUTTON, {
           hasText: SCENARIO.referredToItem.expectedButtonText,
         }),
       ).toHaveText(SCENARIO.referredToItem.expectedButtonText);
@@ -62,7 +61,7 @@ test.describe("Editor scenario: reference links", () => {
     });
 
     const [firstReferringItem] = SCENARIO.referringItems;
-    const firstButton = linksPanel.locator(FOBLES.SELECTORS.BUTTON, {
+    const firstButton = linksPanel.locator(CONST.FOBLES.SELECTORS.BUTTON, {
       hasText: firstReferringItem.expectedButtonText,
     });
 
@@ -76,7 +75,7 @@ test.describe("Editor scenario: reference links", () => {
 
     await step("Toggle Fobles off: the gallery returns to its original shape", async () => {
       await clickLbolt(page);;
-      await expect(linksPanel.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+      await expect(linksPanel.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await expect(linksPanel.locator("a.scLink").first()).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
     });
 

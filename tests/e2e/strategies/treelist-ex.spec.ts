@@ -6,11 +6,12 @@ import {
   getEditorSectionLocator,
 } from "../fobles-helpers";
 
-import { FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
+import { FOBLES_HIDDEN_CLASS_PATTERN } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
-import { STRATEGY_SCENARIOS } from "./strategy-scenarios";
+import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
 import { clickLbolt } from "../macros/fobles-macros";
-import type { StrategyTestContext } from "./scenario.types";
+import type { StrategyTestContext } from "./support/scenario.types";
+import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 

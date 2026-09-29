@@ -1,4 +1,4 @@
-import { FOBLES_YML } from "./CONST.fobles-yml";
+import { FOBLES_YML } from "./yml-fobles.CONST";
 
 // Wrapping/uppercasing to the "{GUID}" form already used throughout these specs is mechanical
 // formatting of an already-raw id, not inference.

@@ -5,9 +5,9 @@ import {
   createStep,
   getEditorSectionLocator,
 } from "../fobles-helpers";
-import { STRATEGY_SCENARIOS } from "./strategy-scenarios";
+import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
 import { clickLbolt } from "../macros/fobles-macros";
-import type { StrategyTestContext } from "./scenario.types";
+import type { StrategyTestContext } from "./support/scenario.types";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 

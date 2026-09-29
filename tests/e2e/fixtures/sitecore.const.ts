@@ -1,2 +1,2 @@
-export const SitecoreVersion ;
+// export const SitecoreVersion ;
 

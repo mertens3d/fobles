@@ -1,5 +1,5 @@
 import { type Page } from "../fixtures/playwright";
-import { foblesWaitForTimeout } from "../helpers/waitHelpers";
+import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 import { highlightQuickInfoPath } from "../macros/sitecore-macros";
 import { showSpeakBubble, hideSpeakBubble } from "../speak-bubble";
 import type { DemoBeat } from "./demo-beat.types";

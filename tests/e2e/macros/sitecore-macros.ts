@@ -7,7 +7,7 @@ import {
 } from "../mouse-proxy";
 import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
 import { dismissFoblesConfirmDialogIfPresent, openQuickMenu } from "./fobles-macros";
-import { foblesWaitForTimeout } from "../helpers/waitHelpers";
+import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 
 // Reusable stock Sitecore Content Editor UI interactions (ribbon tabs, galleries), plus Fobles'
 // own toolbar toggle since it's just as much a canned click sequence any spec reuses - kept

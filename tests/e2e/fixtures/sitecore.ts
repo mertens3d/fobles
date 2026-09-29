@@ -2,7 +2,7 @@ import { expect, type Page } from "@playwright/test";
 import { CONST } from "../CONST";
 import { getTestEnvironment } from "./environment";
 import { ensureAuthenticatedUrl } from "./autoLogin";
-import { foblesWaitForTimeout } from "../helpers/waitHelpers";
+import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 
 
 

@@ -1,5 +1,5 @@
-import { CONST } from "../CONST";
-import { MODULE_ROOT_YML_REF, STRATEGY_YML_REFS } from "./CONST.strategy-yml-refs";
+import { CONST } from "../../CONST";
+import { MODULE_ROOT_YML_REF, STRATEGY_YML_REFS } from "./yml-strategy-refs.CONST";
 import type {
   StrategyScenarioData,
 } from "./scenario.types";

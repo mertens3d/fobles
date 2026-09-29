@@ -47,7 +47,7 @@ test.describe("User Tree Jumps", () => {
       await removeTestRowIfPresent(optionsPage);
       const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
-      await ClickFoblesMenuButton(page, foblesFrame, "User Tree Jump menu A");
+      await ClickFoblesMenuButton(page);
       await expectFlyoutVisible(foblesFrame);
 
       await step("does not render with an empty list", async () => {
@@ -70,7 +70,7 @@ test.describe("User Tree Jumps", () => {
         await setTestRowEnabled(optionsPage, row, true);
         const jumpButton = foblesFrame.getByRole("button", { name: CONST.FOBLES.ADDITIONAL_SETTINGS.TEST_JUMP.label });
         await expect(jumpButton).toBeVisible();
-        await expect(jumpButton).toHaveAttribute("data-fobles-tree-jump-path", CONST.FOBLES.ADDITIONAL_SETTINGS.TEST_JUMP_PATH);
+        await expect(jumpButton).toHaveAttribute(CONST.FOBLES.ATTRIBUTES.TREE_JUMP_PATH, CONST.FOBLES.ADDITIONAL_SETTINGS.TEST_JUMP_PATH);
         await jumpButton.scrollIntoViewIfNeeded();
         await clickWithMouseMarker(page, jumpButton, CONST.FOBLES.ADDITIONAL_SETTINGS.TEST_JUMP.label);
 

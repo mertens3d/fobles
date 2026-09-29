@@ -11,15 +11,16 @@ import {
 } from "../mouse-proxy";
 import type { CornerPosition, MouseCoordinates } from "../mouse-proxy.types";
 import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
-import { walkFrameDocuments } from "../helpers/framesHelper";
+import { walkFrameDocuments } from "../helpers/frame-helpers";
 import { showBillboard } from "../billboard";
-import { foblesWaitForTimeout } from "../helpers/waitHelpers";
+import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 
 export async function ClickFoblesMenuButton(
-    page: Page, foblesFrame: Frame, label: string) {
-    console.log(`[fobles Macro] ClickFoblesMenuButton: "${label}" `);
+    page: Page) {
+    const foblesFrame = await findFoblesFrame(page);
+    console.log(`[fobles Macro] ClickFoblesMenuButton`);
     const menuButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER).first();
-    await clickWithMouseMarker(page, menuButton, label);
+    await clickWithMouseMarker(page, menuButton, "Fobles Menu Button");
 }
 
 
@@ -36,7 +37,7 @@ export async function openQuickMenu(page: Page, foblesFrame: Frame): Promise<voi
         return;
     }
 
-    await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu A");
+    await ClickFoblesMenuButton(page);
 
     console.log(
         `[fobles] Waiting for quick menu flyout's ${CONST.SITECORE.ATTRIBUTES.MENU_VISIBLE} attribute to become "true"`,

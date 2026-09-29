@@ -7,7 +7,8 @@ export const CONST = {
       MENU_URL: "data-fobles-menu-url",
       BUTTON: "data-is-fobles-button",
       PROCESSED: "data-fobles-processed",
-      WRAPPER: "data-fobles-wrapper"
+      WRAPPER: "data-fobles-wrapper",
+      TREE_JUMP_PATH: "data-fobles-tree-jump-path"
     },
     LOCATORS: {
       MENU_URL: "[data-fobles-menu-url]"
@@ -229,3 +230,6 @@ export const CONST = {
     STEP_TIMEOUT_MS: 45_000,
   },
 } as const;
+
+
+export const FOBLES_HIDDEN_CLASS_PATTERN = new RegExp(CONST.FOBLES.CLASSES.HIDDEN);

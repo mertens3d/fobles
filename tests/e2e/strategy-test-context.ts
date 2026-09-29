@@ -10,9 +10,9 @@ import { findFoblesFrame, findFrameWithSelector } from "./frame-finder";
 import type { TestInfo } from "@playwright/test";
 import { ClickLBoltButton, dismissFoblesConfirmDialogIfPresent, dragToolbarToCornerLocation } from "./macros/fobles-macros";
 import { expectLBoltButton } from "./expectSnippets/expectSnippets";
-import type { StrategyScenarioData, StrategyTestContext } from "./strategies/scenario.types";
+import type { StrategyScenarioData, StrategyTestContext } from "./strategies/support/scenario.types";
 import type { FoblesTestStep } from "./types";
-import { logStepDividerStart } from "./helpers/loggingHelper";
+import { logStepDividerStart } from "./helpers/logging-helpers";
 import { createStep, getEditorSectionLocator } from "./fobles-helpers";
 
 // table by its label text plus the toolbar's feature button.

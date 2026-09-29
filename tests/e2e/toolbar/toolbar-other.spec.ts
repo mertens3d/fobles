@@ -29,7 +29,7 @@ test.describe("Fobles Other Buttons", () => {
         const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
         const step = createStep(page, testInfo, page, "Menu Button");
 
-        await ClickFoblesMenuButton(page, foblesFrame, "Other menu buttons");
+        await ClickFoblesMenuButton(page);
 
         await expectFlyoutVisible(foblesFrame);
 
@@ -82,15 +82,15 @@ async function testOneJumpButton(target: menuTarget,
 
 async function testOneJumpButtonInner(index: number, page: Page, target: menuTarget) {
     const foblesFrame: Frame = await openSitecorePageAndFindFoblesFrame(page);
-    await ClickFoblesMenuButton(page, foblesFrame, "Other menu buttons");
+    await ClickFoblesMenuButton(page);
     await expectFlyoutVisible(foblesFrame);
 
-    const button = foblesFrame
+    const menuButton = foblesFrame
         .locator(CONST.FOBLES.LOCATORS.MENU_URL)
         .nth(index);
-    await expect(button).toBeVisible();
-    await button.scrollIntoViewIfNeeded();
-    await clickWithMouseMarker(page, button, `Menu ${target.label}`);
+    await expect(menuButton).toBeVisible();
+    await menuButton.scrollIntoViewIfNeeded(); // this doesn't make sense. This probably got confused with a tree button
+    await clickWithMouseMarker(page, menuButton, `Menu ${target.label}`);
 
     await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
 

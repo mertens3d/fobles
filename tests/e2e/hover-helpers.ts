@@ -6,7 +6,7 @@ import {
 } from "./mouse-proxy";
 import { CONST } from "./CONST";
 import type { MouseCoordinates } from "./mouse-proxy.types";
-import { foblesWaitForTimeout } from "./helpers/waitHelpers";
+import { foblesWaitForTimeout } from "./helpers/wait-helpers";
 
 const STEP_WAIT_MS =
   CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;

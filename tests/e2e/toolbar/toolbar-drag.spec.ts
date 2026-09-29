@@ -5,7 +5,7 @@ import { createStep } from "../fobles-helpers";
 import { resolveCornerPosition, ensureMouseMarkerExists } from "../mouse-proxy";
 import { findFrameWithSelector } from "../frame-finder";
 import { dragToolbarTo } from "../macros/fobles-macros";
-import { foblesWaitForTimeout } from "../helpers/waitHelpers";
+import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 

@@ -2,9 +2,9 @@ import { expect, test } from "../fixtures/playwright";
 import { openSitecorePage } from "../fixtures/sitecore";
 import { CONST } from "../CONST";
 import { attachUiPathNote, createStep } from "../fobles-helpers";
-import { FOBLES_YML } from "../strategies/CONST.fobles-yml";
+import { FOBLES_YML } from "../strategies/support/yml-fobles.CONST";
 import { findFrameWithSelector } from "../frame-finder";
-import { foblesWaitForTimeout } from "../helpers/waitHelpers";
+import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 
 // The dialog/gallery `default.aspx?xmlcontrol=...` pages tracked in docs/TODO.md - each one only
 // ever renders inside a small iframe/dialog (never a full Content Editor page), so Fobles' own

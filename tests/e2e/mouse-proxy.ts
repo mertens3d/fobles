@@ -5,7 +5,7 @@ import {
   type Locator,
   type Page,
 } from "./fixtures/playwright";
-import { foblesWaitForTimeout } from "./helpers/waitHelpers";
+import { foblesWaitForTimeout } from "./helpers/wait-helpers";
 import type { CornerPosition, MouseCoordinates } from "./mouse-proxy.types";
 
 

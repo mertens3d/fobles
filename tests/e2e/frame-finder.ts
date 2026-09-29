@@ -1,6 +1,7 @@
 import type { Frame, Page } from "./fixtures/playwright";
 import { CONST } from "./CONST";
 import { highlightLocator } from "./mouse-proxy";
+import { foblesWaitForTimeout } from "./helpers/wait-helpers";
 
 // Retries across page.frames() since a frame (e.g. a Sitecore gallery) can load asynchronously
 // after this is first called. timeoutMs of 0 (default) is a single fail-fast pass.

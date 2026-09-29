@@ -1,10 +1,10 @@
 import { expect, test } from "../fixtures/playwright";
 import {  setupContentEditorForTesting } from "../fobles-helpers";
-import { fieldScreenshotName } from "./CONST";
+import { fieldScreenshotName } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
-import { STRATEGY_SCENARIOS } from "./strategy-scenarios";
-import type { StrategyTestContext } from "./scenario.types";
-import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./strategy-test-helper";
+import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
+import type { StrategyTestContext } from "./support/scenario.types";
+import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./support/strategy-test-helper";
 import { factoryStrategyTestContext } from "../strategy-test-context";
 import { showBillboard } from "../billboard";
 

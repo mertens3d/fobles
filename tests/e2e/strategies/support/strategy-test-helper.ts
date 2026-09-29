@@ -1,15 +1,15 @@
-import { CONST } from "../CONST";
-import { logStepDividerEnd, logStepDividerStart } from "../helpers/loggingHelper";
-import { expect } from "../fixtures/playwright";
-import { expectFoblesButtonNewTabNavigation, expectFoblesButtonSameTabNavigation } from "../fobles-helpers";
-import { clickLbolt } from "../macros/fobles-macros";
-import { clickWithMouseMarker, ensureMouseMarkerExists, highlightLocator } from "../mouse-proxy";
+import { CONST } from "../../CONST";
+import { logStepDividerEnd, logStepDividerStart } from "../../helpers/logging-helpers";
+import { expect } from "../../fixtures/playwright";
+import { expectFoblesButtonNewTabNavigation, expectFoblesButtonSameTabNavigation } from "../../fobles-helpers";
+import { clickLbolt } from "../../macros/fobles-macros";
+import { clickWithMouseMarker, ensureMouseMarkerExists, highlightLocator } from "../../mouse-proxy";
 import { fieldScreenshotName, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import type { StrategyTestContext } from "./scenario.types";
-import { LogDebugTestContext } from "../helpers/debugHelper";
-import { findFoblesFrame } from "../frame-finder";
-import { factoryStrategyTestContext } from "../strategy-test-context";
-import { showBillboard } from "../billboard";
+import { LogDebugTestContext } from "../../helpers/debug-helpers";
+import { findFoblesFrame } from "../../frame-finder";
+import { factoryStrategyTestContext } from "../../strategy-test-context";
+import { showBillboard } from "../../billboard";
 
 
 export async function stepExpectFoblesInitialConditions(testContext: StrategyTestContext) {

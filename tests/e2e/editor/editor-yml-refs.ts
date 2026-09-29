@@ -1,4 +1,4 @@
-import { FOBLES_YML } from "../strategies/CONST.fobles-yml";
+import { FOBLES_YML } from "../strategies/support/yml-fobles.CONST";
 
 // Fobles Data Item A (tests/e2e/strategies/fobles-yml.ts) is the shared target most field
 // strategies point their scenario field at - that's exactly what makes it a useful subject for

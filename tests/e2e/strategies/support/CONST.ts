@@ -2,7 +2,7 @@
 // Duplicated (not imported) from src/content/features/augmentor/constants.ts, since these tests
 // exercise the built extension at runtime rather than the TypeScript source.
 
-import { CONST } from "../CONST";
+import { CONST } from "../../CONST";
 
 export const FOBLES_HIDDEN_CLASS_PATTERN = new RegExp(CONST.FOBLES.CLASSES.HIDDEN);
 
