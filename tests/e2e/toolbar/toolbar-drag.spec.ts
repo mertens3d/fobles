@@ -5,6 +5,7 @@ import { createStep } from "../fobles-helpers";
 import { resolveCornerPosition, ensureMouseMarkerExists } from "../mouse-proxy";
 import { findFrameWithSelector } from "../frame-finder";
 import { dragToolbarTo } from "../macros/fobles-macros";
+import { foblesWaitForTimeout } from "../helpers/waitHelpers";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -30,7 +31,7 @@ test.describe("Toolbar: drag to reposition", () => {
     await step("Default stage: toolbar starts in its default corner", async () => {
       await expect(container).toBeVisible();
       await expect(container).toHaveAttribute("data-position", "upper-right");
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Drag: toolbar snaps to the opposite corner", async () => {
@@ -40,7 +41,7 @@ test.describe("Toolbar: drag to reposition", () => {
       await dragToolbarTo(page, grip, { x: 80, y: viewport.height - 80 });
       await expect(container).not.toHaveClass(/fobles-toolbar-dragging/);
       await expect(container).toHaveAttribute("data-position", "bottom-left");
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Drag: toolbar snaps to the bottom-right corner", async () => {
@@ -48,12 +49,12 @@ test.describe("Toolbar: drag to reposition", () => {
       await dragToolbarTo(page, grip, resolveCornerPosition(page, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_2));
       await expect(container).not.toHaveClass(/fobles-toolbar-dragging/);
       await expect(container).toHaveAttribute("data-position", "bottom-right");
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
 
       await dragToolbarTo(page, grip, resolveCornerPosition(page, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_3));
       await expect(container).not.toHaveClass(/fobles-toolbar-dragging/);
       await expect(container).toHaveAttribute("data-position", "bottom-right");
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Drag back: toolbar returns to its default corner", async () => {

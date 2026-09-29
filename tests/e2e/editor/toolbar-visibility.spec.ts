@@ -4,6 +4,7 @@ import { CONST } from "../CONST";
 import { attachUiPathNote, createStep } from "../fobles-helpers";
 import { FOBLES_YML } from "../strategies/CONST.fobles-yml";
 import { findFrameWithSelector } from "../frame-finder";
+import { foblesWaitForTimeout } from "../helpers/waitHelpers";
 
 // The dialog/gallery `default.aspx?xmlcontrol=...` pages tracked in docs/TODO.md - each one only
 // ever renders inside a small iframe/dialog (never a full Content Editor page), so Fobles' own
@@ -119,7 +120,7 @@ test.describe("Editor scenario: toolbar visibility on dialog/gallery pages", () 
         await openSitecorePage(page, pageCase.url);
 
         if (!isEligible) {
-          await page.waitForTimeout(2_000);
+          await foblesWaitForTimeout(page, 2_000);
           await expect(page.locator(CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER)).toHaveCount(0);
           return;
         }

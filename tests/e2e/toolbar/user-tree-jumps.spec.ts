@@ -5,7 +5,7 @@ import { clickWithMouseMarker } from "../mouse-proxy";
 import { openSitecorePageAndFindFoblesFrame, createStep } from "../fobles-helpers";
 import { ClickFoblesMenuButton } from "../macros/fobles-macros";
 import { expectFlyoutVisible } from "../expectSnippets/expectSnippets";
-import { addTestRow, openTreeJumpsColumn, removeTestRowIfPresent, setTestRowEnabled } from "./OtherSettings.spec";
+import { addTestRow, openTreeJumpsColumn, removeTestRowIfPresent, setTestRowEnabled } from "./OtherSettings.helpers";
 
 test.describe("User Tree Jumps", () => {
   test("Additional Settings adds and normalizes a User Tree Jump", async ({ sharedBrowserContext }) => {
@@ -47,7 +47,7 @@ test.describe("User Tree Jumps", () => {
       await removeTestRowIfPresent(optionsPage);
       const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
-      await ClickFoblesMenuButton(page, foblesFrame, "User Tree Jump menu");
+      await ClickFoblesMenuButton(page, foblesFrame, "User Tree Jump menu A");
       await expectFlyoutVisible(foblesFrame);
 
       await step("does not render with an empty list", async () => {

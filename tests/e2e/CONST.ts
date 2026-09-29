@@ -70,9 +70,10 @@ export const CONST = {
     HOVER_CLEARANCE_PX: 24,
   },
   TOOLBAR_DRAG_POSITIONS: {
-    DEFAULT: { corner: "upper-right", offsetX: 80, offsetY: 80 },
-    POSITION_2: { corner: "bottom-right", offsetX: 66.78125, offsetY: 66.609375 },
-    POSITION_3: { corner: "bottom-right", offsetX: 66.78125, offsetY: 66.609375 },
+    DEFAULT: { corner: "upper-right", offsetX: 280, offsetY: 80 },
+    POSITION_1: { corner: "upper-right", offsetX: 200, offsetY: 160 },
+    POSITION_2: { corner: "bottom-right", offsetX: 166.78125, offsetY: 66.609375 },
+    POSITION_3: { corner: "bottom-right", offsetX: 166.78125, offsetY: 66.609375 },
   },
   MOUSE_MARKER: {
     ID: "playwright-mouse-marker",

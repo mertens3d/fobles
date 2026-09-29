@@ -15,12 +15,12 @@ export async function findFrameWithSelector(
   do {
     for (const frame of page.frames()) {
       if ((await frame.locator(selector).count()) > 0) {
-        await highlightLocator(frame.locator(selector), description);
+        // await highlightLocator(frame.locator(selector), description);
         console.log(`[fobles] Found ${description} in frame ${frame.url()}`);
         return frame;
       }
     }
-    if (Date.now() < deadline) await page.waitForTimeout(250);
+    if (Date.now() < deadline) await foblesWaitForTimeout(page, 250);
   } while (Date.now() < deadline);
   console.log(
     `[fobles] Gave up looking for ${description} - checked ${page.frames().length} frame(s): ${page

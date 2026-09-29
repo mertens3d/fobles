@@ -12,6 +12,7 @@ import { findFoblesFrame } from "../frame-finder";
 import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
 import { clickLbolt } from "../macros/fobles-macros";
+import { foblesWaitForTimeout } from "../helpers/waitHelpers";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -38,7 +39,7 @@ test.describe("Editor scenario: quick info section", () => {
     await step("Default stage: Quick Info renders as plain Sitecore text", async () => {
       await expect(quickInfoTable).toBeVisible();
       await expect(quickInfoTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: Item ID, Item path, and Template each get a Fobles button", async () => {
@@ -55,7 +56,7 @@ test.describe("Editor scenario: quick info section", () => {
           quickInfoTable.locator(FOBLES.SELECTORS.BUTTON, { hasText: button.expectedButtonText }),
         ).toHaveText(button.expectedButtonText);
       }
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     const itemPathButton = quickInfoTable.locator(FOBLES.SELECTORS.BUTTON, {

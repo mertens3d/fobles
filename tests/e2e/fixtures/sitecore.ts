@@ -2,6 +2,7 @@ import { expect, type Page } from "@playwright/test";
 import { CONST } from "../CONST";
 import { getTestEnvironment } from "./environment";
 import { ensureAuthenticatedUrl } from "./autoLogin";
+import { foblesWaitForTimeout } from "../helpers/waitHelpers";
 
 
 
@@ -25,7 +26,7 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
 
     if (wasDisabled) {
       console.log(`[sitecore preflight] Raw Values was on - clicked it off`);
-      await page.waitForTimeout(1_000);
+      await foblesWaitForTimeout(page, 1_000);
       return;
     }
   }

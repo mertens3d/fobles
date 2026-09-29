@@ -12,6 +12,7 @@ import { findFoblesFrame } from "../frame-finder";
 import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
 import { clickLbolt } from "../macros/fobles-macros";
+import { foblesWaitForTimeout } from "../helpers/waitHelpers";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -39,7 +40,7 @@ test.describe("Editor scenario: reference links", () => {
 
     await step("Default stage: gallery renders as plain Sitecore links", async () => {
       await expect(linksPanel.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: every referenced/referring link gets a Fobles button", async () => {
@@ -57,7 +58,7 @@ test.describe("Editor scenario: reference links", () => {
           hasText: SCENARIO.referredToItem.expectedButtonText,
         }),
       ).toHaveText(SCENARIO.referredToItem.expectedButtonText);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     const [firstReferringItem] = SCENARIO.referringItems;

@@ -27,7 +27,7 @@ test.describe("Strategy scenario: general link", () => {
       const foblesButton = testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.BUTTON).first();
       await expect(foblesButton).toBeVisible();
       await expect(foblesButton).toHaveText(SCENARIO.expectedButtonText);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     runClickNavigationSteps(testContext.step, page, testInfo, testContext.fieldTable,  testContext.locatorFirstResult, SCENARIO);

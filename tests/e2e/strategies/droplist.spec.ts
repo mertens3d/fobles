@@ -31,7 +31,7 @@ test.describe("Strategy scenario: droplist", () => {
     await step("Default stage: field renders as a plain Sitecore select", async () => {
       await expect(testContext.locatorFirstResult).toBeVisible();
       await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: the field has no navigable value, so nothing changes", async () => {
@@ -39,7 +39,7 @@ test.describe("Strategy scenario: droplist", () => {
       await expect(testContext.locatorFirstResult).toBeVisible();
       await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.BUTTON)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
   });
 });

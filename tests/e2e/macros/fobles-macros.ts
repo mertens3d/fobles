@@ -13,6 +13,7 @@ import type { CornerPosition, MouseCoordinates } from "../mouse-proxy.types";
 import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
 import { walkFrameDocuments } from "../helpers/framesHelper";
 import { showBillboard } from "../billboard";
+import { foblesWaitForTimeout } from "../helpers/waitHelpers";
 
 export async function ClickFoblesMenuButton(
     page: Page, foblesFrame: Frame, label: string) {
@@ -35,7 +36,7 @@ export async function openQuickMenu(page: Page, foblesFrame: Frame): Promise<voi
         return;
     }
 
-    await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu");
+    await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu A");
 
     console.log(
         `[fobles] Waiting for quick menu flyout's ${CONST.SITECORE.ATTRIBUTES.MENU_VISIBLE} attribute to become "true"`,
@@ -64,7 +65,7 @@ export async function dragToolbarTo(
     await page.mouse.down();
     await moveMouseToPosition(page, targetPosition, "Toolbar drag");
     await page.mouse.up();
-    await page.waitForTimeout(CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS);
+    // await foblesWaitForTimeout(page, CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS / 2);
 }
 
 
@@ -147,7 +148,7 @@ export async function dismissFoblesConfirmDialogIfPresent(
             }
         });
 
-        await page.waitForTimeout(150);
+        // await foblesWaitForTimeout(page, 150);
     } while (Date.now() < deadline);
     console.log("[fobles] No confirm dialog appeared within 3000ms - treating as not shown");
 }

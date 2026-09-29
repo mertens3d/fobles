@@ -21,7 +21,7 @@ test.describe("Fobles browser integration", () => {
     test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
     let foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
-    await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu");
+    await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu E");
     await expectFlyoutVisible(foblesFrame);
 
     const paths = await getExpectedButtonPaths(foblesFrame);
@@ -40,7 +40,7 @@ test.describe("Fobles browser integration", () => {
     test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
     const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
-    await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu");
+    await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu B");
     await expectFlyoutVisible(foblesFrame);
     const paths = await getExpectedButtonPaths(foblesFrame);
 
@@ -84,7 +84,7 @@ async function testOneClick(paths: string[],
 
     if (index > 0) {
       foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
-      await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu");
+      await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu C");
       await expectFlyoutVisible(foblesFrame);
     }
 
@@ -121,7 +121,7 @@ async function TestOnCtrlClick(paths: string[], index: number, step: (title: str
   await step(`Ctrl+Click: opens "${path}" in a new tab`, async () => {
 
 
-    await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu");
+    await ClickFoblesMenuButton(page, foblesFrame, "Tree jump menu D");
     await expectFlyoutVisible(foblesFrame);
 
     const foblesTreeButton = await ScrollFoblesTreeButtonIntoView(foblesFrame, index);

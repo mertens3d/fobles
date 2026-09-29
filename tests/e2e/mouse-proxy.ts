@@ -180,7 +180,7 @@ export async function pulseMouseMarkerClick(page: Page): Promise<void> {
       }
     }),
   );
-  await page.waitForTimeout(CONST.CLICK_FLASH.DURATION_MS);
+  // await foblesWaitForTimeout(page, CONST.CLICK_FLASH.DURATION_MS);
 }
 
 // The single entry point every interactive click in these suites should use: moves the marker to
@@ -222,7 +222,7 @@ export async function clickWithMouseMarker(
     clickCount: options?.clickCount,
     position: corner === "top-left" ? { x: 0, y: 0 } : undefined,
   });
-  await page.waitForTimeout(POST_CLICK_PAUSE_MS);
+  // await foblesWaitForTimeout(page, POST_CLICK_PAUSE_MS, true);
 }
 
 // A one-time diagnostic sanity check that the marker element actually exists and responds to
@@ -263,7 +263,7 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
       marker.style.top = "100px";
     }
   });
-  await page.waitForTimeout(100);
+  // await foblesWaitForTimeout(page, 100);
 
   const movedState = await page
     .locator(`#${CONST.MOUSE_MARKER.ID}`)
@@ -415,6 +415,19 @@ export async function highlightLocator(
   target: Locator,
   label: string,
 ): Promise<void> {
+  const count = await target.count();
+
+  if (count === 0) {
+    console.warn(`[fobles] Highlight skipped: '${label}' matched 0 elements`);
+    return;
+  }
+
+  if (count > 1) {
+    console.warn(`[fobles] '${label}' matched ${count} elements, using first match`);
+  }
+
+  target = target.first();
+
   console.log(`[fobles] Highlighting locator '${label}'`);
 
   const original = await target.evaluate((element) => {
@@ -448,6 +461,7 @@ export async function highlightLocator(
     original,
   );
 }
+
 
 export async function moveMouseToLocatorCenter(
   page: Page,
@@ -511,6 +525,14 @@ export async function moveMouseToPosition(
   console.log(
     `[fobles] E) Mouse move '${label}' ended at (${initialPosition.x.toFixed(1)}, ${initialPosition.y.toFixed(1)})`,
   );
+}
+export async function moveMousetoCenterMonitor(page: Page): Promise<void> {
+    const viewport = await page.evaluate(() => ({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  }));
+const center = { x: viewport.width / 2, y: viewport.height / 2 };
+  await moveMouseToPosition(page, center, "center of monitor");
 }
 
 export async function moveMouseOutsideHoverArea(

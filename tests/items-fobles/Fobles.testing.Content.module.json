@@ -2,7 +2,7 @@
   "$schema": "../../.sitecore/schemas/ModuleFile.schema.json",
   "namespace": "fobles.content",
   "description": "fobles.content",
-  "references": [],
+  "references": ["fobles.templates"],
   "items": {
     "includes": [
       {
@@ -10,7 +10,40 @@
         "path": "/sitecore/Content/Fobles Testing",
         "database": "master",
         "allowedPushOperations": "CreateUpdateAndDelete",
-        "scope": "ItemAndDescendants"
+         "rules": [
+           {
+            "path": "/Fobles Testing Site/Fobles Testing Site/Dictionary",
+            "scope": "ItemAndDescendants"
+          },
+          {
+            "path": "/Fobles Testing Site/Fobles Testing Site/Settings",
+            "scope": "ItemAndDescendants"
+          },
+          {
+            "path": "/Fobles Testing Site/Fobles Testing Site/Data",
+            "scope": "ItemAndDescendants"
+          },
+          {
+            "path": "/Fobles Testing Site/Fobles Testing Site/Presentation",
+            "scope": "ItemAndDescendants"
+          },
+          {
+            "path": "/Fobles Testing Site/Fobles Testing Site/Home",
+            "scope": "ItemAndDescendants"
+          },
+          {
+            "path": "/Fobles Testing Site/Fobles Testing Site",
+            "scope": "SingleItem"
+          },
+          {
+            "path": "/Fobles Testing Site",
+            "scope": "SingleItem"
+          },
+          {
+            "path": "*",
+            "scope": "Ignored"
+          }
+        ]
       }
     ]
   }

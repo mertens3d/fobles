@@ -37,7 +37,7 @@ test.describe("Strategy scenario: tree list", () => {
     await step("Default stage: field renders as a plain Sitecore tree list", async () => {
       await expect(testContext.locatorFirstResult).toBeVisible();
       await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: the selected pane gets a Fobles button", async () => {
@@ -46,7 +46,7 @@ test.describe("Strategy scenario: tree list", () => {
 
       await expect(selectedPaneButton).toBeVisible();
       await expect(selectedPaneButton).toHaveText(SCENARIO.expectedButtonText);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     // Explicit navigationButton - the "all items" tree pane can render more than one Fobles

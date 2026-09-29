@@ -34,7 +34,7 @@ test.describe("Strategy scenario: treelist ex", () => {
     await step("Default stage: field renders as a plain Sitecore treelist ex", async () => {
       await expect(testContext.locatorFirstResult).toBeVisible();
       await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: the field gets a Fobles button", async () => {
@@ -43,7 +43,7 @@ test.describe("Strategy scenario: treelist ex", () => {
       const foblesButton = testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.BUTTON).first();
       await expect(foblesButton).toBeVisible();
       await expect(foblesButton).toHaveText(SCENARIO.expectedButtonText);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     runClickNavigationSteps(step, page, testInfo, testContext.fieldTable,  testContext.locatorFirstResult, SCENARIO);

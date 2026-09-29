@@ -33,7 +33,7 @@ test.describe.skip("Strategy scenario: tag list", () => {
     await step("Default stage: field renders as a plain Sitecore tag list", async () => {
       await expect(testContext.locatorFirstResult).toBeVisible();
       await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: both panes get Fobles wrappers", async () => {
@@ -46,7 +46,7 @@ test.describe.skip("Strategy scenario: tag list", () => {
         .first();
       await expect(selectedPaneButton).toBeVisible();
       await expect(selectedPaneButton).toHaveText(SCENARIO.expectedButtonText);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles off: the field returns to its original shape", async () => {

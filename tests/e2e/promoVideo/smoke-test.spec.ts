@@ -17,10 +17,10 @@ test.describe("Promo video: smoke test", () => {
     const mousePosition = { x: 100, y: 100 };
     
     await moveMouseToPosition(page, { x: 700, y: 300 },  "Smoke test move 1");
-    await page.waitForTimeout(1_000);
+    await foblesWaitForTimeout(page, 1_000);
     await moveMouseToPosition(page, { x: 250, y: 600 },  "Smoke test move 2");
-    await page.waitForTimeout(1_000);
+    await foblesWaitForTimeout(page, 1_000);
     await moveMouseToPosition(page, { x: 900, y: 800 },  "Smoke test move 3");
-    await page.waitForTimeout(1_000);
+    await foblesWaitForTimeout(page, 1_000);
   });
 });

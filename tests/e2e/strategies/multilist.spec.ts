@@ -34,7 +34,7 @@ test.describe("Strategy scenario: multilist", () => {
     await step("Default stage: field renders as a plain Sitecore multilist", async () => {
       await expect(testContext.locatorFirstResult).toBeVisible();
       await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: the field gets one Fobles button", async () => {
@@ -45,7 +45,7 @@ test.describe("Strategy scenario: multilist", () => {
       const foblesButtons = testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.BUTTON);
       await expect(foblesButtons).toHaveCount(1);
       await expect(foblesButtons.first()).toHaveText(SCENARIO.expectedButtonText);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     runClickNavigationSteps(step, page, testInfo, testContext.fieldTable, testContext.locatorFirstResult, SCENARIO);

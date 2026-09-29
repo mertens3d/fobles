@@ -1,33 +1,61 @@
-import { expect, test, type Frame, type Locator, type Page } from "./fixtures/playwright";
+import {
+  expect,
+  test,
+  type Frame,
+  type Locator,
+  type Page,
+} from "./fixtures/playwright";
 import { openContentEditor, openSitecorePage } from "./fixtures/sitecore";
-import { clickWithMouseMarker, ensureMouseMarkerExists } from "./mouse-proxy";
+import {
+  clickWithMouseMarker,
+  ensureMouseMarkerExists,
+  moveMousetoCenterMonitor,
+  moveMouseToPosition,
+} from "./mouse-proxy";
 import { CONST } from "./CONST";
 import { clickContentTabIfPresent } from "./macros/sitecore-macros";
 import { findFoblesFrame, findFrameWithSelector } from "./frame-finder";
 import type { TestInfo } from "@playwright/test";
-import { ClickLBoltButton, dismissFoblesConfirmDialogIfPresent, dragToolbarToCornerLocation } from "./macros/fobles-macros";
+import {
+  ClickLBoltButton,
+  dismissFoblesConfirmDialogIfPresent,
+  dragToolbarToCornerLocation,
+} from "./macros/fobles-macros";
 import { expectLBoltButton } from "./expectSnippets/expectSnippets";
-import type { StrategyScenarioData, StrategyTestContext } from "./strategies/scenario.types";
+import type {
+  StrategyScenarioData,
+  StrategyTestContext,
+} from "./strategies/scenario.types";
 import type { FoblesTestStep } from "./types";
 import { logStepDividerStart } from "./helpers/loggingHelper";
 
 type Screenshottable = Pick<Locator, "screenshot">;
 
-
-export async function setupContentEditorForTesting(page: Page, scenario: StrategyScenarioData) {
+export async function setupContentEditorForTesting(
+  page: Page,
+  scenario: StrategyScenarioData,
+) {
   //return { page, fieldTable, locatorFirstResult, STEP_WAIT_MS, step, SCENARIO: scenario , testInfo };
 
   console.log(`[fobles] Opening strategy item ${scenario.itemId}`);
-  await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${scenario.itemId}`);
+  await openSitecorePage(
+    page,
+    `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${scenario.itemId}`,
+  );
   // &fo=${scenario.itemId}`);
   console.log(`[fobles] Navigation finished at ${page.url()}`);
   await ensureMouseMarkerExists(page);
 
   await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
-  await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_2);
+  await moveMousetoCenterMonitor(page);
+  await dragToolbarToCornerLocation(
+    page,
+    CONST.TOOLBAR_DRAG_POSITIONS.POSITION_1,
+  );
+  await moveMousetoCenterMonitor(page);
   await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
+  await moveMousetoCenterMonitor(page);
 }
-
 
 // Sitecore's own "fo" query param is either a bare GUID (braces stripped by Fobles'
 // normalizeFoblesValue before building the URL) or a content path (e.g.
@@ -38,12 +66,19 @@ function normalizeFoValueForCompare(value: string): string {
   return value.replace(/[{}]/g, "").toUpperCase();
 }
 
-function assertFoblesTargetUrl(actualUrl: string, expectedFoValue: string): void {
+function assertFoblesTargetUrl(
+  actualUrl: string,
+  expectedFoValue: string,
+): void {
   const url = new URL(actualUrl);
-  expect(decodeURIComponent(url.pathname)).toBe(CONST.SITECORE.PATHS.CONTENT_EDITOR.split("?")[0]);
-  expect(url.searchParams.get("fo") ? normalizeFoValueForCompare(url.searchParams.get("fo")!) : null).toBe(
-    normalizeFoValueForCompare(expectedFoValue),
+  expect(decodeURIComponent(url.pathname)).toBe(
+    CONST.SITECORE.PATHS.CONTENT_EDITOR.split("?")[0],
   );
+  expect(
+    url.searchParams.get("fo")
+      ? normalizeFoValueForCompare(url.searchParams.get("fo")!)
+      : null,
+  ).toBe(normalizeFoValueForCompare(expectedFoValue));
 }
 
 // Named after matchKey - the enclosing step's own full title - rather than expectedFoValue,
@@ -104,7 +139,13 @@ export async function expectFoblesButtonSameTabNavigation(
   await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
 
   await page.waitForURL((url) => url.searchParams.has("fo"));
-  await attachActualFoValueNote(testInfo, expectedFoValue, page.url(), stepTitle);
+  
+  await attachActualFoValueNote(
+    testInfo,
+    expectedFoValue,
+    page.url(),
+    stepTitle,
+  );
   assertFoblesTargetUrl(page.url(), expectedFoValue);
   await attachItemPathScreenshot(page, testInfo, stepTitle);
 }
@@ -118,16 +159,22 @@ export async function expectFoblesButtonNewTabNavigation(
   stepTitle: string,
   popup: Page,
 ): Promise<void> {
-  console.log(`expectFoblesButtonNewTabNavigation s)`)
+  console.log(`expectFoblesButtonNewTabNavigation s)`);
 
   await popup.bringToFront();
 
   await popup.waitForLoadState("domcontentloaded");
-  await attachActualFoValueNote(testContext.testInfo, testContext.SCENARIO.expectedFoValue, popup.url(), stepTitle);
+  await attachActualFoValueNote(
+    testContext.testInfo,
+    testContext.SCENARIO.expectedFoValue,
+    popup.url(),
+    stepTitle,
+  );
   assertFoblesTargetUrl(popup.url(), testContext.SCENARIO.expectedFoValue);
   await attachItemPathScreenshot(popup, testContext.testInfo, stepTitle);
 
-  const newTabHoldMs = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS *
+  const newTabHoldMs =
+    CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS *
     CONST.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
   await popup.waitForTimeout(newTabHoldMs);
   await testContext.page.bringToFront();
@@ -150,7 +197,12 @@ export async function attachScreenshot(
   const mask = [...(options?.mask ?? []), ...autoMasks];
   // Matches toHaveScreenshot()'s defaults - reduces (but can't fully eliminate) visible flicker
   // from CDP's screenshot capture in headed mode.
-  await target.screenshot({ path: filePath, animations: "disabled", caret: "hide", mask: mask.length ? mask : undefined });
+  await target.screenshot({
+    path: filePath,
+    animations: "disabled",
+    caret: "hide",
+    mask: mask.length ? mask : undefined,
+  });
   await testInfo.attach(name, { path: filePath, contentType: "image/png" });
 }
 
@@ -158,16 +210,27 @@ export async function attachScreenshot(
 // be either (a field's own table, a Quick Info row, or the whole page), but the locators below
 // always live on the top-level page regardless of which frame/element is being screenshotted.
 function getOwningPage(target: Screenshottable): Page {
-  return typeof (target as Locator).page === "function" ? (target as Locator).page() : (target as Page);
+  return typeof (target as Locator).page === "function"
+    ? (target as Locator).page()
+    : (target as Page);
 }
 
 // page.locator() only searches the main frame - some quick-menu targets (e.g. the Installation
 // Wizard shell application) render inside a nested iframe instead, so a selector's presence has to
 // be checked frame-by-frame rather than assumed to be in the top-level document.
-async function framesWithSelector(page: Page, selector: string): Promise<Frame[]> {
+async function framesWithSelector(
+  page: Page,
+  selector: string,
+): Promise<Frame[]> {
   const matches: Frame[] = [];
   for (const frame of page.frames()) {
-    if ((await frame.locator(selector).count().catch(() => 0)) > 0) matches.push(frame);
+    if (
+      (await frame
+        .locator(selector)
+        .count()
+        .catch(() => 0)) > 0
+    )
+      matches.push(frame);
   }
   return matches;
 }
@@ -175,7 +238,9 @@ async function framesWithSelector(page: Page, selector: string): Promise<Frame[]
 // Sensitive content that should never appear unmasked in a screenshot, regardless of which call
 // site takes it - checked automatically instead of requiring every caller to opt in. Each entry
 // resolves to no masks when its content isn't present on the page being screenshotted.
-async function getSensitiveAutoMasks(target: Screenshottable): Promise<Locator[]> {
+async function getSensitiveAutoMasks(
+  target: Screenshottable,
+): Promise<Locator[]> {
   const page = getOwningPage(target);
   const masks: Locator[] = [];
 
@@ -197,7 +262,10 @@ async function getSensitiveAutoMasks(target: Screenshottable): Promise<Locator[]
   const itemOwnerRow = "tr:has(td:text-is('Item owner:'))";
   for (const frame of await framesWithSelector(page, itemOwnerRow)) {
     masks.push(
-      frame.locator(itemOwnerRow).locator('td:text-is("Item owner:") + td').locator("input"),
+      frame
+        .locator(itemOwnerRow)
+        .locator('td:text-is("Item owner:") + td')
+        .locator("input"),
     );
   }
 
@@ -219,13 +287,16 @@ async function getSensitiveAutoMasks(target: Screenshottable): Promise<Locator[]
   // to the "Caches (NNN)" section title - mask that nested table (found relative to the title
   // span, since it has no id/class of its own) rather than the whole page.
   for (const frame of await framesWithSelector(page, "#c_cacheTitle")) {
-    masks.push(frame.locator("#c_cacheTitle").locator("xpath=ancestor::tr[1]//table"));
+    masks.push(
+      frame.locator("#c_cacheTitle").locator("xpath=ancestor::tr[1]//table"),
+    );
   }
 
   // jobs.aspx ("Jobs" quick-menu button) lists Running/Queued/Finished jobs, each rendered as
   // either a "No jobs" placeholder or a table.jobs-table - no per-section wrapper element exists,
   // so mask both possible shapes directly rather than trying to select "the section".
-  const jobsSelector = '.wf-content table.jobs-table, .wf-content b:has-text("No jobs")';
+  const jobsSelector =
+    '.wf-content table.jobs-table, .wf-content b:has-text("No jobs")';
   for (const frame of await framesWithSelector(page, jobsSelector)) {
     masks.push(frame.locator(jobsSelector));
   }
@@ -246,7 +317,10 @@ async function getSensitiveAutoMasks(target: Screenshottable): Promise<Locator[]
   // to a .content that actually contains the tree browser (#tree), since ".content" alone is too
   // generic to safely mask on every page. #dataBases (the master/web/filesystem/core database
   // tabs above the tree) is a sibling, not a descendant, so it needs its own entry.
-  for (const frame of await framesWithSelector(page, "div.content:has(#tree)")) {
+  for (const frame of await framesWithSelector(
+    page,
+    "div.content:has(#tree)",
+  )) {
     masks.push(frame.locator("div.content:has(#tree)"));
   }
   for (const frame of await framesWithSelector(page, "#dataBases")) {
@@ -262,7 +336,10 @@ async function getSensitiveAutoMasks(target: Screenshottable): Promise<Locator[]
   // Kick User/Control Panel/Launchpad ("Kick User"/"Control Panel"/"Launchpad" quick-menu
   // buttons) are all Sitecore client (SPA-shell) applications sharing the same main-content
   // region class, regardless of which application it is.
-  for (const frame of await framesWithSelector(page, ".sc-applicationContent-main")) {
+  for (const frame of await framesWithSelector(
+    page,
+    ".sc-applicationContent-main",
+  )) {
     masks.push(frame.locator(".sc-applicationContent-main"));
   }
 
@@ -270,16 +347,23 @@ async function getSensitiveAutoMasks(target: Screenshottable): Promise<Locator[]
   // its own on the layout table holding the actual folder/file listing - find it relative to
   // #FoldersAction (unique to this page) instead, and mask just its third row (the listing itself,
   // not the toolbar rows above it).
-  const fileExplorerRow = "#FoldersAction ~ table[width='100%'][height='100%'] tr:nth-child(3)";
+  const fileExplorerRow =
+    "#FoldersAction ~ table[width='100%'][height='100%'] tr:nth-child(3)";
   for (const frame of await framesWithSelector(page, fileExplorerRow)) {
     masks.push(frame.locator(fileExplorerRow));
   }
 
   // Content Editor's own content tree and ribbon tab buttons.
-  for (const frame of await framesWithSelector(page, ".scContentTreeContainer")) {
+  for (const frame of await framesWithSelector(
+    page,
+    ".scContentTreeContainer",
+  )) {
     masks.push(frame.locator(".scContentTreeContainer"));
   }
-  for (const frame of await framesWithSelector(page, ".scRibbonNavigatorButtonsGroup")) {
+  for (const frame of await framesWithSelector(
+    page,
+    ".scRibbonNavigatorButtonsGroup",
+  )) {
     masks.push(frame.locator(".scRibbonNavigatorButtonsGroup"));
   }
 
@@ -318,7 +402,8 @@ const MAX_STEP_SCREENSHOT_NAME_LENGTH = 40;
 // in sync with this.
 function buildStepMatchKey(matchKey: string): string {
   const quoted = matchKey.match(/"([^"]+)"/);
-  if (!quoted) return toSafeFileName(matchKey).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+  if (!quoted)
+    return toSafeFileName(matchKey).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
 
   const action = toSafeFileName(matchKey.slice(0, quoted.index)).slice(-15);
   const value = toSafeFileName(quoted[1]);
@@ -331,10 +416,15 @@ function buildStepMatchKey(matchKey: string): string {
 // screenshotTarget costs a few seconds, not the whole test's 90s timeout.
 const STEP_SCREENSHOT_TIMEOUT_MS = 5_000;
 
-async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
+async function withTimeout<T>(
+  promise: Promise<T>,
+  timeoutMs: number,
+): Promise<T> {
   return Promise.race([
     promise,
-    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("timed out")), timeoutMs)),
+    new Promise<T>((_, reject) =>
+      setTimeout(() => reject(new Error("timed out")), timeoutMs),
+    ),
   ]);
 }
 
@@ -364,8 +454,6 @@ function relativeUrl(page: Page): string {
 // attachItemPathScreenshot, expectFoblesButtonSameTabNavigation/NewTabNavigation) can name it after
 // that instead of a value another step in the same test might share.
 
-
-
 export function createStep(
   page: Page,
   testInfo: TestInfo,
@@ -387,16 +475,22 @@ export function createStep(
           // against, not just failed ones - named after fullTitle so the report matches it to
           // this exact step (see attachActualFoValueNote for why a shared value can't be used).
           const safeName = buildStepMatchKey(fullTitle);
-          await testInfo.attach(`page-url-${safeName}.txt`, {
-            body: Buffer.from(`test page: ${relativeUrl(page)}`),
-            contentType: "text/plain",
-          }).catch(() => {
-            // Best-effort - never mask the step's real pass/fail outcome.
-          });
+          await testInfo
+            .attach(`page-url-${safeName}.txt`, {
+              body: Buffer.from(`test page: ${relativeUrl(page)}`),
+              contentType: "text/plain",
+            })
+            .catch(() => {
+              // Best-effort - never mask the step's real pass/fail outcome.
+            });
 
           if (options?.screenshot !== false) {
             await withTimeout(
-              attachScreenshot(testInfo, screenshotTarget, `step-${safeName}.png`),
+              attachScreenshot(
+                testInfo,
+                screenshotTarget,
+                `step-${safeName}.png`,
+              ),
               STEP_SCREENSHOT_TIMEOUT_MS,
             ).catch(() => {
               // Best-effort - a screenshot failure (e.g. page mid-navigation) must never mask the
@@ -407,7 +501,9 @@ export function createStep(
       },
       options,
     );
-    console.log(`[fobles] Step finished: ${titlePrefix ? `${titlePrefix}: ${title}` : title}`);
+    console.log(
+      `[fobles] Step finished: ${titlePrefix ? `${titlePrefix}: ${title}` : title}`,
+    );
     console.log(`${CONST.LOG.STEP_DIVIDER}`);
   };
 }
@@ -422,14 +518,13 @@ export async function attachItemPathScreenshot(
   testInfo: TestInfo,
   matchKey: string,
 ): Promise<void> {
+  await clickContentTabIfPresent(page);
+
   const frame = await findFrameWithSelector(
     page,
     CONST.SITECORE.SELECTORS.CONTENT_TAB,
     "Content Editor tab header",
   );
-
-  await clickContentTabIfPresent(page);
-
   const itemPathRow = frame
     .locator(`${CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, {
       hasText: CONST.SITECORE.LABELS.ITEM_PATH,
@@ -450,26 +545,34 @@ export function getEditorSectionLocator(fieldTable: Locator): Locator {
   return fieldTable;
 }
 
-async function logActivationState(frame: Frame, message: string): Promise<void> {
+async function logActivationState(
+  frame: Frame,
+  message: string,
+): Promise<void> {
   const state = await frame.evaluate(() => ({
     persistedState: localStorage.getItem("fobles_state"),
-    foblesButtons: document.querySelectorAll("[data-is-fobles-button='1']").length,
+    foblesButtons: document.querySelectorAll("[data-is-fobles-button='1']")
+      .length,
     foblesWrappers: document.querySelectorAll("[data-fobles-wrapper]").length,
   }));
   console.log(`${message}: ${JSON.stringify(state)}`);
 }
 
-export async function activateFobles(
-  page: Page,
-): Promise<Frame> {
-  await openContentEditor(page, CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID);
-
+export async function activateFobles(page: Page): Promise<Frame> {
+  await openContentEditor(
+    page,
+    CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID,
+  );
 
   await expect
     .poll(
       async () => {
         for (const frame of page.frames()) {
-          if ((await frame.locator(`#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`).count()) > 0) {
+          if (
+            (await frame
+              .locator(`#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`)
+              .count()) > 0
+          ) {
             return true;
           }
         }
@@ -484,7 +587,11 @@ export async function activateFobles(
     `#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`,
     `tree node #${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`,
   );
-  await clickWithMouseMarker(page, treeFrame.locator(`#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`), "Tree node");
+  await clickWithMouseMarker(
+    page,
+    treeFrame.locator(`#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`),
+    "Tree node",
+  );
 
   const foblesFrame = await findFoblesFrame(page);
   await logActivationState(foblesFrame, "[fobles] LBolt setup before click");
@@ -502,8 +609,13 @@ export async function activateFobles(
 // Navigates to the scenario item and locates the fobles toolbar frame - shared by anything that
 // just needs the toolbar findable/visible (jump tests, the promo video), unlike activateFobles
 // which also toggles the LBolt/augmentor feature for field-decoration tests.
-export async function openSitecorePageAndFindFoblesFrame(page: Page): Promise<Frame> {
-  await openContentEditor(page, CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID)
+export async function openSitecorePageAndFindFoblesFrame(
+  page: Page,
+): Promise<Frame> {
+  await openContentEditor(
+    page,
+    CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID,
+  );
   await ensureMouseMarkerExists(page);
 
   const foblesFrame = await findFoblesFrame(page);

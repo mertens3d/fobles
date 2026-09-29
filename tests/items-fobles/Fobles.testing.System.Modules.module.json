@@ -2,7 +2,7 @@
   "$schema": "../../.sitecore/schemas/ModuleFile.schema.json",
   "namespace": "Fobles.system.modules",
   "description": "Fobles System Modules",
-  "references": [],
+  "references": ["fobles.templates"],
   "items": {
     "includes": [
       {
