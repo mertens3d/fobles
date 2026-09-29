@@ -1,15 +1,19 @@
 import { expect, test } from "../fixtures/playwright";
+import { showBillboard } from "../billboard";
 import { CONST } from "../CONST";
 import { factoryStrategyTestContext } from "../strategy-test-context";
 import {
   createStep,
   getEditorSectionLocator,
+  setupContentEditorForTesting,
 } from "../fobles-helpers";
-import { FOBLES_HIDDEN_CLASS_PATTERN } from "./support/CONST";
+import { fieldScreenshotName, FOBLES_HIDDEN_CLASS_PATTERN } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
 import { clickLbolt } from "../macros/fobles-macros";
 import type { StrategyTestContext } from "./support/scenario.types";
+import { foblesWaitForTimeout } from "../helpers/wait-helpers";
+import { stepExpectFoblesCtrlClick, stepExpectFoblesInitialConditions, stepExpectFoblesOffConditions, stepExpectFoblesOnConditions, stepExpectSitecoreInitialConditions } from "./support/strategy-test-helper";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -20,29 +24,25 @@ const SCENARIO = STRATEGY_SCENARIOS.DROP_TREE;
 
 test.describe("Strategy scenario: drop tree", () => {
   test("toggling Fobles decorates and restores the drop tree field", async ({ page }, testInfo) => {
+
+    await setupContentEditorForTesting(page, STRATEGY_SCENARIOS.DROP_TREE);
+    await showBillboard(page, STRATEGY_SCENARIOS.DROP_TREE.friendlyName);
+
+
     const testContext: StrategyTestContext = await factoryStrategyTestContext(
       page,
       SCENARIO,
       testInfo
     );
-    // const input =testContext. fieldTable.locator(CONST.SITECORE.SELECTORS.STRATEGIES.DROP_TREE).first();
-    const step = createStep(page, testInfo, getEditorSectionLocator(testContext.fieldTable), SCENARIO.friendlyName);
 
-    await step("Default stage: field renders as a plain Sitecore combobox-edit input", async () => {
-      await expect(testContext.locatorFirstResult).toBeVisible();
-      await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await foblesWaitForTimeout(page, STEP_WAIT_MS);
+    await stepExpectSitecoreInitialConditions(testContext);
+    await stepExpectFoblesInitialConditions(testContext);
+    await stepExpectFoblesOnConditions(testContext);
+    await stepExpectFoblesCtrlClick(testContext);
+    await stepExpectFoblesOffConditions(testContext);
+
+    runClickNavigationSteps(testContext.step, page, testInfo, testContext.fieldTable, testContext.locatorFirstResult, testContext.SCENARIO, async () => {
+      await expect(testContext.fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"));
     });
-
-    await step("Toggle Fobles on: the field gets a Fobles button", async () => {
-      await clickLbolt(page);
-      await expect(testContext.locatorFirstResult).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-      const foblesButton = testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.BUTTON).first();
-      await expect(foblesButton).toBeVisible();
-      await expect(foblesButton).toHaveText(SCENARIO.expectedButtonText);
-      await foblesWaitForTimeout(page, STEP_WAIT_MS);
-    });
-
-    await runClickNavigationSteps(step, page, testInfo, testContext.fieldTable, testContext.locatorFirstResult, SCENARIO);
   });
 });

@@ -7,8 +7,7 @@ export const CONST = {
       MENU_URL: "data-fobles-menu-url",
       BUTTON: "data-is-fobles-button",
       PROCESSED: "data-fobles-processed",
-      WRAPPER: "data-fobles-wrapper",
-      TREE_JUMP_PATH: "data-fobles-tree-jump-path"
+      WRAPPER: "data-fobles-wrapper"
     },
     LOCATORS: {
       MENU_URL: "[data-fobles-menu-url]"
@@ -53,8 +52,8 @@ export const CONST = {
   SPEED: {
     SELECTED: SELECTED_SPEED,
     SETTINGS: {
-      CRAWL: { STEP_WAIT_MS: 1_000, MOUSE_PX_PER_SECOND: 2_000 },
-      WALK: { STEP_WAIT_MS: 500, MOUSE_PX_PER_SECOND: 3_000 },
+      CRAWL: { STEP_WAIT_MS: 500, MOUSE_PX_PER_SECOND: 3_000 },
+      WALK: { STEP_WAIT_MS: 200, MOUSE_PX_PER_SECOND: 4_000 },
       SPRINT: { STEP_WAIT_MS: 0, MOUSE_PX_PER_SECOND: 4_000 },
     } satisfies Record<
       TestSpeed,
@@ -230,6 +229,3 @@ export const CONST = {
     STEP_TIMEOUT_MS: 45_000,
   },
 } as const;
-
-
-export const FOBLES_HIDDEN_CLASS_PATTERN = new RegExp(CONST.FOBLES.CLASSES.HIDDEN);

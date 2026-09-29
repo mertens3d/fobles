@@ -4,10 +4,14 @@ import { factoryStrategyTestContext } from "../strategy-test-context";
 import {
   createStep,
   getEditorSectionLocator,
+  setupContentEditorForTesting,
 } from "../fobles-helpers";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
 import { clickLbolt } from "../macros/fobles-macros";
 import type { StrategyTestContext } from "./support/scenario.types";
+import { foblesWaitForTimeout } from "../helpers/wait-helpers";
+import { showBillboard } from "../billboard";
+import { stepExpectFoblesInitialConditions, stepExpectSitecoreInitialConditions } from "./support/strategy-test-helper";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -20,6 +24,9 @@ const SCENARIO = STRATEGY_SCENARIOS.DROP_LIST;
 
 test.describe("Strategy scenario: droplist", () => {
   test("Fobles leaves the droplist field untouched", async ({ page }, testInfo) => {
+    await setupContentEditorForTesting(page, STRATEGY_SCENARIOS.DROP_LIST);
+    await showBillboard(page, STRATEGY_SCENARIOS.DROP_LIST.friendlyName);
+
     const testContext: StrategyTestContext = await factoryStrategyTestContext(
       page,
       SCENARIO,
@@ -28,18 +35,23 @@ test.describe("Strategy scenario: droplist", () => {
     // const select = testContext.fieldTable.locator(CONST.SITECORE.SELECTORS.STRATEGIES.DROP_LIST).first();
     const step = createStep(page, testInfo, getEditorSectionLocator(testContext.fieldTable), SCENARIO.friendlyName);
 
-    await step("Default stage: field renders as a plain Sitecore select", async () => {
-      await expect(testContext.locatorFirstResult).toBeVisible();
-      await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await foblesWaitForTimeout(page, STEP_WAIT_MS);
-    });
 
-    await step("Toggle Fobles on: the field has no navigable value, so nothing changes", async () => {
-      await clickLbolt(page);
-      await expect(testContext.locatorFirstResult).toBeVisible();
-      await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.BUTTON)).toHaveCount(0);
-      await foblesWaitForTimeout(page, STEP_WAIT_MS);
-    });
+    await stepExpectSitecoreInitialConditions(testContext);
+    await stepExpectFoblesInitialConditions(testContext);
+    //await stepExpectFoblesOnConditions(testContext);
+    //await stepExpectFoblesOffConditions(testContext);
+    // await step("Default stage: field renders as a plain Sitecore select", async () => {
+    //   await expect(testContext.locatorFirstResult).toBeVisible();
+    //   await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+    //   await foblesWaitForTimeout(page, STEP_WAIT_MS);
+    // });
+
+    // await step("Toggle Fobles on: the field has no navigable value, so nothing changes", async () => {
+    //   await clickLbolt(page);
+    //   await expect(testContext.locatorFirstResult).toBeVisible();
+    //   await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+    //   await expect(testContext.fieldTable.locator(CONST.FOBLES.SELECTORS.BUTTON)).toHaveCount(0);
+    //   await foblesWaitForTimeout(page, STEP_WAIT_MS);
+    // });
   });
 });

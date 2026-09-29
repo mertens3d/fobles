@@ -4,13 +4,7 @@ import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { extractGuid, hasAnyGuidLikeOption } from "../shared/guid";
 
-// Content Editor doesn't render an aria-label on either Drop Link's or Droplist's select at all
-// (both share the same select.scContentControl.scCombobox markup), so distinguish them by the
-// option list's value shape instead (see hasAnyGuidLikeOption/sc-droplist.ts).
 const isDroplink = (select: HTMLSelectElement): boolean => {
-  const ariaLabel = select.getAttribute("aria-label");
-  if (ariaLabel) return /\bdroplink\s+field\b/i.test(ariaLabel);
-
   return hasAnyGuidLikeOption(select);
 };
 
@@ -44,15 +38,24 @@ export function applyDroplinkStrategy(
   config: DroplinkConfig,
 ): void {
   doc.querySelectorAll<HTMLSelectElement>(config.FoblesTopSelector).forEach((select) => {
-    if (select.hasAttribute(FOBLES.ATTRIBUTES.MARKER) || !isDroplink(select)) return;
+    const shouldProcess =
+      !select.hasAttribute(FOBLES.ATTRIBUTES.MARKER) &&
+      isDroplink(select);
 
-    const wrapper = createWrapper(doc);
-    select.classList.add(FOBLES.CLASSES.HIDDEN);
-    select.after(wrapper);
-    select.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");
-    renderSelectedFobles(doc, select, wrapper, config);
-    select.addEventListener("change", () => {
-      if (wrapper.isConnected) renderSelectedFobles(doc, select, wrapper, config);
-    });
+    if (shouldProcess) {
+      const wrapper = createWrapper(doc);
+
+      select.classList.add(FOBLES.CLASSES.HIDDEN);
+      select.after(wrapper);
+      select.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");
+
+      renderSelectedFobles(doc, select, wrapper, config);
+
+      select.addEventListener("change", () => {
+        if (wrapper.isConnected) {
+          renderSelectedFobles(doc, select, wrapper, config);
+        }
+      });
+    }
   });
 }

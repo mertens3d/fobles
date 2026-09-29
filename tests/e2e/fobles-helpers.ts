@@ -62,13 +62,13 @@ export async function setupContentEditorForTesting(
 
   await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
   await moveMousetoCenterMonitor(page);
-  await dragToolbarToCornerLocation(
-    page,
-    CONST.TOOLBAR_DRAG_POSITIONS.POSITION_1,
-  );
-  await moveMousetoCenterMonitor(page);
-  await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
-  await moveMousetoCenterMonitor(page);
+  // await dragToolbarToCornerLocation(
+  //   page,
+  //   CONST.TOOLBAR_DRAG_POSITIONS.POSITION_1,
+  // );
+  // await moveMousetoCenterMonitor(page);
+  // await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
+  // await moveMousetoCenterMonitor(page);
 }
 
 // Sitecore's own "fo" query param is either a bare GUID (braces stripped by Fobles'
