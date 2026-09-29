@@ -8,10 +8,11 @@ import { CONST } from "../CONST";
 import {
     clickWithMouseMarker,
 } from "../mouse-proxy";
-import { openSitecorePageAndFindFoblesFrame,  createStep } from "../fobles-helpers";
+import { openSitecorePageAndFindFoblesFrame,  createStep, setupContentEditorForTestingBasic } from "../fobles-helpers";
 import { ceRibbonOpenHome } from "../macros/sitecore-macros";
 import { ClickFoblesMenuButton, dismissFoblesConfirmDialogIfPresent } from "../macros/fobles-macros";
 import { expectFlyoutVisible } from "../expectSnippets/expectSnippets";
+import { getFoblesMenuTargets } from "./support/other-settings-helpers";
 
 
 
@@ -26,26 +27,21 @@ test.describe("Fobles Other Buttons", () => {
         page,
     }, testInfo) => {
         test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
-        const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
+        await setupContentEditorForTestingBasic(page);
         const step = createStep(page, testInfo, page, "Menu Button");
 
-        await ClickFoblesMenuButton(page);
+        // await ClickFoblesMenuButton(page);
 
-        await expectFlyoutVisible(foblesFrame);
+        // await expectFlyoutVisible(foblesFrame);
 
-        const menuButtons = foblesFrame.locator(  CONST.FOBLES.LOCATORS.MENU_URL);
-        const targets: menuTarget[] = await menuButtons.evaluateAll((buttons) =>
-            buttons.map((button) => ({
-                label: button.textContent?.trim() ?? "",
-                url: button.getAttribute(CONST.FOBLES.ATTRIBUTES.MENU_URL) ?? "",
-            })),
-        );
+        const targets: menuTarget[] = await getFoblesMenuTargets(page);
+
         expect(targets.length).toBeGreaterThan(0);
         const failures: string[] = [];
 
         for (let index = 0; index < targets.length; index += 1) {
             const target = targets[index];
-             await testOneJumpButton(target, index, step, page, failures);
+             await stepExamineOneJumpButton(target, index, step, page, failures);
         }
 
         if (failures.length > 0) {
@@ -54,7 +50,9 @@ test.describe("Fobles Other Buttons", () => {
     });
 });
 
-async function testOneJumpButton(target: menuTarget,
+
+
+async function stepExamineOneJumpButton(target: menuTarget,
     index: number,
     step: (title: string,
         body: (fullTitle: string) => Promise<void>, options?: { timeout?: number; screenshot?: boolean; }) => Promise<void>, 
@@ -65,7 +63,7 @@ async function testOneJumpButton(target: menuTarget,
         await step(
             `Click "${target.label}": URL contains "${target.url}"`,
             async () => {
-                await testOneJumpButtonInner(index, page, target);
+                await stepExamineOneJumpButtonInner(index, page, target);
             },
             { timeout: CONST.TIMEOUTS.STEP_TIMEOUT_MS }
         );
@@ -80,7 +78,7 @@ async function testOneJumpButton(target: menuTarget,
    
 }
 
-async function testOneJumpButtonInner(index: number, page: Page, target: menuTarget) {
+async function stepExamineOneJumpButtonInner(index: number, page: Page, target: menuTarget) {
     const foblesFrame: Frame = await openSitecorePageAndFindFoblesFrame(page);
     await ClickFoblesMenuButton(page);
     await expectFlyoutVisible(foblesFrame);

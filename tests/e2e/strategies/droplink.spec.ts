@@ -13,7 +13,7 @@ test.describe("Strategy scenario: droplink", () => {
     
     await setupContentEditorForTesting(page,STRATEGY_SCENARIOS.DROP_LINK);
     
-    await showBillboard(page, factoryStrategyTestContext.name, { xPercent: 50, yPercent: 50 });
+    await showBillboard(page, factoryStrategyTestContext.name);
     const testContext: StrategyTestContext = await factoryStrategyTestContext(page, STRATEGY_SCENARIOS.DROP_LINK, testInfo);
 
     await stepExpectSitecoreInitialConditions(testContext);

@@ -74,10 +74,10 @@ export async function dragToolbarToCornerLocation(page: Page, cornerPosition: Co
     console.log(`[macro] dragToolbarToCornerLocation ${cornerPosition.corner}`)
 
     
-    await showBillboard(page, `Find Fobles toolbar`, { xPercent: 50, yPercent: 50 });
+    await showBillboard(page, `Find Fobles toolbar`);
     const foblesFrame = await findFrameWithSelector(page, CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
     
-    await showBillboard(page, `Find Toolbar grip`, { xPercent: 50, yPercent: 50 });
+    await showBillboard(page, `Find Toolbar grip`);
     const toolbarGrip = foblesFrame.locator(CONST.SITECORE.SELECTORS.TOOLBAR_GRIP).first();
     highlightLocator(toolbarGrip, "Toolbar grip");
     

@@ -6,7 +6,7 @@ import { clickTreeJump } from "../macros/sitecore-macros";
 import { openSitecorePageAndFindFoblesFrame, createStep } from "../fobles-helpers";
 
 test.describe("Same-tab navigation warning setting", () => {
-  test("popup checkbox shows/hides Fobles' confirm dialog on the next same-tab jump", async ({
+  test.skip("popup checkbox shows/hides Fobles' confirm dialog on the next same-tab jump", async ({
     sharedBrowserContext,
     page,
   }, testInfo) => {

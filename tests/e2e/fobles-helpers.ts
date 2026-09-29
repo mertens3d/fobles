@@ -31,6 +31,20 @@ import { logStepDividerStart } from "./helpers/logging-helpers";
 
 type Screenshottable = Pick<Locator, "screenshot">;
 
+
+
+export async function setupContentEditorForTestingBasic(
+  page: Page
+) {
+  await openContentEditor(page);
+  console.log(`[fobles] Navigation finished at ${page.url()}`);
+  await ensureMouseMarkerExists(page);
+  await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
+  await moveMousetoCenterMonitor(page);
+}
+
+
+
 export async function setupContentEditorForTesting(
   page: Page,
   scenario: StrategyScenarioData,

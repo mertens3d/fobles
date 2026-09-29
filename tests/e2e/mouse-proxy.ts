@@ -1,3 +1,4 @@
+import { showBillboard } from "./billboard";
 import { CONST } from "./CONST";
 import {
   expect,
@@ -61,6 +62,12 @@ export async function getButtonSize(
 
 export async function ensureMouseMarkerExists(page: Page | Frame): Promise<void> {
   if (isSprintMode()) return;
+
+  const viewport = await page.evaluate(() => ({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  }));
+  lastKnownMousePosition = { x: viewport.width / 2, y: viewport.height / 2 };
   await page.evaluate((markerConfig) => {
     if (!document.getElementById(markerConfig.ID)) {
       const marker = document.createElement("div");
@@ -285,7 +292,7 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
   expect(movedState.top).toBeGreaterThan(90);
 }
 
-export async function drawLineToCoord(
+export async function drawMousePath(
   page: Page,
   startPosition: MouseCoordinates,
   targetPosition: MouseCoordinates,
@@ -384,7 +391,7 @@ export async function moveMouseToBoundingBox(
   console.log(await targetLocator.isVisible());
 
   const elementHandle = await targetLocator.elementHandle();
-  console.log(elementHandle);
+  //console.log(elementHandle);
 
 
   if (!(await targetLocator.isVisible())) {
@@ -507,7 +514,7 @@ export async function moveMouseToPosition(
   console.log(
     `[fobles] Mouse move '${label}': start=(${startPosition.x.toFixed(1)}, ${startPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${mouseSteps}`,
   );
-  drawLineToCoord(page, startPosition, targetPosition);
+  drawMousePath(page, startPosition, targetPosition);
   for (let mouseStep = 1; mouseStep <= mouseSteps; mouseStep += 1) {
     // console.log(`[fobles] Mouse move '${label}': step ${mouseStep}/${mouseSteps}`);
     const progress = mouseStep / mouseSteps;
@@ -527,11 +534,12 @@ export async function moveMouseToPosition(
   );
 }
 export async function moveMousetoCenterMonitor(page: Page): Promise<void> {
-    const viewport = await page.evaluate(() => ({
+  const viewport = await page.evaluate(() => ({
     width: window.innerWidth,
     height: window.innerHeight,
   }));
-const center = { x: viewport.width / 2, y: viewport.height / 2 };
+  await showBillboard(page, "Mouse to default");
+  const center = { x: viewport.width / 2, y: viewport.height / 2 };
   await moveMouseToPosition(page, center, "center of monitor");
 }
 

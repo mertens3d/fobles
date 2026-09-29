@@ -53,14 +53,14 @@ export const APPLICATION_PAGE_GROUP: MenuGroup = {
   title: TEXT.GROUP_NAME.APPLICATION_PAGES,
   groupMembers: [
     { id: QUICK_MENU_BUTTON_ID.POWERSHELL_ISE, label: "PowerShell ISE", url: "/sitecore/shell/Applications/PowerShell/PowerShellIse?sc_bw=1", useCurrentItemId: true, icon: "/-/icon/powershell/48x48/ise8.png", isXPOnly: false, isAIOnly: false },
-    { id: QUICK_MENU_BUTTON_ID.INSTALLATION_WIZARD, label: "Installation Wizard", url: "/sitecore/shell/applications/tools/installer/installationwizard", icon: "/-/icon/Applications/48x48/cd.png", isXPOnly: false, isAIOnly: false },
+    { id: QUICK_MENU_BUTTON_ID.INSTALLATION_WIZARD, label: "Installation Wizard", url: "/sitecore/shell/applications/tools/installer/installationwizard", icon: "/-/icon/Applications/48x48/cd.png", isXPOnly: true, isAIOnly: false },
     { id: QUICK_MENU_BUTTON_ID.KICK_USER, label: "Kick User", url: "/sitecore/client/Applications/LicenseOptions/KickUser", icon: KICK_USER_ICON, isXPOnly: false, isAIOnly: false },
     { id: QUICK_MENU_BUTTON_ID.KICK_ALL_USERS, label: "Kick All Users", action: (doc) => kickAllUsers(doc), icon: KICK_USER_ICON, isIncomplete: true, isXPOnly: false, isAIOnly: false },
     { id: QUICK_MENU_BUTTON_ID.FILE_EXPLORER, label: "File Explorer", url: "/sitecore/shell/default.aspx?xmlcontrol=FileExplorer", icon: "/-/icon/Applications/48x48/folder_window.png", isXPOnly: false, isAIOnly: false },
     { id: QUICK_MENU_BUTTON_ID.CONTROL_PANEL, label: "Control Panel", url: "/sitecore/client/Applications/ControlPanel.aspx", icon: "/-/icon/launchpadicons/48x48/controlpanel.png", isXPOnly: false, isAIOnly: false },
     { id: QUICK_MENU_BUTTON_ID.LAUNCHPAD, label: "Launchpad", url: "/sitecore/shell/sitecore/client/applications/launchpad", icon: "/sitecore/shell/client/Applications/LaunchPad/Assets/dots-grid.svg", isXPOnly: false, isAIOnly: false },
     { id: QUICK_MENU_BUTTON_ID.CONTENT_EDITOR, label: "Content Editor", url: SITECORE.RELATIVE_PATHS.CONTENT_EDITOR, icon: "/-/icon/launchpadicons/48x48/contenteditor.png", isXPOnly: false, isAIOnly: false },
-    { id: QUICK_MENU_BUTTON_ID.PACKAGE_DESIGNER, label: "Package Designer", url: "/sitecore/shell/default.aspx?xmlcontrol=Application&hdl=E13B497DCC8642C390AAD7438BB8663B", isXPOnly: false, isAIOnly: false },
+    { id: QUICK_MENU_BUTTON_ID.PACKAGE_DESIGNER, label: "Package Designer", url: "/sitecore/shell/default.aspx?xmlcontrol=Application&hdl=E13B497DCC8642C390AAD7438BB8663B", isXPOnly: true, isAIOnly: false },
     { id: QUICK_MENU_BUTTON_ID.DESKTOP, label: "Desktop", url: "/sitecore/shell/default.aspx", icon: "/-/icon/launchpadicons/48x48/desktop.png", isXPOnly: false, isAIOnly: false },
   ],
 };

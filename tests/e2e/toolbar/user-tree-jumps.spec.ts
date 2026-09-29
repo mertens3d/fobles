@@ -5,7 +5,7 @@ import { clickWithMouseMarker } from "../mouse-proxy";
 import { openSitecorePageAndFindFoblesFrame, createStep } from "../fobles-helpers";
 import { ClickFoblesMenuButton } from "../macros/fobles-macros";
 import { expectFlyoutVisible } from "../expectSnippets/expectSnippets";
-import { addTestRow, openTreeJumpsColumn, removeTestRowIfPresent, setTestRowEnabled } from "./OtherSettings.helpers";
+import { addTestRow, openTreeJumpsColumn, removeTestRowIfPresent, setTestRowEnabled } from "./support/other-settings-helpers";
 
 test.describe("User Tree Jumps", () => {
   test("Additional Settings adds and normalizes a User Tree Jump", async ({ sharedBrowserContext }) => {

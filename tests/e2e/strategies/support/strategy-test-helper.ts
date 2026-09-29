@@ -45,7 +45,7 @@ export async function stepExpectSitecoreInitialConditions(testContext: StrategyT
 
       logStepDividerStart(stepExpectSitecoreInitialConditions.name);
 
-      await showBillboard(testContext.page, stepExpectSitecoreInitialConditions.name, { xPercent: 50, yPercent: 50 });
+      await showBillboard(testContext.page, stepExpectSitecoreInitialConditions.name);
       const fieldTable = await testContext.getFieldTable();
       await highlightLocator(fieldTable, "fieldTable");
       await expect(fieldTable).toBeVisible();

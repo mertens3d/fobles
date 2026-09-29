@@ -1,6 +1,8 @@
 
-import { expect, type Locator, type Page } from "../fixtures/playwright";
-import { CONST } from "../CONST";
+import { expect, type Frame, type Locator, type Page } from "../../fixtures/playwright";
+import { CONST } from "../../CONST";
+import type { menuTarget } from "../toolbar-other.spec";
+import { findFoblesFrame } from "../../frame-finder";
 
 
 export async function saveQuickMenuButtons(optionsPage: Page): Promise<void> {
@@ -56,4 +58,19 @@ export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
   const treeJumpsColumn = optionsPage.locator(".quick-menu-column", { hasText: "Tree Jumps" });
   await treeJumpsColumn.locator("summary").click();
   return treeJumpsColumn;
+}
+
+export async function getFoblesMenuTargets(page: Page) {
+    const foblesFrame = await findFoblesFrame(page);
+    const menuButtons = foblesFrame.locator(CONST.FOBLES.LOCATORS.MENU_URL);
+    const menuAttribute = CONST.FOBLES.ATTRIBUTES.MENU_URL;
+    const targets: menuTarget[] = await menuButtons.evaluateAll(
+      (buttons,attribute) => 
+        buttons.map((button) => ({
+        label: button.textContent?.trim() ?? "",
+        url: button.getAttribute(attribute) ?? "",
+    })),
+    menuAttribute
+    );
+    return targets;
 }

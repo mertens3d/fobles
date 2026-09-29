@@ -5,7 +5,7 @@ import { isSprintMode } from "./mouse-proxy";
 export async function showBillboard(
   page: Page,
   text: string,
-  position: { xPercent: number; yPercent: number },
+  position: { xPercent: number; yPercent: number } =  { xPercent: 50, yPercent: 80 }
 ): Promise<void> {
   if (isSprintMode()) return;
   const { xPercent, yPercent } = position;
