@@ -5,7 +5,6 @@ import {
     moveMouseToPosition,
     resolveCornerPosition,
     ensureMouseMarkerExists,
-    moveMouseToLocatorCenter,
     highlightLocator,
     moveMouseToBoundingBox,
 } from "../mouse-proxy";
@@ -13,7 +12,6 @@ import type { CornerPosition, MouseCoordinates } from "../mouse-proxy.types";
 import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
 import { walkFrameDocuments } from "../helpers/frame-helpers";
 import { showBillboard } from "../billboard";
-import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 
 export async function ClickFoblesMenuButton(
     page: Page) {
@@ -95,12 +93,12 @@ export async function dragToolbarToCornerLocation(page: Page, cornerPosition: Co
 // unique (a field elsewhere could reference the same item) - .first() is safe here regardless,
 // since any such duplicate would still navigate to the same item. Dismisses Fobles' own confirm
 // dialog afterward, same as clickTreeJump.
-export async function clickTreeFoblesButton(
+export async function clickFoblesTreeButton(
     page: Page,
     itemId: string,
     options?: { turnOffWarning?: boolean; skipDialogDismiss?: boolean },
 ): Promise<void> {
-    console.log("[Macro: clickTreeFoblesButton] - Start");
+    console.log("[Macro: clickFoblesTreeButton] - Start");
     const buttonSelector = `${CONST.SITECORE.SELECTORS.TREE_FOBLES_BUTTON}[data-fobles-item-id="${itemId}"]`;
     const treeFrame = await findFrameWithSelector(page, buttonSelector, "tree fobles button", 10_000);
     await ensureMouseMarkerExists(page);
@@ -152,24 +150,6 @@ export async function dismissFoblesConfirmDialogIfPresent(
         // await foblesWaitForTimeout(page, 150);
     } while (Date.now() < deadline);
     console.log("[fobles] No confirm dialog appeared within 3000ms - treating as not shown");
-}
-
-
-export async function ClickLBoltButton(page: Page, foblesFrame: Frame) {
-    const lboltButton = foblesFrame
-        .locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON)
-        .first();
-    await clickWithMouseMarker(page, lboltButton, "LBolt button");
-}
-
-// Clicks the LBolt button via clickWithMouseMarker, which already pauses afterward so the click's
-// effect is visible on screen before the next interaction fires.
-export async function clickLboltButton(
-    page: Page,
-    lboltButton: Locator,
-): Promise<void> {
-    console.log("[Macro: clickLboltButton] - Start");
-    await clickWithMouseMarker(page, lboltButton, "LBolt button");
 }
 
 // Self-sufficient variant of clickLboltButton - finds its own fobles frame and LBolt button

@@ -2,13 +2,14 @@ import { test, type Page } from "../fixtures/playwright";
 import { CONST } from "../CONST";
 import { openSitecorePage } from "../fixtures/sitecore";
 import {   clickTreeJump,  scrollTreeContainer } from "../macros/sitecore-macros";
-import { resolveCornerPosition, ensureMouseMarkerExists } from "../mouse-proxy";
+import { resolveCornerPosition, ensureMouseMarkerExists, moveMouseToDefault } from "../mouse-proxy";
 import { findFrameWithSelector } from "../frame-finder";
 import { getExtensionId, setFoblesNavWarningVisible } from "../fixtures/extension";
 import { playDemoBeat } from "./demo-beat";
 import { videoTestSetup } from "./video-test-setup";
 import { RECORD_VIDEO } from "../../settings/settings";
-import { clickLbolt, clickTreeFoblesButton, dragToolbarTo } from "../macros/fobles-macros";
+import { clickLbolt, clickFoblesTreeButton, dragToolbarTo } from "../macros/fobles-macros";
+import { showSpeakBubble } from "../speak-bubble";
 
 test.describe("Promo Video", () => {
   test("promo video", async ({ page: sharedPage, sharedBrowserContext }) => {
@@ -79,7 +80,7 @@ async function demoTreeFoblesClick(page: Page) {
   await playDemoBeat(page, {
     name: "demoTreeFoblesClick-ClickFobles",
     speechText: "Click the Fobles button to jump straight to that item",
-    action: () => clickTreeFoblesButton(page, "CDD3F21381BB47708FEC4E1DD65EAA66"),
+    action: () => clickFoblesTreeButton(page, "CDD3F21381BB47708FEC4E1DD65EAA66"),
   });
 }
 
@@ -95,6 +96,9 @@ async function demoToolbarDrag(page: Page) {
     highlightResult: false,
   });
 
+  await showSpeakBubble(page, "Drag the toolbar anywhere on the page", CONST.FOBLES.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION);
+  await moveMouseToDefault(page);
   await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_3));
+  await moveMouseToDefault(page);
   await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT));
 }

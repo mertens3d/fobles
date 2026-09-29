@@ -5,7 +5,7 @@ import { isSprintMode } from "./mouse-proxy";
 export async function showSpeakBubble(
   page: Page,
   text: string,
-  position: { xPercent: number; yPercent: number },
+  position: { xPercent: number; yPercent: number } = CONST.FOBLES.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION,
 ): Promise<void> {
   if (isSprintMode()) return;
   const { xPercent, yPercent } = position;

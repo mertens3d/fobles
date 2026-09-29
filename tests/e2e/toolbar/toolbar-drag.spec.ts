@@ -3,7 +3,7 @@ import { expectFoblesContainerDom, expectFoblesContainerVisible } from "../expec
 import { openSitecorePage } from "../fixtures/sitecore";
 import { CONST } from "../CONST";
 import { createStep, setupContentEditorForTesting, setupContentEditorForTestingBasic } from "../fobles-helpers";
-import { resolveCornerPosition, ensureMouseMarkerExists, moveMousetoCenterMonitor as moveMouseToDefault } from "../mouse-proxy";
+import { resolveCornerPosition, ensureMouseMarkerExists, moveMouseToDefault as moveMouseToDefault } from "../mouse-proxy";
 import { findFrameWithSelector } from "../frame-finder";
 import { dragToolbarTo, dragToolbarToCornerLocation } from "../macros/fobles-macros";
 import { foblesWaitForTimeout } from "../helpers/wait-helpers";

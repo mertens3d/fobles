@@ -7,7 +7,8 @@ export const CONST = {
       MENU_URL: "data-fobles-menu-url",
       BUTTON: "data-is-fobles-button",
       PROCESSED: "data-fobles-processed",
-      WRAPPER: "data-fobles-wrapper"
+      WRAPPER: "data-fobles-wrapper",
+      TREE_JUMP_PATH: "data-fobles-tree-jump-path"
     },
     LOCATORS: {
       MENU_URL: "[data-fobles-menu-url]"
@@ -27,6 +28,9 @@ export const CONST = {
     SELECTORS: {
       BUTTON: "[data-is-fobles-button='1']",
       WRAPPER: "[data-fobles-wrapper]",
+    },
+    SPEAK_BUBBLE: {
+      DEFAULT_SPEECH_POSITION: { xPercent: 50, yPercent: 90 },
     },
     BILLBOARD: {
       ID: "playwright-billboard",
@@ -72,8 +76,8 @@ export const CONST = {
   TOOLBAR_DRAG_POSITIONS: {
     DEFAULT: { corner: "upper-right", offsetX: 280, offsetY: 80 },
     POSITION_1: { corner: "upper-right", offsetX: 200, offsetY: 160 },
-    POSITION_2: { corner: "bottom-right", offsetX: 166.78125, offsetY: 66.609375 },
-    POSITION_3: { corner: "bottom-right", offsetX: 166.78125, offsetY: 66.609375 },
+    POSITION_2: { corner: "bottom-right", offsetX: 200, offsetY: 65 },
+    POSITION_3: { corner: "bottom-right", offsetX: 200, offsetY: 65 },
   },
   MOUSE_MARKER: {
     ID: "playwright-mouse-marker",
@@ -200,7 +204,10 @@ export const CONST = {
       CONTENT_ITEM_ID: "0DE95AE4-41AB-4D01-9EB0-67441B7C2450"
     },
     DOM: {
-      SITECORE_CONTENT_TREE_NODE_ID: "Tree_Node_" + "0DE95AE4-41AB-4D01-9EB0-67441B7C2450",
+      TREE_NODE_IDS:{
+
+        CONTENT: "Tree_Node_" + "0DE95AE4-41AB-4D01-9EB0-67441B7C2450",
+      }
     },
     LABELS: {
       TOGGLE_FOBLES: /toggle fobles/i,

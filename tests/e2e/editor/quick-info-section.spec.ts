@@ -9,10 +9,10 @@ import {
 import { ensureMouseMarkerExists } from "../mouse-proxy";
 
 import { findFoblesFrame } from "../frame-finder";
-import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
 import { clickLbolt } from "../macros/fobles-macros";
 import { foblesWaitForTimeout } from "../helpers/wait-helpers";
+import { FOBLES_HIDDEN_CLASS_PATTERN } from "../strategies/support/CONST";
 
 const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 

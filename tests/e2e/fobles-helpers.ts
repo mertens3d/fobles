@@ -9,7 +9,7 @@ import { openContentEditor, openSitecorePage } from "./fixtures/sitecore";
 import {
   clickWithMouseMarker,
   ensureMouseMarkerExists,
-  moveMousetoCenterMonitor,
+  moveMouseToDefault,
   moveMouseToPosition,
 } from "./mouse-proxy";
 import { CONST } from "./CONST";
@@ -17,7 +17,7 @@ import { clickContentTabIfPresent } from "./macros/sitecore-macros";
 import { findFoblesFrame, findFrameWithSelector } from "./frame-finder";
 import type { TestInfo } from "@playwright/test";
 import {
-  ClickLBoltButton,
+  clickLbolt,
   dismissFoblesConfirmDialogIfPresent,
   dragToolbarToCornerLocation,
 } from "./macros/fobles-macros";
@@ -40,7 +40,7 @@ export async function setupContentEditorForTestingBasic(
   console.log(`[fobles] Navigation finished at ${page.url()}`);
   await ensureMouseMarkerExists(page);
   await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
-  await moveMousetoCenterMonitor(page);
+  await moveMouseToDefault(page);
 }
 
 
@@ -61,7 +61,7 @@ export async function setupContentEditorForTesting(
   await ensureMouseMarkerExists(page);
 
   await dragToolbarToCornerLocation(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT);
-  await moveMousetoCenterMonitor(page);
+  await moveMouseToDefault(page);
   // await dragToolbarToCornerLocation(
   //   page,
   //   CONST.TOOLBAR_DRAG_POSITIONS.POSITION_1,
@@ -575,7 +575,7 @@ async function logActivationState(
 export async function activateFobles(page: Page): Promise<Frame> {
   await openContentEditor(
     page,
-    CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID,
+    CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT,
   );
 
   await expect
@@ -584,7 +584,7 @@ export async function activateFobles(page: Page): Promise<Frame> {
         for (const frame of page.frames()) {
           if (
             (await frame
-              .locator(`#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`)
+              .locator(`#${CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`)
               .count()) > 0
           ) {
             return true;
@@ -598,12 +598,12 @@ export async function activateFobles(page: Page): Promise<Frame> {
 
   const treeFrame = await findFrameWithSelector(
     page,
-    `#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`,
-    `tree node #${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`,
+    `#${CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
+    `tree node #${CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
   );
   await clickWithMouseMarker(
     page,
-    treeFrame.locator(`#${CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID}`),
+    treeFrame.locator(`#${CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`),
     "Tree node",
   );
 
@@ -612,7 +612,7 @@ export async function activateFobles(page: Page): Promise<Frame> {
   await ensureMouseMarkerExists(foblesFrame);
 
   await expectLBoltButton(foblesFrame);
-  await ClickLBoltButton(page, foblesFrame);
+  await clickLbolt(page);
 
   console.log(
     `[fobles] LBolt clicked; persisted state now ${await foblesFrame.evaluate(() => localStorage.getItem("fobles_state"))}`,
@@ -628,7 +628,7 @@ export async function openSitecorePageAndFindFoblesFrame(
 ): Promise<Frame> {
   await openContentEditor(
     page,
-    CONST.SITECORE.DOM.SITECORE_CONTENT_TREE_NODE_ID,
+    CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT,
   );
   await ensureMouseMarkerExists(page);
 

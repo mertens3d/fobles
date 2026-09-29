@@ -533,7 +533,7 @@ export async function moveMouseToPosition(
     `[fobles] E) Mouse move '${label}' ended at (${initialPosition.x.toFixed(1)}, ${initialPosition.y.toFixed(1)})`,
   );
 }
-export async function moveMousetoCenterMonitor(page: Page): Promise<void> {
+export async function moveMouseToDefault(page: Page): Promise<void> {
   const viewport = await page.evaluate(() => ({
     width: window.innerWidth,
     height: window.innerHeight,

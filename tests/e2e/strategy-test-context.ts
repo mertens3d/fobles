@@ -8,7 +8,6 @@ import { CONST } from "./CONST";
 import { clickContentTabIfPresent } from "./macros/sitecore-macros";
 import { findFoblesFrame, findFrameWithSelector } from "./frame-finder";
 import type { TestInfo } from "@playwright/test";
-import { ClickLBoltButton, dismissFoblesConfirmDialogIfPresent, dragToolbarToCornerLocation } from "./macros/fobles-macros";
 import { expectLBoltButton } from "./expectSnippets/expectSnippets";
 import type { StrategyScenarioData, StrategyTestContext } from "./strategies/support/scenario.types";
 import type { FoblesTestStep } from "./types";
