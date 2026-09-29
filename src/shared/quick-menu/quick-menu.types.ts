@@ -27,3 +27,15 @@ export type UserTreeJump = {
   icon: string;
   pathSuffix: string;
 };
+
+// A user-defined Admin Page shortcut (src/shared/quick-menu/user-admin-page-settings.ts) - like
+// UserTreeJump, not a fixed catalog entry; the user creates any number of them (up to
+// USER_ADMIN_PAGE.MAX_ENTRIES). Unlike a Tree Jump's pathSuffix, url is already relative to the
+// current domain root (e.g. "/unicorn.aspx"), matching ADMIN_PAGE_GROUP's own catalog entries.
+export type UserAdminPage = {
+  id: string;
+  label: string;
+  enabled: boolean;
+  icon: string;
+  url: string;
+};

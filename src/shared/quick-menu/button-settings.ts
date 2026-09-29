@@ -4,6 +4,22 @@ import type { QuickMenuButtonSetting, QuickMenuButtonSettings } from "./quick-me
 
 export type { QuickMenuButtonSetting, QuickMenuButtonSettings } from "./quick-menu.types";
 
+// Recognizes both icon prefix conventions already used elsewhere in this codebase's own catalog
+// (see src/shared/quick-menu/menu-groups.ts) so a user pasting either one still normalizes cleanly.
+const KNOWN_ICON_PREFIX_PATTERN = /^\/?[~-]\/icon\//i;
+// The prefix reapplied after stripping whatever the user typed - Sitecore's icon-serving virtual path.
+const ICON_PREFIX = "/-/icon/";
+
+// Shared by every user-defined quick-menu entry (Tree Jumps, Admin Pages, ...): strips whatever
+// prefix (if any) the user typed or pasted, then reapplies the one Sitecore actually expects, so
+// the user only ever has to get the icon's own relative path right.
+export function normalizeQuickMenuIconPath(rawIcon: string, defaultIconPath: string): string {
+  const trimmed = rawIcon.trim();
+  const withoutPrefix = trimmed.replace(KNOWN_ICON_PREFIX_PATTERN, "").replace(/^\/+/, "");
+  const relativePath = withoutPrefix || defaultIconPath;
+  return `${ICON_PREFIX}${relativePath}`;
+}
+
 // Sitecore item names disallow these characters; suffixes are joined with "/" as path segments.
 const INVALID_SUFFIX_CHARS = /[.\\:*?"<>|]/g;
 

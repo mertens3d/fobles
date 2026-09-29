@@ -13,15 +13,22 @@ import {
   setUserTreeJumps,
   type UserTreeJump,
 } from "../shared/quick-menu/user-tree-jump-settings";
+import {
+  getUserAdminPages,
+  setUserAdminPages,
+  type UserAdminPage,
+} from "../shared/quick-menu/user-admin-page-settings";
 import { TEXT } from "../content/constants";
 import { collectUserTreeJumpEntries, renderUserTreeJumpEditor } from "./user-tree-jump-editor";
+import { collectUserAdminPageEntries, renderUserAdminPageEditor } from "./user-admin-page-editor";
 import { getElement } from "./dom-helpers";
 
 const quickMenuButtonsContainer = getElement<HTMLDivElement>("quick-menu-buttons");
 const quickMenuButtonsStatus = getElement<HTMLParagraphElement>("quick-menu-buttons-status");
-// Set while rendering the Tree Jumps column, so the Save handler below can read the User Tree
-// Jump rows back out of it - there's no other column that needs that on save.
+// Set while rendering the Tree Jumps/Admin Pages columns, so the Save handler below can read the
+// User Tree Jump/User Admin Page rows back out of them - no other column needs that on save.
 let treeJumpsColumnSection: HTMLElement | null = null;
+let adminPagesColumnSection: HTMLElement | null = null;
 
 function createQuickMenuButtonRow(
   descriptor: QuickMenuButtonDescriptor,
@@ -83,9 +90,11 @@ function createQuickMenuButtonRow(
 function renderQuickMenuButtons(
   userSettings: QuickMenuButtonSettings,
   userTreeJumps: readonly UserTreeJump[],
+  userAdminPages: readonly UserAdminPage[],
 ): void {
   quickMenuButtonsContainer.textContent = "";
   treeJumpsColumnSection = null;
+  adminPagesColumnSection = null;
 
   const columns = new Map<string, QuickMenuButtonDescriptor[]>();
   QUICK_MENU_BUTTON_CATALOG.forEach((descriptor) => {
@@ -113,6 +122,10 @@ function renderQuickMenuButtons(
     if (columnTitle === TEXT.GROUP_NAME.TREE_JUMPS) {
       renderUserTreeJumpEditor(columnSection, userTreeJumps);
       treeJumpsColumnSection = columnSection;
+    }
+    if (columnTitle === TEXT.GROUP_NAME.ADMIN_PAGES) {
+      renderUserAdminPageEditor(columnSection, userAdminPages);
+      adminPagesColumnSection = columnSection;
     }
     quickMenuButtonsContainer.appendChild(columnSection);
     columnDetailsElements.push(columnSection);
@@ -151,18 +164,24 @@ export function initQuickMenuButtons(): void {
     const userTreeJumps = treeJumpsColumnSection
       ? collectUserTreeJumpEntries(treeJumpsColumnSection)
       : [];
+    const userAdminPages = adminPagesColumnSection
+      ? collectUserAdminPageEntries(adminPagesColumnSection)
+      : [];
 
     void Promise.all([
       setQuickMenuButtonSettings(userSettings),
       setUserTreeJumps(userTreeJumps),
+      setUserAdminPages(userAdminPages),
     ]).then(() => {
       quickMenuButtonsStatus.textContent = "Quick menu buttons saved.";
     });
   });
 
-  void Promise.all([getQuickMenuButtonSettings(), getUserTreeJumps()]).then(
-    ([userSettings, userTreeJumps]) => {
-      renderQuickMenuButtons(userSettings, userTreeJumps);
-    },
-  );
+  void Promise.all([
+    getQuickMenuButtonSettings(),
+    getUserTreeJumps(),
+    getUserAdminPages(),
+  ]).then(([userSettings, userTreeJumps, userAdminPages]) => {
+    renderQuickMenuButtons(userSettings, userTreeJumps, userAdminPages);
+  });
 }

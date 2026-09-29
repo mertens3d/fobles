@@ -105,7 +105,7 @@ const getOrCreateProxyButtonsPanel = (doc: Document): HTMLDivElement | null => {
   const trigger = doc.querySelector(SELECTORS.PROXY_BUTTONS_TRIGGER);
   if (!trigger) return null;
 
-  const existing = trigger.querySelector(SELECTORS.PROXY_BUTTONS);
+  const existing = trigger.querySelector<HTMLDivElement>(SELECTORS.PROXY_BUTTONS);
   if (existing) return existing;
 
   const panel = createProxyButtonsPanel(doc);

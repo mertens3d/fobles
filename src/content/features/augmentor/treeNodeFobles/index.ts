@@ -80,7 +80,7 @@ function addTreeOpenButton(node: Element): void {
     return;
   }
 
-  const glyph = node.querySelector(SITECORE.SELECTORS.TREE_GLYPH);
+  const glyph = node.querySelector<HTMLElement>(SITECORE.SELECTORS.TREE_GLYPH);
   const glyphHeight = glyph
     ? Math.ceil(glyph.getBoundingClientRect().height || glyph.clientHeight || glyph.offsetHeight || 18)
     : 18;

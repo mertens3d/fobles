@@ -43,7 +43,7 @@ function listenForFoblesDismissal(doc: Document): void {
       ? target as Element
       : target.parentElement;
     if (
-      targetElement?.closest(CONST.FOBLES.SELECTORS.BUTTON) ||
+      targetElement?.closest(FOBLES.SELECTORS.BUTTON) ||
       targetElement?.closest(`.${FOBLES.CLASSES.DIALOG.BASE}`) ||
       doc.querySelector(SELECTORS.TOOLBAR_CONTAINER)?.contains(target)
     ) {
@@ -184,7 +184,7 @@ export function clearFobles(doc: Document): void {
       resetElement(original);
     };
 
-    currentDoc.querySelectorAll(CONST.FOBLES.SELECTORS.WRAPPER).forEach((wrapperEl) => {
+    currentDoc.querySelectorAll(FOBLES.SELECTORS.WRAPPER).forEach((wrapperEl) => {
       const wrapper = wrapperEl as HTMLElement;
       const original =
         (wrapper.previousElementSibling as HTMLElement | null) ??
@@ -192,7 +192,7 @@ export function clearFobles(doc: Document): void {
         (wrapper.querySelector(FOBLES.SELECTORS.HIDDEN_PROCESSED)) ??
         (wrapper.querySelector(FOBLES.SELECTORS.PROCESSED));
 
-      const button = wrapper.querySelector(CONST.FOBLES.SELECTORS.BUTTON) ?? wrapper.querySelector(FOBLES.SELECTORS.TEMPLATE_BUTTON);
+      const button = wrapper.querySelector(FOBLES.SELECTORS.BUTTON) ?? wrapper.querySelector(FOBLES.SELECTORS.TEMPLATE_BUTTON);
       if (button) {
         button.remove();
       }
@@ -209,7 +209,7 @@ export function clearFobles(doc: Document): void {
       wrapper.remove();
     });
 
-    currentDoc.querySelectorAll(CONST.FOBLES.SELECTORS.BUTTON).forEach((button) => {
+    currentDoc.querySelectorAll(FOBLES.SELECTORS.BUTTON).forEach((button) => {
       if (button.hasAttribute(ATTRIBUTE.DATA.KEY.FOBLES_NAV_OWNER)) return;
       button.remove();
     });

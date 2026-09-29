@@ -24,7 +24,7 @@ export function injectToolbar(context: ToolbarContext): void {
   const host = context.doc.body;
   if (!host) return;
 
-  let container = context.doc.querySelector(
+  let container = context.doc.querySelector<HTMLDivElement>(
     SELECTORS.TOOLBAR_CONTAINER,
   );
   if (!container) {

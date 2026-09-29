@@ -14,6 +14,7 @@ export const TEXT = {
     OTHER: "Other",
     THIRD_PARTY: "3rd Party",
     TREE_JUMPS: "Tree Jumps",
+    USER_ADMIN_PAGES: "User Admin Pages",
     USER_TREE_JUMPS: "User Tree Jumps",
   },
   HIDE_NAV: "Hide Fobles navigation",

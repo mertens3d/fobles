@@ -6,6 +6,7 @@ import {
 } from "./handlers";
 import { createMenuColumn } from "./column-builder";
 import { initUserTreeJumpGroup } from "./user-tree-jump-group";
+import { initUserAdminPageGroup } from "./user-admin-page-group";
 import {
   ADMIN_PAGE_GROUP,
   AI_GROUP,
@@ -24,14 +25,14 @@ function createQuickMenu(doc: Document, closeMenu: () => void): HTMLDivElement {
   const treeJumpsColumn = createMenuColumn(doc, TEXT.GROUP_NAME.TREE_JUMPS, TREE_JUMP_GROUP, closeMenu);
   initUserTreeJumpGroup(doc, treeJumpsColumn, closeMenu);
   columns.appendChild(treeJumpsColumn);
-  columns.appendChild(
-    createMenuColumn(
-      doc,
-      TEXT.GROUP_NAME.ADMIN_PAGES,
-      [...ADMIN_PAGE_GROUP, AI_GROUP, THIRD_PARTY_GROUP],
-      closeMenu,
-    ),
+  const adminPagesColumn = createMenuColumn(
+    doc,
+    TEXT.GROUP_NAME.ADMIN_PAGES,
+    [...ADMIN_PAGE_GROUP, AI_GROUP, THIRD_PARTY_GROUP],
+    closeMenu,
   );
+  initUserAdminPageGroup(doc, adminPagesColumn, closeMenu);
+  columns.appendChild(adminPagesColumn);
   // Omits a column title: the sole group in this column already renders its own title.
   columns.appendChild(createMenuColumn(doc, undefined, [APPLICATION_PAGE_GROUP], closeMenu));
   menu.appendChild(columns);
@@ -43,7 +44,7 @@ export function getOrCreateQuickMenu(doc: Document, closeMenu: () => void): HTML
   const trigger = doc.querySelector(SELECTORS.QUICK_MENU_TRIGGER);
   if (!trigger) return null;
 
-  const existing = trigger.querySelector(SELECTORS.QUICK_MENU);
+  const existing = trigger.querySelector<HTMLDivElement>(SELECTORS.QUICK_MENU);
   if (existing) return existing;
 
   const menu = createQuickMenu(doc, closeMenu);

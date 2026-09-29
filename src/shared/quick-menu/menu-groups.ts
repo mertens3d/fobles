@@ -45,7 +45,6 @@ export const THIRD_PARTY_GROUP: MenuGroup = {
   title: TEXT.GROUP_NAME.THIRD_PARTY,
   groupMembers: [
     { id: QUICK_MENU_BUTTON_ID.SITECORE_ICON_SEARCH, label: "Sitecore Icon Search", url: "https://sitecoreicons.com/" , icon: "/-/icon/wordprocessing/32x32/search_a_h.png", isXPOnly: false, isAIOnly: false },
-    { id: QUICK_MENU_BUTTON_ID.UNICORN, label: "Unicorn", url: "/unicorn.aspx" , icon: "/~/icon/applicationsv2/32x32/arrow_up_right_green.png", isXPOnly: false, isAIOnly: false },
   ],
 };
 

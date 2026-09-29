@@ -25,6 +25,5 @@ export const QUICK_MENU_BUTTON_ID = {
   SITECORE_ICON_SEARCH: "eb9ba2e4-05c0-4f67-b264-6bdaebf9e987",
   STATS: "44d61409-1a86-4f61-98e6-68cf955b0ebb",
   TEMPLATES: "4aacd5ef-33dd-43ee-a296-08e463d9a01a",
-  UNICORN: "ef3eeef4-6a31-427f-aac5-40f8bf4f3527",
 } as const;
 
