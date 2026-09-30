@@ -1,73 +1,56 @@
 import fs from "node:fs";
 import path from "node:path";
 import { CONST } from "../CONST";
+import {
+  getActiveTestEnvironment as getActiveConfigEnvironment,
+  getTestEnvironments as getConfigEnvironments,
+} from "../../tools/scripts/dev/fobles-config.js";
+import { getSecureSecret } from "../../tools/scripts/dev/secure-secret-store.js";
+import { Secret } from "./secret";
 import type {
   SitecoreEnvironment,
-  SitecoreVersion,
   TestEnvironment,
 } from "./sitecore-environment.types";
 
-const ENV_FILE_NAMES = [".env.local", ".env"] as const;
-
-function assertEnvFileExists(): void {
-  const found = ENV_FILE_NAMES.some((name) => fs.existsSync(path.resolve(name)));
-  if (!found) {
-    throw new Error(
-      `No ${ENV_FILE_NAMES.join(" or ")} file found at the repo root. Copy .env.example to .env and configure ${CONST.ENVIRONMENT.ENV_VAR}.`,
-    );
-  }
-}
-
-export function parseSitecoreEnvironments(): SitecoreEnvironment[] {
-  assertEnvFileExists();
-  const raw = process.env[CONST.ENVIRONMENT.ENV_VAR]?.trim();
-
-  if (!raw) {
-    throw new Error(
-      `${CONST.ENVIRONMENT.ENV_VAR} is required. Configure it as endpoint|friendlyName|version.`,
-    );
-  }
-
-  return raw
-    .split(/\r?\n|;/)
-    .map((entry) => entry.trim())
-    .filter(Boolean)
-    .map((entry) => {
-      const [endpoint, friendlyName, version] = entry
-        .split("|")
-        .map((part) => part.trim());
-
-      if (!endpoint || !friendlyName || !version) {
-        throw new Error(
-          `Invalid ${CONST.ENVIRONMENT.ENV_VAR} entry: "${entry}". Use endpoint|friendlyName|version format.`,
-        );
-      }
-
-      return {
-        endpoint,
-        friendlyName,
-        version: version.toLowerCase() as SitecoreVersion,
-      };
-    });
-}
-
-export function getTestEnvironment(): TestEnvironment {
-  const configuredEnvironments = parseSitecoreEnvironments();
-  const selected = configuredEnvironments[0];
-
+function toSitecoreEnvironment(entry: {
+  endpoint: string;
+  name: string;
+  version: string;
+}): SitecoreEnvironment {
   return {
-    ...selected,
-    baseUrl: selected.endpoint,
-    loginUrl: selected.endpoint,
+    endpoint: entry.endpoint,
+    friendlyName: entry.name,
+    version: entry.version.toLowerCase() as SitecoreEnvironment["version"],
   };
 }
 
+function toTestEnvironment(entry: { endpoint: string; name: string; version: string }): TestEnvironment {
+  const environment = toSitecoreEnvironment(entry);
+  return { ...environment, baseUrl: environment.endpoint, loginUrl: environment.endpoint };
+}
+
+export function getTestEnvironment(): TestEnvironment {
+  return toTestEnvironment(getActiveConfigEnvironment());
+}
+
 export function getTestEnvironments(): TestEnvironment[] {
-  return parseSitecoreEnvironments().map((environment) => ({
-    ...environment,
-    baseUrl: environment.endpoint,
-    loginUrl: environment.endpoint,
-  }));
+  return getConfigEnvironments().map(toTestEnvironment);
+}
+
+export type TestUserCredentials = { username?: string; password?: Secret };
+
+// Resolves the active environment's testUser - a literal "name" is used as-is; *SecretName fields
+// look the value up in the DPAPI secure secret store (npm run secret:set) instead. Passwords are
+// never stored in fobles.environments.json itself - only referenced there by secret name.
+export function getActiveTestUserCredentials(): TestUserCredentials {
+  const testUser = getActiveConfigEnvironment().testUser;
+  if (!testUser) return {};
+
+  const rawPassword = testUser.passwordSecretName ? getSecureSecret(testUser.passwordSecretName) : undefined;
+  return {
+    username: testUser.nameSecretName ? getSecureSecret(testUser.nameSecretName) : testUser.name,
+    password: rawPassword ? new Secret(rawPassword) : undefined,
+  };
 }
 
 export function ensureAuthDir(): string {

@@ -72,7 +72,9 @@ Playwright end-to-end tests live in `tests/e2e/` and exercise the extension agai
 
 ## Setup
 
-1. Copy `.env.example` to `.env` and set `SITECORE_TEST_ENVIRONMENTS` to your local endpoint.
+1. Copy `fobles.environments.example.json` to `fobles.environments.json` and set your own test
+   environment(s) and Sitecore CLI login target(s) - see `tools/scripts/dev/fobles-config.js` for
+   the shape. Also copy `.env.example` to `.env` for `PLAYWRIGHT_AUTH_DIR`/`PLAYWRIGHT_PROFILE_DIR`.
 2. Install browsers once: `npx playwright install`.
 3. Run `npm run test:e2e`. Sitecore's auth cookies appear to be session-only, so a separate
    login-then-close step never survives to the next run - if a test hits a login form, it prints a

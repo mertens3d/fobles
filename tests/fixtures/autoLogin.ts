@@ -1,5 +1,5 @@
 import { expect, type Page } from "@playwright/test";
-import { getTestEnvironment } from "./environment";
+import { getActiveTestUserCredentials, getTestEnvironment } from "./environment";
 import { logDiagnostic } from "./logging";
 import type { AutoLoginContext } from "./autologin.type";
 import { CONST } from "../CONST";
@@ -52,16 +52,18 @@ const AI_LOGIN_SELECTORS = {
   PASSWORD_SUBMIT: "._button-login-password",
 };
 
-// Only runs when both SITECORE_TEST_USER_NAME/SITECORE_TEST_USER_PASSWORD are configured (see
-// .env.example) - without them, behavior is unchanged from the manual-login banner below.
+// Only runs when the active environment's fobles.environments.json testUser resolves both a
+// username and password (literal or via the secure secret store) - without them, behavior is
+// unchanged from the manual-login banner below.
 async function attemptAutoLogin(page: Page): Promise<boolean> {
+  const { username, password } = getActiveTestUserCredentials();
   const autoLoginContext: AutoLoginContext = {
-    username: process.env.SITECORE_TEST_USER_NAME?.trim(),
-    password: process.env.SITECORE_TEST_USER_PASSWORD,
+    username: username?.trim(),
+    password,
   };
 
   console.log(
-    `[sitecore preflight] SITECORE_TEST_USER_NAME/SITECORE_TEST_USER_PASSWORD ${autoLoginContext.username && autoLoginContext.password ? "found" : "not found"}`,
+    `[sitecore preflight] test user credentials ${autoLoginContext.username && autoLoginContext.password ? "found" : "not found"}`,
   );
 
   if (getTestEnvironment().version === "ai") {
@@ -86,7 +88,7 @@ async function attemptAiAutoLogin(
   const usernameField = page.locator(AI_LOGIN_SELECTORS.USERNAME);
   if ((await usernameField.count()) > 0) {
     console.log(
-      "[sitecore preflight] SitecoreAI identifier screen detected - submitting SITECORE_TEST_USER_NAME",
+      "[sitecore preflight] SitecoreAI identifier screen detected - submitting test username",
     );
     await usernameField.fill(username);
     await page.locator(AI_LOGIN_SELECTORS.USERNAME_SUBMIT).click();
@@ -100,9 +102,9 @@ async function attemptAiAutoLogin(
   if ((await passwordField.count()) === 0) return false;
 
   console.log(
-    "[sitecore preflight] SitecoreAI password screen detected - submitting SITECORE_TEST_USER_PASSWORD",
+    "[sitecore preflight] SitecoreAI password screen detected - submitting test password",
   );
-  await passwordField.fill(password);
+  await passwordField.fill(password.reveal());
   await page.locator(AI_LOGIN_SELECTORS.PASSWORD_SUBMIT).click();
   return true;
 }
@@ -113,7 +115,7 @@ async function fillXpPassword(
 ): Promise<void> {
   const password = autoLoginContext.password;
   if (password) {
-    await page.locator(XP_LOGIN_SELECTORS.PASSWORD).fill(password);
+    await page.locator(XP_LOGIN_SELECTORS.PASSWORD).fill(password.reveal());
     await page.locator(XP_LOGIN_SELECTORS.SUBMIT).click();
   }
 }
@@ -128,7 +130,7 @@ async function fillXpUsername(
     const usernameField = page.locator(XP_LOGIN_SELECTORS.USERNAME);
     if ((await usernameField.count()) > 0) {
       console.log(
-        "[sitecore preflight] Login form detected - submitting SITECORE_TEST_USER_NAME/SITECORE_TEST_USER_PASSWORD",
+        "[sitecore preflight] Login form detected - submitting test username/password",
       );
       await usernameField.fill(username);
     } else {

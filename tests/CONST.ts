@@ -9,7 +9,6 @@ export const CONST = {
     },
   },
   ENVIRONMENT: {
-    ENV_VAR: "SITECORE_TEST_ENVIRONMENTS",
     AUTH_DIR_ENV_VAR: "PLAYWRIGHT_AUTH_DIR",
     AUTH_DIR: "./tests/test-artifacts/auth",
   },

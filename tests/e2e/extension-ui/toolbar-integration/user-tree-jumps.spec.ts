@@ -11,6 +11,7 @@ import {
 import { ClickFoblesMenuButton } from "../../../macros/fobles-macros";
 import { expectFlyoutVisible } from "../../../expectSnippets/expectSnippets";
 import { humanPause } from "../../../helpers/wait-helpers";
+import { bringPageToFront } from "../../../helpers/page-switch";
 import { addTestRow, removeTestRowIfPresent, setTestRowEnabled } from "../../toolbar/support/other-settings-helpers";
 
 test.describe("User Tree Jumps", () => {
@@ -34,22 +35,25 @@ test.describe("User Tree Jumps", () => {
 
       await step("does not render with an empty list", async () => {
         await expect(foblesFrame.getByText("User Tree Jumps")).toHaveCount(0);
-      }, { screenshot: false });
+      });
 
       let row!: Locator;
       await step("appears live after saving, without a page refresh", async () => {
         row = await addTestRow(optionsPage);
+        await bringPageToFront(page);
         await expect(foblesFrame.getByText("User Tree Jumps")).toBeVisible();
         await expect(foblesFrame.getByRole("button", { name: CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label })).toBeVisible();
       });
 
       await step("hides live again once disabled", async () => {
         await setTestRowEnabled(optionsPage, row, false);
+        await bringPageToFront(page);
         await expect(foblesFrame.getByText("User Tree Jumps")).toHaveCount(0);
       });
 
       await step(`re-enabled entry navigates to "${CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH}"`, async (fullTitle) => {
         await setTestRowEnabled(optionsPage, row, true);
+        await bringPageToFront(page);
         const jumpButton = foblesFrame.getByRole("button", { name: CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label });
         await expect(jumpButton).toBeVisible();
         await expect(jumpButton).toHaveAttribute(CONST.FOBLES.ATTRIBUTES.TREE_JUMP_PATH, CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH);
@@ -69,11 +73,13 @@ test.describe("User Tree Jumps", () => {
           page.waitForURL((url) => url.toString().includes(encodeURI(CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH)), {
             timeout: CONST.TESTING.TIMEOUTS.URL_WAIT_MS,
           }),
+          await humanPause(page),
           clickWithMouseMarker(
             page,
             confirmationDialog.getByRole("button", { name: CONST.FOBLES.LABELS.CONTINUE_BUTTON }),
             "Confirm dialog Continue",
           ),
+          await humanPause(page),
         ]);
         expect(page.url()).toContain(encodeURI(CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH));
         await attachItemPathScreenshot(page, testInfo, fullTitle);

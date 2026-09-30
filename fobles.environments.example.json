@@ -1,0 +1,23 @@
+{
+  "testEnvironments": [
+    {
+      "name": "example",
+      "endpoint": "https://sitecore.example.invalid/sitecore",
+      "version": "xp",
+      "active": true,
+      "testUser": {
+        "name": "admin",
+        "passwordSecretName": "SITECORE_TEST_USER_PASSWORD_EXAMPLE"
+      }
+    }
+  ],
+  "cliLoginTargets": [
+    {
+      "endpointName": "example",
+      "cmUrl": "https://sitecore.example.invalid",
+      "authorityUrl": "https://sitecore.example.invalid/identityserver",
+      "clientId": "Device",
+      "asDefault": true
+    }
+  ]
+}

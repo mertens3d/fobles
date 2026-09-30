@@ -2,7 +2,11 @@ import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "node:path";
 
+// PLAYWRIGHT_AUTH_DIR/PLAYWRIGHT_PROFILE_DIR are the only settings still read from .env - test
+// environments, Sitecore CLI login targets, and test user credentials live in
+// fobles.environments.json instead (see tests/fixtures/environment.ts).
 dotenv.config({ path: [".env.local", ".env"] });
+
 
 const extensionPath = path.resolve(process.cwd(), "dist/unpacked");
 const testArtifactsDir = path.resolve(process.cwd(), "tests/test-artifacts");

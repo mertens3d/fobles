@@ -12,6 +12,10 @@ See [docs/CONTRIBUTING.md](docs/CONTRIBUTING.md) for development and pull reques
 - Microsoft Edge or Google Chrome for loading the unpacked extension
 - Access to a Sitecore environment for browser integration tests
 
+## Suggested Extensions
+
+- [Playwright Test for VSCode](https://marketplace.visualstudio.com/items?itemName=ms-playwright.playwright) (`ms-playwright.playwright`) - run/debug individual `tests/e2e` specs from the editor instead of the CLI.
+
 ## Setup
 
 ```text
@@ -25,11 +29,15 @@ To run browser tests, install the Playwright browsers once:
 npx playwright install
 ```
 
-Browser tests require a local `.env` file. Copy `.env.example` and set your own endpoint:
+Browser tests require a local `fobles.environments.json` file (test environments, Sitecore CLI
+login targets, and test user credentials all live there now). Copy `fobles.environments.example.json`
+and set your own endpoint:
 
 ```text
-SITECORE_TEST_ENVIRONMENTS=https://sitecore.example.invalid/sitecore|example|xp
+cp fobles.environments.example.json fobles.environments.json
 ```
+
+`.env` still holds `PLAYWRIGHT_AUTH_DIR`/`PLAYWRIGHT_PROFILE_DIR` - copy `.env.example` to `.env` too.
 
 Do not commit real endpoints, credentials, authentication state, or browser profiles.
 

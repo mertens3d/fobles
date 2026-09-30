@@ -6,6 +6,7 @@ import { spawn } from "node:child_process";
 import { createInterface } from "node:readline/promises";
 import { stdin as input, stdout as output } from "node:process";
 import { fileURLToPath } from "node:url";
+import { getActiveTestEnvironment } from "../dev/fobles-config.js";
 
 const projectRoot = path.resolve(
   path.dirname(fileURLToPath(import.meta.url)),
@@ -23,26 +24,8 @@ const profileDir = path.resolve(
 );
 
 function getEnvironment() {
-  const raw = process.env.SITECORE_TEST_ENVIRONMENTS?.trim();
-  if (!raw) {
-    throw new Error(
-      "SITECORE_TEST_ENVIRONMENTS is required. Configure it as endpoint|friendlyName|version.",
-    );
-  }
-
-  const entry = raw
-    .split(/\r?\n|;/)
-    .map((value) => value.trim())
-    .find(Boolean);
-  const [endpoint, friendlyName] = entry
-    .split("|")
-    .map((value) => value.trim());
-
-  if (!endpoint || !friendlyName) {
-    throw new Error(`Invalid SITECORE_TEST_ENVIRONMENTS entry: "${entry}"`);
-  }
-
-  return { endpoint, friendlyName };
+  const active = getActiveTestEnvironment();
+  return { endpoint: active.endpoint, friendlyName: active.name };
 }
 
 const environment = getEnvironment();

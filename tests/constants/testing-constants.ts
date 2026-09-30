@@ -66,7 +66,7 @@ export const TESTING = {
     SPEED_MULTIPLIER: 1,
     UPDATE_HZ: 60,
   },
-  HUMAN_PAUSE_MS: 1_000,
+  HUMAN_PAUSE_MS: 2_000,
   MOUSE_PATH:{
     ANIMATION_DURATION_MS: 3_000,
     COLOR: "#474747",
@@ -128,8 +128,8 @@ export const TESTING = {
     },
     EXCLUDED_FRAME_URL_FRAGMENT: "sitecore/shell/Applications/-/media",
     HIGHLIGHT: {
-      BACKGROUND_COLOR: "yellow",
-      OUTLINE: "5px solid red",
+      BACKGROUND_COLOR: "#FCE99C",
+      OUTLINE: "5px solid #DC291E",
       OUTLINE_OFFSET: "2px",
       RESTORE_DELAY_MS: 2_000,
       TRANSITION: "background-color 0.5s ease, outline-color 0.5s ease",

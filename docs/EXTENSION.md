@@ -11,9 +11,10 @@ npm install
 npm run build:extension
 ```
 
-To run Sitecore browser tests, copy `.env.example` to `.env` and set
-`SITECORE_TEST_ENVIRONMENTS` to your local endpoint. Real endpoints and
-credentials must remain in the ignored `.env` file.
+To run Sitecore browser tests, copy `fobles.environments.example.json` to
+`fobles.environments.json` and set your own test environment. Real endpoints and
+credentials must remain in the ignored `fobles.environments.json` file (and the DPAPI-backed
+secure secret store for passwords - see `npm run secret:set`).
 
 To run the browser tests, install the Playwright browsers once:
 

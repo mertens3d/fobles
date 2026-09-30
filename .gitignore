@@ -10,6 +10,7 @@ dist/packed/*
 .env.local
 .env.*
 !.env.example
+fobles.environments.json
 
 # Playwright state, profiles, reports, and test artifacts
 tests/test-artifacts/
