@@ -1,4 +1,4 @@
-import { expect, test, type Locator } from "../../fixtures/playwright";
+import { expect, foblesTest, type Locator } from "../../fixtures/playwright";
 import { getExtensionId, openExtensionPage } from "../../fixtures/extension";
 import { CONST } from "../../CONST";
 import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
@@ -7,10 +7,10 @@ import { ClickFoblesMenuButton } from "../../macros/fobles-macros";
 import { expectFlyoutVisible } from "../../expectSnippets/expectSnippets";
 import { addTestRow, openTreeJumpsColumn, removeTestRowIfPresent, setTestRowEnabled } from "./support/other-settings-helpers";
 
-test.describe("User Tree Jumps", () => {
-  test.describe("Persistence", () => {
-  test("Additional Settings adds and normalizes a User Tree Jump", async ({ sharedBrowserContext }) => {
-    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+foblesTest.describe("User Tree Jumps", () => {
+  foblesTest.describe("Persistence", () => {
+  foblesTest("Additional Settings adds and normalizes a User Tree Jump", async ({ sharedBrowserContext }) => {
+    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(sharedBrowserContext, extensionId, "options");
 
@@ -36,12 +36,12 @@ test.describe("User Tree Jumps", () => {
   });
   });
 
-  test.describe("Toolbar Integration", () => {
-  test("toolbar renders, live-updates, hides, and navigates a User Tree Jump", async ({
+  foblesTest.describe("Toolbar Integration", () => {
+  foblesTest("toolbar renders, live-updates, hides, and navigates a User Tree Jump", async ({
     sharedBrowserContext,
     page,
   }, testInfo) => {
-    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(sharedBrowserContext, extensionId, "options");
     const step = createStep(page, testInfo, page, "User Tree Jump");

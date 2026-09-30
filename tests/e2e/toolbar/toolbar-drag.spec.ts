@@ -1,4 +1,4 @@
-import { test } from "../../fixtures/playwright";
+import { foblesTest } from "../../fixtures/playwright";
 import { expectFoblesContainerDom, expectFoblesContainerVisible } from "../../expectSnippets/expectSnippets";
 import { CONST } from "../../CONST";
 import { createStep, setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers";
@@ -11,8 +11,8 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 // Content Editor's own default placement (DEFAULT_TOOLBAR_PLACEMENT, src/content/constants.ts)
 // is "upper-right" - dragging toward the opposite corner (bottom-left) makes the snap
 // unambiguous regardless of exact viewport size.
-test.describe("Toolbar: drag to reposition", () => {
-  test("dragging the toolbar container snaps it to the nearest corner", async ({ page }, testInfo) => {
+foblesTest.describe("Toolbar: drag to reposition", () => {
+  foblesTest("dragging the toolbar container snaps it to the nearest corner", async ({ page }, testInfo) => {
     
     const step = createStep(page, testInfo, page, "Toolbar Drag");
 

@@ -94,7 +94,7 @@ export async function logoutCurrentSitecoreSession(page: Page): Promise<boolean>
 
 export async function enableFobles(page: Page): Promise<void> {
   const menuTrigger = page
-    .locator(CONST.FOBLES.SELECTORS.MENU_TRIGGER)
+    .locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER)
     .first();
   await expect(menuTrigger).toBeVisible({
     timeout: CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS,
@@ -102,7 +102,7 @@ export async function enableFobles(page: Page): Promise<void> {
 
   await openFoblesMenu(page);
 
-  const menu = page.locator(CONST.FOBLES.SELECTORS.QUICK_MENU).first();
+  const menu = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU).first();
   await expect(menu).toBeVisible({ timeout: CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
 
   const toggle = page
@@ -114,7 +114,7 @@ export async function enableFobles(page: Page): Promise<void> {
 }
 
 export async function openFoblesMenu(page: Page): Promise<void> {
-  const trigger = page.locator(CONST.FOBLES.SELECTORS.MENU_TRIGGER).first();
+  const trigger = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
 
   await page.waitForLoadState("domcontentloaded");
   await expect
@@ -127,6 +127,6 @@ export async function openFoblesMenu(page: Page): Promise<void> {
   await trigger.hover();
   await trigger.click();
 
-  const menu = page.locator(CONST.FOBLES.SELECTORS.QUICK_MENU).first();
+  const menu = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU).first();
   await expect(menu).toBeVisible({ timeout: CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
 }

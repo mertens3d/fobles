@@ -5,8 +5,8 @@ import {
   getUserTreeJumps,
   onUserTreeJumpsChanged,
   type UserTreeJump,
-} from "../../../shared/quick-menu/user-tree-jump-settings";
-import type { MenuOption } from "../../../shared/quick-menu/menu.types";
+} from "../../../shared/jump-menu/user-tree-jump-settings";
+import type { MenuOption } from "../../../shared/jump-menu/menu.types";
 
 function toMenuOption(entry: UserTreeJump): MenuOption {
   return {

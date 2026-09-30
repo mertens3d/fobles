@@ -57,7 +57,7 @@ See [tests/README.md](../tests/README.md) for setup details and the Sitecore tes
 - **Ctrl+Shift+E** (or **Cmd+Shift+E** on Mac): Toggle Fobles on or off.
 - Select **AI Pages mappings** from the extension popup to map Sitecore content roots to AI Pages.
 
-### AI Pages Quick Jump
+### AI Pages Jump
 
 Add one group per Sitecore account, then map that group's content roots to AI Pages sites. A group stores the organization and tenant name; each site root stores its Content Editor path and AI Pages site.
 
@@ -70,4 +70,4 @@ Root: /sitecore/content/ExampleTenant/example-site-123
 Site: example-site-123
 ```
 
-The **AI Pages** Quick Jump action uses the active Content Editor item's ID, path, language, and version. When multiple roots match an item path, the most specific root is used.
+The **AI Pages** Jump action uses the active Content Editor item's ID, path, language, and version. When multiple roots match an item path, the most specific root is used.

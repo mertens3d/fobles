@@ -31,12 +31,14 @@ export async function setupContentEditorForTestingBasic(
 ) {
   await openContentEditor(page);
   console.log(`[fobles] Navigation finished at ${page.url()}`);
+  await postCELoadSetup(page);
+}
+
+export async function postCELoadSetup(page: Page) {
   await ensureMouseMarkerExists(page);
   await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT);
   await moveMouseToDefault(page);
 }
-
-
 
 export async function setupContentEditorForTesting(
   page: Page,
@@ -51,10 +53,7 @@ export async function setupContentEditorForTesting(
   );
   // &fo=${scenario.itemId}`);
   console.log(`[fobles] Navigation finished at ${page.url()}`);
-  await ensureMouseMarkerExists(page);
-
-  await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT);
-  await moveMouseToDefault(page);
+  await postCELoadSetup(page);
   // await dragToolbarToCornerLocation(
   //   page,
   //   CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1,
@@ -266,7 +265,7 @@ function getOwningPage(target: Screenshottable): Page {
     : (target as Page);
 }
 
-// page.locator() only searches the main frame - some quick-menu targets (e.g. the Installation
+// page.locator() only searches the main frame - some jump-menu targets (e.g. the Installation
 // Wizard shell application) render inside a nested iframe instead, so a selector's presence has to
 // be checked frame-by-frame rather than assumed to be in the top-level document.
 async function framesWithSelector(
@@ -327,14 +326,14 @@ async function getSensitiveAutoMasks(
     masks.push(frame.locator(".opened"));
   }
 
-  // showservicesconfig.aspx ("Show Services Config" quick-menu button) lists every registered DI
+  // showservicesconfig.aspx ("Show Services Config" jump-menu button) lists every registered DI
   // service in a <tbody> - scope the mask to its own #ServicesForm container so unrelated tables
   // (e.g. Content Editor field tables) are never affected.
   for (const frame of await framesWithSelector(page, "#ServicesForm tbody")) {
     masks.push(frame.locator("#ServicesForm tbody"));
   }
 
-  // cache.aspx ("Cache" quick-menu button) lists every cache's name/size in a nested table next
+  // cache.aspx ("Cache" jump-menu button) lists every cache's name/size in a nested table next
   // to the "Caches (NNN)" section title - mask that nested table (found relative to the title
   // span, since it has no id/class of its own) rather than the whole page.
   for (const frame of await framesWithSelector(page, "#c_cacheTitle")) {
@@ -343,7 +342,7 @@ async function getSensitiveAutoMasks(
     );
   }
 
-  // jobs.aspx ("Jobs" quick-menu button) lists Running/Queued/Finished jobs, each rendered as
+  // jobs.aspx ("Jobs" jump-menu button) lists Running/Queued/Finished jobs, each rendered as
   // either a "No jobs" placeholder or a table.jobs-table - no per-section wrapper element exists,
   // so mask both possible shapes directly rather than trying to select "the section".
   const jobsSelector =
@@ -352,19 +351,19 @@ async function getSensitiveAutoMasks(
     masks.push(frame.locator(jobsSelector));
   }
 
-  // logs.aspx ("Logs" quick-menu button) lists every log file name/link in #LogTypes.
+  // logs.aspx ("Logs" jump-menu button) lists every log file name/link in #LogTypes.
   for (const frame of await framesWithSelector(page, "#LogTypes")) {
     masks.push(frame.locator("#LogTypes"));
   }
 
-  // stats.aspx ("Stats" quick-menu button) lists rendering/item stats in plain, unstyled
+  // stats.aspx ("Stats" jump-menu button) lists rendering/item stats in plain, unstyled
   // <table>s scoped to its own #form1 - the first one is enough to obscure the data without
   // blacking out the whole page.
   for (const frame of await framesWithSelector(page, "#form1 table")) {
     masks.push(frame.locator("#form1 table").first());
   }
 
-  // dbbrowser.aspx ("DB Browser" quick-menu button) shows a full item tree in div.content - scope
+  // dbbrowser.aspx ("DB Browser" jump-menu button) shows a full item tree in div.content - scope
   // to a .content that actually contains the tree browser (#tree), since ".content" alone is too
   // generic to safely mask on every page. #dataBases (the master/web/filesystem/core database
   // tabs above the tree) is a sibling, not a descendant, so it needs its own entry.
@@ -378,13 +377,13 @@ async function getSensitiveAutoMasks(
     masks.push(frame.locator("#dataBases"));
   }
 
-  // Installation Wizard ("Installation Wizard" quick-menu button, a shell application likely
+  // Installation Wizard ("Installation Wizard" jump-menu button, a shell application likely
   // rendered inside a nested frame) shows the selected package's filename in #PackageFile.
   for (const frame of await framesWithSelector(page, "#PackageFile")) {
     masks.push(frame.locator("#PackageFile"));
   }
 
-  // Kick User/Control Panel/Launchpad ("Kick User"/"Control Panel"/"Launchpad" quick-menu
+  // Kick User/Control Panel/Launchpad ("Kick User"/"Control Panel"/"Launchpad" jump-menu
   // buttons) are all Sitecore client (SPA-shell) applications sharing the same main-content
   // region class, regardless of which application it is.
   for (const frame of await framesWithSelector(
@@ -394,7 +393,7 @@ async function getSensitiveAutoMasks(
     masks.push(frame.locator(".sc-applicationContent-main"));
   }
 
-  // File Explorer ("File Explorer" quick-menu button, xmlcontrol=FileExplorer) has no id/class of
+  // File Explorer ("File Explorer" jump-menu button, xmlcontrol=FileExplorer) has no id/class of
   // its own on the layout table holding the actual folder/file listing - find it relative to
   // #FoldersAction (unique to this page) instead, and mask just its third row (the listing itself,
   // not the toolbar rows above it).
@@ -418,7 +417,7 @@ async function getSensitiveAutoMasks(
     masks.push(frame.locator(".scRibbonNavigatorButtonsGroup"));
   }
 
-  // Desktop ("Desktop" quick-menu button) shows the current database name and a user's saved
+  // Desktop ("Desktop" jump-menu button) shows the current database name and a user's saved
   // desktop shortcuts.
   for (const frame of await framesWithSelector(page, "#DatabaseSelector")) {
     masks.push(frame.locator("#DatabaseSelector"));

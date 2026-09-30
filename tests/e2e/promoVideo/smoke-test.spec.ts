@@ -1,4 +1,4 @@
-import { test } from "../../fixtures/playwright";
+import { foblesTest } from "../../fixtures/playwright";
 import { moveMouseToPosition, ensureMouseMarkerExists, verifyMouseMarker } from "../../helpers/mouse-proxy";
 import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
 
@@ -7,8 +7,8 @@ import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
 // real promoVideo recording looks broken (no marker, odd jumps, no video file), to rule out an
 // environment/security-software issue before debugging the full spec. No Sitecore login needed -
 // deliberately not run alongside 00-session-start/zz-session-end (see the dedicated npm script).
-test.describe("Promo video: smoke test", () => {
-  test("marker shows and moves smoothly on a plain page", async ({ page }) => {
+foblesTest.describe("Promo video: smoke test", () => {
+  foblesTest("marker shows and moves smoothly on a plain page", async ({ page }) => {
     await page.goto(
       "data:text/html,<html><body style='height:1400px;background:%23f2f2f2;font-family:sans-serif'><h1 style='margin:500px 0 0 400px'>Fobles smoke test</h1></body></html>",
     );

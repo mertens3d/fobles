@@ -1,8 +1,8 @@
 import { ATTRIBUTE, CLASS, SELECTORS, TEXT } from "../../constants";
 import {
-  cancelQuickMenuClose,
-  closeQuickMenuOnOutsidePointer,
-  scheduleCloseQuickMenuOnHover,
+  cancelJumpMenuClose,
+  closeJumpMenuOnOutsidePointer,
+  scheduleCloseJumpMenuOnHover,
 } from "./handlers";
 import { createMenuColumn } from "./column-builder";
 import { initUserTreeJumpGroup } from "./user-tree-jump-group";
@@ -13,15 +13,15 @@ import {
   APPLICATION_PAGE_GROUP,
   THIRD_PARTY_GROUP,
   TREE_JUMP_GROUP,
-} from "../../../shared/quick-menu/menu-groups";
+} from "../../../shared/jump-menu/menu-groups";
 
-function createQuickMenu(doc: Document, closeMenu: () => void): HTMLDivElement {
+function createJumpMenu(doc: Document, closeMenu: () => void): HTMLDivElement {
   const menu = doc.createElement("div");
-  menu.className = CLASS.QUICK_MENU;
-  menu.setAttribute(ATTRIBUTE.DATA.KEY.QUICK_MENU, "1");
+  menu.className = CLASS.JUMP_MENU;
+  menu.setAttribute(ATTRIBUTE.DATA.KEY.JUMP_MENU, "1");
 
   const columns = doc.createElement("div");
-  columns.className = CLASS.QUICK_MENU_COLUMNS;
+  columns.className = CLASS.JUMP_MENU_COLUMNS;
   const treeJumpsColumn = createMenuColumn(doc, TEXT.GROUP_NAME.TREE_JUMPS, TREE_JUMP_GROUP, closeMenu);
   initUserTreeJumpGroup(doc, treeJumpsColumn, closeMenu);
   columns.appendChild(treeJumpsColumn);
@@ -39,20 +39,20 @@ function createQuickMenu(doc: Document, closeMenu: () => void): HTMLDivElement {
   return menu;
 }
 
-// closeMenu is supplied by the caller (index.ts) so this file never has to import setQuickMenuVisible.
-export function getOrCreateQuickMenu(doc: Document, closeMenu: () => void): HTMLDivElement | null {
+// closeMenu is supplied by the caller (index.ts) so this file never has to import setJumpMenuVisible.
+export function getOrCreateJumpMenu(doc: Document, closeMenu: () => void): HTMLDivElement | null {
   const trigger = doc.querySelector(SELECTORS.QUICK_MENU_TRIGGER);
   if (!trigger) return null;
 
-  const existing = trigger.querySelector<HTMLDivElement>(SELECTORS.QUICK_MENU);
+  const existing = trigger.querySelector<HTMLDivElement>(SELECTORS.JUMP_MENU);
   if (existing) return existing;
 
-  const menu = createQuickMenu(doc, closeMenu);
+  const menu = createJumpMenu(doc, closeMenu);
   // The panel renders outside the trigger's own hit box, so bridge the gap with a
   // close delay instead of relying on the trigger's mouseleave alone.
-  menu.addEventListener("mouseenter", cancelQuickMenuClose);
-  menu.addEventListener("mouseleave", () => scheduleCloseQuickMenuOnHover(doc));
+  menu.addEventListener("mouseenter", cancelJumpMenuClose);
+  menu.addEventListener("mouseleave", () => scheduleCloseJumpMenuOnHover(doc));
   trigger.appendChild(menu);
-  closeQuickMenuOnOutsidePointer(doc, trigger);
+  closeJumpMenuOnOutsidePointer(doc, trigger);
   return menu;
 }

@@ -104,7 +104,7 @@ type WorkerFixtures = {
 };
 
 // eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export const test = base.extend<{}, WorkerFixtures>({
+export const foblesTest = base.extend<{}, WorkerFixtures>({
   sharedBrowserContext: [
     // eslint-disable-next-line no-empty-pattern
     async ({}, use) => {

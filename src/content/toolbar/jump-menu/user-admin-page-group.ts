@@ -4,8 +4,8 @@ import {
   getUserAdminPages,
   onUserAdminPagesChanged,
   type UserAdminPage,
-} from "../../../shared/quick-menu/user-admin-page-settings";
-import type { MenuOption } from "../../../shared/quick-menu/menu.types";
+} from "../../../shared/jump-menu/user-admin-page-settings";
+import type { MenuOption } from "../../../shared/jump-menu/menu.types";
 
 function toMenuOption(entry: UserAdminPage): MenuOption {
   return {

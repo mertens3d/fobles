@@ -1,6 +1,6 @@
 import { expect, type Frame, type Page } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
-import { isSprintMode, setLastKnownMousePosition } from "./mouse-proxy-state";
+import { hasLastKnownMousePosition, isSprintMode, setLastKnownMousePosition } from "./mouse-proxy-state";
 
 type LocalMousePosition = {
   x: number;
@@ -9,21 +9,24 @@ type LocalMousePosition = {
 };
 
 export async function ensureMouseMarkerExists(page: Page | Frame): Promise<void> {
-  if (isSprintMode()) return;
+  if (!isSprintMode()) {
+    if (!hasLastKnownMousePosition()) {
+      const viewport = await page.evaluate(() => ({
+        width: window.innerWidth,
+        height: window.innerHeight,
+      }));
 
-  const viewport = await page.evaluate(() => ({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  }));
-  setLastKnownMousePosition({ x: viewport.width / 2, y: viewport.height / 2 });
-  await page.evaluate((markerConfig) => {
-    if (!document.getElementById(markerConfig.ID)) {
-      const marker = document.createElement("div");
-      marker.id = markerConfig.ID;
-      marker.style.cssText = markerConfig.CSS_TEXT.join(";");
-      document.documentElement.appendChild(marker);
+      setLastKnownMousePosition({ x: viewport.width / 2, y: viewport.height / 2 });
     }
-  }, CONST.TESTING.MOUSE_MARKER);
+    await page.evaluate((markerConfig) => {
+      if (!document.getElementById(markerConfig.ID)) {
+        const marker = document.createElement("div");
+        marker.id = markerConfig.ID;
+        marker.style.cssText = markerConfig.CSS_TEXT.join(";");
+        document.documentElement.appendChild(marker);
+      }
+    }, CONST.TESTING.MOUSE_MARKER);
+  }
 }
 
 async function forEachFrameWithLocalPosition(

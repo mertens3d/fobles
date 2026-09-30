@@ -20,13 +20,13 @@ Playwright end-to-end tests live in `tests/e2e/` and exercise the extension agai
     can load asynchronously after it's first called; `timeoutMs` of 0 (its default) is a single
     fail-fast pass instead of a retry loop.
   - `findFoblesFrame` anchors on the toolbar container (`.fobles-toolbar-container`), which is
-    always present whether the page has the full or compact toolbar (unlike the Quick Menu
+    always present whether the page has the full or compact toolbar (unlike the Jump Menu
     trigger, which compact pages remove) - with a 10s retry window, since a freshly navigated
     page's toolbar takes a moment for the content script to inject it.
 - `sitecore-macros.ts` - actual canned click/gesture sequences (ribbon tabs, galleries, dragging
   the toolbar, dismissing Fobles' own confirm dialog) that a spec reuses as one step. Every macro
   logs `[Macro: <name>] - Start` as its first line.
-  - `openQuickMenu` is idempotent - it checks the flyout's `data-visible` attribute (not
+  - `openJumpMenu` is idempotent - it checks the flyout's `data-visible` attribute (not
     Playwright's `.isVisible()`, which can't tell: the flyout is hidden via `opacity`/
     `pointer-events` in CSS, not `display`/`visibility`, so Playwright always reports it visible).
   - `clickTreeJump`/`highlightQuickInfoPath` each find their own fresh fobles frame internally

@@ -1,4 +1,4 @@
-import { test } from "../../fixtures/playwright";
+import { foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
 import {
@@ -20,8 +20,8 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 // no-op, unlike every other strategy spec.
 const SCENARIO = STRATEGY_SCENARIOS.DROP_LIST;
 
-test.describe("Strategy scenario: droplist", () => {
-  test("Fobles leaves the droplist field untouched", async ({ page }, testInfo) => {
+foblesTest.describe("Strategy scenario: droplist", () => {
+  foblesTest("Fobles leaves the droplist field untouched", async ({ page }, testInfo) => {
     await setupContentEditorForTesting(page, STRATEGY_SCENARIOS.DROP_LIST);
     await showBillboard(page, STRATEGY_SCENARIOS.DROP_LIST.friendlyName);
 

@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures/playwright";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
 import {
@@ -21,8 +21,8 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 // from that title attribute.
 const SCENARIO = STRATEGY_SCENARIOS.TREELIST_EX;
 
-test.describe("Strategy scenario: treelist ex", () => {
-  test("toggling Fobles decorates and restores the treelist ex field", async ({ page }, testInfo) => {
+foblesTest.describe("Strategy scenario: treelist ex", () => {
+  foblesTest("toggling Fobles decorates and restores the treelist ex field", async ({ page }, testInfo) => {
 
     await setupContentEditorForTesting(page, STRATEGY_SCENARIOS.TREELIST_EX);
 

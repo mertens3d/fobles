@@ -4,12 +4,12 @@ import {
   isCompactToolbarPage,
   isPowerShellIsePath,
 } from "../guard";
-import { setQuickMenuVisible } from "./quick-menu";
+import { setJumpMenuVisible } from "./jump-menu";
 import { setProxyButtonsVisible } from "./proxy-buttons";
 import {
   createLboltButton,
   createProxyButtonsTrigger,
-  createQuickMenuTrigger,
+  createJumpsMenuTrigger,
   createSetIseTabTitleButton,
   createToolbarCloseButton,
   createToolbarGrip,
@@ -65,7 +65,7 @@ export function injectToolbar(context: ToolbarContext): void {
   }
 
   if (!body.querySelector(SELECTORS.QUICK_MENU_TRIGGER)) {
-    body.appendChild(createQuickMenuTrigger(context));
+    body.appendChild(createJumpsMenuTrigger(context));
   }
 
   if (!body.querySelector(SELECTORS.PROXY_BUTTONS_TRIGGER)) {
@@ -89,7 +89,7 @@ export function injectToolbar(context: ToolbarContext): void {
   applyToolbarPlacement(container, context.win, context.placement);
   updateToolbarBackground(context);
   observeToolbarBackground(context);
-  setQuickMenuVisible(context.doc, false);
+  setJumpMenuVisible(context.doc, false);
   setProxyButtonsVisible(context.doc, false);
 }
 
@@ -103,7 +103,7 @@ export function setToolbarVisible(
     return;
   }
 
-  setQuickMenuVisible(context.doc, false);
+  setJumpMenuVisible(context.doc, false);
   setProxyButtonsVisible(context.doc, false);
   context.doc.querySelector(SELECTORS.TOOLBAR_CONTAINER)?.remove();
 }

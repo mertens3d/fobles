@@ -1,7 +1,7 @@
 import { ATTRIBUTE, CLASS, SELECTORS } from "../constants";
 import { extensionLog } from "../logger";
 import { findRibbonCheckbox, postSitecoreEvent } from "../features/augmentor/proxy-buttons-ribbon";
-import { setQuickMenuVisible } from "./quick-menu";
+import { setJumpMenuVisible } from "./jump-menu";
 
 // These live in the main toolbar menu (not the editor header) since the editor header
 // gets redrawn every time a tree item is picked.
@@ -133,7 +133,7 @@ export function setProxyButtonsVisible(doc: Document, visible: boolean): void {
 
   if (visible) {
     if (panel) refreshProxyButtonsState(doc, panel);
-    setQuickMenuVisible(doc, false);
+    setJumpMenuVisible(doc, false);
   }
 }
 

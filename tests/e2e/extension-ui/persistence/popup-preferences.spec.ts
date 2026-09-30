@@ -1,4 +1,4 @@
-import { expect, test, type Locator } from "../../../fixtures/playwright";
+import { expect, foblesTest, type Locator } from "../../../fixtures/playwright";
 import { clickExtensionControl, getExtensionId, openExtensionPage, setExtensionCheckbox } from "../../../fixtures/extension";
 import { attachScreenshot } from "../../../helpers/fobles-helpers";
 import { CONST } from "../../../CONST";
@@ -22,8 +22,8 @@ async function readStableCheckboxState(checkbox: Locator): Promise<boolean> {
   return previousState ?? false;
 }
 
-test.describe("Popup Preference Persistence", () => {
-  test("shows and persists the navigation preferences", async ({ sharedBrowserContext }, testInfo) => {
+foblesTest.describe("Popup Preference Persistence", () => {
+  foblesTest("shows and persists the navigation preferences", async ({ sharedBrowserContext }, testInfo) => {
     const extensionId = await getExtensionId(sharedBrowserContext);
     const popupPage = await openExtensionPage(
       sharedBrowserContext,

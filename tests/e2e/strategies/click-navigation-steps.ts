@@ -28,7 +28,7 @@ export function runClickNavigationSteps(
   onToggledOff?: () => Promise<void>,
   navigationButton?: Locator,
 ): void {
-  const foblesButton = navigationButton ?? fieldTable.locator(CONST.FOBLES.SELECTORS.BUTTON).first();
+  const foblesButton = navigationButton ?? fieldTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
 
  
 }

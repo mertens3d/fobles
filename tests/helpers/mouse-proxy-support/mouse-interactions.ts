@@ -86,6 +86,7 @@ export async function highlightLocator(target: Locator, label: string): Promise<
   const original = await highlightedTarget.evaluate((element) => {
     const el = element as HTMLElement;
     return {
+      color: el.style.color,
       outline: el.style.outline,
       outlineOffset: el.style.outlineOffset,
       backgroundColor: el.style.backgroundColor,
@@ -97,6 +98,7 @@ export async function highlightLocator(target: Locator, label: string): Promise<
     const el = element as HTMLElement;
     el.style.transition = highlight.TRANSITION;
     el.style.outline = highlight.OUTLINE;
+    el.style.color = highlight.COLOR;
     el.style.outlineOffset = highlight.OUTLINE_OFFSET;
     el.style.backgroundColor = highlight.BACKGROUND_COLOR;
   }, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT);

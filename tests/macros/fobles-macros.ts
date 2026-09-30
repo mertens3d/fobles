@@ -17,17 +17,17 @@ export async function ClickFoblesMenuButton(
     page: Page) {
     const foblesFrame = await findFoblesFrame(page);
     console.log(`[fobles Macro] ClickFoblesMenuButton`);
-    const menuButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.MENU_TRIGGER).first();
+    const menuButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
     await clickWithMouseMarker(page, menuButton, "Fobles Menu Button");
 }
 
 
 // Idempotent - only clicks the trigger if the flyout isn't already visible, since it's a toggle
 // button (clicking it while already open would close it instead).
-export async function openQuickMenu(page: Page, foblesFrame: Frame): Promise<void> {
-    console.log("[Macro: openQuickMenu] - Start");
-    console.log("[fobles] Checking whether the quick menu flyout is already visible");
-    const menuFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.QUICK_MENU);
+export async function openJumpMenu(page: Page, foblesFrame: Frame): Promise<void> {
+    console.log("[Macro: openJumpMenu] - Start");
+    console.log("[fobles] Checking whether the jump menu flyout is already visible");
+    const menuFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU);
     const isOpen =
         (await menuFlyout.getAttribute(CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE).catch(() => null)) === "true";
     if (isOpen) {
@@ -38,10 +38,10 @@ export async function openQuickMenu(page: Page, foblesFrame: Frame): Promise<voi
     await ClickFoblesMenuButton(page);
 
     console.log(
-        `[fobles] Waiting for quick menu flyout's ${CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE} attribute to become "true"`,
+        `[fobles] Waiting for jump menu flyout's ${CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE} attribute to become "true"`,
     );
     await foblesFrame
-        .locator(`${CONST.FOBLES.SELECTORS.QUICK_MENU}[${CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE}="true"]`)
+        .locator(`${CONST.FOBLES.SELECTORS.JUMP_MENU}[${CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE}="true"]`)
         .waitFor({ state: "attached" });
 }
 

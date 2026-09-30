@@ -1,12 +1,12 @@
 import {
-  getQuickMenuButtonSettings,
-  onQuickMenuButtonSettingsChanged,
-  type QuickMenuButtonSetting,
-  type QuickMenuButtonSettings,
-} from "../../../shared/quick-menu/button-settings";
+  getJumpMenuButtonSettings,
+  onJumpMenuButtonSettingsChanged,
+  type JumpMenuButtonSetting,
+  type JumpMenuButtonSettings,
+} from "../../../shared/jump-menu/button-settings";
 import { FOBLES } from "../../features/augmentor/constants";
 
-let buttonSettings: QuickMenuButtonSettings = {};
+let buttonSettings: JumpMenuButtonSettings = {};
 const registeredRows: Array<{ id: string; row: HTMLElement }> = [];
 
 // Reuses the existing .fobles-hidden class instead of a hand-rolled !important override,
@@ -15,24 +15,24 @@ const setRowVisibility = (row: HTMLElement, visible: boolean): void => {
   row.classList.toggle(FOBLES.CLASSES.HIDDEN, !visible);
 };
 
-const applyQuickMenuButtonSettings = (): void => {
+const applyJumpMenuButtonSettings = (): void => {
   registeredRows.forEach(({ id, row }) => {
     setRowVisibility(row, buttonSettings[id]?.enabled !== false);
   });
 };
 
-const loadQuickMenuButtonSettings = async (): Promise<void> => {
-  buttonSettings = await getQuickMenuButtonSettings();
-  applyQuickMenuButtonSettings();
+const loadJumpMenuButtonSettings = async (): Promise<void> => {
+  buttonSettings = await getJumpMenuButtonSettings();
+  applyJumpMenuButtonSettings();
 };
 
-void loadQuickMenuButtonSettings();
-onQuickMenuButtonSettingsChanged((settings) => {
+void loadJumpMenuButtonSettings();
+onJumpMenuButtonSettingsChanged((settings) => {
   buttonSettings = settings;
-  applyQuickMenuButtonSettings();
+  applyJumpMenuButtonSettings();
 });
 
-export function getButtonSetting(id: string): QuickMenuButtonSetting | undefined {
+export function getButtonSetting(id: string): JumpMenuButtonSetting | undefined {
   return buttonSettings[id];
 }
 

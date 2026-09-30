@@ -1,7 +1,7 @@
 import { initAiPagesMappings } from "./ai-pages-mappings";
 import { initDebugSettings } from "./debug-settings";
-import { initQuickMenuButtons } from "./quick-menu-buttons";
+import { initJumpMenuButtons } from "./jump-menu-buttons";
 
 initAiPagesMappings();
 initDebugSettings();
-initQuickMenuButtons();
+initJumpMenuButtons();

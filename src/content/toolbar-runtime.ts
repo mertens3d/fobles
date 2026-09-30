@@ -16,7 +16,7 @@ import {
   findAllowedPage,
   isKickUsersPath,
 } from "./guard";
-import { resumeKickAllUsers } from "./features/quick-menu";
+import { resumeKickAllUsers } from "./features/jump-menu";
 import {
   injectToolbar,
   setToolbarPlacement,

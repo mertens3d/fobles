@@ -213,7 +213,7 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
   const startedAt = Date.now();
   const initialUrl = toDisplayUrl(page.url());
   console.log(
-    `[sitecore preflight] Waiting for the Fobles menu (${CONST.FOBLES.SELECTORS.MENU_TRIGGER}) to appear - started at: ${initialUrl}`,
+    `[sitecore preflight] Waiting for the Fobles menu (${CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER}) to appear - started at: ${initialUrl}`,
   );
 
   // A one-off "waiting for X" message is useless once the wait actually stalls - log elapsed time
@@ -241,7 +241,7 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
           for (const frame of page.frames()) {
             if (
               (await frame
-                .locator(CONST.FOBLES.SELECTORS.MENU_TRIGGER)
+                .locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER)
                 .count()) > 0
             ) {
               console.log(

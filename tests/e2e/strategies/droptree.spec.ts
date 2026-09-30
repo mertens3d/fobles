@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures/playwright";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import { showBillboard } from "../../helpers/billboard";
 import { CONST } from "../../CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
@@ -18,8 +18,8 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 // (src/content/features/augmentor/field-strategies/sc-droptree.ts).
 const SCENARIO = STRATEGY_SCENARIOS.DROP_TREE;
 
-test.describe("Strategy scenario: drop tree", () => {
-  test("toggling Fobles decorates and restores the drop tree field", async ({ page }, testInfo) => {
+foblesTest.describe("Strategy scenario: drop tree", () => {
+  foblesTest("toggling Fobles decorates and restores the drop tree field", async ({ page }, testInfo) => {
 
     await setupContentEditorForTesting(page, STRATEGY_SCENARIOS.DROP_TREE);
     await showBillboard(page, STRATEGY_SCENARIOS.DROP_TREE.friendlyName);

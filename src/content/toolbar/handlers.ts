@@ -1,8 +1,8 @@
 import {
-  isQuickMenuPinned,
-  setQuickMenuPinned,
-  setQuickMenuVisible,
-} from "./quick-menu";
+  isJumpMenuPinned,
+  setJumpMenuPinned,
+  setJumpMenuVisible,
+} from "./jump-menu";
 import {
   isProxyButtonsPinned,
   setProxyButtonsPinned,
@@ -10,13 +10,13 @@ import {
 } from "./proxy-buttons";
 import type { ToolbarContext } from "./types";
 
-export function toggleQuickMenu(context: ToolbarContext): void {
-  if (isQuickMenuPinned()) {
-    setQuickMenuPinned(context.doc, false);
-    setQuickMenuVisible(context.doc, false);
+export function toggleJumpMenu(context: ToolbarContext): void {
+  if (isJumpMenuPinned()) {
+    setJumpMenuPinned(context.doc, false);
+    setJumpMenuVisible(context.doc, false);
     return;
   }
-  setQuickMenuPinned(context.doc, true);
+  setJumpMenuPinned(context.doc, true);
 }
 
 export function toggleProxyButtons(context: ToolbarContext): void {

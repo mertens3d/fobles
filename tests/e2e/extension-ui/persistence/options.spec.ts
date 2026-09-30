@@ -1,4 +1,4 @@
-import { expect, test } from "../../../fixtures/playwright";
+import { expect, foblesTest } from "../../../fixtures/playwright";
 import { clickExtensionControl, getExtensionId, openExtensionPage } from "../../../fixtures/extension";
 import { attachScreenshot } from "../../../helpers/fobles-helpers";
 import { CONST } from "../../../CONST";
@@ -13,8 +13,8 @@ import {
   TESTING,
 } from "../options-test-helpers";
 
-test.describe("Additional Settings Persistence", () => {
-  test("clears all stored settings", async ({ sharedBrowserContext }, testInfo) => {
+foblesTest.describe("Additional Settings Persistence", () => {
+  foblesTest("clears all stored settings", async ({ sharedBrowserContext }, testInfo) => {
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(
       sharedBrowserContext,
@@ -71,7 +71,7 @@ test.describe("Additional Settings Persistence", () => {
     }
   });
 
-  test("validates, saves, and reloads AI Pages mappings", async ({ sharedBrowserContext }, testInfo) => {
+  foblesTest("validates, saves, and reloads AI Pages mappings", async ({ sharedBrowserContext }, testInfo) => {
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(
       sharedBrowserContext,
@@ -161,7 +161,7 @@ test.describe("Additional Settings Persistence", () => {
     }
   });
 
-  test("normalizes and persists a User Admin Page", async ({ sharedBrowserContext }, testInfo) => {
+  foblesTest("normalizes and persists a User Admin Page", async ({ sharedBrowserContext }, testInfo) => {
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(
       sharedBrowserContext,
@@ -202,7 +202,7 @@ test.describe("Additional Settings Persistence", () => {
       await expect(savedRow!.locator(TESTING.OPTIONS.ADMIN_PAGES.ICON_INPUT)).toHaveValue(
         TESTING.ADDITIONAL_SETTINGS.ADMIN_PAGE.NORMALIZED_ICON,
       );
-      await expect(savedRow!.locator(TESTING.QUICK_MENU.USER_ADMIN_PAGE_ENABLED_INPUT)).toBeChecked();
+      await expect(savedRow!.locator(TESTING.JUMP_MENU.USER_ADMIN_PAGE_ENABLED_INPUT)).toBeChecked();
       await expect(savedColumn).toBeVisible();
       await attachScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.USER_ADMIN_PAGE_SAVED);
     } finally {

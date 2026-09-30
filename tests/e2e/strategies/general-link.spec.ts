@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures/playwright";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { fieldScreenshotName } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
@@ -12,8 +12,8 @@ import { showBillboard } from "../../helpers/billboard";
 const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 const SCENARIO = STRATEGY_SCENARIOS.GENERAL_LINK;
 
-test.describe("Strategy scenario: general link", () => {
-  test("toggling Fobles decorates and restores the general link field", async ({ page }, testInfo) => {
+foblesTest.describe("Strategy scenario: general link", () => {
+  foblesTest("toggling Fobles decorates and restores the general link field", async ({ page }, testInfo) => {
     await setupContentEditorForTesting(page,STRATEGY_SCENARIOS.GENERAL_LINK);
         
         await showBillboard(page, STRATEGY_SCENARIOS.GENERAL_LINK.friendlyName);

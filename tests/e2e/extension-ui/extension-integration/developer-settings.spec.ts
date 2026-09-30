@@ -1,4 +1,4 @@
-import { expect, test, type Page } from "../../../fixtures/playwright";
+import { expect, foblesTest, type Page } from "../../../fixtures/playwright";
 import { getExtensionId, openExtensionPage, setExtensionCheckbox } from "../../../fixtures/extension";
 import { openSitecorePageAndFindFoblesFrame, attachScreenshot } from "../../../helpers/fobles-helpers";
 import { bringPageToFront } from "../../../helpers/page-switch";
@@ -9,8 +9,8 @@ import {
   TESTING,
 } from "../options-test-helpers";
 
-test.describe("Extension UI Integration", () => {
-  test("developer settings affect Content Editor logging and the popup", async ({
+foblesTest.describe("Extension UI Integration", () => {
+  foblesTest("developer settings affect Content Editor logging and the popup", async ({
     sharedBrowserContext,
     page,
   }, testInfo) => {

@@ -1,10 +1,10 @@
-import { expect, test, type Page } from "../../../fixtures/playwright";
+import { expect, foblesTest, type Page } from "../../../fixtures/playwright";
 import { clickExtensionControl, getExtensionId, openExtensionPage } from "../../../fixtures/extension";
 import { CONST } from "../../../CONST";
 import { attachScreenshot } from "../../../helpers/fobles-helpers";
 
-test.describe("Extension UI Integration", () => {
-  test("opens Additional Settings from the popup", async ({ sharedBrowserContext }, testInfo) => {
+foblesTest.describe("Extension UI Integration", () => {
+  foblesTest("opens Additional Settings from the popup", async ({ sharedBrowserContext }, testInfo) => {
     const extensionId = await getExtensionId(sharedBrowserContext);
     const popupPage = await openExtensionPage(
       sharedBrowserContext,

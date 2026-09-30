@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures/playwright";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import {
   setupContentEditorForTesting,
@@ -21,8 +21,8 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 // [data-fobles-wrapper] - like Tag List, but functional.
 const SCENARIO = STRATEGY_SCENARIOS.MULTILIST_WITH_SEARCH;
 
-test.describe("Strategy scenario: multilist with search", () => {
-  test("toggling Fobles decorates and restores the multilist with search field", async ({ page }, testInfo) => {
+foblesTest.describe("Strategy scenario: multilist with search", () => {
+  foblesTest("toggling Fobles decorates and restores the multilist with search field", async ({ page }, testInfo) => {
   await setupContentEditorForTesting(page,STRATEGY_SCENARIOS.MULTILIST_WITH_SEARCH);
       
       await showBillboard(page, STRATEGY_SCENARIOS.MULTILIST_WITH_SEARCH.friendlyName);

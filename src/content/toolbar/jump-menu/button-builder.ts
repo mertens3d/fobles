@@ -2,13 +2,13 @@ import { ATTRIBUTE, CLASS } from "../../constants";
 import { createFoblesButton } from "../../features/augmentor/helper";
 import { buildMenuOptionUrl } from "./menu-option-url";
 import { registerButtonRow } from "./button-visibility";
-import type { MenuOption } from "../../../shared/quick-menu/menu.types";
+import type { MenuOption } from "../../../shared/jump-menu/menu.types";
 
 function addIcon(doc: Document, button: HTMLButtonElement, option: MenuOption): void {
   const iconBox = doc.createElement("span");
-  iconBox.className = CLASS.QUICK_MENU_OPTION_ICON_BOX;
+  iconBox.className = CLASS.JUMP_MENU_OPTION_ICON_BOX;
   const icon = doc.createElement(option.icon ? "img" : "span");
-  icon.className = CLASS.QUICK_MENU_OPTION_ICON;
+  icon.className = CLASS.JUMP_MENU_OPTION_ICON;
   if (option.icon) {
     (icon as HTMLImageElement).src = option.icon;
     (icon as HTMLImageElement).alt = "";
@@ -19,7 +19,7 @@ function addIcon(doc: Document, button: HTMLButtonElement, option: MenuOption): 
 
 function addLabel(doc: Document, button: HTMLButtonElement, option: MenuOption): void {
   const label = doc.createElement("span");
-  label.className = CLASS.QUICK_MENU_OPTION_LABEL;
+  label.className = CLASS.JUMP_MENU_OPTION_LABEL;
   label.textContent = option.label;
   button.appendChild(label);
 }
@@ -28,7 +28,7 @@ function addBadge(doc: Document, button: HTMLButtonElement, option: MenuOption):
   if (!option.isXPOnly && !option.isAIOnly) return;
 
   const badge = doc.createElement("span");
-  badge.className = CLASS.QUICK_MENU_OPTION_BADGE;
+  badge.className = CLASS.JUMP_MENU_OPTION_BADGE;
   badge.textContent = option.isXPOnly ? "XP" : "AI";
   button.appendChild(badge);
 }
@@ -43,7 +43,7 @@ function addDatasetAttributes(button: HTMLButtonElement, option: MenuOption): vo
 }
 
 // Wires the option's own action (if any) plus the shared "clicking any option closes the menu" behavior.
-// closeMenu is threaded down from index.ts so this file never has to import setQuickMenuVisible.
+// closeMenu is threaded down from index.ts so this file never has to import setJumpMenuVisible.
 function addEvent(
   doc: Document,
   button: HTMLButtonElement,
@@ -94,7 +94,7 @@ export function createMenuOptionRow(
   closeMenu: () => void,
 ): HTMLDivElement {
   const row = doc.createElement("div");
-  row.className = CLASS.QUICK_MENU_ACTION;
+  row.className = CLASS.JUMP_MENU_ACTION;
   row.appendChild(createMenuOptionButton(doc, option, closeMenu));
   registerButtonRow(option.id, row);
   return row;

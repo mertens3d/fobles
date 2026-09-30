@@ -1,11 +1,11 @@
-import { expect, test } from "../fixtures/playwright";
+import { expect, foblesTest } from "../fixtures/playwright";
 import {  openContentEditor } from "../fixtures/sitecore";
 import { attachScreenshot } from "../helpers/fobles-helpers";
 import { CONST } from "../CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 
-test.describe("Session", () => {
-  test("IsLoggedIn", async ({ page }, testInfo) => {
+foblesTest.describe("Session", () => {
+  foblesTest("IsLoggedIn", async ({ page }, testInfo) => {
     await openContentEditor(page);
     await expect(page.locator("input[type='password']")).toHaveCount(0);
 

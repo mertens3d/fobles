@@ -1,6 +1,6 @@
 import { CLASS } from "../../constants";
 import { createMenuGroup } from "./group-builder";
-import type { MenuGroup } from "../../../shared/quick-menu/menu.types";
+import type { MenuGroup } from "../../../shared/jump-menu/menu.types";
 
 export function createMenuColumn(
   doc: Document,
@@ -9,11 +9,11 @@ export function createMenuColumn(
   closeMenu: () => void,
 ): HTMLDivElement {
   const column = doc.createElement("div");
-  column.className = CLASS.QUICK_MENU_COLUMN;
+  column.className = CLASS.JUMP_MENU_COLUMN;
 
   if (title) {
     const heading = doc.createElement("div");
-    heading.className = CLASS.QUICK_MENU_COLUMN_TITLE;
+    heading.className = CLASS.JUMP_MENU_COLUMN_TITLE;
     heading.textContent = title;
     column.appendChild(heading);
   }

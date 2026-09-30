@@ -1,3 +1,4 @@
+import { COLORS } from "../CONST.colors";
 import { SELECTED_SPEED } from "../settings/settings";
 import type { TestSpeed } from "../settings/test-speed.types";
 
@@ -128,8 +129,9 @@ export const TESTING = {
     },
     EXCLUDED_FRAME_URL_FRAGMENT: "sitecore/shell/Applications/-/media",
     HIGHLIGHT: {
-      BACKGROUND_COLOR: "#FCE99C",
-      OUTLINE: "5px solid #DC291E",
+      BACKGROUND_COLOR: COLORS.scSoftYellow,
+      COLOR: "black",
+      OUTLINE: "5px solid " + COLORS.scRed,
       OUTLINE_OFFSET: "2px",
       RESTORE_DELAY_MS: 2_000,
       TRANSITION: "background-color 0.5s ease, outline-color 0.5s ease",
@@ -153,8 +155,8 @@ export const TESTING = {
       "height: 12px",
       "border: 2px solid #fff",
       "border-radius: 50%",
-      "background: #d6336c",
-      "box-shadow: 0 0 0 2px #d6336c, 0 2px 6px rgba(0, 0, 0, .45)",
+      "background: " + COLORS.scRed,
+      "box-shadow: 0 0 0 2px " + COLORS.scRed + ", 0 2px 6px rgba(0, 0, 0, .45)",
       "pointer-events: none",
       "transform: translate(-50%, -50%)",
       "transition: left 16ms linear, top 16ms linear",
@@ -185,12 +187,12 @@ export const TESTING = {
       COLUMN_TITLE: "Admin Pages",
       ICON_INPUT: "input[name='icon']",
       LABEL_INPUT: "input[name='label']",
-      QUICK_MENU_SECTION_TITLE: "Quick Menu Buttons",
+      JUMP_MENU_SECTION_TITLE: "Jump Menu Buttons",
       REMOVE_BUTTON_TITLE: "Remove this Admin Page",
       ROW_SELECTOR: ".user-admin-page-row",
-      SAVE_BUTTON: "Save quick menu buttons",
-      STATUS_SELECTOR: "#quick-menu-buttons-status",
-      SAVE_STATUS: "Quick menu buttons saved.",
+      SAVE_BUTTON: "Save jump menu buttons",
+      STATUS_SELECTOR: "#jump-menu-buttons-status",
+      SAVE_STATUS: "Jump menu buttons saved.",
       URL_INPUT: "input[name='url']",
     },
     DEVELOPER: {
@@ -243,10 +245,10 @@ export const TESTING = {
     USER_ADMIN_PAGE_SAVED: "user-admin-page-saved.png",
   },
   SCREENSHOT: {
-    MASK_COLOR: "#00BFFF",
+    MASK_COLOR: COLORS.scLightGray,
   },
-  QUICK_MENU: {
-    ADMIN_PAGES_COLUMN_SELECTOR: ".quick-menu-column",
+  JUMP_MENU: {
+    ADMIN_PAGES_COLUMN_SELECTOR: ".jump-menu-column",
     ADMIN_PAGES_GROUP_LABEL: "User Admin Pages",
     ADMIN_PAGES_INTEGRATION_LABEL_PREFIX: "Fobles E2E Toolbar Admin ",
     USER_ADMIN_PAGE_ENABLED_INPUT: "input[name='enabled']",

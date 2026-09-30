@@ -7,11 +7,11 @@ import {
   TREE_JUMP_GROUP,
 } from "./menu-groups";
 import type { MenuGroup } from "./menu.types";
-import type { QuickMenuButtonDescriptor } from "./quick-menu.types";
+import type { JumpMenuButtonDescriptor } from "./jump-menu.types";
 
-export type { QuickMenuButtonDescriptor } from "./quick-menu.types";
+export type { JumpMenuButtonDescriptor } from "./jump-menu.types";
 
-const buildButtonCatalog = (): readonly QuickMenuButtonDescriptor[] => {
+const buildButtonCatalog = (): readonly JumpMenuButtonDescriptor[] => {
   const columns: ReadonlyArray<{ title: string; groups: readonly MenuGroup[] }> = [
     { title: TEXT.GROUP_NAME.TREE_JUMPS, groups: TREE_JUMP_GROUP },
     { title: TEXT.GROUP_NAME.ADMIN_PAGES, groups: [...ADMIN_PAGE_GROUP, AI_GROUP, THIRD_PARTY_GROUP] },
@@ -34,4 +34,4 @@ const buildButtonCatalog = (): readonly QuickMenuButtonDescriptor[] => {
   );
 };
 
-export const QUICK_MENU_BUTTON_CATALOG: readonly QuickMenuButtonDescriptor[] = buildButtonCatalog();
+export const JUMP_MENU_BUTTON_CATALOG: readonly JumpMenuButtonDescriptor[] = buildButtonCatalog();

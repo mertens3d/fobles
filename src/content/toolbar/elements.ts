@@ -7,14 +7,14 @@ import {
 } from "../constants";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {
-  openQuickMenuOnHover,
-  scheduleCloseQuickMenuOnHover,
-} from "./quick-menu";
+  openJumpMenuOnHover,
+  scheduleCloseJumpMenuOnHover,
+} from "./jump-menu";
 import {
   openProxyButtonsOnHover,
   scheduleCloseProxyButtonsOnHover,
 } from "./proxy-buttons";
-import { toggleProxyButtons, toggleQuickMenu } from "./handlers";
+import { toggleProxyButtons, toggleJumpMenu } from "./handlers";
 import type { ToolbarContext } from "./types";
 
 const GRIP_ROWS = 5;
@@ -61,18 +61,18 @@ function createFoblesNavButton(
   return button;
 }
 
-export function createQuickMenuTrigger(context: ToolbarContext): HTMLDivElement {
+export function createJumpsMenuTrigger(context: ToolbarContext): HTMLDivElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.FOBLES_NAV_BUTTON,
-    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.QUICK_MENU_TRIGGER,
-    text: TEXT.QUICK_MENU,
+    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.JUMP_MENU_TRIGGER,
+    text: TEXT.JUMP_MENU,
     title: TEXT.QUICK_MENU_TITLE,
-    onClick: () => toggleQuickMenu(context),
+    onClick: () => toggleJumpMenu(context),
   });
 
-  return createMenuTrigger(context, button, CLASS.QUICK_MENU_TRIGGER, {
-    open: () => openQuickMenuOnHover(context.doc),
-    scheduleClose: () => scheduleCloseQuickMenuOnHover(context.doc),
+  return createMenuTrigger(context, button, CLASS.JUMP_MENU_TRIGGER, {
+    open: () => openJumpMenuOnHover(context.doc),
+    scheduleClose: () => scheduleCloseJumpMenuOnHover(context.doc),
   });
 }
 

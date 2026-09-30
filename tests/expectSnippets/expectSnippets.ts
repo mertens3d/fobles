@@ -3,7 +3,7 @@ import { expect, type Frame, type Page } from "../fixtures/playwright";
 import { findFoblesFrame } from "../helpers/frame-finder";
 
 export async function expectFlyoutVisible(foblesFrame: Frame) {
-  const menuFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.QUICK_MENU).first();
+  const menuFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU).first();
   await expect(menuFlyout).toHaveAttribute(CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE, "true");
 }
 

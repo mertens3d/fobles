@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures/playwright";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import {
   setupContentEditorForTesting,
@@ -19,8 +19,8 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 // which replaces two separate panes.
 const SCENARIO = STRATEGY_SCENARIOS.MULTILIST_OPTIONS;
 
-test.describe("Strategy scenario: multilist", () => {
-  test("toggling Fobles decorates and restores the multilist field", async ({ page }, testInfo) => {
+foblesTest.describe("Strategy scenario: multilist", () => {
+  foblesTest("toggling Fobles decorates and restores the multilist field", async ({ page }, testInfo) => {
 await setupContentEditorForTesting(page,STRATEGY_SCENARIOS.MULTILIST_OPTIONS);
     
     await showBillboard(page, STRATEGY_SCENARIOS.MULTILIST_OPTIONS.friendlyName);

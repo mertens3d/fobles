@@ -3,8 +3,8 @@ import {
   normalizeUserAdminPageIconPath,
   normalizeUserAdminPageUrl,
   type UserAdminPage,
-} from "../shared/quick-menu/user-admin-page-settings";
-import { USER_ADMIN_PAGE } from "../shared/quick-menu/user-admin-page-constants";
+} from "../shared/jump-menu/user-admin-page-settings";
+import { USER_ADMIN_PAGE } from "../shared/jump-menu/user-admin-page-constants";
 
 function createEmptyUserAdminPage(): UserAdminPage {
   return { id: createUserAdminPageId(), label: "", enabled: true, icon: "", url: "" };
@@ -15,11 +15,11 @@ function createEmptyUserAdminPage(): UserAdminPage {
 // since an admin page's url is already relative to the current domain root.
 function createUserAdminPageRow(entry: UserAdminPage): HTMLDivElement {
   const row = document.createElement("div");
-  row.className = "quick-menu-entry user-admin-page-row";
+  row.className = "jump-menu-entry user-admin-page-row";
   row.dataset.userAdminPageId = entry.id;
 
   const titleRow = document.createElement("div");
-  titleRow.className = "quick-menu-entry-title";
+  titleRow.className = "jump-menu-entry-title";
 
   const labelInput = document.createElement("input");
   labelInput.type = "text";
@@ -39,7 +39,7 @@ function createUserAdminPageRow(entry: UserAdminPage): HTMLDivElement {
   row.appendChild(titleRow);
 
   const fieldsRow = document.createElement("div");
-  fieldsRow.className = "quick-menu-entry-fields";
+  fieldsRow.className = "jump-menu-entry-fields";
 
   const enabledInput = document.createElement("input");
   enabledInput.type = "checkbox";

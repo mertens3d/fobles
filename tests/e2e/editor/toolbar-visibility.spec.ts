@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures/playwright";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { CONST } from "../../CONST";
 import { attachUiPathNote, createStep } from "../../helpers/fobles-helpers";
@@ -9,7 +9,7 @@ import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
 // The dialog/gallery `default.aspx?xmlcontrol=...` pages tracked in docs/TODO.md - each one only
 // ever renders inside a small iframe/dialog (never a full Content Editor page), so Fobles' own
 // toolbar strips itself down to just the LBolt button on these (see FOBLES_PAGES's toolbarType,
-// src/content/constants.ts) rather than showing the quick menu/proxy buttons/close button too.
+// src/content/constants.ts) rather than showing the jump menu/proxy buttons/close button too.
 // Navigating directly to each page's own URL (rather than clicking through the ribbon action that
 // normally opens it) is equivalent here: Fobles' toolbar-eligibility check only looks at the
 // current frame's own location, never how it got there. uiPath records that real click-path
@@ -42,7 +42,7 @@ const PAGES: ToolbarPageCase[] = [
   {
     label: "File Explorer",
     url: "/sitecore/shell/default.aspx?xmlcontrol=FileExplorer",
-    uiPath: "Quick Menu -> File Explorer",
+    uiPath: "Jump Menu -> File Explorer",
     compact: false,
   },
   {
@@ -107,10 +107,10 @@ const PAGES: ToolbarPageCase[] = [
   },
 ];
 
-test.describe("Editor scenario: toolbar visibility on dialog/gallery pages", () => {
+foblesTest.describe("Editor scenario: toolbar visibility on dialog/gallery pages", () => {
   for (const pageCase of PAGES) {
     const isEligible = pageCase.eligible !== false;
-    const runTest = pageCase.skip ? test.skip.bind(test ) : test.bind(test);
+    const runTest = pageCase.skip ? foblesTest.skip.bind(foblesTest ) : foblesTest.bind(foblesTest);
 
     runTest(`Fobles nav ${isEligible ? "appears" : "does not appear"} on ${pageCase.label}`, async ({ page }, testInfo) => {
       const step = createStep(page, testInfo, page);
@@ -135,7 +135,7 @@ test.describe("Editor scenario: toolbar visibility on dialog/gallery pages", () 
         await expect(foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER)).toBeVisible();
         await expect(foblesFrame.locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON)).toBeVisible();
 
-        const menuTrigger = foblesFrame.locator(CONST.FOBLES.SELECTORS.MENU_TRIGGER);
+        const menuTrigger = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER);
         const proxyButtonsTrigger = foblesFrame.locator(CONST.FOBLES.SELECTORS.PROXY_BUTTONS_TRIGGER);
         const closeButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CLOSE_BUTTON);
 

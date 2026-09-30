@@ -44,4 +44,28 @@ export default defineConfig([
       "unused-imports/no-unused-imports": "error",
     },
   },
+
+  {
+    // Importing foblesTest/expect straight from @playwright/test skips tests/fixtures/playwright.ts,
+    // which is what actually launches the persistent browser context with the Fobles extension
+    // loaded - a spec written this way runs against a plain browser with no extension at all,
+    // silently, since Playwright itself has no way to know that was a mistake. Type-only imports
+    // (e.g. `import type { Page } from "@playwright/test"`) are unaffected and still allowed.
+    files: ["tests/e2e/**/*.spec.ts"],
+    rules: {
+      "@typescript-eslint/no-restricted-imports": [
+        "error",
+        {
+          paths: [
+            {
+              name: "@playwright/test",
+              message:
+                "Import foblesTest/expect from the local fixtures (e.g. \"../fixtures/playwright\") instead - importing from @playwright/test directly skips the fixture that loads the Fobles extension into the browser context.",
+              allowTypeImports: true,
+            },
+          ],
+        },
+      ],
+    },
+  },
 ]);

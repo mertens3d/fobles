@@ -1,12 +1,12 @@
-import { expect, test } from "../../fixtures/playwright";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { CONST } from "../../CONST";
 import {
   createStep,
-  expectFoblesButtonNewTabNavigationStrategy,
+  expectFoblesButtonNewTabNavigation,
   expectFoblesButtonSameTabNavigation,
 } from "../../helpers/fobles-helpers";
-import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
+import { clickWithMouseMarker, ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 
 import { findFoblesFrame } from "../../helpers/frame-finder";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
@@ -24,8 +24,10 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 // its id input) - see quick-info-section.ts's candidates.
 const SCENARIO = EDITOR_SCENARIOS.QUICK_INFO_SECTION;
 
-test.describe("Editor scenario: quick info section", () => {
-  test("toggling Fobles decorates and restores the Quick Info panel", async ({ page }, testInfo) => {
+foblesTest.describe("Editor scenario: quick info section", () => {
+  foblesTest("toggling Fobles decorates and restores the Quick Info panel", async ({ page }, testInfo) => {
+   
+   
     await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`);
     await ensureMouseMarkerExists(page);
 
@@ -53,20 +55,23 @@ test.describe("Editor scenario: quick info section", () => {
         SCENARIO.templateIdButton,
       ]) {
         await expect(
-          quickInfoTable.locator(CONST.FOBLES.SELECTORS.BUTTON, { hasText: button.expectedButtonText }),
+          quickInfoTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, { hasText: button.expectedButtonText }),
         ).toHaveText(button.expectedButtonText);
       }
       await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
-    const itemPathButton = quickInfoTable.locator(CONST.FOBLES.SELECTORS.BUTTON, {
+    const itemPathButton = quickInfoTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
       hasText: SCENARIO.itemPathButton.expectedButtonText,
     });
 
     await step(
       `Ctrl+click: opens the item in a new tab: "${SCENARIO.itemPathButton.expectedFoValue}"`,
       async (fullTitle) => {
-        await expectFoblesButtonNewTabNavigationStrategy(page, testInfo, itemPathButton, SCENARIO.itemPathButton.expectedFoValue, fullTitle);
+        const popupPromise = page.context().waitForEvent("page");
+        await clickWithMouseMarker(page, itemPathButton, "Fobles item button", { modifiers: ["Control"] });
+        const popup = await popupPromise;
+        await expectFoblesButtonNewTabNavigation(testInfo, SCENARIO.itemPathButton.expectedFoValue, fullTitle, popup, page);
       },
       { screenshot: false },
     );
@@ -81,7 +86,7 @@ test.describe("Editor scenario: quick info section", () => {
 
     await clickLbolt(page);
 
-    const itemIdButton = quickInfoTable.locator(CONST.FOBLES.SELECTORS.BUTTON, {
+    const itemIdButton = quickInfoTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
       hasText: SCENARIO.itemIdButton.expectedButtonText,
     });
 

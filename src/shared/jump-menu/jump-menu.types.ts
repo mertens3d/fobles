@@ -1,14 +1,14 @@
 // Persisted per-button customization, keyed by the button's stable GUID (see button-ids.ts).
-export type QuickMenuButtonSetting = {
+export type JumpMenuButtonSetting = {
   // Snapshot of the button's label at save time, so raw storage is readable without cross-referencing code.
   label: string;
   enabled: boolean;
   pathSuffix: string;
 };
 
-export type QuickMenuButtonSettings = Record<string, QuickMenuButtonSetting>;
+export type JumpMenuButtonSettings = Record<string, JumpMenuButtonSetting>;
 
-export type QuickMenuButtonDescriptor = {
+export type JumpMenuButtonDescriptor = {
   id: string;
   label: string;
   column: string;
@@ -17,8 +17,8 @@ export type QuickMenuButtonDescriptor = {
   basePath?: string;
 };
 
-// A user-defined Tree Jump shortcut (src/shared/quick-menu/user-tree-jump-settings.ts) - unlike
-// QuickMenuButtonDescriptor, these aren't a fixed catalog entry; the user creates any number of
+// A user-defined Tree Jump shortcut (src/shared/jump-menu/user-tree-jump-settings.ts) - unlike
+// JumpMenuButtonDescriptor, these aren't a fixed catalog entry; the user creates any number of
 // them (up to USER_TREE_JUMP.MAX_ENTRIES), each rooted at SITECORE.RELATIVE_PATHS.ROOT.
 export type UserTreeJump = {
   id: string;
@@ -28,7 +28,7 @@ export type UserTreeJump = {
   pathSuffix: string;
 };
 
-// A user-defined Admin Page shortcut (src/shared/quick-menu/user-admin-page-settings.ts) - like
+// A user-defined Admin Page shortcut (src/shared/jump-menu/user-admin-page-settings.ts) - like
 // UserTreeJump, not a fixed catalog entry; the user creates any number of them (up to
 // USER_ADMIN_PAGE.MAX_ENTRIES). Unlike a Tree Jump's pathSuffix, url is already relative to the
 // current domain root (e.g. "/unicorn.aspx"), matching ADMIN_PAGE_GROUP's own catalog entries.

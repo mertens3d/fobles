@@ -1,4 +1,4 @@
-import { expect, test } from "../fixtures/playwright";
+import { expect, foblesTest } from "../fixtures/playwright";
 import { getTestEnvironment } from "../fixtures/environment";
 import { attachScreenshot } from "../helpers/fobles-helpers";
 import { logoutCurrentSitecoreSession } from "../fixtures/sitecore";
@@ -8,8 +8,8 @@ import { RECORD_VIDEO } from "../settings/settings";
 // Filename sorts after "strategies/" and "toolbar/" so this always runs last across the whole
 // suite. Logs out itself rather than relying on the worker-teardown cleanup (fixtures/playwright.ts),
 // which only runs after every test - including this one - has already finished.
-test.describe("Session", () => {
-  test("IsLoggedOut", async ({ page }, testInfo) => {
+foblesTest.describe("Session", () => {
+  foblesTest("IsLoggedOut", async ({ page }, testInfo) => {
     const { baseUrl } = getTestEnvironment();
     const contentEditorUrl = new URL(CONST.SITECORE.PATHS.CONTENT_EDITOR, baseUrl).toString();
 

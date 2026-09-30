@@ -1,4 +1,4 @@
-import { expect, test } from "../../../fixtures/playwright";
+import { expect, foblesTest } from "../../../fixtures/playwright";
 import { getExtensionId, openExtensionPage } from "../../../fixtures/extension";
 import { CONST } from "../../../CONST";
 import {
@@ -7,9 +7,9 @@ import {
   removeTestRowIfPresent,
 } from "../../toolbar/support/other-settings-helpers";
 
-test.describe("User Tree Jump Persistence", () => {
-  test("Additional Settings adds and normalizes a User Tree Jump", async ({ sharedBrowserContext }) => {
-    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+foblesTest.describe("User Tree Jump Persistence", () => {
+  foblesTest("Additional Settings adds and normalizes a User Tree Jump", async ({ sharedBrowserContext }) => {
+    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(
       sharedBrowserContext,

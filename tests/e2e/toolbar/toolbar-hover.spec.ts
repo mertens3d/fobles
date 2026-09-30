@@ -7,12 +7,12 @@ import {
 import { activateFobles, } from "../../helpers/fobles-helpers";
 import { hoverAndGrow, hoverAndSlideOut } from "../../helpers/hover-helpers";
 import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
-import test, { expect } from "@playwright/test";
+import { expect, foblesTest } from "../../fixtures/playwright";
 
 
-test.describe("Fobles Hover", () => {
+foblesTest.describe("Fobles Hover", () => {
 
-    test.skip(`'content-editor-root-item-lbolt' creates expected Fobles`, async ({ page }) => {
+    foblesTest.skip(`'content-editor-root-item-lbolt' creates expected Fobles`, async ({ page }) => {
         await activateFobles(page);
         const lboltButton = page
             .locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON)
@@ -21,9 +21,9 @@ test.describe("Fobles Hover", () => {
         await expect(editorTabs).toBeVisible();
         await ensureMouseMarkerExists(page);
 
-        const menuButton = page.locator(CONST.FOBLES.SELECTORS.MENU_TRIGGER).first();
+        const menuButton = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
         await expect(menuButton).toBeVisible();
-        const menuFlyout = page.locator(CONST.FOBLES.SELECTORS.QUICK_MENU).first();
+        const menuFlyout = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU).first();
         const mousePosition = getLastKnownMousePosition();
 
         await hoverAndGrow(page, {

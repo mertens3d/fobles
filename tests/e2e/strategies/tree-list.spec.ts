@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures/playwright";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import {
   setupContentEditorForTesting,
@@ -21,8 +21,8 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 // is guaranteed), not an exact overall wrapper count.
 const SCENARIO = STRATEGY_SCENARIOS.TREE_LIST;
 
-test.describe("Strategy scenario: tree list", () => {
-  test("toggling Fobles decorates and restores the tree list field", async ({ page }, testInfo) => {
+foblesTest.describe("Strategy scenario: tree list", () => {
+  foblesTest("toggling Fobles decorates and restores the tree list field", async ({ page }, testInfo) => {
 
     await setupContentEditorForTesting(page, STRATEGY_SCENARIOS.TREE_LIST);
 

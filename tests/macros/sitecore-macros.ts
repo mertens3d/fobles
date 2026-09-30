@@ -6,7 +6,7 @@ import {
   ensureMouseMarkerExists,
 } from "../helpers/mouse-proxy";
 import { findFoblesFrame, findFrameWithSelector } from "../helpers/frame-finder";
-import { dismissFoblesConfirmDialogIfPresent, openQuickMenu } from "./fobles-macros";
+import { dismissFoblesConfirmDialogIfPresent, openJumpMenu } from "./fobles-macros";
 import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 
 // Reusable stock Sitecore Content Editor UI interactions (ribbon tabs, galleries), plus Fobles'
@@ -14,8 +14,8 @@ import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 // separate from fobles-helpers.ts (which is about asserting Fobles' resulting behavior, not about
 // how to reach the UI that triggers it) and out of any one spec file.
 
-export async function clickRibbonTab(page: Page, frame: Frame, accessKey: string): Promise<void> {
-  console.log("[Macro: clickRibbonTab] - Start");
+export async function clickScRibbonTab(page: Page, frame: Frame, accessKey: string): Promise<void> {
+  console.log("[Macro: clickScRibbonTab] - Start");
   await clickWithMouseMarker(page, frame.locator(`a[accesskey="${accessKey}"]`).first(), `ribbon tab (${accessKey})`);
 }
 
@@ -35,7 +35,7 @@ export async function clickContentTabIfPresent(page: Page): Promise<void> {
   }
 }
 
-// Opens the quick menu (if not already open) and clicks the tree jump button for the given path
+// Opens the jump menu (if not already open) and clicks the tree jump button for the given path
 // (see CONST.SITECORE.TREE_JUMP_PATHS - never a raw path literal at the call site). Finds its own
 // fobles frame fresh rather than accepting one from the caller, since a frame handed in from an
 // earlier navigation/activation step can go stale by the time this actually runs. Dismisses
@@ -57,7 +57,7 @@ export async function clickTreeJump(
   const foblesFrame = await findFoblesFrame(page);
   await ensureMouseMarkerExists(page);
   await ensureMouseMarkerExists(foblesFrame);
-  await openQuickMenu(page, foblesFrame);
+  await openJumpMenu(page, foblesFrame);
   const jumpButtonSelector = `[data-fobles-tree-jump-path="${path}"]`;
   const jumpButton = foblesFrame.locator(jumpButtonSelector);
   console.log(`[fobles] Waiting for tree jump button (selector: ${jumpButtonSelector})`);
@@ -101,17 +101,17 @@ export async function highlightQuickInfoPath(page: Page): Promise<void> {
 // into its own dynamically created frame (see the button's showGallery(...) target), not the
 // ribbon's own frame, so the panel is found by searching every frame on the page rather than
 // assuming it lands in `frame`. Returns the gallery panel locator once it's visible.
-export async function openLinksGallery(page: Page, frame: Frame): Promise<Locator> {
-  console.log("[Macro: openLinksGallery] - Start");
-  await clickRibbonTab(page, frame, "N");
+export async function openScLinksGallery(page: Page, frame: Frame): Promise<Locator> {
+  console.log(`[Macro: ${openScLinksGallery.name}] - Start`);
+  await clickScRibbonTab(page, frame, "N");
   await clickWithMouseMarker(
     page,
-    frame.locator('a[title="Show referenced and referred items."]').first(),
+    frame.locator(CONST.SITECORE.SELECTORS.RIBBON_TAB.NAVIGATE.LINKS_GALLERY_BUTTON).first(),
     "Links gallery button",
   );
 
-  const galleryFrame = await findFrameWithSelector(page, "#Links", "Links gallery panel", 10_000);
-  const linksPanel = galleryFrame.locator("#Links");
+  const galleryFrame = await findFrameWithSelector(page, CONST.SITECORE.SELECTORS.RIBBON_TAB.NAVIGATE.LINKS, "Links gallery panel", 10_000);
+  const linksPanel = galleryFrame.locator( CONST.SITECORE.SELECTORS.RIBBON_TAB.NAVIGATE.LINKS);
   await linksPanel.waitFor({ state: "visible" });
   return linksPanel;
 }
@@ -145,6 +145,6 @@ export async function setTreePanelWidth(page: Page, widthPx: number): Promise<vo
 
 export async function ceRibbonOpenHome(page: Page) {
   await findFrameWithSelector(page, 'a[accesskey="H"]', "Content Editor Home ribbon tab")
-    .then((frame) => clickRibbonTab(page, frame, "H"))
+    .then((frame) => clickScRibbonTab(page, frame, "H"))
     .catch(() => undefined);
 }

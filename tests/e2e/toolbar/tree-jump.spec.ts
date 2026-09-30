@@ -1,6 +1,6 @@
 import {
   expect,
-  test,
+  foblesTest,
   type Frame,
   type Page,
   type TestInfo,
@@ -24,11 +24,11 @@ import {
 } from "../../expectSnippets/expectSnippets";
 import type { BrowserContext } from "@playwright/test";
 
-test.describe("Fobles browser integration", () => {
-  test("tree jump buttons navigate in the current tab", async ({
+foblesTest.describe("Fobles browser integration", () => {
+  foblesTest("tree jump buttons navigate in the current tab", async ({
     page,
   }, testInfo) => {
-    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     let foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
     await ClickFoblesMenuButton(page);
@@ -50,11 +50,11 @@ test.describe("Fobles browser integration", () => {
     }
   });
 
-  test("tree jump buttons open their target URL in a new tab with Ctrl+Click", async ({
+  foblesTest("tree jump buttons open their target URL in a new tab with Ctrl+Click", async ({
     sharedBrowserContext,
     page,
   }, testInfo) => {
-    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
     await ClickFoblesMenuButton(page);

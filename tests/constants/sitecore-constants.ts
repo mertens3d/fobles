@@ -21,6 +21,12 @@ export const SITECORE = {
     ACCOUNT_INFO: "ul.sc-accountInformation",
     CONTENT_TAB: "span.scEditorTabHeaderNormal",
     QUICK_INFO_TABLE: ".scEditorQuickInfo",
+    RIBBON_TAB: {
+      NAVIGATE: {
+        LINKS_GALLERY_BUTTON: 'a[title="Show referenced and referred items."]',
+        LINKS: '#Links',
+      }
+    },
     STRATEGIES: {
       DROP_LINK: "select.scContentControl.scCombobox",
       DROP_LIST: "select.scContentControl.scCombobox",

@@ -1,4 +1,4 @@
-import { expect, test } from "../../../fixtures/playwright";
+import { expect, foblesTest } from "../../../fixtures/playwright";
 import {
   clickExtensionControl,
   getExtensionId,
@@ -20,12 +20,12 @@ import {
   TESTING,
 } from "../options-test-helpers";
 
-test.describe("User Admin Pages Toolbar Integration", () => {
-  test("updates the toolbar live when a User Admin Page is enabled or disabled", async ({
+foblesTest.describe("User Admin Pages Toolbar Integration", () => {
+  foblesTest("updates the toolbar live when a User Admin Page is enabled or disabled", async ({
     sharedBrowserContext,
     page,
   }, testInfo) => {
-    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(
       sharedBrowserContext,
@@ -56,16 +56,16 @@ test.describe("User Admin Pages Toolbar Integration", () => {
       await ClickFoblesMenuButton(page);
       await expectFlyoutVisible(foblesFrame);
       await expect(foblesFrame.getByRole("button", { name: label, exact: true })).toBeVisible();
-      await expect(foblesFrame.getByText(TESTING.QUICK_MENU.ADMIN_PAGES_GROUP_LABEL)).toBeVisible();
+      await expect(foblesFrame.getByText(TESTING.JUMP_MENU.ADMIN_PAGES_GROUP_LABEL)).toBeVisible();
       await attachScreenshot(
         testInfo,
-        foblesFrame.locator(CONST.FOBLES.SELECTORS.QUICK_MENU),
+        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU),
         TESTING.REPORT_SCREENSHOTS.ADMIN_PAGE_ENABLED,
       );
 
       await setExtensionCheckbox(
         optionsPage,
-        newRow.locator(TESTING.QUICK_MENU.USER_ADMIN_PAGE_ENABLED_INPUT),
+        newRow.locator(TESTING.JUMP_MENU.USER_ADMIN_PAGE_ENABLED_INPUT),
         false,
         label,
       );
@@ -74,16 +74,16 @@ test.describe("User Admin Pages Toolbar Integration", () => {
         TESTING.OPTIONS.ADMIN_PAGES.SAVE_STATUS,
       );
       await expect(foblesFrame.getByRole("button", { name: label, exact: true })).toHaveCount(0);
-      await expect(foblesFrame.getByText(TESTING.QUICK_MENU.ADMIN_PAGES_GROUP_LABEL)).toHaveCount(0);
+      await expect(foblesFrame.getByText(TESTING.JUMP_MENU.ADMIN_PAGES_GROUP_LABEL)).toHaveCount(0);
       await attachScreenshot(
         testInfo,
-        foblesFrame.locator(CONST.FOBLES.SELECTORS.QUICK_MENU),
+        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU),
         TESTING.REPORT_SCREENSHOTS.ADMIN_PAGE_DISABLED,
       );
 
       await setExtensionCheckbox(
         optionsPage,
-        newRow.locator(TESTING.QUICK_MENU.USER_ADMIN_PAGE_ENABLED_INPUT),
+        newRow.locator(TESTING.JUMP_MENU.USER_ADMIN_PAGE_ENABLED_INPUT),
         true,
         label,
       );

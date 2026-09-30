@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures/playwright";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import {
   setupContentEditorForTesting,
@@ -21,8 +21,8 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 const SCENARIO = STRATEGY_SCENARIOS.TAG_LIST;
 
 // Skipped - see docs/TODO.md "Strategy Tag List field doesn't render the real Tag List widget".
-test.describe.skip("Strategy scenario: tag list", () => {
-  test("toggling Fobles decorates and restores the tag list field", async ({ page }, testInfo) => {
+foblesTest.describe.skip("Strategy scenario: tag list", () => {
+  foblesTest("toggling Fobles decorates and restores the tag list field", async ({ page }, testInfo) => {
 
     await setupContentEditorForTesting(page, STRATEGY_SCENARIOS.DROP_LINK);
 

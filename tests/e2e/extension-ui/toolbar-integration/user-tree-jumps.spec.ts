@@ -1,4 +1,4 @@
-import { expect, test, type Locator } from "../../../fixtures/playwright";
+import { expect, foblesTest, type Locator } from "../../../fixtures/playwright";
 import { getExtensionId, openExtensionPage } from "../../../fixtures/extension";
 import { CONST } from "../../../CONST";
 import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
@@ -14,13 +14,13 @@ import { humanPause } from "../../../helpers/wait-helpers";
 import { bringPageToFront } from "../../../helpers/page-switch";
 import { addTestRow, removeTestRowIfPresent, setTestRowEnabled } from "../../toolbar/support/other-settings-helpers";
 
-test.describe("User Tree Jumps", () => {
-  test.describe("Toolbar Integration", () => {
-  test("toolbar renders, live-updates, hides, and navigates a User Tree Jump", async ({
+foblesTest.describe("User Tree Jumps", () => {
+  foblesTest.describe("Toolbar Integration", () => {
+  foblesTest("toolbar renders, live-updates, hides, and navigates a User Tree Jump", async ({
     sharedBrowserContext,
     page,
   }, testInfo) => {
-    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(sharedBrowserContext, extensionId, "options");
     const step = createStep(page, testInfo, page, "User Tree Jump");
@@ -61,7 +61,7 @@ test.describe("User Tree Jumps", () => {
         await jumpButton.scrollIntoViewIfNeeded();
         await attachScreenshot(
           testInfo,
-          foblesFrame.locator(CONST.FOBLES.SELECTORS.QUICK_MENU),
+          foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU),
           CONST.TESTING.REPORT_SCREENSHOTS.USER_TREE_JUMP_MENU,
         );
         await clickWithMouseMarker(page, jumpButton, CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label);

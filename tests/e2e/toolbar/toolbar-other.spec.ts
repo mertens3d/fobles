@@ -8,7 +8,7 @@ import { ceRibbonOpenHome } from "../../macros/sitecore-macros";
 import { ClickFoblesMenuButton, dismissFoblesConfirmDialogIfPresent } from "../../macros/fobles-macros";
 import { expectFlyoutVisible } from "../../expectSnippets/expectSnippets";
 import { getFoblesMenuTargets } from "./support/other-settings-helpers";
-import test, { expect, type Frame, type Page } from "@playwright/test";
+import { expect, foblesTest, type Frame, type Page } from "../../fixtures/playwright";
 
 
 
@@ -17,12 +17,12 @@ export type menuTarget = {
     url: string;
 };
 
-test.describe("Fobles Other Buttons", () => {
+foblesTest.describe("Fobles Other Buttons", () => {
 
-    test("other menu buttons navigate to their configured URLs", async ({
+    foblesTest("other menu buttons navigate to their configured URLs", async ({
         page,
     }, testInfo) => {
-        test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+        foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
         await setupContentEditorForTestingBasic(page);
         const step = createStep(page, testInfo, page, "Menu Button");
 

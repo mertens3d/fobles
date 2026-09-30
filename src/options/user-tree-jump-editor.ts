@@ -2,24 +2,24 @@ import {
   createUserTreeJumpId,
   normalizeUserTreeJumpIconPath,
   type UserTreeJump,
-} from "../shared/quick-menu/user-tree-jump-settings";
-import { sanitizeQuickMenuPathSuffix } from "../shared/quick-menu/button-settings";
-import { USER_TREE_JUMP } from "../shared/quick-menu/user-tree-jump-constants";
+} from "../shared/jump-menu/user-tree-jump-settings";
+import { sanitizeJumpMenuPathSuffix } from "../shared/jump-menu/button-settings";
+import { USER_TREE_JUMP } from "../shared/jump-menu/user-tree-jump-constants";
 
 function createEmptyUserTreeJump(): UserTreeJump {
   return { id: createUserTreeJumpId(), label: "", enabled: true, icon: "", pathSuffix: "" };
 }
 
-// Mirrors the Tree Jump catalog's row layout (see createQuickMenuButtonRow in
-// quick-menu-buttons.ts): a title row, then a fields row of checkbox | hardcoded prefix |
+// Mirrors the Tree Jump catalog's row layout (see createJumpMenuButtonRow in
+// jump-menu-buttons.ts): a title row, then a fields row of checkbox | hardcoded prefix |
 // suffix - plus an icon input, which only user-defined entries have.
 function createUserTreeJumpRow(entry: UserTreeJump): HTMLDivElement {
   const row = document.createElement("div");
-  row.className = "quick-menu-entry user-tree-jump-row";
+  row.className = "jump-menu-entry user-tree-jump-row";
   row.dataset.userTreeJumpId = entry.id;
 
   const titleRow = document.createElement("div");
-  titleRow.className = "quick-menu-entry-title";
+  titleRow.className = "jump-menu-entry-title";
 
   const labelInput = document.createElement("input");
   labelInput.type = "text";
@@ -39,7 +39,7 @@ function createUserTreeJumpRow(entry: UserTreeJump): HTMLDivElement {
   row.appendChild(titleRow);
 
   const fieldsRow = document.createElement("div");
-  fieldsRow.className = "quick-menu-entry-fields";
+  fieldsRow.className = "jump-menu-entry-fields";
 
   const enabledInput = document.createElement("input");
   enabledInput.type = "checkbox";
@@ -48,7 +48,7 @@ function createUserTreeJumpRow(entry: UserTreeJump): HTMLDivElement {
   fieldsRow.appendChild(enabledInput);
 
   const prefix = document.createElement("span");
-  prefix.className = "quick-menu-entry-prefix";
+  prefix.className = "jump-menu-entry-prefix";
   prefix.textContent = "/sitecore/";
   fieldsRow.appendChild(prefix);
 
@@ -58,7 +58,7 @@ function createUserTreeJumpRow(entry: UserTreeJump): HTMLDivElement {
   pathSuffixInput.placeholder = "e.g. content/Home";
   pathSuffixInput.value = entry.pathSuffix;
   pathSuffixInput.addEventListener("blur", () => {
-    pathSuffixInput.value = sanitizeQuickMenuPathSuffix(pathSuffixInput.value);
+    pathSuffixInput.value = sanitizeJumpMenuPathSuffix(pathSuffixInput.value);
   });
   fieldsRow.appendChild(pathSuffixInput);
 
@@ -137,7 +137,7 @@ export function collectUserTreeJumpEntries(container: HTMLElement): UserTreeJump
     const enabled = row.querySelector<HTMLInputElement>("input[name='enabled']")?.checked ?? true;
     const pathSuffixInput = row.querySelector<HTMLInputElement>("input[name='pathSuffix']");
     const iconInput = row.querySelector<HTMLInputElement>("input[name='icon']");
-    const pathSuffix = sanitizeQuickMenuPathSuffix(pathSuffixInput?.value ?? "");
+    const pathSuffix = sanitizeJumpMenuPathSuffix(pathSuffixInput?.value ?? "");
     const icon = normalizeUserTreeJumpIconPath(iconInput?.value ?? "");
     if (pathSuffixInput) pathSuffixInput.value = pathSuffix;
     if (iconInput) iconInput.value = icon;

@@ -1,4 +1,4 @@
-import { expect, test } from "../../fixtures/playwright";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
 import {
@@ -19,8 +19,8 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 // name.
 const SCENARIO = STRATEGY_SCENARIOS.INTERNAL_LINK;
 
-test.describe("Strategy scenario: internal link", () => {
-  test("toggling Fobles decorates and restores the internal link field", async ({ page }, testInfo) => {
+foblesTest.describe("Strategy scenario: internal link", () => {
+  foblesTest("toggling Fobles decorates and restores the internal link field", async ({ page }, testInfo) => {
   await setupContentEditorForTesting(page,STRATEGY_SCENARIOS.INTERNAL_LINK);
       
       await showBillboard(page, STRATEGY_SCENARIOS.INTERNAL_LINK.friendlyName);

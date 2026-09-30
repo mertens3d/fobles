@@ -163,14 +163,14 @@
         word-break: break-word;
       }
 
-      .quick-menu-column {
+      .jump-menu-column {
         margin-bottom: 10px;
         padding: 2px 12px 6px;
         border: 1px solid var(--border);
         border-radius: 4px;
       }
 
-      .quick-menu-column > summary {
+      .jump-menu-column > summary {
         margin: 0 -12px;
         padding: 8px 12px;
         color: var(--text);
@@ -179,12 +179,12 @@
         cursor: pointer;
       }
 
-      .quick-menu-column[open] > summary {
+      .jump-menu-column[open] > summary {
         border-bottom: 1px solid var(--border);
         margin-bottom: 6px;
       }
 
-      .quick-menu-button-row {
+      .jump-menu-button-row {
         display: grid;
         grid-template-columns: 20px minmax(160px, 280px) minmax(160px, 1fr);
         align-items: center;
@@ -193,32 +193,32 @@
         border-bottom: 1px solid var(--border);
       }
 
-      .quick-menu-button-row input[type="checkbox"] {
+      .jump-menu-button-row input[type="checkbox"] {
         width: 16px;
         height: 16px;
       }
 
-      .quick-menu-button-label {
+      .jump-menu-button-label {
         overflow: hidden;
         color: var(--text);
         white-space: nowrap;
         text-overflow: ellipsis;
       }
 
-      .quick-menu-button-row--no-suffix .quick-menu-button-label {
+      .jump-menu-button-row--no-suffix .jump-menu-button-label {
         grid-column: 2 / -1;
       }
 
-      .quick-menu-button-row input[name="pathSuffix"] {
+      .jump-menu-button-row input[name="pathSuffix"] {
         min-height: 26px;
       }
 
-      .quick-menu-entry {
+      .jump-menu-entry {
         padding: 8px 0;
         border-bottom: 1px solid var(--border);
       }
 
-      .quick-menu-entry-title {
+      .jump-menu-entry-title {
         display: flex;
         width: 200px;
         align-items: center;
@@ -229,32 +229,32 @@
         font-weight: 700;
       }
 
-      .quick-menu-entry-title input[type="text"] {
+      .jump-menu-entry-title input[type="text"] {
         flex: 1;
         font-weight: 700;
       }
 
-      .quick-menu-entry-fields {
+      .jump-menu-entry-fields {
         display: flex;
         align-items: center;
         gap: 8px;
       }
 
-      .quick-menu-entry-fields input[type="checkbox"] {
+      .jump-menu-entry-fields input[type="checkbox"] {
         flex: 0 0 auto;
         width: 16px;
         height: 16px;
       }
 
-      .quick-menu-entry-prefix {
+      .jump-menu-entry-prefix {
         flex: 0 0 auto;
         color: var(--muted);
         white-space: nowrap;
       }
 
-      .quick-menu-entry-fields input[name="pathSuffix"],
-      .quick-menu-entry-fields input[name="url"],
-      .quick-menu-entry-fields input[name="icon"] {
+      .jump-menu-entry-fields input[name="pathSuffix"],
+      .jump-menu-entry-fields input[name="url"],
+      .jump-menu-entry-fields input[name="icon"] {
         flex: 1;
         min-height: 26px;
         min-width: 0;
@@ -391,11 +391,11 @@
         Tree Jump button's base path. Under Tree Jumps, add your own User
         Tree Jumps too - each is rooted at /sitecore/, up to 30.
       </p>
-      <div id="quick-menu-buttons"></div>
-      <button id="save-quick-menu-buttons" type="button">
-        Save quick menu buttons
+      <div id="jump-menu-buttons"></div>
+      <button id="save-jump-menu-buttons" type="button">
+        Save jump menu buttons
       </button>
-      <p id="quick-menu-buttons-status" role="status"></p>
+      <p id="jump-menu-buttons-status" role="status"></p>
     </details>
     
     

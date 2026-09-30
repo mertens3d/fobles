@@ -1,38 +1,38 @@
 import {
-  QUICK_MENU_BUTTON_CATALOG,
-  type QuickMenuButtonDescriptor,
-} from "../shared/quick-menu/button-catalog";
+  JUMP_MENU_BUTTON_CATALOG,
+  type JumpMenuButtonDescriptor,
+} from "../shared/jump-menu/button-catalog";
 import {
-  getQuickMenuButtonSettings,
-  sanitizeQuickMenuPathSuffix,
-  setQuickMenuButtonSettings,
-  type QuickMenuButtonSettings,
-} from "../shared/quick-menu/button-settings";
+  getJumpMenuButtonSettings,
+  sanitizeJumpMenuPathSuffix,
+  setJumpMenuButtonSettings,
+  type JumpMenuButtonSettings,
+} from "../shared/jump-menu/button-settings";
 import {
   getUserTreeJumps,
   setUserTreeJumps,
   type UserTreeJump,
-} from "../shared/quick-menu/user-tree-jump-settings";
+} from "../shared/jump-menu/user-tree-jump-settings";
 import {
   getUserAdminPages,
   setUserAdminPages,
   type UserAdminPage,
-} from "../shared/quick-menu/user-admin-page-settings";
+} from "../shared/jump-menu/user-admin-page-settings";
 import { TEXT } from "../content/constants";
 import { collectUserTreeJumpEntries, renderUserTreeJumpEditor } from "./user-tree-jump-editor";
 import { collectUserAdminPageEntries, renderUserAdminPageEditor } from "./user-admin-page-editor";
 import { getElement } from "./dom-helpers";
 
-const quickMenuButtonsContainer = getElement<HTMLDivElement>("quick-menu-buttons");
-const quickMenuButtonsStatus = getElement<HTMLParagraphElement>("quick-menu-buttons-status");
+const quickMenuButtonsContainer = getElement<HTMLDivElement>("jump-menu-buttons");
+const quickMenuButtonsStatus = getElement<HTMLParagraphElement>("jump-menu-buttons-status");
 // Set while rendering the Tree Jumps/Admin Pages columns, so the Save handler below can read the
 // User Tree Jump/User Admin Page rows back out of them - no other column needs that on save.
 let treeJumpsColumnSection: HTMLElement | null = null;
 let adminPagesColumnSection: HTMLElement | null = null;
 
-function createQuickMenuButtonRow(
-  descriptor: QuickMenuButtonDescriptor,
-  userSettings: QuickMenuButtonSettings,
+function createJumpMenuButtonRow(
+  descriptor: JumpMenuButtonDescriptor,
+  userSettings: JumpMenuButtonSettings,
 ): HTMLDivElement {
   const enabledInput = document.createElement("input");
   enabledInput.type = "checkbox";
@@ -45,30 +45,30 @@ function createQuickMenuButtonRow(
   // it stays a single compact row.
   if (!descriptor.supportsPathSuffix) {
     const row = document.createElement("div");
-    row.className = "quick-menu-button-row quick-menu-button-row--no-suffix";
+    row.className = "jump-menu-button-row jump-menu-button-row--no-suffix";
     row.appendChild(enabledInput);
 
     const label = document.createElement("span");
-    label.className = "quick-menu-button-label";
+    label.className = "jump-menu-button-label";
     label.textContent = descriptor.label;
     row.appendChild(label);
     return row;
   }
 
   const row = document.createElement("div");
-  row.className = "quick-menu-entry";
+  row.className = "jump-menu-entry";
 
   const titleRow = document.createElement("div");
-  titleRow.className = "quick-menu-entry-title";
+  titleRow.className = "jump-menu-entry-title";
   titleRow.textContent = descriptor.label;
   row.appendChild(titleRow);
 
   const fieldsRow = document.createElement("div");
-  fieldsRow.className = "quick-menu-entry-fields";
+  fieldsRow.className = "jump-menu-entry-fields";
   fieldsRow.appendChild(enabledInput);
 
   const prefix = document.createElement("span");
-  prefix.className = "quick-menu-entry-prefix";
+  prefix.className = "jump-menu-entry-prefix";
   prefix.textContent = descriptor.basePath ?? "";
   fieldsRow.appendChild(prefix);
 
@@ -79,7 +79,7 @@ function createQuickMenuButtonRow(
   suffixInput.placeholder = "optional sub-path";
   suffixInput.value = userSettings[descriptor.id]?.pathSuffix ?? "";
   suffixInput.addEventListener("blur", () => {
-    suffixInput.value = sanitizeQuickMenuPathSuffix(suffixInput.value);
+    suffixInput.value = sanitizeJumpMenuPathSuffix(suffixInput.value);
   });
   fieldsRow.appendChild(suffixInput);
 
@@ -87,8 +87,8 @@ function createQuickMenuButtonRow(
   return row;
 }
 
-function renderQuickMenuButtons(
-  userSettings: QuickMenuButtonSettings,
+function renderJumpMenuButtons(
+  userSettings: JumpMenuButtonSettings,
   userTreeJumps: readonly UserTreeJump[],
   userAdminPages: readonly UserAdminPage[],
 ): void {
@@ -96,8 +96,8 @@ function renderQuickMenuButtons(
   treeJumpsColumnSection = null;
   adminPagesColumnSection = null;
 
-  const columns = new Map<string, QuickMenuButtonDescriptor[]>();
-  QUICK_MENU_BUTTON_CATALOG.forEach((descriptor) => {
+  const columns = new Map<string, JumpMenuButtonDescriptor[]>();
+  JUMP_MENU_BUTTON_CATALOG.forEach((descriptor) => {
     const column = columns.get(descriptor.column) ?? [];
     column.push(descriptor);
     columns.set(descriptor.column, column);
@@ -107,17 +107,17 @@ function renderQuickMenuButtons(
 
   columns.forEach((descriptors, columnTitle) => {
     const columnSection = document.createElement("details");
-    columnSection.className = "quick-menu-column";
+    columnSection.className = "jump-menu-column";
     // The "name" attribute is a native accordion hint in newer browsers; the toggle
     // listener below enforces single-open behavior everywhere else.
-    columnSection.setAttribute("name", "quick-menu-column");
+    columnSection.setAttribute("name", "jump-menu-column");
 
     const summary = document.createElement("summary");
     summary.textContent = columnTitle;
     columnSection.appendChild(summary);
 
     descriptors.forEach((descriptor) =>
-      columnSection.appendChild(createQuickMenuButtonRow(descriptor, userSettings)),
+      columnSection.appendChild(createJumpMenuButtonRow(descriptor, userSettings)),
     );
     if (columnTitle === TEXT.GROUP_NAME.TREE_JUMPS) {
       renderUserTreeJumpEditor(columnSection, userTreeJumps);
@@ -141,17 +141,17 @@ function renderQuickMenuButtons(
   });
 }
 
-export function initQuickMenuButtons(): void {
-  getElement<HTMLButtonElement>("save-quick-menu-buttons").addEventListener("click", () => {
-    const userSettings: QuickMenuButtonSettings = {};
-    QUICK_MENU_BUTTON_CATALOG.forEach((descriptor) => {
+export function initJumpMenuButtons(): void {
+  getElement<HTMLButtonElement>("save-jump-menu-buttons").addEventListener("click", () => {
+    const userSettings: JumpMenuButtonSettings = {};
+    JUMP_MENU_BUTTON_CATALOG.forEach((descriptor) => {
       const enabledInput = quickMenuButtonsContainer.querySelector<HTMLInputElement>(
         `input[name='enabled'][data-button-id='${descriptor.id}']`,
       );
       const suffixInput = quickMenuButtonsContainer.querySelector<HTMLInputElement>(
         `input[name='pathSuffix'][data-button-id='${descriptor.id}']`,
       );
-      const pathSuffix = suffixInput ? sanitizeQuickMenuPathSuffix(suffixInput.value) : "";
+      const pathSuffix = suffixInput ? sanitizeJumpMenuPathSuffix(suffixInput.value) : "";
       if (suffixInput) suffixInput.value = pathSuffix;
 
       userSettings[descriptor.id] = {
@@ -169,7 +169,7 @@ export function initQuickMenuButtons(): void {
       : [];
 
     void Promise.all([
-      setQuickMenuButtonSettings(userSettings),
+      setJumpMenuButtonSettings(userSettings),
       setUserTreeJumps(userTreeJumps),
       setUserAdminPages(userAdminPages),
     ]).then(() => {
@@ -178,10 +178,10 @@ export function initQuickMenuButtons(): void {
   });
 
   void Promise.all([
-    getQuickMenuButtonSettings(),
+    getJumpMenuButtonSettings(),
     getUserTreeJumps(),
     getUserAdminPages(),
   ]).then(([userSettings, userTreeJumps, userAdminPages]) => {
-    renderQuickMenuButtons(userSettings, userTreeJumps, userAdminPages);
+    renderJumpMenuButtons(userSettings, userTreeJumps, userAdminPages);
   });
 }

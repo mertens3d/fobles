@@ -1,4 +1,4 @@
-import { test, type Page } from "../../fixtures/playwright";
+import { foblesTest, type Page } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import {   clickTreeJump,  scrollTreeContainer } from "../../macros/sitecore-macros";
@@ -11,9 +11,9 @@ import { RECORD_VIDEO } from "../../settings/settings";
 import { clickLbolt, clickFoblesTreeButton, dragToolbarTo } from "../../macros/fobles-macros";
 import { showSpeakBubble } from "../../helpers/speak-bubble";
 
-test.describe("Promo Video", () => {
-  test("promo video", async ({ page: sharedPage, sharedBrowserContext }) => {
-    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+foblesTest.describe("Promo Video", () => {
+  foblesTest("promo video", async ({ page: sharedPage, sharedBrowserContext }) => {
+    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     let testError: unknown;
 
     const page = RECORD_VIDEO ? await sharedBrowserContext.newPage() : sharedPage;
