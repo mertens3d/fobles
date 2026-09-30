@@ -31,7 +31,7 @@ export async function openJumpMenu(page: Page, foblesFrame: Frame): Promise<void
     const isOpen =
         (await menuFlyout.getAttribute(CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE).catch(() => null)) === "true";
     if (isOpen) {
-        console.log("[fobles] Quick menu already visible - skipping trigger click");
+        console.log("[fobles] Jump menu already visible - skipping trigger click");
         return;
     }
 

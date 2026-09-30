@@ -1,4 +1,4 @@
-// Stable ids for Quick Menu buttons so per-button settings survive label/path renames.
+// Stable ids for Jump Menu buttons so per-button settings survive label/path renames.
 // Generated once with `[guid]::NewGuid()`; do not reuse or reassign an id to a different button.
 export const JUMP_MENU_BUTTON_ID = {
   AI_PAGES: "3cf80fa6-f016-4327-9cb1-4d6bfdb4e0f5",

@@ -15,7 +15,7 @@ export async function saveJumpMenuButtons(optionsPage: Page): Promise<void> {
     CONST.TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON,
   );
   await expect(optionsPage.locator("#jump-menu-buttons-status")).toHaveText(
-    "Quick menu buttons saved.",
+    "Jump menu buttons saved.",
   );
 }
 

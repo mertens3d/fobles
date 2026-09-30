@@ -173,7 +173,7 @@ export function initJumpMenuButtons(): void {
       setUserTreeJumps(userTreeJumps),
       setUserAdminPages(userAdminPages),
     ]).then(() => {
-      quickMenuButtonsStatus.textContent = "Quick menu buttons saved.";
+      quickMenuButtonsStatus.textContent = "Jump menu buttons saved.";
     });
   });
 
