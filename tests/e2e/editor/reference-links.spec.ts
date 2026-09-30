@@ -24,6 +24,14 @@ const STEP_WAIT_MS :number= CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SEL
 // its field.
 const SCENARIO = EDITOR_SCENARIOS.REFERENCE_LINKS;
 
+// SCENARIO.referringItems/referredToItem (editor-yml-refs.ts) are a known MINIMUM, not the total -
+// someone else's content on the same shared Sitecore instance could reference this same target
+// item too, and that's fine; we only assert our own fixture referrers are still present among
+// whatever else may also be there, so unrelated content never breaks this test.
+function expectedReferenceNotFoundMessage(expectedButtonText: string): string {
+  return `Did you forget to update tests/e2e/editor/editor-yml-refs.ts? Expected a Fobles button for: "${expectedButtonText}"`;
+}
+
 foblesTest.describe("Editor scenario: reference links", () => {
   foblesTest(
     "toggling Fobles decorates and restores the Links gallery",
@@ -38,15 +46,10 @@ foblesTest.describe("Editor scenario: reference links", () => {
       await ensureMouseMarkerExists(foblesFrame);
 
       const linksPanel = await openScLinksGallery(page, foblesFrame);
-      const originalLinks = linksPanel.locator("a.scLink");
-      const originalLinkTexts = (await originalLinks.allTextContents()).map(
-        (text) => text.trim(),
-      );
-      const originalLinkCount = originalLinkTexts.length;
-
-      // const lboltButton = foblesFrame
-      //   .locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON)
-      //   .first();
+      const knownLabels = [
+        ...SCENARIO.referringItems.map((item) => item.expectedButtonText),
+        SCENARIO.referredToItem.expectedButtonText,
+      ];
 
       const step = createStep(
         page,
@@ -62,7 +65,12 @@ foblesTest.describe("Editor scenario: reference links", () => {
             linksPanel.locator(CONST.FOBLES.SELECTORS.WRAPPER),
           ).toHaveCount(0);
 
-          await expect(originalLinks).toHaveCount(originalLinkCount);
+          for (const expectedButtonText of knownLabels) {
+            await expect(
+              linksPanel.locator("a.scLink", { hasText: expectedButtonText }),
+              expectedReferenceNotFoundMessage(expectedButtonText),
+            ).toBeVisible();
+          }
 
           await foblesWaitForTimeout(page, STEP_WAIT_MS);
         },
@@ -73,16 +81,11 @@ foblesTest.describe("Editor scenario: reference links", () => {
         async () => {
           await clickLbolt(page);
 
-          const buttons = linksPanel.locator(
-            CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON,
-          );
-
-          await expect(buttons).toHaveCount(originalLinkCount);
-
-          for (let index = 0; index < originalLinkCount; index += 1) {
-            await expect(buttons.nth(index)).toHaveText(
-              originalLinkTexts[index],
-            );
+          for (const expectedButtonText of knownLabels) {
+            await expect(
+              linksPanel.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, { hasText: expectedButtonText }),
+              expectedReferenceNotFoundMessage(expectedButtonText),
+            ).toBeVisible();
           }
 
           await foblesWaitForTimeout(page, STEP_WAIT_MS);
@@ -91,29 +94,9 @@ foblesTest.describe("Editor scenario: reference links", () => {
 
       const [firstReferringItem] = SCENARIO.referringItems;
 
-      const firstButton = linksPanel
-        .locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON)
-        .first();
-
-      // await step(
-      //   `Ctrl+click: opens the referring item in a new tab: "${firstReferringItem.expectedFoValue}"`,
-      //   async (fullTitle) => {
-      //     const testContextBasic: TestContextBase =
-      //     {
-      //       page,
-      //       STEP_WAIT_MS,
-      //       step,
-      //       testInfo,
-      //     };
-      //     await expectFoblesButtonNewTabNavigation(
-      //       testInfo,
-      //       firstReferringItem.expectedFoValue,
-      //       fullTitle,
-      //       page,
-      //     );
-      //   },
-      //   { screenshot: false },
-      // );
+      const firstButton = linksPanel.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
+        hasText: firstReferringItem.expectedButtonText,
+      });
 
       await step(
         "Toggle Fobles off: the gallery returns to its original shape",
@@ -124,16 +107,10 @@ foblesTest.describe("Editor scenario: reference links", () => {
             linksPanel.locator(CONST.FOBLES.SELECTORS.WRAPPER),
           ).toHaveCount(0);
 
-          await expect(originalLinks).toHaveCount(originalLinkCount);
-
-          for (let index = 0; index < originalLinkCount; index += 1) {
-            await expect(originalLinks.nth(index)).toHaveText(
-              originalLinkTexts[index],
-            );
-
-            await expect(originalLinks.nth(index)).not.toHaveClass(
-              FOBLES_HIDDEN_CLASS_PATTERN,
-            );
+          for (const expectedButtonText of knownLabels) {
+            const originalLink = linksPanel.locator("a.scLink", { hasText: expectedButtonText });
+            await expect(originalLink, expectedReferenceNotFoundMessage(expectedButtonText)).toBeVisible();
+            await expect(originalLink).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
           }
         },
       );

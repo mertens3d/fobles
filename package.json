@@ -29,6 +29,7 @@
     "test:e2e:list": "playwright test -c tests/playwright.config.ts --project=edge --list",
     "test:e2e:debug": "playwright test -c tests/playwright.config.ts --debug",
     "test:e2e:unlock": "node tools/scripts/test/unlock-browser-profile.js",
+    "code:sync-yml-const-paths": "node tools/scripts/test/sync-yml-consts.js",
     "typecheck:extension": "tsc --noEmit -p tsconfig.json",
     "typecheck:tests": "tsc --noEmit -p tests/tsconfig.json",
     "build:scss": "sass src/content/styles/fobles-extension.scss dist/unpacked/fobles.css --no-source-map"
@@ -45,6 +46,7 @@
     "globals": "^17.12.0",
     "sass": "^1.97.3",
     "typescript": "^5.6.3",
-    "typescript-eslint": "^8.70.1"
+    "typescript-eslint": "^8.70.1",
+    "yaml": "^2.9.1"
   }
 }

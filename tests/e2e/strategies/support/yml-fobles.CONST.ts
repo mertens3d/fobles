@@ -94,7 +94,7 @@ export const FOBLES_YML = {
     // (tests/e2e/editor/) also targets it directly as the item's "refers to" Quick Info link.
     FOBLES_DATA_ITEM_TEMPLATE: {
       id: "0e2e40ba-308c-4484-a31a-bfd647d78312",
-      path: "/sitecore/templates/Modules/Fobles Testing/Fobles Data Item",
+      path: "/sitecore/templates/Project/Fobles Testing/Fobles Testing/Fobles Data Item",
     },
   },
   MEDIA: {},
