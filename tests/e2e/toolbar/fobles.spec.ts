@@ -4,21 +4,22 @@ import {
   type Frame,
   type Page,
   type TestInfo,
-} from "../fixtures/playwright";
-import { CONST } from "../CONST";
+} from "../../fixtures/playwright";
+import { CONST } from "../../CONST";
 import {
   clickWithMouseMarker,
-} from "../mouse-proxy";
-import { openSitecorePageAndFindFoblesFrame, attachItemPathScreenshot, createStep } from "../fobles-helpers";
-import { ensureMouseMarkerExists } from "../mouse-proxy";
-import { ClickFoblesMenuButton, dismissFoblesConfirmDialogIfPresent } from "../macros/fobles-macros";
-import { expectCurrentUrl, expectFlyoutVisible } from "../expectSnippets/expectSnippets";
+} from "../../helpers/mouse-proxy";
+import { openSitecorePageAndFindFoblesFrame, attachItemPathScreenshot, createStep } from "../../helpers/fobles-helpers";
+import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
+import { ClickFoblesMenuButton, dismissFoblesConfirmDialogIfPresent } from "../../macros/fobles-macros";
+import { expectCurrentUrl, expectFlyoutVisible } from "../../expectSnippets/expectSnippets";
+import { bringPageToFront } from "../../helpers/page-switch";
 import type { BrowserContext } from "@playwright/test";
 
 test.describe("Fobles browser integration", () => {
 
   test("tree jump buttons navigate in the current tab", async ({ page }, testInfo) => {
-    test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
+    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     let foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
     await ClickFoblesMenuButton(page);
@@ -37,7 +38,7 @@ test.describe("Fobles browser integration", () => {
     sharedBrowserContext,
     page,
   }, testInfo) => {
-    test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
+    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
     await ClickFoblesMenuButton(page);
@@ -61,7 +62,7 @@ async function getExpectedButtonPaths(foblesFrame: Frame) {
   console.log(
     "[fobles] About to look for tree-jump buttons in the open Menu flyout"
   );
-  const treeJumpButtons = foblesFrame.locator(CONST.SITECORE.SELECTORS.TREE_JUMP_BUTTON);
+  const treeJumpButtons = foblesFrame.locator(CONST.FOBLES.SELECTORS.TREE_JUMP_BUTTON);
   const paths = await treeJumpButtons.evaluateAll((buttons) => buttons
     .map((button) => button.getAttribute("data-fobles-tree-jump-path"))
     .filter((path): path is string => path !== null)
@@ -98,8 +99,8 @@ async function testOneClick(paths: string[],
 
     await attachItemPathScreenshot(page, testInfo, path);
     await page.waitForTimeout(
-      CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS *
-      CONST.NAVIGATION.HOLD_MULTIPLIER
+      CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
+      CONST.TESTING.NAVIGATION.HOLD_MULTIPLIER
     );
   }, { screenshot: false });
   return foblesFrame;
@@ -109,7 +110,7 @@ async function testOneClick(paths: string[],
 
 async function ScrollFoblesTreeButtonIntoView(foblesFrame: Frame, index: number) {
   const foblesTreeButton = foblesFrame
-    .locator(CONST.SITECORE.SELECTORS.TREE_JUMP_BUTTON)
+    .locator(CONST.FOBLES.SELECTORS.TREE_JUMP_BUTTON)
     .nth(index);
   await expect(foblesTreeButton).toBeVisible();
   await foblesTreeButton.scrollIntoViewIfNeeded();
@@ -139,13 +140,12 @@ async function TestOnCtrlClick(paths: string[], index: number, step: (title: str
     expectCurrentUrl(newTab, path);
 
 
-    const newTabHoldMs = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS *
-      CONST.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
+    const newTabHoldMs = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
+      CONST.TESTING.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
 
     await attachItemPathScreenshot(newTab, testInfo, path);
-    await newTab.bringToFront();
-    await newTab.waitForTimeout(newTabHoldMs);
-    await page.bringToFront();
+    await bringPageToFront(newTab, newTabHoldMs);
+    await bringPageToFront(page);
     await newTab.close();
 
 

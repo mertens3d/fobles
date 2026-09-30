@@ -1,0 +1,1 @@
+export type TestSpeed = "CRAWL" | "WALK" | "SPRINT";

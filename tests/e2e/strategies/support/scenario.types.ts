@@ -2,8 +2,8 @@
 // values) grouped into one object instead of scattered top-level consts, so it's visually clear
 // which values came from looking up the serialized test data versus other file-level constants
 
-import type { Locator, Page, TestInfo    } from "../../fixtures/playwright";
-import type { FoblesTestStep } from "../../types";
+import type { Page, Locator, TestInfo } from "@playwright/test";
+import type { FoblesTestStep } from "../../../helpers/fobles-test-step.types";
 
 // (e.g. STEP_WAIT_MS, SCREENSHOT_BASE_NAME).
 export type StrategyScenarioData = {
@@ -18,14 +18,17 @@ export type StrategyScenarioData = {
 };
 
 
-export type StrategyTestContext ={
-  SCENARIO: StrategyScenarioData;
-  page: Page;
-  step: FoblesTestStep;
+export type StrategyTestContext  = TestContextBase& {
   fieldTable: Locator;
   getFieldTable(): Promise<Locator>;
-  locatorFirstResult: Locator;
   getScLocatorFirstResult(): Promise<Locator>;
+  locatorFirstResult: Locator;
+  SCENARIO: StrategyScenarioData;
+};
+
+export type TestContextBase ={
+  page: Page;
   STEP_WAIT_MS: number;
+  step: FoblesTestStep;
   testInfo: TestInfo;
 };

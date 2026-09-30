@@ -1,17 +1,15 @@
-import { expect, test } from "../fixtures/playwright";
-import { CONST } from "../CONST";
-import { fieldScreenshotName, FOBLES_HIDDEN_CLASS_PATTERN } from "./support/CONST";
+import { expect, test } from "../../fixtures/playwright";
+import { CONST } from "../../CONST";
+import { fieldScreenshotName } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
-import { clickLbolt } from "../macros/fobles-macros";
 import type { StrategyTestContext } from "./support/scenario.types";
 import { stepExpectFoblesCtrlClick, stepExpectFoblesInitialConditions, stepExpectFoblesOffConditions, stepExpectFoblesOnConditions, stepExpectSitecoreInitialConditions } from "./support/strategy-test-helper";
-import { factoryStrategyTestContext } from "../strategy-test-context";
-import { foblesWaitForTimeout } from "../helpers/wait-helpers";
-import { setupContentEditorForTesting } from "../fobles-helpers";
-import { showBillboard } from "../billboard";
+import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
+import { setupContentEditorForTesting } from "../../helpers/fobles-helpers";
+import { showBillboard } from "../../helpers/billboard";
 
-const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 const SCENARIO = STRATEGY_SCENARIOS.GENERAL_LINK;
 
 test.describe("Strategy scenario: general link", () => {

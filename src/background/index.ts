@@ -9,7 +9,7 @@ chrome.commands?.onCommand?.addListener((command: string) => {
       (tabs: Array<{ id?: number }>) => {
         const activeTab = tabs[0];
         if (activeTab?.id !== undefined) {
-          chrome.tabs?.sendMessage(activeTab.id, {
+          void chrome.tabs?.sendMessage(activeTab.id, {
             action: MESSAGE.ACTION.TOGGLE_FOBLES,
           });
         }
@@ -18,10 +18,16 @@ chrome.commands?.onCommand?.addListener((command: string) => {
   }
 });
 
-chrome.runtime?.onMessage?.addListener((request, sender) => {
+interface RuntimeMessage {
+  action: string;
+}
+
+chrome.runtime?.onMessage?.addListener((request: RuntimeMessage, sender) => {
   if (request.action === MESSAGE.ACTION.RELOAD_EXTENSION) {
     // Reloading the extension alone doesn't refresh already-open tabs' content scripts.
-    if (sender.tab?.id !== undefined) chrome.tabs?.reload?.(sender.tab.id);
+    if (sender.tab?.id !== undefined) {
+      void chrome.tabs?.reload?.(sender.tab.id);
+    }
     chrome.runtime?.reload?.();
   }
 });

@@ -1,16 +1,16 @@
-import { expect, test, type Locator } from "../fixtures/playwright";
-import { getExtensionId, setFoblesNavWarningVisible } from "../fixtures/extension";
-import { CONST } from "../CONST";
-import { clickWithMouseMarker } from "../mouse-proxy";
-import { clickTreeJump } from "../macros/sitecore-macros";
-import { openSitecorePageAndFindFoblesFrame, createStep } from "../fobles-helpers";
+import { expect, test, type Locator } from "../../fixtures/playwright";
+import { getExtensionId, setFoblesNavWarningVisible } from "../../fixtures/extension";
+import { CONST } from "../../CONST";
+import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
+import { clickTreeJump } from "../../macros/sitecore-macros";
+import { openSitecorePageAndFindFoblesFrame, createStep } from "../../helpers/fobles-helpers";
 
 test.describe("Same-tab navigation warning setting", () => {
   test.skip("popup checkbox shows/hides Fobles' confirm dialog on the next same-tab jump", async ({
     sharedBrowserContext,
     page,
   }, testInfo) => {
-    test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
+    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const step = createStep(page, testInfo, page, "Nav Warning Setting");
 
@@ -32,7 +32,7 @@ test.describe("Same-tab navigation warning setting", () => {
         await expect(dialog).toBeVisible();
         await clickWithMouseMarker(
           page,
-          dialog.getByRole("button", { name: CONST.SITECORE.LABELS.CONTINUE_BUTTON }),
+          dialog.getByRole("button", { name: CONST.FOBLES.LABELS.CONTINUE_BUTTON }),
           "Confirm dialog Continue",
         );
       });
@@ -49,7 +49,7 @@ test.describe("Same-tab navigation warning setting", () => {
         await expect(dialog).toBeVisible();
         await clickWithMouseMarker(
           page,
-          dialog.getByRole("button", { name: CONST.SITECORE.LABELS.CONTINUE_BUTTON }),
+          dialog.getByRole("button", { name: CONST.FOBLES.LABELS.CONTINUE_BUTTON }),
           "Confirm dialog Continue",
         );
       });

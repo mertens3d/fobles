@@ -1,18 +1,14 @@
-import {
-    expect,
-    test,
-    type Frame,
-    type Page,
-} from "../fixtures/playwright";
-import { CONST } from "../CONST";
+
+import { CONST } from "../../CONST";
 import {
     clickWithMouseMarker,
-} from "../mouse-proxy";
-import { openSitecorePageAndFindFoblesFrame,  createStep, setupContentEditorForTestingBasic } from "../fobles-helpers";
-import { ceRibbonOpenHome } from "../macros/sitecore-macros";
-import { ClickFoblesMenuButton, dismissFoblesConfirmDialogIfPresent } from "../macros/fobles-macros";
-import { expectFlyoutVisible } from "../expectSnippets/expectSnippets";
+} from "../../helpers/mouse-proxy";
+import { openSitecorePageAndFindFoblesFrame,  createStep, setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers";
+import { ceRibbonOpenHome } from "../../macros/sitecore-macros";
+import { ClickFoblesMenuButton, dismissFoblesConfirmDialogIfPresent } from "../../macros/fobles-macros";
+import { expectFlyoutVisible } from "../../expectSnippets/expectSnippets";
 import { getFoblesMenuTargets } from "./support/other-settings-helpers";
+import test, { expect, type Frame, type Page } from "@playwright/test";
 
 
 
@@ -26,7 +22,7 @@ test.describe("Fobles Other Buttons", () => {
     test("other menu buttons navigate to their configured URLs", async ({
         page,
     }, testInfo) => {
-        test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
+        test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
         await setupContentEditorForTestingBasic(page);
         const step = createStep(page, testInfo, page, "Menu Button");
 
@@ -65,7 +61,7 @@ async function stepExamineOneJumpButton(target: menuTarget,
             async () => {
                 await stepExamineOneJumpButtonInner(index, page, target);
             },
-            { timeout: CONST.TIMEOUTS.STEP_TIMEOUT_MS }
+            { timeout: CONST.TESTING.TIMEOUTS.STEP_TIMEOUT_MS }
         );
     } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
@@ -94,7 +90,7 @@ async function stepExamineOneJumpButtonInner(index: number, page: Page, target: 
 
     await page.waitForURL(
         (url) => url.toString().includes(encodeURI(target.url)),
-        { timeout: CONST.TIMEOUTS.URL_WAIT_MS }
+        { timeout: CONST.TESTING.TIMEOUTS.URL_WAIT_MS }
     );
     // waitForURL only confirms the URL changed, not that the new page has actually
     // painted - without this, the step's auto screenshot can capture a stale composited
@@ -114,8 +110,8 @@ async function stepExamineOneJumpButtonInner(index: number, page: Page, target: 
         `[fobles] URL assertion: expected ${target.url}; actual ${actualUrl}`
     );
     await page.waitForTimeout(
-        CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS *
-        CONST.NAVIGATION.HOLD_MULTIPLIER
+        CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
+        CONST.TESTING.NAVIGATION.HOLD_MULTIPLIER
     );
     return foblesFrame;
 }

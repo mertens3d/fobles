@@ -361,25 +361,10 @@
   </head>
   <body>
     <h1>Fobles Settings</h1>
-    <details class="settings-section">
-      <summary>Developer Settings</summary>
-      <p>
-        These options are for local debugging and development only. Both default
-        to off.
-      </p>
-      <label class="visibility-setting">
-        <input id="debug-logging" type="checkbox" />
-        <span>Enable debug logging</span>
-      </label>
-      <label class="visibility-setting">
-        <input id="show-reload-extension-button" type="checkbox" />
-        <span>Show Reload Extension button</span>
-      </label>
-      <button id="save-debug-settings" type="button" class="settings-button">
-        Save developer settings
-      </button>
-      <p id="debug-status" role="status"></p>
-    </details>
+    
+    
+
+
     <details class="settings-section">
       <summary>Storage</summary>
       <p>
@@ -397,6 +382,8 @@
       <pre id="stored-settings-output" hidden></pre>
       <p id="clear-stored-settings-status" role="status"></p>
     </details>
+    
+    
     <details class="settings-section">
       <summary>Quick Menu Buttons</summary>
       <p>
@@ -410,6 +397,8 @@
       </button>
       <p id="quick-menu-buttons-status" role="status"></p>
     </details>
+    
+    
     <details class="settings-section">
       <summary>Additional Settings</summary>
       <p>
@@ -432,6 +421,31 @@
       <button id="save-mappings" type="button">Save mappings</button>
       <p id="status" role="status"></p>
     </details>
+    
+
+    <details class="settings-section">
+      <summary>Developer Settings</summary>
+      <p>
+        These options are for local debugging and development only. Both default
+        to off.
+      </p>
+      <label class="visibility-setting">
+        <input id="debug-logging" type="checkbox" />
+        <span>Enable debug logging</span>
+      </label>
+      <label class="visibility-setting">
+        <input id="show-reload-extension-button" type="checkbox" />
+        <span>Show Reload Extension button</span>
+      </label>
+      <button id="save-debug-settings" type="button" class="settings-button">
+        Save developer settings
+      </button>
+      <p id="debug-status" role="status"></p>
+    </details>
+
+
+
+    
     <aside class="build-info">
       <div>Fobles for Sitecore</div>
       <div>Build: <strong>__BUILD_STAMP__</strong></div>

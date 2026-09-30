@@ -1,7 +1,7 @@
-import { expect, test } from "./fixtures/playwright";
-import {  openContentEditor } from "./fixtures/sitecore";
-import { attachScreenshot } from "./fobles-helpers";
-import { CONST } from "./CONST";
+import { expect, test } from "../fixtures/playwright";
+import {  openContentEditor } from "../fixtures/sitecore";
+import { attachScreenshot } from "../helpers/fobles-helpers";
+import { CONST } from "../CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 
 test.describe("Session", () => {

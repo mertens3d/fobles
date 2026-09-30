@@ -1,20 +1,20 @@
-import { expect, test } from "../fixtures/playwright";
-import { openSitecorePage } from "../fixtures/sitecore";
-import { CONST } from "../CONST";
+import { expect, test } from "../../fixtures/playwright";
+import { openSitecorePage } from "../../fixtures/sitecore";
+import { CONST } from "../../CONST";
 import {
   createStep,
-  expectFoblesButtonNewTabNavigation,
+  expectFoblesButtonNewTabNavigationStrategy,
   expectFoblesButtonSameTabNavigation,
-} from "../fobles-helpers";
-import { ensureMouseMarkerExists } from "../mouse-proxy";
+} from "../../helpers/fobles-helpers";
+import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 
-import { findFoblesFrame } from "../frame-finder";
+import { findFoblesFrame } from "../../helpers/frame-finder";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
-import { clickLbolt } from "../macros/fobles-macros";
-import { foblesWaitForTimeout } from "../helpers/wait-helpers";
+import { clickLbolt } from "../../macros/fobles-macros";
+import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
 import { FOBLES_HIDDEN_CLASS_PATTERN } from "../strategies/support/CONST";
 
-const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Quick Info (src/content/features/augmentor/editor-strategies/quick-info-section.ts) decorates
 // Content Editor's own built-in Quick Info panel, always present at the top of any open item, so
@@ -33,7 +33,7 @@ test.describe("Editor scenario: quick info section", () => {
     await ensureMouseMarkerExists(foblesFrame);
 
     const quickInfoTable = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE).first();
-    const lboltButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON).first();
+    const lboltButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON).first();
     const step = createStep(page, testInfo, quickInfoTable, "Quick Info");
 
     await step("Default stage: Quick Info renders as plain Sitecore text", async () => {
@@ -66,7 +66,7 @@ test.describe("Editor scenario: quick info section", () => {
     await step(
       `Ctrl+click: opens the item in a new tab: "${SCENARIO.itemPathButton.expectedFoValue}"`,
       async (fullTitle) => {
-        await expectFoblesButtonNewTabNavigation(page, testInfo, itemPathButton, SCENARIO.itemPathButton.expectedFoValue, fullTitle);
+        await expectFoblesButtonNewTabNavigationStrategy(page, testInfo, itemPathButton, SCENARIO.itemPathButton.expectedFoValue, fullTitle);
       },
       { screenshot: false },
     );

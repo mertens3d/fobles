@@ -1,15 +1,13 @@
-import {
-    expect,
-    test,
-} from "../fixtures/playwright";
-import { CONST } from "../CONST";
+
+import { CONST } from "../../CONST";
 import {
     getLastKnownMousePosition,
     moveMouseOutsideHoverArea,
-} from "../mouse-proxy";
-import { activateFobles, } from "../fobles-helpers";
-import { hoverAndGrow, hoverAndSlideOut } from "../hover-helpers";
-import { ensureMouseMarkerExists } from "../mouse-proxy";
+} from "../../helpers/mouse-proxy";
+import { activateFobles, } from "../../helpers/fobles-helpers";
+import { hoverAndGrow, hoverAndSlideOut } from "../../helpers/hover-helpers";
+import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
+import test, { expect } from "@playwright/test";
 
 
 test.describe("Fobles Hover", () => {
@@ -17,15 +15,15 @@ test.describe("Fobles Hover", () => {
     test.skip(`'content-editor-root-item-lbolt' creates expected Fobles`, async ({ page }) => {
         await activateFobles(page);
         const lboltButton = page
-            .locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON)
+            .locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON)
             .first();
         const editorTabs = page.locator("#EditorTabs");
         await expect(editorTabs).toBeVisible();
         await ensureMouseMarkerExists(page);
 
-        const menuButton = page.locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER).first();
+        const menuButton = page.locator(CONST.FOBLES.SELECTORS.MENU_TRIGGER).first();
         await expect(menuButton).toBeVisible();
-        const menuFlyout = page.locator(CONST.SITECORE.SELECTORS.QUICK_MENU).first();
+        const menuFlyout = page.locator(CONST.FOBLES.SELECTORS.QUICK_MENU).first();
         const mousePosition = getLastKnownMousePosition();
 
         await hoverAndGrow(page, {

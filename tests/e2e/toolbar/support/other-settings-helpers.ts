@@ -1,12 +1,19 @@
 
-import { expect, type Frame, type Locator, type Page } from "../../fixtures/playwright";
-import { CONST } from "../../CONST";
+import { expect, type Locator, type Page } from "../../../fixtures/playwright";
+import { clickExtensionControl, fillExtensionInput, setExtensionCheckbox } from "../../../fixtures/extension";
+import { CONST } from "../../../CONST";
 import type { menuTarget } from "../toolbar-other.spec";
-import { findFoblesFrame } from "../../frame-finder";
+import { findFoblesFrame } from "../../../helpers/frame-finder";
+
+const TESTING = CONST.TESTING;
 
 
 export async function saveQuickMenuButtons(optionsPage: Page): Promise<void> {
-  await optionsPage.getByRole("button", { name: "Save quick menu buttons" }).click();
+  await clickExtensionControl(
+    optionsPage,
+    optionsPage.getByRole("button", { name: CONST.TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON }),
+    CONST.TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON,
+  );
   await expect(optionsPage.locator("#quick-menu-buttons-status")).toHaveText(
     "Quick menu buttons saved.",
   );
@@ -22,8 +29,12 @@ export async function removeTestRowIfPresent(optionsPage: Page): Promise<void> {
 
   for (let index = rowCount - 1; index >= 0; index -= 1) {
     const row = rows.nth(index);
-    if ((await row.locator("input[name='label']").inputValue()) === CONST.FOBLES.ADDITIONAL_SETTINGS.TEST_JUMP.label) {
-      await row.locator(".user-tree-jump-remove").click();
+    if ((await row.locator("input[name='label']").inputValue()) === CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label) {
+      await clickExtensionControl(
+        optionsPage,
+        row.locator(".user-tree-jump-remove"),
+        "Remove User Tree Jump",
+      );
       removedAny = true;
     }
   }
@@ -35,11 +46,30 @@ export async function removeTestRowIfPresent(optionsPage: Page): Promise<void> {
 // last (and only) one.
 export async function addTestRow(optionsPage: Page): Promise<Locator> {
   const treeJumpsColumn = await openTreeJumpsColumn(optionsPage);
-  await treeJumpsColumn.getByRole("button", { name: "+ Add User Tree Jump" }).click();
+  await clickExtensionControl(
+    optionsPage,
+    treeJumpsColumn.getByRole("button", { name: "+ Add User Tree Jump" }),
+    "+ Add User Tree Jump",
+  );
   const row = treeJumpsColumn.locator(".user-tree-jump-row").last();
-  await row.locator("input[name='label']").fill(CONST.FOBLES.ADDITIONAL_SETTINGS.TEST_JUMP.label);
-  await row.locator("input[name='pathSuffix']").fill(CONST.FOBLES.ADDITIONAL_SETTINGS.TEST_JUMP.pathSuffixRaw);
-  await row.locator("input[name='icon']").fill(CONST.FOBLES.ADDITIONAL_SETTINGS.TEST_JUMP.iconRaw);
+  await fillExtensionInput(
+    optionsPage,
+    row.locator("input[name='label']"),
+    CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label,
+    "Tree Jump label",
+  );
+  await fillExtensionInput(
+    optionsPage,
+    row.locator("input[name='pathSuffix']"),
+    CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.pathSuffixRaw,
+    "Tree Jump path",
+  );
+  await fillExtensionInput(
+    optionsPage,
+    row.locator("input[name='icon']"),
+    CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.iconRaw,
+    "Tree Jump icon",
+  );
   await saveQuickMenuButtons(optionsPage);
   return row;
 }
@@ -48,15 +78,45 @@ export async function setTestRowEnabled(optionsPage: Page, row: Locator, enabled
   await openTreeJumpsColumn(optionsPage);
   const enabledCheckbox = row.locator("input[name='enabled']");
   if ((await enabledCheckbox.isChecked()) !== enabled) {
-    await enabledCheckbox.click();
+    await setExtensionCheckbox(optionsPage, enabledCheckbox, enabled, "User Tree Jump enabled");
   }
   await saveQuickMenuButtons(optionsPage);
 }
 
 export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
-  await optionsPage.getByText("Quick Menu Buttons", { exact: true }).click();
-  const treeJumpsColumn = optionsPage.locator(".quick-menu-column", { hasText: "Tree Jumps" });
-  await treeJumpsColumn.locator("summary").click();
+  const quickMenuSection = optionsPage.locator(TESTING.OPTIONS.SECTION_SELECTOR).filter({
+    has: optionsPage.locator(TESTING.OPTIONS.SUMMARY_SELECTOR, {
+      hasText: TESTING.OPTIONS.ADMIN_PAGES.QUICK_MENU_SECTION_TITLE,
+    }),
+  });
+  const quickMenuIsOpen = await quickMenuSection.evaluate(
+    (element) => (element as HTMLDetailsElement).open,
+  );
+  if (!quickMenuIsOpen) {
+    await clickExtensionControl(
+      optionsPage,
+      quickMenuSection.locator(TESTING.OPTIONS.SUMMARY_DIRECT_CHILD_SELECTOR),
+      TESTING.OPTIONS.ADMIN_PAGES.QUICK_MENU_SECTION_TITLE,
+    );
+  }
+
+  const treeJumpsColumn = optionsPage
+    .locator(TESTING.QUICK_MENU.ADMIN_PAGES_COLUMN_SELECTOR)
+    .filter({
+      has: optionsPage.locator(TESTING.OPTIONS.SUMMARY_SELECTOR, {
+        hasText: TESTING.OPTIONS.TREE_JUMPS_COLUMN_TITLE,
+      }),
+    });
+  const treeJumpsAreOpen = await treeJumpsColumn.evaluate(
+    (element) => (element as HTMLDetailsElement).open,
+  );
+  if (!treeJumpsAreOpen) {
+    await clickExtensionControl(
+      optionsPage,
+      treeJumpsColumn.locator(TESTING.OPTIONS.SUMMARY_SELECTOR),
+      TESTING.OPTIONS.TREE_JUMPS_COLUMN_TITLE,
+    );
+  }
   return treeJumpsColumn;
 }
 

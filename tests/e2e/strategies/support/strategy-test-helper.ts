@@ -1,15 +1,14 @@
-import { CONST } from "../../CONST";
-import { logStepDividerEnd, logStepDividerStart } from "../../helpers/logging-helpers";
-import { expect } from "../../fixtures/playwright";
-import { expectFoblesButtonNewTabNavigation, expectFoblesButtonSameTabNavigation } from "../../fobles-helpers";
-import { clickLbolt } from "../../macros/fobles-macros";
-import { clickWithMouseMarker, ensureMouseMarkerExists, highlightLocator } from "../../mouse-proxy";
+import { CONST } from "../../../CONST";
+import { expectFoblesButtonNewTabNavigationStrategy, expectFoblesButtonSameTabNavigation } from "../../../helpers/fobles-helpers";
+import { clickLbolt } from "../../../macros/fobles-macros";
+import { clickWithMouseMarker, ensureMouseMarkerExists, highlightLocator } from "../../../helpers/mouse-proxy";
 import { fieldScreenshotName, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import type { StrategyTestContext } from "./scenario.types";
-import { LogDebugTestContext } from "../../helpers/debug-helpers";
-import { findFoblesFrame } from "../../frame-finder";
-import { factoryStrategyTestContext } from "../../strategy-test-context";
-import { showBillboard } from "../../billboard";
+import { findFoblesFrame } from "../../../helpers/frame-finder";
+import { showBillboard } from "../../../helpers/billboard";
+import { logStepDividerEnd, logStepDividerStart } from "../../../helpers/logging-helpers";
+import { expect } from "@playwright/test";
+import { LogDebugTestContext } from "../../../helpers/debug-helpers";
 
 
 export async function stepExpectFoblesInitialConditions(testContext: StrategyTestContext) {
@@ -24,7 +23,7 @@ export async function stepExpectFoblesInitialConditions(testContext: StrategyTes
 
     const fieldTable = await testContext.getFieldTable();
     await expect(fieldTable).toBeVisible();
-    if (!fieldTable.isVisible()) {
+    if (! await fieldTable.isVisible()) {
       console.error(`[fobles] Field table is not visible`);
       throw new Error(`[fobles] Field table is not visible`);
     }
@@ -49,7 +48,7 @@ export async function stepExpectSitecoreInitialConditions(testContext: StrategyT
       const fieldTable = await testContext.getFieldTable();
       await highlightLocator(fieldTable, "fieldTable");
       await expect(fieldTable).toBeVisible();
-      if (!fieldTable.isVisible()) {
+      if (! await fieldTable.isVisible()) {
         console.error(`[fobles] Field table is not visible`);
         throw new Error(`[fobles] Field table is not visible`);
       }
@@ -58,7 +57,7 @@ export async function stepExpectSitecoreInitialConditions(testContext: StrategyT
       const locatorFirstResult = await testContext.getScLocatorFirstResult();
       await highlightLocator(locatorFirstResult, "locatorFirstResult");
       await expect(locatorFirstResult).toBeVisible();
-      if (!locatorFirstResult.isVisible()) {
+      if (! await locatorFirstResult.isVisible()) {
         console.error(`[fobles] Locator first result is not visible`);
         throw new Error(`[fobles] Locator first result is not visible`);
       }
@@ -116,7 +115,7 @@ export async function stepExpectFoblesCtrlClick(testContext: StrategyTestContext
       const popup = await popupPromise;
       console.log(`Popup URL: ${popup.url()}`);
 
-      await expectFoblesButtonNewTabNavigation(testContext, fullTitle, popup);
+      await expectFoblesButtonNewTabNavigationStrategy(testContext, fullTitle, popup);
       logStepDividerEnd(stepExpectFoblesCtrlClick.name);
     },
     { screenshot: false },

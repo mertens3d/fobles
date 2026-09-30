@@ -10,21 +10,24 @@ const testArtifactsDir = path.resolve(process.cwd(), "tests/test-artifacts");
 // otherwise overwrite test-report.html with an empty "0 tests" snapshot on top of a real run's
 // live results, since both invocations write to the same file.
 const isListOnly = process.argv.includes("--list");
-// Each test set (toolbar/strategies/editor) gets its own report file, so running one doesn't
-// wipe out the others' - detected from the file/dir arguments already on the command line (see
-// package.json's test:e2e:toolbar/test:e2e:strategies/test:e2e:editor), not a separate flag to
-// keep in sync. Anything else (a full test:e2e run, or an ad-hoc single-file command outside any
-// of them) falls back to the original shared "test-report.html" name.
 const argsText = process.argv.join(" ");
-const reportSuiteName = argsText.includes("tests/e2e/toolbar")
-  ? "toolbar"
-  : argsText.includes("tests/e2e/strategies")
-    ? "strategies"
-    : argsText.includes("tests/e2e/editor")
-      ? "editor"
-      : argsText.includes("tests/e2e/promoVideo")
-        ? "promoVideo"
-        : null;
+
+function getReportSuiteName(args: string): string | null {
+  if (args.includes("tests/e2e/toolbar")) return "toolbar";
+  if (args.includes("tests/e2e/extension-ui")) {
+    if (args.includes("tests/e2e/extension-ui/persistence")) return "extension-ui-persistence";
+    if (args.includes("tests/e2e/extension-ui/toolbar-integration")) return "extension-ui-toolbar";
+    if (args.includes("tests/e2e/extension-ui/extension-integration")) return "extension-ui-runtime";
+    return "extension-ui";
+  }
+  if (args.includes("tests/e2e/strategies")) return "strategies";
+  if (args.includes("tests/e2e/editor")) return "editor";
+  if (args.includes("tests/e2e/promoVideo")) return "promoVideo";
+  return null;
+}
+
+// Each focused test set gets its own report file so running one group does not overwrite another.
+const reportSuiteName = getReportSuiteName(argsText);
 const reportFileName = reportSuiteName ? `test-report-${reportSuiteName}.html` : "test-report.html";
 // Video recording is a hardcoded RECORD_VIDEO constant in tests/e2e/fixtures/playwright.ts, not
 // anything computed here - flip it by hand before/after a promoVideo recording session.

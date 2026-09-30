@@ -1,19 +1,19 @@
-import { test, type Page } from "../fixtures/playwright";
-import { CONST } from "../CONST";
-import { openSitecorePage } from "../fixtures/sitecore";
-import {   clickTreeJump,  scrollTreeContainer } from "../macros/sitecore-macros";
-import { resolveCornerPosition, ensureMouseMarkerExists, moveMouseToDefault } from "../mouse-proxy";
-import { findFrameWithSelector } from "../frame-finder";
-import { getExtensionId, setFoblesNavWarningVisible } from "../fixtures/extension";
+import { test, type Page } from "../../fixtures/playwright";
+import { CONST } from "../../CONST";
+import { openSitecorePage } from "../../fixtures/sitecore";
+import {   clickTreeJump,  scrollTreeContainer } from "../../macros/sitecore-macros";
+import { resolveCornerPosition, ensureMouseMarkerExists, moveMouseToDefault } from "../../helpers/mouse-proxy";
+import { findFrameWithSelector } from "../../helpers/frame-finder";
+import { getExtensionId, setFoblesNavWarningVisible } from "../../fixtures/extension";
 import { playDemoBeat } from "./demo-beat";
 import { videoTestSetup } from "./video-test-setup";
 import { RECORD_VIDEO } from "../../settings/settings";
-import { clickLbolt, clickFoblesTreeButton, dragToolbarTo } from "../macros/fobles-macros";
-import { showSpeakBubble } from "../speak-bubble";
+import { clickLbolt, clickFoblesTreeButton, dragToolbarTo } from "../../macros/fobles-macros";
+import { showSpeakBubble } from "../../helpers/speak-bubble";
 
 test.describe("Promo Video", () => {
   test("promo video", async ({ page: sharedPage, sharedBrowserContext }) => {
-    test.setTimeout(CONST.TIMEOUTS.TEST_SUITE_MS);
+    test.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     let testError: unknown;
 
     const page = RECORD_VIDEO ? await sharedBrowserContext.newPage() : sharedPage;
@@ -85,20 +85,20 @@ async function demoTreeFoblesClick(page: Page) {
 }
 
 async function demoToolbarDrag(page: Page) {
-  const foblesFrame = await findFrameWithSelector(page, CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
-  const toolbarGrip = foblesFrame.locator(CONST.SITECORE.SELECTORS.TOOLBAR_GRIP).first();
+  const foblesFrame = await findFrameWithSelector(page, CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
+  const toolbarGrip = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_GRIP).first();
 
   await playDemoBeat(page, {
     name: "demoToolbarDrag",
     init: () => ensureMouseMarkerExists(foblesFrame),
     speechText: "Drag the toolbar anywhere on the page",
-    action: () => dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_2)),
+    action: () => dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2)),
     highlightResult: false,
   });
 
-  await showSpeakBubble(page, "Drag the toolbar anywhere on the page", CONST.FOBLES.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION);
+  await showSpeakBubble(page, "Drag the toolbar anywhere on the page", CONST.TESTING.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION);
   await moveMouseToDefault(page);
-  await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TOOLBAR_DRAG_POSITIONS.POSITION_3));
+  await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3));
   await moveMouseToDefault(page);
-  await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TOOLBAR_DRAG_POSITIONS.DEFAULT));
+  await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT));
 }

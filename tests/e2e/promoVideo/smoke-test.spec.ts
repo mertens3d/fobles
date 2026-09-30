@@ -1,5 +1,6 @@
-import { test } from "../fixtures/playwright";
-import { moveMouseToPosition, ensureMouseMarkerExists, verifyMouseMarker } from "../mouse-proxy";
+import { test } from "../../fixtures/playwright";
+import { moveMouseToPosition, ensureMouseMarkerExists, verifyMouseMarker } from "../../helpers/mouse-proxy";
+import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
 
 // Isolates "does video recording plus the mouse marker actually work at all" from every other
 // moving part (Sitecore login, real page navigations, extension activation) - run this first if a

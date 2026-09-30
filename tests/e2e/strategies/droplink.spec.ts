@@ -1,12 +1,12 @@
-import { expect, test } from "../fixtures/playwright";
-import {  setupContentEditorForTesting } from "../fobles-helpers";
+import { expect, test } from "../../fixtures/playwright";
+import {  setupContentEditorForTesting } from "../../helpers/fobles-helpers";
 import { fieldScreenshotName } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
 import type { StrategyTestContext } from "./support/scenario.types";
 import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./support/strategy-test-helper";
-import { factoryStrategyTestContext } from "../strategy-test-context";
-import { showBillboard } from "../billboard";
+import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
+import { showBillboard } from "../../helpers/billboard";
 
 test.describe("Strategy scenario: droplink", () => {
   test("toggling Fobles decorates and restores the droplink field", async ({ page }, testInfo) => {

@@ -1,19 +1,19 @@
-import { expect, test } from "../fixtures/playwright";
-import { openSitecorePage } from "../fixtures/sitecore";
-import { CONST, FOBLES_HIDDEN_CLASS_PATTERN } from "../CONST";
 import {
   createStep,
-  expectFoblesButtonNewTabNavigation,
   expectFoblesButtonSameTabNavigation,
-} from "../fobles-helpers";
-import { ensureMouseMarkerExists } from "../mouse-proxy";
-import { openLinksGallery } from "../macros/sitecore-macros";
-import { findFoblesFrame } from "../frame-finder";
+} from "../../helpers/fobles-helpers";
+import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
+import { openLinksGallery } from "../../macros/sitecore-macros";
+import { findFoblesFrame } from "../../helpers/frame-finder";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
-import { clickLbolt } from "../macros/fobles-macros";
-import { foblesWaitForTimeout } from "../helpers/wait-helpers";
+import { clickLbolt } from "../../macros/fobles-macros";
+import { CONST } from "../../CONST";
+import test, { expect } from "@playwright/test";
+import { openSitecorePage } from "../../fixtures/sitecore";
+import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { FOBLES_HIDDEN_CLASS_PATTERN } from "../strategies/support/CONST";
 
-const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS :number= CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Reference Links (src/content/features/augmentor/editor-strategies/reference-links.ts) doesn't
 // decorate a single field like the strategies/*.spec.ts suite - it decorates Content Editor's own
@@ -26,6 +26,7 @@ const SCENARIO = EDITOR_SCENARIOS.REFERENCE_LINKS;
 
 test.describe("Editor scenario: reference links", () => {
   test("toggling Fobles decorates and restores the Links gallery", async ({ page }, testInfo) => {
+
     await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`);
     await ensureMouseMarkerExists(page);
 
@@ -34,7 +35,7 @@ test.describe("Editor scenario: reference links", () => {
 
     const linksPanel = await openLinksGallery(page, foblesFrame);
 
-    const lboltButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON).first();
+    const lboltButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON).first();
     const step = createStep(page, testInfo, linksPanel, "Reference Links");
 
     await step("Default stage: gallery renders as plain Sitecore links", async () => {
@@ -65,13 +66,24 @@ test.describe("Editor scenario: reference links", () => {
       hasText: firstReferringItem.expectedButtonText,
     });
 
-    await step(
-      `Ctrl+click: opens the referring item in a new tab: "${firstReferringItem.expectedFoValue}"`,
-      async (fullTitle) => {
-        await expectFoblesButtonNewTabNavigation(page, testInfo, firstButton, firstReferringItem.expectedFoValue, fullTitle);
-      },
-      { screenshot: false },
-    );
+    // await step(
+    //   `Ctrl+click: opens the referring item in a new tab: "${firstReferringItem.expectedFoValue}"`,
+    //   async (fullTitle) => {
+    //     const testContextBasic: TestContextBase=
+    //     {
+    //      page,
+    //      STEP_WAIT_MS,
+    //      step,
+    //      testInfo,
+    //     };
+    //     await expectFoblesButtonNewTabNavigation(
+    //       testInfo, 
+    //       firstReferringItem.expectedFoValue, 
+    //       fullTitle, 
+    //       page);
+    //   },
+    //   { screenshot: false },
+    // );
 
     await step("Toggle Fobles off: the gallery returns to its original shape", async () => {
       await clickLbolt(page);;

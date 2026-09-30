@@ -1,10 +1,10 @@
-import { expect, test } from "../fixtures/playwright";
-import { openSitecorePage } from "../fixtures/sitecore";
-import { CONST } from "../CONST";
-import { attachUiPathNote, createStep } from "../fobles-helpers";
+import { expect, test } from "../../fixtures/playwright";
+import { openSitecorePage } from "../../fixtures/sitecore";
+import { CONST } from "../../CONST";
+import { attachUiPathNote, createStep } from "../../helpers/fobles-helpers";
 import { FOBLES_YML } from "../strategies/support/yml-fobles.CONST";
-import { findFrameWithSelector } from "../frame-finder";
-import { foblesWaitForTimeout } from "../helpers/wait-helpers";
+import { findFrameWithSelector } from "../../helpers/frame-finder";
+import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
 
 // The dialog/gallery `default.aspx?xmlcontrol=...` pages tracked in docs/TODO.md - each one only
 // ever renders inside a small iframe/dialog (never a full Content Editor page), so Fobles' own
@@ -121,23 +121,23 @@ test.describe("Editor scenario: toolbar visibility on dialog/gallery pages", () 
 
         if (!isEligible) {
           await foblesWaitForTimeout(page, 2_000);
-          await expect(page.locator(CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER)).toHaveCount(0);
+          await expect(page.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER)).toHaveCount(0);
           return;
         }
 
         const foblesFrame = await findFrameWithSelector(
           page,
-          CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER,
+          CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER,
           `Fobles toolbar on ${pageCase.label}`,
           10_000,
         );
 
-        await expect(foblesFrame.locator(CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER)).toBeVisible();
-        await expect(foblesFrame.locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON)).toBeVisible();
+        await expect(foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER)).toBeVisible();
+        await expect(foblesFrame.locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON)).toBeVisible();
 
-        const menuTrigger = foblesFrame.locator(CONST.SITECORE.SELECTORS.MENU_TRIGGER);
-        const proxyButtonsTrigger = foblesFrame.locator(CONST.SITECORE.SELECTORS.PROXY_BUTTONS_TRIGGER);
-        const closeButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.TOOLBAR_CLOSE_BUTTON);
+        const menuTrigger = foblesFrame.locator(CONST.FOBLES.SELECTORS.MENU_TRIGGER);
+        const proxyButtonsTrigger = foblesFrame.locator(CONST.FOBLES.SELECTORS.PROXY_BUTTONS_TRIGGER);
+        const closeButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CLOSE_BUTTON);
 
         if (pageCase.compact) {
           await expect(menuTrigger).toHaveCount(0);

@@ -1,22 +1,18 @@
-import { expect, test } from "../fixtures/playwright";
-import { CONST } from "../CONST";
+import { expect, test } from "../../fixtures/playwright";
+import { CONST } from "../../CONST";
 import {
-  createStep,
-  getEditorSectionLocator,
   setupContentEditorForTesting,
-} from "../fobles-helpers";
+} from "../../helpers/fobles-helpers";
 
-import { fieldScreenshotName, FOBLES_HIDDEN_CLASS_PATTERN } from "./support/CONST";
+import { fieldScreenshotName } from "./support/CONST";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
-import { clickLbolt } from "../macros/fobles-macros";
 import type { StrategyTestContext } from "./support/scenario.types";
-import { factoryStrategyTestContext } from "../strategy-test-context";
-import { foblesWaitForTimeout } from "../helpers/wait-helpers";
-import { showBillboard } from "../billboard";
+import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
+import { showBillboard } from "../../helpers/billboard";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./support/strategy-test-helper";
 
-const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Tag List replaces TWO panes independently (src/content/features/augmentor/field-strategies
 // /sc-taglist.ts): the "all items" tree pane and the "selected items" select pane, each getting

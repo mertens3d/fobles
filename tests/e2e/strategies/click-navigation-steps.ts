@@ -1,8 +1,8 @@
-import { CONST } from "../CONST";
-import { type Locator, type Page, type TestInfo } from "../fixtures/playwright";
+import { CONST } from "../../CONST";
+import { type Locator, type Page, type TestInfo } from "../../fixtures/playwright";
 
 
-import type { FoblesTestStep } from "../types";
+import type { FoblesTestStep } from "../../helpers/fobles-test-step.types";
 
 import type {  StrategyScenarioData } from "./support/scenario.types";
 

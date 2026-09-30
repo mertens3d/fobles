@@ -1,19 +1,17 @@
-import { expect, test } from "../fixtures/playwright";
-import { CONST } from "../CONST";
-import { factoryStrategyTestContext } from "../strategy-test-context";
+import { test } from "../../fixtures/playwright";
+import { CONST } from "../../CONST";
+import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
 import {
   createStep,
   getEditorSectionLocator,
   setupContentEditorForTesting,
-} from "../fobles-helpers";
+} from "../../helpers/fobles-helpers";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
-import { clickLbolt } from "../macros/fobles-macros";
 import type { StrategyTestContext } from "./support/scenario.types";
-import { foblesWaitForTimeout } from "../helpers/wait-helpers";
-import { showBillboard } from "../billboard";
+import { showBillboard } from "../../helpers/billboard";
 import { stepExpectFoblesInitialConditions, stepExpectSitecoreInitialConditions } from "./support/strategy-test-helper";
 
-const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Droplist renders the same select.scContentControl.scCombobox markup as Droplink, but Sitecore
 // stores/renders only the chosen value's plain name text for it, never an item GUID - there's no

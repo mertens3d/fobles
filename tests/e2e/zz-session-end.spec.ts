@@ -1,8 +1,8 @@
-import { expect, test } from "./fixtures/playwright";
-import { getTestEnvironment } from "./fixtures/environment";
-import { attachScreenshot } from "./fobles-helpers";
-import { logoutCurrentSitecoreSession } from "./fixtures/sitecore";
-import { CONST } from "./CONST";
+import { expect, test } from "../fixtures/playwright";
+import { getTestEnvironment } from "../fixtures/environment";
+import { attachScreenshot } from "../helpers/fobles-helpers";
+import { logoutCurrentSitecoreSession } from "../fixtures/sitecore";
+import { CONST } from "../CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 
 // Filename sorts after "strategies/" and "toolbar/" so this always runs last across the whole
