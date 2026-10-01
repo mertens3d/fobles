@@ -5,7 +5,7 @@ import {
     moveMouseToPosition,
     resolveCornerPosition,
     ensureMouseMarkerExists,
-    highlightLocator,
+    highlightClick,
     moveMouseToBoundingBox,
 } from "../helpers/mouse-proxy";
 import type { CornerPosition, MouseCoordinates } from "../helpers/mouse-proxy.types";
@@ -77,7 +77,7 @@ export async function dragToolbarToCornerLocation(page: Page, cornerPosition: Co
     
     await showBillboard(page, `Find Toolbar grip`);
     const toolbarGrip = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_GRIP).first();
-    await highlightLocator(toolbarGrip, "Toolbar grip");
+    await highlightClick(toolbarGrip, "Toolbar grip");
     
     console.log(`[macro] Found toolbar grip`);
     

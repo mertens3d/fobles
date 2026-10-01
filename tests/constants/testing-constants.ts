@@ -1,6 +1,7 @@
 import { COLORS } from "../CONST.colors";
 import { SELECTED_SPEED } from "../settings/settings";
 import type { TestSpeed } from "../settings/test-speed.types";
+import type { HighlightStyle } from "./CONST.Types";
 
 export const TESTING = {
   ADDITIONAL_SETTINGS: {
@@ -15,7 +16,8 @@ export const TESTING = {
     ADMIN_PAGE: {
       ICON: " /~/icon/applicationsv2/32x32/unicorn.png ",
       INTEGRATION_LABEL_PREFIX: "Fobles E2E Toolbar Admin ",
-      INTEGRATION_URL: "/sitecore/shell/Applications/Content Editor.aspx?sc_bw=1",
+      INTEGRATION_URL:
+        "/sitecore/shell/Applications/Content Editor.aspx?sc_bw=1",
       LABEL_PREFIX: "Fobles E2E Admin ",
       NORMALIZED_ICON: "/-/icon/applicationsv2/32x32/unicorn.png",
       NORMALIZED_URL: "/unicorn.aspx",
@@ -26,7 +28,8 @@ export const TESTING = {
       pathSuffixRaw: "/content/Home",
       iconRaw: "applicationsv2/32x32/bookmark_green.png",
     },
-    TEST_JUMP_ICON_NORMALIZED: "/-/icon/applicationsv2/32x32/bookmark_green.png",
+    TEST_JUMP_ICON_NORMALIZED:
+      "/-/icon/applicationsv2/32x32/bookmark_green.png",
     TEST_JUMP_PATH: "/sitecore/content/Home",
   },
   BILLBOARD: {
@@ -68,7 +71,7 @@ export const TESTING = {
     UPDATE_HZ: 60,
   },
   HUMAN_PAUSE_MS: 2_000,
-  MOUSE_PATH:{
+  MOUSE_PATH: {
     ANIMATION_DURATION_MS: 3_000,
     COLOR: "#474747",
     DEBUG_LINE_ID: "__fobles-debug-line",
@@ -129,13 +132,28 @@ export const TESTING = {
     },
     EXCLUDED_FRAME_URL_FRAGMENT: "sitecore/shell/Applications/-/media",
     HIGHLIGHT: {
-      BACKGROUND_COLOR: COLORS.scSoftYellow,
-      COLOR: "black",
-      OUTLINE: "5px solid " + COLORS.scRed,
-      OUTLINE_OFFSET: "2px",
-      RESTORE_DELAY_MS: 2_000,
-      TRANSITION: "background-color 0.5s ease, outline-color 0.5s ease",
       VISIBLE_DELAY_MS: 500,
+            RESTORE_DELAY_MS: 1_000,
+      STYLES: {
+        SCREEN_SHOT: {
+          BACKGROUND_COLOR: COLORS.scSoftYellow,
+          COLOR: "black",
+          OUTLINE: "5px solid " + COLORS.scSoftYellow,
+          OUTLINE_OFFSET: "2px",
+          RESTORE_DELAY_MS: 2_000,
+          TRANSITION: "background-color 0.5s ease, outline-color 0.5s ease",
+          VISIBLE_DELAY_MS: 500,
+        } satisfies HighlightStyle,
+        CLICK: {
+          BACKGROUND_COLOR: "none",
+          COLOR: "black",
+          OUTLINE: "5px solid " +  COLORS.scRed,
+          OUTLINE_OFFSET: "2px",
+          RESTORE_DELAY_MS: 2_000,
+          TRANSITION: "background-color 0.5s ease, outline-color 0.5s ease",
+          VISIBLE_DELAY_MS: 500,
+        } satisfies HighlightStyle,
+      },
     },
     HTML_TAG: "html",
     OPEN_DIALOG_SELECTOR: "dialog[open]",
@@ -156,7 +174,9 @@ export const TESTING = {
       "border: 2px solid #fff",
       "border-radius: 50%",
       "background: " + COLORS.scRed,
-      "box-shadow: 0 0 0 2px " + COLORS.scRed + ", 0 2px 6px rgba(0, 0, 0, .45)",
+      "box-shadow: 0 0 0 2px " +
+        COLORS.scRed +
+        ", 0 2px 6px rgba(0, 0, 0, .45)",
       "pointer-events: none",
       "transform: translate(-50%, -50%)",
       "transition: left 16ms linear, top 16ms linear",

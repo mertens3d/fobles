@@ -3,6 +3,7 @@ import { CONST } from "../../CONST";
 import { pulseMouseMarkerClick } from "./mouse-marker";
 import { moveMouseToPosition } from "./mouse-movement";
 import type { MouseCoordinates } from "../mouse-proxy.types";
+import type { HighlightStyle } from "../../constants/CONST.Types";
 
 export async function getButtonSize(button: Locator): Promise<{ width: number; height: number }> {
   const box = await button.boundingBox();
@@ -31,6 +32,7 @@ export async function clickWithMouseMarker(
   if (!label) console.error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.LABEL_NOT_DEFINED);
 
   const corner = options?.corner ?? CONST.TESTING.MOUSE_PROXY.CORNER.CENTER;
+  await highlightClick(targetLocator, `${label} - ${clickWithMouseMarker.name}`);
   await moveMouseToBoundingBox(page, targetLocator, label, corner);
   await pulseMouseMarkerClick(page);
   await targetLocator.click({
@@ -56,7 +58,7 @@ export async function moveMouseToBoundingBox(
     console.error(`${CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.TARGET_NOT_VISIBLE_PREFIX}${label}`);
     throw new Error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.MOUSE_TARGET_NOT_VISIBLE);
   }
-  await highlightLocator(targetLocator, label);
+  await highlightClick(targetLocator, label);
 
   const box = await targetLocator.boundingBox();
   if (!box) {
@@ -71,7 +73,16 @@ export async function moveMouseToBoundingBox(
   console.log(`[fobles] E) Mouse move to '${label}' called`);
 }
 
-export async function highlightLocator(target: Locator, label: string): Promise<void> {
+export async function highlightScreenShot(target: Locator, label: string): Promise<void> {
+  await highlightBase(target, `${label} - ${highlightScreenShot.name}`, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.STYLES.SCREEN_SHOT);
+}
+
+
+export async function highlightClick(target: Locator, label: string): Promise<void> {
+  await highlightBase(target, label, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.STYLES.CLICK);
+}
+
+async function highlightBase(target: Locator, label: string, highlightStyle: HighlightStyle): Promise<void> {
   const count = await target.count();
   if (count === 0) {
     console.warn(`[fobles] Highlight skipped: '${label}' matched 0 elements`);
@@ -94,14 +105,14 @@ export async function highlightLocator(target: Locator, label: string): Promise<
     };
   });
 
-  await highlightedTarget.evaluate((element, highlight) => {
+  await highlightedTarget.evaluate((element, highlight: HighlightStyle) => {
     const el = element as HTMLElement;
     el.style.transition = highlight.TRANSITION;
     el.style.outline = highlight.OUTLINE;
-    el.style.color = highlight.COLOR;
+    // el.style.color = highlight.COLOR;
     el.style.outlineOffset = highlight.OUTLINE_OFFSET;
-    el.style.backgroundColor = highlight.BACKGROUND_COLOR;
-  }, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT);
+    //el.style.backgroundColor = highlight.BACKGROUND_COLOR;
+  }, highlightStyle);
   await highlightedTarget.page().waitForTimeout(CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.VISIBLE_DELAY_MS);
 
   void setTimeout(() => {
@@ -110,10 +121,12 @@ export async function highlightLocator(target: Locator, label: string): Promise<
         const el = element as HTMLElement;
         el.style.outline = originalStyles.outline;
         el.style.outlineOffset = originalStyles.outlineOffset;
-        el.style.backgroundColor = originalStyles.backgroundColor;
+        //el.style.backgroundColor = originalStyles.backgroundColor;
         el.style.transition = originalStyles.transition;
       }, original)
-      .catch(() => {});
+      .catch(() => {
+        console.error(`[fobles] Failed to restore original styles for '${label}'`);
+      });
   }, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.RESTORE_DELAY_MS);
 }
 

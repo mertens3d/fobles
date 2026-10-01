@@ -1,6 +1,6 @@
 import { expect, foblesTest, type Page } from "../../../fixtures/playwright";
 import { getExtensionId, openExtensionPage, setExtensionCheckbox } from "../../../fixtures/extension";
-import { openSitecorePageAndFindFoblesFrame, attachScreenshot } from "../../../helpers/fobles-helpers";
+import { openSitecorePageAndFindFoblesFrame, attachPageScreenshot } from "../../../helpers/fobles-helpers";
 import { bringPageToFront } from "../../../helpers/page-switch";
 import {
   clickOptionsButton,
@@ -74,7 +74,7 @@ foblesTest.describe("Extension UI Integration", () => {
       await expect
         .poll(() => debugMessages.some((message) => message.includes(TESTING.CONTENT_EDITOR_DEBUG.LOG_MARKER)))
         .toBe(true);
-      await attachScreenshot(
+      await attachPageScreenshot(
         testInfo,
         page,
         TESTING.REPORT_SCREENSHOTS.DEBUG_LOGGING_ENABLED,
@@ -96,7 +96,7 @@ foblesTest.describe("Extension UI Integration", () => {
       expect(
         debugMessages.some((message) => message.includes(TESTING.CONTENT_EDITOR_DEBUG.LOG_MARKER)),
       ).toBe(false);
-      await attachScreenshot(
+      await attachPageScreenshot(
         testInfo,
         page,
         TESTING.REPORT_SCREENSHOTS.DEBUG_LOGGING_DISABLED,
@@ -119,7 +119,7 @@ foblesTest.describe("Extension UI Integration", () => {
       const reloadButton = popupPage.locator(TESTING.POPUP.RELOAD_EXTENSION_BUTTON_SELECTOR);
       if (!originalReloadButtonSetting) await expect(reloadButton).toBeVisible();
       else await expect(reloadButton).toBeHidden();
-      await attachScreenshot(
+      await attachPageScreenshot(
         testInfo,
         popupPage,
         TESTING.REPORT_SCREENSHOTS.DEVELOPER_SETTINGS,

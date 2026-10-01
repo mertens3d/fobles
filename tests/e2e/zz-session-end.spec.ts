@@ -1,6 +1,6 @@
 import { expect, foblesTest } from "../fixtures/playwright";
 import { getTestEnvironment } from "../fixtures/environment";
-import { attachScreenshot } from "../helpers/fobles-helpers";
+import { attachPageScreenshot } from "../helpers/fobles-helpers";
 import { logoutCurrentSitecoreSession } from "../fixtures/sitecore";
 import { CONST } from "../CONST";
 import { RECORD_VIDEO } from "../settings/settings";
@@ -32,7 +32,7 @@ foblesTest.describe("Session", () => {
     await expect(loginPage).toBeVisible();
     // Skipped during a promoVideo recording session - see 00-session-start.spec.ts's own check.
     if (!RECORD_VIDEO) {
-      await attachScreenshot(testInfo, page, "login-page.png", {
+      await attachPageScreenshot(testInfo, page, "login-page.png", {
         mask: [page.locator("#Username"), page.locator("#Password")],
       });
     }

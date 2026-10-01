@@ -21,6 +21,7 @@ import type {
 import type { FoblesTestStep } from "./fobles-test-step.types";
 import { openContentEditor, openSitecorePage } from "../fixtures/sitecore";
 import { bringPageToFront } from "./page-switch";
+import { highlightClick, highlightScreenShot } from "./mouse-proxy-support/mouse-interactions";
 
 type Screenshottable = Pick<Locator, "screenshot">;
 
@@ -235,7 +236,29 @@ export async function expectFoblesButtonNewTabNavigation(
 // baseline - a clean pass produces no attachment for the report to link to. Attach one ourselves
 // so the report always has a link, pass or fail. Must use `path` (not `body`) - the reporter links
 // to attachments by file path, and body-only attachments never get one.
-export async function attachScreenshot(
+export async function attachLocatorScreenshot(
+  testInfo: TestInfo,
+  target: Locator,
+  name: string,
+  options?: { mask?: Locator[] },
+): Promise<void> {
+  await highlightScreenShot( target,`${name} - ${attachLocatorScreenshot.name}`);
+  const filePath = testInfo.outputPath(name);
+  const autoMasks = await getSensitiveAutoMasks(target);
+  const mask = [...(options?.mask ?? []), ...autoMasks];
+  // Matches toHaveScreenshot()'s defaults - reduces (but can't fully eliminate) visible flicker
+  // from CDP's screenshot capture in headed mode.
+  await target.screenshot({
+    path: filePath,
+    animations: "disabled",
+    caret: "hide",
+    mask: mask.length ? mask : undefined,
+    maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
+  });
+  await testInfo.attach(name, { path: filePath, contentType: "image/png" });
+}
+
+export async function attachPageScreenshot(
   testInfo: TestInfo,
   target: Screenshottable,
   name: string,
@@ -536,7 +559,7 @@ export function createStep(
 
           if (options?.screenshot !== false) {
             await withTimeout(
-              attachScreenshot(
+              attachPageScreenshot(
                 testInfo,
                 screenshotTarget,
                 `step-${safeName}.png`,
@@ -575,14 +598,16 @@ export async function attachItemPathScreenshot(
     CONST.SITECORE.SELECTORS.CONTENT_TAB,
     "Content Editor tab header",
   );
-  const itemPathRow = frame
+  const itemPathRow :Locator = frame
     .locator(`${CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, {
       hasText: CONST.SITECORE.LABELS.ITEM_PATH,
     })
     .first();
+  
+  await highlightClick(itemPathRow, "Item path row");
   await expect(itemPathRow).toBeVisible();
   const safeName = buildStepMatchKey(matchKey);
-  await attachScreenshot(testInfo, itemPathRow, `item-path-${safeName}.png`);
+  await attachLocatorScreenshot(testInfo, itemPathRow, `item-path-${safeName}.png`);
 }
 
 // Every ancestor-based attempt to find "the whole section" reliably broke on some field-strategy

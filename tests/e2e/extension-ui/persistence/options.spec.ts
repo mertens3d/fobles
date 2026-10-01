@@ -1,6 +1,6 @@
 import { expect, foblesTest } from "../../../fixtures/playwright";
 import { clickExtensionControl, getExtensionId, openExtensionPage } from "../../../fixtures/extension";
-import { attachScreenshot } from "../../../helpers/fobles-helpers";
+import {  attachPageScreenshot } from "../../../helpers/fobles-helpers";
 import { CONST } from "../../../CONST";
 import {
   clickOptionsButton,
@@ -29,7 +29,7 @@ foblesTest.describe("Additional Settings Persistence", () => {
       await clickOptionsButton(optionsPage, TESTING.OPTIONS.STORAGE.VIEW_BUTTON);
       await expect(storedSettingsOutput).toBeVisible();
       originalSnapshot = JSON.parse((await storedSettingsOutput.textContent()) ?? "{}") as StoredSettingsSnapshot;
-      await attachScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.STORAGE_BEFORE_CLEAR);
+      await attachPageScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.STORAGE_BEFORE_CLEAR);
 
       const confirmation = optionsPage.waitForEvent("dialog").then(async (dialog) => {
         expect(dialog.type()).toBe("confirm");
@@ -47,7 +47,7 @@ foblesTest.describe("Additional Settings Persistence", () => {
         (await storedSettingsOutput.textContent()) ?? "{}",
       ) as StoredSettingsSnapshot;
       expect(clearedSnapshot).toEqual({ sync: {}, local: {} });
-      await attachScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.STORAGE_CLEARED);
+      await attachPageScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.STORAGE_CLEARED);
     } finally {
       if (originalSnapshot && !optionsPage.isClosed()) {
         await optionsPage.evaluate(async (snapshot) => {
@@ -140,7 +140,7 @@ foblesTest.describe("Additional Settings Persistence", () => {
       await expect(savedGroup!.locator(CONST.TESTING.SELECTORS.AI_MAPPING_SITE_INPUT)).toHaveValue(
         TESTING.ADDITIONAL_SETTINGS.AI_PAGES.SITE,
       );
-      await attachScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.AI_MAPPINGS_SAVED);
+      await attachPageScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.AI_MAPPINGS_SAVED);
     } finally {
       if (groupAdded && !optionsPage.isClosed()) {
         await openSettingsSection(optionsPage, TESTING.OPTIONS.AI_PAGES.SECTION_TITLE);
@@ -204,7 +204,7 @@ foblesTest.describe("Additional Settings Persistence", () => {
       );
       await expect(savedRow!.locator(TESTING.JUMP_MENU.USER_ADMIN_PAGE_ENABLED_INPUT)).toBeChecked();
       await expect(savedColumn).toBeVisible();
-      await attachScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.USER_ADMIN_PAGE_SAVED);
+      await attachPageScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.USER_ADMIN_PAGE_SAVED);
     } finally {
       if (rowAdded && !optionsPage.isClosed()) {
         const adminPagesColumn = await openAdminPagesColumn(optionsPage);

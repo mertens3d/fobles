@@ -1,6 +1,11 @@
 import { expect, foblesTest, type Locator } from "../../../fixtures/playwright";
-import { clickExtensionControl, getExtensionId, openExtensionPage, setExtensionCheckbox } from "../../../fixtures/extension";
-import { attachScreenshot } from "../../../helpers/fobles-helpers";
+import {
+  clickExtensionControl,
+  getExtensionId,
+  openExtensionPage,
+  setExtensionCheckbox,
+} from "../../../fixtures/extension";
+import { attachPageScreenshot } from "../../../helpers/fobles-helpers";
 import { CONST } from "../../../CONST";
 
 async function readStableCheckboxState(checkbox: Locator): Promise<boolean> {
@@ -23,61 +28,76 @@ async function readStableCheckboxState(checkbox: Locator): Promise<boolean> {
 }
 
 foblesTest.describe("Popup Preference Persistence", () => {
-  foblesTest("shows and persists the navigation preferences", async ({ sharedBrowserContext }, testInfo) => {
-    const extensionId = await getExtensionId(sharedBrowserContext);
-    const popupPage = await openExtensionPage(
-      sharedBrowserContext,
-      extensionId,
-      CONST.TESTING.EXTENSION_PAGES.POPUP,
-    );
-    const originalStates = new Map<string, boolean>();
-
-    try {
-      await attachScreenshot(testInfo, popupPage, CONST.TESTING.REPORT_SCREENSHOTS.POPUP_DEFAULT);
-      for (const id of CONST.TESTING.POPUP.PREFERENCE_IDS) {
-        const checkbox = popupPage.locator(
-          `${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${id}`,
-        );
-        await expect(checkbox).toBeVisible();
-        originalStates.set(id, await readStableCheckboxState(checkbox));
-        await clickExtensionControl(popupPage, checkbox, id);
-        await expect(checkbox).toBeChecked({ checked: !originalStates.get(id) });
-      }
-
-      await popupPage.reload();
-      for (const id of CONST.TESTING.POPUP.PREFERENCE_IDS) {
-        await expect(
-          popupPage.locator(`${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${id}`),
-        ).toBeChecked({ checked: !originalStates.get(id) });
-      }
-      await attachScreenshot(
-        testInfo,
-        popupPage,
-        CONST.TESTING.REPORT_SCREENSHOTS.POPUP_PREFERENCES_SAVED,
+  foblesTest(
+    "shows and persists the navigation preferences",
+    async ({ sharedBrowserContext }, testInfo) => {
+      const extensionId = await getExtensionId(sharedBrowserContext);
+      const popupPage = await openExtensionPage(
+        sharedBrowserContext,
+        extensionId,
+        CONST.TESTING.EXTENSION_PAGES.POPUP,
       );
-    } finally {
-      for (const id of CONST.TESTING.POPUP.PREFERENCE_IDS) {
-        const originalState = originalStates.get(id);
-        if (originalState === undefined || popupPage.isClosed()) continue;
-        await setExtensionCheckbox(
+      const originalStates = new Map<string, boolean>();
+
+      try {
+        await attachPageScreenshot(
+          testInfo,
           popupPage,
-          popupPage.locator(`${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${id}`),
-          originalState,
-          id,
+          CONST.TESTING.REPORT_SCREENSHOTS.POPUP_DEFAULT,
         );
-      }
-      if (
-        !popupPage.isClosed() &&
-        originalStates.size === CONST.TESTING.POPUP.PREFERENCE_IDS.length
-      ) {
+        for (const id of CONST.TESTING.POPUP.PREFERENCE_IDS) {
+          const checkbox = popupPage.locator(
+            `${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${id}`,
+          );
+          await expect(checkbox).toBeVisible();
+          originalStates.set(id, await readStableCheckboxState(checkbox));
+          await clickExtensionControl(popupPage, checkbox, id);
+          await expect(checkbox).toBeChecked({
+            checked: !originalStates.get(id),
+          });
+        }
+
         await popupPage.reload();
         for (const id of CONST.TESTING.POPUP.PREFERENCE_IDS) {
           await expect(
-            popupPage.locator(`${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${id}`),
-          ).toBeChecked({ checked: originalStates.get(id) });
+            popupPage.locator(
+              `${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${id}`,
+            ),
+          ).toBeChecked({ checked: !originalStates.get(id) });
         }
+        await attachPageScreenshot(
+          testInfo,
+          popupPage,
+          CONST.TESTING.REPORT_SCREENSHOTS.POPUP_PREFERENCES_SAVED,
+        );
+      } finally {
+        for (const id of CONST.TESTING.POPUP.PREFERENCE_IDS) {
+          const originalState = originalStates.get(id);
+          if (originalState === undefined || popupPage.isClosed()) continue;
+          await setExtensionCheckbox(
+            popupPage,
+            popupPage.locator(
+              `${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${id}`,
+            ),
+            originalState,
+            id,
+          );
+        }
+        if (
+          !popupPage.isClosed() &&
+          originalStates.size === CONST.TESTING.POPUP.PREFERENCE_IDS.length
+        ) {
+          await popupPage.reload();
+          for (const id of CONST.TESTING.POPUP.PREFERENCE_IDS) {
+            await expect(
+              popupPage.locator(
+                `${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${id}`,
+              ),
+            ).toBeChecked({ checked: originalStates.get(id) });
+          }
+        }
+        if (!popupPage.isClosed()) await popupPage.close();
       }
-      if (!popupPage.isClosed()) await popupPage.close();
-    }
-  });
+    },
+  );
 });
