@@ -5,8 +5,8 @@ import {
 } from "../../helpers/mouse-proxy";
 import { openSitecorePageAndFindFoblesFrame,  createStep, setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers";
 import { ceRibbonOpenHome } from "../../macros/sitecore-macros";
-import { ClickFoblesMenuButton, dismissFoblesConfirmDialogIfPresent } from "../../macros/fobles-macros";
-import { expectFlyoutVisible } from "../../expectSnippets/expectSnippets";
+import { ClickFoblesJumpButton, dismissFoblesConfirmDialogIfPresent } from "../../macros/fobles-macros";
+import { expectJumpMenuFlyoutVisible } from "../../expectSnippets/expectSnippets";
 import { getFoblesMenuTargets } from "./support/other-settings-helpers";
 import { expect, foblesTest, type Frame, type Page } from "../../fixtures/playwright";
 
@@ -76,8 +76,8 @@ async function stepExamineOneJumpButton(target: menuTarget,
 
 async function stepExamineOneJumpButtonInner(index: number, page: Page, target: menuTarget) {
     const foblesFrame: Frame = await openSitecorePageAndFindFoblesFrame(page);
-    await ClickFoblesMenuButton(page);
-    await expectFlyoutVisible(foblesFrame);
+    await ClickFoblesJumpButton(page);
+    await expectJumpMenuFlyoutVisible(foblesFrame);
 
     const menuButton = foblesFrame
         .locator(CONST.FOBLES.LOCATORS.MENU_URL)

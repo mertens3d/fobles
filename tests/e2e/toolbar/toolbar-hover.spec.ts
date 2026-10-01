@@ -23,7 +23,7 @@ foblesTest.describe("Fobles Hover", () => {
 
         const menuButton = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
         await expect(menuButton).toBeVisible();
-        const menuFlyout = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU).first();
+        const menuFlyout = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT).first();
         const mousePosition = getLastKnownMousePosition();
 
         await hoverAndGrow(page, {

@@ -3,8 +3,8 @@ import { getExtensionId, openExtensionPage } from "../../fixtures/extension";
 import { CONST } from "../../CONST";
 import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
 import { openSitecorePageAndFindFoblesFrame, createStep } from "../../helpers/fobles-helpers";
-import { ClickFoblesMenuButton } from "../../macros/fobles-macros";
-import { expectFlyoutVisible } from "../../expectSnippets/expectSnippets";
+import { ClickFoblesJumpButton } from "../../macros/fobles-macros";
+import { expectJumpMenuFlyoutVisible } from "../../expectSnippets/expectSnippets";
 import { addTestRow, openTreeJumpsColumn, removeTestRowIfPresent, setTestRowEnabled } from "./support/other-settings-helpers";
 
 foblesTest.describe("User Tree Jumps", () => {
@@ -50,8 +50,8 @@ foblesTest.describe("User Tree Jumps", () => {
       await removeTestRowIfPresent(optionsPage);
       const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
-      await ClickFoblesMenuButton(page);
-      await expectFlyoutVisible(foblesFrame);
+      await ClickFoblesJumpButton(page);
+      await expectJumpMenuFlyoutVisible(foblesFrame);
 
       await step("does not render with an empty list", async () => {
         await expect(foblesFrame.getByText("User Tree Jumps")).toHaveCount(0);

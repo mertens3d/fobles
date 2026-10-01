@@ -17,7 +17,7 @@ import {
 
 function createJumpMenu(doc: Document, closeMenu: () => void): HTMLDivElement {
   const menu = doc.createElement("div");
-  menu.className = CLASS.JUMP_MENU;
+  menu.className = CLASS.JUMP_MENU_FLYOUT;
   menu.setAttribute(ATTRIBUTE.DATA.KEY.JUMP_MENU, "1");
 
   const columns = doc.createElement("div");
@@ -44,7 +44,7 @@ export function getOrCreateJumpMenu(doc: Document, closeMenu: () => void): HTMLD
   const trigger = doc.querySelector(SELECTORS.QUICK_MENU_TRIGGER);
   if (!trigger) return null;
 
-  const existing = trigger.querySelector<HTMLDivElement>(SELECTORS.JUMP_MENU);
+  const existing = trigger.querySelector<HTMLDivElement>(SELECTORS.JUMP_MENU_FLYOUT);
   if (existing) return existing;
 
   const menu = createJumpMenu(doc, closeMenu);
