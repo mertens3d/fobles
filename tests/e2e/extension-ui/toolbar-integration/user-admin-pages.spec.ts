@@ -8,8 +8,8 @@ import {
 import { CONST } from "../../../CONST";
 import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
 import { openSitecorePageAndFindFoblesFrame } from "../../../helpers/fobles-helpers";
-import { ClickFoblesMenuButton } from "../../../macros/fobles-macros";
-import { expectFlyoutVisible } from "../../../expectSnippets/expectSnippets";
+import { ClickFoblesJumpButton } from "../../../macros/fobles-macros";
+import { expectJumpMenuFlyoutVisible } from "../../../expectSnippets/expectSnippets";
 import { attachLocatorScreenshot } from "../../../helpers/fobles-helpers";
 import { bringPageToFront } from "../../../helpers/page-switch";
 import {
@@ -53,13 +53,13 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
 
       await bringPageToFront(page);
       const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
-      await ClickFoblesMenuButton(page);
-      await expectFlyoutVisible(foblesFrame);
+      await ClickFoblesJumpButton(page);
+      await expectJumpMenuFlyoutVisible(foblesFrame);
       await expect(foblesFrame.getByRole("button", { name: label, exact: true })).toBeVisible();
       await expect(foblesFrame.getByText(TESTING.JUMP_MENU.ADMIN_PAGES_GROUP_LABEL)).toBeVisible();
       await attachLocatorScreenshot(
         testInfo,
-        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU),
+        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT),
         TESTING.REPORT_SCREENSHOTS.ADMIN_PAGE_ENABLED,
       );
 
@@ -77,7 +77,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
       await expect(foblesFrame.getByText(TESTING.JUMP_MENU.ADMIN_PAGES_GROUP_LABEL)).toHaveCount(0);
       await attachLocatorScreenshot(
         testInfo,
-        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU),
+        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT),
         TESTING.REPORT_SCREENSHOTS.ADMIN_PAGE_DISABLED,
       );
 

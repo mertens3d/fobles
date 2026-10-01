@@ -13,16 +13,16 @@ import {
   attachItemPathScreenshot,
   createStep,
 } from "../../helpers/fobles-helpers";
-import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import {
-  ClickFoblesMenuButton,
-  dismissFoblesConfirmDialogIfPresent,
+  ClickFoblesJumpButton,
 } from "../../macros/fobles-macros";
 import {
   expectCurrentUrl,
-  expectFlyoutVisible,
+  expectJumpMenuFlyoutVisible,
 } from "../../expectSnippets/expectSnippets";
-import type { BrowserContext } from "@playwright/test";
+import type { BrowserContext, Locator } from "@playwright/test";
+import { getJumpMenuFlyoutButton } from "../../helpers/scrolling-helpers";
+import { clickFoblesNavigationButton } from "../../helpers/click-navigate-helpers";
 
 foblesTest.describe("Fobles browser integration", () => {
   foblesTest("tree jump buttons navigate in the current tab", async ({
@@ -31,8 +31,8 @@ foblesTest.describe("Fobles browser integration", () => {
     foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     let foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
-    await ClickFoblesMenuButton(page);
-    await expectFlyoutVisible(foblesFrame);
+    await ClickFoblesJumpButton(page);
+    await expectJumpMenuFlyoutVisible(foblesFrame);
 
     const paths = await getExpectedButtonPaths(foblesFrame);
 
@@ -57,8 +57,8 @@ foblesTest.describe("Fobles browser integration", () => {
     foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
-    await ClickFoblesMenuButton(page);
-    await expectFlyoutVisible(foblesFrame);
+    await ClickFoblesJumpButton(page);
+    await expectJumpMenuFlyoutVisible(foblesFrame);
     const paths = await getExpectedButtonPaths(foblesFrame);
 
     const step = createStep(page, testInfo, page, "Ctrl+Click Jump");
@@ -84,7 +84,7 @@ async function getExpectedButtonPaths(foblesFrame: Frame): Promise<string[]> {
     "[fobles] About to look for tree-jump buttons in the open Menu flyout",
   );
   const treeJumpButtons = foblesFrame.locator(
-    CONST.FOBLES.SELECTORS.TREE_JUMP_BUTTON,
+    CONST.FOBLES.SELECTORS.DATA.FOBLES_TREE_JUMP_PATH,
   );
   console.log(
     "Looking for tree jump path attribute:",
@@ -123,50 +123,26 @@ async function testOneClick(
     async () => {
       if (index > 0) {
         foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
-        await ClickFoblesMenuButton(page);
-        await expectFlyoutVisible(foblesFrame);
+        await ClickFoblesJumpButton(page);
+        await expectJumpMenuFlyoutVisible(foblesFrame);
       }
 
-      const foblesTreeButton = await ScrollFoblesTreeButtonIntoView(
+      const flyoutButton :Locator= await getJumpMenuFlyoutButton(
         foblesFrame,
         index,
       );
 
-      await clickWithMouseMarker(
-        page,
-        foblesTreeButton,
-        getLastTwoPathItems(path),
-      );
-      await dismissFoblesConfirmDialogIfPresent(page);
-
-      await ensureMouseMarkerExists(page);
-      expectCurrentUrl(page, path);
-
-      await attachItemPathScreenshot(page, testInfo, path);
-      await page.waitForTimeout(
-        CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
-          CONST.TESTING.NAVIGATION.HOLD_MULTIPLIER,
-      );
+      await clickFoblesNavigationButton(page, flyoutButton,  path, testInfo);
+      
     },
     { screenshot: false },
   );
   return foblesFrame;
 }
 
-async function ScrollFoblesTreeButtonIntoView(
-  foblesFrame: Frame,
-  index: number,
-) {
-  const foblesTreeButton = foblesFrame
-    .locator(CONST.FOBLES.SELECTORS.TREE_JUMP_BUTTON)
-    .nth(index);
-  await expect(foblesTreeButton).toBeVisible();
-  await foblesTreeButton.scrollIntoViewIfNeeded();
-  return foblesTreeButton;
-}
 
-const getLastTwoPathItems = (path?: string): string =>
-  (path ?? "").split("/").filter(Boolean).slice(-2).join("/");
+
+
 
 async function TestOneCtrlClick(
   paths: string[],
@@ -185,10 +161,10 @@ async function TestOneCtrlClick(
   await step(
     `Ctrl+Click: opens "${path}" in a new tab`,
     async () => {
-      await ClickFoblesMenuButton(page);
-      await expectFlyoutVisible(foblesFrame);
+      await ClickFoblesJumpButton(page);
+      await expectJumpMenuFlyoutVisible(foblesFrame);
 
-      const foblesTreeButton = await ScrollFoblesTreeButtonIntoView(
+      const foblesTreeButton = await getJumpMenuFlyoutButton(
         foblesFrame,
         index,
       );

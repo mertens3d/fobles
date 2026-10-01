@@ -12,7 +12,7 @@ export {
 } from "./handlers";
 
 export function isJumpMenuVisible(doc: Document): boolean {
-  return doc.querySelector(SELECTORS.JUMP_MENU)?.getAttribute(ATTRIBUTE.DATA.KEY.VISIBLE) === "true";
+  return doc.querySelector(SELECTORS.JUMP_MENU_FLYOUT)?.getAttribute(ATTRIBUTE.DATA.KEY.VISIBLE) === "true";
 }
 
 export function setJumpMenuVisible(doc: Document, visible: boolean): void {

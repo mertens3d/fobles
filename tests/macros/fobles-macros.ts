@@ -13,12 +13,12 @@ import { findFoblesFrame, findFrameWithSelector } from "../helpers/frame-finder"
 import { walkFrameDocuments } from "../helpers/frame-helpers";
 import { showBillboard } from "../helpers/billboard";
 
-export async function ClickFoblesMenuButton(
+export async function ClickFoblesJumpButton(
     page: Page) {
     const foblesFrame = await findFoblesFrame(page);
-    console.log(`[fobles Macro] ClickFoblesMenuButton`);
+    console.log(`[fobles Macro] ClickFoblesJumpButton`);
     const menuButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
-    await clickWithMouseMarker(page, menuButton, "Fobles Menu Button");
+    await clickWithMouseMarker(page, menuButton, "Fobles Jump Button");
 }
 
 
@@ -27,7 +27,7 @@ export async function ClickFoblesMenuButton(
 export async function openJumpMenu(page: Page, foblesFrame: Frame): Promise<void> {
     console.log("[Macro: openJumpMenu] - Start");
     console.log("[fobles] Checking whether the jump menu flyout is already visible");
-    const menuFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU);
+    const menuFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT);
     const isOpen =
         (await menuFlyout.getAttribute(CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE).catch(() => null)) === "true";
     if (isOpen) {
@@ -35,13 +35,13 @@ export async function openJumpMenu(page: Page, foblesFrame: Frame): Promise<void
         return;
     }
 
-    await ClickFoblesMenuButton(page);
+    await ClickFoblesJumpButton(page);
 
     console.log(
         `[fobles] Waiting for jump menu flyout's ${CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE} attribute to become "true"`,
     );
     await foblesFrame
-        .locator(`${CONST.FOBLES.SELECTORS.JUMP_MENU}[${CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE}="true"]`)
+        .locator(`${CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT}[${CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE}="true"]`)
         .waitFor({ state: "attached" });
 }
 

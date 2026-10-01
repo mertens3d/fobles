@@ -8,8 +8,8 @@ import {
   attachLocatorScreenshot,
   attachItemPathScreenshot,
 } from "../../../helpers/fobles-helpers";
-import { ClickFoblesMenuButton } from "../../../macros/fobles-macros";
-import { expectFlyoutVisible } from "../../../expectSnippets/expectSnippets";
+import { ClickFoblesJumpButton } from "../../../macros/fobles-macros";
+import { expectJumpMenuFlyoutVisible } from "../../../expectSnippets/expectSnippets";
 import { humanPause } from "../../../helpers/wait-helpers";
 import { bringPageToFront } from "../../../helpers/page-switch";
 import {
@@ -36,8 +36,8 @@ foblesTest.describe("User Tree Jumps", () => {
           await removeTestRowIfPresent(optionsPage);
           const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
-          await ClickFoblesMenuButton(page);
-          await expectFlyoutVisible(foblesFrame);
+          await ClickFoblesJumpButton(page);
+          await expectJumpMenuFlyoutVisible(foblesFrame);
           await humanPause(page);
 
           await step("does not render with an empty list", async () => {
@@ -88,7 +88,7 @@ foblesTest.describe("User Tree Jumps", () => {
               await jumpButton.scrollIntoViewIfNeeded();
               await attachLocatorScreenshot(
                 testInfo,
-                foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU),
+                foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT),
                 CONST.TESTING.REPORT_SCREENSHOTS.USER_TREE_JUMP_MENU,
               );
               await clickWithMouseMarker(

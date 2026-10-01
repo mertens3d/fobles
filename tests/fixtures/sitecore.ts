@@ -102,7 +102,7 @@ export async function enableFobles(page: Page): Promise<void> {
 
   await openFoblesMenu(page);
 
-  const menu = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU).first();
+  const menu = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT).first();
   await expect(menu).toBeVisible({ timeout: CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
 
   const toggle = page
@@ -127,6 +127,6 @@ export async function openFoblesMenu(page: Page): Promise<void> {
   await trigger.hover();
   await trigger.click();
 
-  const menu = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU).first();
+  const menu = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT).first();
   await expect(menu).toBeVisible({ timeout: CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
 }
