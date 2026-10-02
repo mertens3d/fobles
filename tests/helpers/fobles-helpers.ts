@@ -244,17 +244,22 @@ export async function attachLocatorScreenshot(
 ): Promise<void> {
   await highlightScreenShot( target,`${name} - ${attachLocatorScreenshot.name}`);
   const filePath = testInfo.outputPath(name);
-  const autoMasks = await getSensitiveAutoMasks(target);
-  const mask = [...(options?.mask ?? []), ...autoMasks];
-  // Matches toHaveScreenshot()'s defaults - reduces (but can't fully eliminate) visible flicker
-  // from CDP's screenshot capture in headed mode.
-  await target.screenshot({
-    path: filePath,
-    animations: "disabled",
-    caret: "hide",
-    mask: mask.length ? mask : undefined,
-    maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
-  });
+  const { hardMasks, blurTargets } = await getSensitiveAutoMasks(target);
+  const mask = [...(options?.mask ?? []), ...hardMasks];
+  await applyBlur(blurTargets);
+  try {
+    // Matches toHaveScreenshot()'s defaults - reduces (but can't fully eliminate) visible flicker
+    // from CDP's screenshot capture in headed mode.
+    await target.screenshot({
+      path: filePath,
+      animations: "disabled",
+      caret: "hide",
+      mask: mask.length ? mask : undefined,
+      maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
+    });
+  } finally {
+    await removeBlur(blurTargets);
+  }
   await testInfo.attach(name, { path: filePath, contentType: "image/png" });
 }
 
@@ -265,18 +270,56 @@ export async function attachPageScreenshot(
   options?: { mask?: Locator[] },
 ): Promise<void> {
   const filePath = testInfo.outputPath(name);
-  const autoMasks = await getSensitiveAutoMasks(target);
-  const mask = [...(options?.mask ?? []), ...autoMasks];
+  const { hardMasks, blurTargets } = await getSensitiveAutoMasks(target);
+  const mask = [...(options?.mask ?? []), ...hardMasks];
+  await applyBlur(blurTargets);
   // Matches toHaveScreenshot()'s defaults - reduces (but can't fully eliminate) visible flicker
   // from CDP's screenshot capture in headed mode.
-  await target.screenshot({
-    path: filePath,
-    animations: "disabled",
-    caret: "hide",
-    mask: mask.length ? mask : undefined,
-    maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
-  });
+  try {
+    await target.screenshot({
+      path: filePath,
+      animations: "disabled",
+      caret: "hide",
+      mask: mask.length ? mask : undefined,
+      maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
+    });
+  } finally {
+    await removeBlur(blurTargets);
+  }
   await testInfo.attach(name, { path: filePath, contentType: "image/png" });
+}
+
+// Playwright's own mask option only ever paints an opaque box - there's no built-in "blur"
+// alternative. This fakes it with a plain CSS filter applied directly to each target element
+// right before the screenshot, then removed again - only for content that's fine to merely
+// obscure (operational metadata), never for real secrets/identity (those stay hard-masked via
+// Playwright's mask option instead, since blur is comparatively easier to reverse).
+async function applyBlur(locators: Locator[]): Promise<void> {
+  for (const locator of locators) {
+    await locator
+      .evaluateAll((elements, blurPx) => {
+        for (const element of elements) {
+          (element as HTMLElement).style.filter = `blur(${blurPx}px)`;
+        }
+      }, CONST.TESTING.SCREENSHOT.BLUR_PX)
+      .catch(() => {
+        // Best-effort - a since-removed element must never mask the screenshot's own outcome.
+      });
+  }
+}
+
+async function removeBlur(locators: Locator[]): Promise<void> {
+  for (const locator of locators) {
+    await locator
+      .evaluateAll((elements) => {
+        for (const element of elements) {
+          (element as HTMLElement).style.removeProperty("filter");
+        }
+      })
+      .catch(() => {
+        // Best-effort - see applyBlur.
+      });
+  }
 }
 
 // A Locator knows its owning Page; a Page is already one. Needed because a screenshot target can
@@ -311,11 +354,16 @@ async function framesWithSelector(
 // Sensitive content that should never appear unmasked in a screenshot, regardless of which call
 // site takes it - checked automatically instead of requiring every caller to opt in. Each entry
 // resolves to no masks when its content isn't present on the page being screenshotted.
+// hardMasks stay opaque (Playwright's mask option) - identity (usernames/owners) and anything
+// that could be a real secret (config/connection strings, raw DB browsing, service internals).
+// blurTargets get a CSS blur instead (see applyBlur) - POC, intentionally limited to the Jobs
+// list for now; reclassify more entries into this group once the approach is confirmed good.
 async function getSensitiveAutoMasks(
   target: Screenshottable,
-): Promise<Locator[]> {
+): Promise<{ hardMasks: Locator[]; blurTargets: Locator[] }> {
   const page = getOwningPage(target);
   const masks: Locator[] = [];
+  const blurTargets: Locator[] = [];
 
   // Sitecore's shell chrome shows the logged-in admin username next to their portrait image -
   // once in the visible header bar itself, and again inside ul.sc-accountInformation's own hover
@@ -357,33 +405,37 @@ async function getSensitiveAutoMasks(
   }
 
   // cache.aspx ("Cache" jump-menu button) lists every cache's name/size in a nested table next
-  // to the "Caches (NNN)" section title - mask that nested table (found relative to the title
-  // span, since it has no id/class of its own) rather than the whole page.
+  // to the "Caches (NNN)" section title - find that nested table relative to the title span (it
+  // has no id/class of its own) and blur it rather than the whole page. Blurred, not masked -
+  // cache names/sizes are operational metadata, not a secret.
   for (const frame of await framesWithSelector(page, "#c_cacheTitle")) {
-    masks.push(
+    blurTargets.push(
       frame.locator("#c_cacheTitle").locator("xpath=ancestor::tr[1]//table"),
     );
   }
 
   // jobs.aspx ("Jobs" jump-menu button) lists Running/Queued/Finished jobs, each rendered as
   // either a "No jobs" placeholder or a table.jobs-table - no per-section wrapper element exists,
-  // so mask both possible shapes directly rather than trying to select "the section".
+  // so blur both possible shapes directly rather than trying to select "the section". Blurred
+  // (not hard-masked) as this POC's one converted example - job names/status/times are
+  // operational metadata, not a secret.
   const jobsSelector =
     '.wf-content table.jobs-table, .wf-content b:has-text("No jobs")';
   for (const frame of await framesWithSelector(page, jobsSelector)) {
-    masks.push(frame.locator(jobsSelector));
+    blurTargets.push(frame.locator(jobsSelector));
   }
 
-  // logs.aspx ("Logs" jump-menu button) lists every log file name/link in #LogTypes.
+  // logs.aspx ("Logs" jump-menu button) lists every log file name/link in #LogTypes - blurred,
+  // not masked, since log file names are operational metadata, not a secret.
   for (const frame of await framesWithSelector(page, "#LogTypes")) {
-    masks.push(frame.locator("#LogTypes"));
+    blurTargets.push(frame.locator("#LogTypes"));
   }
 
   // stats.aspx ("Stats" jump-menu button) lists rendering/item stats in plain, unstyled
   // <table>s scoped to its own #form1 - the first one is enough to obscure the data without
-  // blacking out the whole page.
+  // blacking out the whole page. Blurred - these are usage counts, not a secret.
   for (const frame of await framesWithSelector(page, "#form1 table")) {
-    masks.push(frame.locator("#form1 table").first());
+    blurTargets.push(frame.locator("#form1 table").first());
   }
 
   // dbbrowser.aspx ("DB Browser" jump-menu button) shows a full item tree in div.content - scope
@@ -408,7 +460,9 @@ async function getSensitiveAutoMasks(
 
   // Kick User/Control Panel/Launchpad ("Kick User"/"Control Panel"/"Launchpad" jump-menu
   // buttons) are all Sitecore client (SPA-shell) applications sharing the same main-content
-  // region class, regardless of which application it is.
+  // region class, regardless of which application it is. Stays hard-masked (not blurred) - Kick
+  // User's own content lists real logged-in usernames, same sensitivity as the account info
+  // portrait/Item owner above, and this one selector covers all three pages at once.
   for (const frame of await framesWithSelector(
     page,
     ".sc-applicationContent-main",
@@ -418,38 +472,42 @@ async function getSensitiveAutoMasks(
 
   // File Explorer ("File Explorer" jump-menu button, xmlcontrol=FileExplorer) has no id/class of
   // its own on the layout table holding the actual folder/file listing - find it relative to
-  // #FoldersAction (unique to this page) instead, and mask just its third row (the listing itself,
-  // not the toolbar rows above it).
+  // #FoldersAction (unique to this page) instead, and blur just its third row (the listing
+  // itself, not the toolbar rows above it).
   const fileExplorerRow =
     "#FoldersAction ~ table[width='100%'][height='100%'] tr:nth-child(3)";
   for (const frame of await framesWithSelector(page, fileExplorerRow)) {
-    masks.push(frame.locator(fileExplorerRow));
+    blurTargets.push(frame.locator(fileExplorerRow));
   }
 
-  // Content Editor's own content tree and ribbon tab buttons.
+  // Content Editor's own content tree and ribbon tab buttons - blurred (not masked); this is by
+  // far the most frequently-present entry (almost every strategy test screenshot has Content
+  // Editor open), so converting it only affects report attachments, never toHaveScreenshot()'s
+  // own pixel-diff baselines (those pass their own explicit mask option directly, independent of
+  // this function).
   for (const frame of await framesWithSelector(
     page,
     ".scContentTreeContainer",
   )) {
-    masks.push(frame.locator(".scContentTreeContainer"));
+    blurTargets.push(frame.locator(".scContentTreeContainer"));
   }
   for (const frame of await framesWithSelector(
     page,
     ".scRibbonNavigatorButtonsGroup",
   )) {
-    masks.push(frame.locator(".scRibbonNavigatorButtonsGroup"));
+    blurTargets.push(frame.locator(".scRibbonNavigatorButtonsGroup"));
   }
 
   // Desktop ("Desktop" jump-menu button) shows the current database name and a user's saved
-  // desktop shortcuts.
+  // desktop shortcuts - blurred, not masked; a db name and shortcut labels aren't identity/secrets.
   for (const frame of await framesWithSelector(page, "#DatabaseSelector")) {
-    masks.push(frame.locator("#DatabaseSelector"));
+    blurTargets.push(frame.locator("#DatabaseSelector"));
   }
   for (const frame of await framesWithSelector(page, "#DesktopLinks")) {
-    masks.push(frame.locator("#DesktopLinks"));
+    blurTargets.push(frame.locator("#DesktopLinks"));
   }
 
-  return masks;
+  return { hardMasks: masks, blurTargets };
 }
 
 // A screenshot name can't contain path separators or most punctuation - jump targets are Sitecore

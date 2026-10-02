@@ -267,6 +267,7 @@ export const TESTING = {
   },
   SCREENSHOT: {
     MASK_COLOR: COLORS.scLightGray,
+    BLUR_PX: 8,
   },
   JUMP_MENU: {
     ADMIN_PAGES_COLUMN_SELECTOR: ".jump-menu-column",
