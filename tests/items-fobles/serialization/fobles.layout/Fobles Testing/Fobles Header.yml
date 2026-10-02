@@ -7,6 +7,15 @@ SharedFields:
 - ID: "037fe404-dd19-4bf7-8e30-4dadf68b27b0"
   Hint: componentName
   Value: Fobles Header
+- ID: "1a7c85e5-dc0b-490d-9187-bb1dbcb4c72f"
+  Hint: Datasource Template
+  Value: /sitecore/templates/Project/Fobles Testing/Fobles Header
+- ID: "a77e8568-1ab3-44f1-a664-b7c37ec7810d"
+  Hint: Parameters Template
+  Value: "{C032CE44-164A-4A04-8F09-20307BBC4F36}"
+- ID: "dbbbeca1-21c7-4906-9dd2-493c1efa59a2"
+  Hint: __Shared revision
+  Value: "816c1508-f0fe-45f5-a3b1-3d360e21bf65"
 Languages:
 - Language: en
   Versions:
@@ -17,11 +26,11 @@ Languages:
       Value: 20260923T020405Z
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "b845f3df-3927-4407-859e-14a030081a98"
+      Value: "86cb2aad-3f10-4c95-bcab-7abd769adeda"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
-        sitecore\Admin
+        sitecore\gregory.mertens@kestraholdings.com
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20260923T020405Z
+      Value: 20261002T001549Z

@@ -20,6 +20,7 @@ export const MESSAGE = {
     PAGE_READY: "page-ready",
     RELOAD_EXTENSION: "reload-extension",
     TOGGLE_FOBLES: "toggle-fobles",
+    TOGGLE_LBOLT: "toggle-lbolt",
   },
 } as const;
 

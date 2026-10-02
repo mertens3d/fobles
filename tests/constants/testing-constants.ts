@@ -78,7 +78,8 @@ export const TESTING = {
     ENDPOINT_FILL: "lime",
     ENDPOINT_RADIUS: "8",
     SVG_NAMESPACE: "http://www.w3.org/2000/svg",
-    STROKE_WIDTH: "3",
+    STROKE_WIDTH: "2",
+    OPACITY: "0.8",
     TAGS: {
       CIRCLE: "circle",
       LINE: "line",
@@ -339,9 +340,9 @@ export const TESTING = {
     >,
   },
   TOOLBAR_DRAG_POSITIONS: {
-    DEFAULT: { corner: "upper-right", offsetX: 280, offsetY: 80 },
-    POSITION_1: { corner: "upper-right", offsetX: 200, offsetY: 160 },
-    POSITION_2: { corner: "bottom-right", offsetX: 200, offsetY: 65 },
-    POSITION_3: { corner: "bottom-right", offsetX: 200, offsetY: 65 },
+    DEFAULT_UR: { corner: "upper-right", offsetX: 280, offsetY: 80 },
+    POSITION_1_UR: { corner: "upper-right", offsetX: 200, offsetY: 160 },
+    POSITION_2_BL: { corner: "bottom-left", offsetX: 300, offsetY: 265 },
+    POSITION_3_BR: { corner: "bottom-right", offsetX: 200, offsetY: 165 },
   },
 } as const;

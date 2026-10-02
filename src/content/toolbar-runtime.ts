@@ -9,7 +9,7 @@ import type { ToolbarPlacement } from "./toolbar.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";
 import { getDebugSettings } from "../shared/debug-settings";
 import { getPlacementForPage, setPlacementForPage } from "./toolbar-placement";
-import { getFoblesNavVisible } from "../shared/nav-settings";
+import { getFoblesNavVisible, setFoblesNavVisible } from "../shared/nav-settings";
 import { getFoblesState, setFoblesState as setPersistedFoblesState } from "./state";
 import type { MessageRequest } from "./content.types";
 import {
@@ -49,7 +49,7 @@ function getToolbarContext(): ToolbarContext {
   };
 }
 
-function activateFoblesUi(): void {
+function showFoblesToolbar(): void {
   if (foblesUiActive) {
     return;
   }
@@ -60,7 +60,7 @@ function activateFoblesUi(): void {
   foblesUiActive = true;
 }
 
-function deactivateFoblesUi(): void {
+function hideFoblesToolbar(): void {
   if (!foblesUiActive) {
     return;
   }
@@ -86,15 +86,12 @@ function listenForToggleMessages(): void {
   chrome.runtime?.onMessage?.addListener(
     (request: MessageRequest, _sender: unknown, _sendResponse: unknown) => {
       if (request.action === MESSAGE.ACTION.TOGGLE_FOBLES) {
-        if (foblesUiActive) {
-          deactivateFoblesUi();
-          foblesUiActive = false;
-          extensionLog.info("Removed");
-        } else {
-          activateFoblesUi();
-          foblesUiActive = true;
-          extensionLog.info("Added");
-        }
+        const nextVisible = !foblesNavVisible;
+        extensionLog.info("Hotkey triggered: toggle-fobles (nav visibility)", { nextVisible });
+        void setFoblesNavVisible(nextVisible);
+      } else if (request.action === MESSAGE.ACTION.TOGGLE_LBOLT) {
+        extensionLog.info("Hotkey triggered: toggle-lbolt");
+        toggleLightningBolt();
       }
     },
   );
@@ -182,7 +179,7 @@ async function reconcileCurrentPage(): Promise<void> {
   });
 
   if (shouldInitialize || kickUsersPath) {
-    activateFoblesUi();
+    showFoblesToolbar();
   } else {
     extensionLog.debug("Fobles UI not activated: persisted state is OFF");
     setPersistedFoblesState(false);

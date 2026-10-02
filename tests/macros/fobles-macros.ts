@@ -1,11 +1,11 @@
-import type { Frame, Locator, Page } from "@playwright/test";
+/// <reference types="chrome" />
+import type { BrowserContext, Frame, Locator, Page } from "@playwright/test";
 import { CONST } from "../CONST";
 import {
     clickWithMouseMarker,
     moveMouseToPosition,
     resolveCornerPosition,
     ensureMouseMarkerExists,
-    highlightClick,
     moveMouseToBoundingBox,
 } from "../helpers/mouse-proxy";
 import type { CornerPosition, MouseCoordinates } from "../helpers/mouse-proxy.types";
@@ -72,14 +72,14 @@ export async function dragToolbarToCornerLocation(page: Page, cornerPosition: Co
     console.log(`[macro] dragToolbarToCornerLocation ${cornerPosition.corner}`)
 
     
-    await showBillboard(page, `Find Fobles toolbar`);
+    // await showBillboard(page, `Find Fobles toolbar`);
     const foblesFrame = await findFrameWithSelector(page, CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
     
-    await showBillboard(page, `Find Toolbar grip`);
+    // await showBillboard(page, `Find Toolbar grip`);
     const toolbarGrip = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_GRIP).first();
-    await highlightClick(toolbarGrip, "Toolbar grip");
+    //await highlightClickTarget(toolbarGrip, "Toolbar grip");
     
-    console.log(`[macro] Found toolbar grip`);
+    // console.log(`[macro] Found toolbar grip`);
     
     await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, cornerPosition));
     
@@ -161,4 +161,39 @@ export async function clickLbolt(page: Page): Promise<void> {
     await ensureMouseMarkerExists(foblesFrame);
     const lboltButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON);
     await clickWithMouseMarker(page, lboltButton, "LBolt button");
+}
+
+// Triggers a chrome.commands shortcut's relay logic directly from the background service worker,
+// the same way src/background/index.ts's own onCommand listener would - page.keyboard.press(...)
+// does NOT work for this: CDP-synthesized key events never reach Chrome's own global accelerator
+// table, so chrome.commands.onCommand never fires no matter what combo is "pressed". This skips
+// only that untestable OS-level dispatch step and exercises everything downstream of it for real.
+async function triggerExtensionCommand(context: BrowserContext, command: string): Promise<void> {
+    console.log(`[Macro: triggerExtensionCommand] - Start (command: ${command})`);
+    const [existingWorker] = context.serviceWorkers();
+    const worker = existingWorker ?? (await context.waitForEvent("serviceworker"));
+    await worker.evaluate((relayedCommand) => {
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+            const activeTab = tabs[0];
+            if (activeTab?.id !== undefined) {
+                void chrome.tabs.sendMessage(activeTab.id, { action: relayedCommand });
+            }
+        });
+    }, command);
+}
+
+// Triggers the chrome.commands "toggle-lbolt" shortcut's relay logic - exercises the hotkey
+// wiring (background -> content toolbar-runtime -> toggleLightningBolt) rather than the LBolt
+// button's own click handler, and works even when the toolbar itself is hidden.
+export async function pressToggleLboltHotkey(context: BrowserContext): Promise<void> {
+    console.log("[Macro: pressToggleLboltHotkey] - Start");
+    await triggerExtensionCommand(context, CONST.FOBLES.HOTKEYS.TOGGLE_LBOLT_COMMAND);
+}
+
+// Triggers the chrome.commands "toggle-fobles" shortcut's relay logic - flips Fobles nav
+// visibility, the same as the popup's "Fobles navigation visible" checkbox (see
+// showFoblesToolbar/hideFoblesToolbar vs. the nav-visible toggle in src/content/toolbar-runtime.ts).
+export async function pressToggleFoblesToolbarHotkey(context: BrowserContext): Promise<void> {
+    console.log("[Macro: pressToggleFoblesToolbarHotkey] - Start");
+    await triggerExtensionCommand(context, CONST.FOBLES.HOTKEYS.TOGGLE_FOBLES_COMMAND);
 }

@@ -32,9 +32,9 @@ export async function clickWithMouseMarker(
   if (!label) console.error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.LABEL_NOT_DEFINED);
 
   const corner = options?.corner ?? CONST.TESTING.MOUSE_PROXY.CORNER.CENTER;
-  await highlightClick(targetLocator, `${label} - ${clickWithMouseMarker.name}`);
   await moveMouseToBoundingBox(page, targetLocator, label, corner);
-  await pulseMouseMarkerClick(page);
+  await highlightClickTarget(targetLocator, `${label} - ${clickWithMouseMarker.name}`);
+  // await pulseMouseMarkerClick(page);
   await targetLocator.click({
     modifiers: options?.modifiers,
     clickCount: options?.clickCount,
@@ -58,7 +58,7 @@ export async function moveMouseToBoundingBox(
     console.error(`${CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.TARGET_NOT_VISIBLE_PREFIX}${label}`);
     throw new Error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.MOUSE_TARGET_NOT_VISIBLE);
   }
-  await highlightClick(targetLocator, label);
+  // await highlightClickTarget(targetLocator, label);
 
   const box = await targetLocator.boundingBox();
   if (!box) {
@@ -78,7 +78,7 @@ export async function highlightScreenShot(target: Locator, label: string): Promi
 }
 
 
-export async function highlightClick(target: Locator, label: string): Promise<void> {
+export async function highlightClickTarget(target: Locator, label: string): Promise<void> {
   await highlightBase(target, label, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.STYLES.CLICK);
 }
 

@@ -19,7 +19,12 @@ export const SITECORE = {
   },
   SELECTORS: {
     ACCOUNT_INFO: "ul.sc-accountInformation",
-    CONTENT_TAB: "span.scEditorTabHeaderNormal",
+    // Auth0 Universal Login's own stable hook class (underscore-prefixed classes are documented
+    // Auth0 CSS hooks, unlike the hashed utility classes alongside them) - what the "ai" test
+    // environment lands on post-logout instead of XP's classic /Account/Login "login-page".
+    AI_LOGIN_FORM: "._form-login-id",
+    CONTENT_TAB: '#ContentEditor #EditorTabs span:has(:text-is("Content"))',
+    LOGIN_PAGE: ".login-page",
     QUICK_INFO_TABLE: ".scEditorQuickInfo",
     RIBBON_TAB: {
       NAVIGATE: {

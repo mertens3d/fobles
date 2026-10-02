@@ -11,21 +11,21 @@ export const FOBLES_YML = {
     // Strategy Scenarios/Strategy droplink.yml
     STRATEGY_DROPLINK: {
       id: "25fb9977-cc90-4e3c-b036-cafaae676303",
-      path: "/sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy droplink",
+      path: "/sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Home/Strategy Scenarios/Strategy droplink",
       fieldHint: "Strategy DropLink 1x",
       fieldValue: "{2CAAAD6C-31B1-4672-9576-C408177DC2DB}",
     },
     // Strategy Scenarios/Strategy droptree.yml
     STRATEGY_DROPTREE: {
       id: "3e4f5a6b-7c8d-4e9f-8a0b-c2d3e4f5a6b7",
-      path: "/sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy droptree",
+      path: "/sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Home/Strategy Scenarios/Strategy droptree",
       fieldHint: "Strategy DropTree 1x",
       fieldValue: "{2CAAAD6C-31B1-4672-9576-C408177DC2DB}",
     },
     // Strategy Scenarios/Strategy droplist.yml
     STRATEGY_DROPLIST: {
       id: "9fb07e8d-d1a2-40f7-8d9e-2c4f6a7b8c9d",
-      path: "/sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy droplist",
+      path: "/sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Home/Strategy Scenarios/Strategy droplist",
       fieldHint: "Strategy DropList 1x",
       fieldValue: "Fobles Data Item A",
     },
@@ -45,7 +45,7 @@ export const FOBLES_YML = {
     // Strategy Scenarios/Strategy multilist.yml
     STRATEGY_MULTILIST: {
       id: "718293a4-b5c6-4ad7-8be8-f90a1b2c3d4e",
-      path: "/sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy multilist",
+      path: "/sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Home/Strategy Scenarios/Strategy multilist",
       fieldHint: "Strategy Multilist 1x",
       fieldValue: "{2CAAAD6C-31B1-4672-9576-C408177DC2DB}",
     },
@@ -64,21 +64,21 @@ export const FOBLES_YML = {
     // Strategy Scenarios/Strategy tree list.yml
     STRATEGY_TREE_LIST: {
       id: "fb76829c-a9ba-4c25-8d36-6071829a3415",
-      path: "/sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy tree list",
+      path: "/sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Home/Strategy Scenarios/Strategy tree list",
       fieldHint: "Strategy Tree List 1x",
       fieldValue: "{2CAAAD6C-31B1-4672-9576-C408177DC2DB}",
     },
     // Strategy Scenarios/Strategy treelist ex.yml
     STRATEGY_TREELIST_EX: {
       id: "4c5b58e8-feea-4c2b-8d3c-5d6e7f809102",
-      path: "/sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy treelist ex",
+      path: "/sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Home/Strategy Scenarios/Strategy treelist ex",
       fieldHint: "Strategy Treelist Ex 1x",
       fieldValue: "{2CAAAD6C-31B1-4672-9576-C408177DC2DB}",
     },
     // Field Data/List 1x/Fobles Data Item A.yml - the shared target most strategies above select.
     FOBLES_DATA_ITEM_A: {
       id: "2caaad6c-31b1-4672-9576-c408177dc2db",
-      path: "/sitecore/system/Modules/Fobles Testing/Field Data/List 1x/Fobles Data Item A",
+      path: "/sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Data/Field Data/List 1x/Fobles Data Item A",
     },
     // Fobles Testing.yml - the module root; General Link/Internal Link's own target, and the
     // ancestor whose __Display Name Drop Tree's widget renders instead of the real item name.

@@ -4,19 +4,19 @@ import { isSprintMode } from "./mouse-proxy";
 
 export async function showSpeakBubble(
   page: Page,
-  text: string,
+  html: string,
   position: { xPercent: number; yPercent: number } = CONST.TESTING.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION,
 ): Promise<void> {
   if (isSprintMode()) return;
   const { xPercent, yPercent } = position;
-  console.log(`[fobles] Speak bubble: "${text}" at (${xPercent}%, ${yPercent}%)`);
+  console.log(`[fobles] Speak bubble: "${html}" at (${xPercent}%, ${yPercent}%)`);
   await page.evaluate(
     ({ config, text, xPercent, yPercent }) => {
       let style = document.getElementById(config.STYLE_ID);
       if (!style) {
         style = document.createElement("style");
         style.id = config.STYLE_ID;
-        style.textContent = config.STYLE_CSS;
+        style.innerHTML = config.STYLE_CSS;
         document.head.appendChild(style);
       }
 
@@ -32,7 +32,7 @@ export async function showSpeakBubble(
       bubble.style.transform = "translate(-50%, -50%)";
       bubble.style.display = "block";
     },
-    { config: CONST.TESTING.SPEAK_BUBBLE, text, xPercent, yPercent },
+    { config: CONST.TESTING.SPEAK_BUBBLE, text: html, xPercent, yPercent },
   );
 }
 

@@ -63,6 +63,10 @@ function getTreeNodeItemId(node: Element): string | null {
     );
   }
 
+  if (directId.startsWith(SITECORE.TREE_ID_PREFIXES.TEMPLATE_LISTER)) {
+    return directId.replace(SITECORE.TREE_ID_PREFIXES.TEMPLATE_LISTER, "");
+  }
+
   return null;
 }
 

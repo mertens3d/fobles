@@ -8,6 +8,12 @@ SharedFields:
 - ID: "24171bf1-c0e1-480e-be76-4c0a1876f916"
   Hint: Page Design
   Value: "{711CAF15-FA04-45EB-A80B-19FF1007FB34}"
+- ID: "db51d4e9-c24d-4670-af0e-62c8aa08e2b6"
+  Hint: LocalData
+  Value: "{AA407A4A-8C07-454D-A40C-306AF84F32B3}"
+- ID: "dbbbeca1-21c7-4906-9dd2-493c1efa59a2"
+  Hint: __Shared revision
+  Value: "cbaff6e8-fb03-4e70-ba7f-1bb223b35346"
 - ID: "f6d8a61c-2f84-4401-bd24-52d2068172bc"
   Hint: __Originator
   Value: "{92EB9EFB-88D4-4089-82BE-AAD92D4FA24E}"
@@ -25,8 +31,9 @@ Languages:
             id="{FE5D7FDF-89C0-4D99-9AA3-B5FBD009C9F3}">
             <r
               uid="{42C6816A-5BFD-4E6D-A12B-DF60F70B03B3}"
+              s:ds="local:/Data/Two Column CTA Text Block 1"
               s:id="{E82609B8-F10B-47FE-8D6D-785BB1FF49EB}"
-              s:par="CacheClearingBehavior=Clear%20on%20publish"
+              s:par="ArdenVariant&amp;GridParameters&amp;FieldNames&amp;Styles&amp;RenderingIdentifier&amp;CSSStyles&amp;DynamicPlaceholderId=1&amp;Include in schema&amp;CacheClearingBehavior=Clear%20on%20publish"
               s:ph="main" />
           </d>
         </r>
@@ -46,11 +53,11 @@ Languages:
         sitecore\Admin
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "4b40210d-f28f-407c-b8b4-ff390f66919b"
+      Value: "46a28917-5877-427b-8b6a-093b11f7c758"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |
-        sitecore\Admin
+        sitecore\gregory.mertens@kestraholdings.com
     - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
       Hint: __Updated
-      Value: 20260923T021010Z
+      Value: 20261002T001738Z

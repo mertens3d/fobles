@@ -1,5 +1,4 @@
 import { type Frame, type Locator, type Page } from "../fixtures/playwright";
-import { highlightClick } from "../helpers/mouse-proxy";
 import { CONST } from "../CONST";
 import { getTestEnvironment } from "../fixtures/environment";
 import {
@@ -42,11 +41,9 @@ export async function clickContentTabIfPresent(page: Page): Promise<void> {
   console.log("[Macro: clickContentTabIfPresent] - Start");
   const foblesFrame = await findFoblesFrame(page);
   const contentTab = foblesFrame
-    .locator(CONST.SITECORE.SELECTORS.CONTENT_TAB, {
-      hasText: CONST.SITECORE.LABELS.CONTENT_TAB,
-    })
+    .locator(CONST.SITECORE.SELECTORS.CONTENT_TAB)
     .first();
-  await highlightClick(contentTab, "Content Editor tab header");
+
   console.log(
     `[fobles] Checking for a visible Content tab (selector: ${CONST.SITECORE.SELECTORS.CONTENT_TAB})`,
   );

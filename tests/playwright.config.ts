@@ -26,6 +26,7 @@ function getReportSuiteName(args: string): string | null {
   }
   if (args.includes("tests/e2e/strategies")) return "strategies";
   if (args.includes("tests/e2e/editor")) return "editor";
+  if (args.includes("tests/e2e/pages")) return "pages";
   if (args.includes("tests/e2e/promoVideo")) return "promoVideo";
   return null;
 }

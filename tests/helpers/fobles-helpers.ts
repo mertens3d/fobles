@@ -21,7 +21,7 @@ import type {
 import type { FoblesTestStep } from "./fobles-test-step.types";
 import { openContentEditor, openSitecorePage } from "../fixtures/sitecore";
 import { bringPageToFront } from "./page-switch";
-import { highlightClick, highlightScreenShot } from "./mouse-proxy-support/mouse-interactions";
+import { highlightClickTarget, highlightScreenShot } from "./mouse-proxy-support/mouse-interactions";
 
 type Screenshottable = Pick<Locator, "screenshot">;
 
@@ -37,7 +37,7 @@ export async function setupContentEditorForTestingBasic(
 
 export async function postCELoadSetup(page: Page) {
   await ensureMouseMarkerExists(page);
-  await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT);
+  await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR);
   await moveMouseToDefault(page);
 }
 
@@ -604,7 +604,7 @@ export async function attachItemPathScreenshot(
     })
     .first();
   
-  await highlightClick(itemPathRow, "Item path row");
+  await highlightClickTarget(itemPathRow, "Item path row");
   await expect(itemPathRow).toBeVisible();
   const safeName = buildStepMatchKey(matchKey);
   await attachLocatorScreenshot(testInfo, itemPathRow, `item-path-${safeName}.png`);

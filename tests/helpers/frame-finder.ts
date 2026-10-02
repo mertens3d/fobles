@@ -15,7 +15,7 @@ export async function findFrameWithSelector(
   do {
     for (const frame of page.frames()) {
       if ((await frame.locator(selector).count()) > 0) {
-        // await highlightClick(frame.locator(selector), description);
+        // await highlightClickTarget(frame.locator(selector), description);
         console.log(`[fobles] Found ${description} in frame ${frame.url()}`);
         return frame;
       }

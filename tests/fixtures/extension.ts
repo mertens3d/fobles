@@ -57,6 +57,23 @@ export async function setExtensionCheckbox(
   }
 }
 
+// Sets the popup's "Fobles navigation visible" checkbox via a real click (it saves on change, no
+// separate Save button) rather than writing chrome.storage directly - tests should only ever
+// reach this setting the same way a real user would.
+export async function setFoblesNavVisible(
+  context: BrowserContext,
+  extensionId: string,
+  visible: boolean,
+): Promise<void> {
+  const popupPage = await openExtensionPage(context, extensionId, "popup");
+  const preferenceId = CONST.TESTING.POPUP.PREFERENCE_IDS[0];
+  const checkbox = popupPage.locator(
+    `${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${preferenceId}`,
+  );
+  await setExtensionCheckbox(popupPage, checkbox, visible, preferenceId);
+  await popupPage.close();
+}
+
 // Sets the popup's "Warn before same-tab Fobles navigation" checkbox via a real click (it saves
 // on change, no separate Save button) rather than writing chrome.storage directly - tests should
 // only ever reach this setting the same way a real user would.

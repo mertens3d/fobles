@@ -1,7 +1,7 @@
 import { CONST } from "../../../CONST";
 import { expectFoblesButtonNewTabNavigationStrategy, expectFoblesButtonSameTabNavigation } from "../../../helpers/fobles-helpers";
 import { clickLbolt } from "../../../macros/fobles-macros";
-import { clickWithMouseMarker, ensureMouseMarkerExists, highlightClick } from "../../../helpers/mouse-proxy";
+import { clickWithMouseMarker, ensureMouseMarkerExists, highlightClickTarget } from "../../../helpers/mouse-proxy";
 import { fieldScreenshotName, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
 import type { StrategyTestContext } from "./scenario.types";
 import { findFoblesFrame } from "../../../helpers/frame-finder";
@@ -46,7 +46,7 @@ export async function stepExpectSitecoreInitialConditions(testContext: StrategyT
 
       await showBillboard(testContext.page, stepExpectSitecoreInitialConditions.name);
       const fieldTable = await testContext.getFieldTable();
-      await highlightClick(fieldTable, "fieldTable");
+      await highlightClickTarget(fieldTable, "fieldTable");
       await expect(fieldTable).toBeVisible();
       if (! await fieldTable.isVisible()) {
         console.error(`[fobles] Field table is not visible`);
@@ -55,7 +55,7 @@ export async function stepExpectSitecoreInitialConditions(testContext: StrategyT
 
 
       const locatorFirstResult = await testContext.getScLocatorFirstResult();
-      await highlightClick(locatorFirstResult, "locatorFirstResult");
+      await highlightClickTarget(locatorFirstResult, "locatorFirstResult");
       await expect(locatorFirstResult).toBeVisible();
       if (! await locatorFirstResult.isVisible()) {
         console.error(`[fobles] Locator first result is not visible`);
@@ -72,10 +72,10 @@ export async function stepExpectFoblesOnConditions(testContext: StrategyTestCont
     async () => {
       logStepDividerStart(stepExpectFoblesOnConditions.name);
       const fieldTable = await testContext.getFieldTable();
-      await highlightClick(fieldTable, "fieldTable");
+      await highlightClickTarget(fieldTable, "fieldTable");
 
       const locatorFirstResult = await testContext.getScLocatorFirstResult();
-      await highlightClick(locatorFirstResult, "locatorFirstResult");
+      await highlightClickTarget(locatorFirstResult, "locatorFirstResult");
 
       await clickLbolt(testContext.page);
       await expect(locatorFirstResult).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
@@ -130,12 +130,12 @@ export async function stepExpectFoblesOffConditions(testContext: StrategyTestCon
     await clickLbolt(testContext.page);
 
     const locatorFirstResult = await testContext.getScLocatorFirstResult();
-    await highlightClick(locatorFirstResult, "locatorFirstResult");
+    await highlightClickTarget(locatorFirstResult, "locatorFirstResult");
     await expect(locatorFirstResult).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
     await expect(locatorFirstResult).not.toHaveAttribute(CONST.FOBLES.ATTRIBUTES.PROCESSED, "1");
 
     const fieldTable = await testContext.getFieldTable();
-    await highlightClick(fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER), "wrapper");
+    await highlightClickTarget(fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER), "wrapper");
     await expect(fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
 
     await testContext.page.waitForTimeout(testContext.STEP_WAIT_MS);

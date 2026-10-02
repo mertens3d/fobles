@@ -193,6 +193,13 @@ export const FOBLES_PAGES: readonly AllowedPage[] = [
     defaultPlacement: { corner: "upper-right", offsetX: 15, offsetY: 65 },
   },
   {
+    id: "ChangeTemplate",
+    friendlyName: "Change Template",
+    matchStrings: [SITECORE.RELATIVE_PATHS.CHANGE_TEMPLATE],
+    toolbarType: "full",
+    defaultPlacement: { corner: "upper-right", offsetX: 15, offsetY: 65 },
+  },
+  {
     id: "GallerySubitems",
     friendlyName: "Gallery: Subitems",
     matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.GALLERY_SUBITEMS}`],

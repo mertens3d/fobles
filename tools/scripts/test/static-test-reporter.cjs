@@ -103,6 +103,8 @@ class StaticTestReporter {
       })
       .join("");
 
+    const suiteNavHtml = renderSuiteNav(this.outputFile);
+
     const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -148,10 +150,16 @@ class StaticTestReporter {
     pre { margin: .75rem 0 0; white-space: pre-wrap; }
     .login-alert { background: #fab005; border-radius: 6px; color: #1f2933; font-weight: 700; margin-bottom: .5rem; padding: .6rem 1rem; position: sticky; top: 0; z-index: 1; }
     .login-alert a { color: #1f2933; }
+    .suite-nav { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .6rem; }
+    .suite-nav a, .suite-nav span { border-radius: 999px; font-size: .8rem; padding: .25rem .7rem; text-decoration: none; }
+    .suite-nav a { background: #fff; border: 1px solid #d9e2ec; color: #1864ab; }
+    .suite-nav a:hover { background: #e7f5ff; }
+    .suite-nav span.current { background: #1864ab; color: #fff; font-weight: 700; }
   </style>
 </head>
 <body>
   <main>
+    ${suiteNavHtml}
     ${this.loginAlertUrl ? `<div class="login-alert">Login needed - switch to the browser window and log in, then click "Resume" in the Playwright Inspector. (<a href="${escapeHtml(this.loginAlertUrl)}" target="_blank">${escapeHtml(toDisplayUrl(this.loginAlertUrl))}</a>)</div>` : ""}
     <header class="report-header">
       <h1>Browser Test Report</h1>
@@ -355,6 +363,34 @@ function printStopSafelyWarning() {
 function toReportRelativeHref(attachmentPath, reportFile) {
   const relative = path.relative(path.dirname(reportFile), attachmentPath);
   return relative.replace(/\\/g, "/");
+}
+
+// Lists every sibling test-report*.html file in the same reports directory so each suite's report
+// can link to every other suite's - discovered dynamically (not a hardcoded suite list) so a new
+// suite's report file shows up here automatically the first time it's generated.
+function renderSuiteNav(outputFile) {
+  const reportsDir = path.dirname(outputFile);
+  const currentFile = path.basename(outputFile);
+  let siblingFiles;
+  try {
+    siblingFiles = fs
+      .readdirSync(reportsDir)
+      .filter((file) => file.startsWith("test-report") && file.endsWith(".html"))
+      .sort();
+  } catch {
+    siblingFiles = [currentFile];
+  }
+
+  const links = siblingFiles
+    .map((file) => {
+      const label = file.replace(/^test-report-?/, "").replace(/\.html$/, "") || "default";
+      return file === currentFile
+        ? `<span class="current">${escapeHtml(label)}</span>`
+        : `<a href="${escapeHtml(file)}">${escapeHtml(label)}</a>`;
+    })
+    .join("");
+
+  return `<nav class="suite-nav">${links}</nav>`;
 }
 
 function toDisplayUrl(url) {

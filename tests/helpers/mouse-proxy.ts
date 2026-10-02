@@ -6,7 +6,7 @@ export {
 export {
   clickWithMouseMarker,
   getButtonSize,
-  highlightClick as highlightClick,
+  highlightClickTarget,
   moveMouseOutsideHoverArea,
   moveMouseToBoundingBox,
   moveMouseToLocatorCenter,

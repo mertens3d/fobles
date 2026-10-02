@@ -50,12 +50,13 @@ export async function drawMousePath(
       endCircle.setAttribute(config.ENDPOINT_ATTRIBUTES.CY, String(endY));
       endCircle.setAttribute(config.ENDPOINT_ATTRIBUTES.RADIUS, config.ENDPOINT_RADIUS);
       endCircle.setAttribute(config.ENDPOINT_ATTRIBUTES.FILL, config.ENDPOINT_FILL);
+      endCircle.setAttribute("opacity", config.OPACITY);
 
       svg.textContent = "";
       svg.append(line, endCircle);
       document.documentElement.appendChild(svg);
       svg.animate(
-        [{ opacity: 1 }, { opacity: 1, offset: 0.8 }, { opacity: 0 }],
+        [{ opacity: config.OPACITY }, { opacity: config.OPACITY, offset: 0.8 }, { opacity: 0 }],
         { duration: config.ANIMATION_DURATION_MS, fill: "forwards" },
       );
       window.setTimeout(() => svg.remove(), config.ANIMATION_DURATION_MS);
@@ -85,22 +86,12 @@ export async function moveMouseToPosition(
     return;
   }
 
-  console.log(`[fobles] Mouse normal mode: moving to (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`);
-  const distance = Math.hypot(
-    targetPosition.x - initialPosition.x,
-    targetPosition.y - initialPosition.y,
-  );
-  const durationMs =
-    (distance /
-      (CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].MOUSE_PX_PER_SECOND *
-        CONST.TESTING.MOUSE.SPEED_MULTIPLIER)) *
-    1_000;
-  const mouseStepDelay = 1_000 / CONST.TESTING.MOUSE.UPDATE_HZ;
-  const mouseSteps = Math.max(1, Math.ceil(durationMs / mouseStepDelay));
-  console.log(
-    `[fobles] Mouse move '${label}': start=(${initialPosition.x.toFixed(1)}, ${initialPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${mouseSteps}`,
-  );
-  await drawMousePath(page, initialPosition, targetPosition);
+  const { mouseSteps, mouseStepDelay } = calculateTotalMouseSteps(targetPosition, initialPosition, label);
+  
+  if(true){
+    await drawMousePath(page, initialPosition, targetPosition);
+  }
+  
   for (let mouseStep = 1; mouseStep <= mouseSteps; mouseStep += 1) {
     const progress = mouseStep / mouseSteps;
     const x = initialPosition.x + (targetPosition.x - initialPosition.x) * progress;
@@ -116,6 +107,24 @@ export async function moveMouseToPosition(
   );
 }
 
+function calculateTotalMouseSteps(targetPosition: MouseCoordinates, initialPosition: MouseCoordinates, label: string) {
+  console.log(`[fobles] Mouse normal mode: moving to (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`);
+  const distance = Math.hypot(
+    targetPosition.x - initialPosition.x,
+    targetPosition.y - initialPosition.y
+  );
+  const durationMs = (distance /
+    (CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].MOUSE_PX_PER_SECOND *
+      CONST.TESTING.MOUSE.SPEED_MULTIPLIER)) *
+    1000;
+  const mouseStepDelay = 1000 / CONST.TESTING.MOUSE.UPDATE_HZ;
+  const mouseSteps = Math.max(1, Math.ceil(durationMs / mouseStepDelay));
+  console.log(
+    `[fobles] Mouse move '${label}': start=(${initialPosition.x.toFixed(1)}, ${initialPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${mouseSteps}`
+  );
+  return { mouseSteps, mouseStepDelay };
+}
+
 export async function moveMouseToDefault(page: Page): Promise<void> {
   const viewport = await page.evaluate(() => ({
     width: window.innerWidth,
@@ -124,4 +133,43 @@ export async function moveMouseToDefault(page: Page): Promise<void> {
   await showBillboard(page, CONST.TESTING.MOUSE_PROXY.DEFAULT_LABELS.MOUSE_TO_DEFAULT);
   const center = { x: viewport.width / 2, y: viewport.height / 2 };
   await moveMouseToPosition(page, center, CONST.TESTING.MOUSE_PROXY.DEFAULT_LABELS.CENTER_OF_MONITOR);
+}
+
+export async function moveMouseTowardCenter(
+  page: Page,
+  distancePx = 100,
+): Promise<void> {
+  const viewport = await page.evaluate(() => ({
+    width: window.innerWidth,
+    height: window.innerHeight,
+  }));
+
+  const current = getLastKnownMousePosition();
+
+  if (!current) {
+    await moveMouseToDefault(page);
+    return;
+  }
+
+  const center = {
+    x: viewport.width / 2,
+    y: viewport.height / 2,
+  };
+
+  const dx = center.x - current.x;
+  const dy = center.y - current.y;
+  const length = Math.hypot(dx, dy);
+
+  const target = length <= distancePx
+    ? center
+    : {
+        x: current.x + (dx / length) * distancePx,
+        y: current.y + (dy / length) * distancePx,
+      };
+
+  await moveMouseToPosition(
+    page,
+    target,
+    `${distancePx}px toward center`,
+  );
 }

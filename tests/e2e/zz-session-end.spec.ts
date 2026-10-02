@@ -10,7 +10,7 @@ import { RECORD_VIDEO } from "../settings/settings";
 // which only runs after every test - including this one - has already finished.
 foblesTest.describe("Session", () => {
   foblesTest("IsLoggedOut", async ({ page }, testInfo) => {
-    const { baseUrl } = getTestEnvironment();
+    const { baseUrl, version } = getTestEnvironment();
     const contentEditorUrl = new URL(CONST.SITECORE.PATHS.CONTENT_EDITOR, baseUrl).toString();
 
     await page.goto(contentEditorUrl, { waitUntil: "domcontentloaded" });
@@ -26,9 +26,12 @@ foblesTest.describe("Session", () => {
       // net::ERR_ABORTED even though the browser lands on the expected login page regardless -
       // the assertion below checks the actual end state, not this navigation's own promise.
     }
-    // Sitecore's own login page container - a more definitive discriminator than checking for a
-    // password input in isolation, since it identifies the whole login page context unambiguously.
-    const loginPage = page.locator(".login-page").first();
+    // Sitecore's own login page container, or - on the "ai" environment - Auth0's hosted
+    // Universal Login form it redirects to instead; either one unambiguously identifies the
+    // logged-out end state.
+    const loginPage = page.locator(
+      version === "ai" ? CONST.SITECORE.SELECTORS.AI_LOGIN_FORM : CONST.SITECORE.SELECTORS.LOGIN_PAGE,
+    ).first();
     await expect(loginPage).toBeVisible();
     // Skipped during a promoVideo recording session - see 00-session-start.spec.ts's own check.
     if (!RECORD_VIDEO) {

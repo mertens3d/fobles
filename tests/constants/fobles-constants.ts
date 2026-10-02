@@ -10,6 +10,14 @@ export const FOBLES = {
   CLASSES: {
     HIDDEN: "fobles-hidden",
   },
+  // Must match src/shared/constants.ts's MESSAGE.ACTION / src/public/manifest.json's "commands"
+  // keys - page.keyboard.press(...) can't simulate these (CDP key events never reach Chrome's own
+  // global accelerator table), so tests trigger the relay logic directly via the background
+  // service worker instead (see fobles-macros.ts's triggerExtensionCommand).
+  HOTKEYS: {
+    TOGGLE_FOBLES_COMMAND: "toggle-fobles",
+    TOGGLE_LBOLT_COMMAND: "toggle-lbolt",
+  },
   LABELS: {
     CONTINUE_BUTTON: "Continue",
     TOGGLE_FOBLES: /toggle fobles/i,

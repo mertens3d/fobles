@@ -45,6 +45,13 @@
         "mac": "Command+Shift+E"
       },
       "description": "Toggle Fobles on/off"
+    },
+    "toggle-lbolt": {
+      "suggested_key": {
+        "default": "Ctrl+Shift+L",
+        "mac": "Command+Shift+L"
+      },
+      "description": "Toggle LBolt (Fobles field/tree buttons) on/off"
     }
   }
 }

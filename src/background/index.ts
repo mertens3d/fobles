@@ -2,20 +2,23 @@
 
 import { LOGGER, MESSAGE } from "../shared/constants";
 
+const RELAYED_COMMANDS: readonly string[] = [
+  MESSAGE.ACTION.TOGGLE_FOBLES,
+  MESSAGE.ACTION.TOGGLE_LBOLT,
+];
+
 chrome.commands?.onCommand?.addListener((command: string) => {
-  if (command === MESSAGE.ACTION.TOGGLE_FOBLES) {
-    chrome.tabs?.query(
-      { active: true, currentWindow: true },
-      (tabs: Array<{ id?: number }>) => {
-        const activeTab = tabs[0];
-        if (activeTab?.id !== undefined) {
-          void chrome.tabs?.sendMessage(activeTab.id, {
-            action: MESSAGE.ACTION.TOGGLE_FOBLES,
-          });
-        }
-      },
-    );
-  }
+  if (!RELAYED_COMMANDS.includes(command)) return;
+
+  chrome.tabs?.query(
+    { active: true, currentWindow: true },
+    (tabs: Array<{ id?: number }>) => {
+      const activeTab = tabs[0];
+      if (activeTab?.id !== undefined) {
+        void chrome.tabs?.sendMessage(activeTab.id, { action: command });
+      }
+    },
+  );
 });
 
 interface RuntimeMessage {

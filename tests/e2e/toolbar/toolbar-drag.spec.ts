@@ -5,6 +5,7 @@ import { createStep, setupContentEditorForTestingBasic } from "../../helpers/fob
 import { moveMouseToDefault as moveMouseToDefault } from "../../helpers/mouse-proxy";
 import { dragToolbarToCornerLocation } from "../../macros/fobles-macros";
 import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { moveMouseTowardCenter } from "../../helpers/mouse-proxy-support/mouse-movement";
 
 const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -27,27 +28,27 @@ foblesTest.describe("Toolbar: drag to reposition", () => {
       if (!viewport) throw new Error("Could not read viewport size");
 
       await moveMouseToDefault(page);
-      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1);
-      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1.corner);
+      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR);
+      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR.corner);
       await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Drag: toolbar to POSITION_2", async () => {
-      await moveMouseToDefault(page);
-      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2);
-      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2.corner);
+      await moveMouseTowardCenter(page);
+      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL);
+      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL.corner);
       await foblesWaitForTimeout(page, STEP_WAIT_MS);
 
-      await moveMouseToDefault(page);
-      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3);
-      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3.corner);
+      await moveMouseTowardCenter(page);
+      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR);
+      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR.corner);
       await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Drag: toolbar to POSITION_DEFAULT", async () => {
-      await moveMouseToDefault(page);
-      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT);
-      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT.corner);
+      await moveMouseTowardCenter(page);
+      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR);
+      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR.corner);
       await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
   });
