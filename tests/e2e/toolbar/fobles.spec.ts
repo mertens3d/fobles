@@ -12,7 +12,7 @@
 // import { openSitecorePageAndFindFoblesFrame, attachItemPathScreenshot, createStep } from "../../helpers/fobles-helpers";
 // import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 // import { ClickFoblesMenuButton, dismissFoblesConfirmDialogIfPresent } from "../../macros/fobles-macros";
-// import { expectCurrentUrl, expectFlyoutVisible } from "../../expectSnippets/expectSnippets";
+// import { expectCurrentUrl, expectFlyoutVisible } from "../../expect-snippets/expect-snippets";
 // import { bringPageToFront } from "../../helpers/page-switch";
 // import type { BrowserContext } from "@playwright/test";
 

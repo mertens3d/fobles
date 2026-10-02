@@ -11,7 +11,7 @@ const destPath = path.join(destDir, "FoblesPromoVideoMain.webm");
 
 if (!fs.existsSync(sourcePath)) {
   console.error(
-    `No recorded video found at ${sourcePath}. Run npm run test:e2e:promoVideo with RECORD_VIDEO on first.`,
+    `No recorded video found at ${sourcePath}. Run npm run test:e2e:promo-video with RECORD_VIDEO on first.`,
   );
   process.exit(1);
 }

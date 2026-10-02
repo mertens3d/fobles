@@ -14,20 +14,26 @@ const testArtifactsDir = path.resolve(process.cwd(), "tests/test-artifacts");
 // otherwise overwrite test-report.html with an empty "0 tests" snapshot on top of a real run's
 // live results, since both invocations write to the same file.
 const isListOnly = process.argv.includes("--list");
-const argsText = process.argv.join(" ");
+// Normalized to forward slashes so a Windows-style backslash path (e.g. pasted/tab-completed in
+// PowerShell) still matches these forward-slash patterns below, instead of silently falling
+// through to the generic "default" test-report.html.
+const argsText = process.argv.join(" ").replace(/\\/g, "/");
 
+// Matched on "e2e/..." rather than "tests/e2e/..." - an invocation's cwd (repo root vs tests/
+// itself) or an absolute path (e.g. the VS Code Test Explorer's "Run Test" button) changes
+// whatever comes before "e2e/", but never that segment itself.
 function getReportSuiteName(args: string): string | null {
-  if (args.includes("tests/e2e/toolbar")) return "toolbar";
-  if (args.includes("tests/e2e/extension-ui")) {
-    if (args.includes("tests/e2e/extension-ui/persistence")) return "extension-ui-persistence";
-    if (args.includes("tests/e2e/extension-ui/toolbar-integration")) return "extension-ui-toolbar";
-    if (args.includes("tests/e2e/extension-ui/extension-integration")) return "extension-ui-runtime";
+  if (args.includes("e2e/toolbar")) return "toolbar";
+  if (args.includes("e2e/extension-ui")) {
+    if (args.includes("e2e/extension-ui/persistence")) return "extension-ui-persistence";
+    if (args.includes("e2e/extension-ui/toolbar-integration")) return "extension-ui-toolbar";
+    if (args.includes("e2e/extension-ui/extension-integration")) return "extension-ui-runtime";
     return "extension-ui";
   }
-  if (args.includes("tests/e2e/strategies")) return "strategies";
-  if (args.includes("tests/e2e/editor")) return "editor";
-  if (args.includes("tests/e2e/pages")) return "pages";
-  if (args.includes("tests/e2e/promoVideo")) return "promoVideo";
+  if (args.includes("e2e/strategies")) return "strategies";
+  if (args.includes("e2e/editor")) return "editor";
+  if (args.includes("e2e/pages")) return "pages";
+  if (args.includes("e2e/promo-video")) return "promo-video";
   return null;
 }
 
@@ -66,7 +72,7 @@ export default defineConfig({
             outputFile: path.join(testArtifactsDir, "reports", reportFileName),
             // A browser tab popping up mid-recording is disruptive to a promoVideo session -
             // every other suite keeps the normal auto-open behavior.
-            autoOpenInBrowser: reportSuiteName !== "promoVideo",
+            autoOpenInBrowser: reportSuiteName !== "promo-video",
           },
         ],
       ],

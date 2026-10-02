@@ -4,6 +4,7 @@ export const FOBLES = {
     BUTTON: "data-is-fobles-button",
     ITEM_ID: "data-fobles-item-id",
     MARKER: "data-fobles-processed",
+    PANE: "data-fobles-pane",
     STRATEGY: "data-field-strategy",
     TEMPLATE_BUTTON: "data-template-button",
     WRAPPER: "data-fobles-wrapper",
@@ -72,6 +73,14 @@ export const FOBLES = {
     HEIGHT: "--fobles-height",
     LIST_HEIGHT: "--fobles-list-height",
     TREE_HEIGHT: "--tree-fobles-height",
+  },
+  // A strategy whose Fobles-decorated field renders more than one independent pane (e.g.
+  // Multilist with Search's "all items" search-results pane versus its "selected items" pane)
+  // tags each pane's wrapper with ATTRIBUTES.PANE so callers can target the one they actually mean
+  // instead of relying on DOM order.
+  PANES: {
+    ALL: "all",
+    SELECTED: "selected",
   },
   SELECTORS: {
     BUTTON: "[data-is-fobles-button='1']",

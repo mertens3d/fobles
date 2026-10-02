@@ -1,6 +1,6 @@
 import { expect, foblesTest } from "../../../fixtures/playwright";
 import { clickExtensionControl, getExtensionId, openExtensionPage } from "../../../fixtures/extension";
-import {  attachPageScreenshot } from "../../../helpers/fobles-helpers";
+import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
 import { CONST } from "../../../CONST";
 import {
   clickOptionsButton,

@@ -14,6 +14,7 @@ import {
   openJumpMenu,
 } from "./fobles-macros";
 import { foblesWaitForTimeout } from "../helpers/wait-helpers";
+import { isSprintMode } from "../helpers/mouse-proxy";
 
 // Reusable stock Sitecore Content Editor UI interactions (ribbon tabs, galleries), plus Fobles'
 // own toolbar toggle since it's just as much a canned click sequence any spec reuses - kept
@@ -96,8 +97,7 @@ export async function clickTreeJump(
 
   if (newTabPromise) return { jumpButton, newTab: await newTabPromise };
   if (!options?.skipDialogDismiss) {
-    // await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
-    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
+    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
   }
   return { jumpButton, newTab: null };
 }
@@ -185,7 +185,8 @@ export async function scrollTreeContainer(
   await container.evaluate((el, top) => {
     el.scrollTop = top;
   }, scrollTopPx);
-  await foblesWaitForTimeout(page, 600);
+  // Visual settle time for a human watching the scroll - skip it in SPRINT.
+  if (!isSprintMode()) await foblesWaitForTimeout(page, 600);
 }
 
 // Sets the scContentEditorFoldersWidth cookie Sitecore's tree/editor splitter reads its width

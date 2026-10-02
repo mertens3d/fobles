@@ -1,11 +1,11 @@
 import { foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
+import { createStep } from "../../helpers/fobles-helpers-support/test-step";
 import {
-  createStep,
   getEditorSectionLocator,
   setupContentEditorForTesting,
-} from "../../helpers/fobles-helpers";
+} from "../../helpers/fobles-helpers-support/test-setup";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
 import type { StrategyTestContext } from "./support/scenario.types";
 import { showBillboard } from "../../helpers/billboard";

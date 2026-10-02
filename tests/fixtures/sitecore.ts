@@ -1,9 +1,10 @@
 import { expect, type Page } from "@playwright/test";
 import { CONST } from "../CONST";
 import { getTestEnvironment } from "./environment";
-import { ensureAuthenticatedUrl } from "./autoLogin";
-import { foblesWaitForTimeout } from "../helpers/wait-helpers";
+import { ensureAuthenticatedUrl } from "./auto-login";
 import { bringPageToFront } from "../helpers/page-switch";
+import { ensureMouseMarkerExists } from "../helpers/mouse-proxy";
+import { setTreePanelWidth } from "../macros/sitecore-macros";
 
 
 
@@ -27,7 +28,8 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
 
     if (wasDisabled) {
       console.log(`[sitecore preflight] Raw Values was on - clicked it off`);
-      await foblesWaitForTimeout(page, 1_000);
+      // The checkbox's onclick triggers a postback that reloads this same frame.
+      await frame.waitForLoadState("domcontentloaded", { timeout: 1_000 }).catch(() => {});
       return;
     }
   }
@@ -41,6 +43,8 @@ export async function openContentEditor(page: Page, foValue:string = ""): Promis
 
 export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   await bringPageToFront(page);
+  // Sitecore only reads this cookie at load time, so it must be set before navigating, not after.
+  await setTreePanelWidth(page, CONST.TESTING.TREE_PANEL_WIDTH_PX);
   const { baseUrl } = getTestEnvironment();
   const url = new URL(path || baseUrl, baseUrl).toString();
   // page.goto() issues a CDP Page.navigate command from outside the page - Chromium tags it as a
@@ -65,6 +69,7 @@ export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   await page.waitForLoadState("domcontentloaded");
   await ensureAuthenticatedUrl(page);
   await ensureRawValuesDisabled(page);
+  await ensureMouseMarkerExists(page);
 
   console.log(`[fobles] Navigation finished at ${page.url()}`);
 }

@@ -346,4 +346,5 @@ export const TESTING = {
     POSITION_2_BL: { corner: "bottom-left", offsetX: 300, offsetY: 265 },
     POSITION_3_BR: { corner: "bottom-right", offsetX: 200, offsetY: 165 },
   },
+  TREE_PANEL_WIDTH_PX: 250,
 } as const;

@@ -1,5 +1,5 @@
 import { CONST } from "../../../CONST";
-import { expectFoblesButtonNewTabNavigationStrategy, expectFoblesButtonSameTabNavigation } from "../../../helpers/fobles-helpers";
+import { expectFoblesButtonNewTabNavigationStrategy, expectFoblesButtonSameTabNavigation } from "../../../helpers/fobles-helpers-support/navigation-assertions";
 import { clickLbolt } from "../../../macros/fobles-macros";
 import { clickWithMouseMarker, ensureMouseMarkerExists, highlightClickTarget } from "../../../helpers/mouse-proxy";
 import { fieldScreenshotName, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
@@ -79,7 +79,7 @@ export async function stepExpectFoblesOnConditions(testContext: StrategyTestCont
 
       await clickLbolt(testContext.page);
       await expect(locatorFirstResult).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-      const foblesButton = fieldTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
+      const foblesButton = fieldTable.locator(testContext.SCENARIO.foblesButtonSelector ?? CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
       await expect(foblesButton).toBeVisible();
       await expect(foblesButton).toHaveText(testContext.SCENARIO.expectedButtonText);
       await expect(fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "FOBLES_ON"));
@@ -102,7 +102,7 @@ export async function stepExpectFoblesCtrlClick(testContext: StrategyTestContext
       const popupPromise = testContext.page.context().waitForEvent("page");
 
       const fieldTable = await testContext.getFieldTable();
-      const foblesButton = fieldTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
+      const foblesButton = fieldTable.locator(testContext.SCENARIO.foblesButtonSelector ?? CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
 
       console.log(`about to ctrl+click`);
       await clickWithMouseMarker(
@@ -149,7 +149,7 @@ export async function stepExpectFoblesClick(testContext: StrategyTestContext) {
   await testContext.step(
     `Click navigates to the target item: "${testContext.SCENARIO.expectedFoValue}"`,
     async (fullTitle) => {
-      const foblesButton = (await testContext.getFieldTable()).locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
+      const foblesButton = (await testContext.getFieldTable()).locator(testContext.SCENARIO.foblesButtonSelector ?? CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
       await expectFoblesButtonSameTabNavigation(testContext.page, testContext.testInfo, foblesButton, testContext.SCENARIO.expectedFoValue, fullTitle);
     },
     { screenshot: false },

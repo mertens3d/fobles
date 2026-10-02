@@ -1,18 +1,18 @@
 ﻿---
-ID: "ce0c3b15-cfd5-4f08-b545-75c1987b95e9"
+ID: "4331fe24-a32f-44ef-80ba-a5b91b7f9ced"
 Parent: "62b07059-7be4-4b65-af07-69b7f1333cd0"
 Template: "455a3e98-a627-4b40-8035-e683a0331ac7"
-Path: /sitecore/templates/Project/Fobles Testing/Promo Video/Strategy Droplink/Strategy DropLink 1x
+Path: /sitecore/templates/Project/Fobles Testing/Kitchen Sink/Strategy Droplink/Strategy DropLink 10x
 SharedFields:
 - ID: "1eb8ae32-e190-44a6-968d-ed904c794ebf"
   Hint: Source
-  Value: "{30259E3A-3197-483B-8817-23A0FCB855D9}"
+  Value: "{4BA72740-326C-482C-AD43-5362964677AF}"
 - ID: "ab162cc0-dc80-4abf-8871-998ee5d7ba32"
   Hint: Type
   Value: Droplink
 - ID: "ba3f86a2-4a1c-4d78-b63d-91c2779c1b5e"
   Hint: __Sortorder
-  Value: 200
+  Value: 400
 Languages:
 - Language: en
   Versions:
@@ -20,10 +20,10 @@ Languages:
     Fields:
     - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
       Hint: __Created
-      Value: 20260919T152750Z
+      Value: 20260919T153103Z
     - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
       Hint: __Revision
-      Value: "727e2a8b-13ad-4b8d-8871-95933d704199"
+      Value: "4e7ee3ac-fcb6-44a4-8f60-dce63efce578"
     - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
       Hint: __Updated by
       Value: |

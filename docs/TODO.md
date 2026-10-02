@@ -18,7 +18,8 @@
   - `TreeListExEditor` - compact toolbar; reached via Configure ribbon tab -> Editors
   - `DeviceEditor` - compact toolbar; reached via Presentation ribbon tab -> Details
 - [ ] The "other menu buttons navigate to their configured URLs" test's (`tests/e2e/toolbar/fobles.spec.ts`) step screenshot for "Show Config" (`/sitecore/admin/showconfig.aspx`) captures the wrong page - confirmed live. showconfig.aspx is already known to be slow to render (dumps the whole live web.config into an XML tree viewer - see `STEP_TIMEOUT_MS`'s comment in `tests/e2e/CONST.ts`), so `page.waitForLoadState("load")` right before the screenshot likely resolves before the page has actually painted its real content. Needs investigation into a more reliable "actually rendered" wait for this specific target before the auto step-screenshot fires.
-- [ ] Finish the promo video: run the full walkthrough, save it via `npm run test:e2e:promoVideo:save`, then flip `RECORD_VIDEO` back to `false` in `tests/settings/VideoSwitch.ts`.
+- [ ] Finish the promo video: run the full walkthrough, save it via `npm run test:e2e:promo-video:save`, then flip `RECORD_VIDEO` back to `false` in `tests/settings/VideoSwitch.ts`.
+- [ ] Add a `CORRUPT` settings profile (`tests/fixtures/settings-profiles.ts`) - malformed/wrong-shape values written directly to `chrome.storage` (bypassing the UI, since a corrupt value isn't reachable through it) - plus a test asserting the extension/options page degrades gracefully instead of throwing. Shelved for now; shape/scope undecided.
 
 ## TODO - V1
 

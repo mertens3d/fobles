@@ -1,11 +1,11 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { CONST } from "../../CONST";
+import { createStep } from "../../helpers/fobles-helpers-support/test-step";
 import {
-  createStep,
   expectFoblesButtonNewTabNavigation,
   expectFoblesButtonSameTabNavigation,
-} from "../../helpers/fobles-helpers";
+} from "../../helpers/fobles-helpers-support/navigation-assertions";
 import { clickWithMouseMarker, ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 
 import { findFoblesFrame } from "../../helpers/frame-finder";
@@ -29,7 +29,6 @@ foblesTest.describe("Editor scenario: quick info section", () => {
    
    
     await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`);
-    await ensureMouseMarkerExists(page);
 
     const foblesFrame = await findFoblesFrame(page);
     await ensureMouseMarkerExists(foblesFrame);

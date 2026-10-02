@@ -1,7 +1,5 @@
-import {
-  createStep,
-  expectFoblesButtonSameTabNavigation,
-} from "../../helpers/fobles-helpers";
+import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { expectFoblesButtonSameTabNavigation } from "../../helpers/fobles-helpers-support/navigation-assertions";
 import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import { openScLinksGallery } from "../../macros/sitecore-macros";
 import { findFoblesFrame } from "../../helpers/frame-finder";
@@ -40,7 +38,6 @@ foblesTest.describe("Editor scenario: reference links", () => {
         page,
         `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`,
       );
-      await ensureMouseMarkerExists(page);
 
       const foblesFrame = await findFoblesFrame(page);
       await ensureMouseMarkerExists(foblesFrame);

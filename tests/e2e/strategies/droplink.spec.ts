@@ -1,5 +1,5 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
-import {  setupContentEditorForTesting } from "../../helpers/fobles-helpers";
+import {  setupContentEditorForTesting } from "../../helpers/fobles-helpers-support/test-setup";
 import { fieldScreenshotName } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";

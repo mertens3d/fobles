@@ -141,8 +141,11 @@ class StaticTestReporter {
     .row-kind-test { background: #d0ebff; color: #1864ab; }
     .row-kind-step { background: #e5dbff; color: #5f3dc4; }
     .screenshot-links { line-height: 1.7; }
-    .screenshot-link { color: inherit; display: inline-block; text-decoration: none; vertical-align: top; }
-    .screenshot-thumb { background: #fff; border: 1px solid #d9e2ec; border-radius: 4px; display: block; max-height: 320px; max-width: 480px; object-fit: contain; }
+    .screenshot-thumb { background: #fff; border: 1px solid #d9e2ec; border-radius: 4px; cursor: zoom-in; display: block; max-height: 320px; max-width: 480px; object-fit: contain; }
+    .screenshot-modal-backdrop { align-items: center; background: rgba(15, 23, 32, .85); display: none; inset: 0; justify-content: center; padding: 2rem; position: fixed; z-index: 1000; }
+    .screenshot-modal-backdrop.open { display: flex; }
+    .screenshot-modal-backdrop img { border-radius: 6px; box-shadow: 0 10px 40px rgba(0, 0, 0, .5); max-height: 90vh; max-width: 95vw; }
+    .screenshot-modal-close { background: #fff; border: none; border-radius: 999px; cursor: pointer; font-size: 1.3rem; height: 2.2rem; line-height: 1; position: fixed; right: 1.2rem; top: 1rem; width: 2.2rem; z-index: 1001; }
     .badge { border-radius: 999px; display: inline-block; font-size: .8rem; font-weight: 700; padding: .2rem .55rem; }
     .badge-passed { background: #d3f9d8; color: #087f5b; }
     .badge-failed, .badge-timedOut { background: #ffe3e3; color: #c92a2a; }
@@ -176,6 +179,37 @@ class StaticTestReporter {
       <tbody>${rows}</tbody>
     </table>
   </main>
+  <div class="screenshot-modal-backdrop" id="screenshot-modal-backdrop">
+    <button type="button" class="screenshot-modal-close" id="screenshot-modal-close" aria-label="Close">&times;</button>
+    <img id="screenshot-modal-img" alt="">
+  </div>
+  <script>
+  (function () {
+    var backdrop = document.getElementById("screenshot-modal-backdrop");
+    var modalImg = document.getElementById("screenshot-modal-img");
+    var closeBtn = document.getElementById("screenshot-modal-close");
+    if (!backdrop || !modalImg) return;
+
+    function openModal(src, alt) {
+      modalImg.src = src;
+      modalImg.alt = alt || "";
+      backdrop.classList.add("open");
+    }
+    function closeModal() {
+      backdrop.classList.remove("open");
+      modalImg.src = "";
+    }
+
+    document.addEventListener("click", function (event) {
+      var thumb = event.target.closest(".screenshot-thumb");
+      if (thumb) { openModal(thumb.src, thumb.alt); return; }
+      if (backdrop.contains(event.target)) closeModal();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeModal();
+    });
+  })();
+</script>
   ${
     running
       ? `<script>
@@ -247,9 +281,7 @@ function renderScreenshotLinks(screenshots) {
   const links = screenshots
     .map(
       (shot) => `
-      <a href="${escapeHtml(shot.href)}" target="_blank" class="screenshot-link" title="${escapeHtml(shot.name)}">
-        <img src="${escapeHtml(shot.href)}" alt="${escapeHtml(aliasScreenshotName(shot.name))}" class="screenshot-thumb" loading="lazy">
-      </a>`,
+      <img src="${escapeHtml(shot.href)}" alt="${escapeHtml(aliasScreenshotName(shot.name))}" title="${escapeHtml(shot.name)}" class="screenshot-thumb" loading="lazy">`,
     )
     .join("<br>");
   return `<div class="screenshot-links">${links}</div>`;

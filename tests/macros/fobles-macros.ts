@@ -12,6 +12,7 @@ import type { CornerPosition, MouseCoordinates } from "../helpers/mouse-proxy.ty
 import { findFoblesFrame, findFrameWithSelector } from "../helpers/frame-finder";
 import { walkFrameDocuments } from "../helpers/frame-helpers";
 import { showBillboard } from "../helpers/billboard";
+import { expectJumpMenuFlyoutVisible } from "../expect-snippets/expect-snippets";
 
 export async function ClickFoblesJumpButton(
     page: Page) {
@@ -19,6 +20,7 @@ export async function ClickFoblesJumpButton(
     console.log(`[fobles Macro] ClickFoblesJumpButton`);
     const menuButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
     await clickWithMouseMarker(page, menuButton, "Fobles Jump Button");
+    await expectJumpMenuFlyoutVisible(foblesFrame);
 }
 
 
@@ -35,14 +37,23 @@ export async function openJumpMenu(page: Page, foblesFrame: Frame): Promise<void
         return;
     }
 
+    // ClickFoblesJumpButton already waits for the flyout to become visible.
     await ClickFoblesJumpButton(page);
+}
 
-    console.log(
-        `[fobles] Waiting for jump menu flyout's ${CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE} attribute to become "true"`,
-    );
-    await foblesFrame
-        .locator(`${CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT}[${CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE}="true"]`)
-        .waitFor({ state: "attached" });
+
+// Clicks the nth "other menu button" (a plain external-URL jump-menu entry - CONST.FOBLES.LOCATORS.MENU_URL,
+// distinct from a tree-jump button, which targets a Sitecore item path) and dismisses Fobles' own
+// confirm dialog afterward. Opens the jump menu itself first (idempotent, see openJumpMenu)
+// rather than requiring the caller to resolve a frame/open the menu beforehand.
+export async function clickJumpMenuUrlButton(page: Page, index: number, label: string): Promise<void> {
+    console.log(`[Macro: clickJumpMenuUrlButton] - Start (index: ${index})`);
+    const foblesFrame = await findFoblesFrame(page);
+    await openJumpMenu(page, foblesFrame);
+    const menuButton = foblesFrame.locator(CONST.FOBLES.LOCATORS.MENU_URL).nth(index);
+    await menuButton.waitFor({ state: "visible" });
+    await clickWithMouseMarker(page, menuButton, `Menu ${label}`);
+    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
 }
 
 
@@ -108,8 +119,7 @@ export async function clickFoblesTreeButton(
     await button.waitFor({ state: "visible" });
     await clickWithMouseMarker(page, button, "Tree fobles button");
     if (!options?.skipDialogDismiss) {
-        // await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
-        await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
+        await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
     }
 }
 

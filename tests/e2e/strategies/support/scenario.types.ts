@@ -15,6 +15,11 @@ export type StrategyScenarioData = {
   visibleToFobles: boolean;
   scElemLocator: string;
   SCREENSHOT_BASE_NAME: string;
+  // Overrides the default fieldTable-wide "first Fobles button" lookup - needed when a field
+  // renders more than one independent Fobles button (e.g. Multilist with Search's "all items" and
+  // "selected items" panes each get their own), where the default .first() isn't reliably the
+  // scenario's own expected value.
+  foblesButtonSelector?: string;
 };
 
 

@@ -3,6 +3,7 @@ export const FOBLES = {
     BUTTON: "data-is-fobles-button",
     MENU_URL: "data-fobles-menu-url",
     MENU_VISIBLE: "data-visible",
+    PANE: "data-fobles-pane",
     PROCESSED: "data-fobles-processed",
     TREE_JUMP_PATH: "data-fobles-tree-jump-path",
     WRAPPER: "data-fobles-wrapper",
@@ -31,6 +32,10 @@ export const FOBLES = {
 
     },
     DATA_IS_FOBLES_BUTTON: "[data-is-fobles-button='1']",
+    // Some strategies (Multilist with Search, Tree List) render two independent panes ("all
+    // items" and "selected items") each with their own Fobles button - this scopes to just the
+    // selected pane's, since that's the one every scenario actually asserts/navigates against.
+    SELECTED_PANE_BUTTON: "[data-fobles-pane='selected'] [data-is-fobles-button='1']",
     CONFIRM_DIALOG: ".fobles-confirm-dialog",
     CONFIRM_DIALOG_CONTINUE: ".fobles-confirm-dialog-continue",
     CONFIRM_DIALOG_SETTING: ".fobles-confirm-dialog-setting",

@@ -1,0 +1,67 @@
+﻿---
+ID: "6c1b65ea-530c-40c4-8d69-7c57e2a234d8"
+Parent: "aa407a4a-8c07-454d-a40c-306af84f32b3"
+Template: "56f4962a-e209-430d-bd91-2e044eff4b55"
+Path: /sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Home/Data/Promo Kitchen Sink
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260824T181335Z
+    - ID: "398f1877-842d-4a66-b1bb-bec903841341"
+      Hint: Strategy DropLink 3x
+      Value: "{3E40ED84-1411-4FF7-ABEE-344415A6DB8E}"
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\gregory.mertens@kestraholdings.com
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\gregory.mertens@kestraholdings.com
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "751ceb73-cc29-45e6-bd87-0d7901444d23"
+    - ID: "941d3d50-2982-4d09-9875-95cfedadac39"
+      Hint: Rich Text
+      Value: |
+        asdf asd asdf asdf asdf asdf adsf asdfasdfas<br />
+        <img alt="" height="600" width="600" src="-/media/152E6055F339492EB18619C5D3CE4533.ashx" />
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\gregory.mertens@kestraholdings.com
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20261002T010754Z
+- Language: "es-MX"
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260824T181335Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\gregory.mertens@kestraholdings.com
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\gregory.mertens@kestraholdings.com
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "4eb43c8a-e714-4cd9-bd38-2f1ad080ff5a"
+    - ID: "9857f526-390f-48df-b6d1-1a97cc328e8f"
+      Hint: __Version Name
+      Value: AI translated
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\gregory.mertens@kestraholdings.com
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260831T183634Z

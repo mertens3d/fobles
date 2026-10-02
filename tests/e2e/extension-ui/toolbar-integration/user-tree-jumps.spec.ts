@@ -1,15 +1,13 @@
 import { expect, foblesTest, type Locator } from "../../../fixtures/playwright";
-import { getExtensionId, openExtensionPage } from "../../../fixtures/extension";
+import { getExtensionId, openExtensionPage, setFoblesNavWarningVisible } from "../../../fixtures/extension";
 import { CONST } from "../../../CONST";
 import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
-import {
-  openSitecorePageAndFindFoblesFrame,
-  createStep,
-  attachLocatorScreenshot,
-  attachItemPathScreenshot,
-} from "../../../helpers/fobles-helpers";
+import { openContentEditor } from "../../../fixtures/sitecore";
+import { findFoblesFrame } from "../../../helpers/frame-finder";
+import { createStep } from "../../../helpers/fobles-helpers-support/test-step";
+import { attachLocatorScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
+import { attachItemPathScreenshot } from "../../../helpers/fobles-helpers-support/navigation-assertions";
 import { ClickFoblesJumpButton } from "../../../macros/fobles-macros";
-import { expectJumpMenuFlyoutVisible } from "../../../expectSnippets/expectSnippets";
 import { humanPause } from "../../../helpers/wait-helpers";
 import { bringPageToFront } from "../../../helpers/page-switch";
 import {
@@ -33,11 +31,13 @@ foblesTest.describe("User Tree Jumps", () => {
         const step = createStep(page, testInfo, page, "User Tree Jump");
 
         try {
+          // Other suites sharing this persistent browser profile may have left the warning off.
+          await setFoblesNavWarningVisible(sharedBrowserContext, extensionId, true);
           await removeTestRowIfPresent(optionsPage);
-          const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
+          await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+          const foblesFrame = await findFoblesFrame(page);
 
           await ClickFoblesJumpButton(page);
-          await expectJumpMenuFlyoutVisible(foblesFrame);
           await humanPause(page);
 
           await step("does not render with an empty list", async () => {

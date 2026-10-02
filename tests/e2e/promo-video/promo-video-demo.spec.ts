@@ -34,8 +34,8 @@ foblesTest.describe("Promo Video", () => {
         `[fobles] Promo video scene failed: ${error instanceof Error ? (error.stack ?? error.message) : String(error)}`,
       );
     } finally {
-      // const extens ionId = await getExtensionId(sharedBrowserContext);
-      // await setFoblesNavWarningVisible(sharedBrowserContext, extensionId, true);
+      const extensionId = await getExtensionId(sharedBrowserContext);
+      await setFoblesNavWarningVisible(sharedBrowserContext, extensionId, true);
     }
 
     if (RECORD_VIDEO) await page.close();

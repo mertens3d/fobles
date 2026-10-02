@@ -31,22 +31,24 @@ const getSelectedItems = (selectedPane: Element): TreeListItem[] => {
   return select ? collectGuidOptionItems(select) : [];
 };
 
-const createPaneWrapper = (doc: Document, height: number): HTMLElement =>
+const createPaneWrapper = (doc: Document, height: number, pane: string): HTMLElement =>
   createFoblesWrapper(doc, {
     strategy: FOBLES.STRATEGIES.TREE_LIST,
     classNames: [FOBLES.CLASSES.WRAPPERS.STACKED, FOBLES.CLASSES.WRAPPERS.TREE_LIST],
     cssHeightProperty: FOBLES.CSS_PROPERTIES.LIST_HEIGHT,
     height,
+    pane,
   });
 
 const replacePaneWithFobles = (
   doc: Document,
   pane: Element,
   items: TreeListItem[],
+  paneRole: string,
 ): boolean => {
   if (items.length === 0) return false;
 
-  const wrapper = createPaneWrapper(doc, measureFoblesPaneHeight(pane));
+  const wrapper = createPaneWrapper(doc, measureFoblesPaneHeight(pane), paneRole);
   items.forEach((item) => wrapper.appendChild(createFoblesItemButton(doc, item.label, item.value, FOBLES.CLASSES.BUTTONS.TREE_LIST)));
   pane.classList.add(FOBLES.CLASSES.HIDDEN);
   pane.after(wrapper);
@@ -69,10 +71,10 @@ export function applyTreeListStrategy(
     const allTreePane = control.querySelector(SITECORE.SELECTORS.TREE_LIST_ALL_PANE);
     const selectedPane = control.querySelector(SITECORE.SELECTORS.TREE_LIST_SELECTED_PANE);
     const replacedAllPane = allTreePane
-      ? replacePaneWithFobles(doc, allTreePane, getAllTreeItems(allTreePane))
+      ? replacePaneWithFobles(doc, allTreePane, getAllTreeItems(allTreePane), FOBLES.PANES.ALL)
       : false;
     const replacedSelectedPane = selectedPane
-      ? replacePaneWithFobles(doc, selectedPane, getSelectedItems(selectedPane))
+      ? replacePaneWithFobles(doc, selectedPane, getSelectedItems(selectedPane), FOBLES.PANES.SELECTED)
       : false;
 
     if (!replacedAllPane && !replacedSelectedPane) return;

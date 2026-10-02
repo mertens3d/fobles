@@ -2,9 +2,10 @@ import { expect, foblesTest, type Locator } from "../../fixtures/playwright";
 import { getExtensionId, openExtensionPage } from "../../fixtures/extension";
 import { CONST } from "../../CONST";
 import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
-import { openSitecorePageAndFindFoblesFrame, createStep } from "../../helpers/fobles-helpers";
+import { openContentEditor } from "../../fixtures/sitecore";
+import { findFoblesFrame } from "../../helpers/frame-finder";
+import { createStep } from "../../helpers/fobles-helpers-support/test-step";
 import { ClickFoblesJumpButton } from "../../macros/fobles-macros";
-import { expectJumpMenuFlyoutVisible } from "../../expectSnippets/expectSnippets";
 import { addTestRow, openTreeJumpsColumn, removeTestRowIfPresent, setTestRowEnabled } from "./support/other-settings-helpers";
 
 foblesTest.describe("User Tree Jumps", () => {
@@ -48,10 +49,10 @@ foblesTest.describe("User Tree Jumps", () => {
 
     try {
       await removeTestRowIfPresent(optionsPage);
-      const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
+      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      const foblesFrame = await findFoblesFrame(page);
 
       await ClickFoblesJumpButton(page);
-      await expectJumpMenuFlyoutVisible(foblesFrame);
 
       await step("does not render with an empty list", async () => {
         await expect(foblesFrame.getByText("User Tree Jumps")).toHaveCount(0);

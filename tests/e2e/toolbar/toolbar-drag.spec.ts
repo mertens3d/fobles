@@ -1,7 +1,8 @@
 import { foblesTest } from "../../fixtures/playwright";
-import { expectFoblesContainerDom, expectFoblesContainerVisible } from "../../expectSnippets/expectSnippets";
+import { expectFoblesContainerDom, expectFoblesContainerVisible } from "../../expect-snippets/expect-snippets";
 import { CONST } from "../../CONST";
-import { createStep, setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers";
+import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers-support/test-setup";
 import { moveMouseToDefault as moveMouseToDefault } from "../../helpers/mouse-proxy";
 import { dragToolbarToCornerLocation } from "../../macros/fobles-macros";
 import { foblesWaitForTimeout } from "../../helpers/wait-helpers";

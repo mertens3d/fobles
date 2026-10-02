@@ -4,7 +4,7 @@ import {
     getLastKnownMousePosition,
     moveMouseOutsideHoverArea,
 } from "../../helpers/mouse-proxy";
-import { activateFobles, } from "../../helpers/fobles-helpers";
+import { activateFobles, } from "../../helpers/fobles-helpers-support/test-setup";
 import { hoverAndGrow, hoverAndSlideOut } from "../../helpers/hover-helpers";
 import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import { expect, foblesTest } from "../../fixtures/playwright";

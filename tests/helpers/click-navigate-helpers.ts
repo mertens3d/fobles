@@ -3,8 +3,8 @@ import { CONST } from "../CONST";
 import { clickWithMouseMarker, ensureMouseMarkerExists } from "./mouse-proxy";
 import { getLastTwoPathItems } from "./path-helpers";
 import { dismissFoblesConfirmDialogIfPresent } from "../macros/fobles-macros";
-import { expectCurrentUrl as expectCurrentUrlContains } from "../expectSnippets/expectSnippets";
-import { attachItemPathScreenshot } from "./fobles-helpers";
+import { expectCurrentUrl as expectCurrentUrlContains } from "../expect-snippets/expect-snippets";
+import { attachItemPathScreenshot } from "./fobles-helpers-support/navigation-assertions";
 
 export async function clickFoblesNavigationButton(page:Page, foblesScButton: Locator, path: string, testInfo: TestInfo) {
  await clickWithMouseMarker(    

@@ -4,6 +4,7 @@ import { pulseMouseMarkerClick } from "./mouse-marker";
 import { moveMouseToPosition } from "./mouse-movement";
 import type { MouseCoordinates } from "../mouse-proxy.types";
 import type { HighlightStyle } from "../../constants/CONST.Types";
+import { isSprintMode } from "./mouse-proxy-state";
 
 export async function getButtonSize(button: Locator): Promise<{ width: number; height: number }> {
   const box = await button.boundingBox();
@@ -83,51 +84,53 @@ export async function highlightClickTarget(target: Locator, label: string): Prom
 }
 
 async function highlightBase(target: Locator, label: string, highlightStyle: HighlightStyle): Promise<void> {
-  const count = await target.count();
-  if (count === 0) {
-    console.warn(`[fobles] Highlight skipped: '${label}' matched 0 elements`);
-    return;
+  if (!isSprintMode()) {
+    const count = await target.count();
+    if (count === 0) {
+      console.warn(`[fobles] Highlight skipped: '${label}' matched 0 elements`);
+      return;
+    }
+    if (count > 1) {
+      console.warn(`[fobles] '${label}' matched ${count} elements, using first match`);
+    }
+
+    const highlightedTarget = target.first();
+    console.log(`[fobles] Highlighting locator '${label}'`);
+    const original = await highlightedTarget.evaluate((element) => {
+      const el = element as HTMLElement;
+      return {
+        color: el.style.color,
+        outline: el.style.outline,
+        outlineOffset: el.style.outlineOffset,
+        backgroundColor: el.style.backgroundColor,
+        transition: el.style.transition,
+      };
+    });
+
+    await highlightedTarget.evaluate((element, highlight: HighlightStyle) => {
+      const el = element as HTMLElement;
+      el.style.transition = highlight.TRANSITION;
+      el.style.outline = highlight.OUTLINE;
+      // el.style.color = highlight.COLOR;
+      el.style.outlineOffset = highlight.OUTLINE_OFFSET;
+      //el.style.backgroundColor = highlight.BACKGROUND_COLOR;
+    }, highlightStyle);
+    await highlightedTarget.page().waitForTimeout(CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.VISIBLE_DELAY_MS);
+
+    void setTimeout(() => {
+      highlightedTarget
+        .evaluate((element, originalStyles) => {
+          const el = element as HTMLElement;
+          el.style.outline = originalStyles.outline;
+          el.style.outlineOffset = originalStyles.outlineOffset;
+          //el.style.backgroundColor = originalStyles.backgroundColor;
+          el.style.transition = originalStyles.transition;
+        }, original)
+        .catch(() => {
+          console.error(`[fobles] Failed to restore original styles for '${label}'`);
+        });
+    }, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.RESTORE_DELAY_MS);
   }
-  if (count > 1) {
-    console.warn(`[fobles] '${label}' matched ${count} elements, using first match`);
-  }
-
-  const highlightedTarget = target.first();
-  console.log(`[fobles] Highlighting locator '${label}'`);
-  const original = await highlightedTarget.evaluate((element) => {
-    const el = element as HTMLElement;
-    return {
-      color: el.style.color,
-      outline: el.style.outline,
-      outlineOffset: el.style.outlineOffset,
-      backgroundColor: el.style.backgroundColor,
-      transition: el.style.transition,
-    };
-  });
-
-  await highlightedTarget.evaluate((element, highlight: HighlightStyle) => {
-    const el = element as HTMLElement;
-    el.style.transition = highlight.TRANSITION;
-    el.style.outline = highlight.OUTLINE;
-    // el.style.color = highlight.COLOR;
-    el.style.outlineOffset = highlight.OUTLINE_OFFSET;
-    //el.style.backgroundColor = highlight.BACKGROUND_COLOR;
-  }, highlightStyle);
-  await highlightedTarget.page().waitForTimeout(CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.VISIBLE_DELAY_MS);
-
-  void setTimeout(() => {
-    highlightedTarget
-      .evaluate((element, originalStyles) => {
-        const el = element as HTMLElement;
-        el.style.outline = originalStyles.outline;
-        el.style.outlineOffset = originalStyles.outlineOffset;
-        //el.style.backgroundColor = originalStyles.backgroundColor;
-        el.style.transition = originalStyles.transition;
-      }, original)
-      .catch(() => {
-        console.error(`[fobles] Failed to restore original styles for '${label}'`);
-      });
-  }, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.RESTORE_DELAY_MS);
 }
 
 export async function moveMouseToLocatorCenter(

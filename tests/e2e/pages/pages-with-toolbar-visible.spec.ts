@@ -1,15 +1,15 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { CONST } from "../../CONST";
+import { createStep } from "../../helpers/fobles-helpers-support/test-step";
 import {
   attachUiPathNote,
-  createStep,
   expectFoblesButtonNewTabNavigation,
   expectFoblesButtonSameTabNavigation,
-} from "../../helpers/fobles-helpers";
+} from "../../helpers/fobles-helpers-support/navigation-assertions";
 import { clickWithMouseMarker, ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import { findFrameWithSelector } from "../../helpers/frame-finder";
-import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { expectNeverAppears, foblesWaitForTimeout } from "../../helpers/wait-helpers";
 import { clickLbolt } from "../../macros/fobles-macros";
 
 const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
@@ -254,8 +254,11 @@ foblesTest.describe("Pages: toolbar visibility, Fobles activation, and button na
         await openSitecorePage(page, pageCase.url);
 
         if (!isEligible) {
-          await foblesWaitForTimeout(page, 2_000);
-          await expect(page.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER)).toHaveCount(0);
+          await expectNeverAppears(
+            page.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER),
+            2_000,
+            `Fobles toolbar appeared on ${pageCase.label}, which is supposed to be ineligible`,
+          );
           return;
         }
 
@@ -265,7 +268,6 @@ foblesTest.describe("Pages: toolbar visibility, Fobles activation, and button na
           `Fobles toolbar on ${pageCase.label}`,
           10_000,
         );
-        await ensureMouseMarkerExists(page);
         await ensureMouseMarkerExists(foblesFrame);
 
         await expect(foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER)).toBeVisible();

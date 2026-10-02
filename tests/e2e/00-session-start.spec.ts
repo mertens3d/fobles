@@ -1,6 +1,6 @@
 import { expect, foblesTest } from "../fixtures/playwright";
 import {  openContentEditor } from "../fixtures/sitecore";
-import { attachLocatorScreenshot } from "../helpers/fobles-helpers";
+import { attachLocatorScreenshot } from "../helpers/fobles-helpers-support/screenshots";
 import { CONST } from "../CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 

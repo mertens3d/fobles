@@ -1,8 +1,9 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { getExtensionId, setFoblesNavVisible } from "../../fixtures/extension";
-import { createStep, openSitecorePageAndFindFoblesFrame } from "../../helpers/fobles-helpers";
-import { findFrameWithSelector } from "../../helpers/frame-finder";
+import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { openContentEditor } from "../../fixtures/sitecore";
+import { findFoblesFrame, findFrameWithSelector } from "../../helpers/frame-finder";
 import { pressToggleFoblesToolbarHotkey, pressToggleLboltHotkey } from "../../macros/fobles-macros";
 
 const CONTENT_TREE_PANEL_SELECTOR = "#ContentTreeInnerPanel";
@@ -14,7 +15,8 @@ foblesTest.describe("Fobles keyboard shortcuts", () => {
       foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
       const extensionId = await getExtensionId(sharedBrowserContext);
       const step = createStep(page, testInfo, page, "Hotkeys");
-      const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
+      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      const foblesFrame = await findFoblesFrame(page);
       const toolbarContainer = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER);
 
       try {
@@ -44,7 +46,8 @@ foblesTest.describe("Fobles keyboard shortcuts", () => {
     async ({ page, sharedBrowserContext }, testInfo) => {
       foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
       const step = createStep(page, testInfo, page, "Hotkeys");
-      await openSitecorePageAndFindFoblesFrame(page);
+      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      await findFoblesFrame(page);
       const treeFrame = await findFrameWithSelector(page, CONTENT_TREE_PANEL_SELECTOR, "content tree panel", 10_000);
       const treeFoblesButtons = treeFrame.locator(CONST.FOBLES.SELECTORS.TREE_FOBLES_BUTTON);
 
@@ -52,12 +55,12 @@ foblesTest.describe("Fobles keyboard shortcuts", () => {
         await expect(treeFoblesButtons).toHaveCount(0);
       });
 
-      await step("hotkey turns Fobles tree buttons on", async () => {
+      await step("turns tree buttons on", async () => {
         await pressToggleLboltHotkey(sharedBrowserContext);
         await expect(treeFoblesButtons.first()).toBeVisible();
       });
 
-      await step("hotkey turns Fobles tree buttons off", async () => {
+      await step("turns tree buttons off", async () => {
         await pressToggleLboltHotkey(sharedBrowserContext);
         await expect(treeFoblesButtons).toHaveCount(0);
       });

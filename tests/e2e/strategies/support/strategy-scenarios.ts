@@ -34,8 +34,14 @@ function displayResolvedFoValue(targetItemPath: string): string {
   );
 }
 
+// The real combobox-edit value Sitecore renders keeps the "sitecore/" prefix (never stripped)
+// and uses the built-in content root's Display Name "Content" - unlike every other segment here,
+// its real item Name is the fixed, lowercase "content" serialized YAML Path's casing doesn't
+// reflect that override.
 function displayResolvedButtonText(targetItemPath: string): string {
-  return displayResolvedFoValue(targetItemPath).replace(/^\/sitecore\//, "");
+  return displayResolvedFoValue(targetItemPath)
+    .replace(/^\//, "")
+    .replace(/^sitecore\/content\//i, "sitecore/Content/");
 }
 
 // The final per-strategy expectations every spec file asserts against, built from
@@ -124,6 +130,7 @@ export const STRATEGY_SCENARIOS = {
     friendlyName: "Multilist With Search",
     visibleToFobles: true,
     scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.MULTILIST_WITH_SEARCH,
+    foblesButtonSelector: CONST.FOBLES.SELECTORS.SELECTED_PANE_BUTTON,
     SCREENSHOT_BASE_NAME : "multilist-with-search-1x"     
   },
   TAG_LIST: {
@@ -145,6 +152,7 @@ export const STRATEGY_SCENARIOS = {
     friendlyName: "Tree List",
     visibleToFobles: true,
     scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.TREE_LIST,
+    foblesButtonSelector: CONST.FOBLES.SELECTORS.SELECTED_PANE_BUTTON,
     SCREENSHOT_BASE_NAME : "tree-list-1x"
   },
   TREELIST_EX: {

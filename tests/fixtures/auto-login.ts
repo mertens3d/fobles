@@ -1,7 +1,7 @@
 import { expect, type Page } from "@playwright/test";
 import { getActiveTestUserCredentials, getTestEnvironment } from "./environment";
 import { logDiagnostic } from "./logging";
-import type { AutoLoginContext } from "./autologin.type";
+import type { AutoLoginContext } from "./auto-login.types";
 import { CONST } from "../CONST";
 
 function toDisplayUrl(url: string): string {

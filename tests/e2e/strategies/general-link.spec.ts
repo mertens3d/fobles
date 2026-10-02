@@ -6,7 +6,7 @@ import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
 import type { StrategyTestContext } from "./support/scenario.types";
 import { stepExpectFoblesCtrlClick, stepExpectFoblesInitialConditions, stepExpectFoblesOffConditions, stepExpectFoblesOnConditions, stepExpectSitecoreInitialConditions } from "./support/strategy-test-helper";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
-import { setupContentEditorForTesting } from "../../helpers/fobles-helpers";
+import { setupContentEditorForTesting } from "../../helpers/fobles-helpers-support/test-setup";
 import { showBillboard } from "../../helpers/billboard";
 
 const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;

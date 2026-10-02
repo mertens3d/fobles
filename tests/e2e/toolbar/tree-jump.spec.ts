@@ -8,18 +8,16 @@ import {
 import { CONST } from "../../CONST";
 import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
 import { bringPageToFront } from "../../helpers/page-switch";
-import {
-  openSitecorePageAndFindFoblesFrame,
-  attachItemPathScreenshot,
-  createStep,
-} from "../../helpers/fobles-helpers";
+import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { attachItemPathScreenshot } from "../../helpers/fobles-helpers-support/navigation-assertions";
+import { openContentEditor } from "../../fixtures/sitecore";
+import { findFoblesFrame } from "../../helpers/frame-finder";
 import {
   ClickFoblesJumpButton,
 } from "../../macros/fobles-macros";
 import {
   expectCurrentUrl,
-  expectJumpMenuFlyoutVisible,
-} from "../../expectSnippets/expectSnippets";
+} from "../../expect-snippets/expect-snippets";
 import type { BrowserContext, Locator } from "@playwright/test";
 import { getJumpMenuFlyoutButton } from "../../helpers/scrolling-helpers";
 import { clickFoblesNavigationButton } from "../../helpers/click-navigate-helpers";
@@ -29,10 +27,10 @@ foblesTest.describe("Fobles browser integration", () => {
     page,
   }, testInfo) => {
     foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
-    let foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
+    await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+    let foblesFrame = await findFoblesFrame(page);
 
     await ClickFoblesJumpButton(page);
-    await expectJumpMenuFlyoutVisible(foblesFrame);
 
     const paths = await getExpectedButtonPaths(foblesFrame);
 
@@ -55,10 +53,10 @@ foblesTest.describe("Fobles browser integration", () => {
     page,
   }, testInfo) => {
     foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
-    const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
+    await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+    const foblesFrame = await findFoblesFrame(page);
 
     await ClickFoblesJumpButton(page);
-    await expectJumpMenuFlyoutVisible(foblesFrame);
     const paths = await getExpectedButtonPaths(foblesFrame);
 
     const step = createStep(page, testInfo, page, "Ctrl+Click Jump");
@@ -122,9 +120,9 @@ async function testOneClick(
     `Click: navigates to "${path}"`,
     async () => {
       if (index > 0) {
-        foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
+        await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+        foblesFrame = await findFoblesFrame(page);
         await ClickFoblesJumpButton(page);
-        await expectJumpMenuFlyoutVisible(foblesFrame);
       }
 
       const flyoutButton :Locator= await getJumpMenuFlyoutButton(
@@ -162,7 +160,7 @@ async function TestOneCtrlClick(
     `Ctrl+Click: opens "${path}" in a new tab`,
     async () => {
       await ClickFoblesJumpButton(page);
-      await expectJumpMenuFlyoutVisible(foblesFrame);
+
 
       const foblesTreeButton = await getJumpMenuFlyoutButton(
         foblesFrame,

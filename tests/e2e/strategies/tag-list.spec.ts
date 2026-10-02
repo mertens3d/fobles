@@ -2,7 +2,7 @@ import { expect, foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import {
   setupContentEditorForTesting,
-} from "../../helpers/fobles-helpers";
+} from "../../helpers/fobles-helpers-support/test-setup";
 
 import { fieldScreenshotName } from "./support/CONST";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";

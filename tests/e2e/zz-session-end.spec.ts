@@ -1,6 +1,6 @@
 import { expect, foblesTest } from "../fixtures/playwright";
 import { getTestEnvironment } from "../fixtures/environment";
-import { attachPageScreenshot } from "../helpers/fobles-helpers";
+import { attachPageScreenshot } from "../helpers/fobles-helpers-support/screenshots";
 import { logoutCurrentSitecoreSession } from "../fixtures/sitecore";
 import { CONST } from "../CONST";
 import { RECORD_VIDEO } from "../settings/settings";

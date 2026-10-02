@@ -3,7 +3,7 @@ import { CONST } from "../../CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
 import {
   setupContentEditorForTesting,
-} from "../../helpers/fobles-helpers";
+} from "../../helpers/fobles-helpers-support/test-setup";
 
 import { fieldScreenshotName } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";

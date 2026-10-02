@@ -4,6 +4,22 @@ Playwright end-to-end tests live in `tests/e2e/` and exercise the extension agai
 
 ## File Organization
 
+- `fixtures/sitecore.ts`'s `openSitecorePage` is the one choke point every navigation funnels
+  through (`openContentEditor`, `setupContentEditorForTesting`, direct calls), so it's where
+  per-navigation state normalization lives: setting the tree-panel-width cookie before navigating
+  (Sitecore only reads it at load time), then after load, disabling "Raw Values" if a prior
+  session left it on and ensuring the mouse marker exists. A click-driven navigation (tree jump,
+  ribbon tab, a Fobles button) never calls this again - deliberately out of scope; raw-values
+  tests have never needed it, so new checks stay symmetric with that.
+- `fixtures/settings-profiles.ts` - named, swappable starting states for every Fobles setting.
+  `applyDefaultSettingsProfile` clicks the options page's own real "Clear all stored settings"
+  button (never writes `chrome.storage` directly) - every setting getter already falls back to its
+  own built-in default once its key is absent, so clearing is equivalent to "every setting at its
+  shipped default". Applied automatically before every test via `resetTestSettings`, an
+  auto-use fixture in `fixtures/playwright.ts`, so a test never inherits leftover state (e.g. nav
+  warning left off) from whichever test ran before it in this shared persistent profile. A future
+  profile (e.g. deliberately corrupt data - see `docs/TODO.md`) is just another function with the
+  same `SettingsProfile` signature, swapped in where a test needs it.
 - `mouse-proxy.ts` - the mouse marker/animation system, plus `clickWithMouseMarker` (move, flash,
   click - the one entry point every interactive Sitecore-page click should use). Defaults to a
   target's center; pass `{ corner: "top-left" }` to land on its top-left corner instead (e.g.
@@ -119,10 +135,10 @@ Playwright finish interrupting (it still runs fixture teardown, which logs the s
 don't press Ctrl+C again or close the terminal window, since that force-kills the process before
 teardown can run.
 
-## Promo Video (`promoVideo/promoVideo-demo.spec.ts`)
+## Promo Video (`promo-video/promo-video-demo.spec.ts`)
 
 A short, deliberately un-asserted walkthrough for recording a store-listing promo video - not
-part of the regular regression suite. Run with `npm run test:e2e:promoVideo`; recording itself is
+part of the regular regression suite. Run with `npm run test:e2e:promo-video`; recording itself is
 controlled by `RECORD_VIDEO` in `tests/settings/VideoSwitch.ts`. Target runtime: under 1:45 - trim
 clips in an editor afterward rather than padding the script out.
 
@@ -162,7 +178,7 @@ clips in an editor afterward rather than padding the script out.
   `secondary-N.webm`. This keeps the same, predictable filenames run to run instead of piling up
   new hash-named files.
 - `promo-video/` gets wiped at the start of every recording run, so `main.webm` never survives
-  past the next take. Once you're happy with a take, run `npm run test:e2e:promoVideo:save`
+  past the next take. Once you're happy with a take, run `npm run test:e2e:promo-video:save`
   (`tools/scripts/test/save-promo-video.js`) to copy it to
   `playwright-results/videoComposit/FoblesPromoVideoMain.webm` - a separate folder the recording
   itself never touches, so it survives later runs. On-demand only, not run automatically.

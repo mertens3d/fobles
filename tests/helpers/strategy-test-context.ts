@@ -5,7 +5,8 @@ import { CONST } from "../CONST";
 import { findFoblesFrame } from "./frame-finder";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import type { StrategyScenarioData, StrategyTestContext } from "../e2e/strategies/support/scenario.types";
-import { createStep, getEditorSectionLocator } from "./fobles-helpers";
+import { createStep } from "./fobles-helpers-support/test-step";
+import { getEditorSectionLocator } from "./fobles-helpers-support/test-setup";
 
 // table by its label text plus the toolbar's feature button.
 export async function factoryStrategyTestContext(

@@ -7,10 +7,10 @@ import {
 } from "../../../fixtures/extension";
 import { CONST } from "../../../CONST";
 import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
-import { openSitecorePageAndFindFoblesFrame } from "../../../helpers/fobles-helpers";
+import { openContentEditor } from "../../../fixtures/sitecore";
+import { findFoblesFrame } from "../../../helpers/frame-finder";
 import { ClickFoblesJumpButton } from "../../../macros/fobles-macros";
-import { expectJumpMenuFlyoutVisible } from "../../../expectSnippets/expectSnippets";
-import { attachLocatorScreenshot } from "../../../helpers/fobles-helpers";
+import { attachLocatorScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
 import { bringPageToFront } from "../../../helpers/page-switch";
 import {
   clickOptionsButton,
@@ -52,9 +52,9 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
       );
 
       await bringPageToFront(page);
-      const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
+      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      const foblesFrame = await findFoblesFrame(page);
       await ClickFoblesJumpButton(page);
-      await expectJumpMenuFlyoutVisible(foblesFrame);
       await expect(foblesFrame.getByRole("button", { name: label, exact: true })).toBeVisible();
       await expect(foblesFrame.getByText(TESTING.JUMP_MENU.ADMIN_PAGES_GROUP_LABEL)).toBeVisible();
       await attachLocatorScreenshot(

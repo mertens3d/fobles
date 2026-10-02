@@ -6,6 +6,7 @@ import { logoutCurrentSitecoreSession } from "./sitecore";
 import { CONST } from "../CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
+import { applyDefaultSettingsProfile } from "./settings-profiles";
 
 const profileDir = path.resolve(
   process.env.PLAYWRIGHT_PROFILE_DIR ??
@@ -103,8 +104,21 @@ type WorkerFixtures = {
   sharedPage: import("@playwright/test").Page;
 };
 
-// eslint-disable-next-line @typescript-eslint/no-empty-object-type
-export const foblesTest = base.extend<{}, WorkerFixtures>({
+type TestFixtures = {
+  resetTestSettings: void;
+};
+
+export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
+  // Auto-use so every test starts from the same known settings state, regardless of what an
+  // earlier test in this shared persistent profile left behind (see docs/TODO.md's corrupt-data
+  // profile idea for a future, deliberately-different one).
+  resetTestSettings: [
+    async ({ sharedBrowserContext }, use) => {
+      await applyDefaultSettingsProfile(sharedBrowserContext);
+      await use();
+    },
+    { auto: true },
+  ],
   sharedBrowserContext: [
     // eslint-disable-next-line no-empty-pattern
     async ({}, use) => {
@@ -180,7 +194,10 @@ export const foblesTest = base.extend<{}, WorkerFixtures>({
       context.pages().forEach(attachPageDiagnostics);
       context.on("page", attachPageDiagnostics);
       await use(context);
-      await new Promise((resolve) => setTimeout(resolve, 10_000));
+      // Settle time for a human watching the last test's final state - skip it in SPRINT.
+      if (CONST.TESTING.SPEED.SELECTED !== "SPRINT") {
+        await new Promise((resolve) => setTimeout(resolve, 10_000));
+      }
       await logoutSitecoreSessions(context);
       await context.close();
       if (RECORD_VIDEO) renamePromoVideoFiles();
