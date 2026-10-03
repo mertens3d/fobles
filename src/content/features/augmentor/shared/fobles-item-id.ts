@@ -1,19 +1,9 @@
 import { FOBLES } from "../constants";
 
-let usedItemIdCounts = new Map<string, number>();
-
-// Called whenever Fobles/tree buttons toggle on or off (feature-toggle.ts's toggleLightningBolt)
-// so each fresh decoration pass starts counting from zero again.
-export function resetFoblesItemIdCounts(): void {
-  usedItemIdCounts = new Map<string, number>();
-}
-
-// Sets data-fobles-item-id, suffixing with -1, -2, etc. if the same item id has already been
-// assigned to another button in this pass (e.g. a field and the tree both reference the same
-// item) - keeps every button's attribute value unique without requiring the item id itself to be.
+// Sets data-fobles-item-id to the raw item id. Deliberately not deduplicated - a field and the
+// tree can reference the same item, and test selectors (tests/macros/fobles-macros.ts,
+// tests/e2e/pages/pages-with-toolbar-visible.spec.ts) rely on exact-matching this raw id, scoped
+// to the button's own class, to disambiguate.
 export function assignFoblesItemId(element: HTMLElement, itemId: string): void {
-  const count = (usedItemIdCounts.get(itemId) ?? 0) + 1;
-  usedItemIdCounts.set(itemId, count);
-  const value = count === 1 ? itemId : `${itemId}-${count - 1}`;
-  element.setAttribute(FOBLES.ATTRIBUTES.ITEM_ID, value);
+  element.setAttribute(FOBLES.ATTRIBUTES.ITEM_ID, itemId);
 }

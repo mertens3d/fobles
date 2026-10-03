@@ -64,12 +64,10 @@ Playwright end-to-end tests live in `tests/e2e/` and exercise the extension agai
   - `clickLbolt`/`clickTreeFoblesButton(itemId)` target every fobles-generated item button (tree
     button, every field-strategy item button via `createFoblesItemButton`, and quick-info-section's
     buttons) via `data-fobles-item-id` (`src/content/features/augmentor/shared/fobles-item-id.ts`
-    assigns it, appending `-1`/`-2`/etc. if the same item id gets used again in the same pass, e.g.
-    a field referencing the same item as the tree node - reset every time Fobles/tree buttons
-    toggle on or off, in `feature-toggle.ts`'s `toggleLightningBolt`). Not fully guaranteed unique
-    even so (nothing stops a duplicate suffix from colliding with a different real id) -
-    `clickTreeFoblesButton` scopes to the tree button's own class first, then takes `.first()`
-    regardless, since any such collision would still navigate to the same item either way.
+    assigns the raw item id, not deduplicated - a field can reference the same item as the tree
+    node, so the attribute value alone isn't guaranteed unique) - `clickTreeFoblesButton` scopes
+    to the tree button's own class first, then takes `.first()` regardless, since any such
+    collision would still navigate to the same item either way.
   - `scrollTreeContainer(scrollTopPx)` scrolls the tree panel (`#ContentTreeInnerPanel`, a native
     Sitecore element present from page load) to a fixed scrollTop, called before `clickLbolt` -
     the tree's own fobles button doesn't exist until after LBolt runs, so scrolling has to target
