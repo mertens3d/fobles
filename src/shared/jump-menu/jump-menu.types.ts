@@ -1,14 +1,14 @@
 // Persisted per-button customization, keyed by the button's stable GUID (see button-ids.ts).
-export type JumpMenuButtonSetting = {
+export type JumpFlyoutButtonSetting = {
   // Snapshot of the button's label at save time, so raw storage is readable without cross-referencing code.
   label: string;
   enabled: boolean;
   pathSuffix: string;
 };
 
-export type JumpMenuButtonSettings = Record<string, JumpMenuButtonSetting>;
+export type JumpFlyoutButtonSettings = Record<string, JumpFlyoutButtonSetting>;
 
-export type JumpMenuButtonDescriptor = {
+export type JumpFlyoutButtonDescriptor = {
   id: string;
   label: string;
   column: string;
@@ -18,7 +18,7 @@ export type JumpMenuButtonDescriptor = {
 };
 
 // A user-defined Tree Jump shortcut (src/shared/jump-menu/user-tree-jump-settings.ts) - unlike
-// JumpMenuButtonDescriptor, these aren't a fixed catalog entry; the user creates any number of
+// JumpFlyoutButtonDescriptor, these aren't a fixed catalog entry; the user creates any number of
 // them (up to USER_TREE_JUMP.MAX_ENTRIES), each rooted at SITECORE.RELATIVE_PATHS.ROOT.
 export type UserTreeJump = {
   id: string;

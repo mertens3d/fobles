@@ -3,14 +3,14 @@ import {
   normalizeUserTreeJumpIconPath,
   type UserTreeJump,
 } from "../shared/jump-menu/user-tree-jump-settings";
-import { sanitizeJumpMenuPathSuffix } from "../shared/jump-menu/button-settings";
+import { sanitizeJumpFlyoutPathSuffix } from "../shared/jump-menu/button-settings";
 import { USER_TREE_JUMP } from "../shared/jump-menu/user-tree-jump-constants";
 
 function createEmptyUserTreeJump(): UserTreeJump {
   return { id: createUserTreeJumpId(), label: "", enabled: true, icon: "", pathSuffix: "" };
 }
 
-// Mirrors the Tree Jump catalog's row layout (see createJumpMenuButtonRow in
+// Mirrors the Tree Jump catalog's row layout (see createJumpFlyoutButtonRow in
 // jump-menu-buttons.ts): a title row, then a fields row of checkbox | hardcoded prefix |
 // suffix - plus an icon input, which only user-defined entries have.
 function createUserTreeJumpRow(entry: UserTreeJump): HTMLDivElement {
@@ -58,7 +58,7 @@ function createUserTreeJumpRow(entry: UserTreeJump): HTMLDivElement {
   pathSuffixInput.placeholder = "e.g. content/Home";
   pathSuffixInput.value = entry.pathSuffix;
   pathSuffixInput.addEventListener("blur", () => {
-    pathSuffixInput.value = sanitizeJumpMenuPathSuffix(pathSuffixInput.value);
+    pathSuffixInput.value = sanitizeJumpFlyoutPathSuffix(pathSuffixInput.value);
   });
   fieldsRow.appendChild(pathSuffixInput);
 
@@ -137,7 +137,7 @@ export function collectUserTreeJumpEntries(container: HTMLElement): UserTreeJump
     const enabled = row.querySelector<HTMLInputElement>("input[name='enabled']")?.checked ?? true;
     const pathSuffixInput = row.querySelector<HTMLInputElement>("input[name='pathSuffix']");
     const iconInput = row.querySelector<HTMLInputElement>("input[name='icon']");
-    const pathSuffix = sanitizeJumpMenuPathSuffix(pathSuffixInput?.value ?? "");
+    const pathSuffix = sanitizeJumpFlyoutPathSuffix(pathSuffixInput?.value ?? "");
     const icon = normalizeUserTreeJumpIconPath(iconInput?.value ?? "");
     if (pathSuffixInput) pathSuffixInput.value = pathSuffix;
     if (iconInput) iconInput.value = icon;

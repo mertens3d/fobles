@@ -25,7 +25,7 @@ foblesTest.describe("Promo Video", () => {
       await videoTestSetup(page);
       await demoToolbarDrag(page);
       await demoTreeFoblesClick(page);
-      // await demoTreeJumpMenu(page);
+      // await demoTreeJumpFlyout(page);
       // await demoLBoltToggle(page);
       await demoSightings(page, sharedBrowserContext);
     } catch (error) {
@@ -58,7 +58,7 @@ async function demoLBoltToggle(page: Page) {
   });
 }
 
-async function demoTreeJumpMenu(page: Page) {
+async function demoTreeJumpFlyout(page: Page) {
 
 
 
@@ -66,13 +66,13 @@ async function demoTreeJumpMenu(page: Page) {
   await showSpeakBubble(page, "Click opens the tree jump path in the same tab. <br/>Ctrl + Click opens it in a new tab.");
   await clickTreeJump(page, CONST.SITECORE.TREE_JUMP_PATHS.LAYOUT_RENDERINGS);
   // await playDemoBeat(page, {
-  //   name: "DemoTreeJumpMenu-ClickSameTab",
+  //   name: "DemoTreeJumpFlyout-ClickSameTab",
   //   speechText: "Click opens the tree jump path in the same tab",
   //   action: () => clickTreeJump(page, CONST.SITECORE.TREE_JUMP_PATHS.LAYOUT_RENDERINGS),
   // });
 
   // await playDemoBeat(page, {
-  //   name: "DemoTreeJumpMenu-CtrlClickNewTab",   
+  //   name: "DemoTreeJumpFlyout-CtrlClickNewTab",   
   //   speechText: "Ctrl + Click opens the tree jump path in a new tab",
   //   action: () => clickTreeJump(page, CONST.SITECORE.TREE_JUMP_PATHS.MEDIA_LIBRARY),
   // });

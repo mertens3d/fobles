@@ -11,7 +11,7 @@ import {
 } from "../helpers/frame-finder";
 import {
   dismissFoblesConfirmDialogIfPresent,
-  openJumpMenu,
+  openJumpFlyout,
 } from "./fobles-macros";
 import { foblesWaitForTimeout } from "../helpers/wait-helpers";
 import { isSprintMode } from "../helpers/mouse-proxy";
@@ -76,7 +76,7 @@ export async function clickTreeJump(
   const foblesFrame = await findFoblesFrame(page);
   await ensureMouseMarkerExists(page);
   await ensureMouseMarkerExists(foblesFrame);
-  await openJumpMenu(page, foblesFrame);
+  await openJumpFlyout(page, foblesFrame);
   const jumpButtonSelector = `[data-fobles-tree-jump-path="${path}"]`;
   const jumpButton = foblesFrame.locator(jumpButtonSelector);
   console.log(

@@ -1,24 +1,24 @@
 import { ATTRIBUTE, SELECTORS } from "../../constants";
 import { setProxyButtonsVisible } from "../proxy-buttons";
-import { setJumpMenuPinned } from "./handlers";
-import { getOrCreateJumpMenu } from "./menu-builder";
+import { setJumpFlyoutPinned } from "./handlers";
+import { getOrCreateJumpFlyout } from "./menu-builder";
 import "./button-visibility";
 
 export {
-  isJumpMenuPinned,
-  setJumpMenuPinned,
-  openJumpMenuOnHover,
-  scheduleCloseJumpMenuOnHover,
+  isJumpFlyoutPinned,
+  setJumpFlyoutPinned,
+  openJumpFlyoutOnHover,
+  scheduleCloseJumpFlyoutOnHover,
 } from "./handlers";
 
-export function isJumpMenuVisible(doc: Document): boolean {
+export function isJumpFlyoutVisible(doc: Document): boolean {
   return doc.querySelector(SELECTORS.JUMP_MENU_FLYOUT)?.getAttribute(ATTRIBUTE.DATA.KEY.VISIBLE) === "true";
 }
 
-export function setJumpMenuVisible(doc: Document, visible: boolean): void {
-  const menu = getOrCreateJumpMenu(doc, () => setJumpMenuVisible(doc, false));
+export function setJumpFlyoutVisible(doc: Document, visible: boolean): void {
+  const menu = getOrCreateJumpFlyout(doc, () => setJumpFlyoutVisible(doc, false));
   menu?.setAttribute(ATTRIBUTE.DATA.KEY.VISIBLE, visible ? "true" : "false");
-  if (!visible) setJumpMenuPinned(doc, false);
+  if (!visible) setJumpFlyoutPinned(doc, false);
 
   if (visible) setProxyButtonsVisible(doc, false);
 }

@@ -42,7 +42,7 @@ Playwright end-to-end tests live in `tests/e2e/` and exercise the extension agai
 - `sitecore-macros.ts` - actual canned click/gesture sequences (ribbon tabs, galleries, dragging
   the toolbar, dismissing Fobles' own confirm dialog) that a spec reuses as one step. Every macro
   logs `[Macro: <name>] - Start` as its first line.
-  - `openJumpMenu` is idempotent - it checks the flyout's `data-visible` attribute (not
+  - `openJumpFlyout` is idempotent - it checks the flyout's `data-visible` attribute (not
     Playwright's `.isVisible()`, which can't tell: the flyout is hidden via `opacity`/
     `pointer-events` in CSS, not `display`/`visibility`, so Playwright always reports it visible).
   - `clickTreeJump`/`highlightQuickInfoPath` each find their own fresh fobles frame internally

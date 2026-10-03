@@ -1,6 +1,6 @@
 import { STORAGE } from "../constants";
 import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
-import { normalizeJumpMenuIconPath } from "./button-settings";
+import { normalizeJumpFlyoutIconPath } from "./button-settings";
 import { USER_ADMIN_PAGE } from "./user-admin-page-constants";
 import type { UserAdminPage } from "./jump-menu.types";
 
@@ -11,7 +11,7 @@ export function createUserAdminPageId(): string {
 }
 
 export function normalizeUserAdminPageIconPath(rawIcon: string): string {
-  return normalizeJumpMenuIconPath(rawIcon, USER_ADMIN_PAGE.DEFAULT_ICON_PATH);
+  return normalizeJumpFlyoutIconPath(rawIcon, USER_ADMIN_PAGE.DEFAULT_ICON_PATH);
 }
 
 // Unlike a Tree Jump's pathSuffix (joined onto SITECORE.RELATIVE_PATHS.ROOT), an admin page's url

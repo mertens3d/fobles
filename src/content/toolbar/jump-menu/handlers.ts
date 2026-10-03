@@ -1,42 +1,42 @@
-import { setJumpMenuVisible } from "./index";
+import { setJumpFlyoutVisible } from "./index";
 
 let quickMenuPinned = false;
 
-export function isJumpMenuPinned(): boolean {
+export function isJumpFlyoutPinned(): boolean {
   return quickMenuPinned;
 }
 
-export function setJumpMenuPinned(doc: Document, pinned: boolean): void {
+export function setJumpFlyoutPinned(doc: Document, pinned: boolean): void {
   quickMenuPinned = pinned;
-  if (pinned) setJumpMenuVisible(doc, true);
+  if (pinned) setJumpFlyoutVisible(doc, true);
 }
 
 let quickMenuCloseTimer: number | null = null;
 
-export function cancelJumpMenuClose(): void {
+export function cancelJumpFlyoutClose(): void {
   if (quickMenuCloseTimer === null) return;
   window.clearTimeout(quickMenuCloseTimer);
   quickMenuCloseTimer = null;
 }
 
-export function scheduleCloseJumpMenuOnHover(doc: Document): void {
+export function scheduleCloseJumpFlyoutOnHover(doc: Document): void {
   if (quickMenuPinned) return;
-  cancelJumpMenuClose();
+  cancelJumpFlyoutClose();
   quickMenuCloseTimer = window.setTimeout(() => {
     quickMenuCloseTimer = null;
-    setJumpMenuVisible(doc, false);
+    setJumpFlyoutVisible(doc, false);
   }, 250);
 }
 
-export function openJumpMenuOnHover(doc: Document): void {
-  cancelJumpMenuClose();
-  setJumpMenuVisible(doc, true);
+export function openJumpFlyoutOnHover(doc: Document): void {
+  cancelJumpFlyoutClose();
+  setJumpFlyoutVisible(doc, true);
 }
 
-export function closeJumpMenuOnOutsidePointer(doc: Document, container: Element): void {
+export function closeJumpFlyoutOnOutsidePointer(doc: Document, container: Element): void {
   doc.addEventListener("pointerdown", (event) => {
     if (!container.contains(event.target as Node)) {
-      setJumpMenuVisible(doc, false);
+      setJumpFlyoutVisible(doc, false);
     }
   });
 }

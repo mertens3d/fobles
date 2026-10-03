@@ -1,12 +1,12 @@
 import {
   JUMP_MENU_BUTTON_CATALOG,
-  type JumpMenuButtonDescriptor,
+  type JumpFlyoutButtonDescriptor,
 } from "../shared/jump-menu/button-catalog";
 import {
-  getJumpMenuButtonSettings,
-  sanitizeJumpMenuPathSuffix,
-  setJumpMenuButtonSettings,
-  type JumpMenuButtonSettings,
+  getJumpFlyoutButtonSettings,
+  sanitizeJumpFlyoutPathSuffix,
+  setJumpFlyoutButtonSettings,
+  type JumpFlyoutButtonSettings,
 } from "../shared/jump-menu/button-settings";
 import {
   getUserTreeJumps,
@@ -30,9 +30,9 @@ const quickMenuButtonsStatus = getElement<HTMLParagraphElement>("jump-menu-butto
 let treeJumpsColumnSection: HTMLElement | null = null;
 let adminPagesColumnSection: HTMLElement | null = null;
 
-function createJumpMenuButtonRow(
-  descriptor: JumpMenuButtonDescriptor,
-  userSettings: JumpMenuButtonSettings,
+function createJumpFlyoutButtonRow(
+  descriptor: JumpFlyoutButtonDescriptor,
+  userSettings: JumpFlyoutButtonSettings,
 ): HTMLDivElement {
   const enabledInput = document.createElement("input");
   enabledInput.type = "checkbox";
@@ -79,7 +79,7 @@ function createJumpMenuButtonRow(
   suffixInput.placeholder = "optional sub-path";
   suffixInput.value = userSettings[descriptor.id]?.pathSuffix ?? "";
   suffixInput.addEventListener("blur", () => {
-    suffixInput.value = sanitizeJumpMenuPathSuffix(suffixInput.value);
+    suffixInput.value = sanitizeJumpFlyoutPathSuffix(suffixInput.value);
   });
   fieldsRow.appendChild(suffixInput);
 
@@ -87,8 +87,8 @@ function createJumpMenuButtonRow(
   return row;
 }
 
-function renderJumpMenuButtons(
-  userSettings: JumpMenuButtonSettings,
+function renderJumpFlyoutButtons(
+  userSettings: JumpFlyoutButtonSettings,
   userTreeJumps: readonly UserTreeJump[],
   userAdminPages: readonly UserAdminPage[],
 ): void {
@@ -96,7 +96,7 @@ function renderJumpMenuButtons(
   treeJumpsColumnSection = null;
   adminPagesColumnSection = null;
 
-  const columns = new Map<string, JumpMenuButtonDescriptor[]>();
+  const columns = new Map<string, JumpFlyoutButtonDescriptor[]>();
   JUMP_MENU_BUTTON_CATALOG.forEach((descriptor) => {
     const column = columns.get(descriptor.column) ?? [];
     column.push(descriptor);
@@ -117,7 +117,7 @@ function renderJumpMenuButtons(
     columnSection.appendChild(summary);
 
     descriptors.forEach((descriptor) =>
-      columnSection.appendChild(createJumpMenuButtonRow(descriptor, userSettings)),
+      columnSection.appendChild(createJumpFlyoutButtonRow(descriptor, userSettings)),
     );
     if (columnTitle === TEXT.GROUP_NAME.TREE_JUMPS) {
       renderUserTreeJumpEditor(columnSection, userTreeJumps);
@@ -141,9 +141,9 @@ function renderJumpMenuButtons(
   });
 }
 
-export function initJumpMenuButtons(): void {
+export function initJumpFlyoutButtons(): void {
   getElement<HTMLButtonElement>("save-jump-menu-buttons").addEventListener("click", () => {
-    const userSettings: JumpMenuButtonSettings = {};
+    const userSettings: JumpFlyoutButtonSettings = {};
     JUMP_MENU_BUTTON_CATALOG.forEach((descriptor) => {
       const enabledInput = quickMenuButtonsContainer.querySelector<HTMLInputElement>(
         `input[name='enabled'][data-button-id='${descriptor.id}']`,
@@ -151,7 +151,7 @@ export function initJumpMenuButtons(): void {
       const suffixInput = quickMenuButtonsContainer.querySelector<HTMLInputElement>(
         `input[name='pathSuffix'][data-button-id='${descriptor.id}']`,
       );
-      const pathSuffix = suffixInput ? sanitizeJumpMenuPathSuffix(suffixInput.value) : "";
+      const pathSuffix = suffixInput ? sanitizeJumpFlyoutPathSuffix(suffixInput.value) : "";
       if (suffixInput) suffixInput.value = pathSuffix;
 
       userSettings[descriptor.id] = {
@@ -169,7 +169,7 @@ export function initJumpMenuButtons(): void {
       : [];
 
     void Promise.all([
-      setJumpMenuButtonSettings(userSettings),
+      setJumpFlyoutButtonSettings(userSettings),
       setUserTreeJumps(userTreeJumps),
       setUserAdminPages(userAdminPages),
     ]).then(() => {
@@ -178,10 +178,10 @@ export function initJumpMenuButtons(): void {
   });
 
   void Promise.all([
-    getJumpMenuButtonSettings(),
+    getJumpFlyoutButtonSettings(),
     getUserTreeJumps(),
     getUserAdminPages(),
   ]).then(([userSettings, userTreeJumps, userAdminPages]) => {
-    renderJumpMenuButtons(userSettings, userTreeJumps, userAdminPages);
+    renderJumpFlyoutButtons(userSettings, userTreeJumps, userAdminPages);
   });
 }

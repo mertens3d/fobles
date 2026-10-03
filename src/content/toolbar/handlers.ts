@@ -1,7 +1,7 @@
 import {
-  isJumpMenuPinned,
-  setJumpMenuPinned,
-  setJumpMenuVisible,
+  isJumpFlyoutPinned,
+  setJumpFlyoutPinned,
+  setJumpFlyoutVisible,
 } from "./jump-menu";
 import {
   isProxyButtonsPinned,
@@ -10,13 +10,13 @@ import {
 } from "./proxy-buttons";
 import type { ToolbarContext } from "./types";
 
-export function toggleJumpMenu(context: ToolbarContext): void {
-  if (isJumpMenuPinned()) {
-    setJumpMenuPinned(context.doc, false);
-    setJumpMenuVisible(context.doc, false);
+export function toggleJumpFlyout(context: ToolbarContext): void {
+  if (isJumpFlyoutPinned()) {
+    setJumpFlyoutPinned(context.doc, false);
+    setJumpFlyoutVisible(context.doc, false);
     return;
   }
-  setJumpMenuPinned(context.doc, true);
+  setJumpFlyoutPinned(context.doc, true);
 }
 
 export function toggleProxyButtons(context: ToolbarContext): void {

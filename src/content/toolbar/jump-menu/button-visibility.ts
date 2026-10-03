@@ -1,12 +1,12 @@
 import {
-  getJumpMenuButtonSettings,
-  onJumpMenuButtonSettingsChanged,
-  type JumpMenuButtonSetting,
-  type JumpMenuButtonSettings,
+  getJumpFlyoutButtonSettings,
+  onJumpFlyoutButtonSettingsChanged,
+  type JumpFlyoutButtonSetting,
+  type JumpFlyoutButtonSettings,
 } from "../../../shared/jump-menu/button-settings";
 import { FOBLES } from "../../features/augmentor/constants";
 
-let buttonSettings: JumpMenuButtonSettings = {};
+let buttonSettings: JumpFlyoutButtonSettings = {};
 const registeredRows: Array<{ id: string; row: HTMLElement }> = [];
 
 // Reuses the existing .fobles-hidden class instead of a hand-rolled !important override,
@@ -15,24 +15,24 @@ const setRowVisibility = (row: HTMLElement, visible: boolean): void => {
   row.classList.toggle(FOBLES.CLASSES.HIDDEN, !visible);
 };
 
-const applyJumpMenuButtonSettings = (): void => {
+const applyJumpFlyoutButtonSettings = (): void => {
   registeredRows.forEach(({ id, row }) => {
     setRowVisibility(row, buttonSettings[id]?.enabled !== false);
   });
 };
 
-const loadJumpMenuButtonSettings = async (): Promise<void> => {
-  buttonSettings = await getJumpMenuButtonSettings();
-  applyJumpMenuButtonSettings();
+const loadJumpFlyoutButtonSettings = async (): Promise<void> => {
+  buttonSettings = await getJumpFlyoutButtonSettings();
+  applyJumpFlyoutButtonSettings();
 };
 
-void loadJumpMenuButtonSettings();
-onJumpMenuButtonSettingsChanged((settings) => {
+void loadJumpFlyoutButtonSettings();
+onJumpFlyoutButtonSettingsChanged((settings) => {
   buttonSettings = settings;
-  applyJumpMenuButtonSettings();
+  applyJumpFlyoutButtonSettings();
 });
 
-export function getButtonSetting(id: string): JumpMenuButtonSetting | undefined {
+export function getButtonSetting(id: string): JumpFlyoutButtonSetting | undefined {
   return buttonSettings[id];
 }
 

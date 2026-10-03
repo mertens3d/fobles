@@ -4,7 +4,7 @@ import {
   isCompactToolbarPage,
   isPowerShellIsePath,
 } from "../guard";
-import { setJumpMenuVisible } from "./jump-menu";
+import { setJumpFlyoutVisible } from "./jump-menu";
 import { setProxyButtonsVisible } from "./proxy-buttons";
 import {
   createLboltButton,
@@ -89,7 +89,7 @@ export function injectToolbar(context: ToolbarContext): void {
   applyToolbarPlacement(container, context.win, context.placement);
   updateToolbarBackground(context);
   observeToolbarBackground(context);
-  setJumpMenuVisible(context.doc, false);
+  setJumpFlyoutVisible(context.doc, false);
   setProxyButtonsVisible(context.doc, false);
 }
 
@@ -103,7 +103,7 @@ export function setToolbarVisible(
     return;
   }
 
-  setJumpMenuVisible(context.doc, false);
+  setJumpFlyoutVisible(context.doc, false);
   setProxyButtonsVisible(context.doc, false);
   context.doc.querySelector(SELECTORS.TOOLBAR_CONTAINER)?.remove();
 }

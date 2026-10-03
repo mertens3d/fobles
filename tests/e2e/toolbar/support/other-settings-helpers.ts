@@ -8,7 +8,7 @@ import { findFoblesFrame } from "../../../helpers/frame-finder";
 const TESTING = CONST.TESTING;
 
 
-export async function saveJumpMenuButtons(optionsPage: Page): Promise<void> {
+export async function saveJumpFlyoutButtons(optionsPage: Page): Promise<void> {
   await clickExtensionControl(
     optionsPage,
     optionsPage.getByRole("button", { name: CONST.TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON }),
@@ -38,7 +38,7 @@ export async function removeTestRowIfPresent(optionsPage: Page): Promise<void> {
       removedAny = true;
     }
   }
-  if (removedAny) await saveJumpMenuButtons(optionsPage);
+  if (removedAny) await saveJumpFlyoutButtons(optionsPage);
 }
 
 // Adds our test row via the real "+ Add User Tree Jump" button and fields, then saves. Only ever
@@ -70,7 +70,7 @@ export async function addTestRow(optionsPage: Page): Promise<Locator> {
     CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.iconRaw,
     "Tree Jump icon",
   );
-  await saveJumpMenuButtons(optionsPage);
+  await saveJumpFlyoutButtons(optionsPage);
   return row;
 }
 
@@ -80,7 +80,7 @@ export async function setTestRowEnabled(optionsPage: Page, row: Locator, enabled
   if ((await enabledCheckbox.isChecked()) !== enabled) {
     await setExtensionCheckbox(optionsPage, enabledCheckbox, enabled, "User Tree Jump enabled");
   }
-  await saveJumpMenuButtons(optionsPage);
+  await saveJumpFlyoutButtons(optionsPage);
 }
 
 export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
@@ -89,10 +89,10 @@ export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
       hasText: TESTING.OPTIONS.ADMIN_PAGES.JUMP_MENU_SECTION_TITLE,
     }),
   });
-  const jumpMenuIsOpen = await quickJumpSection.evaluate(
+  const jumpFlyoutIsOpen = await quickJumpSection.evaluate(
     (element) => (element as HTMLDetailsElement).open,
   );
-  if (!jumpMenuIsOpen) {
+  if (!jumpFlyoutIsOpen) {
     await clickExtensionControl(
       optionsPage,
       quickJumpSection.locator(TESTING.OPTIONS.SUMMARY_DIRECT_CHILD_SELECTOR),

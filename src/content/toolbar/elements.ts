@@ -7,14 +7,14 @@ import {
 } from "../constants";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {
-  openJumpMenuOnHover,
-  scheduleCloseJumpMenuOnHover,
+  openJumpFlyoutOnHover,
+  scheduleCloseJumpFlyoutOnHover,
 } from "./jump-menu";
 import {
   openProxyButtonsOnHover,
   scheduleCloseProxyButtonsOnHover,
 } from "./proxy-buttons";
-import { toggleProxyButtons, toggleJumpMenu } from "./handlers";
+import { toggleProxyButtons, toggleJumpFlyout } from "./handlers";
 import type { ToolbarContext } from "./types";
 
 const GRIP_ROWS = 5;
@@ -67,12 +67,12 @@ export function createJumpsMenuTrigger(context: ToolbarContext): HTMLDivElement 
     role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.JUMP_MENU_TRIGGER,
     text: TEXT.JUMP_MENU,
     title: TEXT.QUICK_MENU_TITLE,
-    onClick: () => toggleJumpMenu(context),
+    onClick: () => toggleJumpFlyout(context),
   });
 
   return createMenuTrigger(context, button, CLASS.JUMP_MENU_TRIGGER, {
-    open: () => openJumpMenuOnHover(context.doc),
-    scheduleClose: () => scheduleCloseJumpMenuOnHover(context.doc),
+    open: () => openJumpFlyoutOnHover(context.doc),
+    scheduleClose: () => scheduleCloseJumpFlyoutOnHover(context.doc),
   });
 }
 

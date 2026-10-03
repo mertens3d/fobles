@@ -12,7 +12,7 @@ import type { CornerPosition, MouseCoordinates } from "../helpers/mouse-proxy.ty
 import { findFoblesFrame, findFrameWithSelector } from "../helpers/frame-finder";
 import { walkFrameDocuments } from "../helpers/frame-helpers";
 import { showBillboard } from "../helpers/billboard";
-import { expectJumpMenuFlyoutVisible } from "../expect-snippets/expect-snippets";
+import { expectJumpFlyoutFlyoutVisible } from "../expect-snippets/expect-snippets";
 
 export async function ClickFoblesJumpButton(
     page: Page) {
@@ -20,14 +20,14 @@ export async function ClickFoblesJumpButton(
     console.log(`[fobles Macro] ClickFoblesJumpButton`);
     const menuButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
     await clickWithMouseMarker(page, menuButton, "Fobles Jump Button");
-    await expectJumpMenuFlyoutVisible(foblesFrame);
+    await expectJumpFlyoutFlyoutVisible(foblesFrame);
 }
 
 
 // Idempotent - only clicks the trigger if the flyout isn't already visible, since it's a toggle
 // button (clicking it while already open would close it instead).
-export async function openJumpMenu(page: Page, foblesFrame: Frame): Promise<void> {
-    console.log("[Macro: openJumpMenu] - Start");
+export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<void> {
+    console.log("[Macro: openJumpFlyout] - Start");
     console.log("[fobles] Checking whether the jump menu flyout is already visible");
     const menuFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT);
     const isOpen =
@@ -44,12 +44,12 @@ export async function openJumpMenu(page: Page, foblesFrame: Frame): Promise<void
 
 // Clicks the nth "other menu button" (a plain external-URL jump-menu entry - CONST.FOBLES.LOCATORS.MENU_URL,
 // distinct from a tree-jump button, which targets a Sitecore item path) and dismisses Fobles' own
-// confirm dialog afterward. Opens the jump menu itself first (idempotent, see openJumpMenu)
+// confirm dialog afterward. Opens the jump menu itself first (idempotent, see openJumpFlyout)
 // rather than requiring the caller to resolve a frame/open the menu beforehand.
-export async function clickJumpMenuUrlButton(page: Page, index: number, label: string): Promise<void> {
-    console.log(`[Macro: clickJumpMenuUrlButton] - Start (index: ${index})`);
+export async function clickJumpFlyoutUrlButton(page: Page, index: number, label: string): Promise<void> {
+    console.log(`[Macro: clickJumpFlyoutUrlButton] - Start (index: ${index})`);
     const foblesFrame = await findFoblesFrame(page);
-    await openJumpMenu(page, foblesFrame);
+    await openJumpFlyout(page, foblesFrame);
     const menuButton = foblesFrame.locator(CONST.FOBLES.LOCATORS.MENU_URL).nth(index);
     await menuButton.waitFor({ state: "visible" });
     await clickWithMouseMarker(page, menuButton, `Menu ${label}`);

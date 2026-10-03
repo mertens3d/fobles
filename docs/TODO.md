@@ -24,7 +24,7 @@
 ## TODO - V1
 
 - [ ] Finalize and publish the project license and contribution terms. Until then, `LICENSE` is an all-rights-reserved notice and `LICENSE-DRAFT.md` is non-binding.
-- [ ] Investigate the circular import between `src/content/toolbar/jump-menu` and `src/content/toolbar/proxy-buttons.ts` (`jump-menu` imports `setProxyButtonsVisible` from `proxy-buttons.ts`, which imports `setJumpMenuVisible` from `jump-menu`). Works today but is fragile under refactors and blocks tree-shaking/isolated testing.
+- [ ] Investigate the circular import between `src/content/toolbar/jump-menu` and `src/content/toolbar/proxy-buttons.ts` (`jump-menu` imports `setProxyButtonsVisible` from `proxy-buttons.ts`, which imports `setJumpFlyoutVisible` from `jump-menu`). Works today but is fragile under refactors and blocks tree-shaking/isolated testing.
 - [ ] `src/content/features/jump-menu/kick-users.ts` and `ai-pages.ts` are organizational anomalies: they're non-UI command/action logic that doesn't fit `toolbar/` (rendering-only) or `features/augmentor/` (Sitecore-page-manipulation commands) cleanly. Likely belong in `augmentor/` once revisited, since they do manipulate the real Sitecore page (kicking users, reading item info) - just not yet moved there.
 - [ ] `Strategy General Link Anchor` field (tests/items-fobles, `/sitecore/system/Modules/Fobles Testing/Strategy Scenarios/Strategy general link`) has no value yet - `Internal`/`External`/`Media`/`Email`/`JavaScript` are all confirmed real values now. Set it via Content Editor's real "Insert Anchor" dialog and `ser pull`.
 - [ ] `Strategy Image Content Hub` field has no value yet - waiting on a real Content Hub link to test against.

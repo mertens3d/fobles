@@ -1,7 +1,7 @@
 import { SITECORE } from "../../content/sitecore";
 import { STORAGE } from "../constants";
 import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
-import { joinJumpMenuPath, normalizeJumpMenuIconPath, sanitizeJumpMenuPathSuffix } from "./button-settings";
+import { joinJumpFlyoutPath, normalizeJumpFlyoutIconPath, sanitizeJumpFlyoutPathSuffix } from "./button-settings";
 import { USER_TREE_JUMP } from "./user-tree-jump-constants";
 import type { UserTreeJump } from "./jump-menu.types";
 
@@ -12,13 +12,13 @@ export function createUserTreeJumpId(): string {
 }
 
 export function normalizeUserTreeJumpIconPath(rawIcon: string): string {
-  return normalizeJumpMenuIconPath(rawIcon, USER_TREE_JUMP.DEFAULT_ICON_PATH);
+  return normalizeJumpFlyoutIconPath(rawIcon, USER_TREE_JUMP.DEFAULT_ICON_PATH);
 }
 
 // Every user Tree Jump is rooted at SITECORE.RELATIVE_PATHS.ROOT - the suffix is the only part
 // the user actually controls, exactly like the fixed catalog's own base path + suffix buttons.
 export function buildUserTreeJumpPath(pathSuffix: string): string {
-  return joinJumpMenuPath(SITECORE.RELATIVE_PATHS.ROOT, pathSuffix);
+  return joinJumpFlyoutPath(SITECORE.RELATIVE_PATHS.ROOT, pathSuffix);
 }
 
 const isUserTreeJump = (value: unknown): value is UserTreeJump => {
@@ -42,7 +42,7 @@ function normalizeUserTreeJumps(value: unknown): UserTreeJump[] {
     .map((entry) => ({
       ...entry,
       icon: normalizeUserTreeJumpIconPath(entry.icon),
-      pathSuffix: sanitizeJumpMenuPathSuffix(entry.pathSuffix),
+      pathSuffix: sanitizeJumpFlyoutPathSuffix(entry.pathSuffix),
     }));
 }
 

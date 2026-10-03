@@ -19,7 +19,7 @@ import {
   expectCurrentUrl,
 } from "../../expect-snippets/expect-snippets";
 import type { BrowserContext, Locator } from "@playwright/test";
-import { getJumpMenuFlyoutButton } from "../../helpers/scrolling-helpers";
+import { getJumpFlyoutFlyoutButton } from "../../helpers/scrolling-helpers";
 import { clickFoblesNavigationButton } from "../../helpers/click-navigate-helpers";
 
 foblesTest.describe("Fobles browser integration", () => {
@@ -125,7 +125,7 @@ async function testOneClick(
         await ClickFoblesJumpButton(page);
       }
 
-      const flyoutButton :Locator= await getJumpMenuFlyoutButton(
+      const flyoutButton :Locator= await getJumpFlyoutFlyoutButton(
         foblesFrame,
         index,
       );
@@ -162,7 +162,7 @@ async function TestOneCtrlClick(
       await ClickFoblesJumpButton(page);
 
 
-      const foblesTreeButton = await getJumpMenuFlyoutButton(
+      const foblesTreeButton = await getJumpFlyoutFlyoutButton(
         foblesFrame,
         index,
       );

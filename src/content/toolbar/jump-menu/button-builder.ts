@@ -43,7 +43,7 @@ function addDatasetAttributes(button: HTMLButtonElement, option: MenuOption): vo
 }
 
 // Wires the option's own action (if any) plus the shared "clicking any option closes the menu" behavior.
-// closeMenu is threaded down from index.ts so this file never has to import setJumpMenuVisible.
+// closeMenu is threaded down from index.ts so this file never has to import setJumpFlyoutVisible.
 function addEvent(
   doc: Document,
   button: HTMLButtonElement,

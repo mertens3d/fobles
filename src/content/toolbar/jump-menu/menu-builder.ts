@@ -1,8 +1,8 @@
 import { ATTRIBUTE, CLASS, SELECTORS, TEXT } from "../../constants";
 import {
-  cancelJumpMenuClose,
-  closeJumpMenuOnOutsidePointer,
-  scheduleCloseJumpMenuOnHover,
+  cancelJumpFlyoutClose,
+  closeJumpFlyoutOnOutsidePointer,
+  scheduleCloseJumpFlyoutOnHover,
 } from "./handlers";
 import { createMenuColumn } from "./column-builder";
 import { initUserTreeJumpGroup } from "./user-tree-jump-group";
@@ -15,7 +15,7 @@ import {
   TREE_JUMP_GROUP,
 } from "../../../shared/jump-menu/menu-groups";
 
-function createJumpMenu(doc: Document, closeMenu: () => void): HTMLDivElement {
+function createJumpFlyout(doc: Document, closeMenu: () => void): HTMLDivElement {
   const menu = doc.createElement("div");
   menu.className = CLASS.JUMP_MENU_FLYOUT;
   menu.setAttribute(ATTRIBUTE.DATA.KEY.JUMP_MENU, "1");
@@ -39,20 +39,20 @@ function createJumpMenu(doc: Document, closeMenu: () => void): HTMLDivElement {
   return menu;
 }
 
-// closeMenu is supplied by the caller (index.ts) so this file never has to import setJumpMenuVisible.
-export function getOrCreateJumpMenu(doc: Document, closeMenu: () => void): HTMLDivElement | null {
+// closeMenu is supplied by the caller (index.ts) so this file never has to import setJumpFlyoutVisible.
+export function getOrCreateJumpFlyout(doc: Document, closeMenu: () => void): HTMLDivElement | null {
   const trigger = doc.querySelector(SELECTORS.QUICK_MENU_TRIGGER);
   if (!trigger) return null;
 
   const existing = trigger.querySelector<HTMLDivElement>(SELECTORS.JUMP_MENU_FLYOUT);
   if (existing) return existing;
 
-  const menu = createJumpMenu(doc, closeMenu);
+  const menu = createJumpFlyout(doc, closeMenu);
   // The panel renders outside the trigger's own hit box, so bridge the gap with a
   // close delay instead of relying on the trigger's mouseleave alone.
-  menu.addEventListener("mouseenter", cancelJumpMenuClose);
-  menu.addEventListener("mouseleave", () => scheduleCloseJumpMenuOnHover(doc));
+  menu.addEventListener("mouseenter", cancelJumpFlyoutClose);
+  menu.addEventListener("mouseleave", () => scheduleCloseJumpFlyoutOnHover(doc));
   trigger.appendChild(menu);
-  closeJumpMenuOnOutsidePointer(doc, trigger);
+  closeJumpFlyoutOnOutsidePointer(doc, trigger);
   return menu;
 }

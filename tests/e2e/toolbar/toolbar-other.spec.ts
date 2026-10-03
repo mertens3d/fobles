@@ -4,7 +4,7 @@ import { createStep } from "../../helpers/fobles-helpers-support/test-step";
 import { setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers-support/test-setup";
 import { openContentEditor } from "../../fixtures/sitecore";
 import { ceRibbonOpenHome } from "../../macros/sitecore-macros";
-import { clickJumpMenuUrlButton } from "../../macros/fobles-macros";
+import { clickJumpFlyoutUrlButton } from "../../macros/fobles-macros";
 import { getFoblesMenuTargets } from "./support/other-settings-helpers";
 import { expect, foblesTest, type Page } from "../../fixtures/playwright";
 
@@ -83,7 +83,7 @@ async function stepExamineOneJumpButton(target: menuTarget,
 
 async function stepExamineOneJumpButtonInner(index: number, page: Page, target: menuTarget) {
     await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-    await clickJumpMenuUrlButton(page, index, target.label);
+    await clickJumpFlyoutUrlButton(page, index, target.label);
 
     await page.waitForURL(
         (url) => url.toString().includes(encodeURI(target.url)),
