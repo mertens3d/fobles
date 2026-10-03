@@ -1,6 +1,6 @@
 import { foblesTest } from "../../fixtures/playwright";
 import { moveMouseToPosition, ensureMouseMarkerExists, verifyMouseMarker } from "../../helpers/mouse-proxy";
-import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { humanPause } from "../../helpers/wait-helpers";
 
 // Isolates "does video recording plus the mouse marker actually work at all" from every other
 // moving part (Sitecore login, real page navigations, extension activation) - run this first if a
@@ -18,10 +18,10 @@ foblesTest.describe("Promo video: smoke test", () => {
     const mousePosition = { x: 100, y: 100 };
     
     await moveMouseToPosition(page, { x: 700, y: 300 },  "Smoke test move 1");
-    await foblesWaitForTimeout(page, 1_000);
+    await humanPause(page, 1_000);
     await moveMouseToPosition(page, { x: 250, y: 600 },  "Smoke test move 2");
-    await foblesWaitForTimeout(page, 1_000);
+    await humanPause(page, 1_000);
     await moveMouseToPosition(page, { x: 900, y: 800 },  "Smoke test move 3");
-    await foblesWaitForTimeout(page, 1_000);
+    await humanPause(page, 1_000);
   });
 });

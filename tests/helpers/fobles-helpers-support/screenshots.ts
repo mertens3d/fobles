@@ -16,7 +16,7 @@ export async function attachLocatorScreenshot(
   options?: { mask?: Locator[] },
 ): Promise<void> {
   if (!CAPTURE_STEP_SCREENSHOTS) return;
-  await highlightScreenShot( target,`${name} - ${attachLocatorScreenshot.name}`);
+  await highlightScreenShot(target, `${name} - ${attachLocatorScreenshot.name}`);
   const filePath = testInfo.outputPath(name);
   const { hardMasks, blurTargets } = await getSensitiveAutoMasks(target);
   const mask = [...(options?.mask ?? []), ...hardMasks];
@@ -91,52 +91,58 @@ const BLUR_BRANCH_MARKER = "data-fobles-blur-branch";
 
 async function blurTreeExcept(
   frame: Frame,
-  containerSelector: string,
+  containerSelectors: string[],
   keepSelectors: string[],
   furnitureSelectors: string[] = [],
   keepSubtreeSelectors: string[] = [],
-): Promise<Locator> {
-  await frame.locator(containerSelector).evaluateAll(
-    (containers, { keepSelectors, furnitureSelectors, keepSubtreeSelectors, marker }) => {
-      const matchesAny = (element: Element, selectors: string[]): boolean =>
-        selectors.some((selector) => element.matches(selector));
-      const containsKeptElement = (element: Element): boolean =>
-        [...keepSelectors, ...keepSubtreeSelectors].some(
-          (selector) => element.querySelector(selector) !== null,
-        );
+): Promise<Locator[]> {
+  const blurTargets: Locator[] = [];
+  for (const containerSelector of containerSelectors) {
+    await frame.locator(containerSelector).evaluateAll(
+      (containers, { keepSelectors, furnitureSelectors, keepSubtreeSelectors, marker }) => {
+        const matchesAny = (element: Element, selectors: string[]): boolean =>
+          selectors.some((selector) => element.matches(selector));
+        const containsKeptElement = (element: Element): boolean =>
+          [...keepSelectors, ...keepSubtreeSelectors].some(
+            (selector) => element.querySelector(selector) !== null,
+          );
 
-      const markBranches = (node: Element, insideKeptSubtree: boolean): void => {
-        const children = Array.from(node.children);
-        const hasKeptSibling = children.some((child) => matchesAny(child, keepSelectors));
-        const hasKeptSubtreeSibling = children.some((child) =>
-          matchesAny(child, keepSubtreeSelectors),
-        );
+        const markBranches = (node: Element, insideKeptSubtree: boolean): void => {
+          const children = Array.from(node.children);
+          const hasKeptSibling = children.some((child) => matchesAny(child, keepSelectors));
+          const hasKeptSubtreeSibling = children.some((child) =>
+            matchesAny(child, keepSubtreeSelectors),
+          );
 
-        for (const child of children) {
-          child.removeAttribute(marker);
-          if (matchesAny(child, keepSelectors) || matchesAny(child, keepSubtreeSelectors)) continue;
-          if (
-            (hasKeptSibling || hasKeptSubtreeSibling) &&
-            matchesAny(child, furnitureSelectors)
-          ) {
-            continue;
+          for (const child of children) {
+            child.removeAttribute(marker);
+            if (matchesAny(child, keepSelectors) || matchesAny(child, keepSubtreeSelectors)) continue;
+            if (
+              (hasKeptSibling || hasKeptSubtreeSibling) &&
+              matchesAny(child, furnitureSelectors)
+            ) {
+              continue;
+            }
+            if (insideKeptSubtree || hasKeptSubtreeSibling) {
+              markBranches(child, true);
+            } else if (containsKeptElement(child)) {
+              markBranches(child, false);
+            } else {
+              child.setAttribute(marker, "1");
+            }
           }
-          if (insideKeptSubtree || hasKeptSubtreeSibling) {
-            markBranches(child, true);
-          } else if (containsKeptElement(child)) {
-            markBranches(child, false);
-          } else {
-            child.setAttribute(marker, "1");
-          }
-        }
-      };
+        };
 
-      for (const container of containers) markBranches(container, false);
-    },
-    { keepSelectors, furnitureSelectors, keepSubtreeSelectors, marker: BLUR_BRANCH_MARKER },
-  );
+        for (const container of containers) markBranches(container, false);
+      },
+      { keepSelectors, furnitureSelectors, keepSubtreeSelectors, marker: BLUR_BRANCH_MARKER },
+    );
+    blurTargets.push(
+      frame.locator(`${containerSelector} [${BLUR_BRANCH_MARKER}]`),
+    );
+  }
 
-  return frame.locator(`${containerSelector} [${BLUR_BRANCH_MARKER}]`);
+  return blurTargets;
 }
 
 
@@ -222,9 +228,11 @@ async function getSensitiveAutoMasks(
   // dropdown (a second copy of the same li, sharing the same portrait id) - mask every occurrence
   // via the portrait image both copies share, rather than relying on the dropdown's li order
   // (ACCOUNT_INFO's last() alone missed the visible header copy entirely).
-  const userPortraitLi = "li:has(img#globalHeaderUserPortrait)";
-  for (const frame of await framesWithSelector(page, userPortraitLi)) {
-    masks.push(frame.locator(userPortraitLi));
+  // const userPortraitLi = "li:has(img#globalHeaderUserPortrait)";
+  const headerLoginInfo = "div.sc-globalHeader-loginInfo";
+  for (const frame of await framesWithSelector(page, headerLoginInfo)) {
+    // masks.push(frame.locator(userPortraitLi));
+    blurTargets.push(frame.locator(headerLoginInfo));
   }
 
   // Content Editor's Quick Info panel shows the item's owner as a domain\username (e.g.
@@ -234,7 +242,7 @@ async function getSensitiveAutoMasks(
   // instead, so only that value is masked.
   const itemOwnerRow = "tr:has(td:text-is('Item owner:'))";
   for (const frame of await framesWithSelector(page, itemOwnerRow)) {
-    masks.push(
+    blurTargets.push(
       frame
         .locator(itemOwnerRow)
         .locator('td:text-is("Item owner:") + td')
@@ -246,14 +254,14 @@ async function getSensitiveAutoMasks(
   // Fobles flyout's "Show Config" button) marks each expanded node with class "opened" - showconfig
   // dumps the live web.config, including connection strings, so mask every expanded node.
   for (const frame of await framesWithSelector(page, ".opened")) {
-    masks.push(frame.locator(".opened"));
+    blurTargets.push(frame.locator(".opened"));
   }
 
   // showservicesconfig.aspx ("Show Services Config" jump-flyout button) lists every registered DI
   // service in a <tbody> - scope the mask to its own #ServicesForm container so unrelated tables
   // (e.g. Content Editor field tables) are never affected.
   for (const frame of await framesWithSelector(page, "#ServicesForm tbody")) {
-    masks.push(frame.locator("#ServicesForm tbody"));
+    blurTargets.push(frame.locator("#ServicesForm tbody"));
   }
 
   // cache.aspx ("Cache" jump-flyout button) lists every cache's name/size in a nested table next
@@ -298,16 +306,16 @@ async function getSensitiveAutoMasks(
     page,
     "div.content:has(#tree)",
   )) {
-    masks.push(frame.locator("div.content:has(#tree)"));
+    blurTargets.push(frame.locator("div.content:has(#tree)"));
   }
   for (const frame of await framesWithSelector(page, "#dataBases")) {
-    masks.push(frame.locator("#dataBases"));
+    blurTargets.push(frame.locator("#dataBases"));
   }
 
   // Installation Wizard ("Installation Wizard" jump-flyout button, a shell application likely
   // rendered inside a nested frame) shows the selected package's filename in #PackageFile.
   for (const frame of await framesWithSelector(page, "#PackageFile")) {
-    masks.push(frame.locator("#PackageFile"));
+    blurTargets.push(frame.locator("#PackageFile"));
   }
 
   // Kick User/Control Panel/Launchpad ("Kick User"/"Control Panel"/"Launchpad" jump-flyout
@@ -319,7 +327,7 @@ async function getSensitiveAutoMasks(
     page,
     ".sc-applicationContent-main",
   )) {
-    masks.push(frame.locator(".sc-applicationContent-main"));
+    blurTargets.push(frame.locator(".sc-applicationContent-main"));
   }
 
   // File Explorer ("File Explorer" jump-flyout button, xmlcontrol=FileExplorer) has no id/class of
@@ -338,11 +346,15 @@ async function getSensitiveAutoMasks(
   // baselines (those pass their own explicit mask option directly, independent of this function).
   // Keep lists live in CONST.BLUR_KEEP (constants/blur-keep-selectors.ts) - add more kept
   // selectors there, never inline them here.
-  for (const frame of await framesWithSelector(page, CONST.BLUR_KEEP.CONTENT_TREE.CONTAINER_SELECTOR)) {
+  for (const frame of await framesWithSelector(page, CONST.BLUR_KEEP.CONTENT_TREE.CE_CONTAINER_SELECTOR)) {
     blurTargets.push(
-      await blurTreeExcept(
+      ...await blurTreeExcept(
         frame,
-        CONST.BLUR_KEEP.CONTENT_TREE.CONTAINER_SELECTOR,
+        [
+          CONST.BLUR_KEEP.CONTENT_TREE.CE_CONTAINER_SELECTOR,
+          CONST.BLUR_KEEP.CONTENT_TREE.INSERT_FROM_TEMPLATE_CONTAINER_SELECTOR,
+          CONST.BLUR_KEEP.CONTENT_TREE.SELECT_THE_TEMPLATE_CONTAINER_SELECTOR,
+        ],
         [...CONST.BLUR_KEEP.CONTENT_TREE.KEEP_SELECTORS],
         [...CONST.BLUR_KEEP.CONTENT_TREE.FURNITURE_SELECTORS],
         [...CONST.BLUR_KEEP.CONTENT_TREE.KEEP_SUBTREE_SELECTORS],
@@ -354,9 +366,9 @@ async function getSensitiveAutoMasks(
   // strip sharp and blurring any other (e.g. My Toolbar, Developer).
   for (const frame of await framesWithSelector(page, CONST.BLUR_KEEP.RIBBON_BUTTONS.CONTAINER_SELECTOR)) {
     blurTargets.push(
-      await blurTreeExcept(
+      ...await blurTreeExcept(
         frame,
-        CONST.BLUR_KEEP.RIBBON_BUTTONS.CONTAINER_SELECTOR,
+        [CONST.BLUR_KEEP.RIBBON_BUTTONS.CONTAINER_SELECTOR],
         [...CONST.BLUR_KEEP.RIBBON_BUTTONS.KEEP_SELECTORS],
       ),
     );

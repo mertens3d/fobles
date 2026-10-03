@@ -7,6 +7,7 @@ import { ceRibbonOpenHome } from "../../macros/sitecore-macros";
 import { clickJumpFlyoutUrlButton } from "../../macros/fobles-macros";
 import { getFoblesJumpFlyoutTargets } from "./support/other-settings-helpers";
 import { expect, foblesTest, type Page } from "../../fixtures/playwright";
+import { humanPause } from "../../helpers/wait-helpers";
 
 
 
@@ -106,9 +107,9 @@ async function stepExamineOneJumpButtonInner(index: number, page: Page, target: 
     console.log(
         `[fobles] URL assertion: expected ${target.url}; actual ${actualUrl}`
     );
-    await page.waitForTimeout(
-        CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
-        CONST.TESTING.NAVIGATION.HOLD_MULTIPLIER
-    );
+
+    await humanPause(page, CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
+        CONST.TESTING.NAVIGATION.HOLD_MULTIPLIER);
+
 }
 

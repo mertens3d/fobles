@@ -1,6 +1,6 @@
 import type { Frame, Page } from "../fixtures/playwright";
 import { CONST } from "../CONST";
-import { foblesWaitForTimeout } from "./wait-helpers";
+import { waitForBrowser } from "./wait-helpers";
 
 // Retries across page.frames() since a frame (e.g. a Sitecore gallery) can load asynchronously
 // after this is first called. timeoutMs of 0 (default) is a single fail-fast pass.
@@ -20,7 +20,9 @@ export async function findFrameWithSelector(
         return frame;
       }
     }
-    if (Date.now() < deadline) await foblesWaitForTimeout(page, 250);
+    if (Date.now() < deadline) {
+      await waitForBrowser(page, 250);
+    }
   } while (Date.now() < deadline);
   console.log(
     `[fobles] Gave up looking for ${description} - checked ${page.frames().length} frame(s): ${page

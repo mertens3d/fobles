@@ -9,7 +9,7 @@ import {
 } from "../../helpers/fobles-helpers-support/navigation-assertions";
 import { clickWithMouseMarker, ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import { findFrameWithSelector } from "../../helpers/frame-finder";
-import { expectNeverAppears, foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { expectNeverAppears, humanPause } from "../../helpers/wait-helpers";
 import { clickLbolt } from "../../macros/fobles-macros";
 
 const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
@@ -89,7 +89,7 @@ const PAGES: readonly PageCase[] = [
   },
   {
     label: "PowerShell ISE",
-    url: "/sitecore/shell/Applications/PowerShell/PowerShellIse",
+    url: "/sitecore/shell/Applications/PowerShell/PowerShellIse?sc_bw=1&id=A870E3EA-A75E-447C-AC9C-00EB74EA7268&db=master",
     uiPath: "Jump Menu -> PowerShell ISE",
     toolbarType: "full",
     activationGap:
@@ -283,7 +283,7 @@ foblesTest.describe("Pages: toolbar visibility, Fobles activation, and button na
       // guaranteed item exists for deeper activation/navigation checks below.
       await step(`${pageCase.label}: Fobles enabled`, async () => {
         await clickLbolt(page);
-        await foblesWaitForTimeout(page, STEP_WAIT_MS);
+        await humanPause(page, STEP_WAIT_MS);
       });
 
       if (!pageCase.knownItemId) {

@@ -1,7 +1,7 @@
 import type { Page } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { showBillboard } from "../billboard";
-import { foblesWaitForTimeout } from "../wait-helpers";
+import { humanPause } from "../wait-helpers";
 import type { CornerPosition, MouseCoordinates } from "../mouse-proxy.types";
 import { getLastKnownMousePosition, isSprintMode, setLastKnownMousePosition } from "./mouse-proxy-state";
 import { updateMouseMarkers } from "./mouse-marker";
@@ -98,7 +98,7 @@ export async function moveMouseToPosition(
     const y = initialPosition.y + (targetPosition.y - initialPosition.y) * progress;
     await page.mouse.move(x, y);
     await updateMouseMarkers(page, x, y);
-    await foblesWaitForTimeout(page, mouseStepDelay, true);
+    await humanPause(page, mouseStepDelay, true);
   }
 
   setLastKnownMousePosition(targetPosition);

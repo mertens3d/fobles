@@ -3,7 +3,7 @@ import { CONST } from "../../CONST";
 import { type Page } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { findFrameWithSelector } from "../../helpers/frame-finder";
-import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { humanPause } from "../../helpers/wait-helpers";
 import { pressToggleLboltHotkey } from "../../macros/fobles-macros";
 import { FOBLES_YML } from "../strategies/support/yml-fobles.CONST";
 
@@ -54,7 +54,7 @@ export async function demoSightings(
       await contentFrame.locator(sectionSelector).scrollIntoViewIfNeeded();
 
       await pressToggleLboltHotkey(context);
-      await foblesWaitForTimeout(page, LBOLT_SETTLE_MS);
+      await humanPause(page, LBOLT_SETTLE_MS);
       await pressToggleLboltHotkey(context);
     } catch (error) {
       console.log(

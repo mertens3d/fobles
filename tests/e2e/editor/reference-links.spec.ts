@@ -8,10 +8,10 @@ import { clickLbolt } from "../../macros/fobles-macros";
 import { CONST } from "../../CONST";
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
-import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { humanPause } from "../../helpers/wait-helpers";
 import { FOBLES_HIDDEN_CLASS_PATTERN } from "../strategies/support/CONST";
 
-const STEP_WAIT_MS :number= CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS: number = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Reference Links (src/content/features/augmentor/editor-strategies/reference-links.ts) doesn't
 // decorate a single field like the strategies/*.spec.ts suite - it decorates Content Editor's own
@@ -69,7 +69,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
             ).toBeVisible();
           }
 
-          await foblesWaitForTimeout(page, STEP_WAIT_MS);
+          await humanPause(page, STEP_WAIT_MS);
         },
       );
 
@@ -85,7 +85,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
             ).toBeVisible();
           }
 
-          await foblesWaitForTimeout(page, STEP_WAIT_MS);
+          await humanPause(page, STEP_WAIT_MS);
         },
       );
 

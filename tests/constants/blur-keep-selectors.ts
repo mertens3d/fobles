@@ -4,7 +4,9 @@
 // keep-list at the call site.
 export const BLUR_KEEP = {
   CONTENT_TREE: {
-    CONTAINER_SELECTOR: ".scContentTreeContainer",
+    CE_CONTAINER_SELECTOR: ".scContentTreeContainer",
+    INSERT_FROM_TEMPLATE_CONTAINER_SELECTOR: "#Templates_3C1715FE6A134FCF845FDE308BA9741D",
+    SELECT_THE_TEMPLATE_CONTAINER_SELECTOR: "#TemplateLister_3C1715FE6A134FCF845FDE308BA9741D",
     // Each kept node stays sharp along with its own direct children, but not deeper descendants
     // (see blurTreeExcept's recursion) - so "sitecore" reveals Content/Layout/Media Library/
     // System/Templates as labels, but nothing nested any deeper gets a free pass unless it's also
@@ -16,6 +18,12 @@ export const BLUR_KEEP = {
       "#Tree_Node_3D6658D8A0BF4E75B3E2D050FABCF4E1", // Media Library
       "#Tree_Node_13D6D6C6C50B4BBDB3312B04F1A58F21", // System
       "#Tree_Node_3C1715FE6A134FCF845FDE308BA9741D", // Templates
+      "#Tree_Node_BAD98E0EC1B54598AC1321B06218B30C", // Templates/Branches
+      "#Tree_Node_2E5892C5A5294646989B1F15DE10453E", // Templates/Common
+      "#Tree_Node_B26BD0358D0A4DF38F672DE3C7FDD74A", // Templates/Foundation
+      "#Tree_Node_8F3430793CC54EF7BC2732ADDB46F45E", // Templates/Feature
+      "#Tree_Node_825B30B4B40B422E992023A1B6BDA89C", // Templates/Project
+      "#Tree_Node_99999999999999999999999999999999", // Probably doesn't exist
     ],
     // Unlike KEEP_SELECTORS, these stay sharp along with their ENTIRE real subtree, however deep
     // - Fobles' own test fixture data, safe to show in full rather than pruned one level at a
