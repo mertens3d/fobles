@@ -13,7 +13,9 @@ export const SITECORE = {
     ITEM_PATH: "Item path:",
   },
   PATHS: {
-    CONTENT_EDITOR: "/sitecore/shell/Applications/Content Editor.aspx?sc_bw=1",
+    SC_AI_DOMAIN: "sitecorecloud.io",
+    CONTENT_EDITOR_ENCODED: "/sitecore/shell/Applications/Content%20Editor.aspx",
+    CONTENT_EDITOR_BW: "/sitecore/shell/Applications/Content Editor.aspx?sc_bw=1",
     IDENTITY_AUTHORIZE: "/connect/authorize",
     LICENSE_STARTPAGE: "/sitecore/client/Applications/LicenseOptions/StartPage",
   },

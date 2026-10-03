@@ -6,7 +6,8 @@ import { openContentEditor } from "../../fixtures/sitecore";
 import { findFoblesFrame } from "../../helpers/frame-finder";
 import { createStep } from "../../helpers/fobles-helpers-support/test-step";
 import { ClickFoblesJumpButton } from "../../macros/fobles-macros";
-import { addTestRow, openTreeJumpsColumn, removeTestRowIfPresent, setTestRowEnabled } from "./support/other-settings-helpers";
+import { addTestRow, openTreeJumpsColumn, removeTestRowIfPresent, setTestRowEnabled } from "./support/extension-options-settings-helpers";
+import { expectCurrentUrlContains } from "../../expect-snippets/expect-snippets";
 
 foblesTest.describe("User Tree Jumps", () => {
   foblesTest.describe("Persistence", () => {
@@ -90,7 +91,7 @@ foblesTest.describe("User Tree Jumps", () => {
             "Confirm dialog Continue",
           ),
         ]);
-        expect(page.url()).toContain(encodeURI(CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH));
+        expectCurrentUrlContains(page, CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH);
       }, { screenshot: false });
     } finally {
       await removeTestRowIfPresent(optionsPage);

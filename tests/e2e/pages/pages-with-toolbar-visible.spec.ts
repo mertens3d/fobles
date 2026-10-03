@@ -61,7 +61,7 @@ const GALLERY_QUERY_SUFFIX =
 const PAGES: readonly PageCase[] = [
   {
     label: "Content Editor",
-    url: CONST.SITECORE.PATHS.CONTENT_EDITOR,
+    url: CONST.SITECORE.PATHS.CONTENT_EDITOR_BW,
     uiPath: "Jump Menu -> Content Editor",
     toolbarType: "full",
     knownItemId: FOBLES_TESTING_MODULE_ROOT_ID,

@@ -2,6 +2,7 @@ import { type Frame, type Locator, type Page, type TestInfo } from "@playwright/
 import { CONST } from "../../CONST";
 import { CAPTURE_STEP_SCREENSHOTS } from "../../settings/settings";
 import { highlightScreenShot } from "../mouse-proxy-support/mouse-interactions";
+import { sanitizeFileName } from "../path-helpers";
 
 export type Screenshottable = Pick<Locator, "screenshot">;
 
@@ -15,26 +16,30 @@ export async function attachLocatorScreenshot(
   name: string,
   options?: { mask?: Locator[] },
 ): Promise<void> {
-  if (!CAPTURE_STEP_SCREENSHOTS) return;
-  await highlightScreenShot(target, `${name} - ${attachLocatorScreenshot.name}`);
-  const filePath = testInfo.outputPath(name);
-  const { hardMasks, blurTargets } = await getSensitiveAutoMasks(target);
-  const mask = [...(options?.mask ?? []), ...hardMasks];
-  await applyBlur(blurTargets);
-  try {
-    // Matches toHaveScreenshot()'s defaults - reduces (but can't fully eliminate) visible flicker
-    // from CDP's screenshot capture in headed mode.
-    await target.screenshot({
-      path: filePath,
-      animations: "disabled",
-      caret: "hide",
-      mask: mask.length ? mask : undefined,
-      maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
-    });
-  } finally {
-    await removeBlur(blurTargets);
-  }
-  await testInfo.attach(name, { path: filePath, contentType: "image/png" });
+  if (CAPTURE_STEP_SCREENSHOTS) {
+    await highlightScreenShot(target, `${name} - ${attachLocatorScreenshot.name}`);
+    const sanitizedName = sanitizeFileName(name);
+    const filePath = testInfo.outputPath(sanitizedName);
+    const { hardMasks, blurTargets } = await getSensitiveAutoMasks(target);
+    const mask = [...(options?.mask ?? []), ...hardMasks];
+    await applyBlur(blurTargets);
+    try {
+      // Matches toHaveScreenshot()'s defaults - reduces (but can't fully eliminate) visible flicker
+      // from CDP's screenshot capture in headed mode.
+      await target.screenshot({
+        path: filePath,
+        animations: "disabled",
+        caret: "hide",
+        mask: mask.length ? mask : undefined,
+        maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
+      });
+    } catch (error) {
+      console.error(`Failed to capture screenshot for ${name}:`, error);
+    } finally {
+      await removeBlur(blurTargets);
+    }
+    await testInfo.attach(name, { path: filePath, contentType: "image/png" });
+  };
 }
 
 export async function attachPageScreenshot(

@@ -16,7 +16,7 @@ import {
   ClickFoblesJumpButton,
 } from "../../macros/fobles-macros";
 import {
-  expectCurrentUrl,
+  expectCurrentUrlContains,
 } from "../../expect-snippets/expect-snippets";
 import type { BrowserContext, Locator } from "@playwright/test";
 import { getJumpFlyoutButton } from "../../helpers/scrolling-helpers";
@@ -180,7 +180,7 @@ async function TestOneCtrlClick(
       const newTab = await newTabPromise;
       await newTab.waitForLoadState("domcontentloaded").catch(() => undefined);
 
-      expectCurrentUrl(newTab, path);
+      expectCurrentUrlContains(newTab, path);
 
       const newTabHoldMs =
         CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *

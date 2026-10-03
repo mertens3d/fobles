@@ -2,8 +2,6 @@
 import { expect, type Locator, type Page } from "../../../fixtures/playwright";
 import { clickExtensionControl, fillExtensionInput, setExtensionCheckbox } from "../../../fixtures/extension";
 import { CONST } from "../../../CONST";
-import type { jumpTarget } from "../toolbar-other.spec";
-import { findFoblesFrame } from "../../../helpers/frame-finder";
 
 const TESTING = CONST.TESTING;
 
@@ -120,17 +118,17 @@ export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
   return treeJumpsColumn;
 }
 
-export async function getFoblesJumpFlyoutTargets(page: Page) {
-    const foblesFrame = await findFoblesFrame(page);
-    const jumpFlyoutButtons = foblesFrame.locator(CONST.FOBLES.LOCATORS.DATA_PAGE_JUMP_URL);
-    const entryAttribute = CONST.FOBLES.ATTRIBUTES.JUMP_ENTRY_URL;
-    const targets: jumpTarget[] = await jumpFlyoutButtons.evaluateAll(
-      (buttons,attribute) => 
-        buttons.map((button) => ({
-        label: button.textContent?.trim() ?? "",
-        url: button.getAttribute(attribute) ?? "",
-    })),
-    entryAttribute
-    );
-    return targets;
-}
+// export async function getFoblesPageJumpFlyoutTargets(page: Page) {
+//     const foblesFrame = await findFoblesFrame(page);
+//     const jumpFlyoutButtons = foblesFrame.locator(CONST.FOBLES.LOCATORS.DATA_PAGE_JUMP_URL);
+//     const entryAttribute = CONST.FOBLES.ATTRIBUTES.JUMP_ENTRY_URL;
+//     const targets: PageJumpDefinition[] = await jumpFlyoutButtons.evaluateAll(
+//       (buttons,attribute) => 
+//         buttons.map((button) => ({
+//         label: button.textContent?.trim() ?? "",
+//         url: button.getAttribute(attribute) ?? "",
+//     })),
+//     entryAttribute
+//     );
+//     return targets;
+// }

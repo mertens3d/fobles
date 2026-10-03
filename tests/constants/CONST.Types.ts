@@ -7,3 +7,9 @@ export type HighlightStyle = {
   TRANSITION: string;
   VISIBLE_DELAY_MS: number;
 };
+
+export type PageJumpDefinition = {
+  label: string;
+  url: string;
+  skipTestingAI: boolean;
+};

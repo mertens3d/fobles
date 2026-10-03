@@ -24,7 +24,7 @@ function assertFoblesTargetUrl(
 ): void {
   const url = new URL(actualUrl);
   expect(decodeURIComponent(url.pathname)).toBe(
-    CONST.SITECORE.PATHS.CONTENT_EDITOR.split("?")[0],
+    CONST.SITECORE.PATHS.CONTENT_EDITOR_BW.split("?")[0],
   );
   expect(
     url.searchParams.get("fo")
@@ -202,3 +202,26 @@ export async function attachItemPathScreenshot(
   const safeName = buildStepMatchKey(matchKey);
   await attachLocatorScreenshot(testInfo, itemPathRow, `item-path-${safeName}.png`);
 }
+
+// export async function attachFoblesButtonScreenshot(
+//   page: Page,
+//   testInfo: TestInfo,
+//   locator: Locator,
+// ): Promise<void> {
+
+//   const frame = await findFrameWithSelector(
+//     page,
+//     CONST.SITECORE.SELECTORS.CONTENT_TAB,
+//     "Content Editor tab header",
+//   );
+//   const itemPathRow :Locator = frame
+//     .locator(`${CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, {
+//       hasText: CONST.SITECORE.LABELS.ITEM_PATH,
+//     })
+//     .first();
+  
+//   await highlightClickTarget(itemPathRow, "Item path row");
+//   await expect(itemPathRow).toBeVisible();
+//   const safeName = buildStepMatchKey(matchKey);
+//   await attachLocatorScreenshot(testInfo, itemPathRow, `item-path-${safeName}.png`);
+// }

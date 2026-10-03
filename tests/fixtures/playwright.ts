@@ -80,7 +80,7 @@ async function logoutSitecoreSessions(
     const { getTestEnvironment } = await import("./environment");
     const { baseUrl } = getTestEnvironment();
     await page.goto(
-      new URL(CONST.SITECORE.PATHS.CONTENT_EDITOR, baseUrl).toString(),
+      new URL(CONST.SITECORE.PATHS.CONTENT_EDITOR_BW, baseUrl).toString(),
       {
         waitUntil: "domcontentloaded",
       },

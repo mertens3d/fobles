@@ -36,7 +36,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
     async ({ page }, testInfo) => {
       await openSitecorePage(
         page,
-        `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`,
+        `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW}&fo=${SCENARIO.itemId}`,
       );
 
       const foblesFrame = await findFoblesFrame(page);

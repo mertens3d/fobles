@@ -28,7 +28,7 @@ foblesTest.describe("Editor scenario: quick info section", () => {
   foblesTest("toggling Fobles decorates and restores the Quick Info panel", async ({ page }, testInfo) => {
    
    
-    await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`);
+    await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW}&fo=${SCENARIO.itemId}`);
 
     const foblesFrame = await findFoblesFrame(page);
     await ensureMouseMarkerExists(foblesFrame);

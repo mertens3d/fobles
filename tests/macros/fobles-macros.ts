@@ -50,14 +50,18 @@ export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<vo
 // distinct from a tree-jump button, which targets a Sitecore item path) and dismisses Fobles' own
 // confirm dialog afterward. Opens the jump flyout itself first (idempotent, see openJumpFlyout)
 // rather than requiring the caller to resolve a frame/open the jump flyout beforehand.
-export async function clickJumpFlyoutUrlButton(page: Page, index: number, label: string): Promise<void> {
-    console.log(`[Macro: clickJumpFlyoutUrlButton] - Start (index: ${index})`);
+export async function clickJumpFlyoutUrlButton(page: Page, pageJumpUrl:string): Promise<Locator> {
+    console.log(`[Macro: clickJumpFlyoutUrlButton] - Start (pageJumpUrl: ${pageJumpUrl})`);
     const foblesFrame = await findFoblesFrame(page);
     await openJumpFlyout(page, foblesFrame);
-    const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.LOCATORS.DATA_PAGE_JUMP_URL).nth(index);
+    //const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.LOCATORS.DATA_PAGE_JUMP_URL).nth(index);
+    
+    const jumpFlyoutButton = foblesFrame.locator(`[data-fobles-page-jump-url="${pageJumpUrl}"]`);
+    
     await jumpFlyoutButton.waitFor({ state: "visible" });
-    await clickWithMouseMarker(page, jumpFlyoutButton, `Menu ${label}`);
-    await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
+    return jumpFlyoutButton;
+    // await clickWithMouseMarker(page, jumpFlyoutButton, `Menu ${label}`);
+    // await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
 }
 
 

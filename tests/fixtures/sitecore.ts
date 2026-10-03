@@ -36,7 +36,7 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
 }
 
 export async function openContentEditor(page: Page, foValue:string = ""): Promise<void> {
-  const path = CONST.SITECORE.PATHS.CONTENT_EDITOR + (foValue ? `?sc_bw=1&fo=${foValue}` : "");
+  const path = CONST.SITECORE.PATHS.CONTENT_EDITOR_BW + (foValue ? `?sc_bw=1&fo=${foValue}` : "");
   await openSitecorePage(page, path);
 }
 

@@ -47,7 +47,7 @@ export async function demoSightings(
   for (const sighting of sightings) {
     console.log(`[fobles] demoSightings: visiting ${sighting.title} (${sighting.itemId})`);
     try {
-      await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${sighting.itemId}`);
+      await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW}&fo=${sighting.itemId}`);
 
       const sectionSelector = buildSectionSelector(sighting);
       const contentFrame = await findFrameWithSelector(page, sectionSelector, `${sighting.title} section`, 10_000);

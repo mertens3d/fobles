@@ -14,7 +14,8 @@ import {
   addTestRow,
   removeTestRowIfPresent,
   setTestRowEnabled,
-} from "../../toolbar/support/other-settings-helpers";
+} from "../../toolbar/support/extension-options-settings-helpers";
+import { expectCurrentUrlContains } from "../../../expect-snippets/expect-snippets";
 
 foblesTest.describe("User Tree Jumps", () => {
   foblesTest.describe("Toolbar Integration", () => {
@@ -124,9 +125,8 @@ foblesTest.describe("User Tree Jumps", () => {
                 ),
                 humanPause(page),
               ]);
-              expect(page.url()).toContain(
-                encodeURI(CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH),
-              );
+
+              expectCurrentUrlContains(page, CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH);
               await attachItemPathScreenshot(page, testInfo, fullTitle);
             },
             { screenshot: false },

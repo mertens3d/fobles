@@ -2,8 +2,10 @@ import { COLORS } from "../CONST.colors";
 import { SELECTED_SPEED } from "../settings/settings";
 import type { TestSpeed } from "../settings/test-speed.types";
 import type { HighlightStyle } from "./CONST.Types";
+import { TEST_PAGE_JUMP_TARGETS } from "./testing/page-jump-targets";
 
 export const TESTING = {
+  PAGE_JUMP_TARGETS: TEST_PAGE_JUMP_TARGETS,
   ADDITIONAL_SETTINGS: {
     AI_PAGES: {
       GROUP_NAME_PREFIX: "Fobles E2E ",

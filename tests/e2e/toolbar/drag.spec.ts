@@ -13,8 +13,8 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 // Content Editor's own default placement (DEFAULT_TOOLBAR_PLACEMENT, src/content/constants.ts)
 // is "upper-right" - dragging toward the opposite corner (bottom-left) makes the snap
 // unambiguous regardless of exact viewport size.
-foblesTest.describe("Toolbar: drag to reposition", () => {
-  foblesTest("dragging the toolbar container snaps it to the nearest corner", async ({ page }, testInfo) => {
+foblesTest.describe("positions", () => {
+  foblesTest("persisted", async ({ page }, testInfo) => {
     
     const step = createStep(page, testInfo, page, "Toolbar Drag");
 
