@@ -1,8 +1,8 @@
 import { SITECORE } from "../../sitecore";
-import { getCurrentItemId } from "../../features/jump-menu/ai-pages";
-import { joinJumpFlyoutPath } from "../../../shared/jump-menu/button-settings";
+import { getCurrentItemId } from "../../features/jump-flyout/ai-pages";
+import { joinJumpFlyoutPath } from "../../../shared/jump-flyout/button-settings";
 import { getButtonSetting } from "./button-visibility";
-import type { MenuOption } from "../../../shared/jump-menu/menu.types";
+import type { FlyoutOption } from "../../../shared/jump-flyout/jump-flyout.types";
 
 function getCurrentDatabase(doc: Document): string | null {
   const currentUrl = new URL(
@@ -29,7 +29,7 @@ function getCurrentDatabase(doc: Document): string | null {
 }
 
 // A "path" option jumps the content editor tree (fo=), a "url" option navigates directly.
-export function buildMenuOptionUrl(doc: Document, option: MenuOption): string {
+export function buildFlyoutOptionUrl(doc: Document, option: FlyoutOption): string {
   if (option.path !== undefined) {
     const fullPath = joinJumpFlyoutPath(option.path, getButtonSetting(option.id)?.pathSuffix ?? "");
     return `${window.location.origin}${SITECORE.RELATIVE_PATHS.CONTENT_EDITOR}?sc_bw=1&fo=${encodeURI(fullPath)}`;

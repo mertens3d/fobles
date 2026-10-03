@@ -9,11 +9,11 @@ import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {
   openJumpFlyoutOnHover,
   scheduleCloseJumpFlyoutOnHover,
-} from "./jump-menu";
+} from "./jump-flyout";
 import {
   openProxyButtonsOnHover,
-  scheduleCloseProxyButtonsOnHover,
-} from "./proxy-buttons";
+  scheduleCloseProxyButtonsOnHover as scheduleCloseProxyFlyoutOnHover,
+} from "./sc-proxy-buttons";
 import { toggleProxyButtons, toggleJumpFlyout } from "./handlers";
 import type { ToolbarContext } from "./types";
 
@@ -21,7 +21,7 @@ const GRIP_ROWS = 5;
 const GRIP_COLUMNS = [3, 9];
 const GRIP_DOT_RADIUS = 1.3;
 
-function createMenuTrigger(
+function createFlyoutTrigger(
   context: ToolbarContext,
   button: HTMLButtonElement,
   triggerClass: string,
@@ -61,33 +61,33 @@ function createFoblesNavButton(
   return button;
 }
 
-export function createJumpsMenuTrigger(context: ToolbarContext): HTMLDivElement {
+export function createJumpsFlyoutTrigger(context: ToolbarContext): HTMLDivElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.FOBLES_NAV_BUTTON,
-    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.JUMP_MENU_TRIGGER,
+    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.JUMPS_FLYOUT_TRIGGER,
     text: TEXT.JUMP_MENU,
     title: TEXT.QUICK_MENU_TITLE,
     onClick: () => toggleJumpFlyout(context),
   });
 
-  return createMenuTrigger(context, button, CLASS.JUMP_MENU_TRIGGER, {
+  return createFlyoutTrigger(context, button, CLASS.JUMP_FLYOUT.TRIGGER, {
     open: () => openJumpFlyoutOnHover(context.doc),
     scheduleClose: () => scheduleCloseJumpFlyoutOnHover(context.doc),
   });
 }
 
-export function createProxyButtonsTrigger(context: ToolbarContext): HTMLDivElement {
+export function createProxyFlyoutTrigger(context: ToolbarContext): HTMLDivElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.FOBLES_NAV_BUTTON,
-    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.PROXY_BUTTONS_TRIGGER,
+    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.PROXY_FLYOUT_TRIGGER,
     text: TEXT.VIEW,
     title: TEXT.VIEW_TITLE,
     onClick: () => toggleProxyButtons(context),
   });
 
-  return createMenuTrigger(context, button, CLASS.PROXY_BUTTONS_TRIGGER, {
+  return createFlyoutTrigger(context, button, CLASS.PROXY_BUTTONS_TRIGGER, {
     open: () => openProxyButtonsOnHover(context.doc),
-    scheduleClose: () => scheduleCloseProxyButtonsOnHover(context.doc),
+    scheduleClose: () => scheduleCloseProxyFlyoutOnHover(context.doc),
   });
 }
 

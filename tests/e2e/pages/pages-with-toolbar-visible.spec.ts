@@ -222,20 +222,20 @@ const PAGES: readonly PageCase[] = [
 ];
 
 function assertToolbarFlavor(foblesFrame: Awaited<ReturnType<typeof findFrameWithSelector>>, toolbarType: ToolbarType) {
-  const menuTrigger = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER);
+  const jumpFlyoutTrigger = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER);
   const proxyButtonsTrigger = foblesFrame.locator(CONST.FOBLES.SELECTORS.PROXY_BUTTONS_TRIGGER);
   const closeButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CLOSE_BUTTON);
 
   if (toolbarType === "compact") {
     return Promise.all([
-      expect(menuTrigger).toHaveCount(0),
+      expect(jumpFlyoutTrigger).toHaveCount(0),
       expect(proxyButtonsTrigger).toHaveCount(0),
       expect(closeButton).toHaveCount(0),
     ]);
   }
 
   return Promise.all([
-    expect(menuTrigger).toBeVisible(),
+    expect(jumpFlyoutTrigger).toBeVisible(),
     expect(proxyButtonsTrigger).toBeVisible(),
     expect(closeButton).toBeVisible(),
   ]);

@@ -1,5 +1,5 @@
 export const USER_ADMIN_PAGE = {
-  // Unicorn's own icon (see menu-groups.ts) - reused here as the example/default since a
+  // Unicorn's own icon (see flyout-groups.ts) - reused here as the example/default since a
   // user-defined admin page is the exact same shape (label + relative url + icon).
   DEFAULT_ICON_PATH: "applicationsv2/32x32/arrow_up_right_green.png",
   EXAMPLE_LABEL: "Unicorn",

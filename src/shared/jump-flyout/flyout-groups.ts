@@ -1,13 +1,13 @@
 import { TEXT } from "../../content/constants";
 import { SITECORE } from "../../content/sitecore";
-import { openAiPages } from "../../content/features/jump-menu/ai-pages";
-import { kickAllUsers } from "../../content/features/jump-menu/kick-users";
+import { kickAllUsers } from "../../content/features/jump-flyout/kick-users";
 import { JUMP_MENU_BUTTON_ID } from "./button-ids";
-import type { MenuGroup } from "./menu.types";
+import type { FlyoutGroup } from "./jump-flyout.types";
+import { openAiPages } from "../../content/features/jump-flyout/ai-pages";
 
 const KICK_USER_ICON = "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png";
 
-export const TREE_JUMP_GROUP: readonly MenuGroup[] = [
+export const TREE_JUMP_GROUP: readonly FlyoutGroup[] = [
   {
     groupMembers: [
       { id: JUMP_MENU_BUTTON_ID.LAYOUT_RENDERINGS, label: "/Layout /Renderings", path: "/sitecore/layout/Renderings", icon: "/-/icon/software/48x48/elements1.png", isXPOnly: false, isAIOnly: false },
@@ -20,7 +20,7 @@ export const TREE_JUMP_GROUP: readonly MenuGroup[] = [
 ];
 
 // Kept strictly to /sitecore/admin/* pages so membership is mechanical, not a judgment call.
-export const ADMIN_PAGE_GROUP: readonly MenuGroup[] = [
+export const ADMIN_PAGE_GROUP: readonly FlyoutGroup[] = [
   {
     groupMembers: [
       { id: JUMP_MENU_BUTTON_ID.SHOW_CONFIG, label: "Show Config", url: "/sitecore/admin/showconfig.aspx", icon: "/~/icon/applications/48x48/gear_view.png", isXPOnly: false, isAIOnly: false },
@@ -34,21 +34,21 @@ export const ADMIN_PAGE_GROUP: readonly MenuGroup[] = [
   },
 ];
 
-export const AI_GROUP: MenuGroup = {
+export const AI_GROUP: FlyoutGroup = {
   title: TEXT.GROUP_NAME.AI,
   groupMembers: [
     { id: JUMP_MENU_BUTTON_ID.AI_PAGES, label: "Pages", action: (doc) => openAiPages(doc), icon: "/~/icon/applicationsv2/48x48/edit.png", isXPOnly: false, isAIOnly: true },
   ],
 };
 
-export const THIRD_PARTY_GROUP: MenuGroup = {
+export const THIRD_PARTY_GROUP: FlyoutGroup = {
   title: TEXT.GROUP_NAME.THIRD_PARTY,
   groupMembers: [
     { id: JUMP_MENU_BUTTON_ID.SITECORE_ICON_SEARCH, label: "Sitecore Icon Search", url: "https://sitecoreicons.com/" , icon: "/-/icon/wordprocessing/32x32/search_a_h.png", isXPOnly: false, isAIOnly: false },
   ],
 };
 
-export const APPLICATION_PAGE_GROUP: MenuGroup = {
+export const APPLICATION_PAGE_GROUP: FlyoutGroup = {
   title: TEXT.GROUP_NAME.APPLICATION_PAGES,
   groupMembers: [
     { id: JUMP_MENU_BUTTON_ID.POWERSHELL_ISE, label: "PowerShell ISE", url: "/sitecore/shell/Applications/PowerShell/PowerShellIse?sc_bw=1", useCurrentItemId: true, icon: "/-/icon/powershell/48x48/ise8.png", isXPOnly: false, isAIOnly: false },

@@ -3,7 +3,7 @@ import {
   onJumpFlyoutButtonSettingsChanged,
   type JumpFlyoutButtonSetting,
   type JumpFlyoutButtonSettings,
-} from "../../../shared/jump-menu/button-settings";
+} from "../../../shared/jump-flyout/button-settings";
 import { FOBLES } from "../../features/augmentor/constants";
 
 let buttonSettings: JumpFlyoutButtonSettings = {};

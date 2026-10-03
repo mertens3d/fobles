@@ -3,9 +3,9 @@ import { STORAGE } from "../constants";
 import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
 import { joinJumpFlyoutPath, normalizeJumpFlyoutIconPath, sanitizeJumpFlyoutPathSuffix } from "./button-settings";
 import { USER_TREE_JUMP } from "./user-tree-jump-constants";
-import type { UserTreeJump } from "./jump-menu.types";
+import type { UserTreeJump } from "./jump-flyout.types";
 
-export type { UserTreeJump } from "./jump-menu.types";
+export type { UserTreeJump } from "./jump-flyout.types";
 
 export function createUserTreeJumpId(): string {
   return crypto.randomUUID();

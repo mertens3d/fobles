@@ -71,7 +71,7 @@ foblesTest.describe("Fobles browser integration", () => {
         page,
         testInfo,
       );
-      //await clickWithMouseMarker(page, menuButton, "Ctrl-click jump menu");
+      //await clickWithMouseMarker(page, jumpFlyoutButton, "Ctrl-click jump flyout");
       //await expectFlyoutVisible(foblesFrame);
     }
   });

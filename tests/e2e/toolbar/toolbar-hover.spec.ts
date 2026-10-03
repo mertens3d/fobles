@@ -21,9 +21,9 @@ foblesTest.describe("Fobles Hover", () => {
         await expect(editorTabs).toBeVisible();
         await ensureMouseMarkerExists(page);
 
-        const menuButton = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
-        await expect(menuButton).toBeVisible();
-        const menuFlyout = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT).first();
+        const jumpFlyoutButton = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
+        await expect(jumpFlyoutButton).toBeVisible();
+        const jumpFlyout = page.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
         const mousePosition = getLastKnownMousePosition();
 
         await hoverAndGrow(page, {
@@ -36,15 +36,15 @@ foblesTest.describe("Fobles Hover", () => {
 
         await hoverAndSlideOut(page, {
             name: "Menu",
-            hoverTarget: menuButton,
-            flyoutTarget: menuFlyout,
-            hoverRegion: [menuButton, menuFlyout],
+            hoverTarget: jumpFlyoutButton,
+            flyoutTarget: jumpFlyout,
+            hoverRegion: [jumpFlyoutButton, jumpFlyout],
             mousePosition,
         });
 
         await moveMouseOutsideHoverArea(
             page,
-            [menuButton, menuFlyout],
+            [jumpFlyoutButton, jumpFlyout],
             mousePosition,
             "Menu away",
         );

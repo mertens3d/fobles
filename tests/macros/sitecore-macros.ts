@@ -54,7 +54,7 @@ export async function clickContentTabIfPresent(page: Page): Promise<void> {
   }
 }
 
-// Opens the jump menu (if not already open) and clicks the tree jump button for the given path
+// Opens the jump flyout (if not already open) and clicks the tree jump button for the given path
 // (see CONST.SITECORE.TREE_JUMP_PATHS - never a raw path literal at the call site). Finds its own
 // fobles frame fresh rather than accepting one from the caller, since a frame handed in from an
 // earlier navigation/activation step can go stale by the time this actually runs. Dismisses

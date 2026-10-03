@@ -1,11 +1,11 @@
 import { ATTRIBUTE, CLASS, SELECTORS } from "../constants";
 import { extensionLog } from "../logger";
 import { findRibbonCheckbox, postSitecoreEvent } from "../features/augmentor/proxy-buttons-ribbon";
-import { setJumpFlyoutVisible } from "./jump-menu";
+import { setJumpFlyoutVisible } from "./jump-flyout";
 
-// These live in the main toolbar menu (not the editor header) since the editor header
+// These live in the main toolbar (not the editor header) since the editor header
 // gets redrawn every time a tree item is picked.
-const PROXY_BUTTONS = [
+const SC_PROXY_BUTTONS = [
   {
     checkboxId: "Check_BC29C1D329FB74DA585083FEC2AF3A81D",
     eventName: "StandardFields_Click",
@@ -22,7 +22,7 @@ const PROXY_BUTTONS = [
 
 const createProxyButton = (
   doc: Document,
-  option: (typeof PROXY_BUTTONS)[number],
+  option: (typeof SC_PROXY_BUTTONS)[number],
 ): HTMLLabelElement => {
   const wrapper = doc.createElement("label");
   wrapper.className = `${CLASS.PROXY_BUTTON} ${CLASS.FOBLES_NAV_BUTTON} ${CLASS.FOBLES_NAV_BUTTON_COMPACT}`;
@@ -71,7 +71,7 @@ const createProxyButton = (
 
 const createProxyButtonAction = (
   doc: Document,
-  option: (typeof PROXY_BUTTONS)[number],
+  option: (typeof SC_PROXY_BUTTONS)[number],
 ): HTMLDivElement => {
   const action = doc.createElement("div");
   action.className = CLASS.PROXY_BUTTONS_ACTION;
@@ -86,7 +86,7 @@ const createProxyButtonsPanel = (doc: Document): HTMLDivElement => {
 
   const actions = doc.createElement("div");
   actions.className = CLASS.PROXY_BUTTONS_ACTIONS;
-  PROXY_BUTTONS.forEach((option) =>
+  SC_PROXY_BUTTONS.forEach((option) =>
     actions.appendChild(createProxyButtonAction(doc, option)),
   );
   panel.appendChild(actions);
@@ -94,14 +94,14 @@ const createProxyButtonsPanel = (doc: Document): HTMLDivElement => {
 };
 
 const refreshProxyButtonsState = (doc: Document, panel: Element): void => {
-  PROXY_BUTTONS.forEach((option) => {
+  SC_PROXY_BUTTONS.forEach((option) => {
     const checkbox = panel.querySelector<HTMLInputElement>(`#${option.id}`);
     const ribbonCheckbox = findRibbonCheckbox(doc, option.checkboxId);
     if (checkbox && ribbonCheckbox) checkbox.checked = ribbonCheckbox.checked;
   });
 };
 
-const getOrCreateProxyButtonsPanel = (doc: Document): HTMLDivElement | null => {
+const getOrCreateProxyButtonsFlyout = (doc: Document): HTMLDivElement | null => {
   const trigger = doc.querySelector(SELECTORS.PROXY_BUTTONS_TRIGGER);
   if (!trigger) return null;
 
@@ -112,7 +112,7 @@ const getOrCreateProxyButtonsPanel = (doc: Document): HTMLDivElement | null => {
   // The panel renders outside the trigger's own hit box, so bridge the gap with a
   // close delay instead of relying on the trigger's mouseleave alone.
   panel.addEventListener("mouseenter", cancelProxyButtonsClose);
-  panel.addEventListener("mouseleave", () => scheduleProxyButtonsClose(doc));
+  panel.addEventListener("mouseleave", () => scheduleProxyFlyoutClose(doc));
   trigger.appendChild(panel);
   doc.addEventListener("pointerdown", (event) => {
     if (!trigger.contains(event.target as Node)) {
@@ -127,7 +127,7 @@ export function isProxyButtonsVisible(doc: Document): boolean {
 }
 
 export function setProxyButtonsVisible(doc: Document, visible: boolean): void {
-  const panel = getOrCreateProxyButtonsPanel(doc);
+  const panel = getOrCreateProxyButtonsFlyout(doc);
   panel?.setAttribute(ATTRIBUTE.DATA.KEY.VISIBLE, visible ? "true" : "false");
   if (!visible) proxyButtonsPinned = false;
 
@@ -156,7 +156,7 @@ function cancelProxyButtonsClose(): void {
   proxyButtonsCloseTimer = null;
 }
 
-function scheduleProxyButtonsClose(doc: Document): void {
+function scheduleProxyFlyoutClose(doc: Document): void {
   if (proxyButtonsPinned) return;
   cancelProxyButtonsClose();
   proxyButtonsCloseTimer = window.setTimeout(() => {
@@ -171,5 +171,5 @@ export function openProxyButtonsOnHover(doc: Document): void {
 }
 
 export function scheduleCloseProxyButtonsOnHover(doc: Document): void {
-  scheduleProxyButtonsClose(doc);
+  scheduleProxyFlyoutClose(doc);
 }

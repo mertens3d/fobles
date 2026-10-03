@@ -46,7 +46,7 @@
   }
 
   &[data-position$="right"]
-    :is(.fobles-jump-menu-flyout, .fobles-proxy-buttons) {
+    :is(.fobles-jump-flyout-flyout, .fobles-proxy-buttons) {
     right: 0;
     left: auto;
     transform: translateX(8px);
@@ -54,14 +54,14 @@
   }
 
   &[data-position^="bottom"]
-    :is(.fobles-jump-menu-flyout, .fobles-proxy-buttons) {
+    :is(.fobles-jump-flyout-flyout, .fobles-proxy-buttons) {
     top: auto;
     bottom: calc(100% + 8px);
     transform-origin: bottom left;
   }
 
   &[data-position="bottom-right"]
-    :is(.fobles-jump-menu-flyout, .fobles-proxy-buttons) {
+    :is(.fobles-jump-flyout-flyout, .fobles-proxy-buttons) {
     transform-origin: bottom right;
   }
 }
@@ -118,7 +118,7 @@
   opacity: 1;
 }
 
-.fobles-jump-menu-trigger,
+.fobles-jump-flyout-trigger,
 .fobles-proxy-buttons-trigger {
   position: relative;
   display: flex;
@@ -128,9 +128,9 @@
   }
 }
 
-.fobles-jump-menu-flyout,
+.fobles-jump-flyout-flyout,
 .fobles-proxy-buttons {
-  @include fobles-menu-panel;
+  @include fobles-jump-flyout-panel;
   // Overrides the draggable toolbar container's grab cursor so the flyout doesn't look draggable.
   cursor: default;
 
@@ -141,9 +141,9 @@
   }
 }
 
-.fobles-jump-menu-flyout {
+.fobles-jump-flyout-flyout {
   flex-direction: column;
-  min-width: $fobles-jump-menu-flyout-width;
+  min-width: $fobles-jump-flyout-flyout-width;
 
   &-columns {
     display: flex;
@@ -229,7 +229,7 @@
     opacity: 1 !important;
     text-align: left;
 
-    &:hover .fobles-jump-menu-option-label {
+    &:hover .fobles-jump-flyout-option-label {
       filter: brightness(1.04);
       box-shadow: 0 5px 12px $fobles-shadow-button-hover;
     }

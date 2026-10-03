@@ -1,13 +1,13 @@
 import { TEXT } from "../../constants";
-import { createMenuGroup } from "./group-builder";
+import { createFlyoutGroup as createJumpFlyoutGroup } from "./group-builder";
 import {
   getUserAdminPages,
   onUserAdminPagesChanged,
   type UserAdminPage,
-} from "../../../shared/jump-menu/user-admin-page-settings";
-import type { MenuOption } from "../../../shared/jump-menu/menu.types";
+} from "../../../shared/jump-flyout/user-admin-page-settings";
+import type { FlyoutOption } from "../../../shared/jump-flyout/jump-flyout.types";
 
-function toMenuOption(entry: UserAdminPage): MenuOption {
+function toFlyoutOption(entry: UserAdminPage): FlyoutOption {
   return {
     id: entry.id,
     label: entry.label,
@@ -35,9 +35,9 @@ export function initUserAdminPageGroup(
     if (enabledEntries.length === 0) return;
 
     wrapper.appendChild(
-      createMenuGroup(
+      createJumpFlyoutGroup(
         doc,
-        { title: TEXT.GROUP_NAME.USER_ADMIN_PAGES, groupMembers: enabledEntries.map(toMenuOption) },
+        { title: TEXT.GROUP_NAME.USER_ADMIN_PAGES, groupMembers: enabledEntries.map(toFlyoutOption) },
         closeMenu,
       ),
     );

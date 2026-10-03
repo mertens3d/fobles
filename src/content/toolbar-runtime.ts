@@ -16,7 +16,7 @@ import {
   findAllowedPage,
   isKickUsersPath,
 } from "./guard";
-import { resumeKickAllUsers } from "./features/jump-menu";
+import { resumeKickAllUsers } from "./features/jump-flyout";
 import {
   injectToolbar,
   setToolbarPlacement,
@@ -140,7 +140,7 @@ async function reconcileCurrentPage(): Promise<void> {
   const currentUrl = new URL(window.location.href);
   const kickUsersPath = isKickUsersPath(window.location.pathname);
 
-  extensionLog.debug("Fobles menu eligibility decision", {
+  extensionLog.debug("Fobles flyout eligibility decision", {
     href: currentUrl.href,
     host: currentUrl.host,
     pathname: window.location.pathname,
@@ -149,11 +149,11 @@ async function reconcileCurrentPage(): Promise<void> {
     kickUsersPath,
     debugLogging: debug.debugLogging,
     existingToolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
-    existingMenuTrigger: Boolean(document.querySelector(SELECTORS.QUICK_MENU_TRIGGER)),
+    existingMenuTrigger: Boolean(document.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)),
   });
 
   if (!allowedPage) {
-    extensionLog.debug("Fobles menu not shown: page is not eligible", {
+    extensionLog.debug("Fobles flyout not shown: page is not eligible", {
       href: currentUrl.href,
     });
     document.querySelector(SELECTORS.TOOLBAR_CONTAINER)?.remove();
@@ -170,7 +170,7 @@ async function reconcileCurrentPage(): Promise<void> {
   ]);
   const shouldInitialize = getFoblesState();
 
-  extensionLog.debug("Fobles menu initialization decision", {
+  extensionLog.debug("Fobles flyout initialization decision", {
     shouldInitialize,
     kickUsersPath,
     toolbarVisible: foblesNavVisible,
@@ -189,10 +189,10 @@ async function reconcileCurrentPage(): Promise<void> {
   resumeKickAllUsers(document);
 
   setToolbarVisible(getToolbarContext(), foblesNavVisible);
-  extensionLog.debug("Fobles menu injection result", {
+  extensionLog.debug("Fobles flyout injection result", {
     toolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
     lboltButton: Boolean(document.querySelector(SELECTORS.TOOLBAR_LBOLT_BUTTON)),
-    menuTrigger: Boolean(document.querySelector(SELECTORS.QUICK_MENU_TRIGGER)),
+    jumpFlyoutTrigger: Boolean(document.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)),
     foblesUiActive,
   });
 }

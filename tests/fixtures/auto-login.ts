@@ -213,7 +213,7 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
   const startedAt = Date.now();
   const initialUrl = toDisplayUrl(page.url());
   console.log(
-    `[sitecore preflight] Waiting for the Fobles menu (${CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER}) to appear - started at: ${initialUrl}`,
+    `[sitecore preflight] Waiting for the Fobles flyout (${CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER}) to appear - started at: ${initialUrl}`,
   );
 
   // A one-off "waiting for X" message is useless once the wait actually stalls - log elapsed time
@@ -245,7 +245,7 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
                 .count()) > 0
             ) {
               console.log(
-                `[sitecore preflight] (${elapsedMs}ms) Fobles menu found.`,
+                `[sitecore preflight] (${elapsedMs}ms) Fobles flyout found.`,
               );
               return true;
             }
@@ -255,14 +255,14 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
         {
           timeout: CONST.TESTING.TIMEOUTS.DISCOVERY_MS,
           intervals: [1_000],
-          message: `Waiting for the Fobles menu to appear (started at ${initialUrl})`,
+          message: `Waiting for the Fobles flyout to appear (started at ${initialUrl})`,
         },
       )
       .toBe(true);
   } catch (error) {
     const elapsedMs = Date.now() - startedAt;
     logDiagnostic(
-      `[sitecore preflight] page timed out after ${elapsedMs}ms waiting for the Fobles menu - last seen at: ${toDisplayUrl(page.url())}`,
+      `[sitecore preflight] page timed out after ${elapsedMs}ms waiting for the Fobles flyout - last seen at: ${toDisplayUrl(page.url())}`,
     );
     throw error;
   }

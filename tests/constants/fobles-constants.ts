@@ -1,8 +1,8 @@
 export const FOBLES = {
   ATTRIBUTES: {
     BUTTON: "data-is-fobles-button",
-    MENU_URL: "data-fobles-menu-url",
-    MENU_VISIBLE: "data-visible",
+    JUMP_ENTRY_URL: "data-fobles-jump-entry-url",
+    DATA_VISIBLE: "data-visible",
     PANE: "data-fobles-pane",
     PROCESSED: "data-fobles-processed",
     TREE_JUMP_PATH: "data-fobles-tree-jump-path",
@@ -24,7 +24,7 @@ export const FOBLES = {
     TOGGLE_FOBLES: /toggle fobles/i,
   },
   LOCATORS: {
-    MENU_URL: "[data-fobles-menu-url]",
+    MENU_URL: "[data-fobles-jump-entry-url]",
   },
   SELECTORS: {
     DATA:{
@@ -40,9 +40,9 @@ export const FOBLES = {
     CONFIRM_DIALOG_CONTINUE: ".fobles-confirm-dialog-continue",
     CONFIRM_DIALOG_SETTING: ".fobles-confirm-dialog-setting",
     LBOLT_BUTTON: "[data-fobles-nav-button-role='lbolt']",
-    JUMP_MENU_TRIGGER: "[data-fobles-nav-button-role='jump-menu-trigger']",
+    JUMP_MENU_TRIGGER: "[data-fobles-nav-button-role='jump-flyout-trigger']",
     PROXY_BUTTONS_TRIGGER: "[data-fobles-nav-button-role='proxy-buttons-trigger']",
-    JUMP_MENU_FLYOUT: ".fobles-jump-menu-flyout",
+    JUMP_FLYOUT: ".fobles-jump-flyout-flyout",
     TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",
     TOOLBAR_CONTAINER: ".fobles-toolbar-container",
     TOOLBAR_GRIP: ".fobles-toolbar-grip",

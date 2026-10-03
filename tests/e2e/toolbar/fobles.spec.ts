@@ -11,7 +11,7 @@
 // } from "../../helpers/mouse-proxy";
 // import { openSitecorePageAndFindFoblesFrame, attachItemPathScreenshot, createStep } from "../../helpers/fobles-helpers";
 // import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
-// import { ClickFoblesMenuButton, dismissFoblesConfirmDialogIfPresent } from "../../macros/fobles-macros";
+// import { ClickFoblesJumpFlyoutButton, dismissFoblesConfirmDialogIfPresent } from "../../macros/fobles-macros";
 // import { expectCurrentUrl, expectFlyoutVisible } from "../../expect-snippets/expect-snippets";
 // import { bringPageToFront } from "../../helpers/page-switch";
 // import type { BrowserContext } from "@playwright/test";
@@ -22,7 +22,7 @@
 //     foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 //     let foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
-//     await ClickFoblesMenuButton(page);
+//     await ClickFoblesJumpFlyoutButton(page);
 //     await expectFlyoutVisible(foblesFrame);
 
 //     const paths = await getExpectedButtonPaths(foblesFrame);
@@ -41,7 +41,7 @@
 //     foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 //     const foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
 
-//     await ClickFoblesMenuButton(page);
+//     await ClickFoblesJumpFlyoutButton(page);
 //     await expectFlyoutVisible(foblesFrame);
 //     const paths = await getExpectedButtonPaths(foblesFrame);
 
@@ -50,7 +50,7 @@
 //     for (let index = 0; index < paths.length; index += 1) {
 
 //       await TestOnCtrlClick(paths, index, step, foblesFrame, sharedBrowserContext, page, testInfo);
-//       //await clickWithMouseMarker(page, menuButton, "Ctrl-click jump menu");
+//       //await clickWithMouseMarker(page, jumpFlyoutButton, "Ctrl-click jump flyout");
 //       //await expectFlyoutVisible(foblesFrame);
 //     }
 //   });
@@ -85,7 +85,7 @@
 
 //     if (index > 0) {
 //       foblesFrame = await openSitecorePageAndFindFoblesFrame(page);
-//       await ClickFoblesMenuButton(page);
+//       await ClickFoblesJumpFlyoutButton(page);
 //       await expectFlyoutVisible(foblesFrame);
 //     }
 
@@ -122,7 +122,7 @@
 //   await step(`Ctrl+Click: opens "${path}" in a new tab`, async () => {
 
 
-//     await ClickFoblesMenuButton(page);
+//     await ClickFoblesJumpFlyoutButton(page);
 //     await expectFlyoutVisible(foblesFrame);
 
 //     const foblesTreeButton = await ScrollFoblesTreeButtonIntoView(foblesFrame, index);

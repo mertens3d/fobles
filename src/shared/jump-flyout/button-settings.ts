@@ -1,16 +1,16 @@
 import { STORAGE } from "../constants";
 import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
-import type { JumpFlyoutButtonSetting, JumpFlyoutButtonSettings } from "./jump-menu.types";
+import type { JumpFlyoutButtonSetting, JumpFlyoutButtonSettings } from "./jump-flyout.types";
 
-export type { JumpFlyoutButtonSetting, JumpFlyoutButtonSettings } from "./jump-menu.types";
+export type { JumpFlyoutButtonSetting, JumpFlyoutButtonSettings } from "./jump-flyout.types";
 
 // Recognizes both icon prefix conventions already used elsewhere in this codebase's own catalog
-// (see src/shared/jump-menu/menu-groups.ts) so a user pasting either one still normalizes cleanly.
+// (see src/shared/jump-flyout/flyout-groups.ts) so a user pasting either one still normalizes cleanly.
 const KNOWN_ICON_PREFIX_PATTERN = /^\/?[~-]\/icon\//i;
 // The prefix reapplied after stripping whatever the user typed - Sitecore's icon-serving virtual path.
 const ICON_PREFIX = "/-/icon/";
 
-// Shared by every user-defined jump-menu entry (Tree Jumps, Admin Pages, ...): strips whatever
+// Shared by every user-defined jump-flyout entry (Tree Jumps, Admin Pages, ...): strips whatever
 // prefix (if any) the user typed or pasted, then reapplies the one Sitecore actually expects, so
 // the user only ever has to get the icon's own relative path right.
 export function normalizeJumpFlyoutIconPath(rawIcon: string, defaultIconPath: string): string {

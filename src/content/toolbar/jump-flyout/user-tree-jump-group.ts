@@ -1,14 +1,14 @@
 import { TEXT } from "../../constants";
-import { createMenuGroup } from "./group-builder";
+import { createFlyoutGroup } from "./group-builder";
 import {
   buildUserTreeJumpPath,
   getUserTreeJumps,
   onUserTreeJumpsChanged,
   type UserTreeJump,
-} from "../../../shared/jump-menu/user-tree-jump-settings";
-import type { MenuOption } from "../../../shared/jump-menu/menu.types";
+} from "../../../shared/jump-flyout/user-tree-jump-settings";
+import type { FlyoutOption } from "../../../shared/jump-flyout/jump-flyout.types";
 
-function toMenuOption(entry: UserTreeJump): MenuOption {
+function toFlyoutOption(entry: UserTreeJump): FlyoutOption {
   return {
     id: entry.id,
     label: entry.label,
@@ -36,9 +36,9 @@ export function initUserTreeJumpGroup(
     if (enabledEntries.length === 0) return;
 
     wrapper.appendChild(
-      createMenuGroup(
+      createFlyoutGroup(
         doc,
-        { title: TEXT.GROUP_NAME.USER_TREE_JUMPS, groupMembers: enabledEntries.map(toMenuOption) },
+        { title: TEXT.GROUP_NAME.USER_TREE_JUMPS, groupMembers: enabledEntries.map(toFlyoutOption) },
         closeMenu,
       ),
     );

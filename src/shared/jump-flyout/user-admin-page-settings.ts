@@ -2,9 +2,9 @@ import { STORAGE } from "../constants";
 import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
 import { normalizeJumpFlyoutIconPath } from "./button-settings";
 import { USER_ADMIN_PAGE } from "./user-admin-page-constants";
-import type { UserAdminPage } from "./jump-menu.types";
+import type { UserAdminPage } from "./jump-flyout.types";
 
-export type { UserAdminPage } from "./jump-menu.types";
+export type { UserAdminPage } from "./jump-flyout.types";
 
 export function createUserAdminPageId(): string {
   return crypto.randomUUID();

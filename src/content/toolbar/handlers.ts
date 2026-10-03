@@ -2,12 +2,12 @@ import {
   isJumpFlyoutPinned,
   setJumpFlyoutPinned,
   setJumpFlyoutVisible,
-} from "./jump-menu";
+} from "./jump-flyout";
 import {
   isProxyButtonsPinned,
   setProxyButtonsPinned,
   setProxyButtonsVisible,
-} from "./proxy-buttons";
+} from "./sc-proxy-buttons";
 import type { ToolbarContext } from "./types";
 
 export function toggleJumpFlyout(context: ToolbarContext): void {

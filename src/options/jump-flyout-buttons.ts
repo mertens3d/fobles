@@ -1,30 +1,30 @@
 import {
   JUMP_MENU_BUTTON_CATALOG,
   type JumpFlyoutButtonDescriptor,
-} from "../shared/jump-menu/button-catalog";
+} from "../shared/jump-flyout/button-catalog";
 import {
   getJumpFlyoutButtonSettings,
   sanitizeJumpFlyoutPathSuffix,
   setJumpFlyoutButtonSettings,
   type JumpFlyoutButtonSettings,
-} from "../shared/jump-menu/button-settings";
+} from "../shared/jump-flyout/button-settings";
 import {
   getUserTreeJumps,
   setUserTreeJumps,
   type UserTreeJump,
-} from "../shared/jump-menu/user-tree-jump-settings";
+} from "../shared/jump-flyout/user-tree-jump-settings";
 import {
   getUserAdminPages,
   setUserAdminPages,
   type UserAdminPage,
-} from "../shared/jump-menu/user-admin-page-settings";
+} from "../shared/jump-flyout/user-admin-page-settings";
 import { TEXT } from "../content/constants";
 import { collectUserTreeJumpEntries, renderUserTreeJumpEditor } from "./user-tree-jump-editor";
 import { collectUserAdminPageEntries, renderUserAdminPageEditor } from "./user-admin-page-editor";
 import { getElement } from "./dom-helpers";
 
-const quickMenuButtonsContainer = getElement<HTMLDivElement>("jump-menu-buttons");
-const quickMenuButtonsStatus = getElement<HTMLParagraphElement>("jump-menu-buttons-status");
+const quickMenuButtonsContainer = getElement<HTMLDivElement>("jump-flyout-buttons");
+const quickMenuButtonsStatus = getElement<HTMLParagraphElement>("jump-flyout-buttons-status");
 // Set while rendering the Tree Jumps/Admin Pages columns, so the Save handler below can read the
 // User Tree Jump/User Admin Page rows back out of them - no other column needs that on save.
 let treeJumpsColumnSection: HTMLElement | null = null;
@@ -45,30 +45,30 @@ function createJumpFlyoutButtonRow(
   // it stays a single compact row.
   if (!descriptor.supportsPathSuffix) {
     const row = document.createElement("div");
-    row.className = "jump-menu-button-row jump-menu-button-row--no-suffix";
+    row.className = "jump-flyout-button-row jump-flyout-button-row--no-suffix";
     row.appendChild(enabledInput);
 
     const label = document.createElement("span");
-    label.className = "jump-menu-button-label";
+    label.className = "jump-flyout-button-label";
     label.textContent = descriptor.label;
     row.appendChild(label);
     return row;
   }
 
   const row = document.createElement("div");
-  row.className = "jump-menu-entry";
+  row.className = "jump-flyout-entry";
 
   const titleRow = document.createElement("div");
-  titleRow.className = "jump-menu-entry-title";
+  titleRow.className = "jump-flyout-entry-title";
   titleRow.textContent = descriptor.label;
   row.appendChild(titleRow);
 
   const fieldsRow = document.createElement("div");
-  fieldsRow.className = "jump-menu-entry-fields";
+  fieldsRow.className = "jump-flyout-entry-fields";
   fieldsRow.appendChild(enabledInput);
 
   const prefix = document.createElement("span");
-  prefix.className = "jump-menu-entry-prefix";
+  prefix.className = "jump-flyout-entry-prefix";
   prefix.textContent = descriptor.basePath ?? "";
   fieldsRow.appendChild(prefix);
 
@@ -107,10 +107,10 @@ function renderJumpFlyoutButtons(
 
   columns.forEach((descriptors, columnTitle) => {
     const columnSection = document.createElement("details");
-    columnSection.className = "jump-menu-column";
+    columnSection.className = "jump-flyout-column";
     // The "name" attribute is a native accordion hint in newer browsers; the toggle
     // listener below enforces single-open behavior everywhere else.
-    columnSection.setAttribute("name", "jump-menu-column");
+    columnSection.setAttribute("name", "jump-flyout-column");
 
     const summary = document.createElement("summary");
     summary.textContent = columnTitle;
@@ -141,8 +141,8 @@ function renderJumpFlyoutButtons(
   });
 }
 
-export function initJumpFlyoutButtons(): void {
-  getElement<HTMLButtonElement>("save-jump-menu-buttons").addEventListener("click", () => {
+export function initJumpFlyoutButtons(): void { 
+  getElement<HTMLButtonElement>("save-jump-flyout-buttons").addEventListener("click", () => {
     const userSettings: JumpFlyoutButtonSettings = {};
     JUMP_MENU_BUTTON_CATALOG.forEach((descriptor) => {
       const enabledInput = quickMenuButtonsContainer.querySelector<HTMLInputElement>(
@@ -173,7 +173,7 @@ export function initJumpFlyoutButtons(): void {
       setUserTreeJumps(userTreeJumps),
       setUserAdminPages(userAdminPages),
     ]).then(() => {
-      quickMenuButtonsStatus.textContent = "Jump menu buttons saved.";
+      quickMenuButtonsStatus.textContent = "Jump flyout buttons saved.";
     });
   });
 

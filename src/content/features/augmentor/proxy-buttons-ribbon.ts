@@ -1,5 +1,5 @@
 // Proxy Buttons mirror a real Sitecore ribbon checkbox and proxy clicks to it. The ribbon
-// checkbox stays the source of truth. These live in the main toolbar menu (not the editor
+// checkbox stays the source of truth. These live in the main toolbar (not the editor
 // header) since the editor header gets redrawn every time a tree item is picked.
 import { getChildFrameDocuments } from "./shared/frame-documents";
 

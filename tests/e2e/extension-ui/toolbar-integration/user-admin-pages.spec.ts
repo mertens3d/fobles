@@ -59,7 +59,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
       await expect(foblesFrame.getByText(TESTING.JUMP_MENU.ADMIN_PAGES_GROUP_LABEL)).toBeVisible();
       await attachLocatorScreenshot(
         testInfo,
-        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT),
+        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
         TESTING.REPORT_SCREENSHOTS.ADMIN_PAGE_ENABLED,
       );
 
@@ -77,7 +77,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
       await expect(foblesFrame.getByText(TESTING.JUMP_MENU.ADMIN_PAGES_GROUP_LABEL)).toHaveCount(0);
       await attachLocatorScreenshot(
         testInfo,
-        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT),
+        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
         TESTING.REPORT_SCREENSHOTS.ADMIN_PAGE_DISABLED,
       );
 

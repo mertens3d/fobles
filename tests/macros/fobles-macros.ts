@@ -18,8 +18,8 @@ export async function ClickFoblesJumpButton(
     page: Page) {
     const foblesFrame = await findFoblesFrame(page);
     console.log(`[fobles Macro] ClickFoblesJumpButton`);
-    const menuButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
-    await clickWithMouseMarker(page, menuButton, "Fobles Jump Button");
+    const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
+    await clickWithMouseMarker(page, jumpFlyoutButton, "Fobles Jump Button");
     await expectJumpFlyoutFlyoutVisible(foblesFrame);
 }
 
@@ -28,12 +28,12 @@ export async function ClickFoblesJumpButton(
 // button (clicking it while already open would close it instead).
 export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<void> {
     console.log("[Macro: openJumpFlyout] - Start");
-    console.log("[fobles] Checking whether the jump menu flyout is already visible");
-    const menuFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT);
+    console.log("[fobles] Checking whether the Jump flyout is already visible");
+    const jumpFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT);
     const isOpen =
-        (await menuFlyout.getAttribute(CONST.FOBLES.ATTRIBUTES.MENU_VISIBLE).catch(() => null)) === "true";
+        (await jumpFlyout.getAttribute(CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE).catch(() => null)) === "true";
     if (isOpen) {
-        console.log("[fobles] Jump menu already visible - skipping trigger click");
+        console.log("[fobles] Jump flyout already visible - skipping trigger click");
         return;
     }
 
@@ -42,17 +42,17 @@ export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<vo
 }
 
 
-// Clicks the nth "other menu button" (a plain external-URL jump-menu entry - CONST.FOBLES.LOCATORS.MENU_URL,
+// Clicks the nth "other jump flyout button" (a plain external-URL jump-flyout entry - CONST.FOBLES.LOCATORS.MENU_URL,
 // distinct from a tree-jump button, which targets a Sitecore item path) and dismisses Fobles' own
-// confirm dialog afterward. Opens the jump menu itself first (idempotent, see openJumpFlyout)
-// rather than requiring the caller to resolve a frame/open the menu beforehand.
+// confirm dialog afterward. Opens the jump flyout itself first (idempotent, see openJumpFlyout)
+// rather than requiring the caller to resolve a frame/open the jump flyout beforehand.
 export async function clickJumpFlyoutUrlButton(page: Page, index: number, label: string): Promise<void> {
     console.log(`[Macro: clickJumpFlyoutUrlButton] - Start (index: ${index})`);
     const foblesFrame = await findFoblesFrame(page);
     await openJumpFlyout(page, foblesFrame);
-    const menuButton = foblesFrame.locator(CONST.FOBLES.LOCATORS.MENU_URL).nth(index);
-    await menuButton.waitFor({ state: "visible" });
-    await clickWithMouseMarker(page, menuButton, `Menu ${label}`);
+    const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.LOCATORS.MENU_URL).nth(index);
+    await jumpFlyoutButton.waitFor({ state: "visible" });
+    await clickWithMouseMarker(page, jumpFlyoutButton, `Menu ${label}`);
     await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
 }
 

@@ -4,12 +4,12 @@ import {
   isCompactToolbarPage,
   isPowerShellIsePath,
 } from "../guard";
-import { setJumpFlyoutVisible } from "./jump-menu";
-import { setProxyButtonsVisible } from "./proxy-buttons";
+import { setJumpFlyoutVisible } from "./jump-flyout";
+import { setProxyButtonsVisible } from "./sc-proxy-buttons";
 import {
   createLboltButton,
-  createProxyButtonsTrigger,
-  createJumpsMenuTrigger,
+  createProxyFlyoutTrigger,
+  createJumpsFlyoutTrigger,
   createSetIseTabTitleButton,
   createToolbarCloseButton,
   createToolbarGrip,
@@ -53,7 +53,7 @@ export function injectToolbar(context: ToolbarContext): void {
   }
 
   if (isCompactToolbar) {
-    body.querySelector(SELECTORS.QUICK_MENU_TRIGGER)?.remove();
+    body.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)?.remove();
     body.querySelector(SELECTORS.PROXY_BUTTONS_TRIGGER)?.remove();
     body.querySelector(SELECTORS.TOOLBAR_SET_ISE_TITLE_BUTTON)?.remove();
     body.querySelector(SELECTORS.TOOLBAR_CLOSE_BUTTON)?.remove();
@@ -64,12 +64,12 @@ export function injectToolbar(context: ToolbarContext): void {
     return;
   }
 
-  if (!body.querySelector(SELECTORS.QUICK_MENU_TRIGGER)) {
-    body.appendChild(createJumpsMenuTrigger(context));
+  if (!body.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)) {
+    body.appendChild(createJumpsFlyoutTrigger(context));
   }
 
   if (!body.querySelector(SELECTORS.PROXY_BUTTONS_TRIGGER)) {
-    body.appendChild(createProxyButtonsTrigger(context));
+    body.appendChild(createProxyFlyoutTrigger(context));
   }
 
   const setIseTitleButton = body.querySelector(

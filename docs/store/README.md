@@ -22,7 +22,7 @@ everything under `docs/store/images/`, PNG only, no padding beyond what each spe
 | `promo-marquee-1400x560.png` | 1400x560 | Chrome (optional, for featured placement), Edge (optional "Large promotional tile") |
 | `screenshot-1-1280x800.png` ... `screenshot-5-1280x800.png` | 1280x800 (or 640x400/640x480), full-bleed, no rounded corners | Chrome (1-5), Edge (up to 6) |
 
-Suggested screenshot subjects, in order: extension popup, admin menu / quick-jump menu, Sitecore
+Suggested screenshot subjects, in order: extension popup, admin menu / quick-jump flyout, Sitecore
 Content Editor with injected UI, AI Pages mapping screen.
 
 ## Recommended submission checklist
@@ -30,7 +30,7 @@ Content Editor with injected UI, AI Pages mapping screen.
 1. Confirm extension name and icon are final
 2. Add final screenshots for:
    - extension popup
-   - admin menu / quick-jump menu
+   - admin menu / quick-jump flyout
    - Sitecore Content Editor with injected UI
    - optional: AI Pages mapping screen
 3. Add a public support URL and privacy policy URL

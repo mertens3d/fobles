@@ -5,12 +5,12 @@ import { setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers-
 import { openContentEditor } from "../../fixtures/sitecore";
 import { ceRibbonOpenHome } from "../../macros/sitecore-macros";
 import { clickJumpFlyoutUrlButton } from "../../macros/fobles-macros";
-import { getFoblesMenuTargets } from "./support/other-settings-helpers";
+import { getFoblesJumpFlyoutTargets } from "./support/other-settings-helpers";
 import { expect, foblesTest, type Page } from "../../fixtures/playwright";
 
 
 
-export type menuTarget = {
+export type jumpTarget = {
     label: string;
     url: string;
 };
@@ -18,44 +18,44 @@ export type menuTarget = {
 // Launchpad now redirects into the newer app.sitecorecloud.io "Strategy" app shell instead of
 // the classic client app URL in this environment - known drift, not a Fobles bug. Skipped until
 // the expected destination is confirmed/stable.
-const SKIPPED_MENU_LABELS = ["Launchpad"];
+const SKIPPED_JUMP_FLYOUT_LABELS = ["Launchpad"];
 
 foblesTest.describe("Fobles Other Buttons", () => {
 
-    foblesTest("other menu buttons navigate to their configured URLs", async ({
+    foblesTest("other jump flyout buttons navigate to their configured URLs", async ({
         page,
     }, testInfo) => {
         foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
         await setupContentEditorForTestingBasic(page);
-        const step = createStep(page, testInfo, page, "Menu Button");
+        const step = createStep(page, testInfo, page, "Jump Flyout Button");
 
-        // await ClickFoblesMenuButton(page);
+        // await ClickFoblesJumpFlyoutButton(page);
 
         // await expectFlyoutVisible(foblesFrame);
 
-        const targets: menuTarget[] = await getFoblesMenuTargets(page);
+        const targets: jumpTarget[] = await getFoblesJumpFlyoutTargets(page);
 
         expect(targets.length).toBeGreaterThan(0);
         const failures: string[] = [];
 
         for (let index = 0; index < targets.length; index += 1) {
             const target = targets[index];
-            if (SKIPPED_MENU_LABELS.includes(target.label)) {
-                console.log(`[fobles] Skipping menu target "${target.label}" - known environment URL drift`);
+            if (SKIPPED_JUMP_FLYOUT_LABELS.includes(target.label)) {
+                console.log(`[fobles] Skipping jump flyout target "${target.label}" - known environment URL drift`);
                 continue;
             }
              await stepExamineOneJumpButton(target, index, step, page, failures);
         }
 
         if (failures.length > 0) {
-            throw new Error(`Menu target failures:\n${failures.join("\n")}`);
+            throw new Error(`Jump flyout target failures:\n${failures.join("\n")}`);
         }
     });
 });
 
 
 
-async function stepExamineOneJumpButton(target: menuTarget,
+async function stepExamineOneJumpButton(target: jumpTarget,
     index: number,
     step: (title: string,
         body: (fullTitle: string) => Promise<void>, options?: { timeout?: number; screenshot?: boolean; }) => Promise<void>, 
@@ -81,7 +81,7 @@ async function stepExamineOneJumpButton(target: menuTarget,
    
 }
 
-async function stepExamineOneJumpButtonInner(index: number, page: Page, target: menuTarget) {
+async function stepExamineOneJumpButtonInner(index: number, page: Page, target: jumpTarget) {
     await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
     await clickJumpFlyoutUrlButton(page, index, target.label);
 

@@ -183,7 +183,7 @@ function getOwningPage(target: Screenshottable): Page {
     : (target as Page);
 }
 
-// page.locator() only searches the main frame - some jump-menu targets (e.g. the Installation
+// page.locator() only searches the main frame - some jump-flyout targets (e.g. the Installation
 // Wizard shell application) render inside a nested iframe instead, so a selector's presence has to
 // be checked frame-by-frame rather than assumed to be in the top-level document.
 async function framesWithSelector(
@@ -243,20 +243,20 @@ async function getSensitiveAutoMasks(
   }
 
   // The browser's built-in XML viewer (e.g. /sitecore/admin/showconfig.aspx, reached via the
-  // Fobles menu's "Show Config" button) marks each expanded node with class "opened" - showconfig
+  // Fobles flyout's "Show Config" button) marks each expanded node with class "opened" - showconfig
   // dumps the live web.config, including connection strings, so mask every expanded node.
   for (const frame of await framesWithSelector(page, ".opened")) {
     masks.push(frame.locator(".opened"));
   }
 
-  // showservicesconfig.aspx ("Show Services Config" jump-menu button) lists every registered DI
+  // showservicesconfig.aspx ("Show Services Config" jump-flyout button) lists every registered DI
   // service in a <tbody> - scope the mask to its own #ServicesForm container so unrelated tables
   // (e.g. Content Editor field tables) are never affected.
   for (const frame of await framesWithSelector(page, "#ServicesForm tbody")) {
     masks.push(frame.locator("#ServicesForm tbody"));
   }
 
-  // cache.aspx ("Cache" jump-menu button) lists every cache's name/size in a nested table next
+  // cache.aspx ("Cache" jump-flyout button) lists every cache's name/size in a nested table next
   // to the "Caches (NNN)" section title - find that nested table relative to the title span (it
   // has no id/class of its own) and blur it rather than the whole page. Blurred, not masked -
   // cache names/sizes are operational metadata, not a secret.
@@ -266,7 +266,7 @@ async function getSensitiveAutoMasks(
     );
   }
 
-  // jobs.aspx ("Jobs" jump-menu button) lists Running/Queued/Finished jobs, each rendered as
+  // jobs.aspx ("Jobs" jump-flyout button) lists Running/Queued/Finished jobs, each rendered as
   // either a "No jobs" placeholder or a table.jobs-table - no per-section wrapper element exists,
   // so blur both possible shapes directly rather than trying to select "the section". Blurred
   // (not hard-masked) as this POC's one converted example - job names/status/times are
@@ -277,20 +277,20 @@ async function getSensitiveAutoMasks(
     blurTargets.push(frame.locator(jobsSelector));
   }
 
-  // logs.aspx ("Logs" jump-menu button) lists every log file name/link in #LogTypes - blurred,
+  // logs.aspx ("Logs" jump-flyout button) lists every log file name/link in #LogTypes - blurred,
   // not masked, since log file names are operational metadata, not a secret.
   for (const frame of await framesWithSelector(page, "#LogTypes")) {
     blurTargets.push(frame.locator("#LogTypes"));
   }
 
-  // stats.aspx ("Stats" jump-menu button) lists rendering/item stats in plain, unstyled
+  // stats.aspx ("Stats" jump-flyout button) lists rendering/item stats in plain, unstyled
   // <table>s scoped to its own #form1 - the first one is enough to obscure the data without
   // blacking out the whole page. Blurred - these are usage counts, not a secret.
   for (const frame of await framesWithSelector(page, "#form1 table")) {
     blurTargets.push(frame.locator("#form1 table").first());
   }
 
-  // dbbrowser.aspx ("DB Browser" jump-menu button) shows a full item tree in div.content - scope
+  // dbbrowser.aspx ("DB Browser" jump-flyout button) shows a full item tree in div.content - scope
   // to a .content that actually contains the tree browser (#tree), since ".content" alone is too
   // generic to safely mask on every page. #dataBases (the master/web/filesystem/core database
   // tabs above the tree) is a sibling, not a descendant, so it needs its own entry.
@@ -304,13 +304,13 @@ async function getSensitiveAutoMasks(
     masks.push(frame.locator("#dataBases"));
   }
 
-  // Installation Wizard ("Installation Wizard" jump-menu button, a shell application likely
+  // Installation Wizard ("Installation Wizard" jump-flyout button, a shell application likely
   // rendered inside a nested frame) shows the selected package's filename in #PackageFile.
   for (const frame of await framesWithSelector(page, "#PackageFile")) {
     masks.push(frame.locator("#PackageFile"));
   }
 
-  // Kick User/Control Panel/Launchpad ("Kick User"/"Control Panel"/"Launchpad" jump-menu
+  // Kick User/Control Panel/Launchpad ("Kick User"/"Control Panel"/"Launchpad" jump-flyout
   // buttons) are all Sitecore client (SPA-shell) applications sharing the same main-content
   // region class, regardless of which application it is. Stays hard-masked (not blurred) - Kick
   // User's own content lists real logged-in usernames, same sensitivity as the account info
@@ -322,7 +322,7 @@ async function getSensitiveAutoMasks(
     masks.push(frame.locator(".sc-applicationContent-main"));
   }
 
-  // File Explorer ("File Explorer" jump-menu button, xmlcontrol=FileExplorer) has no id/class of
+  // File Explorer ("File Explorer" jump-flyout button, xmlcontrol=FileExplorer) has no id/class of
   // its own on the layout table holding the actual folder/file listing - find it relative to
   // #FoldersAction (unique to this page) instead, and blur just its third row (the listing
   // itself, not the toolbar rows above it).
@@ -362,7 +362,7 @@ async function getSensitiveAutoMasks(
     );
   }
 
-  // Desktop ("Desktop" jump-menu button) shows the current database name and a user's saved
+  // Desktop ("Desktop" jump-flyout button) shows the current database name and a user's saved
   // desktop shortcuts - blurred, not masked; a db name and shortcut labels aren't identity/secrets.
   for (const frame of await framesWithSelector(page, "#DatabaseSelector")) {
     blurTargets.push(frame.locator("#DatabaseSelector"));

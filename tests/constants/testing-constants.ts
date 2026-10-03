@@ -211,9 +211,9 @@ export const TESTING = {
       JUMP_MENU_SECTION_TITLE: "Jump Menu Buttons",
       REMOVE_BUTTON_TITLE: "Remove this Admin Page",
       ROW_SELECTOR: ".user-admin-page-row",
-      SAVE_BUTTON: "Save jump menu buttons",
-      STATUS_SELECTOR: "#jump-menu-buttons-status",
-      SAVE_STATUS: "Jump menu buttons saved.",
+      SAVE_BUTTON: "Save jump flyout buttons",
+      STATUS_SELECTOR: "#jump-flyout-buttons-status",
+      SAVE_STATUS: "Jump flyout buttons saved.",
       URL_INPUT: "input[name='url']",
     },
     DEVELOPER: {
@@ -262,7 +262,7 @@ export const TESTING = {
     POPUP_PREFERENCES_SAVED: "popup-preferences-saved.png",
     STORAGE_CLEARED: "storage-cleared.png",
     STORAGE_BEFORE_CLEAR: "storage-before-clear.png",
-    USER_TREE_JUMP_MENU: "user-tree-jump-menu.png",
+    USER_TREE_JUMP_MENU: "user-tree-jump-flyout.png",
     USER_ADMIN_PAGE_SAVED: "user-admin-page-saved.png",
   },
   SCREENSHOT: {
@@ -270,7 +270,7 @@ export const TESTING = {
     BLUR_PX: 8,
   },
   JUMP_MENU: {
-    ADMIN_PAGES_COLUMN_SELECTOR: ".jump-menu-column",
+    ADMIN_PAGES_COLUMN_SELECTOR: ".jump-flyout-column",
     ADMIN_PAGES_GROUP_LABEL: "User Admin Pages",
     ADMIN_PAGES_INTEGRATION_LABEL_PREFIX: "Fobles E2E Toolbar Admin ",
     USER_ADMIN_PAGE_ENABLED_INPUT: "input[name='enabled']",
@@ -285,7 +285,7 @@ export const TESTING = {
     AI_MAPPING_TENANT_NAME_INPUT: "input[name='tenantName']",
   },
   CONTENT_EDITOR_DEBUG: {
-    LOG_MARKER: "Fobles menu eligibility decision",
+    LOG_MARKER: "Fobles flyout eligibility decision",
     OPEN_CONSOLE_SHORTCUT: "Control+Shift+J",
   },
   SPEAK_BUBBLE: {

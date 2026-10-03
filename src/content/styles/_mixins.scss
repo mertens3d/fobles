@@ -19,7 +19,7 @@
   transition: filter 0.15s ease, box-shadow 0.15s ease, transform 0.15s ease;
 }
 
-@mixin fobles-menu-panel {
+@mixin fobles-jump-flyout-panel {
   --fobles-height: #{$fobles-height};
   position: absolute;
   top: calc(100% + 8px);

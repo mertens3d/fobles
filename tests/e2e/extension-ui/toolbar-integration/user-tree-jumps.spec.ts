@@ -88,7 +88,7 @@ foblesTest.describe("User Tree Jumps", () => {
               await jumpButton.scrollIntoViewIfNeeded();
               await attachLocatorScreenshot(
                 testInfo,
-                foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_FLYOUT),
+                foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
                 CONST.TESTING.REPORT_SCREENSHOTS.USER_TREE_JUMP_MENU,
               );
               await clickWithMouseMarker(

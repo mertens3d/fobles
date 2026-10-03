@@ -28,7 +28,7 @@ class StaticTestReporter {
     if (loginMatch) {
       this.loginAlertUrl = loginMatch[1];
       this.writeReport(this.lastFullResult);
-    } else if (this.loginAlertUrl && text.includes("[sitecore preflight] Looking for Fobles menu")) {
+    } else if (this.loginAlertUrl && text.includes("[sitecore preflight] Looking for Fobles flyout")) {
       this.loginAlertUrl = null;
       this.writeReport(this.lastFullResult);
     }
