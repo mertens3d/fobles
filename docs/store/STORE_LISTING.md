@@ -10,7 +10,7 @@ Fobles for Sitecore helps Sitecore editors work faster in the Content Editor and
 
 Features:
 
-- Quick Jump shortcuts for common Sitecore paths
+- Jump shortcuts for common Sitecore paths
 - Admin page shortcuts for common Sitecore tools and utilities
 - AI Pages mapping tools for faster content navigation
 - Toggleable Fobles navigation helpers for the Sitecore UI
@@ -22,13 +22,13 @@ The extension runs locally in your browser and does not require any remote servi
 
 ## Keywords
 
-Sitecore, Content Editor, productivity, admin, navigation, quick jump, AI Pages
+Sitecore, Content Editor, productivity, admin, navigation, Jump, AI Pages
 
 ## Search terms (Edge) - NEEDS REVIEW
 
 Edge's own "Search terms" field (max 7 terms, 30 characters each, 21 words total) - draft, not yet confirmed:
 
-Sitecore, Sitecore AI, Content Editor, Sitecore Developer, Quick Jump, Sitecore Extension, Sitecore Productivity
+Sitecore, Sitecore AI, Content Editor, Sitecore Developer, Jump, Sitecore Extension, Sitecore Productivity
 
 ## Category
 

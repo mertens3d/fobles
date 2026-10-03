@@ -7,6 +7,7 @@ class StaticTestReporter {
     this.outputFile = path.resolve(
       options.outputFile ?? path.resolve(__dirname, "../../../tests/test-artifacts/reports/test-report.html"),
     );
+    this.autoOpenInBrowser = options.autoOpenInBrowser ?? true;
     this.startedAt = new Date();
     this.results = [];
     this.loginAlertUrl = null;
@@ -18,7 +19,7 @@ class StaticTestReporter {
     this.totalTests = suite.allTests().length;
     printStopSafelyWarning();
     this.writeReport({ status: "running" });
-    openInBrowser(this.outputFile);
+    if (this.autoOpenInBrowser) openInBrowser(this.outputFile);
   }
 
   onStdOut(chunk) {
@@ -27,7 +28,7 @@ class StaticTestReporter {
     if (loginMatch) {
       this.loginAlertUrl = loginMatch[1];
       this.writeReport(this.lastFullResult);
-    } else if (this.loginAlertUrl && text.includes("[sitecore preflight] Looking for Fobles menu")) {
+    } else if (this.loginAlertUrl && text.includes("[sitecore preflight] Looking for Fobles flyout")) {
       this.loginAlertUrl = null;
       this.writeReport(this.lastFullResult);
     }
@@ -102,6 +103,8 @@ class StaticTestReporter {
       })
       .join("");
 
+    const suiteNavHtml = renderSuiteNav(this.outputFile);
+
     const html = `<!doctype html>
 <html lang="en">
 <head>
@@ -138,8 +141,11 @@ class StaticTestReporter {
     .row-kind-test { background: #d0ebff; color: #1864ab; }
     .row-kind-step { background: #e5dbff; color: #5f3dc4; }
     .screenshot-links { line-height: 1.7; }
-    .screenshot-link { color: inherit; display: inline-block; text-decoration: none; vertical-align: top; }
-    .screenshot-thumb { background: #fff; border: 1px solid #d9e2ec; border-radius: 4px; display: block; max-height: 320px; max-width: 480px; object-fit: contain; }
+    .screenshot-thumb { background: #fff; border: 1px solid #d9e2ec; border-radius: 4px; cursor: zoom-in; display: block; max-height: 320px; max-width: 480px; object-fit: contain; }
+    .screenshot-modal-backdrop { align-items: center; background: rgba(15, 23, 32, .85); display: none; inset: 0; justify-content: center; padding: 2rem; position: fixed; z-index: 1000; }
+    .screenshot-modal-backdrop.open { display: flex; }
+    .screenshot-modal-backdrop img { border-radius: 6px; box-shadow: 0 10px 40px rgba(0, 0, 0, .5); max-height: 90vh; max-width: 95vw; }
+    .screenshot-modal-close { background: #fff; border: none; border-radius: 999px; cursor: pointer; font-size: 1.3rem; height: 2.2rem; line-height: 1; position: fixed; right: 1.2rem; top: 1rem; width: 2.2rem; z-index: 1001; }
     .badge { border-radius: 999px; display: inline-block; font-size: .8rem; font-weight: 700; padding: .2rem .55rem; }
     .badge-passed { background: #d3f9d8; color: #087f5b; }
     .badge-failed, .badge-timedOut { background: #ffe3e3; color: #c92a2a; }
@@ -147,10 +153,16 @@ class StaticTestReporter {
     pre { margin: .75rem 0 0; white-space: pre-wrap; }
     .login-alert { background: #fab005; border-radius: 6px; color: #1f2933; font-weight: 700; margin-bottom: .5rem; padding: .6rem 1rem; position: sticky; top: 0; z-index: 1; }
     .login-alert a { color: #1f2933; }
+    .suite-nav { display: flex; flex-wrap: wrap; gap: .4rem; margin-bottom: .6rem; }
+    .suite-nav a, .suite-nav span { border-radius: 999px; font-size: .8rem; padding: .25rem .7rem; text-decoration: none; }
+    .suite-nav a { background: #fff; border: 1px solid #d9e2ec; color: #1864ab; }
+    .suite-nav a:hover { background: #e7f5ff; }
+    .suite-nav span.current { background: #1864ab; color: #fff; font-weight: 700; }
   </style>
 </head>
 <body>
   <main>
+    ${suiteNavHtml}
     ${this.loginAlertUrl ? `<div class="login-alert">Login needed - switch to the browser window and log in, then click "Resume" in the Playwright Inspector. (<a href="${escapeHtml(this.loginAlertUrl)}" target="_blank">${escapeHtml(toDisplayUrl(this.loginAlertUrl))}</a>)</div>` : ""}
     <header class="report-header">
       <h1>Browser Test Report</h1>
@@ -167,6 +179,37 @@ class StaticTestReporter {
       <tbody>${rows}</tbody>
     </table>
   </main>
+  <div class="screenshot-modal-backdrop" id="screenshot-modal-backdrop">
+    <button type="button" class="screenshot-modal-close" id="screenshot-modal-close" aria-label="Close">&times;</button>
+    <img id="screenshot-modal-img" alt="">
+  </div>
+  <script>
+  (function () {
+    var backdrop = document.getElementById("screenshot-modal-backdrop");
+    var modalImg = document.getElementById("screenshot-modal-img");
+    var closeBtn = document.getElementById("screenshot-modal-close");
+    if (!backdrop || !modalImg) return;
+
+    function openModal(src, alt) {
+      modalImg.src = src;
+      modalImg.alt = alt || "";
+      backdrop.classList.add("open");
+    }
+    function closeModal() {
+      backdrop.classList.remove("open");
+      modalImg.src = "";
+    }
+
+    document.addEventListener("click", function (event) {
+      var thumb = event.target.closest(".screenshot-thumb");
+      if (thumb) { openModal(thumb.src, thumb.alt); return; }
+      if (backdrop.contains(event.target)) closeModal();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape") closeModal();
+    });
+  })();
+</script>
   ${
     running
       ? `<script>
@@ -238,9 +281,7 @@ function renderScreenshotLinks(screenshots) {
   const links = screenshots
     .map(
       (shot) => `
-      <a href="${escapeHtml(shot.href)}" target="_blank" class="screenshot-link" title="${escapeHtml(shot.name)}">
-        <img src="${escapeHtml(shot.href)}" alt="${escapeHtml(aliasScreenshotName(shot.name))}" class="screenshot-thumb" loading="lazy">
-      </a>`,
+      <img src="${escapeHtml(shot.href)}" alt="${escapeHtml(aliasScreenshotName(shot.name))}" title="${escapeHtml(shot.name)}" class="screenshot-thumb" loading="lazy">`,
     )
     .join("<br>");
   return `<div class="screenshot-links">${links}</div>`;
@@ -354,6 +395,34 @@ function printStopSafelyWarning() {
 function toReportRelativeHref(attachmentPath, reportFile) {
   const relative = path.relative(path.dirname(reportFile), attachmentPath);
   return relative.replace(/\\/g, "/");
+}
+
+// Lists every sibling test-report*.html file in the same reports directory so each suite's report
+// can link to every other suite's - discovered dynamically (not a hardcoded suite list) so a new
+// suite's report file shows up here automatically the first time it's generated.
+function renderSuiteNav(outputFile) {
+  const reportsDir = path.dirname(outputFile);
+  const currentFile = path.basename(outputFile);
+  let siblingFiles;
+  try {
+    siblingFiles = fs
+      .readdirSync(reportsDir)
+      .filter((file) => file.startsWith("test-report") && file.endsWith(".html"))
+      .sort();
+  } catch {
+    siblingFiles = [currentFile];
+  }
+
+  const links = siblingFiles
+    .map((file) => {
+      const label = file.replace(/^test-report-?/, "").replace(/\.html$/, "") || "default";
+      return file === currentFile
+        ? `<span class="current">${escapeHtml(label)}</span>`
+        : `<a href="${escapeHtml(file)}">${escapeHtml(label)}</a>`;
+    })
+    .join("");
+
+  return `<nav class="suite-nav">${links}</nav>`;
 }
 
 function toDisplayUrl(url) {

@@ -10,6 +10,7 @@ dist/packed/*
 .env.local
 .env.*
 !.env.example
+fobles.environments.json
 
 # Playwright state, profiles, reports, and test artifacts
 tests/test-artifacts/
@@ -27,3 +28,4 @@ auth*.json
 .sitecore/user.json
 .sitecore/.cache/
 .scindex
+test-artifacts/*

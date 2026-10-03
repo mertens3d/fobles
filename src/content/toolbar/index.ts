@@ -4,16 +4,16 @@ import {
   isCompactToolbarPage,
   isPowerShellIsePath,
 } from "../guard";
-import { setQuickMenuVisible } from "./quick-menu";
-import { setProxyButtonsVisible } from "./proxy-buttons";
+import { setJumpFlyoutVisible } from "./jump-flyout";
+import { setProxyFlyoutVisible } from "./sc-proxy-buttons";
 import {
   createLboltButton,
-  createProxyButtonsTrigger,
-  createQuickMenuTrigger,
+  createJumpsFlyoutTrigger,
   createSetIseTabTitleButton,
   createToolbarCloseButton,
   createToolbarGrip,
 } from "./elements";
+import { createProxyFlyoutTrigger } from "./proxy-flyout/proxy-flyout";
 import { applyToolbarPlacement, wireContainerDragging } from "./drag";
 import { observeToolbarBackground, updateToolbarBackground } from "./background";
 import type { ToolbarContext } from "./types";
@@ -24,9 +24,9 @@ export function injectToolbar(context: ToolbarContext): void {
   const host = context.doc.body;
   if (!host) return;
 
-  let container = context.doc.querySelector(
+  let container = context.doc.querySelector<HTMLDivElement>(
     SELECTORS.TOOLBAR_CONTAINER,
-  ) as HTMLDivElement | null;
+  );
   if (!container) {
     container = context.doc.createElement("div");
     container.className = CLASS.TOOLBAR_CONTAINER;
@@ -37,7 +37,7 @@ export function injectToolbar(context: ToolbarContext): void {
     container.appendChild(createToolbarGrip(context));
   }
 
-  let body = container.querySelector(SELECTORS.TOOLBAR_BODY) as HTMLDivElement | null;
+  let body = container.querySelector(SELECTORS.TOOLBAR_BODY);
   if (!body) {
     body = context.doc.createElement("div");
     body.className = CLASS.TOOLBAR_BODY;
@@ -53,7 +53,7 @@ export function injectToolbar(context: ToolbarContext): void {
   }
 
   if (isCompactToolbar) {
-    body.querySelector(SELECTORS.QUICK_MENU_TRIGGER)?.remove();
+    body.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)?.remove();
     body.querySelector(SELECTORS.PROXY_BUTTONS_TRIGGER)?.remove();
     body.querySelector(SELECTORS.TOOLBAR_SET_ISE_TITLE_BUTTON)?.remove();
     body.querySelector(SELECTORS.TOOLBAR_CLOSE_BUTTON)?.remove();
@@ -64,12 +64,12 @@ export function injectToolbar(context: ToolbarContext): void {
     return;
   }
 
-  if (!body.querySelector(SELECTORS.QUICK_MENU_TRIGGER)) {
-    body.appendChild(createQuickMenuTrigger(context));
+  if (!body.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)) {
+    body.appendChild(createJumpsFlyoutTrigger(context));
   }
 
   if (!body.querySelector(SELECTORS.PROXY_BUTTONS_TRIGGER)) {
-    body.appendChild(createProxyButtonsTrigger(context));
+    body.appendChild(createProxyFlyoutTrigger(context));
   }
 
   const setIseTitleButton = body.querySelector(
@@ -89,8 +89,8 @@ export function injectToolbar(context: ToolbarContext): void {
   applyToolbarPlacement(container, context.win, context.placement);
   updateToolbarBackground(context);
   observeToolbarBackground(context);
-  setQuickMenuVisible(context.doc, false);
-  setProxyButtonsVisible(context.doc, false);
+  setJumpFlyoutVisible(context.doc, false);
+  setProxyFlyoutVisible(context.doc, false);
 }
 
 export function setToolbarVisible(
@@ -103,8 +103,8 @@ export function setToolbarVisible(
     return;
   }
 
-  setQuickMenuVisible(context.doc, false);
-  setProxyButtonsVisible(context.doc, false);
+  setJumpFlyoutVisible(context.doc, false);
+  setProxyFlyoutVisible(context.doc, false);
   context.doc.querySelector(SELECTORS.TOOLBAR_CONTAINER)?.remove();
 }
 

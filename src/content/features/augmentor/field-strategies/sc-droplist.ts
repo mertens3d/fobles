@@ -5,9 +5,6 @@ import type { DroplistFobles as DroplistConfig } from "../fobles.types";
 // See sc-droplink.ts for why this can't rely on aria-label; hasAnyGuidLikeOption is what tells
 // the two field types apart.
 const isDroplist = (select: HTMLSelectElement): boolean => {
-  const ariaLabel = select.getAttribute("aria-label");
-  if (ariaLabel) return /\bdroplist\s+field\b/i.test(ariaLabel);
-
   return !hasAnyGuidLikeOption(select);
 };
 

@@ -1,0 +1,23 @@
+﻿---
+ID: "84091c2c-3243-4b6f-8c70-91a2b3c4d5e6"
+Parent: "73f8091b-2132-4a5e-8b6f-8091a2b3c4d5"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Project/Fobles Testing/Fobles Testing/Strategy Treelist Ex/Strategy Treelist Ex
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260919T181000Z
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "f7060393-a9ba-4cd6-8de7-08192a3b4c5d"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\Admin
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260919T181000Z

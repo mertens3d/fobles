@@ -1,16 +1,18 @@
-import { expect, test } from "../fixtures/playwright";
-import { CONST } from "../CONST";
+import { expect, foblesTest } from "../../fixtures/playwright";
+import { CONST } from "../../CONST";
 import {
-  activateFoblesForFieldStrategy,
-  createStep,
-  getEditorSectionLocator,
-} from "../fobles-helpers";
-import { clickLboltButton } from "../sitecore-macros";
-import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
-import { runClickNavigationSteps } from "./click-navigation-steps";
-import { STRATEGY_SCENARIOS } from "./strategy-scenarios";
+  setupContentEditorForTesting,
+} from "../../helpers/fobles-helpers-support/test-setup";
 
-const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
+import { fieldScreenshotName } from "./support/CONST";
+import { runClickNavigationSteps } from "./click-navigation-steps";
+import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
+import type { StrategyTestContext } from "./support/scenario.types";
+import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
+import { showBillboard } from "../../helpers/billboard";
+import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./support/strategy-test-helper";
+
+const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Multilist with Search replaces BOTH panes independently
 // (src/content/features/augmentor/field-strategies/sc-multilistwithsearch.ts): the "all items"
@@ -19,35 +21,21 @@ const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 // [data-fobles-wrapper] - like Tag List, but functional.
 const SCENARIO = STRATEGY_SCENARIOS.MULTILIST_WITH_SEARCH;
 
-test.describe("Strategy scenario: multilist with search", () => {
-  test("toggling Fobles decorates and restores the multilist with search field", async ({ page }, testInfo) => {
-    const { fieldTable, lboltButton } = await activateFoblesForFieldStrategy(
-      page,
-      SCENARIO.itemId,
-      SCENARIO.fieldLabel,
-    );
-    const selectedPane = fieldTable.locator("select.scBucketListSelectedBox").first();
-    const step = createStep(page, testInfo, getEditorSectionLocator(fieldTable), "Multilist with Search");
-
-    await step("Default stage: field renders as a plain Sitecore multilist with search", async () => {
-      await expect(selectedPane).toBeVisible();
-      await expect(fieldTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
-    });
-
-    await step("Toggle Fobles on: both panes get Fobles wrappers", async () => {
-      await clickLboltButton(page, lboltButton);
-      await expect(selectedPane).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-      await expect(fieldTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(2);
-
-      const selectedPaneButton = fieldTable
-        .locator(`select.scBucketListSelectedBox + ${FOBLES.SELECTORS.WRAPPER} ${FOBLES.SELECTORS.BUTTON}`)
-        .first();
-      await expect(selectedPaneButton).toBeVisible();
-      await expect(selectedPaneButton).toHaveText(SCENARIO.expectedButtonText);
-      await page.waitForTimeout(STEP_WAIT_MS);
-    });
-
-    await runClickNavigationSteps(step, page, testInfo, fieldTable, lboltButton, selectedPane, SCENARIO);
+foblesTest.describe("Strategy scenario: multilist with search", () => {
+  foblesTest("toggling Fobles decorates and restores the multilist with search field", async ({ page }, testInfo) => {
+  await setupContentEditorForTesting(page,STRATEGY_SCENARIOS.MULTILIST_WITH_SEARCH);
+      
+      await showBillboard(page, STRATEGY_SCENARIOS.MULTILIST_WITH_SEARCH.friendlyName);
+      const testContext: StrategyTestContext = await factoryStrategyTestContext(page, STRATEGY_SCENARIOS.MULTILIST_WITH_SEARCH, testInfo);
+  
+      await stepExpectSitecoreInitialConditions(testContext);
+      await stepExpectFoblesInitialConditions(testContext);
+      await stepExpectFoblesOnConditions(testContext);
+      await stepExpectFoblesCtrlClick(testContext);
+      await stepExpectFoblesOffConditions(testContext);
+      
+      runClickNavigationSteps(testContext.step, page, testInfo, testContext.fieldTable, testContext.locatorFirstResult, testContext.SCENARIO, async () => {
+        await expect(testContext.fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"));
+      });
   });
 });

@@ -12,20 +12,22 @@ import type { MultilistWithSearchFobles as MultilistWithSearchConfig } from "../
 
 const calculatePaneHeight = (select: HTMLSelectElement): number => measureFoblesPaneHeight(select);
 
-const createPaneWrapper = (doc: Document, height: number): HTMLElement =>
+const createPaneWrapper = (doc: Document, height: number, pane: string): HTMLElement =>
   createFoblesWrapper(doc, {
     strategy: FOBLES.STRATEGIES.MULTILIST_WITH_SEARCH,
     classNames: [FOBLES.CLASSES.WRAPPERS.STACKED, FOBLES.CLASSES.WRAPPERS.MULTILIST_WITH_SEARCH],
     cssHeightProperty: FOBLES.CSS_PROPERTIES.LIST_HEIGHT,
     height,
+    pane,
   });
 
 const replacePane = (
   doc: Document,
   select: HTMLSelectElement,
   height: number,
+  pane: string,
 ): void => {
-  const wrapper = createPaneWrapper(doc, height);
+  const wrapper = createPaneWrapper(doc, height, pane);
   collectGuidOptionItems(select).forEach((item) =>
     wrapper.appendChild(createFoblesItemButton(doc, item.label, item.value, FOBLES.CLASSES.BUTTONS.MULTILIST_WITH_SEARCH)),
   );
@@ -64,8 +66,8 @@ export function applyMultilistWithSearchStrategy(
       selectedPane.before(createStyledSpacer(navigation));
     }
 
-    replacePane(doc, allPane, paneHeight);
-    replacePane(doc, selectedPane, paneHeight);
+    replacePane(doc, allPane, paneHeight, FOBLES.PANES.ALL);
+    replacePane(doc, selectedPane, paneHeight, FOBLES.PANES.SELECTED);
     hideAncillaryControls(control);
     control.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");
   });

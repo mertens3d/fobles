@@ -1,0 +1,17 @@
+{
+  "$schema": "../../.sitecore/schemas/ModuleFile.schema.json",
+  "namespace": "fobles.media",
+  "description": "fobles.media",
+  "references": ["fobles.templates"],
+  "items": {
+    "includes": [
+      {
+        "name": "fobles.media",
+        "path": "/sitecore/media library/Fobles Testing",
+        "database": "master",
+        "allowedPushOperations": "CreateAndUpdate",
+        "scope": "ItemAndDescendants"
+      }
+    ]
+  }
+}

@@ -2,44 +2,27 @@ import {
   ATTRIBUTE,
   CLASS,
   ICONS,
-  SELECTORS,
   SYMBOLS,
   TEXT,
 } from "../constants";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {
-  openQuickMenuOnHover,
-  scheduleCloseQuickMenuOnHover,
-} from "./quick-menu";
-import {
-  openProxyButtonsOnHover,
-  scheduleCloseProxyButtonsOnHover,
-} from "./proxy-buttons";
-import { toggleProxyButtons, toggleQuickMenu } from "./handlers";
+  openJumpFlyoutOnHover,
+  scheduleCloseJumpFlyoutOnHover,
+} from "./jump-flyout";
+import { toggleJumpFlyout } from "./handlers";
 import type { ToolbarContext } from "./types";
+import { createFlyoutTrigger } from "./shared-flyout/shared-flyout";
 
 const GRIP_ROWS = 5;
 const GRIP_COLUMNS = [3, 9];
 const GRIP_DOT_RADIUS = 1.3;
 
-function createMenuTrigger(
-  context: ToolbarContext,
-  button: HTMLButtonElement,
-  triggerClass: string,
-  onHover: { open: () => void; scheduleClose: () => void },
-): HTMLDivElement {
-  const trigger = context.doc.createElement("div");
-  trigger.className = triggerClass;
-  trigger.appendChild(button);
-  trigger.addEventListener("mouseenter", onHover.open);
-  trigger.addEventListener("mouseleave", onHover.scheduleClose);
-  return trigger;
-}
-
-function createFoblesNavButton(
+export function createFoblesNavButton(
   context: ToolbarContext,
   options: {
     className: string;
+    role?: string;
     text: string;
     title: string;
     onClick: (event: MouseEvent) => void;
@@ -54,41 +37,32 @@ function createFoblesNavButton(
     ATTRIBUTE.DATA.KEY.FOBLES_NAV_OWNER,
     ATTRIBUTE.DATA.VALUE.PERSISTENT,
   );
+  if (options.role) {
+    button.setAttribute(ATTRIBUTE.DATA.KEY.NAV_BUTTON_ROLE, options.role);
+  }
   button.addEventListener("click", options.onClick);
   return button;
 }
 
-export function createQuickMenuTrigger(context: ToolbarContext): HTMLDivElement {
+export function createJumpsFlyoutTrigger(context: ToolbarContext): HTMLDivElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.FOBLES_NAV_BUTTON,
-    text: TEXT.QUICK_MENU,
+    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.JUMPS_FLYOUT_TRIGGER,
+    text: TEXT.JUMP_MENU,
     title: TEXT.QUICK_MENU_TITLE,
-    onClick: () => toggleQuickMenu(context),
+    onClick: () => toggleJumpFlyout(context),
   });
 
-  return createMenuTrigger(context, button, CLASS.QUICK_MENU_TRIGGER, {
-    open: () => openQuickMenuOnHover(context.doc),
-    scheduleClose: () => scheduleCloseQuickMenuOnHover(context.doc),
-  });
-}
-
-export function createProxyButtonsTrigger(context: ToolbarContext): HTMLDivElement {
-  const button = createFoblesNavButton(context, {
-    className: CLASS.FOBLES_NAV_BUTTON,
-    text: TEXT.VIEW,
-    title: TEXT.VIEW_TITLE,
-    onClick: () => toggleProxyButtons(context),
-  });
-
-  return createMenuTrigger(context, button, CLASS.PROXY_BUTTONS_TRIGGER, {
-    open: () => openProxyButtonsOnHover(context.doc),
-    scheduleClose: () => scheduleCloseProxyButtonsOnHover(context.doc),
+  return createFlyoutTrigger(context, button, CLASS.JUMP_FLYOUT.TRIGGER, {
+    open: () => openJumpFlyoutOnHover(context.doc),
+    scheduleClose: () => scheduleCloseJumpFlyoutOnHover(context.doc),
   });
 }
 
 export function createLboltButton(context: ToolbarContext): HTMLButtonElement {
   return createFoblesNavButton(context, {
     className: CLASS.TOOLBAR_LBOLT_BUTTON,
+    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.LBOLT,
     text: SYMBOLS.LIGHTNING,
     title: TEXT.TOGGLE_FEATURES,
     onClick: context.onToggleFeatures,
@@ -116,7 +90,7 @@ export function createToolbarCloseButton(
 
 export function createToolbarGrip(context: ToolbarContext): SVGSVGElement {
   const svgNs = "http://www.w3.org/2000/svg";
-  const svg = context.doc.createElementNS(svgNs, "svg") as SVGSVGElement;
+  const svg = context.doc.createElementNS(svgNs, "svg");
   svg.setAttribute("class", CLASS.TOOLBAR_GRIP);
   svg.setAttribute("viewBox", "0 0 12 24");
   svg.setAttribute("aria-hidden", "true");

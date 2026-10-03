@@ -1,0 +1,17 @@
+{
+  "$schema": "../../.sitecore/schemas/ModuleFile.schema.json",
+  "namespace": "fobles.layout",
+  "description": "fobles.layout",
+  "references": ["fobles.templates"],
+  "items": {
+    "includes": [
+      {
+        "name": "fobles.layout",
+        "path": "/sitecore/Layout/Renderings/Project/Fobles Testing",
+        "database": "master",
+        "allowedPushOperations": "CreateUpdateAndDelete",
+        "scope": "ItemAndDescendants"
+      }
+    ]
+  }
+}

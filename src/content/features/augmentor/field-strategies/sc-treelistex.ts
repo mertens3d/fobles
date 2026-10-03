@@ -16,12 +16,17 @@ const findEligibleHosts = (doc: Document, config: TreelistExConfig): HTMLElement
   Array.from(doc.querySelectorAll<HTMLElement>(config.FoblesTopSelector))
     .filter((host) => !host.hasAttribute(FOBLES.ATTRIBUTES.MARKER));
 
-// Each selected item renders as a direct child div carrying the Sitecore path in its title attribute.
+// Each selected item renders as a direct child div carrying the Sitecore path in its title
+// attribute - but relative to the content root, omitting even "/sitecore/content" itself (e.g.
+// "/Fobles Testing/..."), unlike every other strategy's raw value.
+const toContentRootPath = (title: string): string => `/sitecore/content${title}`;
+
 const getItems = (host: HTMLElement): TreelistExItem[] =>
   Array.from(host.children)
     .filter((child): child is HTMLElement => child.tagName === "DIV" && child.hasAttribute("title"))
     .map((child) => {
-      const value = child.getAttribute("title")?.trim() ?? "";
+      const title = child.getAttribute("title")?.trim() ?? "";
+      const value = title ? toContentRootPath(title) : "";
       const label = child.textContent?.trim() ?? value;
       return value && label ? { value, label } : null;
     })

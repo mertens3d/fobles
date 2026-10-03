@@ -9,14 +9,14 @@ import type { ToolbarPlacement } from "./toolbar.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";
 import { getDebugSettings } from "../shared/debug-settings";
 import { getPlacementForPage, setPlacementForPage } from "./toolbar-placement";
-import { getFoblesNavVisible } from "../shared/nav-settings";
+import { getFoblesNavVisible, setFoblesNavVisible } from "../shared/nav-settings";
 import { getFoblesState, setFoblesState as setPersistedFoblesState } from "./state";
 import type { MessageRequest } from "./content.types";
 import {
   findAllowedPage,
   isKickUsersPath,
 } from "./guard";
-import { resumeKickAllUsers } from "./features/quick-menu";
+import { resumeKickAllUsers } from "./features/jump-flyout";
 import {
   injectToolbar,
   setToolbarPlacement,
@@ -49,7 +49,7 @@ function getToolbarContext(): ToolbarContext {
   };
 }
 
-function activateFoblesUi(): void {
+function showFoblesToolbar(): void {
   if (foblesUiActive) {
     return;
   }
@@ -60,7 +60,7 @@ function activateFoblesUi(): void {
   foblesUiActive = true;
 }
 
-function deactivateFoblesUi(): void {
+function hideFoblesToolbar(): void {
   if (!foblesUiActive) {
     return;
   }
@@ -86,15 +86,12 @@ function listenForToggleMessages(): void {
   chrome.runtime?.onMessage?.addListener(
     (request: MessageRequest, _sender: unknown, _sendResponse: unknown) => {
       if (request.action === MESSAGE.ACTION.TOGGLE_FOBLES) {
-        if (foblesUiActive) {
-          deactivateFoblesUi();
-          foblesUiActive = false;
-          extensionLog.info("Removed");
-        } else {
-          activateFoblesUi();
-          foblesUiActive = true;
-          extensionLog.info("Added");
-        }
+        const nextVisible = !foblesNavVisible;
+        extensionLog.info("Hotkey triggered: toggle-fobles (nav visibility)", { nextVisible });
+        void setFoblesNavVisible(nextVisible);
+      } else if (request.action === MESSAGE.ACTION.TOGGLE_LBOLT) {
+        extensionLog.info("Hotkey triggered: toggle-lbolt");
+        toggleLightningBolt();
       }
     },
   );
@@ -143,7 +140,7 @@ async function reconcileCurrentPage(): Promise<void> {
   const currentUrl = new URL(window.location.href);
   const kickUsersPath = isKickUsersPath(window.location.pathname);
 
-  extensionLog.debug("Fobles menu eligibility decision", {
+  extensionLog.debug("Fobles flyout eligibility decision", {
     href: currentUrl.href,
     host: currentUrl.host,
     pathname: window.location.pathname,
@@ -152,11 +149,11 @@ async function reconcileCurrentPage(): Promise<void> {
     kickUsersPath,
     debugLogging: debug.debugLogging,
     existingToolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
-    existingMenuTrigger: Boolean(document.querySelector(SELECTORS.QUICK_MENU_TRIGGER)),
+    existingMenuTrigger: Boolean(document.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)),
   });
 
   if (!allowedPage) {
-    extensionLog.debug("Fobles menu not shown: page is not eligible", {
+    extensionLog.debug("Fobles flyout not shown: page is not eligible", {
       href: currentUrl.href,
     });
     document.querySelector(SELECTORS.TOOLBAR_CONTAINER)?.remove();
@@ -173,7 +170,7 @@ async function reconcileCurrentPage(): Promise<void> {
   ]);
   const shouldInitialize = getFoblesState();
 
-  extensionLog.debug("Fobles menu initialization decision", {
+  extensionLog.debug("Fobles flyout initialization decision", {
     shouldInitialize,
     kickUsersPath,
     toolbarVisible: foblesNavVisible,
@@ -182,7 +179,7 @@ async function reconcileCurrentPage(): Promise<void> {
   });
 
   if (shouldInitialize || kickUsersPath) {
-    activateFoblesUi();
+    showFoblesToolbar();
   } else {
     extensionLog.debug("Fobles UI not activated: persisted state is OFF");
     setPersistedFoblesState(false);
@@ -192,10 +189,10 @@ async function reconcileCurrentPage(): Promise<void> {
   resumeKickAllUsers(document);
 
   setToolbarVisible(getToolbarContext(), foblesNavVisible);
-  extensionLog.debug("Fobles menu injection result", {
+  extensionLog.debug("Fobles flyout injection result", {
     toolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
     lboltButton: Boolean(document.querySelector(SELECTORS.TOOLBAR_LBOLT_BUTTON)),
-    menuTrigger: Boolean(document.querySelector(SELECTORS.QUICK_MENU_TRIGGER)),
+    jumpFlyoutTrigger: Boolean(document.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)),
     foblesUiActive,
   });
 }

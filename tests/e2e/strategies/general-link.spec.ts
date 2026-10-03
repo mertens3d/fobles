@@ -1,43 +1,32 @@
-import { expect, test } from "../fixtures/playwright";
-import { CONST } from "../CONST";
-import {
-  activateFoblesForFieldStrategy,
-  createStep,
-  getEditorSectionLocator,
-} from "../fobles-helpers";
-import { clickLboltButton } from "../sitecore-macros";
-import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
+import { expect, foblesTest } from "../../fixtures/playwright";
+import { CONST } from "../../CONST";
+import { fieldScreenshotName } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
-import { STRATEGY_SCENARIOS } from "./strategy-scenarios";
+import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
+import type { StrategyTestContext } from "./support/scenario.types";
+import { stepExpectFoblesCtrlClick, stepExpectFoblesInitialConditions, stepExpectFoblesOffConditions, stepExpectFoblesOnConditions, stepExpectSitecoreInitialConditions } from "./support/strategy-test-helper";
+import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
+import { setupContentEditorForTesting } from "../../helpers/fobles-helpers-support/test-setup";
+import { showBillboard } from "../../helpers/billboard";
 
-const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 const SCENARIO = STRATEGY_SCENARIOS.GENERAL_LINK;
 
-test.describe("Strategy scenario: general link", () => {
-  test("toggling Fobles decorates and restores the general link field", async ({ page }, testInfo) => {
-    const { fieldTable, lboltButton } = await activateFoblesForFieldStrategy(
-      page,
-      SCENARIO.itemId,
-      SCENARIO.fieldLabel,
-    );
-    const input = fieldTable.locator("input.scContentControl").first();
-    const step = createStep(page, testInfo, getEditorSectionLocator(fieldTable), "General Link");
-
-    await step("Default stage: field renders as a plain Sitecore input", async () => {
-      await expect(input).toBeVisible();
-      await expect(fieldTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
-    });
-
-    await step("Toggle Fobles on: the field gets a Fobles button", async () => {
-      await clickLboltButton(page, lboltButton);
-      await expect(input).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-      const foblesButton = fieldTable.locator(FOBLES.SELECTORS.BUTTON).first();
-      await expect(foblesButton).toBeVisible();
-      await expect(foblesButton).toHaveText(SCENARIO.expectedButtonText);
-      await page.waitForTimeout(STEP_WAIT_MS);
-    });
-
-    await runClickNavigationSteps(step, page, testInfo, fieldTable, lboltButton, input, SCENARIO);
+foblesTest.describe("Strategy scenario: general link", () => {
+  foblesTest("toggling Fobles decorates and restores the general link field", async ({ page }, testInfo) => {
+    await setupContentEditorForTesting(page,STRATEGY_SCENARIOS.GENERAL_LINK);
+        
+        await showBillboard(page, STRATEGY_SCENARIOS.GENERAL_LINK.friendlyName);
+        const testContext: StrategyTestContext = await factoryStrategyTestContext(page, STRATEGY_SCENARIOS.GENERAL_LINK, testInfo);
+    
+        await stepExpectSitecoreInitialConditions(testContext);
+        await stepExpectFoblesInitialConditions(testContext);
+        await stepExpectFoblesOnConditions(testContext);
+        await stepExpectFoblesCtrlClick(testContext);
+        await stepExpectFoblesOffConditions(testContext);
+        
+        runClickNavigationSteps(testContext.step, page, testInfo, testContext.fieldTable, testContext.locatorFirstResult, testContext.SCENARIO, async () => {
+          await expect(testContext.fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"));
+        });
   });
 });

@@ -15,6 +15,7 @@ export const SITECORE = {
   },
   // Named so every path used to build FOBLES_PAGES has an identifier, not just a bare literal.
   RELATIVE_PATHS: {
+    CHANGE_TEMPLATE: "/sitecore/shell/Applications/Templates/Change template.aspx",
     CONTENT_EDITOR: "/sitecore/shell/Applications/Content Editor.aspx",
     CONTENT_EDITOR_MODERN: "/sitecore/shell/Applications/Content-Editor",
     CONTENT_MANAGER: "/sitecore/shell/Applications/Content Manager/default.aspx",
@@ -25,7 +26,7 @@ export const SITECORE = {
     MEDIA_REQUEST_SEGMENT: "/sitecore/shell/applications/-/media/",
     POWERSHELL_ISE: "/sitecore/shell/Applications/PowerShell/PowerShellIse",
     POWERSHELL_SCRIPT_LIBRARY: "/sitecore/system/Modules/PowerShell/Script Library",
-    // Required root for user-defined Tree Jumps (src/shared/quick-menu/user-tree-jump-constants.ts).
+    // Required root for user-defined Tree Jumps (src/shared/jump-flyout/user-tree-jump-constants.ts).
     ROOT: "/sitecore",
     SHELL_DEFAULT: "/sitecore/shell/default.aspx",
     TEMPLATE_MANAGER: "/sitecore/shell/Applications/Templates/Template-Manager",
@@ -69,6 +70,10 @@ export const SITECORE = {
     GLYPH: "Tree_Glyph_",
     NODE: "Tree_Node_",
     SELECT_RENDERING: "Treeview_",
+    // Change Template dialog's own tree widget (see src/content/features/augmentor/
+    // treeNodeFobles/index.ts's getTreeNodeItemId) - its nodes carry the item id directly on this
+    // prefix rather than via a Tree_Node_-prefixed anchor.
+    TEMPLATE_LISTER: "TemplateLister_",
   },
   XML_CONTROLS: {
     ADD_FROM_TEMPLATE: "AddFromTemplate",

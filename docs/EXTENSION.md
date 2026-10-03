@@ -11,9 +11,10 @@ npm install
 npm run build:extension
 ```
 
-To run Sitecore browser tests, copy `.env.example` to `.env` and set
-`SITECORE_TEST_ENVIRONMENTS` to your local endpoint. Real endpoints and
-credentials must remain in the ignored `.env` file.
+To run Sitecore browser tests, copy `fobles.environments.example.json` to
+`fobles.environments.json` and set your own test environment. Real endpoints and
+credentials must remain in the ignored `fobles.environments.json` file (and the DPAPI-backed
+secure secret store for passwords - see `npm run secret:set`).
 
 To run the browser tests, install the Playwright browsers once:
 
@@ -56,7 +57,7 @@ See [tests/README.md](../tests/README.md) for setup details and the Sitecore tes
 - **Ctrl+Shift+E** (or **Cmd+Shift+E** on Mac): Toggle Fobles on or off.
 - Select **AI Pages mappings** from the extension popup to map Sitecore content roots to AI Pages.
 
-### AI Pages Quick Jump
+### AI Pages Jump
 
 Add one group per Sitecore account, then map that group's content roots to AI Pages sites. A group stores the organization and tenant name; each site root stores its Content Editor path and AI Pages site.
 
@@ -69,4 +70,4 @@ Root: /sitecore/content/ExampleTenant/example-site-123
 Site: example-site-123
 ```
 
-The **AI Pages** Quick Jump action uses the active Content Editor item's ID, path, language, and version. When multiple roots match an item path, the most specific root is used.
+The **AI Pages** Jump action uses the active Content Editor item's ID, path, language, and version. When multiple roots match an item path, the most specific root is used.

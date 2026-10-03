@@ -1,53 +1,56 @@
-import { expect, test } from "../fixtures/playwright";
-import { openSitecorePage } from "../fixtures/sitecore";
-import { CONST } from "../CONST";
-import { createStep } from "../fobles-helpers";
-import { showMouseMarker } from "../mouse-proxy";
-import { dragToolbarTo, findFrameWithSelector } from "../sitecore-macros";
+import { foblesTest } from "../../fixtures/playwright";
+import { expectFoblesContainerDom, expectFoblesContainerVisible } from "../../expect-snippets/expect-snippets";
+import { CONST } from "../../CONST";
+import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers-support/test-setup";
+import { moveMouseToDefault as moveMouseToDefault } from "../../helpers/mouse-proxy";
+import { dragToolbarToCornerLocation } from "../../macros/fobles-macros";
+import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { moveMouseTowardCenter } from "../../helpers/mouse-proxy-support/mouse-movement";
 
-const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Content Editor's own default placement (DEFAULT_TOOLBAR_PLACEMENT, src/content/constants.ts)
 // is "upper-right" - dragging toward the opposite corner (bottom-left) makes the snap
 // unambiguous regardless of exact viewport size.
-test.describe("Toolbar: drag to reposition", () => {
-  test("dragging the toolbar container snaps it to the nearest corner", async ({ page }, testInfo) => {
-    await openSitecorePage(page, CONST.SITECORE.PATHS.CONTENT_EDITOR);
-    await showMouseMarker(page);
-
-    const foblesFrame = await findFrameWithSelector(
-      page,
-      CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER,
-      "Fobles toolbar",
-    );
-    await showMouseMarker(foblesFrame);
-
-    const container = foblesFrame.locator(CONST.SITECORE.SELECTORS.TOOLBAR_CONTAINER).first();
-    const grip = foblesFrame.locator(CONST.SITECORE.SELECTORS.TOOLBAR_GRIP).first();
+foblesTest.describe("Toolbar: drag to reposition", () => {
+  foblesTest("dragging the toolbar container snaps it to the nearest corner", async ({ page }, testInfo) => {
+    
     const step = createStep(page, testInfo, page, "Toolbar Drag");
 
-    await step("Default stage: toolbar starts in its default corner", async () => {
-      await expect(container).toBeVisible();
-      await expect(container).toHaveAttribute("data-position", "upper-right");
-      await page.waitForTimeout(STEP_WAIT_MS);
+    await step("Setup: initial conditions", async () => {
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
+      await setupContentEditorForTestingBasic(page);
+      await expectFoblesContainerVisible(page);
     });
 
-    await step("Drag: toolbar snaps to the opposite corner", async () => {
+    await step("Drag: toolbar to POSITION_1", async () => {
       const viewport = page.viewportSize();
       if (!viewport) throw new Error("Could not read viewport size");
 
-      await dragToolbarTo(page, grip, { x: 80, y: viewport.height - 80 });
-      await expect(container).not.toHaveClass(/fobles-toolbar-dragging/);
-      await expect(container).toHaveAttribute("data-position", "bottom-left");
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await moveMouseToDefault(page);
+      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR);
+      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR.corner);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
-    await step("Drag back: toolbar returns to its default corner", async () => {
-      const viewport = page.viewportSize();
-      if (!viewport) throw new Error("Could not read viewport size");
+    await step("Drag: toolbar to POSITION_2", async () => {
+      await moveMouseTowardCenter(page);
+      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL);
+      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL.corner);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
 
-      await dragToolbarTo(page, grip, { x: viewport.width - 80, y: 80 });
-      await expect(container).toHaveAttribute("data-position", "upper-right");
+      await moveMouseTowardCenter(page);
+      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR);
+      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR.corner);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
+    });
+
+    await step("Drag: toolbar to POSITION_DEFAULT", async () => {
+      await moveMouseTowardCenter(page);
+      await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR);
+      await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR.corner);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
   });
 });

@@ -1,17 +1,20 @@
-import { expect, test } from "../fixtures/playwright";
-import { openSitecorePage } from "../fixtures/sitecore";
-import { CONST } from "../CONST";
+import { expect, foblesTest } from "../../fixtures/playwright";
+import { openSitecorePage } from "../../fixtures/sitecore";
+import { CONST } from "../../CONST";
+import { createStep } from "../../helpers/fobles-helpers-support/test-step";
 import {
-  createStep,
   expectFoblesButtonNewTabNavigation,
   expectFoblesButtonSameTabNavigation,
-} from "../fobles-helpers";
-import { showMouseMarker } from "../mouse-proxy";
-import { clickLboltButton, findFoblesFrame } from "../sitecore-macros";
-import { FOBLES, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
-import { EDITOR_SCENARIOS } from "./editor-scenarios";
+} from "../../helpers/fobles-helpers-support/navigation-assertions";
+import { clickWithMouseMarker, ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 
-const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
+import { findFoblesFrame } from "../../helpers/frame-finder";
+import { EDITOR_SCENARIOS } from "./editor-scenarios";
+import { clickLbolt } from "../../macros/fobles-macros";
+import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { FOBLES_HIDDEN_CLASS_PATTERN } from "../strategies/support/CONST";
+
+const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Quick Info (src/content/features/augmentor/editor-strategies/quick-info-section.ts) decorates
 // Content Editor's own built-in Quick Info panel, always present at the top of any open item, so
@@ -21,27 +24,29 @@ const STEP_WAIT_MS = CONST.SPEED.SETTINGS[CONST.SPEED.SELECTED].STEP_WAIT_MS;
 // its id input) - see quick-info-section.ts's candidates.
 const SCENARIO = EDITOR_SCENARIOS.QUICK_INFO_SECTION;
 
-test.describe("Editor scenario: quick info section", () => {
-  test("toggling Fobles decorates and restores the Quick Info panel", async ({ page }, testInfo) => {
+foblesTest.describe("Editor scenario: quick info section", () => {
+  foblesTest("toggling Fobles decorates and restores the Quick Info panel", async ({ page }, testInfo) => {
+   
+   
     await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${SCENARIO.itemId}`);
-    await showMouseMarker(page);
 
     const foblesFrame = await findFoblesFrame(page);
-    await showMouseMarker(foblesFrame);
+    await ensureMouseMarkerExists(foblesFrame);
 
     const quickInfoTable = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE).first();
-    const lboltButton = foblesFrame.locator(CONST.SITECORE.SELECTORS.LBOLT_BUTTON).first();
+    const lboltButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON).first();
     const step = createStep(page, testInfo, quickInfoTable, "Quick Info");
 
     await step("Default stage: Quick Info renders as plain Sitecore text", async () => {
       await expect(quickInfoTable).toBeVisible();
-      await expect(quickInfoTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await expect(quickInfoTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: Item ID, Item path, and Template each get a Fobles button", async () => {
-      await clickLboltButton(page, lboltButton);
-      await expect(quickInfoTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(4);
+      await clickLbolt(page);
+
+      await expect(quickInfoTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(4);
       for (const button of [
         SCENARIO.itemIdButton,
         SCENARIO.itemPathButton,
@@ -49,37 +54,38 @@ test.describe("Editor scenario: quick info section", () => {
         SCENARIO.templateIdButton,
       ]) {
         await expect(
-          quickInfoTable.locator(FOBLES.SELECTORS.BUTTON, { hasText: button.expectedButtonText }),
+          quickInfoTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, { hasText: button.expectedButtonText }),
         ).toHaveText(button.expectedButtonText);
       }
-      await page.waitForTimeout(STEP_WAIT_MS);
+      await foblesWaitForTimeout(page, STEP_WAIT_MS);
     });
 
-    const itemPathButton = quickInfoTable.locator(FOBLES.SELECTORS.BUTTON, {
+    const itemPathButton = quickInfoTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
       hasText: SCENARIO.itemPathButton.expectedButtonText,
     });
 
     await step(
       `Ctrl+click: opens the item in a new tab: "${SCENARIO.itemPathButton.expectedFoValue}"`,
       async (fullTitle) => {
-        await expectFoblesButtonNewTabNavigation(page, testInfo, itemPathButton, SCENARIO.itemPathButton.expectedFoValue, fullTitle);
+        const popupPromise = page.context().waitForEvent("page");
+        await clickWithMouseMarker(page, itemPathButton, "Fobles item button", { modifiers: ["Control"] });
+        const popup = await popupPromise;
+        await expectFoblesButtonNewTabNavigation(testInfo, SCENARIO.itemPathButton.expectedFoValue, fullTitle, popup, page);
       },
       { screenshot: false },
     );
 
     await step("Toggle Fobles off: the panel returns to its original shape", async () => {
-      await clickLboltButton(page, lboltButton);
-      await expect(quickInfoTable.locator(FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+      await clickLbolt(page);
+      await expect(quickInfoTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await expect(quickInfoTable.locator("span.scEditorHeaderQuickInfoPath, input.scEditorHeaderQuickInfoInput").first()).not.toHaveClass(
         FOBLES_HIDDEN_CLASS_PATTERN,
       );
     });
 
-    // Toggle back on to reveal the button again for the click test below - no screenshot needed,
-    // already captured above.
-    await clickLboltButton(page, lboltButton);
+    await clickLbolt(page);
 
-    const itemIdButton = quickInfoTable.locator(FOBLES.SELECTORS.BUTTON, {
+    const itemIdButton = quickInfoTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
       hasText: SCENARIO.itemIdButton.expectedButtonText,
     });
 

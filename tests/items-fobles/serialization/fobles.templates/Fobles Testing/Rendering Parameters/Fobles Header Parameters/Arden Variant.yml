@@ -1,0 +1,23 @@
+﻿---
+ID: "33b5ae5c-abe0-4618-9795-fc4b8e031f5c"
+Parent: "c032ce44-164a-4a04-8f09-20307bbc4f36"
+Template: "e269fbb5-3750-427a-9149-7aa950b49301"
+Path: /sitecore/templates/Project/Fobles Testing/Rendering Parameters/Fobles Header Parameters/Arden Variant
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20260905T195930Z
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "721b9867-a164-4b38-a7b5-5d05ff79b88b"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\gregory.mertens@kestraholdings.com
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20260905T195930Z

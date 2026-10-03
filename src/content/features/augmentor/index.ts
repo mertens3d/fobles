@@ -189,8 +189,8 @@ export function clearFobles(doc: Document): void {
       const original =
         (wrapper.previousElementSibling as HTMLElement | null) ??
         (wrapper.parentElement?.querySelector(FOBLES.SELECTORS.HIDDEN_PROCESSED) as HTMLElement | null) ??
-        (wrapper.querySelector(FOBLES.SELECTORS.HIDDEN_PROCESSED) as HTMLElement | null) ??
-        (wrapper.querySelector(FOBLES.SELECTORS.PROCESSED) as HTMLElement | null);
+        (wrapper.querySelector(FOBLES.SELECTORS.HIDDEN_PROCESSED)) ??
+        (wrapper.querySelector(FOBLES.SELECTORS.PROCESSED));
 
       const button = wrapper.querySelector(FOBLES.SELECTORS.BUTTON) ?? wrapper.querySelector(FOBLES.SELECTORS.TEMPLATE_BUTTON);
       if (button) {

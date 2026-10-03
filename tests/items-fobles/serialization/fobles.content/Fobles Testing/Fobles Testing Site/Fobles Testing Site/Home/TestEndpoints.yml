@@ -1,0 +1,31 @@
+﻿---
+ID: "ed76c5ec-2997-4eec-8a0e-e3a9b694d2c9"
+Parent: "58291ae1-ff44-4172-bbb8-431fd7ca618a"
+Template: "a87a00b1-e6db-45ab-8b54-636fec3b5523"
+Path: /sitecore/content/Fobles Testing/Fobles Testing Site/Fobles Testing Site/Home/TestEndpoints
+Languages:
+- Language: en
+  Versions:
+  - Version: 1
+    Fields:
+    - ID: "25bed78c-4957-4165-998a-ca1b52f67497"
+      Hint: __Created
+      Value: 20261001T230436Z
+    - ID: "52807595-0f8f-4b20-8d2a-cb71d28c6103"
+      Hint: __Owner
+      Value: |
+        sitecore\gregory.mertens@kestraholdings.com
+    - ID: "5dd74568-4d4b-44c1-b513-0af5f4cda34f"
+      Hint: __Created by
+      Value: |
+        sitecore\gregory.mertens@kestraholdings.com
+    - ID: "8cdc337e-a112-42fb-bbb4-4143751e123f"
+      Hint: __Revision
+      Value: "4dde399b-1ab7-4b3c-abbb-7ccb1d95961d"
+    - ID: "badd9cf9-53e0-4d0c-bcc0-2d784c282f6a"
+      Hint: __Updated by
+      Value: |
+        sitecore\gregory.mertens@kestraholdings.com
+    - ID: "d9cf14b1-fa16-4ba6-9288-e8a174d4d522"
+      Hint: __Updated
+      Value: 20261001T230436Z
