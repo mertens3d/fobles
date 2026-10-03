@@ -1,7 +1,7 @@
 export const FOBLES = {
   ATTRIBUTES: {
     BUTTON: "data-is-fobles-button",
-    JUMP_ENTRY_URL: "data-fobles-jump-entry-url",
+    JUMP_ENTRY_URL: "data-fobles-page-jump-url",
     DATA_VISIBLE: "data-visible",
     PANE: "data-fobles-pane",
     PROCESSED: "data-fobles-processed",
@@ -24,7 +24,7 @@ export const FOBLES = {
     TOGGLE_FOBLES: /toggle fobles/i,
   },
   LOCATORS: {
-    MENU_URL: "[data-fobles-jump-entry-url]",
+    DATA_PAGE_JUMP_URL: "[data-fobles-page-jump-url]",
   },
   SELECTORS: {
     DATA:{

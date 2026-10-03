@@ -5,7 +5,7 @@ import {
 } from "../fixtures/playwright";
 import { CONST } from "../CONST";
 
-export async function getJumpFlyoutFlyoutButton(
+export async function getJumpFlyoutButton(
   foblesFrame: Frame,
   index: number,
 ) : Promise<Locator> {

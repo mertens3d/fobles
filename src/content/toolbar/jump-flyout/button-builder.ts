@@ -35,10 +35,12 @@ function addBadge(doc: Document, button: HTMLButtonElement, option: FlyoutOption
 
 function addDatasetAttributes(button: HTMLButtonElement, option: FlyoutOption): void {
   if (option.path !== undefined) {
-    button.dataset.foblesTreeJumpPath = option.path;
+    // button.dataset.foblesTreeJumpPath = option.path;
+    button.setAttribute("data-fobles-tree-jump-path", option.path);
   }
   if (option.url !== undefined) {
-    button.dataset.foblesMenuUrl = option.url;
+    button.setAttribute("data-fobles-page-jump-url", option.url);
+    // button.dataset.foblesMenuUrl = option.url;
   }
 }
 

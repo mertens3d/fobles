@@ -19,7 +19,7 @@ import {
   expectCurrentUrl,
 } from "../../expect-snippets/expect-snippets";
 import type { BrowserContext, Locator } from "@playwright/test";
-import { getJumpFlyoutFlyoutButton } from "../../helpers/scrolling-helpers";
+import { getJumpFlyoutButton } from "../../helpers/scrolling-helpers";
 import { clickFoblesNavigationButton } from "../../helpers/click-navigate-helpers";
 
 foblesTest.describe("Fobles browser integration", () => {
@@ -58,6 +58,7 @@ foblesTest.describe("Fobles browser integration", () => {
 
     await ClickFoblesJumpButton(page);
     const paths = await getExpectedButtonPaths(foblesFrame);
+    await ClickFoblesJumpButton(page, false);
 
     const step = createStep(page, testInfo, page, "Ctrl+Click Jump");
 
@@ -125,7 +126,7 @@ async function testOneClick(
         await ClickFoblesJumpButton(page);
       }
 
-      const flyoutButton :Locator= await getJumpFlyoutFlyoutButton(
+      const flyoutButton :Locator= await getJumpFlyoutButton(
         foblesFrame,
         index,
       );
@@ -162,7 +163,7 @@ async function TestOneCtrlClick(
       await ClickFoblesJumpButton(page);
 
 
-      const foblesTreeButton = await getJumpFlyoutFlyoutButton(
+      const foblesTreeButton = await getJumpFlyoutButton(
         foblesFrame,
         index,
       );

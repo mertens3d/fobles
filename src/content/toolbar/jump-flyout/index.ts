@@ -1,5 +1,5 @@
 import { ATTRIBUTE, SELECTORS } from "../../constants";
-import { setProxyButtonsVisible } from "../sc-proxy-buttons";
+import { setProxyFlyoutVisible } from "../sc-proxy-buttons";
 import { setJumpFlyoutPinned } from "./handlers";
 import { getOrCreateJumpFlyout } from "./flyout-builder";
 import "./button-visibility";
@@ -20,5 +20,5 @@ export function setJumpFlyoutVisible(doc: Document, visible: boolean): void {
   jumpFlyout?.setAttribute(ATTRIBUTE.DATA.KEY.VISIBLE, visible ? "true" : "false");
   if (!visible) setJumpFlyoutPinned(doc, false);
 
-  if (visible) setProxyButtonsVisible(doc, false);
+  if (visible) setProxyFlyoutVisible(doc, false);
 }

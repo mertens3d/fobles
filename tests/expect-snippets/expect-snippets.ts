@@ -7,6 +7,10 @@ export async function expectJumpFlyoutFlyoutVisible(foblesFrame: Frame) {
   await expect(jumpFlyout).toHaveAttribute(CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE, "true");
 }
 
+export async function expectJumpFlyoutFlyoutHidden(foblesFrame: Frame) {
+  const jumpFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
+  await expect(jumpFlyout).toHaveAttribute(CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE, "false");
+}
 export function expectCurrentUrl(page: Page, path: string) {
   const actualUrl = page.url();
   expect(actualUrl, `Expected current URL to contain ${path}`).toContain(

@@ -6,7 +6,7 @@ import {
 import {
   isProxyButtonsPinned,
   setProxyButtonsPinned,
-  setProxyButtonsVisible,
+  setProxyFlyoutVisible,
 } from "./sc-proxy-buttons";
 import type { ToolbarContext } from "./types";
 
@@ -22,7 +22,7 @@ export function toggleJumpFlyout(context: ToolbarContext): void {
 export function toggleProxyButtons(context: ToolbarContext): void {
   if (isProxyButtonsPinned()) {
     setProxyButtonsPinned(context.doc, false);
-    setProxyButtonsVisible(context.doc, false);
+    setProxyFlyoutVisible(context.doc, false);
     return;
   }
   setProxyButtonsPinned(context.doc, true);

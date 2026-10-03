@@ -10,32 +10,15 @@ import {
   openJumpFlyoutOnHover,
   scheduleCloseJumpFlyoutOnHover,
 } from "./jump-flyout";
-import {
-  openProxyButtonsOnHover,
-  scheduleCloseProxyButtonsOnHover as scheduleCloseProxyFlyoutOnHover,
-} from "./sc-proxy-buttons";
-import { toggleProxyButtons, toggleJumpFlyout } from "./handlers";
+import { toggleJumpFlyout } from "./handlers";
 import type { ToolbarContext } from "./types";
+import { createFlyoutTrigger } from "./shared-flyout/shared-flyout";
 
 const GRIP_ROWS = 5;
 const GRIP_COLUMNS = [3, 9];
 const GRIP_DOT_RADIUS = 1.3;
 
-function createFlyoutTrigger(
-  context: ToolbarContext,
-  button: HTMLButtonElement,
-  triggerClass: string,
-  onHover: { open: () => void; scheduleClose: () => void },
-): HTMLDivElement {
-  const trigger = context.doc.createElement("div");
-  trigger.className = triggerClass;
-  trigger.appendChild(button);
-  trigger.addEventListener("mouseenter", onHover.open);
-  trigger.addEventListener("mouseleave", onHover.scheduleClose);
-  return trigger;
-}
-
-function createFoblesNavButton(
+export function createFoblesNavButton(
   context: ToolbarContext,
   options: {
     className: string;
@@ -73,21 +56,6 @@ export function createJumpsFlyoutTrigger(context: ToolbarContext): HTMLDivElemen
   return createFlyoutTrigger(context, button, CLASS.JUMP_FLYOUT.TRIGGER, {
     open: () => openJumpFlyoutOnHover(context.doc),
     scheduleClose: () => scheduleCloseJumpFlyoutOnHover(context.doc),
-  });
-}
-
-export function createProxyFlyoutTrigger(context: ToolbarContext): HTMLDivElement {
-  const button = createFoblesNavButton(context, {
-    className: CLASS.FOBLES_NAV_BUTTON,
-    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.PROXY_FLYOUT_TRIGGER,
-    text: TEXT.VIEW,
-    title: TEXT.VIEW_TITLE,
-    onClick: () => toggleProxyButtons(context),
-  });
-
-  return createFlyoutTrigger(context, button, CLASS.PROXY_BUTTONS_TRIGGER, {
-    open: () => openProxyButtonsOnHover(context.doc),
-    scheduleClose: () => scheduleCloseProxyFlyoutOnHover(context.doc),
   });
 }
 

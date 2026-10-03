@@ -1,29 +1,31 @@
 import { setJumpFlyoutVisible } from "./index";
 
-let quickMenuPinned = false;
+let jumpFlyoutPinned = false;
 
 export function isJumpFlyoutPinned(): boolean {
-  return quickMenuPinned;
+  return jumpFlyoutPinned;
 }
 
 export function setJumpFlyoutPinned(doc: Document, pinned: boolean): void {
-  quickMenuPinned = pinned;
-  if (pinned) setJumpFlyoutVisible(doc, true);
+  jumpFlyoutPinned = pinned;
+  if (pinned) {
+    setJumpFlyoutVisible(doc, true);
+  }
 }
 
-let quickMenuCloseTimer: number | null = null;
+let jumpFlyoutCloseTimer: number | null = null;
 
 export function cancelJumpFlyoutClose(): void {
-  if (quickMenuCloseTimer === null) return;
-  window.clearTimeout(quickMenuCloseTimer);
-  quickMenuCloseTimer = null;
+  if (jumpFlyoutCloseTimer === null) return;
+  window.clearTimeout(jumpFlyoutCloseTimer);
+  jumpFlyoutCloseTimer = null;
 }
 
 export function scheduleCloseJumpFlyoutOnHover(doc: Document): void {
-  if (quickMenuPinned) return;
+  if (jumpFlyoutPinned) return;
   cancelJumpFlyoutClose();
-  quickMenuCloseTimer = window.setTimeout(() => {
-    quickMenuCloseTimer = null;
+  jumpFlyoutCloseTimer = window.setTimeout(() => {
+    jumpFlyoutCloseTimer = null;
     setJumpFlyoutVisible(doc, false);
   }, 250);
 }

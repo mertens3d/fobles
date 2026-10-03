@@ -122,7 +122,7 @@ export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
 
 export async function getFoblesJumpFlyoutTargets(page: Page) {
     const foblesFrame = await findFoblesFrame(page);
-    const jumpFlyoutButtons = foblesFrame.locator(CONST.FOBLES.LOCATORS.MENU_URL);
+    const jumpFlyoutButtons = foblesFrame.locator(CONST.FOBLES.LOCATORS.DATA_PAGE_JUMP_URL);
     const entryAttribute = CONST.FOBLES.ATTRIBUTES.JUMP_ENTRY_URL;
     const targets: jumpTarget[] = await jumpFlyoutButtons.evaluateAll(
       (buttons,attribute) => 

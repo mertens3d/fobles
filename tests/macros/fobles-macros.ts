@@ -12,15 +12,19 @@ import type { CornerPosition, MouseCoordinates } from "../helpers/mouse-proxy.ty
 import { findFoblesFrame, findFrameWithSelector } from "../helpers/frame-finder";
 import { walkFrameDocuments } from "../helpers/frame-helpers";
 import { showBillboard } from "../helpers/billboard";
-import { expectJumpFlyoutFlyoutVisible } from "../expect-snippets/expect-snippets";
+import { expectJumpFlyoutFlyoutHidden, expectJumpFlyoutFlyoutVisible } from "../expect-snippets/expect-snippets";
 
 export async function ClickFoblesJumpButton(
-    page: Page) {
+    page: Page, expectFlyoutVisible = true) {
     const foblesFrame = await findFoblesFrame(page);
     console.log(`[fobles Macro] ClickFoblesJumpButton`);
     const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
     await clickWithMouseMarker(page, jumpFlyoutButton, "Fobles Jump Button");
-    await expectJumpFlyoutFlyoutVisible(foblesFrame);
+    if (expectFlyoutVisible) {
+        await expectJumpFlyoutFlyoutVisible(foblesFrame);
+    }else{
+        await expectJumpFlyoutFlyoutHidden(foblesFrame);
+    }
 }
 
 
@@ -50,7 +54,7 @@ export async function clickJumpFlyoutUrlButton(page: Page, index: number, label:
     console.log(`[Macro: clickJumpFlyoutUrlButton] - Start (index: ${index})`);
     const foblesFrame = await findFoblesFrame(page);
     await openJumpFlyout(page, foblesFrame);
-    const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.LOCATORS.MENU_URL).nth(index);
+    const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.LOCATORS.DATA_PAGE_JUMP_URL).nth(index);
     await jumpFlyoutButton.waitFor({ state: "visible" });
     await clickWithMouseMarker(page, jumpFlyoutButton, `Menu ${label}`);
     await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });

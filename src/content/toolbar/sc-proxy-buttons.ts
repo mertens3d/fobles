@@ -108,25 +108,25 @@ const getOrCreateProxyButtonsFlyout = (doc: Document): HTMLDivElement | null => 
   const existing = trigger.querySelector<HTMLDivElement>(SELECTORS.PROXY_BUTTONS);
   if (existing) return existing;
 
-  const panel = createProxyButtonsPanel(doc);
+  const proxyFlyout = createProxyButtonsPanel(doc);
   // The panel renders outside the trigger's own hit box, so bridge the gap with a
   // close delay instead of relying on the trigger's mouseleave alone.
-  panel.addEventListener("mouseenter", cancelProxyButtonsClose);
-  panel.addEventListener("mouseleave", () => scheduleProxyFlyoutClose(doc));
-  trigger.appendChild(panel);
+  proxyFlyout.addEventListener("mouseenter", cancelProxyButtonsClose);
+  proxyFlyout.addEventListener("mouseleave", () => scheduleProxyFlyoutClose(doc));
+  trigger.appendChild(proxyFlyout);
   doc.addEventListener("pointerdown", (event) => {
     if (!trigger.contains(event.target as Node)) {
-      setProxyButtonsVisible(doc, false);
+      setProxyFlyoutVisible(doc, false);
     }
   });
-  return panel;
+  return proxyFlyout;
 };
 
 export function isProxyButtonsVisible(doc: Document): boolean {
   return doc.querySelector(SELECTORS.PROXY_BUTTONS)?.getAttribute(ATTRIBUTE.DATA.KEY.VISIBLE) === "true";
 }
 
-export function setProxyButtonsVisible(doc: Document, visible: boolean): void {
+export function setProxyFlyoutVisible(doc: Document, visible: boolean): void {
   const panel = getOrCreateProxyButtonsFlyout(doc);
   panel?.setAttribute(ATTRIBUTE.DATA.KEY.VISIBLE, visible ? "true" : "false");
   if (!visible) proxyButtonsPinned = false;
@@ -145,7 +145,7 @@ export function isProxyButtonsPinned(): boolean {
 
 export function setProxyButtonsPinned(doc: Document, pinned: boolean): void {
   proxyButtonsPinned = pinned;
-  if (pinned) setProxyButtonsVisible(doc, true);
+  if (pinned) setProxyFlyoutVisible(doc, true);
 }
 
 let proxyButtonsCloseTimer: number | null = null;
@@ -161,13 +161,13 @@ function scheduleProxyFlyoutClose(doc: Document): void {
   cancelProxyButtonsClose();
   proxyButtonsCloseTimer = window.setTimeout(() => {
     proxyButtonsCloseTimer = null;
-    setProxyButtonsVisible(doc, false);
+    setProxyFlyoutVisible(doc, false);
   }, 250);
 }
 
 export function openProxyButtonsOnHover(doc: Document): void {
   cancelProxyButtonsClose();
-  setProxyButtonsVisible(doc, true);
+  setProxyFlyoutVisible(doc, true);
 }
 
 export function scheduleCloseProxyButtonsOnHover(doc: Document): void {

@@ -5,15 +5,15 @@ import {
   isPowerShellIsePath,
 } from "../guard";
 import { setJumpFlyoutVisible } from "./jump-flyout";
-import { setProxyButtonsVisible } from "./sc-proxy-buttons";
+import { setProxyFlyoutVisible } from "./sc-proxy-buttons";
 import {
   createLboltButton,
-  createProxyFlyoutTrigger,
   createJumpsFlyoutTrigger,
   createSetIseTabTitleButton,
   createToolbarCloseButton,
   createToolbarGrip,
 } from "./elements";
+import { createProxyFlyoutTrigger } from "./proxy-flyout/proxy-flyout";
 import { applyToolbarPlacement, wireContainerDragging } from "./drag";
 import { observeToolbarBackground, updateToolbarBackground } from "./background";
 import type { ToolbarContext } from "./types";
@@ -90,7 +90,7 @@ export function injectToolbar(context: ToolbarContext): void {
   updateToolbarBackground(context);
   observeToolbarBackground(context);
   setJumpFlyoutVisible(context.doc, false);
-  setProxyButtonsVisible(context.doc, false);
+  setProxyFlyoutVisible(context.doc, false);
 }
 
 export function setToolbarVisible(
@@ -104,7 +104,7 @@ export function setToolbarVisible(
   }
 
   setJumpFlyoutVisible(context.doc, false);
-  setProxyButtonsVisible(context.doc, false);
+  setProxyFlyoutVisible(context.doc, false);
   context.doc.querySelector(SELECTORS.TOOLBAR_CONTAINER)?.remove();
 }
 
