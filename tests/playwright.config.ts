@@ -66,7 +66,7 @@ export default defineConfig({
         [
           path.resolve(
             process.cwd(),
-            "tools/scripts/test/static-test-reporter.cjs",
+            "tools/scripts/test/static-test-reporter.ts",
           ),
           {
             outputFile: path.join(testArtifactsDir, "reports", reportFileName),
@@ -108,3 +108,6 @@ export default defineConfig({
   outputDir: path.join(testArtifactsDir, "playwright-results"),
   snapshotDir: path.join(testArtifactsDir, "snapshots"),
 });
+
+console.log("config loaded", import.meta.url);
+// throw new Error("THIS IS THE CONFIG");
