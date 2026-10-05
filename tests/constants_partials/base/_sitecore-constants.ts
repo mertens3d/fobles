@@ -1,4 +1,4 @@
-export const SITECORE = {
+export const _SITECORE_BASE_CONST = {
   DOM: {
     TREE_NODE_IDS: {
       CONTENT: "Tree_Node_" + "0DE95AE4-41AB-4D01-9EB0-67441B7C2450",
@@ -8,6 +8,9 @@ export const SITECORE = {
     CONTENT_ITEM_ID: "0DE95AE4-41AB-4D01-9EB0-67441B7C2450",
     FIELD_RENDERER: "E1AF4AA3-3B5D-4611-8C71-959AD261E5B7",
   },
+  SEARCH_PARAMS: {
+    FO: "fo",
+  },
   LABELS: {
     CONTENT_TAB: "Content",
     ITEM_PATH: "Item path:",
@@ -15,7 +18,7 @@ export const SITECORE = {
   PATHS: {
     SC_AI_DOMAIN: "sitecorecloud.io",
     CONTENT_EDITOR_ENCODED: "/sitecore/shell/Applications/Content%20Editor.aspx",
-    CONTENT_EDITOR_BW: "/sitecore/shell/Applications/Content Editor.aspx?sc_bw=1",
+    CONTENT_EDITOR_BW_ENCODED: "/sitecore/shell/Applications/Content%20Editor.aspx?sc_bw=1",
     IDENTITY_AUTHORIZE: "/connect/authorize",
     LICENSE_STARTPAGE: "/sitecore/client/Applications/LicenseOptions/StartPage",
   },

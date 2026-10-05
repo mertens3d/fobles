@@ -18,7 +18,7 @@ import {
   setUserAdminPages,
   type UserAdminPage,
 } from "../shared/jump-flyout/user-admin-page-settings";
-import { TEXT } from "../content/constants";
+import { TEXT } from "../constants/fobles.constants";
 import { collectUserTreeJumpEntries, renderUserTreeJumpEditor } from "./user-tree-jump-editor";
 import { collectUserAdminPageEntries, renderUserAdminPageEditor } from "./user-admin-page-editor";
 import { getElement } from "./dom-helpers";
@@ -77,7 +77,7 @@ function createJumpFlyoutButtonRow(
   suffixInput.name = "pathSuffix";
   suffixInput.dataset.buttonId = descriptor.id;
   suffixInput.placeholder = "optional sub-path";
-  suffixInput.value = userSettings[descriptor.id]?.pathSuffix ?? "";
+  suffixInput.value = userSettings[descriptor.id]?.encodedPathSuffix ?? "";
   suffixInput.addEventListener("blur", () => {
     suffixInput.value = sanitizeJumpFlyoutPathSuffix(suffixInput.value);
   });
@@ -157,7 +157,7 @@ export function initJumpFlyoutButtons(): void {
       userSettings[descriptor.id] = {
         label: descriptor.label,
         enabled: enabledInput?.checked !== false,
-        pathSuffix,
+        encodedPathSuffix: pathSuffix,
       };
     });
 

@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 
 let usedItemIdCounts = new Map<string, number>();
 

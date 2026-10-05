@@ -48,25 +48,28 @@ export async function attachPageScreenshot(
   name: string,
   options?: { mask?: Locator[] },
 ): Promise<void> {
-  if (!CAPTURE_STEP_SCREENSHOTS) return;
-  const filePath = testInfo.outputPath(name);
-  const { hardMasks, blurTargets } = await getSensitiveAutoMasks(target);
-  const mask = [...(options?.mask ?? []), ...hardMasks];
-  await applyBlur(blurTargets);
-  // Matches toHaveScreenshot()'s defaults - reduces (but can't fully eliminate) visible flicker
-  // from CDP's screenshot capture in headed mode.
-  try {
-    await target.screenshot({
-      path: filePath,
-      animations: "disabled",
-      caret: "hide",
-      mask: mask.length ? mask : undefined,
-      maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
-    });
-  } finally {
-    await removeBlur(blurTargets);
+  if (CAPTURE_STEP_SCREENSHOTS) {
+    console.log(`Capturing page screenshot for ${name}`);
+    const filePath = testInfo.outputPath(name);
+    const { hardMasks, blurTargets } = await getSensitiveAutoMasks(target);
+    const mask = [...(options?.mask ?? []), ...hardMasks];
+    await applyBlur(blurTargets);
+    // Matches toHaveScreenshot()'s defaults - reduces (but can't fully eliminate) visible flicker
+    // from CDP's screenshot capture in headed mode.
+    try {
+      await target.screenshot({
+        path: filePath,
+        animations: "disabled",
+        caret: "hide",
+        mask: mask.length ? mask : undefined,
+        maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
+      });
+    } finally {
+      await removeBlur(blurTargets);
+    }
+    await testInfo.attach(name, { path: filePath, contentType: "image/png" });
+    console.log(`Captured page screenshot for ${name}`);
   }
-  await testInfo.attach(name, { path: filePath, contentType: "image/png" });
 }
 
 // filter/blur renders an element's entire subtree as one composited bitmap before blurring it - a

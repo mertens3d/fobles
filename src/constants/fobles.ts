@@ -1,3 +1,4 @@
+
 // Shared constants used by fobles generation and cleanup
 export const FOBLES = {
   ATTRIBUTES: {
@@ -126,4 +127,3 @@ export const FOBLES = {
     },
   },
 } as const;
-

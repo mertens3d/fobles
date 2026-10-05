@@ -1,4 +1,4 @@
-import { chromium, type BrowserContext, test as base } from "@playwright/test";
+import { chromium, type BrowserContext, test as base, request, type Request } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { installConsoleLogging, logDiagnostic } from "./logging";
@@ -8,9 +8,10 @@ import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";
 
+
 const profileDir = path.resolve(
   process.env.PLAYWRIGHT_PROFILE_DIR ??
-    "./tests/test-artifacts/browser-profile",
+  "./tests/test-artifacts/browser-profile",
 );
 const extensionPath = path.resolve("./dist/unpacked");
 
@@ -53,19 +54,36 @@ function renamePromoVideoFiles(): void {
 // Sitecore's own UI references icons this environment doesn't have (chart.png, database.png,
 // cd.png, etc. under /-/icon/) - these 404 on every navigation and are unrelated to Fobles, so
 // don't clutter the diagnostic log with them.
-const IGNORED_DIAGNOSTIC_URL_PATTERN = /\/-\/icon\//i;
+
 
 function isIgnorableDiagnosticUrl(url: string): boolean {
-  return IGNORED_DIAGNOSTIC_URL_PATTERN.test(url);
+  return CONST.TESTING.DIAGNOSTIC.IGNORED_DIAGNOSTIC_URL_PATTERN.test(url);
 }
 
 // Chromium logs this on every Sitecore iframe navigation regardless of Fobles - always the same
 // text, never actionable, and floods the log enough to bury real warnings.
-const IGNORED_CONSOLE_WARNING_PATTERN =
-  /has both allow-scripts and allow-same-origin/i;
 
-function isIgnorableConsoleMessage(type: string, text: string): boolean {
-  return type === "warning" && IGNORED_CONSOLE_WARNING_PATTERN.test(text);
+function isIgnorableConsoleWarning(text: string): boolean {
+  return CONST.TESTING.DIAGNOSTIC.IGNORED_CONSOLE_WARNING_PATTERN.test(text);
+}
+
+function isIgnorableConsoleError( text: string): boolean {
+  let isIgnoreable = false;
+  if (CONST.TESTING.DIAGNOSTIC.IGNORABLE_CONSOLE_MESSAGES.some((msg) => text.includes(msg))) {
+    isIgnoreable = true;
+  }
+  return isIgnoreable;
+}
+
+function isIgnorableRequestFailure(request: Request): boolean {
+  const errorText = request.failure()?.errorText ?? '';
+  let isIgnorable = false;
+  if (!CONST.TESTING.DIAGNOSTIC.IGNORED_REQUEST_FAILURES.some((ignored) =>
+    errorText.includes(ignored),
+  )) {
+    isIgnorable = true;
+  }
+  return isIgnorable;
 }
 
 async function logoutSitecoreSessions(
@@ -80,7 +98,7 @@ async function logoutSitecoreSessions(
     const { getTestEnvironment } = await import("./environment");
     const { baseUrl } = getTestEnvironment();
     await page.goto(
-      new URL(CONST.SITECORE.PATHS.CONTENT_EDITOR_BW, baseUrl).toString(),
+      new URL(CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED, baseUrl).toString(),
       {
         waitUntil: "domcontentloaded",
       },
@@ -121,7 +139,7 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
   ],
   sharedBrowserContext: [
     // eslint-disable-next-line no-empty-pattern
-    async ({}, use) => {
+    async ({ }, use) => {
       // Installed here (not at module load) since this module gets imported for test discovery
       // and listing too, which would otherwise wipe the real log right after an actual run.
       installConsoleLogging();
@@ -154,11 +172,20 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
         page.on("console", (message) => {
           const location = message.location().url;
           if (location && isIgnorableDiagnosticUrl(location)) return;
-          if (isIgnorableConsoleMessage(message.type(), message.text())) return;
-          const label = `[browser console:${message.type()}]`;
-          logDiagnostic(
-            `${label} ${message.text()}${location ? ` (${location})` : ""}`,
-          );
+          
+          if (message.type() === "warning") {
+            if (!isIgnorableConsoleWarning( message.text()))
+              logDiagnostic(
+                `[browser console:${message.type()}] ${message.text()}${location ? ` (${location})` : ""}`,
+              );
+          }
+          else if (message.type() === "error") {
+            if (!isIgnorableConsoleError(message.text()))
+              logDiagnostic(
+                `[browser console:${message.type()}] ${message.text()}${location ? ` (${location})` : ""}`,
+              );
+          }
+          
         });
         page.on("response", (response) => {
           if (
@@ -174,9 +201,12 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
           logDiagnostic(`[browser pageerror] ${error.stack ?? error.message}`);
         });
         page.on("requestfailed", (request) => {
-          logDiagnostic(
-            `[browser requestfailed] ${request.method()} ${request.url()} - ${request.failure()?.errorText ?? "unknown error"}`,
-          );
+
+          if (!isIgnorableRequestFailure(request)) {
+            logDiagnostic(
+              `[browser requestfailed] ${request.method()} ${request.url()} - ${request.failure()?.errorText ?? "unknown error"}`,
+            );
+          }
         });
         // Catches silent redirects (e.g. an IdentityServer renewal) the instant they happen,
         // regardless of which test step is running when it occurs.

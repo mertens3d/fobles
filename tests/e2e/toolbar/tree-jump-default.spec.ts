@@ -8,7 +8,7 @@ import {
 import { CONST } from "../../CONST";
 import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
 import { bringPageToFront } from "../../helpers/page-switch";
-import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import { attachItemPathScreenshot } from "../../helpers/fobles-helpers-support/navigation-assertions";
 import { openContentEditor } from "../../fixtures/sitecore";
 import { findFoblesFrame } from "../../helpers/frame-finder";
@@ -20,11 +20,11 @@ import {
 } from "../../expect-snippets/expect-snippets";
 import type { BrowserContext, Locator } from "@playwright/test";
 import { getJumpFlyoutButton } from "../../helpers/scrolling-helpers";
-import { clickFoblesNavigationButton } from "../../helpers/click-navigate-helpers";
+import { clickFoblesNavigationButtonStep } from "../../helpers/click-navigate-helpers";
 
 foblesTest.describe("Fobles browser integration", () => {
   foblesTest("tree jump buttons navigate in the current tab", async ({
-    page,
+    page, sharedBrowserContext
   }, testInfo) => {
     foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
@@ -34,7 +34,7 @@ foblesTest.describe("Fobles browser integration", () => {
 
     const paths = await getExpectedButtonPaths(foblesFrame);
 
-    const step = createStep(page, testInfo, page, "Tree Jump Click");
+    const step = createFoblesStep(page, testInfo, page, "Tree Jump Click");
 
     for (let index = 0; index < paths.length; index += 1) {
       foblesFrame = await testOneClick(
@@ -44,6 +44,7 @@ foblesTest.describe("Fobles browser integration", () => {
         foblesFrame,
         page,
         testInfo,
+        sharedBrowserContext,
       );
     }
   });
@@ -60,7 +61,7 @@ foblesTest.describe("Fobles browser integration", () => {
     const paths = await getExpectedButtonPaths(foblesFrame);
     await ClickFoblesJumpButton(page, false);
 
-    const step = createStep(page, testInfo, page, "Ctrl+Click Jump");
+    const step = createFoblesStep(page, testInfo, page, "Ctrl+Click Jump");
 
     for (let index = 0; index < paths.length; index += 1) {
       await TestOneCtrlClick(
@@ -91,14 +92,14 @@ async function getExpectedButtonPaths(foblesFrame: Frame): Promise<string[]> {
   );
   const attr = CONST.FOBLES.ATTRIBUTES.TREE_JUMP_PATH;
 
-const paths = await treeJumpButtons.evaluateAll(
-  (buttons, attr) => {
-    return buttons
-      .map((button) => button.getAttribute(attr))
-      .filter((path): path is string => path !== null);
-  },
-  attr
-);
+  const paths = await treeJumpButtons.evaluateAll(
+    (buttons, attr) => {
+      return buttons
+        .map((button) => button.getAttribute(attr))
+        .filter((path): path is string => path !== null);
+    },
+    attr
+  );
 
   expect(paths.length).toBeGreaterThan(0);
   return paths;
@@ -115,6 +116,7 @@ async function testOneClick(
   foblesFrame: Frame,
   page: Page,
   testInfo: TestInfo,
+  sharedBrowserContext: BrowserContext,
 ) {
   const path = paths[index];
   await step(
@@ -126,22 +128,18 @@ async function testOneClick(
         await ClickFoblesJumpButton(page);
       }
 
-      const flyoutButton :Locator= await getJumpFlyoutButton(
+      const flyoutButton: Locator = await getJumpFlyoutButton(
         foblesFrame,
         index,
       );
 
-      await clickFoblesNavigationButton(page, flyoutButton,  path, testInfo);
-      
+      await clickFoblesNavigationButtonStep(page, flyoutButton, path, testInfo);
+
     },
     { screenshot: false },
   );
   return foblesFrame;
 }
-
-
-
-
 
 async function TestOneCtrlClick(
   paths: string[],

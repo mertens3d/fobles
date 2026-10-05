@@ -1,4 +1,4 @@
-import { CLASS, ATTRIBUTE, TEXT } from "../../constants";
+import { CLASS, ATTRIBUTE, TEXT } from "../../../constants/fobles.constants";
 import { createFoblesNavButton } from "../elements";
 import { toggleProxyButtons } from "../handlers";
 import { openProxyButtonsOnHover, scheduleCloseProxyButtonsOnHover as scheduleCloseProxyFlyoutOnHover } from "../sc-proxy-buttons";

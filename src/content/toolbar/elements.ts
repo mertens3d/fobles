@@ -3,8 +3,8 @@ import {
   CLASS,
   ICONS,
   SYMBOLS,
-  TEXT,
-} from "../constants";
+  TEXT
+} from "../../constants/fobles.constants";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {
   openJumpFlyoutOnHover,

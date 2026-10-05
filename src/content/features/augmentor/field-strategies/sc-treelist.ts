@@ -1,5 +1,5 @@
-import { FOBLES } from "../constants";
-import { SITECORE } from "../../../sitecore";
+import { FOBLES } from "../../../../constants/fobles";
+import { SITECORE } from "../../../../constants/sitecore";
 import { formatFoId } from "../shared/guid";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";

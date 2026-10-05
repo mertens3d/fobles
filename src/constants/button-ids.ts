@@ -1,3 +1,4 @@
+
 // Stable ids for Jump Menu buttons so per-button settings survive label/path renames.
 // Generated once with `[guid]::NewGuid()`; do not reuse or reassign an id to a different button.
 export const JUMP_MENU_BUTTON_ID = {
@@ -26,4 +27,3 @@ export const JUMP_MENU_BUTTON_ID = {
   STATS: "44d61409-1a86-4f61-98e6-68cf955b0ebb",
   TEMPLATES: "4aacd5ef-33dd-43ee-a296-08e463d9a01a",
 } as const;
-

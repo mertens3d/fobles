@@ -1,9 +1,10 @@
-import { TEXT } from "../../content/constants";
-import { SITECORE } from "../../content/sitecore";
-import { kickAllUsers } from "../../content/features/jump-flyout/kick-users";
+import { openAiPages } from "../content/features/jump-flyout/ai-pages";
+import { kickAllUsers } from "../content/features/jump-flyout/kick-users";
 import { JUMP_MENU_BUTTON_ID } from "./button-ids";
-import type { FlyoutGroup } from "./jump-flyout.types";
-import { openAiPages } from "../../content/features/jump-flyout/ai-pages";
+import type { FlyoutGroup } from "../shared/jump-flyout/jump-flyout.types";
+import { TEXT } from "./fobles.constants";
+import { SITECORE } from "./sitecore";
+
 
 const KICK_USER_ICON = "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png";
 
@@ -13,13 +14,13 @@ export const TREE_JUMP_GROUP: readonly FlyoutGroup[] = [
       { id: JUMP_MENU_BUTTON_ID.LAYOUT_RENDERINGS, label: "/Layout /Renderings", path: "/sitecore/layout/Renderings", icon: "/-/icon/software/48x48/elements1.png", isXPOnly: false, isAIOnly: false },
       { id: JUMP_MENU_BUTTON_ID.LAYOUT_PLACEHOLDERS, label: "/Layout /Placeholders", path: "/sitecore/layout/Placeholder Settings", icon: "/-/icon/business/48x48/table_selection_block.png", isXPOnly: false, isAIOnly: false },
       { id: JUMP_MENU_BUTTON_ID.MEDIA_LIBRARY, label: "/media", path: "/sitecore/media library", icon: "/-/icon/applications/48x48/photo_scenery.png", isXPOnly: false, isAIOnly: false },
-      { id: JUMP_MENU_BUTTON_ID.POWERSHELL_SCRIPT_LIBRARY, label: "/System /PowerShell", path: SITECORE.RELATIVE_PATHS.POWERSHELL_SCRIPT_LIBRARY, icon: "/-/icon//powershell/48x48/spe.png", isXPOnly: false, isAIOnly: false },
+      { id: JUMP_MENU_BUTTON_ID.POWERSHELL_SCRIPT_LIBRARY, label: "/System /PowerShell", path: SITECORE.RELATIVE_PATHS_ENCODED.POWERSHELL_SCRIPT_LIBRARY, icon: "/-/icon//powershell/48x48/spe.png", isXPOnly: false, isAIOnly: false },
       { id: JUMP_MENU_BUTTON_ID.TEMPLATES, label: "/Templates", path: "/sitecore/templates", icon: "/-/icon/Applications/48x48/folder_cubes.png", isXPOnly: false, isAIOnly: false },
     ],
   },
 ];
-
 // Kept strictly to /sitecore/admin/* pages so membership is mechanical, not a judgment call.
+
 export const ADMIN_PAGE_GROUP: readonly FlyoutGroup[] = [
   {
     groupMembers: [
@@ -44,7 +45,7 @@ export const AI_GROUP: FlyoutGroup = {
 export const THIRD_PARTY_GROUP: FlyoutGroup = {
   title: TEXT.GROUP_NAME.THIRD_PARTY,
   groupMembers: [
-    { id: JUMP_MENU_BUTTON_ID.SITECORE_ICON_SEARCH, label: "Sitecore Icon Search", url: "https://sitecoreicons.com/" , icon: "/-/icon/wordprocessing/32x32/search_a_h.png", isXPOnly: false, isAIOnly: false },
+    { id: JUMP_MENU_BUTTON_ID.SITECORE_ICON_SEARCH, label: "Sitecore Icon Search", url: "https://sitecoreicons.com/", icon: "/-/icon/wordprocessing/32x32/search_a_h.png", isXPOnly: false, isAIOnly: false },
   ],
 };
 
@@ -58,7 +59,7 @@ export const APPLICATION_PAGE_GROUP: FlyoutGroup = {
     { id: JUMP_MENU_BUTTON_ID.FILE_EXPLORER, label: "File Explorer", url: "/sitecore/shell/default.aspx?xmlcontrol=FileExplorer", icon: "/-/icon/Applications/48x48/folder_window.png", isXPOnly: false, isAIOnly: false },
     { id: JUMP_MENU_BUTTON_ID.CONTROL_PANEL, label: "Control Panel", url: "/sitecore/client/Applications/ControlPanel.aspx", icon: "/-/icon/launchpadicons/48x48/controlpanel.png", isXPOnly: false, isAIOnly: false },
     { id: JUMP_MENU_BUTTON_ID.LAUNCHPAD, label: "Launchpad", url: "/sitecore/shell/sitecore/client/applications/launchpad", icon: "/sitecore/shell/client/Applications/LaunchPad/Assets/dots-grid.svg", isXPOnly: false, isAIOnly: false },
-    { id: JUMP_MENU_BUTTON_ID.CONTENT_EDITOR, label: "Content Editor", url: SITECORE.RELATIVE_PATHS.CONTENT_EDITOR, icon: "/-/icon/launchpadicons/48x48/contenteditor.png", isXPOnly: false, isAIOnly: false },
+    { id: JUMP_MENU_BUTTON_ID.CONTENT_EDITOR, label: "Content Editor", url: SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY, icon: "/-/icon/launchpadicons/48x48/contenteditor.png", isXPOnly: false, isAIOnly: false },
     { id: JUMP_MENU_BUTTON_ID.PACKAGE_DESIGNER, label: "Package Designer", url: "/sitecore/shell/default.aspx?xmlcontrol=Application&hdl=E13B497DCC8642C390AAD7438BB8663B", isXPOnly: true, isAIOnly: false },
     { id: JUMP_MENU_BUTTON_ID.DESKTOP, label: "Desktop", url: "/sitecore/shell/default.aspx", icon: "/-/icon/launchpadicons/48x48/desktop.png", isXPOnly: false, isAIOnly: false },
   ],

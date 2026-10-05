@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 import { hasAnyGuidLikeOption } from "../shared/guid";
 import type { DroplistFobles as DroplistConfig } from "../fobles.types";
 

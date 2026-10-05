@@ -11,7 +11,7 @@ import { RECORD_VIDEO } from "../settings/settings";
 foblesTest.describe("Session", () => {
   foblesTest("IsLoggedOut", async ({ page }, testInfo) => {
     const { baseUrl, version } = getTestEnvironment();
-    const contentEditorUrl = new URL(CONST.SITECORE.PATHS.CONTENT_EDITOR_BW, baseUrl).toString();
+    const contentEditorUrl = new URL(CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED, baseUrl).toString();
 
     await page.goto(contentEditorUrl, { waitUntil: "domcontentloaded" });
     const loggedOut = await logoutCurrentSitecoreSession(page);

@@ -1,5 +1,5 @@
-import { CSS_PROPERTIES, SELECTORS } from "../constants";
-import { SITECORE } from "../sitecore";
+import { CSS_PROPERTIES, SELECTORS } from "../../constants/fobles.constants";
+import { SITECORE } from "../../constants/sitecore";
 import type { ToolbarContext } from "./types";
 
 const observedDocuments = new WeakSet<Document>();

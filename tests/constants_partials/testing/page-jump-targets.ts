@@ -1,15 +1,49 @@
+// @source-path [fobles] tests/constants/testing/page-jump-targets.ts
+
 import type { PageJumpDefinition } from "../CONST.Types";
 
 export const TEST_PAGE_JUMP_TARGETS: PageJumpDefinition[] = [
-  { label: "Show Config", url: "/sitecore/admin/showconfig.aspx", skipTestingAI: false },
-  { label: "Show Services Config", url: "/sitecore/admin/showservicesconfig.aspx", skipTestingAI: false },
-  { label: "Cache", url: "/sitecore/admin/cache.aspx", skipTestingAI: false },
-  { label: "Jobs", url: "/sitecore/admin/jobs.aspx", skipTestingAI: false },
-  { label: "Stats", url: "/sitecore/admin/stats.aspx", skipTestingAI: false },
-  { label: "Logs", url: "/sitecore/admin/logs.aspx", skipTestingAI: false },
-  { label: "DB Browser", url: "/sitecore/admin/dbbrowser.aspx", skipTestingAI: true },
+  {
+    label: "Show Config",
+    url: "/sitecore/admin/showconfig.aspx",
+    skipTestingAI: false
+  },
+  {
+    label: "Show Services Config",
+    url: "/sitecore/admin/showservicesconfig.aspx",
+    skipTestingAI: false
+  },
+  {
+    label: "Cache",
+    url: "/sitecore/admin/cache.aspx",
+    skipTestingAI: false
+  },
+  {
+    label: "Jobs",
+    url: "/sitecore/admin/jobs.aspx",
+    skipTestingAI: false
+  },
+  {
+    label: "Stats",
+    url: "/sitecore/admin/stats.aspx",
+    skipTestingAI: false
+  },
+  {
+    label: "Logs",
+    url: "/sitecore/admin/logs.aspx",
+    skipTestingAI: false
+  },
+  {
+    label: "DB Browser",
+    url: "/sitecore/admin/dbbrowser.aspx",
+    skipTestingAI: true
+  },
 
-  { label: "Sitecore Icon Search", url: "https://sitecoreicons.com/", skipTestingAI: false },
+  {
+    label: "Sitecore Icon Search",
+    url: "https://sitecoreicons.com/",
+    skipTestingAI: false
+  },
 
   {
     label: "PowerShell ISE",
@@ -47,7 +81,7 @@ export const TEST_PAGE_JUMP_TARGETS: PageJumpDefinition[] = [
   },
   {
     label: "Content Editor",
-    url: "/sitecore/shell/Applications/Content Editor.aspx",
+    url: "/sitecore/shell/Applications/Content%20Editor.aspx",
     skipTestingAI: false,
   },
   {

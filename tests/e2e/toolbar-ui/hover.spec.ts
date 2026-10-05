@@ -12,7 +12,7 @@ import { expect, foblesTest } from "../../fixtures/playwright";
 
 foblesTest.describe("Fobles Hover", () => {
 
-    foblesTest.skip(`'content-editor-root-item-lbolt' creates expected Fobles`, async ({ page }) => {
+    foblesTest(`'content-editor-root-item-lbolt' creates expected Fobles`, async ({ page }) => {
         await activateFobles(page);
         const lboltButton = page
             .locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON)
@@ -21,7 +21,7 @@ foblesTest.describe("Fobles Hover", () => {
         await expect(editorTabs).toBeVisible();
         await ensureMouseMarkerExists(page);
 
-        const jumpFlyoutButton = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
+        const jumpFlyoutButton = page.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
         await expect(jumpFlyoutButton).toBeVisible();
         const jumpFlyout = page.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
         const mousePosition = getLastKnownMousePosition();

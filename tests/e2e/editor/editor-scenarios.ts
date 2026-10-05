@@ -1,3 +1,4 @@
+import { toBracedGuid } from "../../helpers/guid-helpers";
 import { REFERRED_TO_ITEM, REFERRING_ITEMS, TARGET_ITEM } from "./editor-yml-refs";
 
 // The last path segment is an item's own name - mechanical string parsing of an already-raw
@@ -6,9 +7,7 @@ function leafName(path: string): string {
   return path.split("/").pop() ?? path;
 }
 
-function toBracedGuid(id: string): string {
-  return `{${id.toUpperCase()}}`;
-}
+
 
 // Content Editor's "Links" gallery (src/content/features/augmentor/editor-strategies
 // /reference-links.ts) renders each field-based reference exactly this way - "ItemName -

@@ -1,3 +1,4 @@
+
 export const SITECORE = {
   ACTION_PREFIXES: {
     FILE: "contentfile",
@@ -14,12 +15,12 @@ export const SITECORE = {
     XML_CONTROL: "xmlcontrol",
   },
   // Named so every path used to build FOBLES_PAGES has an identifier, not just a bare literal.
-  RELATIVE_PATHS: {
-    CHANGE_TEMPLATE: "/sitecore/shell/Applications/Templates/Change template.aspx",
-    CONTENT_EDITOR: "/sitecore/shell/Applications/Content Editor.aspx",
+  RELATIVE_PATHS_ENCODED: {
+    CHANGE_TEMPLATE: "/sitecore/shell/Applications/Templates/Change%20template.aspx",
+    CONTENT_EDITOR_LEGACY: "/sitecore/shell/Applications/Content%20Editor.aspx",
     CONTENT_EDITOR_MODERN: "/sitecore/shell/Applications/Content-Editor",
-    CONTENT_MANAGER: "/sitecore/shell/Applications/Content Manager/default.aspx",
-    FIELD_EDITOR: "/sitecore/shell/Applications/Field Editor.aspx",
+    CONTENT_MANAGER: "/sitecore/shell/Applications/Content%20Manager/default.aspx",
+    FIELD_EDITOR: "/sitecore/shell/Applications/Field%20Editor.aspx",
     KICK_USERS: "/sitecore/client/Applications/LicenseOptions/KickUser.aspx",
     // Sitecore's media request virtual path; can appear nested after another page's path segment
     // (e.g. behind Content Editor.aspx) but is never itself a page eligible for the toolbar.

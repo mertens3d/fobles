@@ -1,6 +1,6 @@
 import { extensionLog } from "../../../logger";
-import { SITECORE } from "../../../sitecore";
-import { FOBLES } from "../constants";
+import { SITECORE } from "../../../../constants/sitecore";
+import { FOBLES } from "../../../../constants/fobles";
 import {
   buildFoblesUrl,
   openFoblesUrl,

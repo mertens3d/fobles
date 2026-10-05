@@ -1,4 +1,4 @@
-import { STORAGE } from "../constants";
+import { STORAGE } from "../../constants/constants-b";
 import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
 import { normalizeJumpFlyoutIconPath } from "./button-settings";
 import { USER_ADMIN_PAGE } from "./user-admin-page-constants";

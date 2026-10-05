@@ -1,10 +1,10 @@
-import { SITECORE } from "../../sitecore";
+import { SITECORE } from "../../../constants/sitecore";
 import {
   getFoblesNavWarningVisible,
   getTurnOffFoblesAfterNavigation,
   setFoblesNavWarningVisible,
 } from "../../../shared/nav-settings";
-import { FOBLES } from "./constants";
+import { FOBLES } from "../../../constants/fobles";
 import { attachFoblesTooltip, hideFoblesTooltip } from "./shared/fobles-tooltip";
 import { isGuidLike, stripGuidBraces } from "./shared/guid";
 
@@ -99,27 +99,17 @@ const confirmSameTabNavigation = async (doc: Document): Promise<boolean> => {
   });
 };
 
-const opensContentEditor = (url: string, view: Window): boolean => {
-  try {
-    const target = new URL(url, view.location.href);
-    return decodeURIComponent(target.pathname).toLowerCase() ===
-      SITECORE.RELATIVE_PATHS.CONTENT_EDITOR.toLowerCase();
-  } catch {
-    return false;
-  }
-};
-
 export function ensurePathShape(
   value: string,
   kind: "sitecore" | "content" | "media" | "template" = "sitecore",
 ): string {
-  const decoded = value.includes("%20") ? decodeURIComponent(value) : value;
-  const trimmed = decoded.trim();
+  // const decoded = value.includes("%20") ? decodeURIComponent(value) : value;
+  const trimmed = value.trim();
   const withoutLeadingSlash = trimmed.replace(/^\/+/, "");
 
   if (!withoutLeadingSlash) {
     if (kind === "media") {
-      return "/sitecore/media library/";
+      return "/sitecore/media%20library/";
     }
 
     if (kind === "template") {
@@ -133,8 +123,8 @@ export function ensurePathShape(
 
   if (kind === "media") {
     if (
-      lowered.startsWith("sitecore/media library/") ||
-      lowered.startsWith("media library/")
+      lowered.startsWith("sitecore/media%20library/") ||
+      lowered.startsWith("media%20library/")
     ) {
       return `/${withoutLeadingSlash}`;
     }
@@ -168,8 +158,8 @@ export function normalizeFoblesValue(raw: string): string {
     return stripGuidBraces(raw);
   }
 
-  const decoded = raw.includes("%20") ? decodeURIComponent(raw) : raw;
-  const trimmed = decoded.trim();
+  // const decoded = raw.includes("%20") ? decodeURIComponent(raw) : raw;
+  const trimmed = raw.trim();
   const withoutLeadingSlash = trimmed.replace(/^\/+/, "");
 
   if (!withoutLeadingSlash) {
@@ -197,7 +187,7 @@ export function buildFoblesUrl(fo: string): string {
   const normalizedFo = normalizeFoblesValue(fo);
   const host = location.hostname;
   const protocol = window.location.protocol;
-  return `${protocol}//${host}${SITECORE.RELATIVE_PATHS.CONTENT_EDITOR}?sc_bw=1&fo=${encodeURI(normalizedFo)}`;
+  return `${protocol}//${host}${SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY}?sc_bw=1&fo=${normalizedFo}`;
 }
 
 export function createFoblesButton(
@@ -253,17 +243,15 @@ export async function openFoblesUrl(url: string, event?: MouseEvent): Promise<vo
   if (shouldOpenNewTab) {
     view.open(url, "_blank", "noopener,noreferrer");
     await turnOffFoblesAfterNavigation();
-    return;
-  }
+  } else {
+    if (await confirmSameTabNavigation(doc)) {
+      await turnOffFoblesAfterNavigation();
+      try {
+        topLevelView.location.assign(url);
+      } catch {
+        view.location.assign(url);
+      }
 
-  if (
-    (!opensContentEditor(url, view) || await confirmSameTabNavigation(doc))
-  ) {
-    await turnOffFoblesAfterNavigation();
-    try {
-      topLevelView.location.assign(url);
-    } catch {
-      view.location.assign(url);
     }
   }
 }

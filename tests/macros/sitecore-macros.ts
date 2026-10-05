@@ -13,7 +13,7 @@ import {
   dismissFoblesConfirmDialogIfPresent,
   openJumpFlyout,
 } from "./fobles-macros";
-import { humanPause } from "../helpers/wait-helpers";
+import { pauseForHuman } from "../helpers/wait-helpers";
 
 // Reusable stock Sitecore Content Editor UI interactions (ribbon tabs, galleries), plus Fobles'
 // own toolbar toggle since it's just as much a canned click sequence any spec reuses - kept
@@ -185,7 +185,7 @@ export async function scrollTreeContainer(
     el.scrollTop = top;
   }, scrollTopPx);
   
-  await humanPause(page, 600);
+  await pauseForHuman(page, 600);
 }
 
 // Sets the scContentEditorFoldersWidth cookie Sitecore's tree/editor splitter reads its width

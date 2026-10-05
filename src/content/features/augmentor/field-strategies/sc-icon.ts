@@ -1,5 +1,5 @@
-import { FOBLES } from "../constants";
-import { SITECORE } from "../../../sitecore";
+import { FOBLES } from "../../../../constants/fobles";
+import { SITECORE } from "../../../../constants/sitecore";
 import type { IconFobles as IconConfig } from "../fobles.types";
 
 const isIconField = (input: HTMLInputElement): boolean => {

@@ -1,4 +1,4 @@
-import { SITECORE } from "../../sitecore";
+import { SITECORE } from "../../../constants/sitecore";
 import { getCurrentItemId } from "../../features/jump-flyout/ai-pages";
 import { joinJumpFlyoutPath } from "../../../shared/jump-flyout/button-settings";
 import { getButtonSetting } from "./button-visibility";
@@ -23,7 +23,7 @@ function getCurrentDatabase(doc: Document): string | null {
   );
   const sitecoreUri = [
     contextElement?.getAttribute("onfocus"),
-    contextElement?.getAttribute("onblur"),
+    contextElement?.getAttribute("onblur"), 
   ].find((value) => value?.includes("sitecore://"));
   return sitecoreUri?.match(/sitecore:\/\/([^/]+)/i)?.[1] ?? null;
 }
@@ -31,8 +31,8 @@ function getCurrentDatabase(doc: Document): string | null {
 // A "path" option jumps the content editor tree (fo=), a "url" option navigates directly.
 export function buildFlyoutOptionUrl(doc: Document, option: FlyoutOption): string {
   if (option.path !== undefined) {
-    const fullPath = joinJumpFlyoutPath(option.path, getButtonSetting(option.id)?.pathSuffix ?? "");
-    return `${window.location.origin}${SITECORE.RELATIVE_PATHS.CONTENT_EDITOR}?sc_bw=1&fo=${encodeURI(fullPath)}`;
+    const fullPath = joinJumpFlyoutPath(option.path, getButtonSetting(option.id)?.encodedPathSuffix ?? "");
+    return `${window.location.origin}${SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY}?sc_bw=1&fo=${fullPath}`;
   }
 
   const origin = doc.defaultView?.location.origin ?? window.location.origin;
@@ -40,8 +40,12 @@ export function buildFlyoutOptionUrl(doc: Document, option: FlyoutOption): strin
   if (option.useCurrentItemId) {
     const itemId = getCurrentItemId(doc);
     const database = getCurrentDatabase(doc);
-    if (itemId) url.searchParams.set(SITECORE.QUERY_PARAMS.ITEM_ID, itemId);
-    if (database) url.searchParams.set(SITECORE.QUERY_PARAMS.DATABASE, database);
+    if (itemId) {
+      url.searchParams.set(SITECORE.QUERY_PARAMS.ITEM_ID, itemId);
+    }
+    if (database) {
+      url.searchParams.set(SITECORE.QUERY_PARAMS.DATABASE, database);
+    }
   }
   return url.toString();
 }

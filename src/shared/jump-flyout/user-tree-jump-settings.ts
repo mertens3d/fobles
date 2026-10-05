@@ -1,8 +1,8 @@
-import { SITECORE } from "../../content/sitecore";
-import { STORAGE } from "../constants";
+import { SITECORE } from "../../constants/sitecore";
+import { STORAGE } from "../../constants/constants-b";
 import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
 import { joinJumpFlyoutPath, normalizeJumpFlyoutIconPath, sanitizeJumpFlyoutPathSuffix } from "./button-settings";
-import { USER_TREE_JUMP } from "./user-tree-jump-constants";
+import { USER_TREE_JUMP } from "../../constants/user-tree-jump-constants";
 import type { UserTreeJump } from "./jump-flyout.types";
 
 export type { UserTreeJump } from "./jump-flyout.types";
@@ -18,7 +18,7 @@ export function normalizeUserTreeJumpIconPath(rawIcon: string): string {
 // Every user Tree Jump is rooted at SITECORE.RELATIVE_PATHS.ROOT - the suffix is the only part
 // the user actually controls, exactly like the fixed catalog's own base path + suffix buttons.
 export function buildUserTreeJumpPath(pathSuffix: string): string {
-  return joinJumpFlyoutPath(SITECORE.RELATIVE_PATHS.ROOT, pathSuffix);
+  return joinJumpFlyoutPath(SITECORE.RELATIVE_PATHS_ENCODED.ROOT, pathSuffix);
 }
 
 const isUserTreeJump = (value: unknown): value is UserTreeJump => {

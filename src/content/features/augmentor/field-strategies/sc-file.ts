@@ -1,5 +1,5 @@
-import { FOBLES } from "../constants";
-import { SITECORE } from "../../../sitecore";
+import { FOBLES } from "../../../../constants/fobles";
+import { SITECORE } from "../../../../constants/sitecore";
 import { ensurePathShape } from "../helper";
 import type { FileFobles as FileConfig } from "../fobles.types";
 import { applySingleInputFieldStrategy } from "../shared/apply-single-input-field";

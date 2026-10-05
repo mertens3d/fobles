@@ -4,7 +4,7 @@ import {
   type UserTreeJump,
 } from "../shared/jump-flyout/user-tree-jump-settings";
 import { sanitizeJumpFlyoutPathSuffix } from "../shared/jump-flyout/button-settings";
-import { USER_TREE_JUMP } from "../shared/jump-flyout/user-tree-jump-constants";
+import { USER_TREE_JUMP } from "../constants/user-tree-jump-constants";
 
 function createEmptyUserTreeJump(): UserTreeJump {
   return { id: createUserTreeJumpId(), label: "", enabled: true, icon: "", pathSuffix: "" };

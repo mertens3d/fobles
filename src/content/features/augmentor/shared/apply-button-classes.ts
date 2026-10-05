@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 
 export function applyButtonClasses(
   button: HTMLButtonElement,

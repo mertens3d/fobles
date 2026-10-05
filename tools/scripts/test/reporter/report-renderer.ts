@@ -1,7 +1,8 @@
-import type { CurrentFullResult, ReportResult, ReportStep } from "./reporter-types";
+import type { CurrentFullResult, ReportResult, ReportStep, ScreenshotInfo } from "./reporter-types";
 import { escapeHtml, formatDuration, formatStatus, toDisplayUrl } from "./report-utils";
 import { renderNotes, renderScreenshotLinks } from "./screenshot-rendering";
 import { renderSuiteNav } from "./suite-navigation";
+import { refreshScriptRunning, REPORT_CLIENT_SCRIPT } from "./client-script";
 
 export type RenderReportInput = {
   outputFile: string;
@@ -13,7 +14,7 @@ export type RenderReportInput = {
   loginAlertUrl: string | null;
 };
 
-function renderDetails(error: string, screenshots = []): string {
+function renderDetails(error: string, screenshots: ScreenshotInfo[] = []): string {
   const parts: string[] = [];
   if (error) {
     parts.push(`<details><summary>View failure</summary><pre>${escapeHtml(error)}</pre></details>`);
@@ -52,7 +53,7 @@ function renderTestDetails(result: ReportResult): string {
   const details: string[] = [];
 
   if (result.status === "timedOut") {
-    const lastStep = result.steps.at(-1)?.title;
+    const lastStep = result.steps[result.steps.length - 1]?.title;
     details.push(
       `Test timed out before the next step completed.${lastStep ? ` Last completed step: ${lastStep}.` : " No test step completed."}`,
     );
@@ -117,32 +118,31 @@ export function renderReport(input: RenderReportInput): string {
     ? ` · ${escapeHtml(formatStatus(input.fullResult.status))}`
     : "";
   const runningText = running ? "Run in progress · " : "";
-  const refreshText = running ? ` · <span id="refresh-countdown"></span>` : "";
-  const refreshScript = running
-    ? `<script>
-  (function () {
-    var secondsLeft = 2;
-    var el = document.getElementById("refresh-countdown");
-    function tick() {
-      if (el) el.textContent = "refreshing in " + secondsLeft + "s";
-      if (secondsLeft <= 0) { location.reload(); return; }
-      secondsLeft -= 1;
-      setTimeout(tick, 1000);
-    }
-    tick();
-  })();
-</script>`
-    : "";
+  const refreshText = running
+  ? ` ·
+      <label>
+        <input
+          type="checkbox"
+          id="auto-refresh-enabled"
+          checked
+        />
+        auto refresh
+      </label>
+      · <span id="refresh-countdown"></span>`
+  : "";
+  const refreshScript = running ? `${refreshScriptRunning}` : "";
 
-  return `<!doctype html>
-<html lang="en">
-<head>
+  const head = `<head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Playwright Test Report</title>
   <style>${input.css}</style>
-</head>
-<body>
+  </head>`;
+
+  return `<!doctype html>
+  <html lang="en">
+  ${head}
+  <body>
   <main>
     ${suiteNavHtml}
     ${loginAlertHtml}
@@ -165,30 +165,7 @@ export function renderReport(input: RenderReportInput): string {
     <button type="button" class="screenshot-modal-close" id="screenshot-modal-close" aria-label="Close">&times;</button>
     <img id="screenshot-modal-img" alt="">
   </div>
-  <script>
-  (function () {
-    var backdrop = document.getElementById("screenshot-modal-backdrop");
-    var modalImg = document.getElementById("screenshot-modal-img");
-    if (!backdrop || !modalImg) return;
-    function openModal(src, alt) {
-      modalImg.src = src;
-      modalImg.alt = alt || "";
-      backdrop.classList.add("open");
-    }
-    function closeModal() {
-      backdrop.classList.remove("open");
-      modalImg.src = "";
-    }
-    document.addEventListener("click", function (event) {
-      var thumb = event.target.closest(".screenshot-thumb");
-      if (thumb) { openModal(thumb.src, thumb.alt); return; }
-      if (backdrop.contains(event.target)) closeModal();
-    });
-    document.addEventListener("keydown", function (event) {
-      if (event.key === "Escape") closeModal();
-    });
-  })();
-  </script>
+  ${REPORT_CLIENT_SCRIPT}
   ${refreshScript}
 </body>
 </html>`;

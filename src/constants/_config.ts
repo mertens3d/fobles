@@ -1,4 +1,5 @@
-import type { FoblesConfig } from "./fobles.types";
+import type { FoblesConfig } from "../content/features/augmentor/fobles.types";
+
 
 export const fieldConfigs: FoblesConfig[] = [
   {
@@ -124,5 +125,4 @@ export const fieldConfigs: FoblesConfig[] = [
     strategy: "template-path",
     FoblesTopSelector: "a.scTemplate span.scTemplatePath",
   },
-
 ];

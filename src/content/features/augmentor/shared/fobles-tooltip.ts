@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 
 const tooltips = new WeakMap<Document, HTMLDivElement>();
 const tooltipDismissListeners = new WeakSet<Document>();

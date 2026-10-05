@@ -1,4 +1,4 @@
-import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import { expectFoblesButtonSameTabNavigation } from "../../helpers/fobles-helpers-support/navigation-assertions";
 import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import { openScLinksGallery } from "../../macros/sitecore-macros";
@@ -8,7 +8,7 @@ import { clickLbolt } from "../../macros/fobles-macros";
 import { CONST } from "../../CONST";
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
-import { humanPause } from "../../helpers/wait-helpers";
+import { pauseForHuman } from "../../helpers/wait-helpers";
 import { FOBLES_HIDDEN_CLASS_PATTERN } from "../strategies/support/CONST";
 
 const STEP_WAIT_MS: number = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
@@ -36,7 +36,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
     async ({ page }, testInfo) => {
       await openSitecorePage(
         page,
-        `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW}&fo=${SCENARIO.itemId}`,
+        `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`,
       );
 
       const foblesFrame = await findFoblesFrame(page);
@@ -48,7 +48,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
         SCENARIO.referredToItem.expectedButtonText,
       ];
 
-      const step = createStep(
+      const step = createFoblesStep(
         page,
         testInfo,
         linksPanel,
@@ -69,7 +69,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
             ).toBeVisible();
           }
 
-          await humanPause(page, STEP_WAIT_MS);
+          await pauseForHuman(page, STEP_WAIT_MS);
         },
       );
 
@@ -85,7 +85,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
             ).toBeVisible();
           }
 
-          await humanPause(page, STEP_WAIT_MS);
+          await pauseForHuman(page, STEP_WAIT_MS);
         },
       );
 

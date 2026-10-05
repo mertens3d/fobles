@@ -1,4 +1,4 @@
-import { TEXT } from "../../constants";
+import { TEXT } from "../../../constants/fobles.constants";
 import { createFlyoutGroup as createJumpFlyoutGroup } from "./group-builder";
 import {
   getUserAdminPages,

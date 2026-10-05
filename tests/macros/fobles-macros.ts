@@ -13,16 +13,18 @@ import { findFoblesFrame, findFrameWithSelector } from "../helpers/frame-finder"
 import { walkFrameDocuments } from "../helpers/frame-helpers";
 import { showBillboard } from "../helpers/billboard";
 import { expectJumpFlyoutFlyoutHidden, expectJumpFlyoutFlyoutVisible } from "../expect-snippets/expect-snippets";
+import { pauseForBrowser } from "../helpers/wait-helpers";
+import { isFoblesPage } from "../helpers/page-helpers";
 
 export async function ClickFoblesJumpButton(
     page: Page, expectFlyoutVisible = true) {
     const foblesFrame = await findFoblesFrame(page);
     console.log(`[fobles Macro] ClickFoblesJumpButton`);
-    const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
+    const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
     await clickWithMouseMarker(page, jumpFlyoutButton, "Fobles Jump Button");
     if (expectFlyoutVisible) {
         await expectJumpFlyoutFlyoutVisible(foblesFrame);
-    }else{
+    } else {
         await expectJumpFlyoutFlyoutHidden(foblesFrame);
     }
 }
@@ -50,14 +52,14 @@ export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<vo
 // distinct from a tree-jump button, which targets a Sitecore item path) and dismisses Fobles' own
 // confirm dialog afterward. Opens the jump flyout itself first (idempotent, see openJumpFlyout)
 // rather than requiring the caller to resolve a frame/open the jump flyout beforehand.
-export async function clickJumpFlyoutUrlButton(page: Page, pageJumpUrl:string): Promise<Locator> {
+export async function getClickJumpFlyoutUrlButton(page: Page, pageJumpUrl: string): Promise<Locator> {
     console.log(`[Macro: clickJumpFlyoutUrlButton] - Start (pageJumpUrl: ${pageJumpUrl})`);
     const foblesFrame = await findFoblesFrame(page);
     await openJumpFlyout(page, foblesFrame);
     //const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.LOCATORS.DATA_PAGE_JUMP_URL).nth(index);
-    
+
     const jumpFlyoutButton = foblesFrame.locator(`[data-fobles-page-jump-url="${pageJumpUrl}"]`);
-    
+
     await jumpFlyoutButton.waitFor({ state: "visible" });
     return jumpFlyoutButton;
     // await clickWithMouseMarker(page, jumpFlyoutButton, `Menu ${label}`);
@@ -90,18 +92,18 @@ export async function dragToolbarTo(
 export async function dragToolbarToCornerLocation(page: Page, cornerPosition: CornerPosition) {
     console.log(`[macro] dragToolbarToCornerLocation ${cornerPosition.corner}`)
 
-    
+
     // await showBillboard(page, `Find Fobles toolbar`);
     const foblesFrame = await findFrameWithSelector(page, CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
-    
+
     // await showBillboard(page, `Find Toolbar grip`);
     const toolbarGrip = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_GRIP).first();
     //await highlightClickTarget(toolbarGrip, "Toolbar grip");
-    
+
     // console.log(`[macro] Found toolbar grip`);
-    
+
     await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, cornerPosition));
-    
+
 }
 
 
@@ -140,34 +142,50 @@ export async function dismissFoblesConfirmDialogIfPresent(
     page: Page,
     options?: { turnOffWarning?: boolean },
 ): Promise<void> {
-    console.log("[Macro: dismissFoblesConfirmDialogIfPresent] - Start");
-    console.log(
-        `[fobles] Polling up to 3000ms for a visible confirm dialog (selector: ${CONST.FOBLES.SELECTORS.CONFIRM_DIALOG})`,
-    );
-    const deadline = Date.now() + 3_000;
-    do {
-       await walkFrameDocuments(page, async (frame) => {
-            const dialog = frame.locator(CONST.FOBLES.SELECTORS.CONFIRM_DIALOG).first();
-            if (await dialog.isVisible().catch(() => false)) {
-                console.log("[fobles] Confirm dialog found - dismissing");
-                if (options?.turnOffWarning) {
-                    const warningCheckbox = dialog
-                        .locator(CONST.FOBLES.SELECTORS.CONFIRM_DIALOG_SETTING)
-                        .locator("input[type='checkbox']");
-                    await clickWithMouseMarker(page, warningCheckbox, "Turn off same-tab navigation warning");
-                }
-                await clickWithMouseMarker(
-                    page,
-                    dialog.locator(CONST.FOBLES.SELECTORS.CONFIRM_DIALOG_CONTINUE),
-                    "Confirm dialog Continue",
-                );
-                return;
-            }
-        });
 
-        // await foblesWaitForTimeout(page, 150);
-    } while (Date.now() < deadline);
-    console.log("[fobles] No confirm dialog appeared within 3000ms - treating as not shown");
+    if (isFoblesPage(page.url())) {
+       
+        console.log("[Macro: dismissFoblesConfirmDialogIfPresent] - Start");
+        console.log(
+            `[fobles] Polling up to ${CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS}ms for a visible confirm dialog (selector: ${CONST.FOBLES.SELECTORS.CONFIRM_DIALOG})`,
+        );
+        const deadline = Date.now() + CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS;
+        let dismissed = false;
+        do {
+            await walkFrameDocuments(page, async (frame) => {
+                const dialog = frame.locator(CONST.FOBLES.SELECTORS.CONFIRM_DIALOG).first();
+                if (await dialog.isVisible().catch(() => false)) {
+                    dismissed = true;
+                    console.log("[fobles] Confirm dialog found - dismissing");
+                    if (options?.turnOffWarning) {
+                        const warningCheckbox = dialog
+                            .locator(CONST.FOBLES.SELECTORS.CONFIRM_DIALOG_SETTING)
+                            .locator("input[type='checkbox']");
+                        await clickWithMouseMarker(page, warningCheckbox, "Turn off same-tab navigation warning");
+
+                    }
+                    await clickWithMouseMarker(
+                        page,
+                        dialog.locator(CONST.FOBLES.SELECTORS.CONFIRM_DIALOG_CONTINUE),
+                        "Confirm dialog Continue",
+                    );
+                }
+            });
+
+            if (!dismissed) {
+                await pauseForBrowser(page, 150);
+            }
+        } while (!dismissed && Date.now() < deadline);
+        if (!dismissed) {
+            console.log(
+                `[fobles] No confirm dialog appeared within ${CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS}ms - treating as not shown`,
+            );
+        }
+    }else{
+        console.log(
+            `[fobles] No confirm dialog should appear in ${page.url()}`
+        );
+    }
 }
 
 // Self-sufficient variant of clickLboltButton - finds its own fobles frame and LBolt button

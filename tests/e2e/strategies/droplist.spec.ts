@@ -1,7 +1,7 @@
 import { foblesTest } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
-import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import {
   getEditorSectionLocator,
   setupContentEditorForTesting,
@@ -31,7 +31,7 @@ foblesTest.describe("Strategy scenario: droplist", () => {
       testInfo
     );
     // const select = testContext.fieldTable.locator(CONST.SITECORE.SELECTORS.STRATEGIES.DROP_LIST).first();
-    const step = createStep(page, testInfo, getEditorSectionLocator(testContext.fieldTable), SCENARIO.friendlyName);
+    const step = createFoblesStep(page, testInfo, getEditorSectionLocator(testContext.fieldTable), SCENARIO.friendlyName);
 
 
     await stepExpectSitecoreInitialConditions(testContext);

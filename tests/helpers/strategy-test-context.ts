@@ -5,7 +5,7 @@ import { CONST } from "../CONST";
 import { findFoblesFrame } from "./frame-finder";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import type { StrategyScenarioData, StrategyTestContext } from "../e2e/strategies/support/scenario.types";
-import { createStep } from "./fobles-helpers-support/test-step";
+import { createFoblesStep } from "./fobles-helpers-support/test-step";
 import { getEditorSectionLocator } from "./fobles-helpers-support/test-setup";
 
 // table by its label text plus the toolbar's feature button.
@@ -28,7 +28,7 @@ export async function factoryStrategyTestContext(
   };
 
   const fieldTable = await testContext.getFieldTable();
-  testContext.step = createStep(page, testInfo, getEditorSectionLocator(fieldTable), scenario.friendlyName);
+  testContext.step = createFoblesStep(page, testInfo, getEditorSectionLocator(fieldTable), scenario.friendlyName);
 
   // remove after legacy properties are unused
   testContext.fieldTable = fieldTable;

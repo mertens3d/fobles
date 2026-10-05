@@ -1,5 +1,5 @@
-import { FOBLES } from "../constants";
-import { SITECORE } from "../../../sitecore";
+import { FOBLES } from "../../../../constants/fobles";
+import { SITECORE } from "../../../../constants/sitecore";
 import { extensionLog } from "../../../logger";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";

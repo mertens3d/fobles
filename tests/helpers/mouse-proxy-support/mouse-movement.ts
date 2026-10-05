@@ -1,14 +1,14 @@
 import type { Page } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { showBillboard } from "../billboard";
-import { humanPause } from "../wait-helpers";
+import { pauseForHuman } from "../wait-helpers";
 import type { CornerPosition, MouseCoordinates } from "../mouse-proxy.types";
 import { getLastKnownMousePosition, isSprintMode, setLastKnownMousePosition } from "./mouse-proxy-state";
 import { updateMouseMarkers } from "./mouse-marker";
 
 export function resolveCornerPosition(page: Page, cornerPosition: CornerPosition): MouseCoordinates {
   const viewport = page.viewportSize();
-  if (!viewport) throw new Error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.COULD_NOT_READ_VIEWPORT);
+  if (!viewport) throw new Error(CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_READ_VIEWPORT);
 
   const x = cornerPosition.corner.endsWith("right")
     ? viewport.width - cornerPosition.offsetX
@@ -66,7 +66,7 @@ export async function drawMousePath(
       startY: startPosition.y,
       endX: targetPosition.x,
       endY: targetPosition.y,
-      config: CONST.TESTING.MOUSE_PATH,
+      config: CONST.TESTING.MOUSE.PATH,
     },
   );
 }
@@ -76,11 +76,11 @@ export async function moveMouseToPosition(
   targetPosition: MouseCoordinates,
   label: string,
 ): Promise<void> {
-  console.log(`[fobles] S) Mouse move '${label}' `);
+  // console.log(`[fobles] S) Mouse move '${label}' `);
   const initialPosition = getLastKnownMousePosition();
 
   if (isSprintMode()) {
-    console.log(`[fobles] Mouse sprint mode: moving directly to (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`);
+    // console.log(`[fobles] Mouse sprint mode: moving directly to (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`);
     await page.mouse.move(targetPosition.x, targetPosition.y);
     setLastKnownMousePosition(targetPosition);
     return;
@@ -98,13 +98,13 @@ export async function moveMouseToPosition(
     const y = initialPosition.y + (targetPosition.y - initialPosition.y) * progress;
     await page.mouse.move(x, y);
     await updateMouseMarkers(page, x, y);
-    await humanPause(page, mouseStepDelay, true);
+    await pauseForHuman(page, mouseStepDelay, true);
   }
 
   setLastKnownMousePosition(targetPosition);
-  console.log(
-    `[fobles] E) Mouse move '${label}' ended at (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`,
-  );
+  // console.log(
+  //   `[fobles] E) Mouse move '${label}' ended at (${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)})`,
+  // );
 }
 
 function calculateTotalMouseSteps(targetPosition: MouseCoordinates, initialPosition: MouseCoordinates, label: string) {
@@ -115,13 +115,13 @@ function calculateTotalMouseSteps(targetPosition: MouseCoordinates, initialPosit
   );
   const durationMs = (distance /
     (CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].MOUSE_PX_PER_SECOND *
-      CONST.TESTING.MOUSE.SPEED_MULTIPLIER)) *
+      CONST.TESTING.MOUSE.ROOT.SPEED_MULTIPLIER)) *
     1000;
-  const mouseStepDelay = 1000 / CONST.TESTING.MOUSE.UPDATE_HZ;
+  const mouseStepDelay = 1000 / CONST.TESTING.MOUSE.ROOT.UPDATE_HZ;
   const mouseSteps = Math.max(1, Math.ceil(durationMs / mouseStepDelay));
-  console.log(
-    `[fobles] Mouse move '${label}': start=(${initialPosition.x.toFixed(1)}, ${initialPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${mouseSteps}`
-  );
+  // console.log(
+  //   `[fobles] Mouse move '${label}': start=(${initialPosition.x.toFixed(1)}, ${initialPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${mouseSteps}`
+  // );
   return { mouseSteps, mouseStepDelay };
 }
 
@@ -130,9 +130,9 @@ export async function moveMouseToDefault(page: Page): Promise<void> {
     width: window.innerWidth,
     height: window.innerHeight,
   }));
-  await showBillboard(page, CONST.TESTING.MOUSE_PROXY.DEFAULT_LABELS.MOUSE_TO_DEFAULT);
+  await showBillboard(page, CONST.TESTING.MOUSE.PROXY.DEFAULT_LABELS.MOUSE_TO_DEFAULT);
   const center = { x: viewport.width / 2, y: viewport.height / 2 };
-  await moveMouseToPosition(page, center, CONST.TESTING.MOUSE_PROXY.DEFAULT_LABELS.CENTER_OF_MONITOR);
+  await moveMouseToPosition(page, center, CONST.TESTING.MOUSE.PROXY.DEFAULT_LABELS.CENTER_OF_MONITOR);
 }
 
 export async function moveMouseTowardCenter(

@@ -3,6 +3,7 @@ import { getActiveTestUserCredentials, getTestEnvironment } from "./environment"
 import { logDiagnostic } from "./logging";
 import type { AutoLoginContext } from "./auto-login.types";
 import { CONST } from "../CONST";
+import { normalizePath } from "../helpers/path-helpers";
 
 function toDisplayUrl(url: string): string {
   try {
@@ -27,7 +28,7 @@ function assertLicenseAvailable(page: Page): void {
 
   if (licenseExhausted) throw new Error(licenseMessage);
 
-  if (page.url().includes(CONST.SITECORE.PATHS.LICENSE_STARTPAGE)) {
+  if (normalizePath(page.url()).includes(CONST.SITECORE.PATHS.LICENSE_STARTPAGE)) {
     licenseExhausted = true;
     throw new Error(licenseMessage);
   }
@@ -212,9 +213,6 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
 
   const startedAt = Date.now();
   const initialUrl = toDisplayUrl(page.url());
-  console.log(
-    `[sitecore preflight] Waiting for the Fobles flyout (${CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER}) to appear - started at: ${initialUrl}`,
-  );
 
   // A one-off "waiting for X" message is useless once the wait actually stalls - log elapsed time
   // and the current URL on every poll tick, so a stall shows exactly how long it's been and
@@ -241,7 +239,7 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
           for (const frame of page.frames()) {
             if (
               (await frame
-                .locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER)
+                .locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER)
                 .count()) > 0
             ) {
               console.log(

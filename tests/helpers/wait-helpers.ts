@@ -1,14 +1,14 @@
 import { expect, type Locator, type Page } from "../fixtures/playwright";
 import { CONST } from "../CONST";
 
-export async function waitForBrowser(page: Page, timeout: number, noLog: boolean = false): Promise<void> {
-    if (!noLog) console.log(`[fobles] s) waitForBrowser ${timeout}ms`);
+export async function pauseForBrowser(page: Page, timeout: number, noLog: boolean = false): Promise<void> {
+    if (!noLog) console.log(`[fobles] s) pauseForBrowser ${timeout}ms`);
     await page.waitForTimeout(timeout);
-    if (!noLog) console.log(`[fobles] e) waitForBrowser ${timeout}ms`);
+    if (!noLog) console.log(`[fobles] e) pauseForBrowser ${timeout}ms`);
     // return new Promise((resolve) => setTimeout(resolve, timeout));
 }
 
-export async function humanPause(
+export async function pauseForHuman(
     page: Page,
     durationMs: number = CONST.TESTING.HUMAN_PAUSE_MS,
     noLog: boolean = false,

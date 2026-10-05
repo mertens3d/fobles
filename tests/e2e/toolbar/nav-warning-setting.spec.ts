@@ -5,16 +5,16 @@ import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
 import { clickTreeJump } from "../../macros/sitecore-macros";
 import { openContentEditor } from "../../fixtures/sitecore";
 import { findFoblesFrame } from "../../helpers/frame-finder";
-import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 
 foblesTest.describe("Same-tab navigation warning setting", () => {
-  foblesTest.skip("popup checkbox shows/hides Fobles' confirm dialog on the next same-tab jump", async ({
+  foblesTest("popup checkbox shows/hides Fobles' confirm dialog on the next same-tab jump", async ({
     sharedBrowserContext,
     page,
   }, testInfo) => {
     foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
-    const step = createStep(page, testInfo, page, "Nav Warning Setting");
+    const step = createFoblesStep(page, testInfo, page, "Nav Warning Setting");
 
     // Re-navigates to the scenario item and clicks a tree jump button - the same setup every
     // jump test uses - then hands back whatever (if anything) shows up as a "dialog". Skips the

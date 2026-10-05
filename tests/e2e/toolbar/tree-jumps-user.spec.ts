@@ -4,10 +4,11 @@ import { CONST } from "../../CONST";
 import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
 import { openContentEditor } from "../../fixtures/sitecore";
 import { findFoblesFrame } from "../../helpers/frame-finder";
-import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import { ClickFoblesJumpButton } from "../../macros/fobles-macros";
 import { addTestRow, openTreeJumpsColumn, removeTestRowIfPresent, setTestRowEnabled } from "./support/extension-options-settings-helpers";
 import { expectCurrentUrlContains } from "../../expect-snippets/expect-snippets";
+import { normalizePath } from "../../helpers/path-helpers";
 
 foblesTest.describe("User Tree Jumps", () => {
   foblesTest.describe("Persistence", () => {
@@ -46,7 +47,7 @@ foblesTest.describe("User Tree Jumps", () => {
     foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(sharedBrowserContext, extensionId, "options");
-    const step = createStep(page, testInfo, page, "User Tree Jump");
+    const step = createFoblesStep(page, testInfo, page, "User Tree Jump");
 
     try {
       await removeTestRowIfPresent(optionsPage);
@@ -82,7 +83,8 @@ foblesTest.describe("User Tree Jumps", () => {
         const confirmationDialog = foblesFrame.getByRole("dialog");
         await expect(confirmationDialog).toBeVisible();
         await Promise.all([
-          page.waitForURL((url) => url.toString().includes(encodeURI(CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH)), {
+          page.waitForURL((url) => normalizePath(url.toString()).includes(
+           normalizePath(CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH)), {
             timeout: CONST.TESTING.TIMEOUTS.URL_WAIT_MS,
           }),
           clickWithMouseMarker(

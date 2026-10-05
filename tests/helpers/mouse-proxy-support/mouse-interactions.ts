@@ -3,12 +3,12 @@ import { CONST } from "../../CONST";
 import { pulseMouseMarkerClick } from "./mouse-marker";
 import { moveMouseToPosition } from "./mouse-movement";
 import type { MouseCoordinates } from "../mouse-proxy.types";
-import type { HighlightStyle } from "../../constants/CONST.Types";
+import type { HighlightStyle } from "../../constants_partials/CONST.Types";
 import { isSprintMode } from "./mouse-proxy-state";
 
 export async function getButtonSize(button: Locator): Promise<{ width: number; height: number }> {
   const box = await button.boundingBox();
-  if (!box) throw new Error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.COULD_NOT_MEASURE_BUTTON);
+  if (!box) throw new Error(CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_MEASURE_BUTTON);
   return { width: box.width, height: box.height };
 }
 
@@ -24,22 +24,22 @@ export async function clickWithMouseMarker(
 ): Promise<void> {
   console.log(`[fobles] clickWithMouseMarker '${label}' options: ${JSON.stringify(options)}`);
 
-  if (!page) console.error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.PAGE_NOT_DEFINED);
+  if (!page) console.error(CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.PAGE_NOT_DEFINED);
   if (!(await targetLocator.isVisible())) {
-    const message = `${CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.TARGET_NOT_VISIBLE_PREFIX}${label}`;
+    const message = `${CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.TARGET_NOT_VISIBLE_PREFIX}${label}`;
     console.error(message);
     throw new Error(message);
   }
-  if (!label) console.error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.LABEL_NOT_DEFINED);
+  if (!label) console.error(CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.LABEL_NOT_DEFINED);
 
-  const corner = options?.corner ?? CONST.TESTING.MOUSE_PROXY.CORNER.CENTER;
+  const corner = options?.corner ?? CONST.TESTING.MOUSE.PROXY.CORNER.CENTER;
   await moveMouseToBoundingBox(page, targetLocator, label, corner);
   await highlightClickTarget(targetLocator, `${label} - ${clickWithMouseMarker.name}`);
   // await pulseMouseMarkerClick(page);
   await targetLocator.click({
     modifiers: options?.modifiers,
     clickCount: options?.clickCount,
-    position: corner === CONST.TESTING.MOUSE_PROXY.CORNER.TOP_LEFT ? { x: 0, y: 0 } : undefined,
+    position: corner === CONST.TESTING.MOUSE.PROXY.CORNER.TOP_LEFT ? { x: 0, y: 0 } : undefined,
   });
 }
 
@@ -47,40 +47,40 @@ export async function moveMouseToBoundingBox(
   page: Page,
   targetLocator: Locator,
   label: string,
-  corner: "center" | "top-left" = CONST.TESTING.MOUSE_PROXY.CORNER.CENTER,
+  corner: "center" | "top-left" = CONST.TESTING.MOUSE.PROXY.CORNER.CENTER,
 ): Promise<void> {
   console.log(`[fobles] S) moveMouseToBoundingBox '${label}'`);
   if (!targetLocator) {
-    console.error(`${CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.TARGET_NOT_PROVIDED_PREFIX}${label}'`);
-    throw new Error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.NO_MOUSE_TARGET_PROVIDED);
+    console.error(`${CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.TARGET_NOT_PROVIDED_PREFIX}${label}'`);
+    throw new Error(CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.NO_MOUSE_TARGET_PROVIDED);
   }
 
   if (!(await targetLocator.isVisible())) {
-    console.error(`${CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.TARGET_NOT_VISIBLE_PREFIX}${label}`);
-    throw new Error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.MOUSE_TARGET_NOT_VISIBLE);
+    console.error(`${CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.TARGET_NOT_VISIBLE_PREFIX}${label}`);
+    throw new Error(CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.MOUSE_TARGET_NOT_VISIBLE);
   }
   // await highlightClickTarget(targetLocator, label);
 
   const box = await targetLocator.boundingBox();
   if (!box) {
-    console.error(`${CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.COULD_NOT_GET_BOUNDING_BOX} '${label}'`);
-    throw new Error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.COULD_NOT_GET_BOUNDING_BOX);
+    console.error(`${CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_GET_BOUNDING_BOX} '${label}'`);
+    throw new Error(CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_GET_BOUNDING_BOX);
   }
 
-  const targetPosition = corner === CONST.TESTING.MOUSE_PROXY.CORNER.TOP_LEFT
+  const targetPosition = corner === CONST.TESTING.MOUSE.PROXY.CORNER.TOP_LEFT
     ? { x: box.x, y: box.y }
     : { x: box.x + box.width / 2, y: box.y + box.height / 2 };
   await moveMouseToPosition(page, targetPosition, label);
-  console.log(`[fobles] E) Mouse move to '${label}' called`);
+  // console.log(`[fobles] E) Mouse move to '${label}' called`);
 }
 
 export async function highlightScreenShot(target: Locator, label: string): Promise<void> {
-  await highlightBase(target, `${label} - ${highlightScreenShot.name}`, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.STYLES.SCREEN_SHOT);
+  await highlightBase(target, `${label} - ${highlightScreenShot.name}`, CONST.TESTING.MOUSE.PROXY.HIGHLIGHT.STYLES.SCREEN_SHOT);
 }
 
 
 export async function highlightClickTarget(target: Locator, label: string): Promise<void> {
-  await highlightBase(target, label, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.STYLES.CLICK);
+  await highlightBase(target, label, CONST.TESTING.MOUSE.PROXY.HIGHLIGHT.STYLES.CLICK);
 }
 
 async function highlightBase(target: Locator, label: string, highlightStyle: HighlightStyle): Promise<void> {
@@ -115,7 +115,7 @@ async function highlightBase(target: Locator, label: string, highlightStyle: Hig
       el.style.outlineOffset = highlight.OUTLINE_OFFSET;
       //el.style.backgroundColor = highlight.BACKGROUND_COLOR;
     }, highlightStyle);
-    await highlightedTarget.page().waitForTimeout(CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.VISIBLE_DELAY_MS);
+    await highlightedTarget.page().waitForTimeout(CONST.TESTING.MOUSE.PROXY.HIGHLIGHT.VISIBLE_DELAY_MS);
 
     void setTimeout(() => {
       highlightedTarget
@@ -129,7 +129,7 @@ async function highlightBase(target: Locator, label: string, highlightStyle: Hig
         .catch(() => {
           console.error(`[fobles] Failed to restore original styles for '${label}'`);
         });
-    }, CONST.TESTING.MOUSE_PROXY.HIGHLIGHT.RESTORE_DELAY_MS);
+    }, CONST.TESTING.MOUSE.PROXY.HIGHLIGHT.RESTORE_DELAY_MS);
   }
 }
 
@@ -138,7 +138,7 @@ export async function moveMouseToLocatorCenter(
   targetLocator: Locator,
   label: string,
 ): Promise<void> {
-  await moveMouseToBoundingBox(page, targetLocator, label, CONST.TESTING.MOUSE_PROXY.CORNER.CENTER);
+  await moveMouseToBoundingBox(page, targetLocator, label, CONST.TESTING.MOUSE.PROXY.CORNER.CENTER);
 }
 
 export async function moveMouseOutsideHoverArea(
@@ -152,7 +152,7 @@ export async function moveMouseOutsideHoverArea(
     await Promise.all(sourceList.map((source) => source.boundingBox()))
   ).filter((box): box is NonNullable<typeof box> => box !== null);
   if (sourceBoxes.length === 0) {
-    throw new Error(CONST.TESTING.MOUSE_PROXY.ERROR_MESSAGES.COULD_NOT_LOCATE_HOVER_REGION);
+    throw new Error(CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_LOCATE_HOVER_REGION);
   }
 
   const sourceBox = {
@@ -174,7 +174,7 @@ export async function moveMouseOutsideHoverArea(
     height: window.innerHeight,
   }));
   const center = { x: viewport.width / 2, y: viewport.height / 2 };
-  const clearance = CONST.TESTING.MOUSE.HOVER_CLEARANCE_PX;
+  const clearance = CONST.TESTING.MOUSE.ROOT.HOVER_CLEARANCE_PX;
   const candidates = [
     { x: sourceBox.x - clearance, y: center.y },
     { x: sourceBox.x + sourceBox.width + clearance, y: center.y },

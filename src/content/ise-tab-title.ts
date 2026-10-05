@@ -1,4 +1,4 @@
-import { SITECORE } from "./sitecore";
+import { SITECORE } from "../constants/sitecore";
 import { isPowerShellIsePath } from "./guard";
 
 export function getPowerShellIseScriptTitle(doc: Document): string | null {

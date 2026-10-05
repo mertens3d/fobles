@@ -1,6 +1,6 @@
 import type { Page } from "@playwright/test";
 import { CONST } from "../CONST";
-import { humanPause } from "./wait-helpers";
+import { pauseForHuman } from "./wait-helpers";
 
 const foregroundPages = new WeakMap<object, Page>();
 
@@ -16,7 +16,7 @@ export async function bringPageToFront(
     await page.bringToFront();
     foregroundPages.set(context, page);
     if (switchedPage) {
-      await humanPause(page, pauseMs);
+      await pauseForHuman(page, pauseMs);
     }
   }
 }

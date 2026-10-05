@@ -75,9 +75,9 @@ export default class StaticTestReporter implements Reporter {
     this.totalTests = suite.allTests().length;
     printStopSafelyWarning();
     this.writeReport({ status: "running" });
-    if (this.autoOpenInBrowser){
+    if (this.autoOpenInBrowser) {
       openInBrowser(this.outputFile);
-    } 
+    }
   }
 
   onStdOut(chunk: string | Buffer): void {
@@ -122,6 +122,13 @@ export default class StaticTestReporter implements Reporter {
         text: attachment.body!.toString("utf8"),
       }));
 
+    console.log("**** Test Ended: ");
+    for (const step of result.steps ?? []) {
+      console.log(`step: ${step.title}`);
+      for (const attachment of step.attachments ?? []) {
+        console.log(`\t attachment: ${attachment.name} - ${attachment.path}`);
+      }
+    }
     const steps = flattenSteps(result.steps ?? []);
     const remainingScreenshots = matchAttachmentsToSteps(
       screenshots,

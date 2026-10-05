@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 import { buildFoblesUrl, createFoblesButton } from "../helper";
 import { applyButtonClasses } from "./apply-button-classes";
 import { assignFoblesItemId } from "./fobles-item-id";

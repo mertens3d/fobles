@@ -3,7 +3,7 @@ export type JumpFlyoutButtonSetting = {
   // Snapshot of the button's label at save time, so raw storage is readable without cross-referencing code.
   label: string;
   enabled: boolean;
-  pathSuffix: string;
+  encodedPathSuffix: string;
 };
 
 export type JumpFlyoutButtonSettings = Record<string, JumpFlyoutButtonSetting>;

@@ -1,11 +1,11 @@
 import { foblesTest } from "../../fixtures/playwright";
 import { expectFoblesContainerDom, expectFoblesContainerVisible } from "../../expect-snippets/expect-snippets";
 import { CONST } from "../../CONST";
-import { createStep } from "../../helpers/fobles-helpers-support/test-step";
+import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import { setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers-support/test-setup";
 import { moveMouseToDefault as moveMouseToDefault } from "../../helpers/mouse-proxy";
 import { dragToolbarToCornerLocation } from "../../macros/fobles-macros";
-import { waitForBrowser, humanPause } from "../../helpers/wait-helpers";
+import { pauseForBrowser, pauseForHuman } from "../../helpers/wait-helpers";
 import { moveMouseTowardCenter } from "../../helpers/mouse-proxy-support/mouse-movement";
 
 const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
@@ -16,10 +16,10 @@ const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].
 foblesTest.describe("positions", () => {
   foblesTest("persisted", async ({ page }, testInfo) => {
     
-    const step = createStep(page, testInfo, page, "Toolbar Drag");
+    const step = createFoblesStep(page, testInfo, page, "Toolbar Drag");
 
     await step("Setup: initial conditions", async () => {
-      await waitForBrowser(page, STEP_WAIT_MS);
+      await pauseForBrowser(page, STEP_WAIT_MS);
       await setupContentEditorForTestingBasic(page);
       await expectFoblesContainerVisible(page);
     });
@@ -31,26 +31,28 @@ foblesTest.describe("positions", () => {
       await moveMouseToDefault(page);
       await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR);
       await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR.corner);
-      await humanPause(page, STEP_WAIT_MS);
+      await pauseForHuman(page, STEP_WAIT_MS);
     });
 
     await step("Drag: toolbar to POSITION_2", async () => {
       await moveMouseTowardCenter(page);
       await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL);
       await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL.corner);
-      await humanPause(page, STEP_WAIT_MS);
+      await pauseForHuman(page, STEP_WAIT_MS);
+    });
 
+    await step("Drag: toolbar to POSITION_3", async () => {
       await moveMouseTowardCenter(page);
       await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR);
       await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR.corner);
-      await humanPause(page, STEP_WAIT_MS);
+      await pauseForHuman(page, STEP_WAIT_MS);
     });
 
     await step("Drag: toolbar to POSITION_DEFAULT", async () => {
       await moveMouseTowardCenter(page);
       await dragToolbarToCornerLocation(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR);
       await expectFoblesContainerDom(page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR.corner);
-      await humanPause(page, STEP_WAIT_MS);
+      await pauseForHuman(page, STEP_WAIT_MS);
     });
   });
 });

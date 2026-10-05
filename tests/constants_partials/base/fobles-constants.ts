@@ -1,4 +1,4 @@
-export const FOBLES = {
+export const _FOBLES_BASE_CONST = {
   ATTRIBUTES: {
     BUTTON: "data-is-fobles-button",
     JUMP_ENTRY_URL: "data-fobles-page-jump-url",
@@ -40,7 +40,7 @@ export const FOBLES = {
     CONFIRM_DIALOG_CONTINUE: ".fobles-confirm-dialog-continue",
     CONFIRM_DIALOG_SETTING: ".fobles-confirm-dialog-setting",
     LBOLT_BUTTON: "[data-fobles-nav-button-role='lbolt']",
-    JUMP_MENU_TRIGGER: "[data-fobles-nav-button-role='jump-flyout-trigger']",
+    JUMP_FLYOUT_TRIGGER: "[data-fobles-nav-button-role='jump-flyout-trigger']",
     PROXY_BUTTONS_TRIGGER: "[data-fobles-nav-button-role='proxy-buttons-trigger']",
     JUMP_FLYOUT: ".fobles-jump-flyout-flyout",
     TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",

@@ -8,27 +8,27 @@ import { bringPageToFront } from "../page-switch";
 import type { StrategyTestContext } from "../../e2e/strategies/support/scenario.types";
 import { attachLocatorScreenshot } from "./screenshots";
 import { buildStepMatchKey } from "./step-match-key";
+import { getScSearchParams, normalizeFoValueForCompare, normalizePath } from "../path-helpers";
 
 // Sitecore's own "fo" query param is either a bare GUID (braces stripped by Fobles'
 // normalizeFoblesValue before building the URL) or a content path (e.g.
 // "/sitecore/system/Modules/Fobles Testing") - callers may still pass a braced GUID (matching how
 // it's usually written in test constants), so strip braces unconditionally; a plain path is
 // unaffected since it never contains any.
-function normalizeFoValueForCompare(value: string): string {
-  return value.replace(/[{}]/g, "").toUpperCase();
-}
+
 
 function assertFoblesTargetUrl(
   actualUrl: string,
   expectedFoValue: string,
 ): void {
   const url = new URL(actualUrl);
-  expect(decodeURIComponent(url.pathname)).toBe(
-    CONST.SITECORE.PATHS.CONTENT_EDITOR_BW.split("?")[0],
+  expect(normalizePath(url.pathname)).toBe(
+    normalizePath(CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED.split("?")[0]),
   );
+  const scSearchParams =  getScSearchParams(url);
   expect(
-    url.searchParams.get("fo")
-      ? normalizeFoValueForCompare(url.searchParams.get("fo")!)
+    scSearchParams.fo
+      ? normalizeFoValueForCompare(scSearchParams.fo)
       : null,
   ).toBe(normalizeFoValueForCompare(expectedFoValue));
 }
@@ -45,7 +45,8 @@ async function attachActualFoValueNote(
   actualUrl: string,
   matchKey: string,
 ): Promise<void> {
-  const actualFo = new URL(actualUrl).searchParams.get("fo") ?? "(none)";
+  const sitecoreSearchParams = getScSearchParams(new URL(actualUrl));
+  const actualFo = sitecoreSearchParams.fo ?? "(none)";
   const safeName = buildStepMatchKey(matchKey);
   await testInfo.attach(`actual-fo-${safeName}.txt`, {
     body: Buffer.from(`actual: fo=${actualFo}`),
@@ -90,7 +91,10 @@ export async function expectFoblesButtonSameTabNavigation(
 
   await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
 
-  await page.waitForURL((url:URL) => url.searchParams.has("fo"));
+  await page.waitForURL((url:URL) => {
+    const scSearchParams = getScSearchParams(url);
+    return scSearchParams.fo !== null;
+  });
   
   await attachActualFoValueNote(
     testInfo,

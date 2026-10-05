@@ -4,7 +4,7 @@ import {
   type JumpFlyoutButtonSetting,
   type JumpFlyoutButtonSettings,
 } from "../../../shared/jump-flyout/button-settings";
-import { FOBLES } from "../../features/augmentor/constants";
+import { FOBLES } from "../../../constants/fobles";
 
 let buttonSettings: JumpFlyoutButtonSettings = {};
 const registeredRows: Array<{ id: string; row: HTMLElement }> = [];

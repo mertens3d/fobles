@@ -1,5 +1,6 @@
 import { CONST } from "../CONST";
 import { expect, type Frame, type Page } from "../fixtures/playwright";
+import { getScSearchParams, normalizeFoValueForCompare, normalizePath } from "../helpers/path-helpers";
 import { findFoblesFrame } from "../helpers/frame-finder";
 
 export async function expectJumpFlyoutFlyoutVisible(foblesFrame: Frame) {
@@ -12,13 +13,20 @@ export async function expectJumpFlyoutFlyoutHidden(foblesFrame: Frame) {
   await expect(jumpFlyout).toHaveAttribute(CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE, "false");
 }
 
+export function expectFoValue(page: Page, expectedFoValue: string) {
+  const scSearchParams = getScSearchParams(new URL(page.url()));
+  const actualFoValue = scSearchParams.fo ?? "";
+  expect(normalizeFoValueForCompare(actualFoValue), `Expected fo value to be ${normalizeFoValueForCompare(expectedFoValue)}`)
+    .toBe(normalizeFoValueForCompare(expectedFoValue));
+}
+
 export function expectCurrentUrlContains(page: Page, path: string) {
-  const actualUrl = page.url();
-  expect(actualUrl, `Expected current URL to contain ${path}`)
-    .toContain(encodeURI(path)
-    );
+  const actualUrl = normalizePath(page.url());
+  const normalizedPath = normalizePath(path);
+  expect(actualUrl, `Expected current URL to contain ${normalizedPath}`)
+    .toContain(normalizedPath);
   console.log(
-    `[fobles] URL assertion: expected to contain ${path}; actual ${actualUrl}`
+    `[fobles] URL assertion: expected to contain ${normalizedPath}; actual ${actualUrl}`
   );
 }
 
