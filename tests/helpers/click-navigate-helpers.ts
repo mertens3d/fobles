@@ -4,7 +4,7 @@ import { CONST } from "../CONST";
 import { clickWithMouseMarker, ensureMouseMarkerExists } from "./mouse-proxy";
 import { getLastTwoPathItems } from "./path-helpers";
 import { dismissFoblesConfirmDialogIfPresent } from "../macros/fobles-macros";
-import { expectCurrentUrlContains as expectCurrentUrlContains } from "../expect-snippets/expect-snippets";
+import { expectCurrentUrlContains as expectCurrentUrlContains, expectFoValue } from "../expect-snippets/expect-snippets";
 import { attachItemPathScreenshot } from "./fobles-helpers-support/navigation-assertions";
 import { pauseForHuman } from "./wait-helpers";
 import { ceRibbonOpenHome } from "../macros/sitecore-macros";
@@ -13,6 +13,7 @@ import type { BrowserContext } from "@playwright/test";
 import { bringPageToFront } from "./page-switch";
 
 import { buildStepMatchKey } from "./fobles-helpers-support/step-match-key";
+import type { ClickNavigationExpect } from "../constants_partials/CONST.Types";
 
 
 // export async function ctrlClickFoblesNavigationButtonStep(page: Page, foblesButton: Locator, expectedUrlContainsPath: string, testInfo: TestInfo, sharedBrowserContext: BrowserContext, step: FoblesStep) {
@@ -35,24 +36,29 @@ import { buildStepMatchKey } from "./fobles-helpers-support/step-match-key";
 //   );
 // }
 
-export async function clickFoblesNavigationButtonStep(page: Page, foblesButton: Locator, expectedUrlContainsPath: string, testInfo: TestInfo) {
+export async function clickFoblesNavigationButtonStep(page: Page, foblesButton: Locator,  testInfo: TestInfo,  clickNavigationExpect: ClickNavigationExpect, label: string) {
 
   await clickWithMouseMarker(
     page,
     foblesButton,
-    getLastTwoPathItems(expectedUrlContainsPath),
+    label,
   );
 
-  await postClickCommon(page, expectedUrlContainsPath, testInfo);
+  await postClickCommon(page,  clickNavigationExpect, testInfo, label);
 }
 
 
-async function postClickCommon(page: Page, expectedUrlContainsPath: string, testInfo: TestInfo) {
+async function postClickCommon(page: Page, clickNavigationExpect: ClickNavigationExpect, testInfo: TestInfo, label: string) {
   await dismissFoblesConfirmDialogIfPresent(page);
   await ensureMouseMarkerExists(page);
 
-  this needs to allow for fo and path paths
-  expectCurrentUrlContains(page, expectedUrlContainsPath);
+  if(clickNavigationExpect?.foValue){
+    expectFoValue(page, clickNavigationExpect.foValue);
+  }
+  if(clickNavigationExpect?.url){
+    
+    expectCurrentUrlContains(page, clickNavigationExpect.url);
+  }
 
   // waitForURL only confirms the URL changed, not that the new page has actually
   // painted - without this, the step's auto screenshot can capture a stale composited
@@ -63,7 +69,7 @@ async function postClickCommon(page: Page, expectedUrlContainsPath: string, test
   // normalize to Home before the screenshot so it's consistent regardless.
   if (isContentEditor(page)) {
     await ceRibbonOpenHome(page);
-    await attachItemPathScreenshot(page, testInfo, expectedUrlContainsPath);
+    await attachItemPathScreenshot(page, testInfo, label);
   }
 
   await pauseForHuman(page, CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
@@ -87,7 +93,7 @@ export async function ctrlClickFoblesNavigationButton(page: Page, foblesButton: 
     CONST.TESTING.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
   await bringPageToFront(newTab, newTabHoldMs);
 
-  await postClickCommon(newTab, expectedUrlContainsPath, testInfo);
+  await postClickCommon(newTab, { url: expectedUrlContainsPath }, testInfo, `Ctrl-click jump ${getLastTwoPathItems(expectedUrlContainsPath)}`);
 
   const safeFileName = `step-${buildStepMatchKey(fullTitle)}.png`;
   await attachPageScreenshot(testInfo, newTab, safeFileName);

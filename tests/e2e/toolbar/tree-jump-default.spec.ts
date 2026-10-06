@@ -15,69 +15,59 @@ import { findFoblesFrame } from "../../helpers/frame-finder";
 import {
   ClickFoblesJumpButton,
 } from "../../macros/fobles-macros";
-import {
-  expectCurrentUrlContains,
-  expectFoValue,
-} from "../../expect-snippets/expect-snippets";
+import { expectFoValue, } from "../../expect-snippets/expect-snippets";
 import type { BrowserContext, Locator } from "@playwright/test";
 import { getJumpFlyoutButton } from "../../helpers/scrolling-helpers";
 import { clickFoblesNavigationButtonStep } from "../../helpers/click-navigate-helpers";
+import type { TreeJumpDefinition } from "../../constants_partials/CONST.Types";
+import { getTreeJumpFlyoutButton } from "../../helpers/element-finders";
 
-foblesTest.describe("Fobles browser integration", () => {
-  foblesTest("tree jump buttons navigate in the current tab", async ({
-    page, sharedBrowserContext
-  }, testInfo) => {
-    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
-    await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-    let foblesFrame = await findFoblesFrame(page);
+foblesTest.describe("PageNavigation", () => {
 
-    await ClickFoblesJumpButton(page);
+  for (const treeJumpTarget of CONST.TESTING.TREE_JUMP_TARGETS) {
 
-    const paths = await getExpectedButtonPaths(foblesFrame);
+    foblesTest(`${treeJumpTarget.label}-Click`, async ({
+      page, sharedBrowserContext
+    }, testInfo) => {
+      foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
 
-    const step = createFoblesStep(page, testInfo, page, "Tree Jump Click");
 
-    for (let index = 0; index < paths.length; index += 1) {
-      foblesFrame = await testOneClick(
-        paths,
-        index,
+      const step = createFoblesStep(page, testInfo, page, "Tree Jump Click");
+
+      await testOneClick(
+        treeJumpTarget,
         step,
-        foblesFrame,
         page,
         testInfo,
         sharedBrowserContext,
       );
-    }
-  });
+      // }
+    });
+  }
+  for (const treeJumpTarget of CONST.TESTING.TREE_JUMP_TARGETS) {
+    foblesTest(`${treeJumpTarget.label}-CtrlClick`, async ({
+      sharedBrowserContext,
+      page,
+    }, testInfo) => {
+      foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      const foblesFrame = await findFoblesFrame(page);
 
-  foblesTest("tree jump buttons open their target URL in a new tab with Ctrl+Click", async ({
-    sharedBrowserContext,
-    page,
-  }, testInfo) => {
-    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
-    await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-    const foblesFrame = await findFoblesFrame(page);
+      await ClickFoblesJumpButton(page);
+      const paths = await getExpectedButtonPaths(foblesFrame);
+      await ClickFoblesJumpButton(page, false);
 
-    await ClickFoblesJumpButton(page);
-    const paths = await getExpectedButtonPaths(foblesFrame);
-    await ClickFoblesJumpButton(page, false);
+      const step = createFoblesStep(page, testInfo, page, "Ctrl+Click Jump");
 
-    const step = createFoblesStep(page, testInfo, page, "Ctrl+Click Jump");
-
-    for (let index = 0; index < paths.length; index += 1) {
       await TestOneCtrlClick(
-        paths,
-        index,
+        treeJumpTarget,
         step,
-        foblesFrame,
         sharedBrowserContext,
         page,
-        testInfo,
-      );
-      //await clickWithMouseMarker(page, jumpFlyoutButton, "Ctrl-click jump flyout");
-      //await expectFlyoutVisible(foblesFrame);
-    }
-  });
+        testInfo);
+    });
+  }
 });
 
 async function getExpectedButtonPaths(foblesFrame: Frame): Promise<string[]> {
@@ -107,88 +97,83 @@ async function getExpectedButtonPaths(foblesFrame: Frame): Promise<string[]> {
 }
 
 async function testOneClick(
-  paths: string[],
-  index: number,
+  treeJumpTarget: TreeJumpDefinition,
   step: (
     title: string,
     body: (fullTitle: string) => Promise<void>,
     options?: { timeout?: number; screenshot?: boolean },
   ) => Promise<void>,
-  foblesFrame: Frame,
   page: Page,
   testInfo: TestInfo,
   sharedBrowserContext: BrowserContext,
 ) {
-  const path = paths[index];
+  
   await step(
-    `Click: navigates to "${path}"`,
+    `Click: navigates to "${treeJumpTarget.clickNavigationExpect.foValue}"`,
     async () => {
-      if (index > 0) {
-        await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-        foblesFrame = await findFoblesFrame(page);
-        await ClickFoblesJumpButton(page);
+
+      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      await ClickFoblesJumpButton(page);
+      let foblesTreeButton: Locator | undefined;
+      if (treeJumpTarget.clickNavigationExpect?.foValue) {
+        foblesTreeButton = await getTreeJumpFlyoutButton(page, treeJumpTarget.clickNavigationExpect.foValue);
+        await clickFoblesNavigationButtonStep(page, foblesTreeButton, testInfo, treeJumpTarget.clickNavigationExpect, "TODOAAA");
+      } else {
+        throw new Error(`Expected foValue not found for tree jump target: ${treeJumpTarget.label}`);
       }
-
-      const flyoutButton: Locator = await getJumpFlyoutButton(
-        foblesFrame,
-        index,
-      );
-
-      await clickFoblesNavigationButtonStep(page, flyoutButton, path, testInfo);
-
     },
     { screenshot: false },
   );
-  return foblesFrame;
 }
 
 async function TestOneCtrlClick(
-  paths: string[],
-  index: number,
+  treeJumpTarget: TreeJumpDefinition,
   step: (
     title: string,
     body: (fullTitle: string) => Promise<void>,
     options?: { timeout?: number; screenshot?: boolean },
   ) => Promise<void>,
-  foblesFrame: Frame,
   sharedBrowserContext: BrowserContext,
   page: Page,
   testInfo: TestInfo,
 ) {
-  const path = paths[index];
+  const path = treeJumpTarget.clickNavigationExpect.foValue;
   await step(
     `Ctrl+Click: opens "${path}" in a new tab`,
     async () => {
       await ClickFoblesJumpButton(page);
 
+      let foblesTreeButton: Locator | undefined;
 
-      const foblesTreeButton = await getJumpFlyoutButton(
-        foblesFrame,
-        index,
-      );
+      if (treeJumpTarget.clickNavigationExpect?.foValue) {
+        foblesTreeButton = await getTreeJumpFlyoutButton(page, treeJumpTarget.clickNavigationExpect.foValue);
 
-      const newTabPromise = sharedBrowserContext.waitForEvent("page");
-      await clickWithMouseMarker(
-        page,
-        foblesTreeButton,
-        `Ctrl-click jump ${index + 1}`,
-        {
-          modifiers: ["Control"],
-        },
-      );
-      const newTab = await newTabPromise;
-      await newTab.waitForLoadState("domcontentloaded").catch(() => undefined);
+        const newTabPromise = sharedBrowserContext.waitForEvent("page");
+        await clickWithMouseMarker(
+          page,
+          foblesTreeButton,
+          `Ctrl-click jump ${treeJumpTarget.label}`,
+          {
+            modifiers: ["Control"],
+          },
+        );
+        const newTab = await newTabPromise;
+        await newTab.waitForLoadState("domcontentloaded").catch(() => undefined);
 
-      expectFoValue(newTab, path);
+        expectFoValue(newTab, treeJumpTarget.clickNavigationExpect.foValue);
 
-      const newTabHoldMs =
-        CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
-        CONST.TESTING.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
+        const newTabHoldMs =
+          CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
+          CONST.TESTING.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
 
-      await attachItemPathScreenshot(newTab, testInfo, path);
-      await bringPageToFront(newTab, newTabHoldMs);
-      await bringPageToFront(page);
-      await newTab.close();
+        await attachItemPathScreenshot(newTab, testInfo, treeJumpTarget.clickNavigationExpect.foValue);
+        await bringPageToFront(newTab, newTabHoldMs);
+        await bringPageToFront(page);
+        await newTab.close();
+      } else {
+        // Handle the case where the expected foValue is not found
+        throw new Error(`Expected foValue not found for tree jump target: ${treeJumpTarget.label}`);
+      }
     },
     { screenshot: false },
   );

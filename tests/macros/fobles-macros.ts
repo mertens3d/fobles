@@ -11,7 +11,6 @@ import {
 import type { CornerPosition, MouseCoordinates } from "../helpers/mouse-proxy.types";
 import { findFoblesFrame, findFrameWithSelector } from "../helpers/frame-finder";
 import { walkFrameDocuments } from "../helpers/frame-helpers";
-import { showBillboard } from "../helpers/billboard";
 import { expectJumpFlyoutFlyoutHidden, expectJumpFlyoutFlyoutVisible } from "../expect-snippets/expect-snippets";
 import { pauseForBrowser } from "../helpers/wait-helpers";
 import { isFoblesPage } from "../helpers/page-helpers";
@@ -45,25 +44,6 @@ export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<vo
 
     // ClickFoblesJumpButton already waits for the flyout to become visible.
     await ClickFoblesJumpButton(page);
-}
-
-
-// Clicks the nth "other jump flyout button" (a plain external-URL jump-flyout entry - CONST.FOBLES.LOCATORS.MENU_URL,
-// distinct from a tree-jump button, which targets a Sitecore item path) and dismisses Fobles' own
-// confirm dialog afterward. Opens the jump flyout itself first (idempotent, see openJumpFlyout)
-// rather than requiring the caller to resolve a frame/open the jump flyout beforehand.
-export async function getClickJumpFlyoutUrlButton(page: Page, pageJumpUrl: string): Promise<Locator> {
-    console.log(`[Macro: clickJumpFlyoutUrlButton] - Start (pageJumpUrl: ${pageJumpUrl})`);
-    const foblesFrame = await findFoblesFrame(page);
-    await openJumpFlyout(page, foblesFrame);
-    //const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.LOCATORS.DATA_PAGE_JUMP_URL).nth(index);
-
-    const jumpFlyoutButton = foblesFrame.locator(`[data-fobles-page-jump-url="${pageJumpUrl}"]`);
-
-    await jumpFlyoutButton.waitFor({ state: "visible" });
-    return jumpFlyoutButton;
-    // await clickWithMouseMarker(page, jumpFlyoutButton, `Menu ${label}`);
-    // await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
 }
 
 

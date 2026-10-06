@@ -51,7 +51,7 @@ export const _TESTING_MOUSE = {
       CORNER: {
         CENTER: "center",
         TOP_LEFT: "top-left",
-      },
+      } as const,
       DEFAULT_LABELS: {
         CENTER_OF_MONITOR: "center of monitor",
         MOUSE_TO_DEFAULT: "Mouse to default",
