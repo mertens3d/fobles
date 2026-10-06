@@ -1,4 +1,5 @@
 import path from "node:path";
+import stripAnsi from "strip-ansi";
 
 export function formatStatus(status: string): string {
   return status === "timedOut"
@@ -13,18 +14,15 @@ export function formatDuration(milliseconds: number): string {
 
 export function escapeHtml(value: unknown): string {
   return String(value)
-    .replaceAll("&", "&amp;")
-    .replaceAll("<", "&lt;")
-    .replaceAll(">", "&gt;")
-    .replaceAll('"', "&quot;")
-    .replaceAll("'", "&#39;");
+    .replace(/&/g, "&amp;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;")
+    .replace(/"/g, "&quot;")
+    .replace(/'/g, "&#39;");
 }
 
-export function stripAnsi(value: unknown): string {
-  return String(value).replace(
-    /[\u001B\u009B][[\]()#;?]*(?:(?:(?:[a-zA-Z\d]*(?:;[-a-zA-Z\d\/#&.:=?%@~_]+)*)?\u0007)|(?:(?:\d{1,4}(?:;\d{0,4})*)?[\dA-PR-TZcf-nq-uy=><~]))/g,
-    "",
-  );
+export function stripAnsiSafe(value: unknown): string {
+  return stripAnsi(String(value));
 }
 
 export function toReportRelativeHref(

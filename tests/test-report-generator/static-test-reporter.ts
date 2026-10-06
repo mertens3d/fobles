@@ -1,6 +1,5 @@
 import fs from "node:fs";
 import path from "node:path";
-import { fileURLToPath } from "node:url";
 import type {
   FullConfig,
   FullResult,
@@ -10,7 +9,7 @@ import type {
   TestResult,
 } from "@playwright/test/reporter";
 import { matchAttachmentsToSteps } from "./reporter/attachment-matching";
-import { openInBrowser, printStopSafelyWarning } from "./reporter/browser-utils";
+import { printStopSafelyWarning } from "./reporter/browser-utils";
 import { renderReport } from "./reporter/report-renderer";
 import type {
   CurrentFullResult,
@@ -20,7 +19,7 @@ import type {
   ScreenshotInfo,
   ReportResult,
 } from "./reporter/reporter-types";
-import { stripAnsi, toReportRelativeHref } from "./reporter/report-utils";
+import { stripAnsiSafe, toReportRelativeHref } from "./reporter/report-utils";
 
 function flattenSteps(steps: TestResult["steps"]): ReportStep[] {
   return steps.flatMap((step) => {
@@ -32,7 +31,7 @@ function flattenSteps(steps: TestResult["steps"]): ReportStep[] {
         title: step.title,
         status: step.error ? "failed" : "passed",
         duration: step.duration ?? 0,
-        error: stripAnsi(step.error?.message ?? ""),
+        error: stripAnsiSafe(step.error?.message ?? ""),
       },
       ...nested,
     ];
@@ -44,7 +43,7 @@ export default class StaticTestReporter implements Reporter {
   private readonly autoOpenInBrowser: boolean;
   private readonly startedAt: Date;
   private readonly resultsByFolder: Map<string, ReportResult[]>;
-  private readonly css: string;
+  // private readonly css: string;
   private loginAlertUrl: string | null;
   private lastFullResult: CurrentFullResult;
   private totalTests: number;
@@ -67,8 +66,8 @@ export default class StaticTestReporter implements Reporter {
     this.lastFullResult = { status: "running" };
     this.totalTests = 0;
 
-    const cssPath = fileURLToPath(new URL("./reporter/report.css", import.meta.url));
-    this.css = fs.readFileSync(cssPath, "utf8");
+    // const cssPath = fileURLToPath(new URL("./reporter/report.css", import.meta.url));
+    // this.css = fs.readFileSync(cssPath, "utf8");
   }
 
   onBegin(_config: FullConfig, suite: Suite): void {
@@ -76,7 +75,7 @@ export default class StaticTestReporter implements Reporter {
     printStopSafelyWarning();
     this.writeReport({ status: "running" });
     if (this.autoOpenInBrowser) {
-      openInBrowser(this.outputFile);
+      // openInBrowser(this.outputFile);
     }
   }
 
@@ -150,7 +149,7 @@ export default class StaticTestReporter implements Reporter {
       titlePath: test.titlePath(),
       status: result.status,
       duration: result.duration,
-      error: stripAnsi(result.error?.message ?? ""),
+      error: stripAnsiSafe(result.error?.message ?? ""),
       steps,
       screenshots: remainingScreenshots,
       notes: remainingNotes,
@@ -181,13 +180,14 @@ export default class StaticTestReporter implements Reporter {
 
     const liveHtml = renderReport({
       outputFile: this.outputFile,
-      css: this.css,
       fullResult,
       results: allResults,
       startedAt: this.startedAt,
       totalTests: this.totalTests,
       loginAlertUrl: this.loginAlertUrl,
     });
+
+    copyAssets(this.outputFile);
 
     fs.writeFileSync(
       this.outputFile,
@@ -203,7 +203,6 @@ export default class StaticTestReporter implements Reporter {
 
       const html = renderReport({
         outputFile: folderOutputFile,
-        css: this.css,
         fullResult,
         results,
         startedAt: this.startedAt,
@@ -227,4 +226,21 @@ function getFolderName(test: TestCase): string {
   const match = file.match(/\/e2e\/([^/]+)\//);
 
   return match?.[1] ?? "misc";
+}
+
+
+
+
+function copyAssets(outputPath: string): void {
+  const reportDir = path.dirname(outputPath);
+
+  const srcDir = path.resolve(
+    process.cwd(),
+    "tests",
+    "test-report-generator",
+    "assets",
+  );
+  const destDir = path.join(reportDir, "assets");
+
+  fs.cpSync(srcDir, destDir, { recursive: true });
 }

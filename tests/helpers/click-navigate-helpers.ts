@@ -51,6 +51,7 @@ async function postClickCommon(page: Page, expectedUrlContainsPath: string, test
   await dismissFoblesConfirmDialogIfPresent(page);
   await ensureMouseMarkerExists(page);
 
+  this needs to allow for fo and path paths
   expectCurrentUrlContains(page, expectedUrlContainsPath);
 
   // waitForURL only confirms the URL changed, not that the new page has actually

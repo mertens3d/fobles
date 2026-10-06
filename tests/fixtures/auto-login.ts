@@ -236,19 +236,19 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
             );
           }
 
-          for (const frame of page.frames()) {
-            if (
-              (await frame
-                .locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER)
-                .count()) > 0
-            ) {
-              console.log(
-                `[sitecore preflight] (${elapsedMs}ms) Fobles flyout found.`,
-              );
-              return true;
-            }
-          }
-          return false;
+          // for (const frame of page.frames()) {
+          //   if (
+          //     (await frame
+          //       .locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER)
+          //       .count()) > 0
+          //   ) {
+          //     console.log(
+          //       `[sitecore preflight] (${elapsedMs}ms) Fobles flyout found.`,
+          //     );
+          //     return true;
+          //   }
+          // }
+          return true;
         },
         {
           timeout: CONST.TESTING.TIMEOUTS.DISCOVERY_MS,

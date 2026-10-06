@@ -2,11 +2,10 @@ import type { CurrentFullResult, ReportResult, ReportStep, ScreenshotInfo } from
 import { escapeHtml, formatDuration, formatStatus, toDisplayUrl } from "./report-utils";
 import { renderNotes, renderScreenshotLinks } from "./screenshot-rendering";
 import { renderSuiteNav } from "./suite-navigation";
-import { refreshScriptRunning, REPORT_CLIENT_SCRIPT } from "./client-script";
+import { refreshScriptRunning } from "./client-script";
 
 export type RenderReportInput = {
   outputFile: string;
-  css: string;
   fullResult: CurrentFullResult;
   results: ReportResult[];
   startedAt: Date;
@@ -136,7 +135,7 @@ export function renderReport(input: RenderReportInput): string {
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Playwright Test Report</title>
-  <style>${input.css}</style>
+  <link rel="stylesheet" href="assets/report.css"></link>
   </head>`;
 
   return `<!doctype html>
@@ -149,6 +148,7 @@ export function renderReport(input: RenderReportInput): string {
     <header class="report-header">
       <h1>Browser Test Report</h1>
       <span class="meta-inline">${runningText}${escapeHtml(timestamp)} · ${escapeHtml(formatDuration(duration))}${statusText}${refreshText}</span>
+      
     </header>
     <section class="summary">
       <div class="summary-card${failedCount === 0 && (counts.passed ?? 0) > 0 ? " success" : ""}"><strong>${counts.passed ?? 0}</strong>Checks passed</div>
@@ -156,17 +156,18 @@ export function renderReport(input: RenderReportInput): string {
       <div class="summary-card"><strong>${counts.skipped ?? 0}</strong>Checks skipped</div>
       <div class="summary-card"><strong>${checks.length}</strong>Checks total</div>
     </section>
+    <div class="table-container">
     <table>
-      <thead><tr><th class="test-step-col">Test step</th><th class="result-col">Result</th><th class="details-col">Details</th></tr></thead>
-      <tbody>${rows}</tbody>
+    <thead><tr><th class="test-step-col">Test step</th><th class="result-col">Result</th><th class="details-col">Details</th></tr></thead>
+    <tbody>${rows}</tbody>
     </table>
+    </div>
   </main>
   <div class="screenshot-modal-backdrop" id="screenshot-modal-backdrop">
     <button type="button" class="screenshot-modal-close" id="screenshot-modal-close" aria-label="Close">&times;</button>
     <img id="screenshot-modal-img" alt="">
   </div>
-  ${REPORT_CLIENT_SCRIPT}
-  ${refreshScript}
+  <script src="assets/scripts.js"></script>
 </body>
 </html>`;
 }

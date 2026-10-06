@@ -2,7 +2,7 @@
 import { CONST } from "../../CONST";
 import { openContentEditor } from "../../fixtures/sitecore";
 import { getClickJumpFlyoutUrlButton } from "../../macros/fobles-macros";
-import { foblesTest, type Locator, type Page, type TestInfo } from "../../fixtures/playwright";
+import { foblesTest, type Locator} from "../../fixtures/playwright";
 import { clickFoblesNavigationButtonStep, ctrlClickFoblesNavigationButton } from "../../helpers/click-navigate-helpers";
 import { getLastTwoPathItems, isAIPage } from "../../helpers/path-helpers";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";

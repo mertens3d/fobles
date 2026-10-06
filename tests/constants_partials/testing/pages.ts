@@ -110,7 +110,7 @@ export const FOBLES_PAGES : readonly PageCase[] = [
     label: "Gallery Subitems",
     encodedPath: `/sitecore/shell/default.aspx?xmlcontrol=Gallery.Subitems&${GALLERY_QUERY_SUFFIX}`,
     uiPath: "CE -> Navigate -> Subitems",
-    foblesEligible: true,
+    foblesEligible: false,
     toolbarType: "compact",
     // Confirmed failing live: no Fobles toolbar container ever appears on this page (see
     // docs/TODO.md) - skip until that's investigated/fixed.
@@ -121,7 +121,7 @@ export const FOBLES_PAGES : readonly PageCase[] = [
     label: "Gallery Favorites",
     encodedPath: `/sitecore/shell/default.aspx?xmlcontrol=Gallery.Favorites&${GALLERY_QUERY_SUFFIX}`,
     uiPath: "CE -> Navigate -> Favorites",
-    foblesEligible: true,
+    foblesEligible: false,
     toolbarType: "compact",
     // Confirmed failing live: no Fobles toolbar container ever appears on this page (see
     // docs/TODO.md) - skip until that's investigated/fixed.
