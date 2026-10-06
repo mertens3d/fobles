@@ -66,7 +66,7 @@ export default defineConfig({
         [
           path.resolve(
             process.cwd(),
-            "tools/scripts/test/static-test-reporter.ts",
+            "tests/test-report-generator/static-test-reporter.ts",
           ),
           {
             outputFile: path.join(testArtifactsDir, "reports", reportFileName),
