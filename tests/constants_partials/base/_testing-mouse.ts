@@ -17,7 +17,7 @@ export const _TESTING_MOUSE = {
       ENDPOINT_RADIUS: "8",
       SVG_NAMESPACE: "http://www.w3.org/2000/svg",
       STROKE_WIDTH: "2",
-      OPACITY: "0.8",
+      OPACITY: 0.8,
       TAGS: {
         CIRCLE: "circle",
         LINE: "line",

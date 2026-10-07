@@ -2,7 +2,6 @@ import type { FullResult, TestResult } from "@playwright/test/reporter";
 
 export type ReporterOptions = {
   outputFile?: string;
-  autoOpenInBrowser?: boolean;
 };
 
 export type ReportStatus = TestResult["status"] | FullResult["status"] | "running";

@@ -40,7 +40,6 @@ function flattenSteps(steps: TestResult["steps"]): ReportStep[] {
 
 export default class StaticTestReporter implements Reporter {
   private readonly outputFile: string;
-  private readonly autoOpenInBrowser: boolean;
   private readonly startedAt: Date;
   private readonly resultsByFolder: Map<string, ReportResult[]>;
   // private readonly css: string;
@@ -59,7 +58,6 @@ export default class StaticTestReporter implements Reporter {
         "test-report.html",
       ),
     );
-    this.autoOpenInBrowser = options.autoOpenInBrowser ?? true;
     this.startedAt = new Date();
     this.resultsByFolder = new Map();
     this.loginAlertUrl = null;
@@ -74,9 +72,6 @@ export default class StaticTestReporter implements Reporter {
     this.totalTests = suite.allTests().length;
     printStopSafelyWarning();
     this.writeReport({ status: "running" });
-    if (this.autoOpenInBrowser) {
-      // openInBrowser(this.outputFile);
-    }
   }
 
   onStdOut(chunk: string | Buffer): void {

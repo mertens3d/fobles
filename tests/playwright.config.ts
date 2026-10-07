@@ -70,9 +70,6 @@ export default defineConfig({
           ),
           {
             outputFile: path.join(testArtifactsDir, "reports", reportFileName),
-            // A browser tab popping up mid-recording is disruptive to a promoVideo session -
-            // every other suite keeps the normal auto-open behavior.
-            autoOpenInBrowser: reportSuiteName !== "promo-video",
           },
         ],
       ],

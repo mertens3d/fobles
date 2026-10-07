@@ -1,6 +1,5 @@
 import { type Locator, type Page } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
-import { pulseMouseMarkerClick } from "./mouse-marker";
 import { moveMouseToPosition } from "./mouse-movement";
 import type { MouseCoordinates } from "../mouse-proxy.types";
 import type { HighlightStyle } from "../../constants_partials/CONST.Types";

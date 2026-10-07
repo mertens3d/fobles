@@ -29,18 +29,18 @@ foblesTest.describe("Tree Navigation", () => {
             let jumpFlyoutButton: Locator | undefined;
 
             await step(
-                `Ctrl+Click "${pageJumpTarget.clickNavigationExpect.foValue}"`,
+                `Ctrl+Click "${pageJumpTarget.clickNavigationExpect.url}"`,
 
                 async (fullTitle) => {
-                    if (pageJumpTarget.clickNavigationExpect?.foValue) {
+                    if (pageJumpTarget.clickNavigationExpect?.url) {
                         await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-                        jumpFlyoutButton = await getPageJumpFlyoutButton(page, pageJumpTarget.clickNavigationExpect.foValue);
-                        await attachLocatorScreenshot(testInfo, jumpFlyoutButton, `fobles-navigation-button-${getLastTwoPathItems(pageJumpTarget.clickNavigationExpect.foValue)}.png`);
+                        jumpFlyoutButton = await getPageJumpFlyoutButton(page, pageJumpTarget.clickNavigationExpect.url);
+                        await attachLocatorScreenshot(testInfo, jumpFlyoutButton, `fobles-navigation-button-${getLastTwoPathItems(pageJumpTarget.clickNavigationExpect.url)}.png`);
                         if (jumpFlyoutButton) {
-                            await ctrlClickFoblesNavigationButton(page, jumpFlyoutButton, pageJumpTarget.clickNavigationExpect.foValue, testInfo, sharedBrowserContext, fullTitle);
+                            await ctrlClickFoblesNavigationButton(page, jumpFlyoutButton, pageJumpTarget.clickNavigationExpect.url, testInfo, sharedBrowserContext, fullTitle);
                         }
                     } else {
-                        throw new Error(`Expected foValue not found for page jump target: ${pageJumpTarget.label}`);
+                        throw new Error(`Expected url not found for page jump target: ${pageJumpTarget.label}`);
                     }
                 },
                 {
@@ -50,18 +50,18 @@ foblesTest.describe("Tree Navigation", () => {
             );
 
             await step(
-                `Click"${pageJumpTarget.clickNavigationExpect.foValue}"`,
+                `Click"${pageJumpTarget.clickNavigationExpect.url}"`,
                 async () => {
-                    if (pageJumpTarget.clickNavigationExpect.foValue) {
+                    if (pageJumpTarget.clickNavigationExpect.url) {
 
                         await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-                        jumpFlyoutButton = await getPageJumpFlyoutButton(page, pageJumpTarget.clickNavigationExpect.foValue);
-                        await attachLocatorScreenshot(testInfo, jumpFlyoutButton, `fobles-navigation-button-${getLastTwoPathItems(pageJumpTarget.clickNavigationExpect.foValue)}.png`);
+                        jumpFlyoutButton = await getPageJumpFlyoutButton(page, pageJumpTarget.clickNavigationExpect.url);
+                        await attachLocatorScreenshot(testInfo, jumpFlyoutButton, `fobles-navigation-button-${getLastTwoPathItems(pageJumpTarget.clickNavigationExpect.url)}.png`);
                         if (jumpFlyoutButton) {
                             await clickFoblesNavigationButtonStep(page, jumpFlyoutButton, testInfo, pageJumpTarget.clickNavigationExpect, pageJumpTarget.label);
                         }
                     } else {
-                        throw new Error(`Expected foValue not found for page jump target: ${pageJumpTarget.label}`);
+                        throw new Error(`Expected url not found for page jump target: ${pageJumpTarget.label}`);
                     }
                 },
                 {

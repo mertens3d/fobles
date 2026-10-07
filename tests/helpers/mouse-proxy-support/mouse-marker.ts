@@ -15,8 +15,6 @@ const isHtmlPage = await page.evaluate(
 );
 
   if (!isSprintMode() && isHtmlPage) {
-
-
     if (!hasLastKnownMousePosition()) {
       const viewport = await page.evaluate(() => ({
         width: window.innerWidth,

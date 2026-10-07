@@ -1,5 +1,5 @@
 import type { TestSpeed } from "./test-speed.types";
-export const SELECTED_SPEED: TestSpeed = "SPRINT";
+export const SELECTED_SPEED: TestSpeed = "WALK";
 export const RECORD_VIDEO = true;
 // Report screenshots (createStep's auto-capture, attachLocatorScreenshot/attachPageScreenshot)
 // cost real time (mask/blur detection, encoding, disk writes) on every step - turn off when a run
