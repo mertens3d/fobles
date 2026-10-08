@@ -105,8 +105,10 @@
 
 .fobles-toolbar-graph-icon {
   display: block;
-  width: calc(100% - 8px);
-  height: calc(100% - 8px);
+  // Sized off the button's height (not 100% width) since the button is now wider than it is
+  // tall - a percentage of both would stretch the icon out of its own aspect ratio.
+  width: calc(#{$fobles-toolbar-control-size} - 8px);
+  height: calc(#{$fobles-toolbar-control-size} - 8px);
 }
 
 .fobles-toolbar-grip {
@@ -353,8 +355,8 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: $fobles-lbolt-button-width;
-  min-width: $fobles-lbolt-button-width;
+  width: $fobles-toolbar-button-width;
+  min-width: $fobles-toolbar-button-width;
   height: $fobles-toolbar-control-size;
   min-height: $fobles-toolbar-control-size;
   padding: 0;
@@ -381,11 +383,21 @@
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: $fobles-toolbar-control-size;
-  min-width: $fobles-toolbar-control-size;
+  width: $fobles-toolbar-button-width;
+  min-width: $fobles-toolbar-button-width;
   height: $fobles-toolbar-control-size;
   min-height: $fobles-toolbar-control-size;
   padding: 0;
+}
+
+// Jump/View's actual <button> isn't a direct child of the toolbar body (it's wrapped one level
+// in by createFlyoutTrigger) - scoped to these trigger wrappers specifically so this doesn't
+// also widen unrelated .fobles-nav-button reuses (e.g. the compact Standard Fields/Raw Values
+// toggle rows inside the View dropdown panel itself).
+.fobles-jump-flyout-trigger > .fobles-nav-button,
+.fobles-proxy-buttons-trigger > .fobles-nav-button {
+  width: $fobles-toolbar-button-width;
+  min-width: $fobles-toolbar-button-width;
 }
 
 .fobles-proxy-button {

@@ -55,6 +55,17 @@ the `.scContentControl` input's value inside the same marker - same label-prefix
   Each is also enriched with its `template` (Quick Info "Template:" row) for the hover tooltip.
 - The shared Renderings field's `<d l="{guid}">` attribute (the device's actual Layout item
   reference) is parsed too and resolved the same way as a rendering (`sharedLayoutName`/Link).
+- `parentName`/`parentLink` - no fetch, just the current item's own path minus its last segment
+  (`buildFoblesUrl` accepts a path as well as a guid).
+- `childItems` - `src/content/macros/tree-expand-macro.ts` (new "macros" folder, per the pattern
+  started for ribbon toggles): finds the item's own tree node by its glyph id, expands it if
+  collapsed (polls briefly for Sitecore's postback, no-ops harmlessly on a fetched/static
+  document), reads direct children from the trailing `<div>` after its `Tree_Node_` anchor, then
+  collapses it back if it had to expand it.
+- `referrers` - fetches `default.aspx?xmlcontrol=Gallery.Links&id=...` directly (no ribbon
+  clicking) and parses `#Links a.scLink` the same way `editor-strategies/reference-links.ts`
+  already does for the Content Editor's own inline Links section (`extractGuid` on `onclick`,
+  `textContent` for the label - same markup, same extraction, just not its DOM-mutation half).
 - `src/content/features/jump-flyout/rendering-graph-modal.ts` - renders the result as a
   [cytoscape](https://js.cytoscape.org/) graph in a `<dialog>` injected into the active Content
   Editor page (not a new tab/page - simpler, no new build entry or manifest changes needed).
@@ -68,8 +79,9 @@ the `.scContentControl` input's value inside the same marker - same label-prefix
   one generic `appendSatellites` helper (kind + value + optional link), so adding another
   referenced-data kind later is just one more list entry, not a bespoke if-block. No nested
   placeholder/parent edges between controls yet (see Known limitations). Every node's label is
-  prefixed with its kind (DEVICE/ITEM/CONTROL/DATASOURCE/VARIANT/TEMPLATE/LAYOUT); the three
-  structural wrapper nodes (Default/Shared Layout/Final Layout) just get a plain label.
+  prefixed with its kind (DEVICE/ITEM/CONTROL/DATASOURCE/VARIANT/TEMPLATE/LAYOUT/PARENT/CHILD/
+  REFERRER); the three structural wrapper nodes (Default/Shared Layout/Final Layout) just get a
+  plain label.
   Node label is just the name; hovering shows name/GUID/path/template via
   [cytoscape-popper](https://github.com/cytoscape/cytoscape.js-popper) + [tippy.js](https://atomiks.github.io/tippyjs/)
   (one tippy instance per node, created lazily on first hover). Tapping a node opens its `link`
@@ -94,10 +106,33 @@ the `.scContentControl` input's value inside the same marker - same label-prefix
   - already used by the Standard Fields/Raw Values proxy buttons; now also the basis for
     `src/content/macros/ribbon-toggle-macro.ts`.
 
+## Filters, field-link strategies, extra layouts (post-POC-v2)
+
+- Persisted show/hide checkboxes (`src/shared/rendering-graph-settings.ts`'s
+  `RenderingGraphFilters`) for Template/Parent/Children/Layout/Referrers/Sections - each maps to
+  a cytoscape class applied in `buildElements`, toggled via `style("display", ...)` rather than
+  rebuilding the graph (hiding a node also hides its edges for free). Re-applied after every
+  re-root since freshly-added elements default back to visible.
+- Field labels strip the Content Editor's own `[shared]` / `[shared, standard value]` admin
+  suffix (`.scEditorFieldLabelAdministrator`) before becoming a node label/tooltip.
+- `breadthfirst` (`directed: true, circle: true`) added back as a selectable layout alongside
+  dagre/cose-bilkent/fcose - rejected earlier for the *default* (edge crossings), still useful as
+  an option.
+- `src/content/features/jump-flyout/rendering-graph-field-links.ts` - a field-strategy-keyed
+  resolver (mirrors `src/constants/_config.ts`'s per-strategy `FoblesTopSelector`s, but reads
+  Sitecore's own raw markup directly rather than the augmentor's injected buttons, which don't
+  exist in a fetched/re-rooted document). Only `treelist-ex` is wired up so far (e.g. Insert
+  Options) - each selected item becomes its own clickable satellite off the field's node, instead
+  of the field collapsing to one flat joined-text value. Discovered quirk: a treelist-ex item's
+  `title` attribute is sometimes content-root-relative (needs `/sitecore/content` prefixed, as
+  `sc-treelistex.ts` already assumes) and sometimes already an absolute `/sitecore/...` path (a
+  template picker) - `toItemPath` only prefixes when the title isn't already rooted.
+
 ## Known limitations / possible next steps
 
 - Only the Default device is harvested.
 - Graph topology is a flat star (current item -> each control) - doesn't yet reflect nested
   dynamic placeholders (`p:before`/`p:after` positioning in the raw XML).
-- Datasource nodes aren't in the graph yet, only `datasourceLink` data on each control node.
+- Most field-strategies (multilist, droplink, general link, ...) still flatten to raw text -
+  only treelist-ex has a link resolver so far (see above).
 

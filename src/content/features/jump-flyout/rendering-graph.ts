@@ -2,18 +2,25 @@ import { STORAGE } from "../../../constants/constants-b";
 import { SITECORE } from "../../../constants/sitecore";
 import { extensionLog } from "../../logger";
 import { buildFoblesUrl } from "../augmentor/helper";
-import { stripGuidBraces } from "../augmentor/shared/guid";
+import { extractGuid, formatFoId, stripGuidBraces } from "../augmentor/shared/guid";
 import {
   isRibbonCheckboxEnabled,
   setRibbonCheckboxEnabled,
 } from "../../macros/ribbon-toggle-macro";
 import { collectTreeChildren } from "../../macros/tree-expand-macro";
-import { openRenderingGraphModal, openRenderingGraphProgressModal, closeRenderingGraphProgressModal } from "./rendering-graph-modal";
+import { resolveFieldLinks } from "./rendering-graph-field-links";
+import {
+  openRenderingGraphModal,
+  openRenderingGraphProgressModal,
+  closeRenderingGraphProgressModal,
+  updateRenderingGraphProgressModal,
+} from "./rendering-graph-modal";
 import { getCurrentItemId, getQuickInfoValue } from "./ai-pages";
 import type {
   RenderingGraphChildItem,
   RenderingGraphControl,
   RenderingGraphField,
+  RenderingGraphReferrer,
   RenderingGraphResult,
   RenderingGraphSection,
 } from "./rendering-graph.types";
@@ -153,10 +160,37 @@ function isHandledElsewhere(label: string): boolean {
   return EXCLUDED_FIELD_LABEL_PREFIXES.some((prefix) => normalized.startsWith(prefix));
 }
 
+// The administrator suffix (" [shared]", " [shared, standard value]", ...) is only ever
+// relevant in the Content Editor's own chrome - stripped here so it doesn't leak into node
+// labels/tooltips the graph builds from this text.
+function extractFieldLabel(marker: HTMLElement): string {
+  const labelElement = marker.querySelector<HTMLElement>(SITECORE.SELECTORS.FIELD_LABEL);
+  if (!labelElement) return "";
+  const clone = labelElement.cloneNode(true) as HTMLElement;
+  clone.querySelector(SITECORE.SELECTORS.FIELD_LABEL_ADMINISTRATOR)?.remove();
+  return clone.textContent?.trim() ?? "";
+}
+
 // Raw Values (already forced on for the Layout field above) applies to every field on the page,
 // not just Layout - so every other section's fields can be read the exact same way, generically,
 // with no per-field-type parsing. Fields that don't render a raw .scContentControl under this
 // mode (rare) just come back empty and get filtered out, same as an absent datasource/variant.
+// Several raw-value controls (multilist tables, tree-list divs, ...) match .scContentControl
+// just as much as a real input/select/textarea does, but don't carry a `.value` at all - reading
+// one unconditionally throws. Anything that isn't actually value-bearing is treated the same as
+// "no value" (filtered out below), same as a genuinely empty field.
+function readRawFieldValue(marker: HTMLElement): string | null {
+  const control = marker.querySelector<HTMLElement>(SITECORE.SELECTORS.CONTENT_CONTROL);
+  if (
+    !(control instanceof HTMLInputElement) &&
+    !(control instanceof HTMLSelectElement) &&
+    !(control instanceof HTMLTextAreaElement)
+  ) {
+    return null;
+  }
+  return control.value.trim() || null;
+}
+
 function collectSections(doc: Document): RenderingGraphSection[] {
   const sections: RenderingGraphSection[] = [];
 
@@ -171,9 +205,16 @@ function collectSections(doc: Document): RenderingGraphSection[] {
 
     const fields: RenderingGraphField[] = [];
     panel.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.EDITOR_FIELD_MARKER).forEach((marker) => {
-      const label = marker.querySelector<HTMLElement>(SITECORE.SELECTORS.FIELD_LABEL)?.textContent?.trim() ?? "";
+      const label = extractFieldLabel(marker);
       if (!label || isHandledElsewhere(label)) return;
-      const value = marker.querySelector<HTMLInputElement>(SITECORE.SELECTORS.CONTENT_CONTROL)?.value.trim() || null;
+
+      const links = resolveFieldLinks(marker);
+      if (links) {
+        fields.push({ label, value: links.map((link) => link.label).join(", "), links });
+        return;
+      }
+
+      const value = readRawFieldValue(marker);
       if (!value) return;
       fields.push({ label, value });
     });
@@ -184,9 +225,60 @@ function collectSections(doc: Document): RenderingGraphSection[] {
   return sections;
 }
 
+function buildGalleryLinksUrl(itemId: string): string {
+  const origin = `${window.location.protocol}//${window.location.hostname}`;
+  const params = new URLSearchParams({
+    [SITECORE.QUERY_PARAMS.XML_CONTROL]: "Gallery.Links",
+    [SITECORE.QUERY_PARAMS.ITEM_ID]: formatFoId(itemId),
+    la: "en",
+    vs: "1",
+    db: "master",
+    sc_content: "master",
+    ShowEditor: "1",
+    "Ribbon.RenderTabs": "true",
+  });
+  return `${origin}${SITECORE.RELATIVE_PATHS_ENCODED.SHELL_DEFAULT}?${params.toString()}`;
+}
+
+// Items that reference this one - Sitecore's own "Links" gallery (ribbon: Links -> "Items that
+// refer to the selected item"), fetched directly instead of clicking through the ribbon. Same
+// #Links/.scLink markup the Content Editor's own inline reference-links strategy already parses
+// (src/content/features/augmentor/editor-strategies/reference-links.ts) - same extraction here,
+// just without that strategy's DOM-mutation (button-building) half, which doesn't apply here.
+// Scoped to specifically the "refers to" section's own .scRef sibling - #Links can carry other
+// sections too (e.g. items the selected item itself uses), already captured elsewhere.
+async function collectReferrers(itemId: string, signal: AbortSignal): Promise<RenderingGraphReferrer[]> {
+  try {
+    const response = await fetch(buildGalleryLinksUrl(itemId), { credentials: "same-origin", signal });
+    if (!response.ok) return [];
+    const fetchedDoc = new DOMParser().parseFromString(await response.text(), "text/html");
+    const referrerAnchors = Array.from(fetchedDoc.querySelectorAll<HTMLElement>(".scMenuHeader"))
+      .filter((header) => header.textContent?.toLowerCase().includes("refer to the selected item"))
+      .flatMap((header) =>
+        Array.from(header.nextElementSibling?.querySelectorAll<HTMLAnchorElement>("a.scLink") ?? []),
+      );
+
+    return referrerAnchors
+      .map((anchor) => {
+        const referrerId = extractGuid(anchor.getAttribute("onclick"));
+        // "Name - [/sitecore/full/path] - The reference from 'Field' field. Language: en, ..."
+        const fullLabel = anchor.textContent?.replace(/\s+/g, " ").trim() ?? "";
+        const name = fullLabel.split(" - [")[0]?.trim() || null;
+        const path = fullLabel.match(/ - \[(.*?)\]/)?.[1]?.trim() || null;
+        if (!referrerId) return null;
+        return { name, itemId: referrerId, link: buildFoblesUrl(referrerId), path };
+      })
+      .filter((referrer): referrer is RenderingGraphReferrer => referrer !== null);
+  } catch (error) {
+    extensionLog.warn("Rendering graph: failed to collect referring items", { itemId, error });
+    return [];
+  }
+}
+
 export async function buildRenderingGraph(
   doc: Document,
   signal: AbortSignal,
+  progressDoc: Document = doc,
 ): Promise<RenderingGraphResult | null> {
   const itemId = getCurrentItemId(doc);
   if (!itemId) {
@@ -213,11 +305,23 @@ export async function buildRenderingGraph(
     ? parseDevice(finalLayoutInput.value, SITECORE.DEVICES.DEFAULT)
     : { layoutId: null, controls: [] };
   const layoutId = finalDevice.layoutId ?? sharedDevice.layoutId;
+
+  // Not a real percentage (no good way to know total work upfront) - just a ticking counter so
+  // Cancel/the progress message reads as "genuinely still working", not hung.
+  const totalSteps = (layoutId ? 1 : 0) + finalDevice.controls.length + 2;
+  let completedSteps = 0;
+  const reportProgress = (): void => {
+    completedSteps += 1;
+    updateRenderingGraphProgressModal(progressDoc, completedSteps, totalSteps);
+  };
+
   const layoutDetails = layoutId ? await resolveRenderingDetails(layoutId, signal) : null;
+  if (layoutId) reportProgress();
 
   const enrichedControls = await Promise.all(
     finalDevice.controls.map(async (control) => {
       const details = control.renderingId ? await resolveRenderingDetails(control.renderingId, signal) : null;
+      reportProgress();
       return {
         ...control,
         name: details?.name ?? null,
@@ -231,8 +335,11 @@ export async function buildRenderingGraph(
 
   const parentPath = getParentPath(currentItemPath);
   const treeChildren = await collectTreeChildren(doc, itemId);
+  reportProgress();
+  const referrers = await collectReferrers(itemId, signal);
+  reportProgress();
 
-  return {
+  const result: RenderingGraphResult = {
     itemId,
     itemName: currentItemPath?.split("/").filter(Boolean).pop() ?? null,
     itemPath: currentItemPath,
@@ -241,14 +348,19 @@ export async function buildRenderingGraph(
     itemLink: buildFoblesUrl(itemId),
     parentName: parentPath?.split("/").filter(Boolean).pop() ?? null,
     parentLink: parentPath ? buildFoblesUrl(parentPath) : null,
+    parentPath,
     sharedLayoutName: layoutDetails?.name ?? null,
     sharedLayoutLink: layoutId ? buildFoblesUrl(layoutId) : null,
+    sharedLayoutPath: layoutDetails?.path ?? null,
     controls: enrichedControls,
     sections: collectSections(doc),
     childItems: treeChildren.map(
       (child): RenderingGraphChildItem => ({ name: child.name, itemId: child.itemId, link: buildFoblesUrl(child.itemId) }),
     ),
+    referrers,
   };
+
+  return result;
 }
 
 function cancelRenderingGraph(doc: Document): void {
@@ -263,14 +375,14 @@ function cancelRenderingGraph(doc: Document): void {
 // already uses) and re-harvests against the fetched document instead of the live one. Raw
 // Values/Standard Fields are already confirmed on by the time any node is clickable, so the
 // fetched page reflects them too (both are session-level view settings, not per-page).
-async function harvestGraphForLink(link: string): Promise<RenderingGraphResult | null> {
+async function harvestGraphForLink(link: string, progressDoc: Document): Promise<RenderingGraphResult | null> {
   const controller = new AbortController();
   renderingGraphAbortController = controller;
   try {
     const response = await fetch(link, { credentials: "same-origin" });
     if (!response.ok) return null;
     const fetchedDoc = new DOMParser().parseFromString(await response.text(), "text/html");
-    return await buildRenderingGraph(fetchedDoc, controller.signal);
+    return await buildRenderingGraph(fetchedDoc, controller.signal, progressDoc);
   } catch (error) {
     extensionLog.warn("Rendering graph: failed to re-harvest for clicked node", { link, error });
     return null;
@@ -283,7 +395,7 @@ async function harvestAndOpen(doc: Document): Promise<void> {
   const graph = await buildRenderingGraph(doc, controller.signal);
   closeRenderingGraphProgressModal(doc);
   if (controller.signal.aborted || !graph) return;
-  openRenderingGraphModal(doc, graph, harvestGraphForLink);
+  openRenderingGraphModal(doc, graph, (link) => harvestGraphForLink(link, doc));
 }
 
 function readPendingRenderingGraph(): PendingRenderingGraph | null {
@@ -338,7 +450,7 @@ function advancePendingRenderingGraph(doc: Document, pending: PendingRenderingGr
 
   clearPendingRenderingGraph();
   closeRenderingGraphProgressModal(doc);
-  if (pending.graph) openRenderingGraphModal(doc, pending.graph, harvestGraphForLink);
+  if (pending.graph) openRenderingGraphModal(doc, pending.graph, (link) => harvestGraphForLink(link, doc));
 }
 
 export function openRenderingGraph(doc: Document): void {
