@@ -7,6 +7,8 @@ export const SYMBOLS = {
 
 export const TEXT = {
     DRAG_NAV: "Drag to move Fobles navigation",
+    GRAPH: "Graph",
+    GRAPH_TITLE: "Build a rendering graph for this item",
     GROUP_NAME: {
         ADMIN_PAGES: "Admin Pages",
         AI: "AI",
@@ -30,6 +32,9 @@ export const TEXT = {
 
 export const ICONS = {
     CLOSE: "/sitecore/shell/themes/standard/Images/Window%20Management/page_close.png",
+    // This extension's own bundled asset (src/public/graph.svg) - needs chrome.runtime.getURL(...)
+    // to resolve, not used as-is like CLOSE's Sitecore-hosted absolute path.
+    GRAPH: "graph.svg",
 } as const;
 
 export const CLASS = {
@@ -62,6 +67,8 @@ export const CLASS = {
     TOOLBAR_CLOSE_ICON: "fobles-toolbar-close-icon",
     TOOLBAR_CONTAINER: "fobles-toolbar-container",
     TOOLBAR_DRAGGING: "fobles-toolbar-dragging",
+    TOOLBAR_GRAPH_BUTTON: "fobles-nav-button fobles-nav-graph-button",
+    TOOLBAR_GRAPH_ICON: "fobles-toolbar-graph-icon",
     TOOLBAR_GRIP: "fobles-toolbar-grip",
     TOOLBAR_LBOLT_BUTTON: "fobles-nav-button fobles-nav-lbolt-button",
     TOOLBAR_RESIZING: "fobles-toolbar-resizing",
@@ -80,6 +87,7 @@ export const SELECTORS = {
     TOOLBAR_BODY: ".fobles-toolbar-body",
     TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",
     TOOLBAR_CONTAINER: ".fobles-toolbar-container",
+    TOOLBAR_GRAPH_BUTTON: ".fobles-nav-graph-button",
     TOOLBAR_GRIP: ".fobles-toolbar-grip",
     TOOLBAR_LBOLT_BUTTON: ".fobles-nav-lbolt-button",
     TOOLBAR_SET_ISE_TITLE_BUTTON: ".fobles-nav-set-ise-title-button",
@@ -116,6 +124,7 @@ export const ATTRIBUTE = {
         // reuse, DOM position, or a locator's first()/nth() to happen to land on the right one.
         NAV_BUTTON_ROLE: {
             LBOLT: "lbolt",
+            GRAPH: "graph",
             PROXY_FLYOUT_TRIGGER: "proxy-buttons-trigger",
             JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger",
         },

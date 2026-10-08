@@ -103,6 +103,12 @@
   filter: brightness(0.745);
 }
 
+.fobles-toolbar-graph-icon {
+  display: block;
+  width: calc(100% - 8px);
+  height: calc(100% - 8px);
+}
+
 .fobles-toolbar-grip {
   flex: none;
   width: 10px;
@@ -352,7 +358,7 @@
   height: $fobles-toolbar-control-size;
   min-height: $fobles-toolbar-control-size;
   padding: 0;
-  font-size: 16px;
+  font-size: 20px;
   line-height: 1;
   transform-origin: top right;
 
@@ -369,6 +375,17 @@
   &:hover {
     transform: scale(1.5);
   }
+}
+
+.fobles-nav-graph-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: $fobles-toolbar-control-size;
+  min-width: $fobles-toolbar-control-size;
+  height: $fobles-toolbar-control-size;
+  min-height: $fobles-toolbar-control-size;
+  padding: 0;
 }
 
 .fobles-proxy-button {

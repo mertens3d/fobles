@@ -60,6 +60,7 @@ export const SITECORE = {
     MULTILIST_WITH_SEARCH_NAV_ARROWS: "img[id^='btnRight'], img[id^='btnLeft'], img[id^='btnUp'], img[id^='btnDown']",
     PROFILE_CARDS_IMAGE: "img.scEditorHeaderCustomizeProfilesIcon",
     SCRIPT_NAME: "#ScriptName",
+    SECTION_CAPTION: "[class*='scEditorSectionCaption']",
     TAG_LIST_NAV_ARROWS: "img[id$='_right'], img[id$='_left'], img[id$='_up'], img[id$='_down']",
     TREE_GLYPH: "img[id^='Tree_Glyph_']",
     TREE_LIST_ALL_PANE: ".scScrollbox.scContentControlTree",

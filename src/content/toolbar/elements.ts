@@ -5,6 +5,7 @@ import {
   SYMBOLS,
   TEXT
 } from "../../constants/fobles.constants";
+import { openRenderingGraph } from "../features/jump-flyout/rendering-graph";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {
   openJumpFlyoutOnHover,
@@ -67,6 +68,25 @@ export function createLboltButton(context: ToolbarContext): HTMLButtonElement {
     title: TEXT.TOGGLE_FEATURES,
     onClick: context.onToggleFeatures,
   });
+}
+
+export function createGraphButton(context: ToolbarContext): HTMLButtonElement {
+  const button = createFoblesNavButton(context, {
+    className: CLASS.TOOLBAR_GRAPH_BUTTON,
+    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.GRAPH,
+    text: "",
+    title: TEXT.GRAPH_TITLE,
+    onClick: () => openRenderingGraph(context.doc),
+  });
+  button.setAttribute("aria-label", TEXT.GRAPH_TITLE);
+
+  const icon = context.doc.createElement("img");
+  icon.className = CLASS.TOOLBAR_GRAPH_ICON;
+  icon.src = chrome.runtime.getURL(ICONS.GRAPH);
+  icon.alt = "";
+  button.appendChild(icon);
+
+  return button;
 }
 
 export function createToolbarCloseButton(

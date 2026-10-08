@@ -11,6 +11,22 @@ export type RenderingGraphControl = {
   parameters: Record<string, string>;
 };
 
+export type RenderingGraphField = {
+  label: string;
+  value: string | null;
+};
+
+export type RenderingGraphSection = {
+  name: string;
+  fields: readonly RenderingGraphField[];
+};
+
+export type RenderingGraphChildItem = {
+  name: string | null;
+  itemId: string;
+  link: string;
+};
+
 export type RenderingGraphResult = {
   itemId: string;
   itemName: string | null;
@@ -18,7 +34,11 @@ export type RenderingGraphResult = {
   itemTemplate: string | null;
   itemTemplateLink: string | null;
   itemLink: string;
+  parentName: string | null;
+  parentLink: string | null;
   sharedLayoutName: string | null;
   sharedLayoutLink: string | null;
   controls: readonly RenderingGraphControl[];
+  sections: readonly RenderingGraphSection[];
+  childItems: readonly RenderingGraphChildItem[];
 };

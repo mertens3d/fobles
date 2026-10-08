@@ -24,6 +24,8 @@ const banner = [
 const generatedFiles = ["background.js", "content.js"];
 const iconSourcePath = join(projectRoot, "src", "public", "fobles_icon.png");
 const iconOutputPath = join(projectRoot, "dist", "unpacked", "fobles_icon.png");
+const graphIconSourcePath = join(projectRoot, "src", "public", "graph.svg");
+const graphIconOutputPath = join(projectRoot, "dist", "unpacked", "graph.svg");
 const maintainedFiles = [
   "manifest.json",
   "options.html",
@@ -32,6 +34,7 @@ const maintainedFiles = [
 
 async function applyBannerToGeneratedFiles() {
   await copyFile(iconSourcePath, iconOutputPath);
+  await copyFile(graphIconSourcePath, graphIconOutputPath);
 
   for (const fileName of maintainedFiles) {
     const sourcePath = join(projectRoot, "src", "public", fileName);
