@@ -9,7 +9,12 @@ type LocalMousePosition = {
 };
 
 export async function ensureMouseMarkerExists(page: Page | Frame): Promise<void> {
-  if (!isSprintMode()) {
+  
+const isHtmlPage = await page.evaluate(
+  () => document.contentType.startsWith("text/html"),
+);
+
+  if (!isSprintMode() && isHtmlPage) {
     if (!hasLastKnownMousePosition()) {
       const viewport = await page.evaluate(() => ({
         width: window.innerWidth,
@@ -22,10 +27,11 @@ export async function ensureMouseMarkerExists(page: Page | Frame): Promise<void>
       if (!document.getElementById(markerConfig.ID)) {
         const marker = document.createElement("div");
         marker.id = markerConfig.ID;
-        marker.style.cssText = markerConfig.CSS_TEXT.join(";");
+        const cssText = markerConfig.CSS_TEXT.join(";");
+        marker.style.cssText = cssText;
         document.documentElement.appendChild(marker);
       }
-    }, CONST.TESTING.MOUSE_MARKER);
+    }, CONST.TESTING.MOUSE.MARKER);
   }
 }
 
@@ -36,13 +42,13 @@ async function forEachFrameWithLocalPosition(
   callback: (frame: Frame, localX: number, localY: number) => Promise<void>,
 ): Promise<void> {
   for (const frame of page.frames()) {
-    if (frame.url().includes(CONST.TESTING.MOUSE_PROXY.EXCLUDED_FRAME_URL_FRAGMENT)) continue;
+    if (frame.url().includes(CONST.TESTING.MOUSE.PROXY.EXCLUDED_FRAME_URL_FRAGMENT)) continue;
 
     let localX = x;
     let localY = y;
     try {
       if (frame !== page.mainFrame()) {
-        const frameBox = await frame.locator(CONST.TESTING.MOUSE_PROXY.HTML_TAG).boundingBox();
+        const frameBox = await frame.locator(CONST.TESTING.MOUSE.PROXY.HTML_TAG).boundingBox();
         if (!frameBox) continue;
         localX -= frameBox.x;
         localY -= frameBox.y;
@@ -57,14 +63,14 @@ async function forEachFrameWithLocalPosition(
 export async function updateMouseMarkers(page: Page, x: number, y: number): Promise<void> {
   await forEachFrameWithLocalPosition(page, x, y, async (frame, localX, localY) => {
     const marker = frame.locator(
-      `${CONST.TESTING.MOUSE_PROXY.SELECTOR_PREFIX}${CONST.TESTING.MOUSE_MARKER.ID}`,
+      `${CONST.TESTING.MOUSE.PROXY.SELECTOR_PREFIX}${CONST.TESTING.MOUSE.MARKER.ID}`,
     );
     if ((await marker.count()) === 0) return;
 
     const coordinates: LocalMousePosition = {
       x: localX,
       y: localY,
-      OPEN_DIALOG_SELECTOR: CONST.TESTING.MOUSE_PROXY.OPEN_DIALOG_SELECTOR,
+      OPEN_DIALOG_SELECTOR: CONST.TESTING.MOUSE.PROXY.OPEN_DIALOG_SELECTOR,
     };
     await marker.evaluate((element, position) => {
       const openDialog = document.querySelector(position.OPEN_DIALOG_SELECTOR);
@@ -85,7 +91,7 @@ export async function pulseMouseMarkerClick(page: Page): Promise<void> {
     page.frames().map(async (frame) => {
       const flashInFrame = async () => {
         const marker = frame.locator(
-          `${CONST.TESTING.MOUSE_PROXY.SELECTOR_PREFIX}${CONST.TESTING.MOUSE_MARKER.ID}`,
+          `${CONST.TESTING.MOUSE.PROXY.SELECTOR_PREFIX}${CONST.TESTING.MOUSE.MARKER.ID}`,
         );
         if ((await marker.count()) === 0) return;
 
@@ -100,14 +106,14 @@ export async function pulseMouseMarkerClick(page: Page): Promise<void> {
           }, config.DURATION_MS);
         }, {
           ...CONST.TESTING.CLICK_FLASH,
-          OPEN_DIALOG_SELECTOR: CONST.TESTING.MOUSE_PROXY.OPEN_DIALOG_SELECTOR,
+          OPEN_DIALOG_SELECTOR: CONST.TESTING.MOUSE.PROXY.OPEN_DIALOG_SELECTOR,
         });
       };
 
       try {
         await Promise.race([
           flashInFrame(),
-          new Promise((resolve) => setTimeout(resolve, CONST.TESTING.MOUSE_PROXY.RACE_TIMEOUT_MS)),
+          new Promise((resolve) => setTimeout(resolve, CONST.TESTING.MOUSE.PROXY.RACE_TIMEOUT_MS)),
         ]);
       } catch {
         // A cosmetic flash should not fail a click when a frame is navigating or detaching.
@@ -122,7 +128,7 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
     return;
   }
   const markerSelector =
-    `${CONST.TESTING.MOUSE_PROXY.SELECTOR_PREFIX}${CONST.TESTING.MOUSE_MARKER.ID}`;
+    `${CONST.TESTING.MOUSE.PROXY.SELECTOR_PREFIX}${CONST.TESTING.MOUSE.MARKER.ID}`;
   const markerState = await page.locator(markerSelector).evaluate((marker) => {
     const style = getComputedStyle(marker);
     const box = marker.getBoundingClientRect();
@@ -139,8 +145,8 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
   console.log(`[fobles] Mouse preflight initial marker: ${JSON.stringify(markerState)}`);
 
   await page.mouse.move(
-    CONST.TESTING.MOUSE_PROXY.PREFLIGHT_POSITION_PX,
-    CONST.TESTING.MOUSE_PROXY.PREFLIGHT_POSITION_PX,
+    CONST.TESTING.MOUSE.PROXY.PREFLIGHT_POSITION_PX,
+    CONST.TESTING.MOUSE.PROXY.PREFLIGHT_POSITION_PX,
   );
   await page.locator(markerSelector).evaluate((marker, position) => {
     const element = marker as HTMLElement;
@@ -148,8 +154,8 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
     element.style.left = position.POSITION;
     element.style.top = position.POSITION;
   }, {
-    POSITION: CONST.TESTING.MOUSE_PROXY.PREFLIGHT_POSITION,
-    TRANSITION: CONST.TESTING.MOUSE_PROXY.PREFLIGHT_TRANSITION,
+    POSITION: CONST.TESTING.MOUSE.PROXY.PREFLIGHT_POSITION,
+    TRANSITION: CONST.TESTING.MOUSE.PROXY.PREFLIGHT_TRANSITION,
   });
 
   const movedState = await page.locator(markerSelector).evaluate((marker) => {

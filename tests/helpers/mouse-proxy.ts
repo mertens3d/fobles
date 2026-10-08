@@ -12,7 +12,6 @@ export {
   moveMouseToLocatorCenter,
 } from "./mouse-proxy-support/mouse-interactions";
 export {
-  drawMousePath,
   moveMouseToDefault,
   moveMouseToPosition,
   resolveCornerPosition,

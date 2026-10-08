@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 
 const removeInteractiveAttributes = (element: HTMLElement): void => {
   element.removeAttribute("id");

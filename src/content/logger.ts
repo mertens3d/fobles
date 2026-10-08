@@ -1,4 +1,4 @@
-import { LOGGER } from "../shared/constants";
+import { LOGGER } from "../constants/constants-b";
 import type { Logger } from "./content.types";
 
 const isDebugEnabled = (): boolean =>

@@ -1,5 +1,5 @@
 import { isMenuOwnedFrame } from "../../../guard";
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 
 export type FrameDocumentOptions = {
   skipMenuOwned?: boolean;

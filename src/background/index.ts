@@ -1,6 +1,6 @@
 /// <reference types="chrome" />
 
-import { LOGGER, MESSAGE } from "../shared/constants";
+import { LOGGER, MESSAGE } from "../constants/constants-b";
 
 const RELAYED_COMMANDS: readonly string[] = [
   MESSAGE.ACTION.TOGGLE_FOBLES,

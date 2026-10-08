@@ -1,4 +1,4 @@
-import { ATTRIBUTE, CLASS, SELECTORS, TEXT } from "../../constants";
+import { ATTRIBUTE, CLASS, SELECTORS, TEXT } from "../../../constants/fobles.constants";
 import {
   cancelJumpFlyoutClose,
   closeJumpFlyoutOnOutsidePointer,
@@ -12,8 +12,8 @@ import {
   AI_GROUP,
   APPLICATION_PAGE_GROUP,
   THIRD_PARTY_GROUP,
-  TREE_JUMP_GROUP,
-} from "../../../shared/jump-flyout/flyout-groups";
+  TREE_JUMP_GROUP
+} from "../../../constants/flyout-groups";
 
 function createJumpFlyout(doc: Document, closeMenu: () => void): HTMLDivElement {
   const jumpFlyout = doc.createElement("div");

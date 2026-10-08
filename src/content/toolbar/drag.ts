@@ -1,4 +1,4 @@
-import { CLASS, SELECTORS } from "../constants";
+import { CLASS, SELECTORS } from "../../constants/fobles.constants";
 import type { ToolbarCorner, ToolbarPlacement } from "../toolbar.types";
 import type { ToolbarContext } from "./types";
 

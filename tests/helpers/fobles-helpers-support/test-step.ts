@@ -1,6 +1,6 @@
 import { test, type Page, type TestInfo } from "@playwright/test";
 import { CONST } from "../../CONST";
-import type { FoblesTestStep } from "../fobles-test-step.types";
+import type { FoblesStep } from "../fobles-test-step.types";
 import { attachPageScreenshot, type Screenshottable } from "./screenshots";
 import { buildStepMatchKey } from "./step-match-key";
 
@@ -48,12 +48,12 @@ function relativeUrl(page: Page): string {
 // attachItemPathScreenshot, expectFoblesButtonSameTabNavigation/NewTabNavigation) can name it after
 // that instead of a value another step in the same test might share.
 
-export function createStep(
+export function createFoblesStep(
   page: Page,
   testInfo: TestInfo,
   screenshotTarget: Screenshottable = page,
   titlePrefix?: string,
-): FoblesTestStep {
+): FoblesStep {
   return async (title, body, options) => {
     const fullTitle = titlePrefix ? `${titlePrefix}: ${title}` : title;
     console.log(`${CONST.TESTING.LOG.STEP_DIVIDER}`);

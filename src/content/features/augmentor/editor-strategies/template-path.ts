@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 import type { TemplatePathFobles as TemplatePathConfig } from "../fobles.types";
 import { buildFoblesUrl, createFoblesButton } from "../helper";
 

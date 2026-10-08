@@ -1,4 +1,4 @@
-import { ATTRIBUTE, CLASS } from "../../constants";
+import { ATTRIBUTE, CLASS } from "../../../constants/fobles.constants";
 import { createFoblesButton } from "../../features/augmentor/helper";
 import { buildFlyoutOptionUrl } from "./flyout-option-url";
 import { registerButtonRow } from "./button-visibility";

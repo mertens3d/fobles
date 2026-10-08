@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 import type {
   QuickInfoCandidate,
   QuickInfoSectionFobles as QuickInfoSectionConfig,

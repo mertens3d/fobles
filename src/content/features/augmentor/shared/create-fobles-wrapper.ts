@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 import type { FoblesStrategy } from "../fobles.types";
 
 export type CreateFoblesWrapperOptions = {

@@ -1,4 +1,4 @@
-import { ATTRIBUTE, SELECTORS } from "../../constants";
+import { ATTRIBUTE, SELECTORS } from "../../../constants/fobles.constants";
 import { setProxyFlyoutVisible } from "../sc-proxy-buttons";
 import { setJumpFlyoutPinned } from "./handlers";
 import { getOrCreateJumpFlyout } from "./flyout-builder";

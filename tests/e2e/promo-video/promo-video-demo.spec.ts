@@ -49,7 +49,7 @@ async function demoLBoltToggle(page: Page) {
     init: async () => {
       await openSitecorePage(
         page,
-        `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=75D27C2B-5F88-4CC8-B1DE-8412A1628408&sc_lang=en`,
+        `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=75D27C2B-5F88-4CC8-B1DE-8412A1628408&sc_lang=en`,
       );
       await ensureMouseMarkerExists(page);
     },

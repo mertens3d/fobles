@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 
 // Sets data-fobles-item-id to the raw item id. Deliberately not deduplicated - a field and the
 // tree can reference the same item, and test selectors (tests/macros/fobles-macros.ts,

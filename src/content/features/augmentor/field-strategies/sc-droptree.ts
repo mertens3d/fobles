@@ -1,4 +1,4 @@
-import { FOBLES } from "../constants";
+import { FOBLES } from "../../../../constants/fobles";
 import { buildFoblesUrl, createFoblesButton, normalizeFoblesValue } from "../helper";
 import { extensionLog } from "../../../logger";
 import { applyButtonClasses } from "../shared/apply-button-classes";

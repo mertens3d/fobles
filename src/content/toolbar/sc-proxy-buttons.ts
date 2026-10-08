@@ -1,4 +1,4 @@
-import { ATTRIBUTE, CLASS, SELECTORS } from "../constants";
+import { ATTRIBUTE, CLASS, SELECTORS } from "../../constants/fobles.constants";
 import { extensionLog } from "../logger";
 import { findRibbonCheckbox, postSitecoreEvent } from "../features/augmentor/proxy-buttons-ribbon";
 import { setJumpFlyoutVisible } from "./jump-flyout";

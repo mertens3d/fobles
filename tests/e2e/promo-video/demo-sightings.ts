@@ -3,7 +3,7 @@ import { CONST } from "../../CONST";
 import { type Page } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { findFrameWithSelector } from "../../helpers/frame-finder";
-import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { pauseForHuman } from "../../helpers/wait-helpers";
 import { pressToggleLboltHotkey } from "../../macros/fobles-macros";
 import { FOBLES_YML } from "../strategies/support/yml-fobles.CONST";
 
@@ -47,14 +47,14 @@ export async function demoSightings(
   for (const sighting of sightings) {
     console.log(`[fobles] demoSightings: visiting ${sighting.title} (${sighting.itemId})`);
     try {
-      await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${sighting.itemId}`);
+      await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${sighting.itemId}`);
 
       const sectionSelector = buildSectionSelector(sighting);
       const contentFrame = await findFrameWithSelector(page, sectionSelector, `${sighting.title} section`, 10_000);
       await contentFrame.locator(sectionSelector).scrollIntoViewIfNeeded();
 
       await pressToggleLboltHotkey(context);
-      await foblesWaitForTimeout(page, LBOLT_SETTLE_MS);
+      await pauseForHuman(page, LBOLT_SETTLE_MS);
       await pressToggleLboltHotkey(context);
     } catch (error) {
       console.log(

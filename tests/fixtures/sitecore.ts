@@ -36,7 +36,7 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
 }
 
 export async function openContentEditor(page: Page, foValue:string = ""): Promise<void> {
-  const path = CONST.SITECORE.PATHS.CONTENT_EDITOR + (foValue ? `?sc_bw=1&fo=${foValue}` : "");
+  const path = CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED + (foValue ? `?sc_bw=1&fo=${foValue}` : "");
   await openSitecorePage(page, path);
 }
 
@@ -57,7 +57,7 @@ export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   // which is already "domcontentloaded"), so downstream login/menu checks run too early and never
   // see the real page.
   
-  console.log(`[fobles] Opening ${url}`);
+  console.log(`[fobles] ${openSitecorePage.name} Page ${url}`);
   
   await page
     .evaluate((targetUrl) => {
@@ -71,7 +71,7 @@ export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   await ensureRawValuesDisabled(page);
   await ensureMouseMarkerExists(page);
 
-  console.log(`[fobles] Navigation finished at ${page.url()}`);
+  console.log(`[fobles] ${openSitecorePage.name} Navigation finished at ${page.url()}`);
 }
 
 // Used both by the worker-teardown cleanup and the final "IsLoggedOut" test - returns whether a
@@ -99,7 +99,7 @@ export async function logoutCurrentSitecoreSession(page: Page): Promise<boolean>
 
 export async function enableFobles(page: Page): Promise<void> {
   const jumpFlyoutTrigger = page
-    .locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER)
+    .locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER)
     .first();
   await expect(jumpFlyoutTrigger).toBeVisible({
     timeout: CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS,
@@ -119,7 +119,7 @@ export async function enableFobles(page: Page): Promise<void> {
 }
 
 export async function openFoblesJumpFlyout(page: Page): Promise<void> {
-  const trigger = page.locator(CONST.FOBLES.SELECTORS.JUMP_MENU_TRIGGER).first();
+  const trigger = page.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
 
   await page.waitForLoadState("domcontentloaded");
   await expect

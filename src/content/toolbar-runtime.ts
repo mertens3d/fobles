@@ -2,9 +2,9 @@ import {
   type AllowedPage,
   DEFAULT_TOOLBAR_PLACEMENT,
   SELECTORS,
-  TOOLBAR_CORNERS,
-} from "./constants";
-import { MESSAGE, STORAGE } from "../shared/constants";
+  TOOLBAR_CORNERS
+} from "../constants/fobles.constants";
+import { MESSAGE, STORAGE } from "../constants/constants-b";
 import type { ToolbarPlacement } from "./toolbar.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";
 import { getDebugSettings } from "../shared/debug-settings";
@@ -134,14 +134,15 @@ async function reconcileCurrentPage(): Promise<void> {
   const debug = await getDebugSettings();
   setExtensionDebugEnabled(debug.debugLogging);
 
-  const allowedPage = findAllowedPage(window.location);
+  const allowedPage = findAllowedPage(window.location.pathname);
   currentAllowedPage = allowedPage;
   pageEligible = allowedPage !== null;
   const currentUrl = new URL(window.location.href);
   const kickUsersPath = isKickUsersPath(window.location.pathname);
 
   extensionLog.debug("Fobles flyout eligibility decision", {
-    href: currentUrl.href,
+    hrefEncoded: currentUrl.href,
+    currentAllowedPage,
     host: currentUrl.host,
     pathname: window.location.pathname,
     matchedPage: allowedPage,

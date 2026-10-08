@@ -1,4 +1,4 @@
-import { TOOLBAR_CORNERS } from "./constants";
+import { TOOLBAR_CORNERS } from "../constants/fobles.constants";
 
 export type ToolbarCorner = (typeof TOOLBAR_CORNERS)[number];
 

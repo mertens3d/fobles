@@ -66,13 +66,10 @@ export default defineConfig({
         [
           path.resolve(
             process.cwd(),
-            "tools/scripts/test/static-test-reporter.cjs",
+            "tests/test-report-generator/static-test-reporter.ts",
           ),
           {
             outputFile: path.join(testArtifactsDir, "reports", reportFileName),
-            // A browser tab popping up mid-recording is disruptive to a promoVideo session -
-            // every other suite keeps the normal auto-open behavior.
-            autoOpenInBrowser: reportSuiteName !== "promo-video",
           },
         ],
       ],
@@ -108,3 +105,6 @@ export default defineConfig({
   outputDir: path.join(testArtifactsDir, "playwright-results"),
   snapshotDir: path.join(testArtifactsDir, "snapshots"),
 });
+
+console.log("config loaded", import.meta.url);
+// throw new Error("THIS IS THE CONFIG");

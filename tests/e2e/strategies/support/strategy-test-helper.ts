@@ -9,6 +9,7 @@ import { showBillboard } from "../../../helpers/billboard";
 import { logStepDividerEnd, logStepDividerStart } from "../../../helpers/logging-helpers";
 import { expect } from "@playwright/test";
 import { LogDebugTestContext } from "../../../helpers/debug-helpers";
+import { pauseForHuman } from "../../../helpers/wait-helpers";
 
 
 export async function stepExpectFoblesInitialConditions(testContext: StrategyTestContext) {
@@ -30,7 +31,8 @@ export async function stepExpectFoblesInitialConditions(testContext: StrategyTes
 
     await expect(fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
     await expect(fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"));
-    await testContext.page.waitForTimeout(testContext.STEP_WAIT_MS);
+
+    await pauseForHuman(testContext.page, testContext.STEP_WAIT_MS);
 
     logStepDividerEnd(stepExpectFoblesInitialConditions.name);
   });
@@ -83,7 +85,7 @@ export async function stepExpectFoblesOnConditions(testContext: StrategyTestCont
       await expect(foblesButton).toBeVisible();
       await expect(foblesButton).toHaveText(testContext.SCENARIO.expectedButtonText);
       await expect(fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "FOBLES_ON"));
-      await testContext.page.waitForTimeout(testContext.STEP_WAIT_MS);
+      await pauseForHuman(testContext.page, testContext.STEP_WAIT_MS);
       await LogDebugTestContext(testContext);
       logStepDividerEnd(stepExpectFoblesOnConditions.name);
     });
@@ -138,7 +140,8 @@ export async function stepExpectFoblesOffConditions(testContext: StrategyTestCon
     await highlightClickTarget(fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER), "wrapper");
     await expect(fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
 
-    await testContext.page.waitForTimeout(testContext.STEP_WAIT_MS);
+    await pauseForHuman(testContext.page, testContext.STEP_WAIT_MS);
+
     logStepDividerEnd(stepExpectFoblesOffConditions.name);
   });
 }

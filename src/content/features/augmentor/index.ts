@@ -1,9 +1,9 @@
 
-import { ATTRIBUTE, SELECTORS } from "../../constants";
-import { SITECORE } from "../../sitecore";
+import { ATTRIBUTE, SELECTORS } from "../../../constants/fobles.constants";
+import { SITECORE } from "../../../constants/sitecore";
 import { extensionLog } from "../../logger";
-import { FOBLES } from "./constants";
-import { fieldConfigs } from "./_config";
+import { FOBLES } from "../../../constants/fobles";
+import { fieldConfigs } from "../../../constants/_config";
 import { walkFrameDocuments } from "./shared/frame-documents";
 import type { FoblesConfig, FoblesStrategy } from "./fobles.types";
 import { applyDroplinkStrategy } from "./field-strategies/sc-droplink";

@@ -1,4 +1,4 @@
-import { TEXT } from "../../constants";
+import { TEXT } from "../../../constants/fobles.constants";
 import { createFlyoutGroup } from "./group-builder";
 import {
   buildUserTreeJumpPath,

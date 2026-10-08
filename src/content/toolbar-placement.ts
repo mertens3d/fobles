@@ -1,5 +1,5 @@
-import { DEFAULT_TOOLBAR_PLACEMENT, TOOLBAR_CORNERS } from "./constants";
-import { STORAGE } from "../shared/constants";
+import { DEFAULT_TOOLBAR_PLACEMENT, TOOLBAR_CORNERS } from "../constants/fobles.constants";
+import { STORAGE } from "../constants/constants-b";
 import { getStorageValue, setStorageValue } from "../shared/storage/storage";
 import type { ToolbarPlacement } from "./toolbar.types";
 

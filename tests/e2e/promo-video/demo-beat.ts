@@ -1,6 +1,6 @@
 import { CONST } from "../../CONST";
 import { type Page } from "../../fixtures/playwright";
-import { foblesWaitForTimeout } from "../../helpers/wait-helpers";
+import { pauseForHuman } from "../../helpers/wait-helpers";
 import { highlightQuickInfoPath } from "../../macros/sitecore-macros";
 import { showSpeakBubble, hideSpeakBubble } from "../../helpers/speak-bubble";
 import type { DemoBeat } from "./demo-beat.types";
@@ -23,5 +23,5 @@ export async function playDemoBeat(page: Page, beat: DemoBeat): Promise<void> {
 
     await hideSpeakBubble(page);
     console.log(`[fobles] Scene pause: waiting ${SCENE_PAUSE_MS}ms`);
-    await foblesWaitForTimeout(page, SCENE_PAUSE_MS);
+    await pauseForHuman(page, SCENE_PAUSE_MS);
 }

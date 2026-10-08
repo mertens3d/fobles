@@ -1,4 +1,4 @@
-import { MESSAGE } from "../shared/constants";
+import { MESSAGE } from "../constants/constants-b";
 import {
   getFoblesNavVisible,
   getFoblesNavWarningVisible,

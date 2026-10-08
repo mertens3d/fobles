@@ -44,7 +44,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
       await fillOptionsInput(
         optionsPage,
         newRow.locator(TESTING.OPTIONS.ADMIN_PAGES.URL_INPUT),
-        TESTING.ADDITIONAL_SETTINGS.ADMIN_PAGE.INTEGRATION_URL,
+        TESTING.ADDITIONAL_SETTINGS.ADMIN_PAGE.INTEGRATION_URL_ENCODED,
       );
       await clickOptionsButton(optionsPage, TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON);
       await expect(optionsPage.locator(TESTING.OPTIONS.ADMIN_PAGES.STATUS_SELECTOR)).toHaveText(
@@ -94,7 +94,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
       const adminPageButton = foblesFrame.getByRole("button", { name: label, exact: true });
       await expect(adminPageButton).toBeVisible();
 
-      const targetUrl = new URL(TESTING.ADDITIONAL_SETTINGS.ADMIN_PAGE.INTEGRATION_URL, page.url());
+      const targetUrl = new URL(TESTING.ADDITIONAL_SETTINGS.ADMIN_PAGE.INTEGRATION_URL_ENCODED, page.url());
       await bringPageToFront(page);
       await Promise.all([
         page.waitForURL((url) => url.pathname === targetUrl.pathname),

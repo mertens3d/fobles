@@ -24,7 +24,7 @@ export async function setupContentEditorForTesting(
   console.log(`[fobles] Opening strategy item ${scenario.itemId}`);
   await openSitecorePage(
     page,
-    `${CONST.SITECORE.PATHS.CONTENT_EDITOR}&fo=${scenario.itemId}`,
+    `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${scenario.itemId}`,
   );
   // &fo=${scenario.itemId}`);
   console.log(`[fobles] Navigation finished at ${page.url()}`);

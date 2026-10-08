@@ -1,4 +1,4 @@
-import { CLASS, SELECTORS, TEXT } from "../constants";
+import { CLASS, SELECTORS, TEXT } from "../../constants/fobles.constants";
 import type { ToolbarPlacement } from "../toolbar.types";
 import {
   isCompactToolbarPage,
@@ -46,7 +46,7 @@ export function injectToolbar(context: ToolbarContext): void {
 
   wireContainerDragging(context, container);
 
-  const isCompactToolbar = isCompactToolbarPage(context.win.location);
+  const isCompactToolbar = isCompactToolbarPage(context.win.location.pathname);
 
   if (!body.querySelector(`.${CLASS.TOOLBAR_LBOLT_BUTTON.split(" ").join(".")}`)) {
     body.appendChild(createLboltButton(context));

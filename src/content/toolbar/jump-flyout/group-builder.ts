@@ -1,4 +1,4 @@
-import { CLASS } from "../../constants";
+import { CLASS } from "../../../constants/fobles.constants";
 import { createFlyoutOptionRow } from "./button-builder";
 import type { FlyoutGroup } from "../../../shared/jump-flyout/jump-flyout.types";
 

@@ -2,7 +2,7 @@ import { CONST } from "../../CONST";
 import { type Locator, type Page, type TestInfo } from "../../fixtures/playwright";
 
 
-import type { FoblesTestStep } from "../../helpers/fobles-test-step.types";
+import type { FoblesStep } from "../../helpers/fobles-test-step.types";
 
 import type {  StrategyScenarioData } from "./support/scenario.types";
 
@@ -19,7 +19,7 @@ import type {  StrategyScenarioData } from "./support/scenario.types";
 // the scenario's own expected value. Defaults to that same fieldTable-wide lookup for every other
 // strategy, which only ever renders the one button it needs.
 export function runClickNavigationSteps(
-  step: FoblesTestStep,
+  step: FoblesStep,
   page: Page,
   testInfo: TestInfo,
   fieldTable: Locator,

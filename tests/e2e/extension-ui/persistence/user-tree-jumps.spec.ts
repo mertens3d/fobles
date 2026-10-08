@@ -5,7 +5,7 @@ import {
   openTreeJumpsColumn,
   addTestRow,
   removeTestRowIfPresent,
-} from "../../toolbar/support/other-settings-helpers";
+} from "../../toolbar/support/extension-options-settings-helpers";
 
 foblesTest.describe("User Tree Jump Persistence", () => {
   foblesTest("Additional Settings adds and normalizes a User Tree Jump", async ({ sharedBrowserContext }) => {

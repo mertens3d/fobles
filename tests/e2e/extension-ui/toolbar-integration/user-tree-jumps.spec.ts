@@ -4,17 +4,18 @@ import { CONST } from "../../../CONST";
 import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
 import { openContentEditor } from "../../../fixtures/sitecore";
 import { findFoblesFrame } from "../../../helpers/frame-finder";
-import { createStep } from "../../../helpers/fobles-helpers-support/test-step";
+import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 import { attachLocatorScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
 import { attachItemPathScreenshot } from "../../../helpers/fobles-helpers-support/navigation-assertions";
 import { ClickFoblesJumpButton } from "../../../macros/fobles-macros";
-import { humanPause } from "../../../helpers/wait-helpers";
+import { pauseForHuman } from "../../../helpers/wait-helpers";
 import { bringPageToFront } from "../../../helpers/page-switch";
 import {
   addTestRow,
   removeTestRowIfPresent,
   setTestRowEnabled,
-} from "../../toolbar/support/other-settings-helpers";
+} from "../../toolbar/support/extension-options-settings-helpers";
+import { expectCurrentUrlContains, expectFoValue } from "../../../expect-snippets/expect-snippets";
 
 foblesTest.describe("User Tree Jumps", () => {
   foblesTest.describe("Toolbar Integration", () => {
@@ -28,7 +29,7 @@ foblesTest.describe("User Tree Jumps", () => {
           extensionId,
           "options",
         );
-        const step = createStep(page, testInfo, page, "User Tree Jump");
+        const step = createFoblesStep(page, testInfo, page, "User Tree Jump");
 
         try {
           // Other suites sharing this persistent browser profile may have left the warning off.
@@ -38,7 +39,7 @@ foblesTest.describe("User Tree Jumps", () => {
           const foblesFrame = await findFoblesFrame(page);
 
           await ClickFoblesJumpButton(page);
-          await humanPause(page);
+          await pauseForHuman(page);
 
           await step("does not render with an empty list", async () => {
             await expect(foblesFrame.getByText("User Tree Jumps")).toHaveCount(
@@ -84,7 +85,7 @@ foblesTest.describe("User Tree Jumps", () => {
                 CONST.FOBLES.ATTRIBUTES.TREE_JUMP_PATH,
                 CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH,
               );
-              await humanPause(page);
+              await pauseForHuman(page);
               await jumpButton.scrollIntoViewIfNeeded();
               await attachLocatorScreenshot(
                 testInfo,
@@ -99,22 +100,22 @@ foblesTest.describe("User Tree Jumps", () => {
 
               const confirmationDialog = foblesFrame.getByRole("dialog");
               await expect(confirmationDialog).toBeVisible();
-              await humanPause(page);
+              await pauseForHuman(page);
               await Promise.all([
                 page.waitForURL(
                   (url) =>
                     url
                       .toString()
                       .includes(
-                        encodeURI(
+                        
                           CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH,
-                        ),
+                        
                       ),
                   {
                     timeout: CONST.TESTING.TIMEOUTS.URL_WAIT_MS,
                   },
                 ),
-                humanPause(page),
+                pauseForHuman(page),
                 clickWithMouseMarker(
                   page,
                   confirmationDialog.getByRole("button", {
@@ -122,11 +123,10 @@ foblesTest.describe("User Tree Jumps", () => {
                   }),
                   "Confirm dialog Continue",
                 ),
-                humanPause(page),
+                pauseForHuman(page),
               ]);
-              expect(page.url()).toContain(
-                encodeURI(CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH),
-              );
+
+              expectFoValue(page, CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH);
               await attachItemPathScreenshot(page, testInfo, fullTitle);
             },
             { screenshot: false },
