@@ -1,7 +1,6 @@
 import type { ToolbarPlacement } from "../content/toolbar.types";
 import { SITECORE } from "./sitecore";
 
-
 export const SYMBOLS = {
     LIGHTNING: "\u26A1\uFE0E",
 } as const;

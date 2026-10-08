@@ -9,6 +9,7 @@ export const STORAGE = {
     FOBLES_STATE: "fobles_state",
     KICK_ALL_USERS: "fobles_kick_all_users",
     JUMP_MENU_BUTTON_SETTINGS: "JumpFlyoutButtonSettings",
+    RENDERING_GRAPH_PENDING: "fobles_rendering_graph_pending",
     SHOW_RELOAD_EXTENSION_BUTTON: "showReloadExtensionButton",
     TURN_OFF_FOBLES_AFTER_NAVIGATION: "turnOffFoblesAfterNavigation",
     USER_ADMIN_PAGES: "userAdminPages",

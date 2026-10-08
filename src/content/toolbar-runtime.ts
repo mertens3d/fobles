@@ -16,7 +16,7 @@ import {
   findAllowedPage,
   isKickUsersPath,
 } from "./guard";
-import { resumeKickAllUsers } from "./features/jump-flyout";
+import { resumeKickAllUsers, resumeRenderingGraph } from "./features/jump-flyout";
 import {
   injectToolbar,
   setToolbarPlacement,
@@ -188,6 +188,7 @@ async function reconcileCurrentPage(): Promise<void> {
   }
 
   resumeKickAllUsers(document);
+  resumeRenderingGraph(document);
 
   setToolbarVisible(getToolbarContext(), foblesNavVisible);
   extensionLog.debug("Fobles flyout injection result", {

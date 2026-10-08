@@ -1,4 +1,3 @@
-
 export const SITECORE = {
   ACTION_PREFIXES: {
     FILE: "contentfile",
@@ -6,6 +5,10 @@ export const SITECORE = {
     ICON: "icon",
     IMAGE: "contentimage",
     INTERNAL_LINK: "contentinternallink",
+  },
+  // Well-known system item ids Sitecore ships with every install.
+  DEVICES: {
+    DEFAULT: "{FE5D7FDF-89C0-4D99-9AA3-B5FBD009C9F3}",
   },
   QUERY_PARAMS: {
     DATABASE: "db",
@@ -32,6 +35,11 @@ export const SITECORE = {
     SHELL_DEFAULT: "/sitecore/shell/default.aspx",
     TEMPLATE_MANAGER: "/sitecore/shell/Applications/Templates/Template-Manager",
   },
+  // Mirrors src/content/toolbar/sc-proxy-buttons.ts's real ribbon checkbox ids for these same toggles.
+  RIBBON_CHECKBOXES: {
+    RAW_VALUES: "Check_BBDED3F008D144C82A983B54F0424BBC1",
+    STANDARD_FIELDS: "Check_BC29C1D329FB74DA585083FEC2AF3A81D",
+  },
   SELECTORS: {
     COMBOBOX: ".scCombobox",
     CONTENT_CONTROL: ".scContentControl",
@@ -41,6 +49,7 @@ export const SITECORE = {
     FIELD_ACTIONS: ".scContentButtons",
     FIELD_ACTION_LINKS: ".scContentButtons > a.scContentButton",
     FIELD_CELL: "td.scEditorFieldMarkerInputCell",
+    FIELD_LABEL: ".scEditorFieldLabel",
     GLOBAL_HEADER: ".sc-globalHeader",
     GLOBAL_HEADER_CONTENT: ".sc-globalHeader-content",
     MULTILIST: ".scContentControlMultilist",

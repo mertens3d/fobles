@@ -1,5 +1,6 @@
 import { openAiPages } from "../content/features/jump-flyout/ai-pages";
 import { kickAllUsers } from "../content/features/jump-flyout/kick-users";
+import { openRenderingGraph } from "../content/features/jump-flyout/rendering-graph";
 import { JUMP_MENU_BUTTON_ID } from "./button-ids";
 import type { FlyoutGroup } from "../shared/jump-flyout/jump-flyout.types";
 import { TEXT } from "./fobles.constants";
@@ -31,6 +32,7 @@ export const ADMIN_PAGE_GROUP: readonly FlyoutGroup[] = [
       { id: JUMP_MENU_BUTTON_ID.STATS, label: "Stats", url: "/sitecore/admin/stats.aspx", icon: "/-/icon/Applications/48x48/chart.png", isXPOnly: false, isAIOnly: false },
       { id: JUMP_MENU_BUTTON_ID.LOGS, label: "Logs", url: "/sitecore/admin/logs.aspx", icon: "/-/icon/Applications/48x48/document_text.png", isXPOnly: true, isAIOnly: false },
       { id: JUMP_MENU_BUTTON_ID.DB_BROWSER, label: "DB Browser", url: "/sitecore/admin/dbbrowser.aspx", icon: "/-/icon/Applications/48x48/database.png", isXPOnly: true, isAIOnly: false },
+      { id: JUMP_MENU_BUTTON_ID.RENDERING_GRAPH, label: "Rendering Graph (POC)", action: (doc) => openRenderingGraph(doc), icon: "/-/icon/software/48x48/elements1.png", isIncomplete: false, isXPOnly: false, isAIOnly: false },
     ],
   },
 ];
