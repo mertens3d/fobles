@@ -1,5 +1,5 @@
 import type { ToolbarPlacement } from "../content/toolbar.types";
-import { SITECORE } from "./sitecore";
+import { CONST } from "./const";
 
 export const SYMBOLS = {
     LIGHTNING: "\u26A1\uFE0E",
@@ -163,8 +163,8 @@ export const FOBLES_PAGES: readonly AllowedPage[] = [
         id: "ContentEditor",
         friendlyName: "Content Editor",
         matchStrings: [
-            SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_MODERN,
-            SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY
+            CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_MODERN,
+            CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY
         ],
         toolbarType: "full",
         isFoblesEligible: true,
@@ -172,42 +172,42 @@ export const FOBLES_PAGES: readonly AllowedPage[] = [
     {
         id: "TemplateManager",
         friendlyName: "Template Manager",
-        matchStrings: [SITECORE.RELATIVE_PATHS_ENCODED.TEMPLATE_MANAGER],
+        matchStrings: [CONST.SITECORE.RELATIVE_PATHS_ENCODED.TEMPLATE_MANAGER],
         toolbarType: "full",
         isFoblesEligible: true,
     },
     {
         id: "ContentManager",
         friendlyName: "Content Manager",
-        matchStrings: [SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_MANAGER],
+        matchStrings: [CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_MANAGER],
         toolbarType: "full",
         isFoblesEligible: true,
     },
     {
         id: "PowerShellIse",
         friendlyName: "PowerShell ISE",
-        matchStrings: [SITECORE.RELATIVE_PATHS_ENCODED.POWERSHELL_ISE],
+        matchStrings: [CONST.SITECORE.RELATIVE_PATHS_ENCODED.POWERSHELL_ISE],
         toolbarType: "full",
         isFoblesEligible: true,
     },
     {
         id: "KickUsers",
         friendlyName: "Kick User",
-        matchStrings: [SITECORE.RELATIVE_PATHS_ENCODED.KICK_USERS],
+        matchStrings: [CONST.SITECORE.RELATIVE_PATHS_ENCODED.KICK_USERS],
         toolbarType: "full",
         isFoblesEligible: true,
     },
     {
         id: "FileExplorer",
         friendlyName: "File Explorer",
-        matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.FILE_EXPLORER}`],
+        matchStrings: [`xmlcontrol=${CONST.SITECORE.XML_CONTROLS.FILE_EXPLORER}`],
         toolbarType: "full",
         isFoblesEligible: true,
     },
     {
         id: "AddFromTemplate",
         friendlyName: "Add From Template",
-        matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.ADD_FROM_TEMPLATE}`],
+        matchStrings: [`xmlcontrol=${CONST.SITECORE.XML_CONTROLS.ADD_FROM_TEMPLATE}`],
         toolbarType: "full",
         isFoblesEligible: true,
         defaultPlacement: { corner: "upper-right", offsetX: 15, offsetY: 65 },
@@ -215,7 +215,7 @@ export const FOBLES_PAGES: readonly AllowedPage[] = [
     {
         id: "ChangeTemplate",
         friendlyName: "Change Template",
-        matchStrings: [SITECORE.RELATIVE_PATHS_ENCODED.CHANGE_TEMPLATE],
+        matchStrings: [CONST.SITECORE.RELATIVE_PATHS_ENCODED.CHANGE_TEMPLATE],
         toolbarType: "full",
         isFoblesEligible: true,
         defaultPlacement: { corner: "upper-right", offsetX: 15, offsetY: 65 },
@@ -223,35 +223,35 @@ export const FOBLES_PAGES: readonly AllowedPage[] = [
     {
         id: "GallerySubitems",
         friendlyName: "Gallery: Subitems",
-        matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.GALLERY_SUBITEMS}`],
+        matchStrings: [`xmlcontrol=${CONST.SITECORE.XML_CONTROLS.GALLERY_SUBITEMS}`],
         toolbarType: "compact",
         isFoblesEligible: true,
     },
     {
         id: "GalleryFavorites",
         friendlyName: "Gallery: Favorites",
-        matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.GALLERY_FAVORITES}`],
+        matchStrings: [`xmlcontrol=${CONST.SITECORE.XML_CONTROLS.GALLERY_FAVORITES}`],
         toolbarType: "compact",
         isFoblesEligible: true,
     },
     {
         id: "TreeListExEditor",
         friendlyName: "TreeListEx Editor",
-        matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.TREE_LIST_EX_EDITOR}`],
+        matchStrings: [`xmlcontrol=${CONST.SITECORE.XML_CONTROLS.TREE_LIST_EX_EDITOR}`],
         toolbarType: "compact",
         isFoblesEligible: true,
     },
     {
         id: "DeviceEditor",
         friendlyName: "Device Editor",
-        matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.DEVICE_EDITOR}`],
+        matchStrings: [`xmlcontrol=${CONST.SITECORE.XML_CONTROLS.DEVICE_EDITOR}`],
         toolbarType: "compact",
         isFoblesEligible: false,
     },
     {
         id: "SelectRendering",
         friendlyName: "Select Rendering",
-        matchStrings: [`xmlcontrol=${SITECORE.XML_CONTROLS.SELECT_RENDERING}`],
+        matchStrings: [`xmlcontrol=${CONST.SITECORE.XML_CONTROLS.SELECT_RENDERING}`],
         toolbarType: "compact",
         isFoblesEligible: true,
         defaultPlacement: { corner: "upper-right", offsetX: 16, offsetY: 70 },
@@ -259,7 +259,7 @@ export const FOBLES_PAGES: readonly AllowedPage[] = [
     {
         id: "FieldEditor",
         friendlyName: "Field Editor",
-        matchStrings: [`${SITECORE.RELATIVE_PATHS_ENCODED.FIELD_EDITOR}?mo=mini`],
+        matchStrings: [`${CONST.SITECORE.RELATIVE_PATHS_ENCODED.FIELD_EDITOR}?mo=mini`],
         toolbarType: "compact",
         isFoblesEligible: true,
     },

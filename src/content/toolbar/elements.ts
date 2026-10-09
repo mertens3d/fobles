@@ -5,7 +5,7 @@ import {
   SYMBOLS,
   TEXT
 } from "../../constants/fobles.constants";
-import { openRenderingGraph } from "../features/jump-flyout/rendering-graph";
+import { openRenderingGraph } from "./graph/rendering-graph";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {
   openJumpFlyoutOnHover,

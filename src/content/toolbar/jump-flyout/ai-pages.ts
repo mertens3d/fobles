@@ -1,10 +1,11 @@
-import { extractGuid } from "../augmentor/shared/guid";
+import { extractGuid } from "../../features/augmentor/shared/guid";
 import {
   getAiPagesMappings,
   onAiPagesMappingsChange,
   type AiPagesGroup,
   type AiPagesMapping,
 } from "../../../shared/ai-pages-mappings";
+import { getQuickInfo } from "./quick-info";
 
 type ResolvedAiPagesMapping = AiPagesMapping & Omit<AiPagesGroup, "mappings">;
 
@@ -21,35 +22,8 @@ onAiPagesMappingsChange((groups) => {
   aiPagesGroups = groups;
 });
 
-export const getQuickInfoValue = (
-  doc: Document,
-  labelPrefix: string,
-): string | null => {
-  const quickInfoTables = doc.querySelectorAll<HTMLTableElement>(
-    "td.scEditorSectionPanelCell > table.scEditorQuickInfo",
-  );
-
-  for (const table of quickInfoTables) {
-    for (const row of Array.from(table.rows)) {
-      const label = row.cells.item(0)?.textContent?.trim().toLowerCase() ?? "";
-      if (!label.startsWith(labelPrefix.toLowerCase())) continue;
-
-      const valueElement = row.cells
-        .item(1)
-        ?.querySelector<HTMLInputElement>(
-          "input.scEditorHeaderQuickInfoInput[readonly]",
-        );
-      const value =
-        valueElement?.value.trim() ?? row.cells.item(1)?.textContent?.trim();
-      if (value) return value;
-    }
-  }
-
-  return null;
-};
-
 export const getCurrentItemId = (doc: Document): string | null =>
-  extractGuid(getQuickInfoValue(doc, "Item ID:"));
+  extractGuid(getQuickInfo(doc).itemId);
 
 const getAiPagesMapping = (itemPath: string): ResolvedAiPagesMapping | null => {
   const normalizedPath = normalizeContentPath(itemPath);
@@ -91,10 +65,10 @@ const buildAiPagesUrl = (
 
 export const openAiPages = (doc: Document): void => {
   const itemId = getCurrentItemId(doc);
-  const itemPath = getQuickInfoValue(doc, "Item path:");
-  const language = getQuickInfoValue(doc, "Language:");
-  const version = getQuickInfoValue(doc, "Version:");
-  const mapping = itemPath ? getAiPagesMapping(itemPath) : null;
+  const docQuickInfo = getQuickInfo(doc);
+  const language = "";
+  const version = "";
+  const mapping = docQuickInfo?.itemPath ? getAiPagesMapping(docQuickInfo?.itemPath ?? "") : null;
 
   if (itemId && mapping) {
     const url = buildAiPagesUrl(itemId, mapping, language, version);

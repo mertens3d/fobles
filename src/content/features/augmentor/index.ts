@@ -1,6 +1,6 @@
 
 import { ATTRIBUTE, SELECTORS } from "../../../constants/fobles.constants";
-import { SITECORE } from "../../../constants/sitecore";
+import { CONST} from "../../../constants/const";
 import { extensionLog } from "../../logger";
 import { FOBLES } from "../../../constants/fobles";
 import { fieldConfigs } from "../../../constants/_config";
@@ -153,9 +153,9 @@ export function triggerFobles(doc: Document): void {
       frameElement: !!window.frameElement,
       readyState: document.readyState,
       selectCount: currentDoc.querySelectorAll("select").length,
-      contentControlCount: currentDoc.querySelectorAll(SITECORE.SELECTORS.CONTENT_CONTROL).length,
-      comboCount: currentDoc.querySelectorAll(SITECORE.SELECTORS.COMBOBOX).length,
-      hasScEditorFieldMarker: !!currentDoc.querySelector(SITECORE.SELECTORS.EDITOR_FIELD_MARKER),
+      contentControlCount: currentDoc.querySelectorAll(CONST.SITECORE.SELECTORS.CONTENT_CONTROL).length,
+      comboCount: currentDoc.querySelectorAll(CONST.SITECORE.SELECTORS.COMBOBOX).length,
+      hasScEditorFieldMarker: !!currentDoc.querySelector(CONST.SITECORE.SELECTORS.EDITOR_FIELD_MARKER),
       iframeCount: currentDoc.querySelectorAll("iframe").length,
     });
 
@@ -168,7 +168,7 @@ export function triggerFobles(doc: Document): void {
 export function clearFobles(doc: Document): void {
   walkAllDocuments(doc, (currentDoc) => {
     removeFoblesTooltips(currentDoc);
-    const headerArea = currentDoc.querySelector(SITECORE.SELECTORS.GLOBAL_HEADER_CONTENT);
+    const headerArea = currentDoc.querySelector(CONST.SITECORE.SELECTORS.GLOBAL_HEADER_CONTENT);
     extensionLog.debug("clearFobles start", {
       headerButtons: headerArea ? headerArea.querySelectorAll("button").length : 0,
     });
@@ -214,11 +214,11 @@ export function clearFobles(doc: Document): void {
       button.remove();
     });
 
-    currentDoc.querySelectorAll(`${SITECORE.SELECTORS.MULTILIST_BOX}${FOBLES.SELECTORS.PROCESSED}`).forEach((el) => {
+    currentDoc.querySelectorAll(`${CONST.SITECORE.SELECTORS.MULTILIST.BOX}${FOBLES.SELECTORS.PROCESSED}`).forEach((el) => {
       resetElement(el as HTMLElement);
     });
 
-    currentDoc.querySelectorAll(`${SITECORE.SELECTORS.MULTILIST}${FOBLES.SELECTORS.PROCESSED}`).forEach((el) => {
+    currentDoc.querySelectorAll(`${CONST.SITECORE.SELECTORS.MULTILIST.ROOT}${FOBLES.SELECTORS.PROCESSED}`).forEach((el) => {
       resetElement(el as HTMLElement);
     });
 
@@ -246,7 +246,7 @@ export function clearFobles(doc: Document): void {
       spacer.remove();
     });
 
-    currentDoc.querySelectorAll(`${SITECORE.SELECTORS.MULTILIST_NAV_BUTTON}, ${SITECORE.SELECTORS.MULTILIST_FIELD_BUTTONS}`).forEach((el) => {
+    currentDoc.querySelectorAll(`${CONST.SITECORE.SELECTORS.MULTILIST.NAV_BUTTON}, ${CONST.SITECORE.SELECTORS.MULTILIST.FIELD_BUTTONS}`).forEach((el) => {
       const htmlEl = el as HTMLElement;
       htmlEl.classList.remove(FOBLES.CLASSES.HIDDEN);
       htmlEl.style.display = "";

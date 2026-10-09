@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { SITECORE } from "../../../../constants/sitecore";
+import { CONST } from "../../../../constants/const";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
@@ -12,7 +12,7 @@ type MultilistOption = {
 };
 
 const findEligibleHosts = (table: Element): HTMLSelectElement[] =>
-  Array.from(table.querySelectorAll<HTMLSelectElement>(SITECORE.SELECTORS.MULTILIST_BOX))
+  Array.from(table.querySelectorAll<HTMLSelectElement>(CONST.SITECORE.SELECTORS.MULTILIST.BOX))
     .filter((select) => !select.hasAttribute(FOBLES.ATTRIBUTES.MARKER));
 
 const getHostContainer = (select: HTMLSelectElement): Element | null =>
@@ -61,13 +61,13 @@ const hideOriginalControls = (
   select: HTMLSelectElement,
 ): void => {
   const row = control.closest("tr");
-  const fieldCell = control.closest(SITECORE.SELECTORS.FIELD_CELL) ?? select.closest("td") ?? select.parentElement;
+  const fieldCell = control.closest(CONST.SITECORE.SELECTORS.FIELD_CELL) ?? select.closest("td") ?? select.parentElement;
 
-  row?.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.MULTILIST_NAV_BUTTON).forEach((navButton) => {
+  row?.querySelectorAll<HTMLElement>(CONST.SITECORE.SELECTORS.MULTILIST.NAV_BUTTON).forEach((navButton) => {
     navButton.classList.add(FOBLES.CLASSES.HIDDEN);
   });
 
-  fieldCell?.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.MULTILIST_FIELD_BUTTONS).forEach((actionButton) => {
+  fieldCell?.querySelectorAll<HTMLElement>(CONST.SITECORE.SELECTORS.MULTILIST.FIELD_BUTTONS).forEach((actionButton) => {
     hideWithStyledSpacer(actionButton);
   });
 

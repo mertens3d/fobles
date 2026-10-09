@@ -1,14 +1,14 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { SITECORE } from "../../../../constants/sitecore";
+import { CONST } from "../../../../constants/const";
 import type { IconFobles as IconConfig } from "../fobles.types";
 
 const isIconField = (input: HTMLInputElement): boolean => {
-  const fieldCell = input.closest(SITECORE.SELECTORS.FIELD_CELL);
-  return Array.from(fieldCell?.querySelectorAll(SITECORE.SELECTORS.FIELD_ACTION) ?? [])
+  const fieldCell = input.closest(CONST.SITECORE.SELECTORS.FIELD_CELL);
+  return Array.from(fieldCell?.querySelectorAll(CONST.SITECORE.SELECTORS.FIELD_ACTION) ?? [])
     .some((button) =>
       (button.getAttribute("onclick") ?? "")
         .toLowerCase()
-        .includes(`${SITECORE.ACTION_PREFIXES.ICON}:`),
+        .includes(`${CONST.SITECORE.ACTION_PREFIXES.ICON}:`),
     );
 };
 

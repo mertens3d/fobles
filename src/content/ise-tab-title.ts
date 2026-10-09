@@ -1,9 +1,9 @@
-import { SITECORE } from "../constants/sitecore";
+import { CONST} from "../constants/const";
 import { isPowerShellIsePath } from "./guard";
 
 export function getPowerShellIseScriptTitle(doc: Document): string | null {
   const scriptName = doc
-    .querySelector(SITECORE.SELECTORS.SCRIPT_NAME)
+    .querySelector(CONST.SITECORE.SELECTORS.SCRIPT_NAME)
     ?.textContent
     ?.trim();
   return scriptName?.split(/[\\/]/).filter(Boolean).pop() ?? null;

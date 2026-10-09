@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { SITECORE } from "../../../../constants/sitecore";
+import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
@@ -44,9 +44,9 @@ const createItemButton = (doc: Document, item: TreelistExItem): HTMLButtonElemen
   createFoblesItemButton(doc, item.label, item.value, FOBLES.CLASSES.BUTTONS.TREELIST_EX);
 
 const hideEditButton = (host: HTMLElement): void => {
-  const fieldCell = host.closest(SITECORE.SELECTORS.FIELD_CELL);
+  const fieldCell = host.closest(CONST.SITECORE.SELECTORS.FIELD_CELL);
   const editButton = fieldCell?.querySelector<HTMLAnchorElement>(
-    SITECORE.SELECTORS.FIELD_ACTION_LINKS,
+    CONST.SITECORE.SELECTORS.FIELD_ACTION_LINKS,
   );
   if (editButton) hideWithStyledSpacer(editButton);
 };

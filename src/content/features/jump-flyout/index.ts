@@ -2,5 +2,3 @@
 // non-UI command logic that doesn't fit toolbar (rendering) or augmentor (page-manipulation
 // commands) cleanly yet. Left here until that boundary is revisited.
 export { resumeKickAllUsers } from "./kick-users";
-export { resumeRenderingGraph } from "./rendering-graph";
-

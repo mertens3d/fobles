@@ -1,5 +1,5 @@
 import { extensionLog } from "../../../logger";
-import { SITECORE } from "../../../../constants/sitecore";
+import { CONST } from "../../../../constants/const";
 import { FOBLES } from "../../../../constants/fobles";
 import {
   buildFoblesUrl,
@@ -15,7 +15,7 @@ export function clearTreeButtons(root: ParentNode = document): void {
   root.querySelectorAll(`.${FOBLES.CLASSES.TREE.WRAPPER}`).forEach((wrapper) => wrapper.remove());
   root.querySelectorAll(`.${FOBLES.CLASSES.TREE.SPACER}`).forEach((spacer) => spacer.remove());
 
-  root.querySelectorAll(`${SITECORE.SELECTORS.TREE_GLYPH}.${FOBLES.CLASSES.TREE.GLYPH_HIDDEN}`).forEach((glyph) => {
+  root.querySelectorAll(`${CONST.SITECORE.SELECTORS.TREE.GLYPH}.${FOBLES.CLASSES.TREE.GLYPH_HIDDEN}`).forEach((glyph) => {
     const icon = glyph as HTMLImageElement;
     icon.classList.remove(FOBLES.CLASSES.TREE.GLYPH_HIDDEN);
   });
@@ -28,8 +28,8 @@ function buildTreeButtonUrl(itemId: string): string {
 }
 
 function getTreeNodeItemId(node: Element): string | null {
-  const glyph = node.querySelector(SITECORE.SELECTORS.TREE_GLYPH);
-  const anchor = node.querySelector(SITECORE.SELECTORS.TREE_NODE_LINK);
+  const glyph = node.querySelector(CONST.SITECORE.SELECTORS.TREE.GLYPH);
+  const anchor = node.querySelector(CONST.SITECORE.SELECTORS.TREE.NODE_LINK);
 
   extensionLog.debug("tree node inspect", {
     nodeHtml: node.outerHTML.slice(0, 400),
@@ -38,33 +38,33 @@ function getTreeNodeItemId(node: Element): string | null {
   });
 
   if (glyph?.id) {
-    const raw = glyph.id.replace(SITECORE.TREE_ID_PREFIXES.GLYPH, "");
+    const raw = glyph.id.replace(CONST.SITECORE.TREE_ID_PREFIXES.GLYPH, "");
     if (raw) return raw;
   }
 
   if (anchor?.id) {
-    const raw = anchor.id.replace(SITECORE.TREE_ID_PREFIXES.NODE, "");
+    const raw = anchor.id.replace(CONST.SITECORE.TREE_ID_PREFIXES.NODE, "");
     if (raw) return raw;
   }
 
   const directId = node.getAttribute("id") ?? "";
-  if (directId.startsWith(SITECORE.TREE_ID_PREFIXES.NODE)) {
-    return directId.replace(SITECORE.TREE_ID_PREFIXES.NODE, "");
+  if (directId.startsWith(CONST.SITECORE.TREE_ID_PREFIXES.NODE)) {
+    return directId.replace(CONST.SITECORE.TREE_ID_PREFIXES.NODE, "");
   }
 
-  if (directId.startsWith(SITECORE.TREE_ID_PREFIXES.GLYPH)) {
-    return directId.replace(SITECORE.TREE_ID_PREFIXES.GLYPH, "");
+  if (directId.startsWith(CONST.SITECORE.TREE_ID_PREFIXES.GLYPH)) {
+    return directId.replace(CONST.SITECORE.TREE_ID_PREFIXES.GLYPH, "");
   }
 
-  if (directId.startsWith(SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING)) {
+  if (directId.startsWith(CONST.SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING)) {
     return directId.replace(
-      SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING,
+      CONST.SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING,
       "",
     );
   }
 
-  if (directId.startsWith(SITECORE.TREE_ID_PREFIXES.TEMPLATE_LISTER)) {
-    return directId.replace(SITECORE.TREE_ID_PREFIXES.TEMPLATE_LISTER, "");
+  if (directId.startsWith(CONST.SITECORE.TREE_ID_PREFIXES.TEMPLATE_LISTER)) {
+    return directId.replace(CONST.SITECORE.TREE_ID_PREFIXES.TEMPLATE_LISTER, "");
   }
 
   return null;
@@ -84,7 +84,7 @@ function addTreeOpenButton(node: Element): void {
     return;
   }
 
-  const glyph = node.querySelector<HTMLElement>(SITECORE.SELECTORS.TREE_GLYPH);
+  const glyph = node.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.TREE.GLYPH);
   const glyphHeight = glyph
     ? Math.ceil(glyph.getBoundingClientRect().height || glyph.clientHeight || glyph.offsetHeight || 18)
     : 18;
@@ -132,8 +132,8 @@ function addTreeOpenButton(node: Element): void {
 }
 
 function walkTreeForButtons(root: ParentNode): void {
-  root.querySelectorAll(SITECORE.SELECTORS.TREE_ROOT).forEach((treePanel) => {
-    treePanel.querySelectorAll(SITECORE.SELECTORS.TREE_NODE).forEach((node) => {
+  root.querySelectorAll(CONST.SITECORE.SELECTORS.TREE.ROOT).forEach((treePanel) => {
+    treePanel.querySelectorAll(CONST.SITECORE.SELECTORS.TREE.NODE).forEach((node) => {
       addTreeOpenButton(node);
     });
   });

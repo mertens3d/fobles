@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { SITECORE } from "../../../../constants/sitecore";
+import { CONST } from "../../../../constants/const";
 import type { TagListFobles as TagListConfig } from "../fobles.types";
 import { formatFoId } from "../shared/guid";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
@@ -14,11 +14,11 @@ type TagListItem = {
 };
 
 const collectTreeItems = (pane: Element): TagListItem[] =>
-  Array.from(pane.querySelectorAll(SITECORE.SELECTORS.TREE_NODES_WITH_ID))
+  Array.from(pane.querySelectorAll(CONST.SITECORE.SELECTORS.TREE.NODES_WITH_ID))
     .map((node) => {
       const compactGuid = node.id.match(/([0-9a-f]{32})$/i)?.[1];
       const value = compactGuid ? formatFoId(compactGuid) : null;
-      const label = node.querySelector(SITECORE.SELECTORS.TREE_NODE_TITLE)?.textContent?.trim() ?? "";
+      const label = node.querySelector(CONST.SITECORE.SELECTORS.TREE. NODE_TITLE)?.textContent?.trim() ?? "";
       return value && label ? { value, label } : null;
     })
     .filter((item): item is TagListItem => item !== null);
@@ -47,7 +47,7 @@ const replacePane = (
 
 const hideNavigation = (control: Element): void => {
   control
-    .querySelectorAll<HTMLElement>(SITECORE.SELECTORS.TAG_LIST_NAV_ARROWS)
+    .querySelectorAll<HTMLElement>(CONST.SITECORE.SELECTORS.TAG_LIST_NAV_ARROWS)
     .forEach(hideWithStyledSpacer);
 };
 

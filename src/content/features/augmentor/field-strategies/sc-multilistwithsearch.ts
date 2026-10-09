@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { SITECORE } from "../../../../constants/sitecore";
+import { CONST } from "../../../../constants/const";
 import {
   createStyledSpacer,
   hideWithStyledSpacer,
@@ -36,13 +36,13 @@ const replacePane = (
 };
 
 const hideAncillaryControls = (control: Element): void => {
-  const fieldCell = control.closest(SITECORE.SELECTORS.FIELD_CELL);
+  const fieldCell = control.closest(CONST.SITECORE.SELECTORS.FIELD_CELL);
   fieldCell
-    ?.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.FIELD_ACTION_LINKS)
+    ?.querySelectorAll<HTMLElement>(CONST.SITECORE.SELECTORS.FIELD_ACTION_LINKS)
     .forEach(hideWithStyledSpacer);
   control
     .querySelectorAll<HTMLElement>(
-      `${SITECORE.SELECTORS.MULTILIST_NAV}, ${SITECORE.SELECTORS.MULTILIST_WITH_SEARCH_NAV_ARROWS}`,
+      `${CONST.SITECORE.SELECTORS.MULTILIST.NAV}, ${CONST.SITECORE.SELECTORS.MULTILIST.WITH_SEARCH_NAV_ARROWS}`,
     )
     .forEach(hideWithStyledSpacer);
 };
@@ -61,7 +61,7 @@ export function applyMultilistWithSearchStrategy(
     if (!allPane || !selectedPane) return;
 
     const paneHeight = calculatePaneHeight(allPane);
-    const navigation = control.querySelector<HTMLElement>(SITECORE.SELECTORS.MULTILIST_NAV);
+    const navigation = control.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.MULTILIST.NAV);
     if (navigation) {
       selectedPane.before(createStyledSpacer(navigation));
     }

@@ -1,4 +1,4 @@
-import { SITECORE } from "../../../constants/sitecore";
+import { CONST} from "../../../constants/const";
 
 export type FieldLink = {
   label: string;
@@ -15,13 +15,13 @@ type FieldLinkResolver = (marker: HTMLElement) => FieldLink[] | null;
 // "/Fobles Testing/Home"), but already absolute when the field's root lives outside content
 // (e.g. a template picker: "/sitecore/templates/..."). Only prefix when it isn't already rooted.
 function toItemPath(title: string): string {
-  return title.startsWith(SITECORE.RELATIVE_PATHS_ENCODED.ROOT)
+  return title.startsWith(CONST.SITECORE.RELATIVE_PATHS_ENCODED.ROOT)
     ? title
-    : `${SITECORE.RELATIVE_PATHS_ENCODED.ROOT}/content${title}`;
+    : `${CONST.SITECORE.RELATIVE_PATHS_ENCODED.ROOT}/content${title}`;
 }
 
 const resolveTreelistExLinks: FieldLinkResolver = (marker) => {
-  const host = marker.querySelector<HTMLElement>(SITECORE.SELECTORS.TREELIST_EX);
+  const host = marker.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.TREELIST_EX.ROOT);
   if (!host) return null;
 
   const links = Array.from(host.children)

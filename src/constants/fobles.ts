@@ -1,3 +1,4 @@
+import { FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_ID } from "./button-ids";
 
 // Shared constants used by fobles generation and cleanup
 export const FOBLES = {
@@ -112,6 +113,12 @@ export const FOBLES = {
   },
   SYMBOLS: {
     TREE_BUTTON: "\u2022",
+  },
+  TOOLBAR: {
+    JUMP_FLYOUT: {
+      BUTTON_ID: FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_ID,
+    },
+    GROUPS: {}
   },
   TEXT: {
     CONFIRM: {

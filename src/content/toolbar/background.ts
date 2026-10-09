@@ -1,5 +1,5 @@
 import { CSS_PROPERTIES, SELECTORS } from "../../constants/fobles.constants";
-import { SITECORE } from "../../constants/sitecore";
+import { CONST } from "../../constants/const";
 import type { ToolbarContext } from "./types";
 
 const observedDocuments = new WeakSet<Document>();
@@ -11,7 +11,7 @@ export function updateToolbarBackground(context: ToolbarContext): void {
   if (!container) return;
 
   container.style.removeProperty(CSS_PROPERTIES.TOOLBAR_BACKGROUND);
-  const globalHeader = context.doc.querySelector<HTMLElement>(SITECORE.SELECTORS.GLOBAL_HEADER);
+  const globalHeader = context.doc.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.GLOBAL_HEADER);
   if (!globalHeader) return;
 
   const backgroundColor = context.win.getComputedStyle(globalHeader).backgroundColor;
@@ -27,7 +27,7 @@ export function updateToolbarBackground(context: ToolbarContext): void {
 export function observeToolbarBackground(context: ToolbarContext): void {
   if (observedDocuments.has(context.doc)) return;
 
-  const header = context.doc.querySelector(SITECORE.SELECTORS.GLOBAL_HEADER);
+  const header = context.doc.querySelector(CONST.SITECORE.SELECTORS.GLOBAL_HEADER);
   if (!header) return;
 
   const observer = new MutationObserver(() => updateToolbarBackground(context));

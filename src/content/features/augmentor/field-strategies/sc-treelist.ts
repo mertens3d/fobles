@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { SITECORE } from "../../../../constants/sitecore";
+import { CONST } from "../../../../constants/const";
 import { formatFoId } from "../shared/guid";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
@@ -18,16 +18,16 @@ const getTreeNodeValue = (node: Element): string | null => {
 };
 
 const getAllTreeItems = (treePane: Element): TreeListItem[] =>
-  Array.from(treePane.querySelectorAll(SITECORE.SELECTORS.TREE_NODES_WITH_ID))
+  Array.from(treePane.querySelectorAll(CONST.SITECORE.SELECTORS.TREE.NODES_WITH_ID))
     .map((node) => {
       const value = getTreeNodeValue(node);
-      const label = node.querySelector(SITECORE.SELECTORS.TREE_NODE_TITLE)?.textContent?.trim() ?? "";
+      const label = node.querySelector(CONST.SITECORE.SELECTORS.TREE.NODE_TITLE)?.textContent?.trim() ?? "";
       return value && label ? { value, label } : null;
     })
     .filter((item): item is TreeListItem => item !== null);
 
 const getSelectedItems = (selectedPane: Element): TreeListItem[] => {
-  const select = selectedPane.querySelector<HTMLSelectElement>(SITECORE.SELECTORS.MULTILIST_BOX);
+  const select = selectedPane.querySelector<HTMLSelectElement>(CONST.SITECORE.SELECTORS.MULTILIST.BOX);
   return select ? collectGuidOptionItems(select) : [];
 };
 
@@ -56,7 +56,7 @@ const replacePaneWithFobles = (
 };
 
 const hideTreeListNavigation = (control: Element): void => {
-  control.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.MULTILIST_NAV_BUTTON).forEach((button) => {
+  control.querySelectorAll<HTMLElement>(CONST.SITECORE.SELECTORS.MULTILIST.NAV_BUTTON).forEach((button) => {
     button.classList.add(FOBLES.CLASSES.HIDDEN);
   });
 };
@@ -68,8 +68,8 @@ export function applyTreeListStrategy(
   doc.querySelectorAll(config.FoblesTopSelector).forEach((control) => {
     if (control.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;
 
-    const allTreePane = control.querySelector(SITECORE.SELECTORS.TREE_LIST_ALL_PANE);
-    const selectedPane = control.querySelector(SITECORE.SELECTORS.TREE_LIST_SELECTED_PANE);
+    const allTreePane = control.querySelector(CONST.SITECORE.SELECTORS.TREE.LIST_ALL_PANE);
+    const selectedPane = control.querySelector(CONST.SITECORE.SELECTORS.TREE.LIST_SELECTED_PANE);
     const replacedAllPane = allTreePane
       ? replacePaneWithFobles(doc, allTreePane, getAllTreeItems(allTreePane), FOBLES.PANES.ALL)
       : false;

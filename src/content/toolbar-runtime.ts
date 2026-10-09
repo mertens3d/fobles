@@ -16,7 +16,7 @@ import {
   findAllowedPage,
   isKickUsersPath,
 } from "./guard";
-import { resumeKickAllUsers, resumeRenderingGraph } from "./features/jump-flyout";
+import { resumeKickAllUsers} from "./features/jump-flyout";
 import {
   injectToolbar,
   setToolbarPlacement,
@@ -25,6 +25,7 @@ import {
 } from "./toolbar";
 import { applyPowerShellIseTabIdentity } from "./ise-tab-title";
 import { toggleLightningBolt } from "./feature-toggle";
+import { resumeRenderingGraph } from "./toolbar/graph/rendering-graph";
 
 let foblesUiActive = false;
 let foblesNavPlacement: ToolbarPlacement = DEFAULT_TOOLBAR_PLACEMENT;

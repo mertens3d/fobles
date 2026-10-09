@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { SITECORE } from "../../../../constants/sitecore";
+import { CONST } from "../../../../constants/const";
 import type { FoblesConfigBase, FoblesStrategy, SingleInputFieldOptions } from "../fobles.types";
 import { createFoblesWrapper } from "./create-fobles-wrapper";
 import { createFoblesItemButton } from "./create-fobles-item-button";
@@ -11,8 +11,8 @@ const hasActionPrefix = (
   input: HTMLInputElement,
   actionPrefix: string,
 ): boolean => {
-  const fieldCell = input.closest(SITECORE.SELECTORS.FIELD_CELL);
-  return Array.from(fieldCell?.querySelectorAll(SITECORE.SELECTORS.FIELD_ACTION) ?? [])
+  const fieldCell = input.closest(CONST.SITECORE.SELECTORS.FIELD_CELL);
+  return Array.from(fieldCell?.querySelectorAll(CONST.SITECORE.SELECTORS.FIELD_ACTION) ?? [])
     .some((button) =>
       (button.getAttribute("onclick") ?? "")
         .toLowerCase()
@@ -22,8 +22,8 @@ const hasActionPrefix = (
 
 const hideFieldActions = (input: HTMLInputElement): void => {
   const actions = input
-    .closest(SITECORE.SELECTORS.FIELD_CELL)
-    ?.querySelector<HTMLElement>(SITECORE.SELECTORS.FIELD_ACTIONS);
+    .closest(CONST.SITECORE.SELECTORS.FIELD_CELL)
+    ?.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.FIELD_ACTIONS);
   if (actions) hideWithStyledSpacer(actions);
 };
 

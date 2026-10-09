@@ -1,4 +1,4 @@
-import { SITECORE } from "../../../constants/sitecore";
+import { CONST} from "../../../constants/const";
 import {
   getFoblesNavWarningVisible,
   getTurnOffFoblesAfterNavigation,
@@ -187,7 +187,7 @@ export function buildFoblesUrl(fo: string): string {
   const normalizedFo = normalizeFoblesValue(fo);
   const host = location.hostname;
   const protocol = window.location.protocol;
-  return `${protocol}//${host}${SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY}?sc_bw=1&fo=${normalizedFo}`;
+  return `${protocol}//${host}${CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY}?sc_bw=1&fo=${normalizedFo}`;
 }
 
 export function createFoblesButton(

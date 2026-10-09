@@ -1,5 +1,5 @@
 import { type AllowedPage, FOBLES_PAGES } from "../constants/fobles.constants";
-import { SITECORE } from "../constants/sitecore";
+import { CONST} from "../constants/const";
 
 function normalizePath(pathname: string): string {
   let normalizedPath = pathname;
@@ -50,7 +50,7 @@ export function findAllowedPage(
   const normalizedHref = getNormalizedPath(locationPath);
   // A media request path can appear nested behind another page's path (e.g. Content Editor.aspx)
   // but is always a media resource, never a real shell page eligible for the toolbar.
-  if (normalizedHref.includes(SITECORE.RELATIVE_PATHS_ENCODED.MEDIA_REQUEST_SEGMENT.toLowerCase())) return null;
+  if (normalizedHref.includes(CONST.SITECORE.RELATIVE_PATHS_ENCODED.MEDIA_REQUEST_SEGMENT.toLowerCase())) return null;
 
   const result = 
     FOBLES_PAGES.find(
@@ -76,10 +76,10 @@ export function isContentEditorPath(pathname: string): boolean {
   const normalizedPath = getNormalizedPath(pathname); 
   const result = 
    normalizedPath.includes(
-    SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY.toLowerCase(),
+    CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY.toLowerCase(),
   ) ||
   normalizedPath.includes(
-    SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_MODERN.toLowerCase(),
+    CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_MODERN.toLowerCase(),
   );
   return result;
 }
@@ -103,7 +103,7 @@ export function isMenuOwnedFrame(
 
 export function isPowerShellIsePath(pathname: string): boolean {
   return getNormalizedPath(pathname).includes(
-    SITECORE.RELATIVE_PATHS_ENCODED.POWERSHELL_ISE.toLowerCase(),
+    CONST.SITECORE.RELATIVE_PATHS_ENCODED.POWERSHELL_ISE.toLowerCase(),
   );
 }
 
@@ -116,6 +116,6 @@ export function isCompactToolbarPage(locationPath: string , baseUrl?: string): b
 
 export function isKickUsersPath(pathname: string): boolean {
   return getNormalizedPath(pathname).includes(
-    SITECORE.RELATIVE_PATHS_ENCODED.KICK_USERS.toLowerCase(),
+    CONST.SITECORE.RELATIVE_PATHS_ENCODED.KICK_USERS.toLowerCase(),
   );
 }

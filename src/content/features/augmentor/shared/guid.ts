@@ -9,10 +9,12 @@ export function stripGuidBraces(value: string | null | undefined): string {
 }
 
 export function extractGuid(value: string | null | undefined): string | null {
-  if (!value) return null;
-
-  const match = value.match(GUID_PATTERN);
-  return match ? stripGuidBraces(match[1]) : null;
+let match = null;
+  if (value) {
+    const candidate = value.match(GUID_PATTERN);
+    match = candidate ? stripGuidBraces(candidate[1]) : null;
+  } 
+  return match
 }
 
 export function formatFoId(itemId: string): string {

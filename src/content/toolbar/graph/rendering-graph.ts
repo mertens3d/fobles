@@ -1,50 +1,51 @@
 import { STORAGE } from "../../../constants/constants-b";
-import { SITECORE } from "../../../constants/sitecore";
+import { CONST } from "../../../constants/const";
 import { extensionLog } from "../../logger";
-import { buildFoblesUrl } from "../augmentor/helper";
-import { extractGuid, formatFoId } from "../augmentor/shared/guid";
+import { buildFoblesUrl } from "../../features/augmentor/helper";
+import { extractGuid, formatFoId } from "../../features/augmentor/shared/guid";
 import {
   isRibbonCheckboxEnabled,
   setRibbonCheckboxEnabled,
 } from "../../macros/ribbon-toggle-macro";
 import { collectTreeChildren } from "../../macros/tree-expand-macro";
-
-import { getCurrentItemId } from "../../toolbar/jump-flyout/ai-pages";
+import {
+  openRenderingGraphModal,
+  openRenderingGraphProgressModal,
+  closeRenderingGraphProgressModal,
+  updateRenderingGraphProgressModal,
+} from "./rendering-graph-modal";
+import { getCurrentItemId } from "../jump-flyout/ai-pages";
+import { getQuickInfo } from "../jump-flyout/quick-info";
 import type {
   RenderingGraphChildItem,
-  RenderingGraphField,
   RenderingGraphReferrer,
   ReferenceGraphResult,
-  RenderingGraphSection,
-} from "../../toolbar/graph/rendering-graph.types";
-import { getQuickInfo } from "../../toolbar/jump-flyout/quick-info";
-import { resolveFieldLinks } from "../../toolbar/graph/rendering-graph-field-links";
-import { updateRenderingGraphProgressModal, closeRenderingGraphProgressModal, openRenderingGraphModal, openRenderingGraphProgressModal } from "../../toolbar/graph/rendering-graph-modal";
-import type { QuickInfo } from "../../toolbar/types";
-import type { PendingRenderingGraph } from "../../toolbar/graph/graph.types";
-import { GRAPHCONST } from "../../toolbar/graph/graph.const";
-import { parseDevice } from "../../toolbar/graph/layout-parsing";
+} from "./rendering-graph.types";
+import type { QuickInfo } from "../types";
+import type { PendingRenderingGraph } from "./graph.types";
+import { collectSections, harvestGraphForLink } from "./harvester";
+import { parseDevice } from "./layout-parsing";
+import { EXCLUDED_FIELD_LABEL_PREFIXES } from "./graph.const";
 
 // Shared by the fast path (harvestAndOpen) and the slow, reload-spanning path - Cancel aborts
 // whichever one is currently in flight; a stale/already-settled controller is harmless to abort.
-let renderingGraphAbortController: AbortController | undefined = undefined;
+export let renderingGraphAbortController: AbortController | undefined = undefined;
 
 function findFieldInput(doc: Document, labelPrefix: string): HTMLInputElement | undefined {
   const label = Array.from(
-    doc.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.FIELD_LABEL),
+    doc.querySelectorAll<HTMLElement>(CONST.SITECORE.SELECTORS.FIELD_LABEL),
   ).find((element) =>
     element.textContent?.trim().toLowerCase().startsWith(labelPrefix.toLowerCase()),
   );
   return (
     label
-      ?.closest(SITECORE.SELECTORS.FIELD_CELL)
-      ?.querySelector<HTMLInputElement>(SITECORE.SELECTORS.CONTENT_CONTROL) ?? undefined
+      ?.closest(CONST.SITECORE.SELECTORS.FIELD_CELL)
+      ?.querySelector<HTMLInputElement>(CONST.SITECORE.SELECTORS.CONTENT_CONTROL) ?? undefined
   );
 }
 
 
-
-async function resolveQuickInfoForRenderingId(
+async function resolveQuickInfoFromItemId(
   renderingId: string,
   signal: AbortSignal,
 ): Promise<QuickInfo | undefined> {
@@ -52,9 +53,9 @@ async function resolveQuickInfoForRenderingId(
     const response = await fetch(buildFoblesUrl(renderingId), { credentials: "same-origin", signal });
     if (!response.ok) return undefined;
     const fetchedDoc = new DOMParser().parseFromString(await response.text(), "text/html");
-    // const path = getQuickInfoValue(fetchedDoc, "Item path:");
-    const fetchDocQuickInfo = getQuickInfo(fetchedDoc);
-    return fetchDocQuickInfo;
+
+    const quickInfo = getQuickInfo(fetchedDoc);
+    return quickInfo;
   } catch (error) {
     extensionLog.warn("Rendering graph: failed to resolve rendering details", { renderingId, error });
     return undefined;
@@ -87,21 +88,19 @@ function getParentPath(itemPath: string | undefined): string | undefined {
   return `/${segments.join("/")}`;
 }
 
-
-
-function isHandledElsewhere(label: string): boolean {
+export function isHandledElsewhere(label: string): boolean {
   const normalized = label.toLowerCase();
-  return GRAPHCONST.EXCLUSIONS.EXCLUDED_FIELD_LABEL_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+  return EXCLUDED_FIELD_LABEL_PREFIXES.some((prefix) => normalized.startsWith(prefix));
 }
 
 // The administrator suffix (" [shared]", " [shared, standard value]", ...) is only ever
 // relevant in the Content Editor's own chrome - stripped here so it doesn't leak into node
 // labels/tooltips the graph builds from this text.
-function extractFieldLabel(marker: HTMLElement): string {
-  const labelElement = marker.querySelector<HTMLElement>(SITECORE.SELECTORS.FIELD_LABEL);
+export function extractFieldLabel(marker: HTMLElement): string {
+  const labelElement = marker.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.FIELD_LABEL);
   if (!labelElement) return "";
   const clone = labelElement.cloneNode(true) as HTMLElement;
-  clone.querySelector(SITECORE.SELECTORS.FIELD_LABEL_ADMINISTRATOR)?.remove();
+  clone.querySelector(CONST.SITECORE.SELECTORS.FIELD_LABEL_ADMINISTRATOR)?.remove();
   return clone.textContent?.trim() ?? "";
 }
 
@@ -113,8 +112,8 @@ function extractFieldLabel(marker: HTMLElement): string {
 // just as much as a real input/select/textarea does, but don't carry a `.value` at all - reading
 // one unconditionally throws. Anything that isn't actually value-bearing is treated the same as
 // "no value" (filtered out below), same as a genuinely empty field.
-function readRawFieldValue(marker: HTMLElement): string | undefined {
-  const control = marker.querySelector<HTMLElement>(SITECORE.SELECTORS.CONTENT_CONTROL);
+export function readRawFieldValue(marker: HTMLElement): string | undefined {
+  const control = marker.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.CONTENT_CONTROL);
   if (
     !(control instanceof HTMLInputElement) &&
     !(control instanceof HTMLSelectElement) &&
@@ -125,45 +124,11 @@ function readRawFieldValue(marker: HTMLElement): string | undefined {
   return control.value.trim() || undefined;
 }
 
-function collectSections(doc: Document): RenderingGraphSection[] {
-  const sections: RenderingGraphSection[] = [];
-
-  doc.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.SECTION_CAPTION).forEach((caption) => {
-    const name = caption.textContent?.trim() ?? "";
-    if (!name || GRAPHCONST.EXCLUSIONS.EXCLUDED_SECTION_NAMES.has(name.toLowerCase())) return;
-
-    const panelId =
-      caption.querySelector("img[aria-controls]")?.getAttribute("aria-controls") ?? `${caption.id}_controls`;
-    const panel = doc.getElementById(panelId);
-    if (!panel) return;
-
-    const fields: RenderingGraphField[] = [];
-    panel.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.EDITOR_FIELD_MARKER).forEach((marker) => {
-      const label = extractFieldLabel(marker);
-      if (!label || isHandledElsewhere(label)) return;
-
-      const links = resolveFieldLinks(marker);
-      if (links) {
-        fields.push({ label, value: links.map((link) => link.label).join(", "), links });
-        return;
-      }
-
-      const value = readRawFieldValue(marker);
-      if (!value) return;
-      fields.push({ label, value });
-    });
-
-    if (fields.length > 0) sections.push({ name, fields });
-  });
-
-  return sections;
-}
-
 function buildGalleryLinksUrl(itemId: string): string {
   const origin = `${window.location.protocol}//${window.location.hostname}`;
   const params = new URLSearchParams({
-    [SITECORE.SEARCH_PARAMS.XML_CONTROL]: "Gallery.Links",
-    [SITECORE.SEARCH_PARAMS.ITEM_ID]: formatFoId(itemId),
+    [CONST.SITECORE.SEARCH_PARAMS.XML_CONTROL]: "Gallery.Links",
+    [CONST.SITECORE.SEARCH_PARAMS.ITEM_ID]: formatFoId(itemId),
     la: "en",
     vs: "1",
     db: "master",
@@ -171,7 +136,7 @@ function buildGalleryLinksUrl(itemId: string): string {
     ShowEditor: "1",
     "Ribbon.RenderTabs": "true",
   });
-  return `${origin}${SITECORE.RELATIVE_PATHS_ENCODED.SHELL_DEFAULT}?${params.toString()}`;
+  return `${origin}${CONST.SITECORE.RELATIVE_PATHS_ENCODED.SHELL_DEFAULT}?${params.toString()}`;
 }
 
 // Items that reference this one - Sitecore's own "Links" gallery (ribbon: Links -> "Items that
@@ -209,7 +174,7 @@ async function collectReferrers(itemId: string, signal: AbortSignal): Promise<Re
   }
 }
 
-export async function buildRenderingGraph(
+export async function buildReferenceGraph(
   doc: Document,
   signal: AbortSignal,
   progressDoc: Document = doc,
@@ -229,13 +194,14 @@ export async function buildRenderingGraph(
       "Rendering graph: no Renderings field found for this item (no layout, or View > Standard Fields/Raw Values is off)",
     );
   }
-  const docQuickInfo = getQuickInfo(doc)
-    const templateGuid = getTemplateGuid(doc);
+
+  const quickInfoForDoc = getQuickInfo(doc);
+  const templateGuid = getTemplateGuid(doc);
   const sharedDevice = sharedLayoutInput?.value
-    ? parseDevice(sharedLayoutInput.value, SITECORE.DEVICES.DEFAULT)
+    ? parseDevice(sharedLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
     : { layoutId: undefined, controls: [] };
   const finalDevice = finalLayoutInput?.value
-    ? parseDevice(finalLayoutInput.value, SITECORE.DEVICES.DEFAULT)
+    ? parseDevice(finalLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
     : { layoutId: undefined, controls: [] };
   const layoutId = finalDevice.layoutId ?? sharedDevice.layoutId;
 
@@ -248,25 +214,25 @@ export async function buildRenderingGraph(
     updateRenderingGraphProgressModal(progressDoc, completedSteps, totalSteps);
   };
 
-  const layoutDetailsQuickInfo = layoutId ? await resolveQuickInfoForRenderingId(layoutId, signal) : undefined;
+  const layoutDetailsQuickInfo = layoutId ? await resolveQuickInfoFromItemId(layoutId, signal) : undefined;
   if (layoutId) reportProgress();
 
   const enrichedControls = await Promise.all(
     finalDevice.controls.map(async (control) => {
-      const details = control.renderingId ? await resolveQuickInfoForRenderingId(control.renderingId, signal) : undefined;
+      const quickInfo = control.renderingId ? await resolveQuickInfoFromItemId(control.renderingId, signal) : undefined;
       reportProgress();
       return {
         ...control,
-        name: details?.itemName ?? undefined,
-        path: details?.itemPath ?? undefined,
-        template: details?.template ?? undefined,
+        name: quickInfo?.itemName ?? undefined,
+        path: quickInfo?.itemPath ?? undefined,
+        template: quickInfo?.template ?? undefined,
         link: control.renderingId ? buildFoblesUrl(control.renderingId) : undefined,
-        datasourceLink: resolveDatasourceLink(control.datasource, docQuickInfo?.itemPath ?? undefined),
+        datasourceLink: resolveDatasourceLink(control.datasource, quickInfoForDoc.itemPath),
       };
     }),
   );
 
-  const parentPath = getParentPath(docQuickInfo?.itemPath ?? undefined);
+  const parentPath = getParentPath(quickInfoForDoc.itemPath);
   const treeChildren = await collectTreeChildren(doc, itemId);
   reportProgress();
   const referrers = await collectReferrers(itemId, signal);
@@ -274,9 +240,9 @@ export async function buildRenderingGraph(
 
   const result: ReferenceGraphResult = {
     itemId,
-    itemName: docQuickInfo?.itemName,
-    itemPath: docQuickInfo?.itemPath,
-    itemTemplate: docQuickInfo?.template,
+    itemName: quickInfoForDoc.itemName,
+    itemPath: quickInfoForDoc.itemPath,
+    itemTemplate: quickInfoForDoc.template,
     itemTemplateLink: templateGuid ? buildFoblesUrl(templateGuid) : undefined,
     itemLink: buildFoblesUrl(itemId),
     parentName: parentPath?.split("/").filter(Boolean).pop() ?? undefined,
@@ -288,12 +254,13 @@ export async function buildRenderingGraph(
     controls: enrichedControls,
     sections: collectSections(doc),
     childItems: treeChildren.map(
-      (child): RenderingGraphChildItem => ({
-         name: child.name,
-         itemId: child.itemId,
-         link: buildFoblesUrl(child.itemId),
-         path: undefined,
-       }),
+      (child): RenderingGraphChildItem => (
+        {
+          name: child.name,
+          itemId: child.itemId,
+          link: buildFoblesUrl(child.itemId),
+          path: undefined,
+        }),
     ),
     referrers,
   };
@@ -308,32 +275,13 @@ function cancelRenderingGraph(doc: Document): void {
   closeRenderingGraphProgressModal(doc);
 }
 
-// Left-clicking a graph node re-roots the SAME open modal at that item, with no page navigation
-// at all - fetches that item's own content-editor page (same technique resolveRenderingDetails
-// already uses) and re-harvests against the fetched document instead of the live one. Raw
-// Values/Standard Fields are already confirmed on by the time any node is clickable, so the
-// fetched page reflects them too (both are session-level view settings, not per-page).
-export async function harvestGraphForLink(link: string, progressDoc: Document): Promise<ReferenceGraphResult | undefined> {
-  const controller = new AbortController();
-  renderingGraphAbortController = controller;
-  try {
-    const response = await fetch(link, { credentials: "same-origin" });
-    if (!response.ok) return undefined;
-    const fetchedDoc = new DOMParser().parseFromString(await response.text(), "text/html");
-    return await buildRenderingGraph(fetchedDoc, controller.signal, progressDoc);
-  } catch (error) {
-    extensionLog.warn("Rendering graph: failed to re-harvest for clicked node", { link, error });
-    return undefined;
-  }
-}
-
 async function harvestAndOpen(doc: Document): Promise<void> {
   const controller = new AbortController();
   renderingGraphAbortController = controller;
-  const graph = await buildRenderingGraph(doc, controller.signal);
+  const graph = await buildReferenceGraph(doc, controller.signal);
   closeRenderingGraphProgressModal(doc);
   if (controller.signal.aborted || !graph) return;
-  openRenderingGraphModal(doc, graph, (link) => harvestGraphForLink(link, doc));
+  openRenderingGraphModal(doc, graph, (link) => harvestGraphForLink(link, doc, renderingGraphAbortController));
 }
 
 function readPendingRenderingGraph(): PendingRenderingGraph | undefined {
@@ -360,12 +308,12 @@ function clearPendingRenderingGraph(): void {
 // settings it already flipped shouldn't be left changed just because the user gave up waiting.
 function advancePendingRenderingGraph(doc: Document, pending: PendingRenderingGraph): void {
   if (!pending.cancelled && !pending.harvested) {
-    if (setRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS, true)) return;
-    if (setRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.RAW_VALUES, true)) return;
+    if (setRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS, true)) return;
+    if (setRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.RAW_VALUES, true)) return;
 
     const controller = new AbortController();
     renderingGraphAbortController = controller;
-    void buildRenderingGraph(doc, controller.signal).then((graph) => {
+    void buildReferenceGraph(doc, controller.signal).then((graph) => {
       // Re-read rather than trust the closed-over pending - Cancel may have flagged it while fetches were in flight.
       const latest = readPendingRenderingGraph() ?? pending;
       const harvestedPending: PendingRenderingGraph = {
@@ -379,16 +327,16 @@ function advancePendingRenderingGraph(doc: Document, pending: PendingRenderingGr
     return;
   }
 
-  if (setRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS, pending.restoreStandardFields)) {
+  if (setRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS, pending.restoreStandardFields)) {
     return;
   }
-  if (setRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.RAW_VALUES, pending.restoreRawValues)) {
+  if (setRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.RAW_VALUES, pending.restoreRawValues)) {
     return;
   }
 
   clearPendingRenderingGraph();
   closeRenderingGraphProgressModal(doc);
-  if (pending.graph) openRenderingGraphModal(doc, pending.graph, (link) => harvestGraphForLink(link, doc));
+  if (pending.graph) openRenderingGraphModal(doc, pending.graph, (link) => harvestGraphForLink(link, doc, undefined));
 }
 
 export function openRenderingGraph(doc: Document): void {
@@ -400,8 +348,8 @@ export function openRenderingGraph(doc: Document): void {
 
   openRenderingGraphProgressModal(doc, () => cancelRenderingGraph(doc));
 
-  const rawValuesOn = isRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.RAW_VALUES) ?? true;
-  const standardFieldsOn = isRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS) ?? true;
+  const rawValuesOn = isRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.RAW_VALUES) ?? true;
+  const standardFieldsOn = isRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS) ?? true;
 
   if (rawValuesOn && standardFieldsOn) {
     void harvestAndOpen(doc);

@@ -10,7 +10,7 @@ export const SITECORE = {
   DEVICES: {
     DEFAULT: "{FE5D7FDF-89C0-4D99-9AA3-B5FBD009C9F3}",
   },
-  QUERY_PARAMS: {
+  SEARCH_PARAMS: {
     DATABASE: "db",
     // Alternate query keys Sitecore itself uses to indicate the current database.
     DATABASE_KEYS: ["db", "sc_content"],
@@ -40,7 +40,16 @@ export const SITECORE = {
     RAW_VALUES: "Check_BBDED3F008D144C82A983B54F0424BBC1",
     STANDARD_FIELDS: "Check_BC29C1D329FB74DA585083FEC2AF3A81D",
   },
+  QUICK_INFO: {
+    LABEL_PREFIX: {
+      ITEM_ID: "Item ID",
+      ITEM_PATH: "Item Path",
+      TEMPLATE: "Template",
+      ITEM_NAME: "Item Name",
+    },
+  },
   SELECTORS: {
+    QUICK_INFO_CELL: "td.scEditorSectionPanelCell > table.scEditorQuickInfo",
     COMBOBOX: ".scCombobox",
     CONTENT_CONTROL: ".scContentControl",
     DATABASE_INPUT: "input[id$='_Database'][value]",
@@ -53,30 +62,37 @@ export const SITECORE = {
     FIELD_LABEL_ADMINISTRATOR: ".scEditorFieldLabelAdministrator",
     GLOBAL_HEADER: ".sc-globalHeader",
     GLOBAL_HEADER_CONTENT: ".sc-globalHeader-content",
-    MULTILIST: ".scContentControlMultilist",
-    MULTILIST_BOX: ".scContentControlMultilistBox",
-    MULTILIST_FIELD_BUTTONS: ".scContentButtons, .scContentButton",
-    MULTILIST_NAV: ".scMultilistNav",
-    MULTILIST_NAV_BUTTON: "img.scNavButton",
-    MULTILIST_WITH_SEARCH_NAV_ARROWS: "img[id^='btnRight'], img[id^='btnLeft'], img[id^='btnUp'], img[id^='btnDown']",
+    MULTILIST: {
+      ROOT: ".scContentControlMultilist",
+      BOX: ".scContentControlMultilistBox",
+      FIELD_BUTTONS: ".scContentButtons, .scContentButton",
+      NAV: ".scMultilistNav",
+      NAV_BUTTON: "img.scNavButton",
+      WITH_SEARCH_NAV_ARROWS: "img[id^='btnRight'], img[id^='btnLeft'], img[id^='btnUp'], img[id^='btnDown']",
+    },
     PROFILE_CARDS_IMAGE: "img.scEditorHeaderCustomizeProfilesIcon",
     SCRIPT_NAME: "#ScriptName",
     SECTION_CAPTION: "[class*='scEditorSectionCaption']",
     TAG_LIST_NAV_ARROWS: "img[id$='_right'], img[id$='_left'], img[id$='_up'], img[id$='_down']",
-    TREELIST_EX: "div.scContentControl.scTreelistEx",
-    TREE_GLYPH: "img[id^='Tree_Glyph_']",
-    TREE_LIST_ALL_PANE: ".scScrollbox.scContentControlTree",
-    TREE_LIST_SELECTED_PANE: ".scContentControlSelectedList",
-    TREE_NODE: ".scContentTreeNode",
-    TREE_NODE_LINK: "a[id^='Tree_Node_']",
-    TREE_NODE_TITLE: ".scContentTreeNodeTitle",
-    TREE_NODES_WITH_ID: ".scContentTreeNode[id]",
+    TREELIST_EX: {
+      ROOT: "div.scContentControl.scTreelistEx",
+    },
+    TREE: {
+      GLYPH: "img[id^='Tree_Glyph_']",
+      LIST_ALL_PANE: ".scScrollbox.scContentControlTree",
+      LIST_SELECTED_PANE: ".scContentControlSelectedList",
+      NODE: ".scContentTreeNode",
+      NODE_LINK: "a[id^='Tree_Node_']",
+      NODE_TITLE: ".scContentTreeNodeTitle",
+      NODES_WITH_ID: ".scContentTreeNode[id]",
+      ROOT: "#ContentTreeInnerPanel, #Treeview, [onclick*='Sitecore.Treeview.onTreeClick']",
+    },
+
     // #ContentTreeInnerPanel/#Treeview cover the two ids already confirmed; the attribute
     // selector is Sitecore's own generic Treeview webcontrol root marker (every tree panel wires
     // its root's onclick to this same handler), so it also catches trees with other container
     // ids - e.g. Add From Template's own "Templates" tree root - without needing one hardcoded id
     // per dialog.
-    TREE_ROOT: "#ContentTreeInnerPanel, #Treeview, [onclick*='Sitecore.Treeview.onTreeClick']",
     URI_ELEMENT: "[onfocus*='sitecore://'], [onblur*='sitecore://']",
   },
   TREE_ID_PREFIXES: {

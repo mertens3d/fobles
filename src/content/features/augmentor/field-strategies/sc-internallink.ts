@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { SITECORE } from "../../../../constants/sitecore";
+import { CONST } from "../../../../constants/const";
 import type { InternalLinkFobles as InternalLinkConfig } from "../fobles.types";
 import { ensurePathShape } from "../helper";
 import { applySingleInputFieldStrategy } from "../shared/apply-single-input-field";
@@ -20,7 +20,7 @@ export function applyInternalLinkStrategy(
   config: InternalLinkConfig,
 ): void {
   applySingleInputFieldStrategy(doc, config, {
-    actionPrefix: SITECORE.ACTION_PREFIXES.INTERNAL_LINK,
+    actionPrefix: CONST.SITECORE.ACTION_PREFIXES.INTERNAL_LINK,
     buttonClass: FOBLES.CLASSES.BUTTONS.INTERNAL_LINK,
     wrapperClass: FOBLES.CLASSES.WRAPPERS.INTERNAL_LINK,
     getTarget: getInternalLinkTarget,

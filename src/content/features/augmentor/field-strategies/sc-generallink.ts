@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { SITECORE } from "../../../../constants/sitecore";
+import { CONST } from "../../../../constants/const";
 import {
   ensurePathShape,
 } from "../helper";
@@ -32,7 +32,7 @@ export function applyGeneralLinkStrategy(
   config: GeneralLinkConfig,
 ): void {
   applySingleInputFieldStrategy(doc, config, {
-    actionPrefix: SITECORE.ACTION_PREFIXES.GENERAL_LINK,
+    actionPrefix: CONST.SITECORE.ACTION_PREFIXES.GENERAL_LINK,
     buttonClass: FOBLES.CLASSES.BUTTONS.GENERAL_LINK,
     wrapperClass: FOBLES.CLASSES.WRAPPERS.GENERAL_LINK,
     getTarget: getInternalTarget,
