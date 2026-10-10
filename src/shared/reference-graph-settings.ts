@@ -1,6 +1,9 @@
+// @source-path [fobles] src/shared/reference-graph-settings.ts
+
 import { STORAGE } from "../constants/constants-b";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
-import type { LayoutPreset, LayoutGraphPresetName, ReferenceGraphFiltersState } from "../content/toolbar/reference-graph/graph.types";
+import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../content/toolbar/reference-graph/graph-filters";
+import type {  LayoutGraphPresetName, ReferenceGraphFiltersState } from "../content/toolbar/reference-graph/graph.types";
 import { getStorageValue, setStorageValue } from "./storage/storage";
 
 export async function getReferenceGraphLayoutName(): Promise<LayoutGraphPresetName > {

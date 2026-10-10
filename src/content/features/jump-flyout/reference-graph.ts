@@ -14,10 +14,11 @@ import type {
   ReferenceGraphResult,
 } from "../../toolbar/reference-graph/reference-graph.types";
 import { getQuickInfo } from "../../toolbar/jump-flyout/quick-info";
-import { closeReferenceGraphProgressModal, openReferenceGraphModal, openReferenceGraphProgressModal } from "../../toolbar/reference-graph/reference-graph-modal";
+import {  openReferenceGraphModal } from "../../toolbar/reference-graph/reference-graph-modal";
 import type { QuickInfo } from "../../toolbar/types";
 import { type PendingReferenceGraph } from "../../toolbar/reference-graph/graph.types";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { closeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "../../toolbar/reference-graph/build-progress";
 
 // Shared by the fast path (harvestAndOpen) and the slow, reload-spanning path - Cancel aborts
 // whichever one is currently in flight; a stale/already-settled controller is harmless to abort.

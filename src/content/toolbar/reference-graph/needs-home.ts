@@ -1,11 +1,14 @@
+// @source-path [fobles] src/content/toolbar/reference-graph/needs-home.ts
+
 import type cytoscape from "cytoscape";
 import { buildFoblesUrl } from "../../features/augmentor/helper";
 import { buildTooltip } from "./graph-tooltip";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { buildLabel, kindClass, appendCompoundChildren, appendSatellites, lastPathSegment, stripDynamicPlaceholderSuffix, slugify } from "./reference-graph-modal";
+import { buildLabel,  appendCompoundChildren, appendSatellites, lastPathSegment } from "./reference-graph-modal";
 import type { ReferenceGraphResult } from "./reference-graph.types";
 import type { PlaceholderGroup } from "./graph.types";
 import { CONST } from "../../../constants/const";
+import { kindClass, slugify, stripDynamicPlaceholderSuffix } from "./graph-helpers";
 
 
 export function buildElements(graphReferenceResult: ReferenceGraphResult): cytoscape.ElementDefinition[] {

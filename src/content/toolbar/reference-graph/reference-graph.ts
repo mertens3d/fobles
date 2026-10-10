@@ -10,10 +10,8 @@ import {
 import { buildReferenceGraph, collectTreeChildren } from "./build-graph";
 import {
   openReferenceGraphModal,
-  openReferenceGraphProgressModal,
-  closeReferenceGraphProgressModal,
 } from "./reference-graph-modal";
-import { updateReferenceGraphProgressModal } from "./build-progress";
+import { closeReferenceGraphProgressModal, openReferenceGraphProgressModal, updateReferenceGraphProgressModal } from "./build-progress";
 import { getCurrentItemId } from "../jump-flyout/ai-pages";
 import { getQuickInfo } from "../jump-flyout/quick-info";
 import type { QuickInfo } from "../types";

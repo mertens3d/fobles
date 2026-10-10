@@ -7,22 +7,16 @@ import cytoscapeFcose from "cytoscape-fcose";
 import cytoscapePopper from "cytoscape-popper";
 import tippy from "tippy.js";
 import { extensionLog } from "../../logger";
-import {
-  getReferenceGraphLayoutName,
-  setReferenceGraphLayout,
-} from "../../../shared/reference-graph-settings";
+import { getReferenceGraphFilters, getReferenceGraphLayoutName, setReferenceGraphFilters, setReferenceGraphLayout } from "../../../shared/reference-graph-settings";
 import type { ReferenceGraphResult } from "./reference-graph.types";
-
+import { createCloseButton } from "./close-button";
 import { attachGraphEventHandlers } from "./event-handlers";
 import { buildTooltip, hideActiveTooltip } from "./graph-tooltip";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { applyFilters, applyFilterSettings, attachFilterEventListeners, makeCheckBox } from "./graph-filters";
-import { getCurrentSelectLayout } from "./graph-type-select";
-
-import { createCloseButton, createToolbar } from "./graph-toolbar";
+import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "./graph-filters";
 import { kindClass, slugify } from "./graph-helpers";
-import { updateRootInfo } from "./root-info";
-import { getBackButton } from "./back-button";
+import { createRoot } from "react-dom/client";
+import { GraphToolbar } from "./graph-toolbar";
 
 cytoscape.use(cytoscapeDagre);
 cytoscape.use(cytoscapeCoseBilkent);
@@ -51,9 +45,6 @@ cytoscape.use(
 );
 extensionLog.debug("Reference graph: cytoscape-popper/tippy bridge registered");
 
-
-
-
 export function buildLabel(kind: string, name: string): string {
   return `${name}\n[${kind.toLowerCase()}]`;
 }
@@ -69,12 +60,7 @@ export function lastPathSegment(path: string | undefined): string | undefined {
 // path instead of a bespoke if-block per kind, so adding a new one later is just another list
 // entry. The index (not just kind) is part of the node id since some kinds - child items - can
 // legitimately repeat multiple times under the same parent.
-export function appendSatellites(
-  nodes: cytoscape.ElementDefinition[],
-  edges: cytoscape.ElementDefinition[],
-  parentId: string,
-  descriptors: SatelliteDescriptor[],
-): void {
+export function appendSatellites(nodes: cytoscape.ElementDefinition[], edges: cytoscape.ElementDefinition[], parentId: string, descriptors: SatelliteDescriptor[]): void {
   descriptors.forEach((descriptor, index) => {
     if (!descriptor.value) return;
     const nodeId = `${parentId}-${slugify(descriptor.kind)}-${index}`;
@@ -89,9 +75,7 @@ export function appendSatellites(
       classes: [kindClass(descriptor.category ?? descriptor.kind), descriptor.filterClass].filter(Boolean).join(" "),
     });
     edges.push({
-      data: descriptor.reverse
-        ? { id: `edge-${nodeId}`, source: nodeId, target: parentId }
-        : { id: `edge-${nodeId}`, source: parentId, target: nodeId },
+      data: descriptor.reverse ? { id: `edge-${nodeId}`, source: nodeId, target: parentId } : { id: `edge-${nodeId}`, source: parentId, target: nodeId },
     });
   });
 }
@@ -100,11 +84,7 @@ export function appendSatellites(
 // used here for Section -> its Fields specifically, rather than an edge - a section genuinely
 // contains its fields, so no edge is drawn (the nesting itself conveys that). Returns the created
 // id per descriptor (undefined where skipped) so a caller can attach further satellites to one of them.
-export function appendCompoundChildren(
-  nodes: cytoscape.ElementDefinition[],
-  parentId: string,
-  descriptors: SatelliteDescriptor[],
-): Array<string | undefined> {
+export function appendCompoundChildren(nodes: cytoscape.ElementDefinition[], parentId: string, descriptors: SatelliteDescriptor[]): Array<string | undefined> {
   return descriptors.map((descriptor, index) => {
     if (!descriptor.value) return undefined;
     const nodeId = `${parentId}-${slugify(descriptor.kind)}-${index}`;
@@ -126,11 +106,7 @@ export function appendCompoundChildren(
 // page - no new tab/page/build entry needed. Plain-clicking a node with a link calls
 // harvestForLink and, if it resolves, re-roots this SAME dialog's graph at that item (no
 // navigation, no reopening); ctrl/cmd-click opens it in a new tab instead.
-export function openReferenceGraphModal(
-  doc: Document,
-  graph: ReferenceGraphResult,
-  harvestForLink: (link: string) => Promise<ReferenceGraphResult | undefined>,
-): void {
+export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResult, harvestForLink: (link: string) => Promise<ReferenceGraphResult | undefined>): void {
   doc.getElementById(REFERENCE_GRAPH.DIALOG_ID)?.remove();
 
   const dialog = doc.createElement("dialog");
@@ -140,6 +116,7 @@ export function openReferenceGraphModal(
   // Hover/disabled states for the buttons below - a plain inline style can't express either, and
   // scoping the selector to the dialog's own id keeps it from leaking onto the host Sitecore page.
   const toolbarStyle = doc.createElement("style");
+
   toolbarStyle.textContent = `
     #${REFERENCE_GRAPH.DIALOG_ID} .fobles-reference-graph-button {
       border: 1px solid #2f6fed;
@@ -158,16 +135,14 @@ export function openReferenceGraphModal(
   `;
 
   const closeButton = createCloseButton(doc, dialog);
-  const toolbar = createToolbar(doc,renderGraph);
 
-  
-
+  // const toolbar = createToolbar(doc,renderGraph);
+  const toolbar = doc.createElement("div");
+  const toolbarRoot = createRoot(toolbar);
 
   // Persisted show/hide toggles for each satellite group - checked state (and the resulting
   // node visibility) survives across re-roots within this dialog's lifetime automatically, since
   // these checkboxes/their classes aren't recreated.
-  const { filterRow } = buildFilterRow(doc);
-
 
   const container = doc.createElement("div");
   container.style.cssText = "width:100%;height:100%;";
@@ -175,10 +150,7 @@ export function openReferenceGraphModal(
   dialog.append(toolbarStyle, closeButton, toolbar, container);
   doc.body.appendChild(dialog);
   activeReferenceGraphDialog = dialog;
-  dialog.addEventListener("close", () => {
-    activeReferenceGraphDialog = undefined;
-    dialog.remove();
-  });
+  dialog.addEventListener("close", () => { toolbarRoot.unmount(); activeReferenceGraphDialog = undefined; dialog.remove(); });
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
   });
@@ -196,7 +168,7 @@ export function openReferenceGraphModal(
     // dagre (layered/Sugiyama-style) grows the tree outward in clean ranks from the root,
     // minimizing edge crossings as part of the algorithm itself - breadthfirst (even circular)
     // can't guarantee that. The dropdown above lets the user try the organic alternatives too.
-    layout: (REFERENCE_GRAPH.LAYOUT_PRESETS[REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME]).build(),
+    layout: REFERENCE_GRAPH.LAYOUT_PRESETS[REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME].build(),
     // Default wheelSensitivity (1) feels like one scroll notch jumps too far - calmer here, with
     // bounds so the graph can't be zoomed out to invisible or in to meaningless.
     wheelSensitivity: 1.5,
@@ -282,68 +254,89 @@ export function openReferenceGraphModal(
     ],
   });
 
+  let currentLayoutPresetName = REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME;
+  const graphHistory: ReferenceGraphResult[] = [];
+  // let currentGraph = graph;
+  let currentFilters = DEFAULT_RENDERING_GRAPH_FILTERS_STATE;
+
+  function renderToolbar(toolbarGraph: ReferenceGraphResult): void {
+    toolbarRoot.render(
+      <GraphToolbar
+        graph={toolbarGraph}
+        layoutPresetName={currentLayoutPresetName}
+        onLayoutChange={(layoutPresetName) => {
+          currentLayoutPresetName = layoutPresetName;
+          cy.layout(REFERENCE_GRAPH.LAYOUT_PRESETS[layoutPresetName].build()).run();
+          void setReferenceGraphLayout(layoutPresetName);
+        }}
+        canGoBack={graphHistory.length > 0}
+        onBack={() => {
+          const previousGraph = graphHistory.pop();
+          if (previousGraph) renderGraph(previousGraph);
+        }}
+        filters={currentFilters}
+        onFilterChange={(key, checked) => {
+          currentFilters = { ...currentFilters, [key]: checked };
+          const filterDefinition = REFERENCE_GRAPH.FILTER_DEFS.find((filter) => filter.key === key);
+          if (filterDefinition) {
+            cy.elements(`.${filterDefinition.className}`).style("display", checked ? "element" : "none");
+          }
+
+          cy.layout( REFERENCE_GRAPH.LAYOUT_PRESETS[currentLayoutPresetName].build(), ).run();
+
+          void setReferenceGraphFilters(currentFilters);
+          renderToolbar(currentGraph);
+        }}
+      />,
+    );
+  }
+  renderToolbar(graph);
+
+  void getReferenceGraphFilters().then((filters) => {
+    currentFilters = filters;
+    REFERENCE_GRAPH.FILTER_DEFS.forEach(({ key, className }) => {
+      cy.elements(`.${className}`).style("display", currentFilters[key] ? "element" : "none");
+    });
+    renderToolbar(currentGraph);
+  });
+
   // The root's own info is shown in the toolbar panel instead (see rootInfo/updateRootInfo
   // above), not repeated as a tooltip on its node. Tooltips themselves are created lazily per
   // node on first click (see the "tap" handler below), not pre-attached here.
   extensionLog.debug("Reference graph: modal opened", { nodeCount: cy.nodes().length });
 
-  applyFilters();
-  attachFilterEventListeners();
-  applyFilterSettings();
-
   let currentGraph = graph;
-
-
-  
 
   // Apply a previously-saved layout preference once it loads, without blocking the dialog's
   // initial (default-layout) render on the storage read.
   void getReferenceGraphLayoutName().then((layoutPresetName) => {
-    // const layoutPresetName = layoutPresetName as LayoutGraphPresetName;
-
-const layoutSelect = getCurrentSelectLayout();
-
-    if (!layoutPresetName || !(layoutPresetName in REFERENCE_GRAPH.LAYOUT_PRESETS) || layoutPresetName === layoutSelect) return;
-    void setReferenceGraphLayout(layoutPresetName);
-    // layoutSelect.value = layoutPresetName;
+    if (!layoutPresetName || !(layoutPresetName in REFERENCE_GRAPH.LAYOUT_PRESETS) || layoutPresetName === currentLayoutPresetName) {
+      return;
+    }
+    currentLayoutPresetName = layoutPresetName;
     cy.layout(REFERENCE_GRAPH.LAYOUT_PRESETS[layoutPresetName].build()).run();
+    renderToolbar(currentGraph);
   });
 
-
-
-  attachGraphEventHandlers(cy, container, harvestForLink, doc, graphHistory, currentGraph, renderGraph);
-
-
-}
-
+  attachGraphEventHandlers(cy, container, harvestForLink, doc, graphHistory, () => currentGraph, renderGraph);
 
   function renderGraph(newGraph: ReferenceGraphResult): void {
+    //  const graphHistory: ReferenceGraphResult[] = [];
+    //  let currentGraph = graph;
+    renderToolbar(newGraph);
+
     cy.elements().remove();
     const elements = buildElements(newGraph);
     console.log("[Fobles] Reference Graph elements", elements);
     cy.add(elements);
     hideActiveTooltip();
-    applyFilters();
-    const layoutGraphPresetName = getCurrentSelectLayout()
-    cy.layout(REFERENCE_GRAPH.LAYOUT_PRESETS[layoutGraphPresetName].build()).run();
+    REFERENCE_GRAPH.FILTER_DEFS.forEach(({ key, className }) => {
+      cy.elements(`.${className}`).style("display", currentFilters[key] ? "element" : "none");
+    });
+
+    cy.layout(REFERENCE_GRAPH.LAYOUT_PRESETS[currentLayoutPresetName].build()).run();
+
     currentGraph = newGraph;
-    updateRootInfo(newGraph, rootInfo, doc);
-    const backButton = getBackButton();
-    if (backButton) {
-      backButton.disabled = graphHistory.length === 0;
-    }
+   
   }
-
-
-function buildFilterRow(doc: Document) {
-  const filterRow = doc.createElement("div");
-  filterRow.style.cssText = "display:flex;flex-direction:column;gap:4px;font-size:11px;";
-  const filterCheckboxes = REFERENCE_GRAPH.FILTER_DEFS.map((filterDef) => {
-    const checkboxAndLabel = makeCheckBox(doc, filterDef);
-
-    filterRow.appendChild(checkboxAndLabel.label);
-    return { ...filterDef, checkbox: checkboxAndLabel.checkbox };
-  });
-  return { filterRow, filterCheckboxes };
 }
-

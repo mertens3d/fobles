@@ -9,7 +9,7 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
     harvestForLink: (link: string) => Promise<ReferenceGraphResult | undefined>,
     doc: Document,
     graphHistory: ReferenceGraphResult[],
-    currentGraph: ReferenceGraphResult,
+    getCurrentGraph: () => ReferenceGraphResult,
     renderGraph: (newGraph: ReferenceGraphResult) => void,
 ): void {
     cy.on("mouseover", "node", (event) => {
@@ -68,7 +68,7 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
             closeReferenceGraphProgressModal(doc);
             // Not every item has a Layout section (templates, media, etc.) - expected, not an error.
             if (cancelled || !newGraph) return;
-            graphHistory.push(currentGraph);
+            graphHistory.push(getCurrentGraph());
             renderGraph(newGraph);
         });
     });
