@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/toolbar/reference-graph/components/root-info.tsx
 
-import type { ReferenceGraphResult } from "../reference-graph.types";
+import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
 
-type RootInfoProps = { graph: ReferenceGraphResult };
+type RootInfoProps = { graph: SitecoreHarvestResult };
 export function RootInfo({ graph }: RootInfoProps) {
   const rows = [
     ["Name", graph.rootItem.name],

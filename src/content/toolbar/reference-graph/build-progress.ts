@@ -1,5 +1,6 @@
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import type { BuildStep, ReferenceGraphFiltersState } from "./graph.types";
+import type { HarvestStatus, SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { HarvestStep } from "../../sitecore-harvester/sitecore-harvester.types";
 
 //   let completedSteps = 0;
 
@@ -15,27 +16,46 @@ import type { BuildStep, ReferenceGraphFiltersState } from "./graph.types";
 //   if (buildingMessage) buildingMessage.textContent = `${REFERENCE_GRAPH.TEXT.BUILDING_REFERENCE_GRAPH} (${completedSteps}/${total})`;
 // }
 
-export function initializeReferenceGraphProgressModal(doc: Document, buildSteps: readonly BuildStep[], filters: ReferenceGraphFiltersState,): void {
+export function initializeReferenceGraphProgressModal(doc: Document, buildSteps: readonly HarvestStep[], filters: SitecoreHarvestFiltersState,): void {
   const buildingMessage = doc.getElementById(REFERENCE_GRAPH.PROGRESS_MESSAGE_ID,);
   if (!buildingMessage) return;
   buildingMessage.replaceChildren(...buildSteps.map((step) => {
     const row = doc.createElement("div");
-    row.id = `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${step.buildStepKey}`;
+    row.id = `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${step.harvestStepKey}`;
     row.textContent = filters[step.filterKey] ? `○ ${step.label}` : `○ ${step.label} - Skipped`;
     return row;
   }),);
 }
 
+export function handleHarvestProgress(
+  doc: Document,
+  step: HarvestStep,
+  status: HarvestStatus,
+): void {
+  if (status === "skipped") {
+    updateReferenceGraphProgressModalSkipped(doc, step);
+    return;
+  }
+  updateReferenceGraphProgressModal(doc, step);
+}
+export function updateReferenceGraphProgressModalSkipped(doc: Document, harvestStep: HarvestStep,): void {
+  const row = doc.getElementById(`${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${harvestStep.harvestStepKey}`,);
+  if (row) {
+    row.textContent = `○ ${harvestStep.label} - Skipped`;
+  }
+}
+
 export function updateReferenceGraphProgressModal(
   doc: Document,
-  buildStep: BuildStep,
+  buildStep: HarvestStep,
 ): void {
   const row = doc.getElementById(
-    `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${buildStep.buildStepKey}`,
+    `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${buildStep.harvestStepKey}`,
   );
 
   if (row) row.textContent = `✓ ${buildStep.label}`;
 }
+
 export function closeReferenceGraphProgressModal(doc: Document): void {
   (doc.getElementById(REFERENCE_GRAPH.PROGRESS_DIALOG_ID) as HTMLDialogElement | undefined)?.close();
 }

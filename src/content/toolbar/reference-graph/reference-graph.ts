@@ -7,17 +7,16 @@ import {
   isRibbonCheckboxEnabled,
   setRibbonCheckboxEnabled,
 } from "../../macros/ribbon-toggle-macro";
-import { buildReferenceGraph } from "./build-graph";
+import { harvestSitecore } from "../../sitecore-harvester/harvest-sitecore";
 import {
   openReferenceGraphModal,
 } from "./reference-graph-modal";
-import { closeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
+import { closeReferenceGraphProgressModal, handleHarvestProgress, openReferenceGraphProgressModal } from "./build-progress";
 import { getCurrentItemId } from "../jump-flyout/ai-pages";
 import { getQuickInfo } from "../jump-flyout/quick-info";
 import type { QuickInfo } from "../types";
 import type { PendingReferenceGraph } from "./graph.types";
 import { harvestGraphForLink } from "./harvester";
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 
 // Shared by the fast path (harvestAndOpen) and the slow, reload-spanning path - Cancel aborts
@@ -70,52 +69,6 @@ function getTemplateGuid(doc: Document): string | undefined {
   return doc.querySelector<HTMLInputElement>("input.scEditorHeaderQuickInfoInputID[readonly]")?.value.trim() || undefined;
 }
 
-// No fetch needed - buildFoblesUrl accepts a sitecore path just as well as a guid, and the
-// parent's path is just the current item's path with its last segment dropped.
-function getParentPath(itemPath: string | undefined): string | undefined {
-  if (!itemPath) return undefined;
-  const segments = itemPath.split("/").filter(Boolean);
-  if (segments.length <= 1) return undefined;
-  segments.pop();
-  return `/${segments.join("/")}`;
-}
-
-export function isHandledElsewhere(label: string): boolean {
-  const normalized = label.toLowerCase();
-  return REFERENCE_GRAPH.EXCLUDED_FIELD_LABEL_PREFIXES.some((prefix) => normalized.startsWith(prefix));
-}
-
-// The administrator suffix (" [shared]", " [shared, standard value]", ...) is only ever
-// relevant in the Content Editor's own chrome - stripped here so it doesn't leak into node
-// labels/tooltips the graph builds from this text.
-export function extractFieldLabel(marker: HTMLElement): string {
-  const labelElement = marker.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.FIELD_LABEL);
-  if (!labelElement) return "";
-  const clone = labelElement.cloneNode(true) as HTMLElement;
-  clone.querySelector(CONST.SITECORE.SELECTORS.FIELD_LABEL_ADMINISTRATOR)?.remove();
-  return clone.textContent?.trim() ?? "";
-}
-
-// Raw Values (already forced on for the Layout field above) applies to every field on the page,
-// not just Layout - so every other section's fields can be read the exact same way, generically,
-// with no per-field-type parsing. Fields that don't render a raw .scContentControl under this
-// mode (rare) just come back empty and get filtered out, same as an absent datasource/variant.
-// Several raw-value controls (multilist tables, tree-list divs, ...) match .scContentControl
-// just as much as a real input/select/textarea does, but don't carry a `.value` at all - reading
-// one unconditionally throws. Anything that isn't actually value-bearing is treated the same as
-// "no value" (filtered out below), same as a genuinely empty field.
-export function readRawFieldValue(marker: HTMLElement): string | undefined {
-  const control = marker.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.CONTENT_CONTROL);
-  if (
-    !(control instanceof HTMLInputElement) &&
-    !(control instanceof HTMLSelectElement) &&
-    !(control instanceof HTMLTextAreaElement)
-  ) {
-    return undefined;
-  }
-  return control.value.trim() || undefined;
-}
-
 function buildGalleryLinksUrl(itemId: string): string {
   const origin = `${window.location.protocol}//${window.location.hostname}`;
   const params = new URLSearchParams({
@@ -142,7 +95,7 @@ async function harvestAndOpen(doc: Document): Promise<void> {
   const controller = new AbortController();
   referenceGraphAbortController = controller;
   const filters = await getReferenceGraphFilters();
-  const graph = await buildReferenceGraph(doc, controller.signal, filters);
+  const graph = await harvestSitecore(doc, controller.signal, filters, (step, status) => handleHarvestProgress(doc, step, status),);
   closeReferenceGraphProgressModal(doc);
   if (controller.signal.aborted || !graph) return;
   openReferenceGraphModal(doc, graph, async (link, filters) => await harvestGraphForLink(
@@ -179,7 +132,7 @@ async function advancePendingReferenceGraph(doc: Document, pending: PendingRefer
     const controller = new AbortController();
     referenceGraphAbortController = controller;
     const filters = await getReferenceGraphFilters();
-    void buildReferenceGraph(doc, controller.signal, filters).then(async (graph) => {
+    void harvestSitecore(doc, controller.signal, filters,).then(async (graph) => {
       // Re-read rather than trust the closed-over pending - Cancel may have flagged it while fetches were in flight.
       const latest = readPendingReferenceGraph() ?? pending;
       const harvestedPending: PendingReferenceGraph = {

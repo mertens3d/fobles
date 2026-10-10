@@ -17,6 +17,17 @@ export const SITECORE = {
     ITEM_ID: "id",
     XML_CONTROL: "xmlcontrol",
   },
+
+  HARVEST:{
+// Sections/fields already represented elsewhere in the graph, or not useful for this POC's
+    // purposes (Statistics/Security/Appearance are noisy system bookkeeping, not content-shape data).
+    // Quick Info is also a differently-shaped table (see getQuickInfoValue), not a field-marker
+    // section; Renderings/Final renderings get their own rich subtree (parseDevice) instead of a
+    // flat raw-value leaf.
+    EXCLUDED_SECTION_NAMES: new Set(["appearance", "quick info", "security", "statistics"]),
+    EXCLUDED_FIELD_LABEL_PREFIXES: ["final renderings", "renderings"],
+    //i guessed on this
+  },
   // Named so every path used to build FOBLES_PAGES has an identifier, not just a bare literal.
   RELATIVE_PATHS_ENCODED: {
     CHANGE_TEMPLATE: "/sitecore/shell/Applications/Templates/Change%20template.aspx",

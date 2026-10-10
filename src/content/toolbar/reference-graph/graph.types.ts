@@ -1,5 +1,6 @@
 import type cytoscape from "cytoscape";
-import type { itemNodeData, ReferenceGraphControl, ReferenceGraphResult } from "./reference-graph.types";
+import type { HarvestGraphControl } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 
 export type GlyphState = "expanded" | "collapsed" | "leaf";
 // POC: harvests the active item's default-device layout straight from the Content Editor's own
@@ -16,7 +17,7 @@ export type PendingReferenceGraph = {
   restoreStandardFields: boolean;
   harvested: boolean;
   cancelled: boolean;
-  graph: ReferenceGraphResult | undefined;
+  graph: SitecoreHarvestResult | undefined;
 };
 export type LayoutPreset = {
   label: string;
@@ -24,24 +25,8 @@ export type LayoutPreset = {
 };
 export type LayoutGraphPresetName = "dagre" | "cose-bilkent" | "fcose" | "breadthfirst";
 
-export type BuildStepKey = "children" | "sections" | "layout" | "controls" | "referrers" | "parent";
-
-export type BuildStep = {
-  buildStepKey: BuildStepKey;
-  filterKey: keyof ReferenceGraphFiltersState;
-  label: string;
-  build: (buildContext: BuildContext) => Promise<void>;
-};
-export type BuildContext = {
-  doc: Document;
-  itemId: string;
-  result: ReferenceGraphResult;
-  signal: AbortSignal;
-  rootItem: itemNodeData;
-};
-
 export type PlaceholderGroupControl = {
-  control: ReferenceGraphControl;
+  control: HarvestGraphControl;
   index: number;
 };
 
@@ -55,13 +40,4 @@ export type PlaceholderGroup = {
   label: string;
   parentId: string;
   controls: PlaceholderGroupControl[];
-};
-export type ReferenceGraphFiltersState = {
-  parent: boolean;
-  children: boolean;
-  layout: boolean;
-  referrers: boolean;
-  sections: boolean;
-  template: boolean;
-  controls: boolean;
 };

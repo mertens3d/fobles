@@ -1,56 +1,3 @@
-export type ReferenceGraphControl = {
-  renderingId: string;
-  name: string | undefined;
-  path: string | undefined;
-  template: string | undefined;
-  datasource: string | undefined;
-  datasourceLink: string | undefined;
-  placeholder: string | undefined;
-  uid: string | undefined;
-  link: string | undefined;
-  parameters: Record<string, string>;
-};
-
-export type ReferenceGraphFieldLink = {
-  label: string;
-  itemId: string;
-};
-
-export type ReferenceGraphField = {
-  label: string;
-  value: string | undefined;
-  // Set when a field-link strategy (reference-graph-field-links.ts) recognized this field's raw
-  // markup as a list of other items - e.g. treelist-ex's Insert options - so each one can render
-  // as its own clickable node instead of being flattened into `value`.
-  links?: readonly ReferenceGraphFieldLink[];
-};
-
-export type ReferenceGraphSection = {
-  name: string;
-  fields: readonly ReferenceGraphField[];
-};
-
-export type itemNodeData = {
-  name: string | undefined;
-  itemId: string;
-  link: string | undefined;
-  path: string | undefined;
-  templateLink: string | undefined;
-  template: string | undefined;
-};
-
-export type ReferenceGraphResult = {
-  rootItem: itemNodeData;
-  parent: itemNodeData | undefined;
-  sharedLayoutName: string | undefined;
-  sharedLayoutLink: string | undefined;
-  sharedLayoutPath: string | undefined;
-  controls: readonly ReferenceGraphControl[] | undefined;
-  sections: readonly ReferenceGraphSection[] | undefined;
-  childItems: readonly itemNodeData[] | undefined;
-  referrers: readonly itemNodeData[] | undefined;
-};
-
 export type SatelliteDescriptor = {
   kind: string;
   value: string | undefined;
@@ -79,11 +26,6 @@ export type TooltipData = {
   path: string | undefined;
   placeholder: string | undefined;
 };
-export type ParsedDevice = {
-  layoutId: string | undefined;
-  controls: ReferenceGraphControl[];
-};
-
 export type TreeChildNode = {
   name: string | undefined;
   itemId: string;

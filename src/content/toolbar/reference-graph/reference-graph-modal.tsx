@@ -1,4 +1,3 @@
-import { buildElements } from "./needs-home";
 import { type SatelliteDescriptor } from "./reference-graph.types";
 import cytoscape from "cytoscape";
 import cytoscapeCoseBilkent from "cytoscape-cose-bilkent";
@@ -8,7 +7,6 @@ import cytoscapePopper from "cytoscape-popper";
 import tippy from "tippy.js";
 import { extensionLog } from "../../logger";
 import { getReferenceGraphFilters, getReferenceGraphLayoutName, setReferenceGraphFilters, setReferenceGraphLayout } from "../../../shared/reference-graph-settings";
-import type { ReferenceGraphResult } from "./reference-graph.types";
 import { createCloseButton } from "./close-button";
 import { attachGraphEventHandlers } from "./event-handlers";
 import { buildTooltip, hideActiveTooltip } from "./graph-tooltip";
@@ -17,8 +15,10 @@ import { createSingleFilterState, DEFAULT_RENDERING_GRAPH_FILTERS_STATE, getEnab
 import { kindClass, slugify } from "./graph-helpers";
 import { createRoot } from "react-dom/client";
 import { GraphToolbar } from "./components/graph-toolbar";
-import type { ReferenceGraphFiltersState } from "./graph.types";
+import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
 import { closeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
+import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import { buildElements } from "./graph-elements";
 
 cytoscape.use(cytoscapeDagre);
 cytoscape.use(cytoscapeCoseBilkent);
@@ -108,8 +108,8 @@ export function appendCompoundChildren(nodes: cytoscape.ElementDefinition[], par
 // page - no new tab/page/build entry needed. Plain-clicking a node with a link calls
 // harvestForLink and, if it resolves, re-roots this SAME dialog's graph at that item (no
 // navigation, no reopening); ctrl/cmd-click opens it in a new tab instead.
-export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResult,
-  harvestForLink: (link: string, filters: ReferenceGraphFiltersState,) => Promise<ReferenceGraphResult | undefined>): void {
+export function openReferenceGraphModal(doc: Document, graph: SitecoreHarvestResult,
+  harvestForLink: (link: string, filters: SitecoreHarvestFiltersState,) => Promise<SitecoreHarvestResult | undefined>): void {
   doc.getElementById(REFERENCE_GRAPH.DIALOG_ID)?.remove();
 
   const dialog = doc.createElement("dialog");
@@ -163,7 +163,7 @@ export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResu
   });
   dialog.showModal();
 
-  const initialElements = buildElements(graph);
+  const initialElements : cytoscape.ElementDefinition[] = buildElements(graph);
   // Unconditional (not gated behind extensionLog's debug flag) - this is the enriched shape
   // (with each node's parent/compound nesting already resolved), not the raw harvested graph,
   // deliberately logged here so it can be inspected in devtools without flipping on debug mode.
@@ -262,10 +262,10 @@ export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResu
   });
 
   let currentLayoutPresetName = REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME;
-  const graphHistory: ReferenceGraphResult[] = [];
+  const graphHistory: SitecoreHarvestResult[] = [];
   let currentFilters = DEFAULT_RENDERING_GRAPH_FILTERS_STATE;
 
-  function renderToolbar(toolbarGraph: ReferenceGraphResult): void {
+  function renderToolbar(toolbarGraph: SitecoreHarvestResult): void {
     toolbarRoot.render(
       <GraphToolbar
         graph={toolbarGraph}
@@ -285,7 +285,7 @@ export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResu
           currentFilters = { ...currentFilters, [key]: checked, };
           void setReferenceGraphFilters(currentFilters);
           renderToolbar(currentGraph);
-          const loadedFilters = loadedFiltersByItemId.get(currentGraph.rootItem.itemId) ?? new Set<keyof ReferenceGraphFiltersState>();
+          const loadedFilters = loadedFiltersByItemId.get(currentGraph.rootItem.itemId) ?? new Set<keyof SitecoreHarvestFiltersState>();
           loadedFiltersByItemId.set(currentGraph.rootItem.itemId, loadedFilters,);
           if (!checked || key === "template" || loadedFilters.has(key)) {
             renderGraph(currentGraph);
@@ -322,7 +322,7 @@ export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResu
   }
 
   let currentGraph = graph;
-  const loadedFiltersByItemId = new Map<string, Set<keyof ReferenceGraphFiltersState>>();
+  const loadedFiltersByItemId = new Map<string, Set<keyof SitecoreHarvestFiltersState>>();
 
   renderToolbar(graph);
 
@@ -351,7 +351,7 @@ export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResu
 
   attachGraphEventHandlers(cy, container, harvestForLink, doc, () => currentFilters, graphHistory, () => currentGraph, renderGraph,);
 
-  function renderGraph(newGraph: ReferenceGraphResult): void {
+  function renderGraph(newGraph: SitecoreHarvestResult): void {
     renderToolbar(newGraph);
 
     cy.elements().remove();

@@ -1,4 +1,4 @@
-import type { ReferenceGraphFiltersState } from "../../content/toolbar/reference-graph/graph.types";
+import type { SitecoreHarvestFiltersState } from "../../content/sitecore-harvester/sitecore-harvester.types";
 
 export const _REFERENCE_GRAPH_BASE = {
     NODE_KIND: {
@@ -29,5 +29,5 @@ export const _REFERENCE_GRAPH_BASE = {
             sections: "fobles-reference-graph-filter-sections",
             template: "fobles-reference-graph-filter-template",
             controls: "fobles-reference-graph-filter-controls",
-        } as const satisfies Record<keyof ReferenceGraphFiltersState, string>,
+        } as const satisfies Record<keyof SitecoreHarvestFiltersState, string>,
 };

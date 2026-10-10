@@ -1,88 +1,26 @@
 import { STORAGE } from "../../../constants/constants-b";
 import { SITECORE } from "../../../constants/sitecore";
 import { extensionLog } from "../../logger";
-import { buildFoblesUrl } from "../augmentor/helper";
-import { formatFoId } from "../augmentor/shared/guid";
 import {
   isRibbonCheckboxEnabled,
   setRibbonCheckboxEnabled,
 } from "../../macros/ribbon-toggle-macro";
-import { buildReferenceGraph } from "../../toolbar/reference-graph/build-graph";
+import { harvestSitecore } from "../../sitecore-harvester/harvest-sitecore";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { getCurrentItemId } from "../../toolbar/jump-flyout/ai-pages";
-import type {
-  ReferenceGraphResult,
-} from "../../toolbar/reference-graph/reference-graph.types";
-import { getQuickInfo } from "../../toolbar/jump-flyout/quick-info";
 import { openReferenceGraphModal } from "../../toolbar/reference-graph/reference-graph-modal";
-import type { QuickInfo } from "../../toolbar/types";
 import { type PendingReferenceGraph } from "../../toolbar/reference-graph/graph.types";
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { closeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "../../toolbar/reference-graph/build-progress";
+import { closeReferenceGraphProgressModal, handleHarvestProgress, openReferenceGraphProgressModal } from "../../toolbar/reference-graph/build-progress";
+import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import { CONST } from "../../../constants/const";
 
 // Shared by the fast path (harvestAndOpen) and the slow, reload-spanning path - Cancel aborts
 // whichever one is currently in flight; a stale/already-settled controller is harmless to abort.
 let referenceGraphAbortController: AbortController | undefined = undefined;
 
-export function findFieldInput(doc: Document, labelPrefix: string): HTMLInputElement | undefined {
-  const label = Array.from(
-    doc.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.FIELD_LABEL),
-  ).find((element) =>
-    element.textContent?.trim().toLowerCase().startsWith(labelPrefix.toLowerCase()),
-  );
-  return (
-    label
-      ?.closest(SITECORE.SELECTORS.FIELD_CELL)
-      ?.querySelector<HTMLInputElement>(SITECORE.SELECTORS.CONTENT_CONTROL) ?? undefined
-  );
-}
-
-export async function resolveQuickInfoForRenderingId(
-  renderingId: string,
-  signal: AbortSignal,
-): Promise<QuickInfo | undefined> {
-  try {
-    const response = await fetch(buildFoblesUrl(renderingId), { credentials: "same-origin", signal });
-    if (!response.ok) return undefined;
-    const fetchedDoc = new DOMParser().parseFromString(await response.text(), "text/html");
-    // const path = getQuickInfoValue(fetchedDoc, "Item path:");
-    const fetchDocQuickInfo = getQuickInfo(fetchedDoc);
-    return fetchDocQuickInfo;
-  } catch (error) {
-    extensionLog.warn("Reference graph: failed to resolve rendering details", { renderingId, error });
-    return undefined;
-  }
-}
-
-// "local:" datasource paths are relative to the item the rendering is placed on - everything
-// else (a GUID, or an already-absolute /sitecore/... path) can go straight to buildFoblesUrl.
-export function resolveDatasourceLink(datasource: string | undefined, currentItemPath: string | undefined): string | undefined {
-  if (!datasource) return undefined;
-  if (!datasource.toLowerCase().startsWith("local:")) return buildFoblesUrl(datasource);
-  if (!currentItemPath) return undefined;
-  return buildFoblesUrl(`${currentItemPath}${datasource.slice("local:".length)}`);
-}
-
-// Quick Info's Template row carries its guid in a differently-classed readonly input
-// (scEditorHeaderQuickInfoInputID) than every other row (scEditorHeaderQuickInfoInput) -
-// getQuickInfoValue only reads the latter, so the template's guid needs its own lookup.
-export function getTemplateGuid(doc: Document): string | undefined {
-  return doc.querySelector<HTMLInputElement>("input.scEditorHeaderQuickInfoInputID[readonly]")?.value.trim() || undefined;
-}
-
-// No fetch needed - buildFoblesUrl accepts a sitecore path just as well as a guid, and the
-// parent's path is just the current item's path with its last segment dropped.
-export function getParentPath(itemPath: string | undefined): string | undefined {
-  if (!itemPath) return undefined;
-  const segments = itemPath.split("/").filter(Boolean);
-  if (segments.length <= 1) return undefined;
-  segments.pop();
-  return `/${segments.join("/")}`;
-}
-
 export function isHandledElsewhere(label: string): boolean {
   const normalized = label.toLowerCase();
-  return REFERENCE_GRAPH.EXCLUSIONS.EXCLUDED_FIELD_LABEL_PREFIXES.some((prefix) => normalized.startsWith(prefix));
+  return CONST.SITECORE.HARVEST.EXCLUDED_FIELD_LABEL_PREFIXES.some((prefix: string) => normalized.startsWith(prefix));
 }
 
 // The administrator suffix (" [shared]", " [shared, standard value]", ...) is only ever
@@ -116,21 +54,6 @@ export function readRawFieldValue(marker: HTMLElement): string | undefined {
   return control.value.trim() || undefined;
 }
 
-export function buildGalleryLinksUrl(itemId: string): string {
-  const origin = `${window.location.protocol}//${window.location.hostname}`;
-  const params = new URLSearchParams({
-    [SITECORE.SEARCH_PARAMS.XML_CONTROL]: "Gallery.Links",
-    [SITECORE.SEARCH_PARAMS.ITEM_ID]: formatFoId(itemId),
-    la: "en",
-    vs: "1",
-    db: "master",
-    sc_content: "master",
-    ShowEditor: "1",
-    "Ribbon.RenderTabs": "true",
-  });
-  return `${origin}${SITECORE.RELATIVE_PATHS_ENCODED.SHELL_DEFAULT}?${params.toString()}`;
-}
-
 function cancelReferenceGraph(doc: Document): void {
   referenceGraphAbortController?.abort();
   const pending = readPendingReferenceGraph();
@@ -143,7 +66,7 @@ function cancelReferenceGraph(doc: Document): void {
 // already uses) and re-harvests against the fetched document instead of the live one. Raw
 // Values/Standard Fields are already confirmed on by the time any node is clickable, so the
 // fetched page reflects them too (both are session-level view settings, not per-page).
-export async function harvestGraphForLink(link: string, progressDoc: Document): Promise<ReferenceGraphResult | undefined> {
+export async function harvestGraphForLink(link: string, progressDoc: Document): Promise<SitecoreHarvestResult | undefined> {
   const controller = new AbortController();
   referenceGraphAbortController = controller;
   try {
@@ -151,7 +74,7 @@ export async function harvestGraphForLink(link: string, progressDoc: Document): 
     if (!response.ok) return undefined;
     const fetchedDoc = new DOMParser().parseFromString(await response.text(), "text/html");
     const filters = await getReferenceGraphFilters();
-    return await buildReferenceGraph(fetchedDoc, controller.signal, filters, progressDoc);
+    return await harvestSitecore(fetchedDoc, controller.signal, filters, (step, status) => handleHarvestProgress(progressDoc, step, status),);
   } catch (error) {
     extensionLog.warn("Reference graph: failed to re-harvest for clicked node", { link, error });
     return undefined;
@@ -162,7 +85,7 @@ async function harvestAndOpen(doc: Document): Promise<void> {
   const controller = new AbortController();
   referenceGraphAbortController = controller;
   const filters = await getReferenceGraphFilters();
-  const graph = await buildReferenceGraph(doc, controller.signal, filters);
+  const graph = await harvestSitecore(doc, controller.signal, filters, (step, status) => handleHarvestProgress(doc, step, status),);
   closeReferenceGraphProgressModal(doc);
   if (controller.signal.aborted || !graph) return;
   openReferenceGraphModal(doc, graph, (link) => harvestGraphForLink(link, doc));
@@ -198,17 +121,18 @@ async function advancePendingReferenceGraph(doc: Document, pending: PendingRefer
     const controller = new AbortController();
     referenceGraphAbortController = controller;
     const filters = await getReferenceGraphFilters();
-    await buildReferenceGraph(doc, controller.signal, filters).then(async (graph) => {
-      // Re-read rather than trust the closed-over pending - Cancel may have flagged it while fetches were in flight.
-      const latest = readPendingReferenceGraph() ?? pending;
-      const harvestedPending: PendingReferenceGraph = {
-        ...latest,
-        harvested: true,
-        graph: latest.cancelled ? undefined : graph,
-      };
-      writePendingReferenceGraph(harvestedPending);
-      await advancePendingReferenceGraph(doc, harvestedPending);
-    });
+    await harvestSitecore(doc, controller.signal, filters, (step, status) =>
+      handleHarvestProgress(doc, step, status),).then(async (graph) => {
+        // Re-read rather than trust the closed-over pending - Cancel may have flagged it while fetches were in flight.
+        const latest = readPendingReferenceGraph() ?? pending;
+        const harvestedPending: PendingReferenceGraph = {
+          ...latest,
+          harvested: true,
+          graph: latest.cancelled ? undefined : graph,
+        };
+        writePendingReferenceGraph(harvestedPending);
+        await advancePendingReferenceGraph(doc, harvestedPending);
+      });
     return;
   }
 

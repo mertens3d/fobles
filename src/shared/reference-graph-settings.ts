@@ -3,7 +3,8 @@
 import { STORAGE } from "../constants/constants-b";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
 import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../content/toolbar/reference-graph/graph-filters";
-import type {  LayoutGraphPresetName, ReferenceGraphFiltersState } from "../content/toolbar/reference-graph/graph.types";
+import type {  LayoutGraphPresetName } from "../content/toolbar/reference-graph/graph.types";
+import type { SitecoreHarvestFiltersState } from "../content/sitecore-harvester/sitecore-harvester.types";
 import { getStorageValue, setStorageValue } from "./storage/storage";
 
 export async function getReferenceGraphLayoutName(): Promise<LayoutGraphPresetName > {
@@ -15,11 +16,11 @@ export async function setReferenceGraphLayout(layout: LayoutGraphPresetName ): P
   await setStorageValue({ [STORAGE.KEY.REFERENCE_GRAPH.LAYOUT]: layout });
 }
 
-export async function getReferenceGraphFilters(): Promise<ReferenceGraphFiltersState> {
-  const result = await getStorageValue<Partial<ReferenceGraphFiltersState>>([STORAGE.KEY.REFERENCE_GRAPH.FILTERS]);
+export async function getReferenceGraphFilters(): Promise<SitecoreHarvestFiltersState> {
+  const result = await getStorageValue<Partial<SitecoreHarvestFiltersState>>([STORAGE.KEY.REFERENCE_GRAPH.FILTERS]);
   return { ...DEFAULT_RENDERING_GRAPH_FILTERS_STATE, ...result[STORAGE.KEY.REFERENCE_GRAPH.FILTERS] };
 }
 
-export async function setReferenceGraphFilters(filters: ReferenceGraphFiltersState): Promise<void> {
+export async function setReferenceGraphFilters(filters: SitecoreHarvestFiltersState): Promise<void> {
   await setStorageValue({ [STORAGE.KEY.REFERENCE_GRAPH.FILTERS]: filters });
 }

@@ -1,16 +1,21 @@
-import { buildFoblesUrl } from "../../features/augmentor/helper";
-import { extractGuid } from "../../features/augmentor/shared/guid";
-import { buildGalleryLinksUrl, findFieldInput, getTemplateGuid, resolveQuickInfoForRenderingId } from "../../features/jump-flyout/reference-graph";
-import { extensionLog } from "../../logger";
-import { getGlyphId, getGlyphState, waitForExpansion, readChildNodes } from "../../macros/tree-expand-macro";
-import { getCurrentItemId } from "../jump-flyout/ai-pages";
-import { getQuickInfo } from "../jump-flyout/quick-info";
-import { BUILD_STEPS } from "./build-steps";
+// @source-path [fobles] src/content/sitecore-harvester/harvest-sitecore.ts
+
+import { buildFoblesUrl } from "../features/augmentor/helper";
+import { extractGuid } from "../features/augmentor/shared/guid";
+import { buildGalleryLinksUrl } from "./harvest-helpers";
+import { findFieldInput } from "./harvest-helpers";
+import { resolveQuickInfoForRenderingId } from "./harvest-helpers";
+import { getTemplateGuid } from "./harvest-helpers";
+import { extensionLog } from "../logger";
+import { getGlyphId, getGlyphState, waitForExpansion, readChildNodes } from "../macros/tree-expand-macro";
+import { getCurrentItemId } from "../toolbar/jump-flyout/ai-pages";
+import { getQuickInfo } from "../toolbar/jump-flyout/quick-info";
+import { HARVEST_STEPS } from "./harvest-steps";
 import { parseDevice } from "./layout-parsing";
-import type { itemNodeData, ReferenceGraphResult } from "./reference-graph.types";
-import { CONST } from "../../../constants/const";
-import type { BuildContext, ReferenceGraphFiltersState } from "./graph.types";
-import { initializeReferenceGraphProgressModal, updateReferenceGraphProgressModal } from "./build-progress";
+import type { HarvestProgressCallback, itemNodeData, SitecoreHarvestResult } from "./sitecore-harvester.types";
+import { CONST } from "../../constants/const";
+import type { SitecoreHarvestFiltersState } from "./sitecore-harvester.types";
+import type { HarvestContext } from "./sitecore-harvester.types";
 
 // Finds itemId's own tree node, expanding it first (and restoring it back to collapsed
 // afterward) if needed, then returns its direct children. Only the live document can actually
@@ -55,7 +60,7 @@ export async function collectTreeChildren(doc: Document, itemId: string): Promis
 // just without that strategy's DOM-mutation (button-building) half, which doesn't apply here.
 // Scoped to specifically the "refers to" section's own .scRef sibling - #Links can carry other
 // sections too (e.g. items the selected item itself uses), already captured elsewhere.
-export async function collectReferrers(buildContext: BuildContext): Promise<itemNodeData[]> {
+export async function collectReferrers(buildContext: HarvestContext): Promise<itemNodeData[]> {
   let returnValue: itemNodeData[] = [];
   try {
     const fetchURL = buildGalleryLinksUrl(buildContext.itemId);
@@ -98,11 +103,12 @@ export async function collectReferrers(buildContext: BuildContext): Promise<item
   return returnValue;
 }
 
-export async function buildReferenceGraph(
+export async function harvestSitecore(
   doc: Document,
   signal: AbortSignal,
-  filters: ReferenceGraphFiltersState,
-  progressDoc: Document = doc,): Promise<ReferenceGraphResult | undefined> {
+  filters: SitecoreHarvestFiltersState,
+  onProgress?: HarvestProgressCallback,
+): Promise<SitecoreHarvestResult | undefined> {
   const itemId = getCurrentItemId(doc);
   if (!itemId) {
     extensionLog.warn("Reference graph: could not resolve current item id");
@@ -144,7 +150,7 @@ export async function buildReferenceGraph(
     templateLink: templateGuid ? buildFoblesUrl(templateGuid) : undefined,
   };
 
-  const result: ReferenceGraphResult = {
+  const result: SitecoreHarvestResult = {
     rootItem,
     parent: undefined,
     sharedLayoutName: undefined,
@@ -156,7 +162,7 @@ export async function buildReferenceGraph(
     referrers: undefined,
   };
 
-  const buildContext: BuildContext = {
+  const buildContext: HarvestContext = {
     doc,
     itemId,
     result,
@@ -164,13 +170,17 @@ export async function buildReferenceGraph(
     rootItem,
   };
 
-  initializeReferenceGraphProgressModal(progressDoc, BUILD_STEPS, filters);
+  for (const harvestStep of HARVEST_STEPS) {
+    if (!filters[harvestStep.filterKey]) {
+      onProgress?.(harvestStep, "skipped");
+    }
+  }
 
-  const enabledBuildSteps = BUILD_STEPS.filter((buildStep) => filters[buildStep.filterKey],);
+  const enabledHarvestSteps = HARVEST_STEPS.filter((harvestStep) => filters[harvestStep.filterKey],);
 
-  for (const buildStep of enabledBuildSteps) {
-    await buildStep.build(buildContext);
-    updateReferenceGraphProgressModal(progressDoc, buildStep);
+  for (const harvestStep of enabledHarvestSteps) {
+    await harvestStep.build(buildContext);
+    onProgress?.(harvestStep, "complete");
     await testingDelay(1000);
   }
 
@@ -178,6 +188,7 @@ export async function buildReferenceGraph(
 }
 
 function testingDelay(milliseconds: number): Promise<void> {
-  return new Promise((resolve) => { 
-    setTimeout(resolve, milliseconds); });
+  return new Promise((resolve) => {
+    setTimeout(resolve, milliseconds);
+  });
 }

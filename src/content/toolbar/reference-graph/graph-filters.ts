@@ -1,7 +1,7 @@
-import type { ReferenceGraphFiltersState } from "./graph.types";
-import type { ReferenceGraphResult } from "./reference-graph.types";
+import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
 
-export const DEFAULT_RENDERING_GRAPH_FILTERS_STATE: ReferenceGraphFiltersState = {
+export const DEFAULT_RENDERING_GRAPH_FILTERS_STATE: SitecoreHarvestFiltersState = {
   parent: true,
   children: true,
   layout: true,
@@ -11,7 +11,7 @@ export const DEFAULT_RENDERING_GRAPH_FILTERS_STATE: ReferenceGraphFiltersState =
   controls: true,
 };
 
-export function createSingleFilterState(enabledKey: keyof ReferenceGraphFiltersState,): ReferenceGraphFiltersState {
+export function createSingleFilterState(enabledKey: keyof SitecoreHarvestFiltersState,): SitecoreHarvestFiltersState {
   return {
     parent: enabledKey === "parent",
     children: enabledKey === "children",
@@ -23,7 +23,7 @@ export function createSingleFilterState(enabledKey: keyof ReferenceGraphFiltersS
   };
 }
 
-export function mergeFilterGraph(currentGraph: ReferenceGraphResult, partialGraph: ReferenceGraphResult, filterKey: keyof ReferenceGraphFiltersState,): ReferenceGraphResult {
+export function mergeFilterGraph(currentGraph: SitecoreHarvestResult, partialGraph: SitecoreHarvestResult, filterKey: keyof SitecoreHarvestFiltersState,): SitecoreHarvestResult {
   const mergedGraph = { ...currentGraph };
 
   switch (filterKey) {
@@ -57,9 +57,9 @@ export function mergeFilterGraph(currentGraph: ReferenceGraphResult, partialGrap
   return mergedGraph;
 }
 
-export function getEnabledFilterKeys(filters: ReferenceGraphFiltersState,): Set<keyof ReferenceGraphFiltersState> {
+export function getEnabledFilterKeys(filters: SitecoreHarvestFiltersState,): Set<keyof SitecoreHarvestFiltersState> {
   return new Set(Object.entries(filters)
     .filter(([, enabled]) => enabled)
-    .map(([key]) => key as keyof ReferenceGraphFiltersState,),
+    .map(([key]) => key as keyof SitecoreHarvestFiltersState,),
   );
 }

@@ -1,10 +1,10 @@
 // @source-path [fobles] src/content/toolbar/reference-graph/event-handlers.ts
 
 import { extensionLog } from "../../logger";
-import type { ReferenceGraphResult } from "./reference-graph.types";
 import { hideActiveTooltip, toggleTooltip } from "./graph-tooltip";
 import { closeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
-import type { ReferenceGraphFiltersState } from "./graph.types";
+import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 
 function getEventNode(event: cytoscape.EventObject): cytoscape.NodeSingular {
     return event.target as cytoscape.NodeSingular;
@@ -17,12 +17,12 @@ function getNodeLink(node: cytoscape.NodeSingular): string | undefined {
 
 export function attachGraphEventHandlers(cy: cytoscape.Core,
     container: HTMLElement,
-    harvestForLink: ( link: string, filters: ReferenceGraphFiltersState, ) => Promise<ReferenceGraphResult | undefined>,
+    harvestForLink: ( link: string, filters: SitecoreHarvestFiltersState, ) => Promise<SitecoreHarvestResult | undefined>,
     doc: Document,
-    getCurrentFilters: () => ReferenceGraphFiltersState,
-    graphHistory: ReferenceGraphResult[],
-    getCurrentGraph: () => ReferenceGraphResult,
-    renderGraph: (newGraph: ReferenceGraphResult) => void,
+    getCurrentFilters: () => SitecoreHarvestFiltersState,
+    graphHistory: SitecoreHarvestResult[],
+    getCurrentGraph: () => SitecoreHarvestResult,
+    renderGraph: (newGraph: SitecoreHarvestResult) => void,
 ): void {
     cy.on("mouseover", "node", (event: cytoscape.EventObject) => {
         const node = getEventNode(event);

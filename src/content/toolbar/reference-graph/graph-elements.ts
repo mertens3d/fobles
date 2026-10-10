@@ -5,12 +5,13 @@ import { buildFoblesUrl } from "../../features/augmentor/helper";
 import { buildTooltip } from "./graph-tooltip";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { buildLabel,  appendCompoundChildren, appendSatellites, lastPathSegment } from "./reference-graph-modal";
-import type { ReferenceGraphResult } from "./reference-graph.types";
 import type { PlaceholderGroup } from "./graph.types";
 import { CONST } from "../../../constants/const";
 import { kindClass, slugify, stripDynamicPlaceholderSuffix } from "./graph-helpers";
+import type { SitecoreHarvestField, SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { HarvestFieldLink } from "../../sitecore-harvester/sitecore-harvester.types";
 
-export function buildElements(graphReferenceResult: ReferenceGraphResult): cytoscape.ElementDefinition[] {
+export function buildElements(graphReferenceResult: SitecoreHarvestResult): cytoscape.ElementDefinition[] {
     const nodes: cytoscape.ElementDefinition[] = [
         {
             data: {
@@ -274,7 +275,7 @@ export function buildElements(graphReferenceResult: ReferenceGraphResult): cytos
             const fieldIds = appendCompoundChildren(
                 nodes,
                 sectionId,
-                section.fields.map((field) => ({
+                section.fields.map((field: SitecoreHarvestField) => ({
                     kind: field.label,
                     value: field.value,
                     category: REFERENCE_GRAPH.NODE_KIND.FIELD,
@@ -291,7 +292,7 @@ export function buildElements(graphReferenceResult: ReferenceGraphResult): cytos
                     nodes,
                     edges,
                     fieldId,
-                    field.links.map((link) => ({
+                    field.links.map((link: HarvestFieldLink) => ({
                         kind: REFERENCE_GRAPH.NODE_KIND.FIELD,
                         value: link.label,
                         link: buildFoblesUrl(link.itemId),

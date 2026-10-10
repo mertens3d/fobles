@@ -1,6 +1,7 @@
 import type cytoscape from "cytoscape";
-import type { ReferenceGraphFiltersState } from "../content/toolbar/reference-graph/graph.types";
-import type { LayoutPreset, LayoutGraphPresetName, BuildStepKey } from "../content/toolbar/reference-graph/graph.types";
+import type { SitecoreHarvestFiltersState } from "../content/sitecore-harvester/sitecore-harvester.types";
+import type { LayoutPreset, LayoutGraphPresetName } from "../content/toolbar/reference-graph/graph.types";
+import type { HarvestStepKey } from "../content/sitecore-harvester/sitecore-harvester.types";
 import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE";
 
 export const REFERENCE_GRAPH = {
@@ -12,15 +13,7 @@ export const REFERENCE_GRAPH = {
         CHILDREN: "edge-children",
         REFERRERS: "edge-referrers"
     },
-    EXCLUSIONS: {
-        // Sections/fields already represented elsewhere in the graph, or not useful for this POC's
-        // purposes (Statistics/Security/Appearance are noisy system bookkeeping, not content-shape data).
-        // Quick Info is also a differently-shaped table (see getQuickInfoValue), not a field-marker
-        // section; Renderings/Final renderings get their own rich subtree (parseDevice) instead of a
-        // flat raw-value leaf.
-        EXCLUDED_SECTION_NAMES: new Set(["appearance", "quick info", "security", "statistics"]),
-        EXCLUDED_FIELD_LABEL_PREFIXES: ["final renderings", "renderings"],
-    },
+
     FILTER_CLASS: _REFERENCE_GRAPH_BASE.FILTER_CLASS,
     NODE_ID: {
         // Fixed structural wrapper nodes (the two layout XML sources everything else is parsed from, and
@@ -65,7 +58,7 @@ export const REFERENCE_GRAPH = {
         { key: "referrers", buildStepKey: "referrers", label: "Referrers", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.referrers },
         { key: "sections", buildStepKey: "sections", label: "Sections", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.sections },
         { key: "template", buildStepKey: "template", label: "Template", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.template },
-    ] as ReadonlyArray<{ key: keyof ReferenceGraphFiltersState; buildStepKey: BuildStepKey; label: string; className: string; }>,
+    ] as ReadonlyArray<{ key: keyof SitecoreHarvestFiltersState; buildStepKey: HarvestStepKey; label: string; className: string; }>,
     DIALOG_ID: "fobles-reference-graph-dialog",
     PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
     PROGRESS_MESSAGE_ID: "fobles-reference-graph-progress-message",
@@ -98,13 +91,5 @@ export const REFERENCE_GRAPH = {
         },
     } as Record<LayoutGraphPresetName, LayoutPreset>,
     DEFAULT_LAYOUT_PRESET: { LayoutPresetName: "dagre" },
-    // Sections/fields already represented elsewhere in the graph, or not useful for this POC's
-    // purposes (Statistics/Security/Appearance are noisy system bookkeeping, not content-shape data).
-    // Quick Info is also a differently-shaped table (see getQuickInfoValue), not a field-marker
-    // section; Renderings/Final renderings get their own rich subtree (parseDevice) instead of a
-    // flat raw-value leaf.
-    EXCLUDED_SECTION_NAMES: new Set(["appearance", "quick info", "security", "statistics"]),
-    EXCLUDED_FIELD_LABEL_PREFIXES: ["final renderings", "renderings"],
-    //i guessed on this
 
 };

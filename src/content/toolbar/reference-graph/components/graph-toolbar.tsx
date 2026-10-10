@@ -1,21 +1,22 @@
-import type { LayoutGraphPresetName, ReferenceGraphFiltersState } from "../graph.types";
-import type { ReferenceGraphResult } from "../reference-graph.types";
+import type { LayoutGraphPresetName } from "../graph.types";
+import type { SitecoreHarvestFiltersState } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { BackButton } from "./back-button";
 import { GraphTypeSelect } from "./graph-type-select";
 import { RootInfo } from "./root-info";
 import { GraphFilterList } from "./graph-filter-list";
 import { InteractionLegend } from "./interaction-legend";
+import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
 
-export type GraphToolbarHandle = { showGraph: ( graph: ReferenceGraphResult, addCurrentGraphToHistory: boolean, ) => void; };
+export type GraphToolbarHandle = { showGraph: ( graph: SitecoreHarvestResult, addCurrentGraphToHistory: boolean, ) => void; };
 
 type ToolbarProps = {
-  graph: ReferenceGraphResult;
+  graph: SitecoreHarvestResult;
   layoutPresetName: LayoutGraphPresetName;
   onLayoutChange: (value: LayoutGraphPresetName) => void;
   canGoBack: boolean;
   onBack: () => void;
-  filters: ReferenceGraphFiltersState;
-  onFilterChange: (key: keyof ReferenceGraphFiltersState, checked: boolean) => void;
+  filters: SitecoreHarvestFiltersState;
+  onFilterChange: (key: keyof SitecoreHarvestFiltersState, checked: boolean) => void;
 };
 
 export function GraphToolbar({ graph, layoutPresetName, onLayoutChange, canGoBack, onBack, filters, onFilterChange }: ToolbarProps) {

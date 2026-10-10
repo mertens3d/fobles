@@ -1,8 +1,8 @@
-import { stripGuidBraces } from "../../features/augmentor/shared/guid";
-import type { ParsedDevice } from "./reference-graph.types";
-import type { ReferenceGraphControl } from "./reference-graph.types";
+import { stripGuidBraces } from "../features/augmentor/shared/guid";
+import type { ParsedDevice } from "./sitecore-harvester.types";
+import type { HarvestGraphControl } from "./sitecore-harvester.types";
 
-export function factoryReferenceGraphControl(control: Element): ReferenceGraphControl {
+export function createHarvestGraphControl(control: Element): HarvestGraphControl {
   return {
     renderingId: control.getAttribute("s:id") ?? "",
     name: undefined,
@@ -36,7 +36,7 @@ export function parseDevice(xml: string, deviceId: string): ParsedDevice {
   );
   if (!device) return { layoutId: undefined, controls: [] };
 
-  const controls: ReferenceGraphControl[] = Array.from(device.getElementsByTagName("r")).map((control) => (factoryReferenceGraphControl(control)));
+  const controls: HarvestGraphControl[] = Array.from(device.getElementsByTagName("r")).map((control) => (createHarvestGraphControl(control)));
 
   return {
     layoutId: device.getAttribute("l") ?? undefined,

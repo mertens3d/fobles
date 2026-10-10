@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/toolbar/reference-graph/components/graph-filter-list.tsx
 
 import { REFERENCE_GRAPH } from "../../../../constants/graph.const";
-import type { ReferenceGraphFiltersState } from "../graph.types";
-type GraphFilterListProps = { filters: ReferenceGraphFiltersState; onChange: (key: keyof ReferenceGraphFiltersState, checked: boolean) => void };
+import type { SitecoreHarvestFiltersState } from "../../../sitecore-harvester/sitecore-harvester.types";
+type GraphFilterListProps = { filters: SitecoreHarvestFiltersState; onChange: (key: keyof SitecoreHarvestFiltersState, checked: boolean) => void };
 export function GraphFilterList({ filters, onChange }: GraphFilterListProps) {
   return (
     <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11 }}>
