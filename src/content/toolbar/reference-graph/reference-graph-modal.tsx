@@ -16,7 +16,7 @@ import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "./graph-filters";
 import { kindClass, slugify } from "./graph-helpers";
 import { createRoot } from "react-dom/client";
-import { GraphToolbar } from "./graph-toolbar";
+import { GraphToolbar } from "./components/graph-toolbar";
 
 cytoscape.use(cytoscapeDagre);
 cytoscape.use(cytoscapeCoseBilkent);

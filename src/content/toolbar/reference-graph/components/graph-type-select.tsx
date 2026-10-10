@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/toolbar/reference-graph/graph-type-select.tsx
 
-import { CONST } from "../../../constants/const";
-import type { LayoutGraphPresetName } from "./graph.types";
+import { CONST } from "../../../../constants/const";
+import type { LayoutGraphPresetName } from "../graph.types";
 
 
 let layoutSelect: HTMLSelectElement;

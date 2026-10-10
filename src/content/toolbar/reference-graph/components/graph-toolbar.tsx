@@ -1,5 +1,5 @@
-import type { LayoutGraphPresetName, ReferenceGraphFiltersState } from "./graph.types";
-import type { ReferenceGraphResult } from "./reference-graph.types";
+import type { LayoutGraphPresetName, ReferenceGraphFiltersState } from "../graph.types";
+import type { ReferenceGraphResult } from "../reference-graph.types";
 import { BackButton } from "./back-button";
 import { GraphTypeSelect } from "./graph-type-select";
 import { RootInfo } from "./root-info";
