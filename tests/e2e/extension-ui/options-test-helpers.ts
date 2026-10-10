@@ -75,8 +75,8 @@ export async function findAdminPageByLabel(page: Page, label: string): Promise<L
 }
 
 export async function openAdminPagesColumn(page: Page): Promise<Locator> {
-  await openSettingsSection(page, TESTING.OPTIONS.ADMIN_PAGES.JUMP_MENU_SECTION_TITLE);
-  const column = page.locator(TESTING.JUMP_MENU.ADMIN_PAGES_COLUMN_SELECTOR).filter({
+  await openSettingsSection(page, TESTING.OPTIONS.ADMIN_PAGES.JUMP_FLYOUT_SECTION_TITLE);
+  const column = page.locator(TESTING.JUMP_FLYOUT.ADMIN_PAGES_COLUMN_SELECTOR).filter({
     has: page.locator(TESTING.OPTIONS.SUMMARY_SELECTOR, {
       hasText: TESTING.OPTIONS.ADMIN_PAGES.COLUMN_TITLE,
     }),

@@ -1,15 +1,16 @@
 import { CONST } from "../../constants/const";
 import { formatFoId, stripGuidBraces } from "../features/augmentor/shared/guid";
-import type { GlyphState, TreeChildNode } from "../toolbar/graph/graph.types";
+import type { GlyphState } from "../toolbar/reference-graph/graph.types";
+import type { TreeChildNode } from "../toolbar/reference-graph/reference-graph.types";
 
-function getGlyphId(itemId: string): string {
+export function getGlyphId(itemId: string): string {
   return `${CONST.SITECORE.TREE_ID_PREFIXES.GLYPH}${stripGuidBraces(itemId).replace(/-/g, "").toUpperCase()}`;
 }
 
 // A leaf (no children at all) renders a plain spacer glyph (noexpand15x15.gif) - neither
 // expanded nor collapsed - so it has to be its own state, not just "not expanded", or a leaf
 // gets misread as collapsed and clicked (a no-op at best; see collectTreeChildren below).
-function getGlyphState(glyph: HTMLImageElement): GlyphState {
+export function getGlyphState(glyph: HTMLImageElement): GlyphState {
   const src = glyph.src.toLowerCase();
   if (src.includes("treemenu_expanded")) return "expanded";
   if (src.includes("treemenu_collapsed")) return "collapsed";
@@ -17,9 +18,9 @@ function getGlyphState(glyph: HTMLImageElement): GlyphState {
 }
 
 // Children of an expanded node live in a single trailing, unclassed <div> right after its own
-// Tree_Node_ anchor (see src/rendering graph/example markup/tree partial.html) - :scope keeps
+// Tree_Node_ anchor (see src/reference graph/example markup/tree partial.html) - :scope keeps
 // this to direct children only, not every descendant node further down the tree.
-function readChildNodes(glyph: HTMLImageElement): TreeChildNode[] {
+export function readChildNodes(glyph: HTMLImageElement): TreeChildNode[] {
   const anchor = glyph.parentElement?.querySelector<HTMLAnchorElement>(CONST.SITECORE.SELECTORS.TREE.NODE_LINK);
   const childrenContainer = anchor?.nextElementSibling;
   if (!childrenContainer) return [];
@@ -43,7 +44,7 @@ function readChildNodes(glyph: HTMLImageElement): TreeChildNode[] {
 // reference detached and permanently stuck in its old state. Returns undefined on a detached/static
 // document (e.g. one built from fetch() + DOMParser, not the live page) - clicking there doesn't
 // trigger any real postback, so this just times out harmlessly.
-function waitForExpansion(doc: Document, glyphId: string, timeoutMs = 3_000): Promise<HTMLImageElement | undefined> {
+export function waitForExpansion(doc: Document, glyphId: string, timeoutMs = 3_000): Promise<HTMLImageElement | undefined> {
   return new Promise((resolve) => {
     const startedAt = Date.now();
     const poll = (): void => {
@@ -58,29 +59,4 @@ function waitForExpansion(doc: Document, glyphId: string, timeoutMs = 3_000): Pr
   });
 }
 
-// Finds itemId's own tree node, expanding it first (and restoring it back to collapsed
-// afterward) if needed, then returns its direct children. Only the live document can actually
-// expand anything - see waitForExpansion's note - so a fetched/static document just reports
-// whatever children happen to already be rendered (usually none).
-export async function collectTreeChildren(doc: Document, itemId: string): Promise<TreeChildNode[]> {
-  const glyphId = getGlyphId(itemId);
-  const glyph = doc.getElementById(glyphId) as HTMLImageElement | undefined;
-  if (!glyph) return [];
 
-  const initialState = getGlyphState(glyph);
-  if (initialState === "leaf") return [];
-
-  let currentGlyph = glyph;
-  if (initialState === "collapsed") {
-    currentGlyph.click();
-    currentGlyph = (await waitForExpansion(doc, glyphId)) ?? currentGlyph;
-  }
-
-  const children = readChildNodes(currentGlyph);
-
-  if (initialState === "collapsed" && getGlyphState(currentGlyph) === "expanded") {
-    currentGlyph.click();
-  }
-
-  return children;
-}

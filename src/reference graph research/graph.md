@@ -17,7 +17,7 @@ item guid (it can have braces..it doesn't have to be encoded)
 
 from that page select the final layout tab
 
-src\rendering graph\example markup\Layout Details partial.html
+src\reference graph\example markup\Layout Details partial.html
 
 harvest the data see below for data shape
 
@@ -42,7 +42,7 @@ then open.
 https://xmc-kestrafinan4e39-gettingstarfc3e-gettingstard1db.sitecorecloud.io/sitecore/shell/default.aspx?xmlcontrol=DeviceEditor&de=%7BFE5D7FDF-89C0-4D99-9AA3-B5FBD009C9F3%7D&id=%7B58291AE1-FF44-4172-BBB8-431FD7CA618A%7D&vs=1&la=en
 
 example page
-src\rendering graph\example markup\device editor partial.html
+src\reference graph\example markup\device editor partial.html
 
 havest the rendeirng data there (layout and controls)
 
@@ -60,7 +60,7 @@ https://xmc-kestrafinan4e39-gettingstarfc3e-gettingstard1db.sitecorecloud.io/sit
 I don't know if you have enough information to go to that directly
 
 example html
-src\rendering graph\example markup\select a rendering partial.html
+src\reference graph\example markup\select a rendering partial.html
 
 from that we want the active item. in the example markup it should be 
 Fobles Header
@@ -75,7 +75,7 @@ https://xmc-kestrafinan4e39-gettingstarfc3e-gettingstard1db.sitecorecloud.io/sit
 
 once again it appears to be necassary to trigger the click on the item,  but after that you can just open the page in a different tab and the values will be the desired ones. That or traverse the iframes. Which is best
 
-src\rendering graph\example markup\edit partial.html
+src\reference graph\example markup\edit partial.html
 
 from that markup we want things like
 Variant (not Arden variant)
@@ -88,7 +88,7 @@ additional parameters
 possible other approach
 turn on raw values (I can do it ahead of time for POC) and get the data from the layout section 
 
-src\rendering graph\example markup\layout section.html
+src\reference graph\example markup\layout section.html
 
 actually...this might be the better way now that I think about it. Is all the same info there?
 i think we can use the rendering item id to get the name of the rendering using content edit along with the fo query string.

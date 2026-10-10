@@ -1,5 +1,5 @@
 import {
-  JUMP_MENU_BUTTON_CATALOG,
+  JUMP_FLYOUT_BUTTON_CATALOG,
   type JumpFlyoutButtonDescriptor,
 } from "../shared/jump-flyout/button-catalog";
 import {
@@ -97,7 +97,7 @@ function renderJumpFlyoutButtons(
   adminPagesColumnSection = null;
 
   const columns = new Map<string, JumpFlyoutButtonDescriptor[]>();
-  JUMP_MENU_BUTTON_CATALOG.forEach((descriptor) => {
+  JUMP_FLYOUT_BUTTON_CATALOG.forEach((descriptor) => {
     const column = columns.get(descriptor.column) ?? [];
     column.push(descriptor);
     columns.set(descriptor.column, column);
@@ -144,7 +144,7 @@ function renderJumpFlyoutButtons(
 export function initJumpFlyoutButtons(): void { 
   getElement<HTMLButtonElement>("save-jump-flyout-buttons").addEventListener("click", () => {
     const userSettings: JumpFlyoutButtonSettings = {};
-    JUMP_MENU_BUTTON_CATALOG.forEach((descriptor) => {
+    JUMP_FLYOUT_BUTTON_CATALOG.forEach((descriptor) => {
       const enabledInput = quickMenuButtonsContainer.querySelector<HTMLInputElement>(
         `input[name='enabled'][data-button-id='${descriptor.id}']`,
       );

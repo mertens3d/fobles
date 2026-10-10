@@ -69,22 +69,22 @@ function normalizeJumpFlyoutButtonSettings(value: unknown): JumpFlyoutButtonSett
 }
 
 export async function getJumpFlyoutButtonSettings(): Promise<JumpFlyoutButtonSettings> {
-  const result = await getStorageValue([STORAGE.KEY.JUMP_MENU_BUTTON_SETTINGS]);
-  return normalizeJumpFlyoutButtonSettings(result[STORAGE.KEY.JUMP_MENU_BUTTON_SETTINGS]);
+  const result = await getStorageValue([STORAGE.KEY.JUMP_FLYOUT_BUTTON_SETTINGS]);
+  return normalizeJumpFlyoutButtonSettings(result[STORAGE.KEY.JUMP_FLYOUT_BUTTON_SETTINGS]);
 }
 
 export async function setJumpFlyoutButtonSettings(
   settings: JumpFlyoutButtonSettings,
 ): Promise<void> {
   await setStorageValue({
-    [STORAGE.KEY.JUMP_MENU_BUTTON_SETTINGS]: settings,
+    [STORAGE.KEY.JUMP_FLYOUT_BUTTON_SETTINGS]: settings,
   });
 }
 
 export function onJumpFlyoutButtonSettingsChanged(
   callback: (settings: JumpFlyoutButtonSettings) => void,
 ): void {
-  onStorageChange(STORAGE.KEY.JUMP_MENU_BUTTON_SETTINGS, (newValue) => {
+  onStorageChange(STORAGE.KEY.JUMP_FLYOUT_BUTTON_SETTINGS, (newValue) => {
     callback(normalizeJumpFlyoutButtonSettings(newValue));
   });
 }

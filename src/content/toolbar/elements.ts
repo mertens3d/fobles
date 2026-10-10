@@ -5,7 +5,7 @@ import {
   SYMBOLS,
   TEXT
 } from "../../constants/fobles.constants";
-import { openRenderingGraph } from "./graph/rendering-graph";
+import { openReferenceGraph } from "./reference-graph/reference-graph";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {
   openJumpFlyoutOnHover,
@@ -49,7 +49,7 @@ export function createJumpsFlyoutTrigger(context: ToolbarContext): HTMLDivElemen
   const button = createFoblesNavButton(context, {
     className: CLASS.FOBLES_NAV_BUTTON,
     role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.JUMPS_FLYOUT_TRIGGER,
-    text: TEXT.JUMP_MENU,
+    text: TEXT.JUMP_FLYOUT,
     title: TEXT.QUICK_MENU_TITLE,
     onClick: () => toggleJumpFlyout(context),
   });
@@ -76,7 +76,7 @@ export function createGraphButton(context: ToolbarContext): HTMLButtonElement {
     role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.GRAPH,
     text: "",
     title: TEXT.GRAPH_TITLE,
-    onClick: () => openRenderingGraph(context.doc),
+    onClick: () => openReferenceGraph(context.doc),
   });
   button.setAttribute("aria-label", TEXT.GRAPH_TITLE);
 

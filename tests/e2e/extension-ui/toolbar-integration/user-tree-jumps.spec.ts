@@ -90,7 +90,7 @@ foblesTest.describe("User Tree Jumps", () => {
               await attachLocatorScreenshot(
                 testInfo,
                 foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
-                CONST.TESTING.REPORT_SCREENSHOTS.USER_TREE_JUMP_MENU,
+                CONST.TESTING.REPORT_SCREENSHOTS.USER_TREE_JUMP_FLYOUT,
               );
               await clickWithMouseMarker(
                 page,

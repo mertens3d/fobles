@@ -56,7 +56,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
       const foblesFrame = await findFoblesFrame(page);
       await ClickFoblesJumpButton(page);
       await expect(foblesFrame.getByRole("button", { name: label, exact: true })).toBeVisible();
-      await expect(foblesFrame.getByText(TESTING.JUMP_MENU.ADMIN_PAGES_GROUP_LABEL)).toBeVisible();
+      await expect(foblesFrame.getByText(TESTING.JUMP_FLYOUT.ADMIN_PAGES_GROUP_LABEL)).toBeVisible();
       await attachLocatorScreenshot(
         testInfo,
         foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
@@ -65,7 +65,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
 
       await setExtensionCheckbox(
         optionsPage,
-        newRow.locator(TESTING.JUMP_MENU.USER_ADMIN_PAGE_ENABLED_INPUT),
+        newRow.locator(TESTING.JUMP_FLYOUT.USER_ADMIN_PAGE_ENABLED_INPUT),
         false,
         label,
       );
@@ -74,7 +74,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
         TESTING.OPTIONS.ADMIN_PAGES.SAVE_STATUS,
       );
       await expect(foblesFrame.getByRole("button", { name: label, exact: true })).toHaveCount(0);
-      await expect(foblesFrame.getByText(TESTING.JUMP_MENU.ADMIN_PAGES_GROUP_LABEL)).toHaveCount(0);
+      await expect(foblesFrame.getByText(TESTING.JUMP_FLYOUT.ADMIN_PAGES_GROUP_LABEL)).toHaveCount(0);
       await attachLocatorScreenshot(
         testInfo,
         foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
@@ -83,7 +83,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
 
       await setExtensionCheckbox(
         optionsPage,
-        newRow.locator(TESTING.JUMP_MENU.USER_ADMIN_PAGE_ENABLED_INPUT),
+        newRow.locator(TESTING.JUMP_FLYOUT.USER_ADMIN_PAGE_ENABLED_INPUT),
         true,
         label,
       );

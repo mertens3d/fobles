@@ -1,4 +1,5 @@
 import { FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_ID } from "./button-ids";
+import { REFERENCE_GRAPH } from "./graph.const";
 
 // Shared constants used by fobles generation and cleanup
 export const FOBLES = {
@@ -11,6 +12,7 @@ export const FOBLES = {
     TEMPLATE_BUTTON: "data-template-button",
     WRAPPER: "data-fobles-wrapper",
   },
+  REFERENCE_GRAPH: REFERENCE_GRAPH,
   CLASSES: {
     BUTTONS: {
       ACTION: "fobles-action-button",

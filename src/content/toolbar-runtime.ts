@@ -25,7 +25,7 @@ import {
 } from "./toolbar";
 import { applyPowerShellIseTabIdentity } from "./ise-tab-title";
 import { toggleLightningBolt } from "./feature-toggle";
-import { resumeRenderingGraph } from "./toolbar/graph/rendering-graph";
+import { resumeReferenceGraph } from "./toolbar/reference-graph/reference-graph";
 
 let foblesUiActive = false;
 let foblesNavPlacement: ToolbarPlacement = DEFAULT_TOOLBAR_PLACEMENT;
@@ -189,7 +189,7 @@ async function reconcileCurrentPage(): Promise<void> {
   }
 
   resumeKickAllUsers(document);
-  resumeRenderingGraph(document);
+  resumeReferenceGraph(document);
 
   setToolbarVisible(getToolbarContext(), foblesNavVisible);
   extensionLog.debug("Fobles flyout injection result", {

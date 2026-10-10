@@ -18,7 +18,7 @@ import {
 function createJumpFlyout(doc: Document, closeMenu: () => void): HTMLDivElement {
   const jumpFlyout = doc.createElement("div");
   jumpFlyout.className = CLASS.JUMP_FLYOUT.FLYOUT;
-  jumpFlyout.setAttribute(ATTRIBUTE.DATA.KEY.JUMP_MENU, "1");
+  jumpFlyout.setAttribute(ATTRIBUTE.DATA.KEY.JUMP_FLYOUT, "1");
 
   const columns = doc.createElement("div");
   columns.className = CLASS.JUMP_FLYOUT.COLUMNS;

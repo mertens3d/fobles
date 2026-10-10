@@ -84,7 +84,7 @@ export async function setTestRowEnabled(optionsPage: Page, row: Locator, enabled
 export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
   const quickJumpSection = optionsPage.locator(TESTING.OPTIONS.SECTION_SELECTOR).filter({
     has: optionsPage.locator(TESTING.OPTIONS.SUMMARY_SELECTOR, {
-      hasText: TESTING.OPTIONS.ADMIN_PAGES.JUMP_MENU_SECTION_TITLE,
+      hasText: TESTING.OPTIONS.ADMIN_PAGES.JUMP_FLYOUT_SECTION_TITLE,
     }),
   });
   const jumpFlyoutIsOpen = await quickJumpSection.evaluate(
@@ -94,12 +94,12 @@ export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
     await clickExtensionControl(
       optionsPage,
       quickJumpSection.locator(TESTING.OPTIONS.SUMMARY_DIRECT_CHILD_SELECTOR),
-      TESTING.OPTIONS.ADMIN_PAGES.JUMP_MENU_SECTION_TITLE,
+      TESTING.OPTIONS.ADMIN_PAGES.JUMP_FLYOUT_SECTION_TITLE,
     );
   }
 
   const treeJumpsColumn = optionsPage
-    .locator(TESTING.JUMP_MENU.ADMIN_PAGES_COLUMN_SELECTOR)
+    .locator(TESTING.JUMP_FLYOUT.ADMIN_PAGES_COLUMN_SELECTOR)
     .filter({
       has: optionsPage.locator(TESTING.OPTIONS.SUMMARY_SELECTOR, {
         hasText: TESTING.OPTIONS.TREE_JUMPS_COLUMN_TITLE,

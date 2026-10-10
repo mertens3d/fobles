@@ -1,4 +1,4 @@
-# Rendering Graph - research notes
+# Reference Graph - research notes
 
 ## Shortcut found: skip the iframe/dialog navigation entirely
 
@@ -40,11 +40,11 @@ the `.scContentControl` input's value inside the same marker - same label-prefix
 
 ## Current implementation (post-POC-v1)
 
-- `src/content/features/jump-flyout/rendering-graph.ts` - harvests the graph, auto-enabling
+- `src/content/features/jump-flyout/reference-graph.ts` - harvests the graph, auto-enabling
   Standard Fields/Raw Values if either is off and restoring them to their original state
   afterward. Both toggles are Sitecore ribbon checkboxes (`SITECORE.RIBBON_CHECKBOXES`) that
   trigger a full page postback on click, so the enable -> harvest -> restore sequence is a small
-  resumable state machine persisted to `localStorage` (`resumeRenderingGraph`, wired into
+  resumable state machine persisted to `localStorage` (`resumeReferenceGraph`, wired into
   `src/content/toolbar-runtime.ts` next to `resumeKickAllUsers`) - the harvested graph itself
   rides along in that same persisted state so the final restore reload doesn't lose it.
 - `src/content/macros/ribbon-toggle-macro.ts` - generic read/toggle helpers for any Sitecore
@@ -66,7 +66,7 @@ the `.scContentControl` input's value inside the same marker - same label-prefix
   clicking) and parses `#Links a.scLink` the same way `editor-strategies/reference-links.ts`
   already does for the Content Editor's own inline Links section (`extractGuid` on `onclick`,
   `textContent` for the label - same markup, same extraction, just not its DOM-mutation half).
-- `src/content/features/jump-flyout/rendering-graph-modal.ts` - renders the result as a
+- `src/content/features/jump-flyout/reference-graph-modal.ts` - renders the result as a
   [cytoscape](https://js.cytoscape.org/) graph in a `<dialog>` injected into the active Content
   Editor page (not a new tab/page - simpler, no new build entry or manifest changes needed).
   Laid out with [cytoscape-dagre](https://github.com/cytoscape/cytoscape.js-dagre) (`rankDir:
@@ -108,8 +108,8 @@ the `.scContentControl` input's value inside the same marker - same label-prefix
 
 ## Filters, field-link strategies, extra layouts (post-POC-v2)
 
-- Persisted show/hide checkboxes (`src/shared/rendering-graph-settings.ts`'s
-  `RenderingGraphFilters`) for Template/Parent/Children/Layout/Referrers/Sections - each maps to
+- Persisted show/hide checkboxes (`src/shared/reference-graph-settings.ts`'s
+  `ReferenceGraphFilters`) for Template/Parent/Children/Layout/Referrers/Sections - each maps to
   a cytoscape class applied in `buildElements`, toggled via `style("display", ...)` rather than
   rebuilding the graph (hiding a node also hides its edges for free). Re-applied after every
   re-root since freshly-added elements default back to visible.
@@ -118,7 +118,7 @@ the `.scContentControl` input's value inside the same marker - same label-prefix
 - `breadthfirst` (`directed: true, circle: true`) added back as a selectable layout alongside
   dagre/cose-bilkent/fcose - rejected earlier for the *default* (edge crossings), still useful as
   an option.
-- `src/content/features/jump-flyout/rendering-graph-field-links.ts` - a field-strategy-keyed
+- `src/content/features/jump-flyout/reference-graph-field-links.ts` - a field-strategy-keyed
   resolver (mirrors `src/constants/_config.ts`'s per-strategy `FoblesTopSelector`s, but reads
   Sitecore's own raw markup directly rather than the augmentor's injected buttons, which don't
   exist in a fetched/re-rooted document). Only `treelist-ex` is wired up so far (e.g. Insert

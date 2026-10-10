@@ -104,14 +104,14 @@ export const TESTING = {
     POPUP_PREFERENCES_SAVED: "popup-preferences-saved.png",
     STORAGE_CLEARED: "storage-cleared.png",
     STORAGE_BEFORE_CLEAR: "storage-before-clear.png",
-    USER_TREE_JUMP_MENU: "user-tree-jump-flyout.png",
+    USER_TREE_JUMP_FLYOUT: "user-tree-jump-flyout.png",
     USER_ADMIN_PAGE_SAVED: "user-admin-page-saved.png",
   },
   SCREENSHOT: {
     MASK_COLOR: _SITECORE_COLORS.scLightGray,
     BLUR_PX: 8,
   },
-  JUMP_MENU: {
+  JUMP_FLYOUT: {
     ADMIN_PAGES_COLUMN_SELECTOR: ".jump-flyout-column",
     ADMIN_PAGES_GROUP_LABEL: "User Admin Pages",
     ADMIN_PAGES_INTEGRATION_LABEL_PREFIX: "Fobles E2E Toolbar Admin ",

@@ -34,4 +34,4 @@ const buildButtonCatalog = (): readonly JumpFlyoutButtonDescriptor[] => {
   );
 };
 
-export const JUMP_MENU_BUTTON_CATALOG: readonly JumpFlyoutButtonDescriptor[] = buildButtonCatalog();
+export const JUMP_FLYOUT_BUTTON_CATALOG: readonly JumpFlyoutButtonDescriptor[] = buildButtonCatalog();

@@ -1,8 +1,8 @@
 import { stripGuidBraces } from "../../features/augmentor/shared/guid";
-import type { ParsedDevice } from "./graph.types";
-import type { RenderingGraphControl } from "./rendering-graph.types";
+import type { ParsedDevice } from "./reference-graph.types";
+import type { ReferenceGraphControl } from "./reference-graph.types";
 
-export function factoryRenderingGraphControl(control: Element): RenderingGraphControl {
+export function factoryReferenceGraphControl(control: Element): ReferenceGraphControl {
   return {
     renderingId: control.getAttribute("s:id") ?? "",
     name: undefined,
@@ -15,12 +15,7 @@ export function factoryRenderingGraphControl(control: Element): RenderingGraphCo
     link: undefined,
     parameters: parseParameters(control.getAttribute("s:par") ?? undefined),
   };
-
-
- 
-
 }
-
 
 function parseParameters(raw: string | undefined): Record<string, string> {
   if (!raw) return {};
@@ -43,7 +38,7 @@ export function parseDevice(xml: string, deviceId: string): ParsedDevice {
   if (!device) return { layoutId: undefined, controls: [] };
 
 
-  const controls: RenderingGraphControl[] = Array.from(device.getElementsByTagName("r")).map((control) => (factoryRenderingGraphControl(control)));
+  const controls: ReferenceGraphControl[] = Array.from(device.getElementsByTagName("r")).map((control) => (factoryReferenceGraphControl(control)));
 
 
   return {

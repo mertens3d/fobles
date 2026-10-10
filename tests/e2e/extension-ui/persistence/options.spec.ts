@@ -202,7 +202,7 @@ foblesTest.describe("Additional Settings Persistence", () => {
       await expect(savedRow!.locator(TESTING.OPTIONS.ADMIN_PAGES.ICON_INPUT)).toHaveValue(
         TESTING.ADDITIONAL_SETTINGS.ADMIN_PAGE.NORMALIZED_ICON,
       );
-      await expect(savedRow!.locator(TESTING.JUMP_MENU.USER_ADMIN_PAGE_ENABLED_INPUT)).toBeChecked();
+      await expect(savedRow!.locator(TESTING.JUMP_FLYOUT.USER_ADMIN_PAGE_ENABLED_INPUT)).toBeChecked();
       await expect(savedColumn).toBeVisible();
       await attachPageScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.USER_ADMIN_PAGE_SAVED);
     } finally {

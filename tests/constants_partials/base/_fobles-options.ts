@@ -15,7 +15,7 @@ export const _FOBLES_OPTIONS = {
       COLUMN_TITLE: "Admin Pages",
       ICON_INPUT: "input[name='icon']",
       LABEL_INPUT: "input[name='label']",
-      JUMP_MENU_SECTION_TITLE: "Jump Menu Buttons",
+      JUMP_FLYOUT_SECTION_TITLE: "Jump Menu Buttons",
       REMOVE_BUTTON_TITLE: "Remove this Admin Page",
       ROW_SELECTOR: ".user-admin-page-row",
       SAVE_BUTTON: "Save jump flyout buttons",

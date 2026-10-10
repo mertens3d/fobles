@@ -8,7 +8,7 @@ export const SYMBOLS = {
 export const TEXT = {
     DRAG_NAV: "Drag to move Fobles navigation",
     GRAPH: "Graph",
-    GRAPH_TITLE: "Build a rendering graph for this item",
+    GRAPH_TITLE: "Build a reference graph for this item",
     GROUP_NAME: {
         ADMIN_PAGES: "Admin Pages",
         AI: "AI",
@@ -20,7 +20,7 @@ export const TEXT = {
         USER_TREE_JUMPS: "User Tree Jumps",
     },
     HIDE_NAV: "Hide Fobles navigation",
-    JUMP_MENU: "Jump",
+    JUMP_FLYOUT: "Jump",
     QUICK_MENU_TITLE: "Toggle quick jump, utilities & about",
     SET_ISE_TAB_TITLE: "Set tab title",
     SET_ISE_TAB_TITLE_ERROR: "Script name not found.",
@@ -112,7 +112,7 @@ export const ATTRIBUTE = {
             FOBLES_NAV_OWNER: "data-fobles-nav-owner",
             NAV_BUTTON_ROLE: "data-fobles-nav-button-role",
             PROXY_BUTTONS: "data-proxy-buttons",
-            JUMP_MENU: "data-jump-flyout",
+            JUMP_FLYOUT: "data-jump-flyout",
             TEMPLATE_BUTTON: "data-template-button",
             VISIBLE: "data-visible",
         },
