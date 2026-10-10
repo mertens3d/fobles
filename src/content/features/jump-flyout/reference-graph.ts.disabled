@@ -1,0 +1,229 @@
+// // @source-path [fobles] src/content/toolbar/reference-graph/reference-graph.ts
+
+
+// import { STORAGE } from "../../../constants/constants-b";
+// import { SITECORE } from "../../../constants/sitecore";
+// import { extensionLog } from "../../logger";
+// import {
+//   isRibbonCheckboxEnabled,
+//   setRibbonCheckboxEnabled,
+// } from "../../macros/ribbon-toggle-macro";
+// import { harvestSitecore } from "../../sitecore-harvester/harvest-sitecore";
+// import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
+// import { getCurrentItemId } from "../../toolbar/jump-flyout/ai-pages";
+// import { openReferenceGraphModal } from "../../toolbar/reference-graph/reference-graph-modal";
+// import { type PendingReferenceGraph } from "../../toolbar/reference-graph/graph.types";
+// import { closeReferenceGraphProgressModal, handleHarvestProgress, openReferenceGraphProgressModal } from "../../toolbar/reference-graph/build-progress";
+// import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+// import { CONST } from "../../../constants/const";
+// import type { HarvestSitecoreInBackgroundTabMessage } from "../../sitecore-harvester/sitecore-harvester.messages";
+// import { buildFoblesUrl } from "../augmentor/helper";
+// // Shared by the fast path (harvestAndOpen) and the slow, reload-spanning path - Cancel aborts
+// // whichever one is currently in flight; a stale/already-settled controller is harmless to abort.
+// let referenceGraphAbortController: AbortController | undefined = undefined;
+
+// export function isHandledElsewhere(label: string): boolean {
+//   const normalized = label.toLowerCase();
+//   return CONST.SITECORE.HARVEST.EXCLUDED_FIELD_LABEL_PREFIXES.some((prefix: string) => normalized.startsWith(prefix));
+// }
+
+// // The administrator suffix (" [shared]", " [shared, standard value]", ...) is only ever
+// // relevant in the Content Editor's own chrome - stripped here so it doesn't leak into node
+// // labels/tooltips the graph builds from this text.
+// export function extractFieldLabel(marker: HTMLElement): string {
+//   const labelElement = marker.querySelector<HTMLElement>(SITECORE.SELECTORS.FIELD_LABEL);
+//   if (!labelElement) return "";
+//   const clone = labelElement.cloneNode(true) as HTMLElement;
+//   clone.querySelector(SITECORE.SELECTORS.FIELD_LABEL_ADMINISTRATOR)?.remove();
+//   return clone.textContent?.trim() ?? "";
+// }
+
+// // Raw Values (already forced on for the Layout field above) applies to every field on the page,
+// // not just Layout - so every other section's fields can be read the exact same way, generically,
+// // with no per-field-type parsing. Fields that don't render a raw .scContentControl under this
+// // mode (rare) just come back empty and get filtered out, same as an absent datasource/variant.
+// // Several raw-value controls (multilist tables, tree-list divs, ...) match .scContentControl
+// // just as much as a real input/select/textarea does, but don't carry a `.value` at all - reading
+// // one unconditionally throws. Anything that isn't actually value-bearing is treated the same as
+// // "no value" (filtered out below), same as a genuinely empty field.
+// export function readRawFieldValue(marker: HTMLElement): string | undefined {
+//   const control = marker.querySelector<HTMLElement>(SITECORE.SELECTORS.CONTENT_CONTROL);
+//   if (
+//     !(control instanceof HTMLInputElement) &&
+//     !(control instanceof HTMLSelectElement) &&
+//     !(control instanceof HTMLTextAreaElement)
+//   ) {
+//     return undefined;
+//   }
+//   return control.value.trim() || undefined;
+// }
+
+// function cancelReferenceGraph(doc: Document): void {
+//   referenceGraphAbortController?.abort();
+//   const pending = readPendingReferenceGraph();
+//   if (pending) writePendingReferenceGraph({ ...pending, cancelled: true });
+//   closeReferenceGraphProgressModal(doc);
+// }
+
+// // Left-clicking a graph node re-roots the SAME open modal at that item, with no page navigation
+// // at all - fetches that item's own content-editor page (same technique resolveRenderingDetails
+// // already uses) and re-harvests against the fetched document instead of the live one. Raw
+// // Values/Standard Fields are already confirmed on by the time any node is clickable, so the
+// // fetched page reflects them too (both are session-level view settings, not per-page).
+// export async function harvestGraphForLink(
+//   link: string,
+//   progressDoc: Document,
+// ): Promise<SitecoreHarvestResult | undefined> {
+//   const controller = new AbortController();
+//   referenceGraphAbortController = controller;
+
+//   try {
+//     const filters = await getReferenceGraphFilters();
+//     return await harvestInBackgroundTab(link, filters);
+//   } catch (error) {
+//     extensionLog.warn("Reference graph: failed to re-harvest for clicked node", { link, error });
+//     return undefined;
+//   }
+// }
+
+// async function harvestAndOpen(doc: Document): Promise<void> {
+//   const itemId = getCurrentItemId(doc);
+
+//   if (!itemId) {
+//     return;
+//   }
+
+//   const filters = await getReferenceGraphFilters();
+//   const graph = await harvestInBackgroundTab(
+//     buildFoblesUrl(itemId),
+//     filters,
+//   );
+
+//   closeReferenceGraphProgressModal(doc);
+
+//   if (!graph) {
+//     return;
+//   }
+
+//   openReferenceGraphModal(
+//     doc,
+//     graph,
+//     (link) => harvestGraphForLink(link, doc),
+//   );
+// }
+
+// function readPendingReferenceGraph(): PendingReferenceGraph | undefined {
+//   try {
+//     const raw = localStorage.getItem(STORAGE.KEY.REFERENCE_GRAPH.PENDING);
+//     return raw ? (JSON.parse(raw) as PendingReferenceGraph) : undefined;
+//   } catch {
+//     return undefined;
+//   }
+// }
+
+// function writePendingReferenceGraph(pending: PendingReferenceGraph): void {
+//   localStorage.setItem(STORAGE.KEY.REFERENCE_GRAPH.PENDING, JSON.stringify(pending));
+// }
+
+// function clearPendingReferenceGraph(): void {
+//   localStorage.removeItem(STORAGE.KEY.REFERENCE_GRAPH.PENDING);
+// }
+
+// // Drives one step of the enable -> harvest -> restore sequence, each step separated by a full
+// // page reload (see the file header comment). Re-entrant: called both right after the button
+// // click and again on every subsequent page load via resumeReferenceGraph, until nothing is left
+// // to flip. A cancelled request skips straight to restoring the original toggle state - the view
+// // settings it already flipped shouldn't be left changed just because the user gave up waiting.
+// async function advancePendingReferenceGraph(doc: Document, pending: PendingReferenceGraph): Promise<void> {
+//   if (!pending.cancelled && !pending.harvested) {
+//     if (setRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS, true)) return;
+//     if (setRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.RAW_VALUES, true)) return;
+
+//     const controller = new AbortController();
+//     referenceGraphAbortController = controller;
+//     const filters = await getReferenceGraphFilters();
+//     await harvestSitecore(doc, controller.signal, filters, (step, status) =>
+//       handleHarvestProgress(doc, step, status),).then(async (graph) => {
+//         // Re-read rather than trust the closed-over pending - Cancel may have flagged it while fetches were in flight.
+//         const latest = readPendingReferenceGraph() ?? pending;
+//         const harvestedPending: PendingReferenceGraph = {
+//           ...latest,
+//           harvested: true,
+//           graph: latest.cancelled ? undefined : graph,
+//         };
+//         writePendingReferenceGraph(harvestedPending);
+//         await advancePendingReferenceGraph(doc, harvestedPending);
+//       });
+//     return;
+//   }
+
+//   if (setRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS, pending.restoreStandardFields)) {
+//     return;
+//   }
+//   if (setRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.RAW_VALUES, pending.restoreRawValues)) {
+//     return;
+//   }
+
+//   clearPendingReferenceGraph();
+//   closeReferenceGraphProgressModal(doc);
+//   if (pending.graph) openReferenceGraphModal(doc, pending.graph, (link) => harvestGraphForLink(link, doc));
+// }
+
+// export async function openReferenceGraph(doc: Document): Promise<void> {
+//   const itemId = getCurrentItemId(doc);
+//   if (!itemId) {
+//     extensionLog.warn("Reference graph: could not resolve current item id");
+//     return;
+//   }
+
+//   openReferenceGraphProgressModal(doc, () => cancelReferenceGraph(doc));
+
+//   const rawValuesOn = isRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.RAW_VALUES) ?? true;
+//   const standardFieldsOn = isRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS) ?? true;
+
+//   if (rawValuesOn && standardFieldsOn) {
+//     await harvestAndOpen(doc);
+//     return;
+//   }
+
+//   const pending: PendingReferenceGraph = {
+//     itemId,
+//     restoreRawValues: rawValuesOn,
+//     restoreStandardFields: standardFieldsOn,
+//     harvested: false,
+//     cancelled: false,
+//     graph: undefined,
+//   };
+//   writePendingReferenceGraph(pending);
+//   await advancePendingReferenceGraph(doc, pending);
+// }
+
+// // Hooked into every page load (see src/content/toolbar-runtime.ts) so the enable/restore
+// // sequence above keeps going across each reload it triggers.
+// export async function resumeReferenceGraph(doc: Document): Promise<void> {
+//   const pending = readPendingReferenceGraph();
+//   if (!pending) return;
+
+//   if (getCurrentItemId(doc) !== pending.itemId) {
+//     clearPendingReferenceGraph();
+//     return;
+//   }
+
+//   if (!pending.cancelled) openReferenceGraphProgressModal(doc, () => cancelReferenceGraph(doc));
+//   await advancePendingReferenceGraph(doc, pending);
+// }
+
+// async function harvestInBackgroundTab(
+//   url: string,
+//   filters: SitecoreHarvestFiltersState,
+// ): Promise<SitecoreHarvestResult | undefined> {
+//   console.log("HARVEST IN BACKGROUND TAB", url);
+
+//   const message: HarvestSitecoreInBackgroundTabMessage = {
+//     type: "HARVEST_SITECORE_IN_BACKGROUND_TAB",
+//     url,
+//     filters,
+//   };
+
+//   return chrome.runtime.sendMessage(message);
+// }

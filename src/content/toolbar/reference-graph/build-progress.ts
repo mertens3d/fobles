@@ -27,9 +27,12 @@ export function initializeReferenceGraphProgressModal(doc: Document, buildSteps:
   }),);
 }
 
+type HarvestProgressStep =
+  Pick<HarvestStep, "harvestStepKey" | "label">;
+
 export function handleHarvestProgress(
   doc: Document,
-  step: HarvestStep,
+  step: HarvestProgressStep,
   status: HarvestStatus,
 ): void {
   if (status === "skipped") {
@@ -38,7 +41,7 @@ export function handleHarvestProgress(
   }
   updateReferenceGraphProgressModal(doc, step);
 }
-export function updateReferenceGraphProgressModalSkipped(doc: Document, harvestStep: HarvestStep,): void {
+export function updateReferenceGraphProgressModalSkipped(doc: Document, harvestStep: HarvestProgressStep,): void {
   const row = doc.getElementById(`${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${harvestStep.harvestStepKey}`,);
   if (row) {
     row.textContent = `○ ${harvestStep.label} - Skipped`;
@@ -47,7 +50,7 @@ export function updateReferenceGraphProgressModalSkipped(doc: Document, harvestS
 
 export function updateReferenceGraphProgressModal(
   doc: Document,
-  buildStep: HarvestStep,
+  buildStep: HarvestProgressStep,
 ): void {
   const row = doc.getElementById(
     `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${buildStep.harvestStepKey}`,

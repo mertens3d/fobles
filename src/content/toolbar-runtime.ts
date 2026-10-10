@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/toolbar-runtime.ts
+
 import {
   type AllowedPage,
   DEFAULT_TOOLBAR_PLACEMENT,

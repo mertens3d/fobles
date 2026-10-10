@@ -2,22 +2,23 @@
 
 import { extensionLog } from "../../logger";
 import { hideActiveTooltip, toggleTooltip } from "./graph-tooltip";
-import { closeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
+import { closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
 import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import { HARVEST_STEPS } from "../../sitecore-harvester/harvest-steps";
 
 function getEventNode(event: cytoscape.EventObject): cytoscape.NodeSingular {
     return event.target as cytoscape.NodeSingular;
 }
 
 function getNodeLink(node: cytoscape.NodeSingular): string | undefined {
-    const link: unknown = node.data("link"); 
+    const link: unknown = node.data("link");
     return typeof link === "string" ? link : undefined;
 }
 
 export function attachGraphEventHandlers(cy: cytoscape.Core,
     container: HTMLElement,
-    harvestForLink: ( link: string, filters: SitecoreHarvestFiltersState, ) => Promise<SitecoreHarvestResult | undefined>,
+    harvestForLink: (link: string, filters: SitecoreHarvestFiltersState,) => Promise<SitecoreHarvestResult | undefined>,
     doc: Document,
     getCurrentFilters: () => SitecoreHarvestFiltersState,
     graphHistory: SitecoreHarvestResult[],
@@ -81,7 +82,16 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
             cancelled = true;
             closeReferenceGraphProgressModal(doc);
         });
-        void harvestForLink(link,getCurrentFilters()).then((newGraph) => {
+
+        const filters = getCurrentFilters();
+
+        initializeReferenceGraphProgressModal(
+            doc,
+            HARVEST_STEPS,
+            filters,
+        );
+
+        void harvestForLink(link, filters).then((newGraph) => {
             closeReferenceGraphProgressModal(doc);
             // Not every item has a Layout section (templates, media, etc.) - expected, not an error.
             if (cancelled || !newGraph) return;

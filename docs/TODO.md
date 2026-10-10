@@ -56,3 +56,8 @@
 
 - Authenticated Sitecore end-to-end tests require a configured private environment and interactive login. They are not run by ordinary hosted CI.
 - `dist/unpacked/` and `tests/test-artifacts/` are generated local output and are intentionally ignored by Git.
+
+
+
+
+add a message about "Site access" has to be set to "On Specific Sites" because of the background tab worker

@@ -16,9 +16,10 @@ import { kindClass, slugify } from "./graph-helpers";
 import { createRoot } from "react-dom/client";
 import { GraphToolbar } from "./components/graph-toolbar";
 import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
-import { closeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
+import { closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import { buildElements } from "./graph-elements";
+import { HARVEST_STEPS } from "../../sitecore-harvester/harvest-steps";
 
 cytoscape.use(cytoscapeDagre);
 cytoscape.use(cytoscapeCoseBilkent);
@@ -163,7 +164,7 @@ export function openReferenceGraphModal(doc: Document, graph: SitecoreHarvestRes
   });
   dialog.showModal();
 
-  const initialElements : cytoscape.ElementDefinition[] = buildElements(graph);
+  const initialElements: cytoscape.ElementDefinition[] = buildElements(graph);
   // Unconditional (not gated behind extensionLog's debug flag) - this is the enriched shape
   // (with each node's parent/compound nesting already resolved), not the raw harvested graph,
   // deliberately logged here so it can be inspected in devtools without flipping on debug mode.
@@ -300,21 +301,32 @@ export function openReferenceGraphModal(doc: Document, graph: SitecoreHarvestRes
             cancelled = true;
             closeReferenceGraphProgressModal(doc);
           });
+
+          initializeReferenceGraphProgressModal(
+            doc,
+            HARVEST_STEPS.filter(
+              (step) => step.filterKey === key,
+            ),
+            requestedFilters,
+          );
+
           void harvestForLink(link, requestedFilters).then((partialGraph) => {
-            closeReferenceGraphProgressModal(doc);
-            console.log("[Fobles] requested filter", key); 
-            console.log("[Fobles] partial graph", partialGraph);
-            if (cancelled ||
-              !partialGraph ||
-              currentGraph.rootItem.itemId !== graphBeingBuilt.rootItem.itemId) {
-              currentFilters = { ...currentFilters, [key]: false, };
-              void setReferenceGraphFilters(currentFilters);
-              renderToolbar(currentGraph);
-              return;
-            }
-            currentGraph = mergeFilterGraph(currentGraph, partialGraph, key,);
-            loadedFilters.add(key);
-            renderGraph(currentGraph);
+            void harvestForLink(link, requestedFilters).then((partialGraph) => {
+              closeReferenceGraphProgressModal(doc);
+              console.log("[Fobles] requested filter", key);
+              console.log("[Fobles] partial graph", partialGraph);
+              if (cancelled ||
+                !partialGraph ||
+                currentGraph.rootItem.itemId !== graphBeingBuilt.rootItem.itemId) {
+                currentFilters = { ...currentFilters, [key]: false, };
+                void setReferenceGraphFilters(currentFilters);
+                renderToolbar(currentGraph);
+                return;
+              }
+              currentGraph = mergeFilterGraph(currentGraph, partialGraph, key,);
+              loadedFilters.add(key);
+              renderGraph(currentGraph);
+            });
           });
         }}
       />,

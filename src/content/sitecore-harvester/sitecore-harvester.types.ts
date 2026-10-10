@@ -90,3 +90,10 @@ export type HarvestStepKey = "children" | "sections" | "layout" | "controls" | "
 
 export type HarvestStatus = "skipped" | "complete";
 export type HarvestProgressCallback = (step: HarvestStep, status: HarvestStatus) => void;
+
+export type BackgroundHarvestContext = {
+  url: string;
+  filters: SitecoreHarvestFiltersState;
+  requestId: string;
+  originTabId: number;
+};
