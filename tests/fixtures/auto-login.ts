@@ -248,7 +248,8 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
           //     return true;
           //   }
           // }
-          return true;
+          return Promise.resolve(true);
+          // return true;
         },
         {
           timeout: CONST.TESTING.TIMEOUTS.DISCOVERY_MS,

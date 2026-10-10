@@ -1,10 +1,8 @@
-
 import { expect, type Locator, type Page } from "../../../fixtures/playwright";
 import { clickExtensionControl, fillExtensionInput, setExtensionCheckbox } from "../../../fixtures/extension";
 import { CONST } from "../../../CONST";
 
 const TESTING = CONST.TESTING;
-
 
 export async function saveJumpFlyoutButtons(optionsPage: Page): Promise<void> {
   await clickExtensionControl(

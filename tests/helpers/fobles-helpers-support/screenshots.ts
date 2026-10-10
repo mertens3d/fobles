@@ -153,7 +153,6 @@ async function blurTreeExcept(
   return blurTargets;
 }
 
-
 // Playwright's own mask option only ever paints an opaque box - there's no built-in "blur"
 // alternative. This fakes it with a plain CSS filter applied directly to each target element
 // right before the screenshot, then removed again - only for content that's fine to merely

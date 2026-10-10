@@ -1,4 +1,3 @@
-
 // Shared by every field-strategy test (strategies/*.spec.ts) - navigates to the scenario item,
 // shows the mouse marker (matching the toolbar suite's visual style), and locates the field's
 import { CONST } from "../CONST";
@@ -46,8 +45,6 @@ async function getScLocatorFirstResult(
     .locator(this.SCENARIO.scElemLocator)
     .first();
 }
-
-
 
 async function getFieldTable(
   this: StrategyTestContext,

@@ -28,7 +28,6 @@ export async function ClickFoblesJumpButton(
     }
 }
 
-
 // Idempotent - only clicks the trigger if the flyout isn't already visible, since it's a toggle
 // button (clicking it while already open would close it instead).
 export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<void> {
@@ -45,7 +44,6 @@ export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<vo
     // ClickFoblesJumpButton already waits for the flyout to become visible.
     await ClickFoblesJumpButton(page);
 }
-
 
 // Drags the toolbar container to a target screen position via a real pointerdown -> pointermove
 // -> pointerup sequence - the same gesture wireContainerDragging (src/content/toolbar/drag.ts)
@@ -68,10 +66,8 @@ export async function dragToolbarTo(
     // await foblesWaitForTimeout(page, CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS / 2);
 }
 
-
 export async function dragToolbarToCornerLocation(page: Page, cornerPosition: CornerPosition) {
     console.log(`[macro] dragToolbarToCornerLocation ${cornerPosition.corner}`)
-
 
     // await showBillboard(page, `Find Fobles toolbar`);
     const foblesFrame = await findFrameWithSelector(page, CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
@@ -85,9 +81,6 @@ export async function dragToolbarToCornerLocation(page: Page, cornerPosition: Co
     await dragToolbarTo(page, toolbarGrip, resolveCornerPosition(page, cornerPosition));
 
 }
-
-
-
 
 // Clicks the fobles button a specific tree node got decorated with, once LBolt is on. Scoped to
 // the tree button's own class plus the target item's id, since the id alone isn't guaranteed
@@ -112,8 +105,6 @@ export async function clickFoblesTreeButton(
         await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
     }
 }
-
-
 
 // Clicks through Fobles' own same-tab navigation confirmation dialog if it's showing (searches
 // every frame, since the dialog renders wherever the clicked button lives) - a no-op otherwise.

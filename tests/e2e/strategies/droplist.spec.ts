@@ -33,7 +33,6 @@ foblesTest.describe("Strategy scenario: droplist", () => {
     // const select = testContext.fieldTable.locator(CONST.SITECORE.SELECTORS.STRATEGIES.DROP_LIST).first();
     const step = createFoblesStep(page, testInfo, getEditorSectionLocator(testContext.fieldTable), SCENARIO.friendlyName);
 
-
     await stepExpectSitecoreInitialConditions(testContext);
     await stepExpectFoblesInitialConditions(testContext);
     //await stepExpectFoblesOnConditions(testContext);

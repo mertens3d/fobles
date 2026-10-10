@@ -1,4 +1,3 @@
-
 import { CONST } from "../../CONST";
 import { openContentEditor } from "../../fixtures/sitecore";
 import { getPageJumpFlyoutButton } from "../../helpers/element-finders";
@@ -8,7 +7,6 @@ import { getLastTwoPathItems, isAIPage } from "../../helpers/path-helpers";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import { setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers-support/test-setup";
 import { attachLocatorScreenshot } from "../../helpers/fobles-helpers-support/screenshots";
-
 
 foblesTest.describe("Tree Navigation", () => {
 
@@ -70,10 +68,6 @@ foblesTest.describe("Tree Navigation", () => {
                 }
             );
 
-
-
         });
     }
 });
-
-

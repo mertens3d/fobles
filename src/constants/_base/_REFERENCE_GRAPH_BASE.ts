@@ -28,5 +28,6 @@ export const _REFERENCE_GRAPH_BASE = {
             referrers: "fobles-reference-graph-filter-referrers",
             sections: "fobles-reference-graph-filter-sections",
             template: "fobles-reference-graph-filter-template",
+            controls: "fobles-reference-graph-filter-controls",
         } as const satisfies Record<keyof ReferenceGraphFiltersState, string>,
 };

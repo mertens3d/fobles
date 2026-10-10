@@ -27,4 +27,3 @@ foblesTest.describe("Strategy scenario: droplink", () => {
     });
   });
 });
-

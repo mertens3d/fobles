@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/toolbar/reference-graph/components/root-info.tsx
+
 import type { ReferenceGraphResult } from "../reference-graph.types";
 
 type RootInfoProps = { graph: ReferenceGraphResult };

@@ -36,10 +36,6 @@ await setupContentEditorForTesting(page,STRATEGY_SCENARIOS.MULTILIST_OPTIONS);
       await expect(testContext.fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"));
     });
 
-
-
-
-
     // Multilist renders two select boxes sharing this class (the "All"/unselected pane and the
     // "Selected" pane) - Fobles only wraps the selected-items one, so target it specifically
     // rather than .first(), which resolves to the unselected pane instead.

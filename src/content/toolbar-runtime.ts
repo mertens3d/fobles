@@ -189,7 +189,7 @@ async function reconcileCurrentPage(): Promise<void> {
   }
 
   resumeKickAllUsers(document);
-  resumeReferenceGraph(document);
+  await resumeReferenceGraph(document);
 
   setToolbarVisible(getToolbarContext(), foblesNavVisible);
   extensionLog.debug("Fobles flyout injection result", {

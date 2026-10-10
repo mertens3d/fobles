@@ -169,4 +169,3 @@ export const STRATEGY_SCENARIOS = {
   },
 } satisfies Record<string, StrategyScenarioData >
 ;
-

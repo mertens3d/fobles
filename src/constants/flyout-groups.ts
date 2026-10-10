@@ -5,7 +5,6 @@ import { FOBLES } from "./fobles";
 import { TEXT } from "./fobles.constants";
 import { CONST } from "./const";
 
-
 const KICK_USER_ICON = "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png";
 
 export const TREE_JUMP_GROUP: readonly FlyoutGroup[] = [

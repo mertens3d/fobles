@@ -28,6 +28,7 @@ export type BuildStepKey = "children" | "sections" | "layout" | "controls" | "re
 
 export type BuildStep = {
   buildStepKey: BuildStepKey;
+  filterKey: keyof ReferenceGraphFiltersState;
   label: string;
   build: (buildContext: BuildContext) => Promise<void>;
 };
@@ -62,4 +63,5 @@ export type ReferenceGraphFiltersState = {
   referrers: boolean;
   sections: boolean;
   template: boolean;
+  controls: boolean;
 };

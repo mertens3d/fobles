@@ -1,4 +1,4 @@
-import { chromium, type BrowserContext, test as base, request, type Request } from "@playwright/test";
+import { chromium, type BrowserContext, test as base, type Request } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
 import { installConsoleLogging, logDiagnostic } from "./logging";
@@ -7,7 +7,6 @@ import { CONST } from "../CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";
-
 
 const profileDir = path.resolve(
   process.env.PLAYWRIGHT_PROFILE_DIR ??
@@ -54,7 +53,6 @@ function renamePromoVideoFiles(): void {
 // Sitecore's own UI references icons this environment doesn't have (chart.png, database.png,
 // cd.png, etc. under /-/icon/) - these 404 on every navigation and are unrelated to Fobles, so
 // don't clutter the diagnostic log with them.
-
 
 function isIgnorableDiagnosticUrl(url: string): boolean {
   return CONST.TESTING.DIAGNOSTIC.IGNORED_DIAGNOSTIC_URL_PATTERN.test(url);

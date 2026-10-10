@@ -11,7 +11,6 @@ import { expect } from "@playwright/test";
 import { LogDebugTestContext } from "../../../helpers/debug-helpers";
 import { pauseForHuman } from "../../../helpers/wait-helpers";
 
-
 export async function stepExpectFoblesInitialConditions(testContext: StrategyTestContext) {
   await testContext.step("Initial Fobles conditions", async () => {
     logStepDividerStart(stepExpectFoblesInitialConditions.name);
@@ -38,7 +37,6 @@ export async function stepExpectFoblesInitialConditions(testContext: StrategyTes
   });
 }
 
-
 export async function stepExpectSitecoreInitialConditions(testContext: StrategyTestContext) {
 
   await testContext.step("Initial Sitecore Conditions",
@@ -54,7 +52,6 @@ export async function stepExpectSitecoreInitialConditions(testContext: StrategyT
         console.error(`[fobles] Field table is not visible`);
         throw new Error(`[fobles] Field table is not visible`);
       }
-
 
       const locatorFirstResult = await testContext.getScLocatorFirstResult();
       await highlightClickTarget(locatorFirstResult, "locatorFirstResult");
@@ -91,7 +88,6 @@ export async function stepExpectFoblesOnConditions(testContext: StrategyTestCont
     });
 
 }
-
 
 export async function stepExpectFoblesCtrlClick(testContext: StrategyTestContext) {
   await testContext.step(

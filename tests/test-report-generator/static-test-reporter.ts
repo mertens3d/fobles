@@ -95,7 +95,6 @@ export default class StaticTestReporter implements Reporter {
     console.log(test.location.file);
     console.log(getFolderName(test));
 
-
     const screenshots: ScreenshotInfo[] = (result.attachments ?? [])
       .filter(
         (attachment) =>
@@ -152,7 +151,6 @@ export default class StaticTestReporter implements Reporter {
 
     folderResults.push(reportResult);
 
-
     this.writeReport({ status: "running" });
   }
 
@@ -166,7 +164,6 @@ export default class StaticTestReporter implements Reporter {
     const allResults = Array.from(
       this.resultsByFolder.values(),
     ).flat();
-
 
     console.log("-----------------Current results by folder:------------");
     console.log(
@@ -214,7 +211,6 @@ export default class StaticTestReporter implements Reporter {
   }
 }
 
-
 function getFolderName(test: TestCase): string {
   const file = test.location.file.replace(/\\/g, "/");
 
@@ -222,9 +218,6 @@ function getFolderName(test: TestCase): string {
 
   return match?.[1] ?? "misc";
 }
-
-
-
 
 function copyAssets(outputPath: string): void {
   const reportDir = path.dirname(outputPath);

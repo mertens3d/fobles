@@ -22,7 +22,6 @@ export type StrategyScenarioData = {
   foblesButtonSelector?: string;
 };
 
-
 export type StrategyTestContext  = TestContextBase& {
   fieldTable: Locator;
   getFieldTable(): Promise<Locator>;

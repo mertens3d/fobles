@@ -1,7 +1,6 @@
 import { CONST } from "../../../constants/const";
 import type { QuickInfo } from "../types";
 
-
 export const getQuickInfo = (
     doc: Document
 ): QuickInfo => {
@@ -36,7 +35,6 @@ export const getQuickInfo = (
 
     return quickInfo;
 };
-
 
 function getQuickInfoFromRow(row: HTMLTableRowElement) {
     const valueElement = row.cells

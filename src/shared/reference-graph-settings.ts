@@ -15,8 +15,6 @@ export async function setReferenceGraphLayout(layout: LayoutGraphPresetName ): P
   await setStorageValue({ [STORAGE.KEY.REFERENCE_GRAPH.LAYOUT]: layout });
 }
 
-
-
 export async function getReferenceGraphFilters(): Promise<ReferenceGraphFiltersState> {
   const result = await getStorageValue<Partial<ReferenceGraphFiltersState>>([STORAGE.KEY.REFERENCE_GRAPH.FILTERS]);
   return { ...DEFAULT_RENDERING_GRAPH_FILTERS_STATE, ...result[STORAGE.KEY.REFERENCE_GRAPH.FILTERS] };

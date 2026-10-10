@@ -76,7 +76,7 @@ export function createGraphButton(context: ToolbarContext): HTMLButtonElement {
     role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.GRAPH,
     text: "",
     title: TEXT.GRAPH_TITLE,
-    onClick: () => openReferenceGraph(context.doc),
+    onClick: () => { void openReferenceGraph(context.doc); },
   });
   button.setAttribute("aria-label", TEXT.GRAPH_TITLE);
 

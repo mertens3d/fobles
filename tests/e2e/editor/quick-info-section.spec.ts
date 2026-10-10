@@ -27,7 +27,6 @@ const SCENARIO = EDITOR_SCENARIOS.QUICK_INFO_SECTION;
 foblesTest.describe("Editor scenario: quick info section", () => {
   foblesTest("toggling Fobles decorates and restores the Quick Info panel", async ({ page }, testInfo) => {
    
-   
     await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`);
 
     const foblesFrame = await findFoblesFrame(page);

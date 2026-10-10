@@ -7,7 +7,6 @@ import path from "node:path";
 // fobles.environments.json instead (see tests/fixtures/environment.ts).
 dotenv.config({ path: [".env.local", ".env"] });
 
-
 const extensionPath = path.resolve(process.cwd(), "dist/unpacked");
 const testArtifactsDir = path.resolve(process.cwd(), "tests/test-artifacts");
 // --list never runs a test (no onTestEnd calls) - it still triggers onBegin/onEnd, which would

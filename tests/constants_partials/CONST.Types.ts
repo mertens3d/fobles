@@ -8,7 +8,6 @@ export type HighlightStyle = {
   VISIBLE_DELAY_MS: number;
 };
 
-
 export type JumpDefinition = {
   label: string;
   skipTestingAI: boolean;
@@ -27,7 +26,6 @@ export type ClickNavigationExpect={
   url?: string;
   foValue?: string;
 }
-
 
 export type ToolbarType = "full" | "compact";
 

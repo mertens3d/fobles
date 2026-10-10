@@ -99,5 +99,3 @@ export const FOBLES_YML = {
   },
   MEDIA: {},
 } as const;
-
-

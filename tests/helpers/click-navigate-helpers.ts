@@ -15,7 +15,6 @@ import { bringPageToFront } from "./page-switch";
 import { buildStepMatchKey } from "./fobles-helpers-support/step-match-key";
 import type { ClickNavigationExpect } from "../constants_partials/CONST.Types";
 
-
 // export async function ctrlClickFoblesNavigationButtonStep(page: Page, foblesButton: Locator, expectedUrlContainsPath: string, testInfo: TestInfo, sharedBrowserContext: BrowserContext, step: FoblesStep) {
 //   await step(
 //     `Ctrl-click navigation`,
@@ -46,7 +45,6 @@ export async function clickFoblesNavigationButtonStep(page: Page, foblesButton: 
 
   await postClickCommon(page,  clickNavigationExpect, testInfo, label);
 }
-
 
 async function postClickCommon(page: Page, clickNavigationExpect: ClickNavigationExpect, testInfo: TestInfo, label: string) {
   await dismissFoblesConfirmDialogIfPresent(page);

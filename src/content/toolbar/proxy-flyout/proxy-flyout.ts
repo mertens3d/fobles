@@ -5,7 +5,6 @@ import { openProxyButtonsOnHover, scheduleCloseProxyButtonsOnHover as scheduleCl
 import { createFlyoutTrigger } from "../shared-flyout/shared-flyout";
 import type { ToolbarContext } from "../types";
 
-
 export function createProxyFlyoutTrigger(context: ToolbarContext): HTMLDivElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.FOBLES_NAV_BUTTON,

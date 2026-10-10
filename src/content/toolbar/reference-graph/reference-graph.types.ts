@@ -1,4 +1,3 @@
-
 export type ReferenceGraphControl = {
   renderingId: string;
   name: string | undefined;
@@ -31,7 +30,6 @@ export type ReferenceGraphSection = {
   fields: readonly ReferenceGraphField[];
 };
 
-
 export type itemNodeData = {
   name: string | undefined;
   itemId: string;
@@ -52,7 +50,6 @@ export type ReferenceGraphResult = {
   childItems: readonly itemNodeData[] | undefined;
   referrers: readonly itemNodeData[] | undefined;
 };
-
 
 export type SatelliteDescriptor = {
   kind: string;
@@ -87,9 +84,7 @@ export type ParsedDevice = {
   controls: ReferenceGraphControl[];
 };
 
-
 export type TreeChildNode = {
   name: string | undefined;
   itemId: string;
 };
-

@@ -1,6 +1,5 @@
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { BUILD_STEPS } from "./build-steps";
-import type { BuildStep } from "./graph.types";
+import type { BuildStep, ReferenceGraphFiltersState } from "./graph.types";
 
 //   let completedSteps = 0;
 
@@ -16,19 +15,15 @@ import type { BuildStep } from "./graph.types";
 //   if (buildingMessage) buildingMessage.textContent = `${REFERENCE_GRAPH.TEXT.BUILDING_REFERENCE_GRAPH} (${completedSteps}/${total})`;
 // }
 
-
-export function initializeReferenceGraphProgressModal(doc: Document): void {
-  const buildingMessage = doc.getElementById(REFERENCE_GRAPH.PROGRESS_MESSAGE_ID);
+export function initializeReferenceGraphProgressModal(doc: Document, buildSteps: readonly BuildStep[], filters: ReferenceGraphFiltersState,): void {
+  const buildingMessage = doc.getElementById(REFERENCE_GRAPH.PROGRESS_MESSAGE_ID,);
   if (!buildingMessage) return;
-
-  buildingMessage.replaceChildren(
-    ...BUILD_STEPS.map((step) => {
-      const row = doc.createElement("div");
-      row.id = `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${step.buildStepKey}`;
-      row.textContent = `○ ${step.label}`;
-      return row;
-    }),
-  );
+  buildingMessage.replaceChildren(...buildSteps.map((step) => {
+    const row = doc.createElement("div");
+    row.id = `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${step.buildStepKey}`;
+    row.textContent = filters[step.filterKey] ? `○ ${step.label}` : `○ ${step.label} - Skipped`;
+    return row;
+  }),);
 }
 
 export function updateReferenceGraphProgressModal(
@@ -44,7 +39,6 @@ export function updateReferenceGraphProgressModal(
 export function closeReferenceGraphProgressModal(doc: Document): void {
   (doc.getElementById(REFERENCE_GRAPH.PROGRESS_DIALOG_ID) as HTMLDialogElement | undefined)?.close();
 }
-
 
 // Shown immediately on click (and again on every reload the toggle-enable/restore sequence
 // triggers), since harvesting involves a fetch per rendering plus possibly a couple of page

@@ -24,7 +24,6 @@ foblesTest.describe("Strategy scenario: drop tree", () => {
     await setupContentEditorForTesting(page, STRATEGY_SCENARIOS.DROP_TREE);
     await showBillboard(page, STRATEGY_SCENARIOS.DROP_TREE.friendlyName);
 
-
     const testContext: StrategyTestContext = await factoryStrategyTestContext(
       page,
       SCENARIO,

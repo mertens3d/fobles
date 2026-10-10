@@ -82,4 +82,3 @@ onTurnOffFoblesAfterNavigationChange((enabled) => {
 onShowReloadExtensionButtonChange((visible) => {
   if (reloadExtensionButton) reloadExtensionButton.hidden = !visible;
 });
-

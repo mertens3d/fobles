@@ -1,6 +1,5 @@
 import type { FoblesConfig } from "../content/features/augmentor/fobles.types";
 
-
 export const fieldConfigs: FoblesConfig[] = [
   {
     strategy: "drop-tree",

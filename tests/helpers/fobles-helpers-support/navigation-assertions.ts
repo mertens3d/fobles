@@ -16,7 +16,6 @@ import { getScSearchParams, normalizeFoValueForCompare, normalizePath } from "..
 // it's usually written in test constants), so strip braces unconditionally; a plain path is
 // unaffected since it never contains any.
 
-
 function assertFoblesTargetUrl(
   actualUrl: string,
   expectedFoValue: string,
@@ -145,9 +144,7 @@ await expectFoblesButtonNewTabNavigation(
   testContext.page,
 );
 
-
 }
-
 
 export async function expectFoblesButtonNewTabNavigation(
   testInfo: TestInfo,

@@ -31,7 +31,6 @@ foblesTest.describe("PageNavigation", () => {
       foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
       await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
 
-
       const step = createFoblesStep(page, testInfo, page, "Tree Jump Click");
 
       await testOneClick(

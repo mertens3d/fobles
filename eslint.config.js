@@ -3,6 +3,7 @@ import globals from "globals";
 import tseslint from "typescript-eslint";
 import { defineConfig } from "eslint/config";
 import unusedImports from "eslint-plugin-unused-imports";
+import stylistic from "@stylistic/eslint-plugin";
 
 export default defineConfig([
   {
@@ -18,7 +19,7 @@ export default defineConfig([
   },
 
   {
-    files: ["**/*.{ts,mts,cts}"],
+    files: ["**/*.{ts,tsx,mts,cts}"],
 
     extends: [
       js.configs.recommended,
@@ -27,6 +28,7 @@ export default defineConfig([
 
     plugins: {
       "unused-imports": unusedImports,
+      "@stylistic": stylistic,
     },
 
     languageOptions: {
@@ -38,10 +40,10 @@ export default defineConfig([
 
     rules: {
       "@typescript-eslint/no-floating-promises": "error",
-
       "@typescript-eslint/no-unused-vars": "off",
-
       "unused-imports/no-unused-imports": "error",
+      "@stylistic/max-statements-per-line": ["error", { "max": 1 }],
+      "@stylistic/no-multiple-empty-lines": [ "error", { "max": 1, "maxEOF": 0, "maxBOF": 0 } ],
     },
   },
 

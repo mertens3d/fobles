@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/back-button.tsx
+// @source-path [fobles] src/content/toolbar/reference-graph/components/back-button.tsx
 
 type BackButtonProps = { disabled: boolean; onBack: () => void };
 

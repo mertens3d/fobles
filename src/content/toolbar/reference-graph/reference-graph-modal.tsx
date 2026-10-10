@@ -13,10 +13,12 @@ import { createCloseButton } from "./close-button";
 import { attachGraphEventHandlers } from "./event-handlers";
 import { buildTooltip, hideActiveTooltip } from "./graph-tooltip";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "./graph-filters";
+import { createSingleFilterState, DEFAULT_RENDERING_GRAPH_FILTERS_STATE, getEnabledFilterKeys, mergeFilterGraph } from "./graph-filters";
 import { kindClass, slugify } from "./graph-helpers";
 import { createRoot } from "react-dom/client";
 import { GraphToolbar } from "./components/graph-toolbar";
+import type { ReferenceGraphFiltersState } from "./graph.types";
+import { closeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
 
 cytoscape.use(cytoscapeDagre);
 cytoscape.use(cytoscapeCoseBilkent);
@@ -106,7 +108,8 @@ export function appendCompoundChildren(nodes: cytoscape.ElementDefinition[], par
 // page - no new tab/page/build entry needed. Plain-clicking a node with a link calls
 // harvestForLink and, if it resolves, re-roots this SAME dialog's graph at that item (no
 // navigation, no reopening); ctrl/cmd-click opens it in a new tab instead.
-export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResult, harvestForLink: (link: string) => Promise<ReferenceGraphResult | undefined>): void {
+export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResult,
+  harvestForLink: (link: string, filters: ReferenceGraphFiltersState,) => Promise<ReferenceGraphResult | undefined>): void {
   doc.getElementById(REFERENCE_GRAPH.DIALOG_ID)?.remove();
 
   const dialog = doc.createElement("dialog");
@@ -150,7 +153,11 @@ export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResu
   dialog.append(toolbarStyle, closeButton, toolbar, container);
   doc.body.appendChild(dialog);
   activeReferenceGraphDialog = dialog;
-  dialog.addEventListener("close", () => { toolbarRoot.unmount(); activeReferenceGraphDialog = undefined; dialog.remove(); });
+  dialog.addEventListener("close", () => {
+    toolbarRoot.unmount();
+    activeReferenceGraphDialog = undefined;
+    dialog.remove();
+  });
   dialog.addEventListener("click", (event) => {
     if (event.target === dialog) dialog.close();
   });
@@ -256,7 +263,6 @@ export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResu
 
   let currentLayoutPresetName = REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME;
   const graphHistory: ReferenceGraphResult[] = [];
-  // let currentGraph = graph;
   let currentFilters = DEFAULT_RENDERING_GRAPH_FILTERS_STATE;
 
   function renderToolbar(toolbarGraph: ReferenceGraphResult): void {
@@ -276,36 +282,61 @@ export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResu
         }}
         filters={currentFilters}
         onFilterChange={(key, checked) => {
-          currentFilters = { ...currentFilters, [key]: checked };
-          const filterDefinition = REFERENCE_GRAPH.FILTER_DEFS.find((filter) => filter.key === key);
-          if (filterDefinition) {
-            cy.elements(`.${filterDefinition.className}`).style("display", checked ? "element" : "none");
-          }
-
-          cy.layout( REFERENCE_GRAPH.LAYOUT_PRESETS[currentLayoutPresetName].build(), ).run();
-
+          currentFilters = { ...currentFilters, [key]: checked, };
           void setReferenceGraphFilters(currentFilters);
           renderToolbar(currentGraph);
+          const loadedFilters = loadedFiltersByItemId.get(currentGraph.rootItem.itemId) ?? new Set<keyof ReferenceGraphFiltersState>();
+          loadedFiltersByItemId.set(currentGraph.rootItem.itemId, loadedFilters,);
+          if (!checked || key === "template" || loadedFilters.has(key)) {
+            renderGraph(currentGraph);
+            return;
+          }
+          const graphBeingBuilt = currentGraph;
+          const link = graphBeingBuilt.rootItem.link;
+          if (!link) return;
+          const requestedFilters = createSingleFilterState(key);
+          let cancelled = false;
+          openReferenceGraphProgressModal(doc, () => {
+            cancelled = true;
+            closeReferenceGraphProgressModal(doc);
+          });
+          void harvestForLink(link, requestedFilters).then((partialGraph) => {
+            closeReferenceGraphProgressModal(doc);
+            console.log("[Fobles] requested filter", key); 
+            console.log("[Fobles] partial graph", partialGraph);
+            if (cancelled ||
+              !partialGraph ||
+              currentGraph.rootItem.itemId !== graphBeingBuilt.rootItem.itemId) {
+              currentFilters = { ...currentFilters, [key]: false, };
+              void setReferenceGraphFilters(currentFilters);
+              renderToolbar(currentGraph);
+              return;
+            }
+            currentGraph = mergeFilterGraph(currentGraph, partialGraph, key,);
+            loadedFilters.add(key);
+            renderGraph(currentGraph);
+          });
         }}
       />,
     );
   }
+
+  let currentGraph = graph;
+  const loadedFiltersByItemId = new Map<string, Set<keyof ReferenceGraphFiltersState>>();
+
   renderToolbar(graph);
 
   void getReferenceGraphFilters().then((filters) => {
     currentFilters = filters;
-    REFERENCE_GRAPH.FILTER_DEFS.forEach(({ key, className }) => {
-      cy.elements(`.${className}`).style("display", currentFilters[key] ? "element" : "none");
-    });
+    loadedFiltersByItemId.set(graph.rootItem.itemId, getEnabledFilterKeys(filters),);
     renderToolbar(currentGraph);
+    renderGraph(currentGraph);
   });
 
   // The root's own info is shown in the toolbar panel instead (see rootInfo/updateRootInfo
   // above), not repeated as a tooltip on its node. Tooltips themselves are created lazily per
   // node on first click (see the "tap" handler below), not pre-attached here.
   extensionLog.debug("Reference graph: modal opened", { nodeCount: cy.nodes().length });
-
-  let currentGraph = graph;
 
   // Apply a previously-saved layout preference once it loads, without blocking the dialog's
   // initial (default-layout) render on the storage read.
@@ -318,11 +349,9 @@ export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResu
     renderToolbar(currentGraph);
   });
 
-  attachGraphEventHandlers(cy, container, harvestForLink, doc, graphHistory, () => currentGraph, renderGraph);
+  attachGraphEventHandlers(cy, container, harvestForLink, doc, () => currentFilters, graphHistory, () => currentGraph, renderGraph,);
 
   function renderGraph(newGraph: ReferenceGraphResult): void {
-    //  const graphHistory: ReferenceGraphResult[] = [];
-    //  let currentGraph = graph;
     renderToolbar(newGraph);
 
     cy.elements().remove();
@@ -337,6 +366,9 @@ export function openReferenceGraphModal(doc: Document, graph: ReferenceGraphResu
     cy.layout(REFERENCE_GRAPH.LAYOUT_PRESETS[currentLayoutPresetName].build()).run();
 
     currentGraph = newGraph;
-   
+    if (!loadedFiltersByItemId.has(newGraph.rootItem.itemId)) {
+      loadedFiltersByItemId.set(newGraph.rootItem.itemId, getEnabledFilterKeys(currentFilters),);
+
+    }
   }
 }

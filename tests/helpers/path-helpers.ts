@@ -4,7 +4,6 @@ import type { Page } from "../fixtures/playwright";
 export const getLastTwoPathItems = (path?: string): string =>
   (path ?? "").split("/").filter(Boolean).slice(-2).join("/");
 
-
 export const isContentEditor = (page: Page): boolean => {
   //return encodeURI(page.url())
   return normalizePath(page.url())

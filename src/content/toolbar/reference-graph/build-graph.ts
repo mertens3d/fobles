@@ -1,7 +1,6 @@
-import { SITECORE } from "../../../constants/sitecore";
 import { buildFoblesUrl } from "../../features/augmentor/helper";
 import { extractGuid } from "../../features/augmentor/shared/guid";
-import { buildGalleryLinksUrl, findFieldInput, getParentPath, getTemplateGuid, resolveDatasourceLink, resolveQuickInfoForRenderingId } from "../../features/jump-flyout/reference-graph";
+import { buildGalleryLinksUrl, findFieldInput, getTemplateGuid, resolveQuickInfoForRenderingId } from "../../features/jump-flyout/reference-graph";
 import { extensionLog } from "../../logger";
 import { getGlyphId, getGlyphState, waitForExpansion, readChildNodes } from "../../macros/tree-expand-macro";
 import { getCurrentItemId } from "../jump-flyout/ai-pages";
@@ -10,9 +9,8 @@ import { BUILD_STEPS } from "./build-steps";
 import { parseDevice } from "./layout-parsing";
 import type { itemNodeData, ReferenceGraphResult } from "./reference-graph.types";
 import { CONST } from "../../../constants/const";
-import type { BuildContext } from "./graph.types";
+import type { BuildContext, ReferenceGraphFiltersState } from "./graph.types";
 import { initializeReferenceGraphProgressModal, updateReferenceGraphProgressModal } from "./build-progress";
-
 
 // Finds itemId's own tree node, expanding it first (and restoring it back to collapsed
 // afterward) if needed, then returns its direct children. Only the live document can actually
@@ -49,7 +47,8 @@ export async function collectTreeChildren(doc: Document, itemId: string): Promis
       template: undefined,
     })
   );
-}// Items that reference this one - Sitecore's own "Links" gallery (ribbon: Links -> "Items that
+}
+// Items that reference this one - Sitecore's own "Links" gallery (ribbon: Links -> "Items that
 // refer to the selected item"), fetched directly instead of clicking through the ribbon. Same
 // #Links/.scLink markup the Content Editor's own inline reference-links strategy already parses
 // (src/content/features/augmentor/editor-strategies/reference-links.ts) - same extraction here,
@@ -71,7 +70,7 @@ export async function collectReferrers(buildContext: BuildContext): Promise<item
         );
 
       returnValue = referrerAnchors
-        .map((anchor) => {
+        .map((anchor): itemNodeData | undefined => {
           const referrerId = extractGuid(anchor.getAttribute("onclick"));
           // "Name - [/sitecore/full/path] - The reference from 'Field' field. Language: en, ..."
           const fullLabel = anchor.textContent?.replace(/\s+/g, " ").trim() ?? "";
@@ -85,7 +84,7 @@ export async function collectReferrers(buildContext: BuildContext): Promise<item
             path,
             templateLink: undefined,
             template: undefined,
-          } as itemNodeData;
+          };
         })
         .filter((referrer): referrer is itemNodeData => referrer !== undefined);
       // if (candidateValues.length > 0) {
@@ -98,11 +97,12 @@ export async function collectReferrers(buildContext: BuildContext): Promise<item
   }
   return returnValue;
 }
+
 export async function buildReferenceGraph(
   doc: Document,
   signal: AbortSignal,
-  progressDoc: Document = doc
-): Promise<ReferenceGraphResult | undefined> {
+  filters: ReferenceGraphFiltersState,
+  progressDoc: Document = doc,): Promise<ReferenceGraphResult | undefined> {
   const itemId = getCurrentItemId(doc);
   if (!itemId) {
     extensionLog.warn("Reference graph: could not resolve current item id");
@@ -132,11 +132,8 @@ export async function buildReferenceGraph(
   // Cancel/the progress message reads as "genuinely still working", not hung.
   const totalSteps = (layoutId ? 1 : 0) + finalDevice.controls.length + 2;
 
-
-
   const layoutDetailsQuickInfo = layoutId ? await resolveQuickInfoForRenderingId(layoutId, signal) : undefined;
   // if (layoutId) reportProgress(progressDoc, totalSteps);
-
 
   const rootItem = {
     itemId,
@@ -159,7 +156,6 @@ export async function buildReferenceGraph(
     referrers: undefined,
   };
 
-
   const buildContext: BuildContext = {
     doc,
     itemId,
@@ -168,41 +164,20 @@ export async function buildReferenceGraph(
     rootItem,
   };
 
-initializeReferenceGraphProgressModal(progressDoc);
+  initializeReferenceGraphProgressModal(progressDoc, BUILD_STEPS, filters);
 
-for (const buildStep of BUILD_STEPS) {
-  await buildStep.build(buildContext);
-  updateReferenceGraphProgressModal(progressDoc, buildStep);
-}
+  const enabledBuildSteps = BUILD_STEPS.filter((buildStep) => filters[buildStep.filterKey],);
 
-  // const referrers = await collectReferrers(itemId, signal);
-  // reportProgress();
-  // const result: ReferenceGraphResult = {
-  //   itemId,
-  //   itemName: docQuickInfo?.itemName,
-  //   itemPath: docQuickInfo?.itemPath,
-  //   itemTemplate: docQuickInfo?.template,
-  //   itemTemplateLink: templateGuid ? buildFoblesUrl(templateGuid) : undefined,
-  //   itemLink: buildFoblesUrl(itemId),
-  //   parentName: parentPath?.split("/").filter(Boolean).pop() ?? undefined,
-  //   parentLink: parentPath ? buildFoblesUrl(parentPath) : undefined,
-  //   parentPath,
-  //   sharedLayoutName: layoutDetailsQuickInfo?.itemName,
-  //   sharedLayoutLink: layoutId ? buildFoblesUrl(layoutId) : undefined,
-  //   sharedLayoutPath: layoutDetailsQuickInfo?.itemPath,
-  //   controls: enrichedControls,
-  //   sections: collectSections(doc),
-  //   childItems: treeChildren.map(
-  //     (child): ReferenceGraphChildItem => ({
-  //       name: child.name,
-  //       itemId: child.itemId,
-  //       link: buildFoblesUrl(child.itemId),
-  //       path: undefined,
-  //     }),
-  //   ),
-  //   referrers,
-  // };
+  for (const buildStep of enabledBuildSteps) {
+    await buildStep.build(buildContext);
+    updateReferenceGraphProgressModal(progressDoc, buildStep);
+    await testingDelay(1000);
+  }
+
   return result;
 }
 
-  
+function testingDelay(milliseconds: number): Promise<void> {
+  return new Promise((resolve) => { 
+    setTimeout(resolve, milliseconds); });
+}

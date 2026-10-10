@@ -1,7 +1,6 @@
 import { _SITECORE_COLORS } from "./base/_sc-colors";
 import type { TestSpeed } from "../settings/test-speed.types";
 import { _TESTING_MOUSE } from "./base/_testing-mouse";
-import type { HighlightStyle } from "./CONST.Types";
 import { TEST_PAGE_JUMP_TARGETS, TEST_TREE_JUMP_TARGETS } from "./testing/page-jump-targets";
 import { FOBLES_PAGES } from "./testing/pages";
 import { SELECTED_SPEED } from "../settings/settings";

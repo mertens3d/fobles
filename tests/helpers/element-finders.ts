@@ -2,7 +2,6 @@ import type { Page, Locator } from "@playwright/test";
 import { openJumpFlyout } from "../macros/fobles-macros";
 import { findFoblesFrame } from "./frame-finder";
 
-
 export async function getTreeJumpFlyoutButton(page: Page, treeJumpPath: string): Promise<Locator> {
     console.log(`[Macro: getTreeJumpFlyoutButton] - Start (treeJumpPath: ${treeJumpPath})`);
     const foblesFrame = await findFoblesFrame(page);
@@ -14,12 +13,10 @@ export async function getTreeJumpFlyoutButton(page: Page, treeJumpPath: string):
     return treeJumpFlyoutButton;
 }
 
-
 // Clicks the nth "other jump flyout button" (a plain external-URL jump-flyout entry - CONST.FOBLES.LOCATORS.MENU_URL,
 // distinct from a tree-jump button, which targets a Sitecore item path) and dismisses Fobles' own
 // confirm dialog afterward. Opens the jump flyout itself first (idempotent, see openJumpFlyout)
 // rather than requiring the caller to resolve a frame/open the jump flyout beforehand.
-
 
 export async function getPageJumpFlyoutButton(page: Page, pageJumpUrl: string): Promise<Locator> {
     console.log(`[Macro: getPageJumpFlyoutUrlButton] - Start (pageJumpUrl: ${pageJumpUrl})`);
@@ -33,4 +30,3 @@ export async function getPageJumpFlyoutButton(page: Page, pageJumpUrl: string): 
     // await clickWithMouseMarker(page, jumpFlyoutButton, `Menu ${label}`);
     // await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
 }
-

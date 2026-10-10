@@ -7,7 +7,6 @@ import type { DemoBeat } from "./demo-beat.types";
 
 const SCENE_PAUSE_MS = 2_500;
 
-
 export async function playDemoBeat(page: Page, beat: DemoBeat): Promise<void> {
     console.log(`[fobles] Playing demo beat: ${beat.name}`);
     if (beat.init) {

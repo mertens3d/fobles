@@ -10,7 +10,6 @@ import type { PlaceholderGroup } from "./graph.types";
 import { CONST } from "../../../constants/const";
 import { kindClass, slugify, stripDynamicPlaceholderSuffix } from "./graph-helpers";
 
-
 export function buildElements(graphReferenceResult: ReferenceGraphResult): cytoscape.ElementDefinition[] {
     const nodes: cytoscape.ElementDefinition[] = [
         {

@@ -29,7 +29,6 @@ function parseParameters(raw: string | undefined): Record<string, string> {
   return parameters;
 }
 
-
 export function parseDevice(xml: string, deviceId: string): ParsedDevice {
   const parsed = new DOMParser().parseFromString(xml, "application/xml");
   const device = Array.from(parsed.getElementsByTagName("d")).find(
@@ -37,13 +36,10 @@ export function parseDevice(xml: string, deviceId: string): ParsedDevice {
   );
   if (!device) return { layoutId: undefined, controls: [] };
 
-
   const controls: ReferenceGraphControl[] = Array.from(device.getElementsByTagName("r")).map((control) => (factoryReferenceGraphControl(control)));
-
 
   return {
     layoutId: device.getAttribute("l") ?? undefined,
     controls: controls,
   };
 }
-

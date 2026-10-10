@@ -6,8 +6,6 @@ import { bringPageToFront } from "../helpers/page-switch";
 import { ensureMouseMarkerExists } from "../helpers/mouse-proxy";
 import { setTreePanelWidth } from "../macros/sitecore-macros";
 
-
-
 // Sitecore's Content Editor "View > Raw Values" ribbon toggle is a persisted per-session setting,
 // not something tied to the current page - if a prior manual session left it on, every field
 // renders as a plain text box with its raw stored value (GUIDs, XML) instead of its real widget
@@ -39,7 +37,6 @@ export async function openContentEditor(page: Page, foValue:string = ""): Promis
   const path = CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED + (foValue ? `?sc_bw=1&fo=${foValue}` : "");
   await openSitecorePage(page, path);
 }
-
 
 export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   await bringPageToFront(page);

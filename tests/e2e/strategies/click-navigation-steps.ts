@@ -1,7 +1,6 @@
 import { CONST } from "../../CONST";
 import { type Locator, type Page, type TestInfo } from "../../fixtures/playwright";
 
-
 import type { FoblesStep } from "../../helpers/fobles-test-step.types";
 
 import type {  StrategyScenarioData } from "./support/scenario.types";
@@ -29,6 +28,5 @@ export function runClickNavigationSteps(
   navigationButton?: Locator,
 ): void {
   const foblesButton = navigationButton ?? fieldTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
-
  
 }

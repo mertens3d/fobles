@@ -7,8 +7,6 @@ function leafName(path: string): string {
   return path.split("/").pop() ?? path;
 }
 
-
-
 // Content Editor's "Links" gallery (src/content/features/augmentor/editor-strategies
 // /reference-links.ts) renders each field-based reference exactly this way - "ItemName -
 // [ItemPath] - The reference from 'FieldHint' field. Language: en, Version: 1".

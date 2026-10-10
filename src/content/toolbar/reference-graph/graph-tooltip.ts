@@ -1,14 +1,11 @@
 import type { TooltipData } from "./reference-graph.types";
-import tippy, { type Instance as TippyInstance } from "tippy.js";
-
-
+import { type Instance as TippyInstance } from "tippy.js";
 
 // Lazily creates one tippy instance per node on first click, cached on the node itself (cytoscape's
 // scratchpad, not `data()` - this is view-only state, not graph data) so later clicks reuse it.
 // Tracks the single currently-shown instance so clicking a different node always hides whichever
 // other tooltip was still open; clicking the SAME node again toggles its tooltip off.
 let activeReferenceGraphTooltip: TippyInstance | null = null;
-
 
 export function buildTooltip(
   name: string | undefined,
@@ -49,7 +46,6 @@ function buildTooltipContent(data: TooltipData): HTMLElement {
 
   return container;
 }
-
 
 export function toggleTooltip(node: cytoscape.NodeSingular): void {
     const tip = getOrCreateTooltip(node);

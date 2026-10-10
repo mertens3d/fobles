@@ -1,19 +1,32 @@
-import tippy, { type Instance as TippyInstance } from "tippy.js";
+// @source-path [fobles] src/content/toolbar/reference-graph/event-handlers.ts
+
 import { extensionLog } from "../../logger";
 import type { ReferenceGraphResult } from "./reference-graph.types";
 import { hideActiveTooltip, toggleTooltip } from "./graph-tooltip";
 import { closeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
+import type { ReferenceGraphFiltersState } from "./graph.types";
 
-export function attachGraphEventHandlers(cy: cytoscape.Core, 
+function getEventNode(event: cytoscape.EventObject): cytoscape.NodeSingular {
+    return event.target as cytoscape.NodeSingular;
+}
+
+function getNodeLink(node: cytoscape.NodeSingular): string | undefined {
+    const link: unknown = node.data("link"); 
+    return typeof link === "string" ? link : undefined;
+}
+
+export function attachGraphEventHandlers(cy: cytoscape.Core,
     container: HTMLElement,
-    harvestForLink: (link: string) => Promise<ReferenceGraphResult | undefined>,
+    harvestForLink: ( link: string, filters: ReferenceGraphFiltersState, ) => Promise<ReferenceGraphResult | undefined>,
     doc: Document,
+    getCurrentFilters: () => ReferenceGraphFiltersState,
     graphHistory: ReferenceGraphResult[],
     getCurrentGraph: () => ReferenceGraphResult,
     renderGraph: (newGraph: ReferenceGraphResult) => void,
 ): void {
-    cy.on("mouseover", "node", (event) => {
-        container.style.cursor = event.target.data("link") ? "pointer" : "default";
+    cy.on("mouseover", "node", (event: cytoscape.EventObject) => {
+        const node = getEventNode(event);
+        container.style.cursor = getNodeLink(node) ? "pointer" : "default";
     });
     cy.on("mouseout", "node", () => {
         container.style.cursor = "default";
@@ -25,8 +38,11 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
     // navigate action below, same debounce technique used for any click/dblclick disambiguation.
     let pendingTapTimeout: ReturnType<typeof setTimeout> | null = null;
     cy.on("tap", "node", (event) => {
-        const link = event.target.data("link");
-        const mouseEvent = event.originalEvent as MouseEvent | undefined;
+        const node = getEventNode(event);
+        const link = getNodeLink(node);
+        const originalEvent: unknown = event.originalEvent;
+        const mouseEvent = originalEvent instanceof MouseEvent ? originalEvent : undefined;
+
         if (mouseEvent?.ctrlKey || mouseEvent?.metaKey) {
             if (link) window.open(link, "_blank", "noopener,noreferrer");
             return;
@@ -40,7 +56,7 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
         }
         pendingTapTimeout = setTimeout(() => {
             pendingTapTimeout = null;
-            toggleTooltip(event.target);
+            toggleTooltip(node);
         }, 250);
     });
 
@@ -54,7 +70,8 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
             clearTimeout(pendingTapTimeout);
             pendingTapTimeout = null;
         }
-        const link = event.target.data("link");
+        const node = getEventNode(event);
+        const link = getNodeLink(node);
         if (!link) return;
         hideActiveTooltip();
 
@@ -64,7 +81,7 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
             cancelled = true;
             closeReferenceGraphProgressModal(doc);
         });
-        void harvestForLink(link).then((newGraph) => {
+        void harvestForLink(link,getCurrentFilters()).then((newGraph) => {
             closeReferenceGraphProgressModal(doc);
             // Not every item has a Layout section (templates, media, etc.) - expected, not an error.
             if (cancelled || !newGraph) return;
@@ -73,4 +90,3 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
         });
     });
 }
-

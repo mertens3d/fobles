@@ -77,7 +77,6 @@ export async function highlightScreenShot(target: Locator, label: string): Promi
   await highlightBase(target, `${label} - ${highlightScreenShot.name}`, CONST.TESTING.MOUSE.PROXY.HIGHLIGHT.STYLES.SCREEN_SHOT);
 }
 
-
 export async function highlightClickTarget(target: Locator, label: string): Promise<void> {
   await highlightBase(target, label, CONST.TESTING.MOUSE.PROXY.HIGHLIGHT.STYLES.CLICK);
 }

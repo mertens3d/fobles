@@ -1,6 +1,5 @@
 import type { ToolbarContext } from "../types";
 
-
 export function createFlyoutTrigger(
   context: ToolbarContext,
   button: HTMLButtonElement,

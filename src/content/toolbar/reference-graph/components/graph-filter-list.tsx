@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/toolbar/reference-graph/components/graph-filter-list.tsx
+
 import { REFERENCE_GRAPH } from "../../../../constants/graph.const";
 import type { ReferenceGraphFiltersState } from "../graph.types";
 type GraphFilterListProps = { filters: ReferenceGraphFiltersState; onChange: (key: keyof ReferenceGraphFiltersState, checked: boolean) => void };

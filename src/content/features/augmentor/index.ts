@@ -1,4 +1,3 @@
-
 import { ATTRIBUTE, SELECTORS } from "../../../constants/fobles.constants";
 import { CONST} from "../../../constants/const";
 import { extensionLog } from "../../logger";

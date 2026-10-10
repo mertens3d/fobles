@@ -2,7 +2,7 @@ import { type AllowedPage, FOBLES_PAGES } from "../constants/fobles.constants";
 import { CONST} from "../constants/const";
 
 function normalizePath(pathname: string): string {
-  let normalizedPath = pathname;
+  const normalizedPath = pathname;
   // try {
   //   normalizedPath = decodeURIComponent(pathname);
   // } catch {

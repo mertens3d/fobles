@@ -1,8 +1,6 @@
 import type { HighlightStyle } from "../CONST.Types";
 import { _SITECORE_COLORS } from "./_sc-colors";
 
-
-
 export const _TESTING_MOUSE = {
     ROOT: {
       HOVER_CLEARANCE_PX: 24,

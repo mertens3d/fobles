@@ -15,7 +15,7 @@ import {
   removeTestRowIfPresent,
   setTestRowEnabled,
 } from "../../toolbar/support/extension-options-settings-helpers";
-import { expectCurrentUrlContains, expectFoValue } from "../../../expect-snippets/expect-snippets";
+import { expectFoValue } from "../../../expect-snippets/expect-snippets";
 
 foblesTest.describe("User Tree Jumps", () => {
   foblesTest.describe("Toolbar Integration", () => {

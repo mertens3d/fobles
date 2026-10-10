@@ -6,6 +6,8 @@ import { RootInfo } from "./root-info";
 import { GraphFilterList } from "./graph-filter-list";
 import { InteractionLegend } from "./interaction-legend";
 
+export type GraphToolbarHandle = { showGraph: ( graph: ReferenceGraphResult, addCurrentGraphToHistory: boolean, ) => void; };
+
 type ToolbarProps = {
   graph: ReferenceGraphResult;
   layoutPresetName: LayoutGraphPresetName;

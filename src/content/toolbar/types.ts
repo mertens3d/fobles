@@ -11,7 +11,6 @@ export type ToolbarContext = {
   onToggleFeatures: () => void;
 };
 
-
 export type QuickInfo = {
   itemId: string | undefined;
   itemName: string | undefined;

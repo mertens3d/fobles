@@ -58,5 +58,3 @@ export function waitForExpansion(doc: Document, glyphId: string, timeoutMs = 3_0
     poll();
   });
 }
-
-

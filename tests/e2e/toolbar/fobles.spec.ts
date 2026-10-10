@@ -55,7 +55,6 @@
 //     }
 //   });
 
-
 // });
 
 // async function getExpectedButtonPaths(foblesFrame: Frame) {
@@ -106,8 +105,6 @@
 //   return foblesFrame;
 // }
 
-
-
 // async function ScrollFoblesTreeButtonIntoView(foblesFrame: Frame, index: number) {
 //   const foblesTreeButton = foblesFrame
 //     .locator(CONST.FOBLES.SELECTORS.TREE_JUMP_BUTTON)
@@ -120,7 +117,6 @@
 // async function TestOnCtrlClick(paths: string[], index: number, step: (title: string, body: (fullTitle: string) => Promise<void>, options?: { timeout?: number; screenshot?: boolean; }) => Promise<void>, foblesFrame: Frame, sharedBrowserContext: BrowserContext, page: Page, testInfo: TestInfo) {
 //   const path = paths[index];
 //   await step(`Ctrl+Click: opens "${path}" in a new tab`, async () => {
-
 
 //     await ClickFoblesJumpFlyoutButton(page);
 //     await expectFlyoutVisible(foblesFrame);
@@ -136,9 +132,7 @@
 //       .waitForLoadState("domcontentloaded")
 //       .catch(() => undefined);
 
-
 //     expectCurrentUrl(newTab, path);
-
 
 //     const newTabHoldMs = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
 //       CONST.TESTING.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
@@ -148,7 +142,5 @@
 //     await bringPageToFront(page);
 //     await newTab.close();
 
-
 //   }, { screenshot: false });
 // }
-

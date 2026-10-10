@@ -1,4 +1,3 @@
-
 import { CONST } from "../../CONST";
 import {
     getLastKnownMousePosition,
@@ -8,7 +7,6 @@ import { activateFobles, } from "../../helpers/fobles-helpers-support/test-setup
 import { hoverAndGrow, hoverAndSlideOut } from "../../helpers/hover-helpers";
 import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import { expect, foblesTest } from "../../fixtures/playwright";
-
 
 foblesTest.describe("Fobles Hover", () => {
 
@@ -56,7 +54,6 @@ foblesTest.describe("Fobles Hover", () => {
             "/sitecore/content",
             "/sitecore/templates/System/Main section",
         ];
-
 
         for (const buttonName of expectedQuickInfoButtons) {
             await expect(

@@ -10,10 +10,10 @@ import { extractFieldLabel, isHandledElsewhere, readRawFieldValue } from "./refe
 import { resolveFieldLinks } from "./reference-graph-field-links";
 import type {   ReferenceGraphField, ReferenceGraphSection, itemNodeData } from "./reference-graph.types";
 
-
 export const BUILD_STEPS: readonly BuildStep[] = [
   {
     buildStepKey: "children",
+    filterKey: "children",
     label: "Children",
     build: async (buildContext: BuildContext) => {
       buildContext.result.childItems = await collectTreeChildren(buildContext.doc, buildContext.itemId);
@@ -21,16 +21,18 @@ export const BUILD_STEPS: readonly BuildStep[] = [
   },
   {
     buildStepKey: "sections",
+    filterKey: "sections",
     label: "Sections",
-    build: async (buildContext: BuildContext) => {
-      buildContext.result.sections = await collectSections(buildContext.doc);
+    build: (buildContext: BuildContext) => {
+      buildContext.result.sections = collectSections(buildContext.doc);
+      return Promise.resolve();
     },
   },
   {
     buildStepKey: "layout",
+    filterKey: "layout",
     label: "Layout",
     build: async (buildContext: BuildContext) => {
-
 
       const sharedLayoutInput = findFieldInput(buildContext.doc, "Renderings");
       const finalLayoutInput = findFieldInput(buildContext.doc, "Final renderings") ?? sharedLayoutInput;
@@ -51,6 +53,7 @@ export const BUILD_STEPS: readonly BuildStep[] = [
 
   {
     buildStepKey: "controls",
+    filterKey: "controls",
     label: "Controls",
     build: async (buildContext: BuildContext) => {
       const sharedLayoutInput = findFieldInput(buildContext.doc, "Renderings");
@@ -79,6 +82,7 @@ export const BUILD_STEPS: readonly BuildStep[] = [
 
   {
     buildStepKey: "referrers",
+    filterKey: "referrers",
     label: "Referrers",
     build: async (buildContext: BuildContext) => {
       buildContext.result.referrers = await collectReferrers(buildContext);
@@ -86,6 +90,7 @@ export const BUILD_STEPS: readonly BuildStep[] = [
   },
   {
     buildStepKey: "parent",
+    filterKey: "parent",
     label: "Parent",
     build: async (buildContext: BuildContext) => {
       const parentPath = getParentPath(buildContext.rootItem.path ?? undefined);
@@ -99,12 +104,12 @@ export const BUILD_STEPS: readonly BuildStep[] = [
       }
 
       buildContext.result.parent = parent;
+      return Promise.resolve();
     },
   },
 ];
 
-
-export async function collectSections(doc: Document): Promise<ReferenceGraphSection[]> {
+export function collectSections(doc: Document): ReferenceGraphSection[] {
   const sections: ReferenceGraphSection[] = [];
 
   doc.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.SECTION_CAPTION).forEach((caption) => {
@@ -136,4 +141,3 @@ export async function collectSections(doc: Document): Promise<ReferenceGraphSect
 
   return sections;
 }
-

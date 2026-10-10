@@ -2,13 +2,12 @@ import { foblesTest, type Page } from "../../fixtures/playwright";
 import { CONST } from "../../CONST";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import {   clickTreeJump,  scrollTreeContainer } from "../../macros/sitecore-macros";
-import { resolveCornerPosition, ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
-import { findFrameWithSelector } from "../../helpers/frame-finder";
+import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import { getExtensionId, setFoblesNavWarningVisible } from "../../fixtures/extension";
 import { playDemoBeat } from "./demo-beat";
 import { videoTestSetup } from "./video-test-setup";
 import { RECORD_VIDEO } from "../../settings/settings";
-import { clickLbolt, clickFoblesTreeButton, dragToolbarTo, dragToolbarToCornerLocation } from "../../macros/fobles-macros";
+import { clickLbolt, clickFoblesTreeButton, dragToolbarToCornerLocation } from "../../macros/fobles-macros";
 import { showSpeakBubble } from "../../helpers/speak-bubble";
 import { moveMouseTowardCenter } from "../../helpers/mouse-proxy-support/mouse-movement";
 import { demoSightings } from "./demo-sightings";
@@ -60,8 +59,6 @@ async function demoLBoltToggle(page: Page) {
 
 async function demoTreeJumpFlyout(page: Page) {
 
-
-
   await clickLbolt(page)
   await showSpeakBubble(page, "Click opens the tree jump path in the same tab. <br/>Ctrl + Click opens it in a new tab.");
   await clickTreeJump(page, CONST.SITECORE.TREE_JUMP_PATHS.LAYOUT_RENDERINGS);
@@ -89,7 +86,6 @@ async function demoTreeFoblesClick(page: Page) {
   await scrollTreeContainer(page, 400);
   await clickLbolt(page);
 
-
   await showSpeakBubble(page, "Click opens the tree jump path in the same tab. <br/>Ctrl + Click opens it in a new tab.");
   await clickFoblesTreeButton(page, "CDD3F21381BB47708FEC4E1DD65EAA66");
   // await playDemoBeat(page, {
@@ -110,7 +106,6 @@ async function demoToolbarDrag(page: Page) {
   //   action: () => dragToolbarToCornerLocation  (page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2),
   //   highlightResult: false,
   // });
-
  
   await showSpeakBubble(page, "Drag the toolbar anywhere on the page", CONST.TESTING.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION);
   await dragToolbarToCornerLocation  (page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL);

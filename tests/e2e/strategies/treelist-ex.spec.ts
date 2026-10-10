@@ -39,7 +39,6 @@ foblesTest.describe("Strategy scenario: treelist ex", () => {
       await expect(testContext.fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"));
     });
 
-
     // const testContext: StrategyTestContext = await factoryStrategyTestContext(
     //   page,
     //   SCENARIO,

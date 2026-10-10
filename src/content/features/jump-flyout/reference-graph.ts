@@ -7,14 +7,14 @@ import {
   isRibbonCheckboxEnabled,
   setRibbonCheckboxEnabled,
 } from "../../macros/ribbon-toggle-macro";
-import { buildReferenceGraph} from "../../toolbar/reference-graph/build-graph";
-
+import { buildReferenceGraph } from "../../toolbar/reference-graph/build-graph";
+import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { getCurrentItemId } from "../../toolbar/jump-flyout/ai-pages";
 import type {
   ReferenceGraphResult,
 } from "../../toolbar/reference-graph/reference-graph.types";
 import { getQuickInfo } from "../../toolbar/jump-flyout/quick-info";
-import {  openReferenceGraphModal } from "../../toolbar/reference-graph/reference-graph-modal";
+import { openReferenceGraphModal } from "../../toolbar/reference-graph/reference-graph-modal";
 import type { QuickInfo } from "../../toolbar/types";
 import { type PendingReferenceGraph } from "../../toolbar/reference-graph/graph.types";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
@@ -36,8 +36,6 @@ export function findFieldInput(doc: Document, labelPrefix: string): HTMLInputEle
       ?.querySelector<HTMLInputElement>(SITECORE.SELECTORS.CONTENT_CONTROL) ?? undefined
   );
 }
-
-
 
 export async function resolveQuickInfoForRenderingId(
   renderingId: string,
@@ -81,8 +79,6 @@ export function getParentPath(itemPath: string | undefined): string | undefined 
   segments.pop();
   return `/${segments.join("/")}`;
 }
-
-
 
 export function isHandledElsewhere(label: string): boolean {
   const normalized = label.toLowerCase();
@@ -154,7 +150,8 @@ export async function harvestGraphForLink(link: string, progressDoc: Document): 
     const response = await fetch(link, { credentials: "same-origin" });
     if (!response.ok) return undefined;
     const fetchedDoc = new DOMParser().parseFromString(await response.text(), "text/html");
-    return await buildReferenceGraph(fetchedDoc, controller.signal, progressDoc);
+    const filters = await getReferenceGraphFilters();
+    return await buildReferenceGraph(fetchedDoc, controller.signal, filters, progressDoc);
   } catch (error) {
     extensionLog.warn("Reference graph: failed to re-harvest for clicked node", { link, error });
     return undefined;
@@ -164,7 +161,8 @@ export async function harvestGraphForLink(link: string, progressDoc: Document): 
 async function harvestAndOpen(doc: Document): Promise<void> {
   const controller = new AbortController();
   referenceGraphAbortController = controller;
-  const graph = await buildReferenceGraph(doc, controller.signal);
+  const filters = await getReferenceGraphFilters();
+  const graph = await buildReferenceGraph(doc, controller.signal, filters);
   closeReferenceGraphProgressModal(doc);
   if (controller.signal.aborted || !graph) return;
   openReferenceGraphModal(doc, graph, (link) => harvestGraphForLink(link, doc));
@@ -192,14 +190,15 @@ function clearPendingReferenceGraph(): void {
 // click and again on every subsequent page load via resumeReferenceGraph, until nothing is left
 // to flip. A cancelled request skips straight to restoring the original toggle state - the view
 // settings it already flipped shouldn't be left changed just because the user gave up waiting.
-function advancePendingReferenceGraph(doc: Document, pending: PendingReferenceGraph): void {
+async function advancePendingReferenceGraph(doc: Document, pending: PendingReferenceGraph): Promise<void> {
   if (!pending.cancelled && !pending.harvested) {
     if (setRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS, true)) return;
     if (setRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.RAW_VALUES, true)) return;
 
     const controller = new AbortController();
     referenceGraphAbortController = controller;
-    void buildReferenceGraph(doc, controller.signal).then((graph) => {
+    const filters = await getReferenceGraphFilters();
+    await buildReferenceGraph(doc, controller.signal, filters).then(async (graph) => {
       // Re-read rather than trust the closed-over pending - Cancel may have flagged it while fetches were in flight.
       const latest = readPendingReferenceGraph() ?? pending;
       const harvestedPending: PendingReferenceGraph = {
@@ -208,7 +207,7 @@ function advancePendingReferenceGraph(doc: Document, pending: PendingReferenceGr
         graph: latest.cancelled ? undefined : graph,
       };
       writePendingReferenceGraph(harvestedPending);
-      advancePendingReferenceGraph(doc, harvestedPending);
+      await advancePendingReferenceGraph(doc, harvestedPending);
     });
     return;
   }
@@ -225,7 +224,7 @@ function advancePendingReferenceGraph(doc: Document, pending: PendingReferenceGr
   if (pending.graph) openReferenceGraphModal(doc, pending.graph, (link) => harvestGraphForLink(link, doc));
 }
 
-export function openReferenceGraph(doc: Document): void {
+export async function openReferenceGraph(doc: Document): Promise<void> {
   const itemId = getCurrentItemId(doc);
   if (!itemId) {
     extensionLog.warn("Reference graph: could not resolve current item id");
@@ -238,7 +237,7 @@ export function openReferenceGraph(doc: Document): void {
   const standardFieldsOn = isRibbonCheckboxEnabled(doc, SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS) ?? true;
 
   if (rawValuesOn && standardFieldsOn) {
-    void harvestAndOpen(doc);
+    await harvestAndOpen(doc);
     return;
   }
 
@@ -251,12 +250,12 @@ export function openReferenceGraph(doc: Document): void {
     graph: undefined,
   };
   writePendingReferenceGraph(pending);
-  advancePendingReferenceGraph(doc, pending);
+  await advancePendingReferenceGraph(doc, pending);
 }
 
 // Hooked into every page load (see src/content/toolbar-runtime.ts) so the enable/restore
 // sequence above keeps going across each reload it triggers.
-export function resumeReferenceGraph(doc: Document): void {
+export async function resumeReferenceGraph(doc: Document): Promise<void> {
   const pending = readPendingReferenceGraph();
   if (!pending) return;
 
@@ -266,5 +265,5 @@ export function resumeReferenceGraph(doc: Document): void {
   }
 
   if (!pending.cancelled) openReferenceGraphProgressModal(doc, () => cancelReferenceGraph(doc));
-  advancePendingReferenceGraph(doc, pending);
+  await advancePendingReferenceGraph(doc, pending);
 }
