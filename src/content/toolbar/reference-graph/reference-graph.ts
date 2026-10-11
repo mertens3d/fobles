@@ -6,8 +6,11 @@ import { extensionLog } from "../../logger";
 import { buildFoblesUrl } from "../../features/augmentor/helper";
 import { formatFoId } from "../../features/augmentor/shared/guid";
 import {
-  isRibbonCheckboxEnabled,
-  setRibbonCheckboxEnabled,
+  getScRawValuesState,
+  getScStandardFieldsState,
+  setScRawValuesState,
+  setScStandardFieldsState,
+  type BooleanTripleState,
 } from "../../macros/ribbon-toggle-macro";
 import { harvestSitecore } from "../../sitecore-harvester/harvest-sitecore";
 import {
@@ -20,9 +23,9 @@ import type { QuickInfo } from "../types";
 import type { PendingReferenceGraph } from "./graph.types";
 import { harvestGraphForLink } from "./harvester";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
-import type { HarvestSitecoreInBackgroundTabMessage, SitecoreHarvestProgressMessage } from "../../sitecore-harvester/sitecore-harvester.messages";
+import type { HarvestSitecoreInBackgroundTabMessage, SitecoreHarvestProgressMessage } from "../../sitecore-harvester/background-tab/sitecore-harvester.messages";
 import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
-import { HARVEST_STEPS } from "../../sitecore-harvester/harvest-steps";
+import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
 
 // Shared by the fast path (harvestAndOpen) and the slow, reload-spanning path - Cancel aborts
 // whichever one is currently in flight; a stale/already-settled controller is harmless to abort.
@@ -108,11 +111,11 @@ async function harvestAndOpen(doc: Document): Promise<void> {
 
   initializeReferenceGraphProgressModal(
     doc,
-    HARVEST_STEPS,
+    PROGRESS_STEPS,
     filters,
   );
 
-  console.log("REFERENCE GRAPH: awaiting background harvest");
+  extensionLog.debug("REFERENCE GRAPH: awaiting background harvest");
 
   const graph = await harvestInBackgroundTab({
     doc,
@@ -120,22 +123,20 @@ async function harvestAndOpen(doc: Document): Promise<void> {
     filters,
   });
 
-  console.log("REFERENCE GRAPH: background harvest returned", {
+  extensionLog.debug("REFERENCE GRAPH: background harvest returned", {
     graph,
     isNull: graph === null,
     isUndefined: graph === undefined,
   });
 
-  closeReferenceGraphProgressModal(doc);
-
-  console.log("REFERENCE GRAPH: post-harvest", {
+  extensionLog.debug("REFERENCE GRAPH: post-harvest", {
     aborted: controller.signal.aborted,
     hasGraph: Boolean(graph),
   });
 
   if (controller.signal.aborted || !graph) return;
 
-  console.log("REFERENCE GRAPH: calling openReferenceGraphModal");
+  extensionLog.debug("REFERENCE GRAPH: calling openReferenceGraphModal");
 
   openReferenceGraphModal(doc, graph, async (link, filters) => await harvestGraphForLink(
     link, doc, referenceGraphAbortController, filters));
@@ -164,9 +165,25 @@ function clearPendingReferenceGraph(): void {
 // to flip. A cancelled request skips straight to restoring the original toggle state - the view
 // settings it already flipped shouldn't be left changed just because the user gave up waiting.
 async function advancePendingReferenceGraph(doc: Document, pending: PendingReferenceGraph): Promise<void> {
+  extensionLog.debug(`[${advancePendingReferenceGraph.name}] advancing pending reference graph`, { pending });
+
   if (!pending.cancelled && !pending.harvested) {
-    if (setRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS, true)) return;
-    if (setRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.RAW_VALUES, true)) return;
+
+    if (!pending.restoreRawValues) {
+      const currentState = await getScRawValuesState(doc);
+      if (!currentState) {
+        await setScRawValuesState(doc, true);
+        return;
+      }
+    }
+
+    if (!pending.restoreStandardFields) {
+      const currentState = await getScStandardFieldsState(doc);
+      if (!currentState) {
+        await setScStandardFieldsState(doc, true);
+        return;
+      }
+    }
 
     const controller = new AbortController();
     referenceGraphAbortController = controller;
@@ -185,10 +202,13 @@ async function advancePendingReferenceGraph(doc: Document, pending: PendingRefer
     return;
   }
 
-  if (setRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS, pending.restoreStandardFields)) {
+  if (pending.restoreStandardFields && await getScStandardFieldsState(doc) !== pending.restoreStandardFields) {
+    await setScStandardFieldsState(doc, pending.restoreStandardFields);
     return;
   }
-  if (setRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.RAW_VALUES, pending.restoreRawValues)) {
+
+  if (pending.restoreRawValues && await getScRawValuesState(doc) !== pending.restoreRawValues) {
+    await setScRawValuesState(doc, pending.restoreRawValues);
     return;
   }
 
@@ -200,6 +220,9 @@ async function advancePendingReferenceGraph(doc: Document, pending: PendingRefer
 }
 
 export async function openReferenceGraph(doc: Document): Promise<void> {
+
+  extensionLog.debug(`[${openReferenceGraph.name}] advancing pending reference graph`, { doc: doc.URL });
+
   const itemId = getCurrentItemId(doc);
   if (!itemId) {
     extensionLog.warn("Reference graph: could not resolve current item id");
@@ -208,8 +231,8 @@ export async function openReferenceGraph(doc: Document): Promise<void> {
 
   openReferenceGraphProgressModal(doc, () => cancelReferenceGraph(doc));
 
-  const rawValuesOn = isRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.RAW_VALUES) ?? true;
-  const standardFieldsOn = isRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS) ?? true;
+  const rawValuesOn: BooleanTripleState = await getScRawValuesState(doc);
+  const standardFieldsOn: BooleanTripleState = await getScStandardFieldsState(doc);//= isRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS) ?? true;
 
   if (rawValuesOn && standardFieldsOn) {
     await harvestAndOpen(doc);
@@ -267,7 +290,7 @@ async function harvestInBackgroundTab(
     handleHarvestProgress(
       context.doc,
       {
-        harvestStepKey: message.harvestStepKey,
+        stepKey: message.stepKey,
         label: message.label,
       },
       message.status,

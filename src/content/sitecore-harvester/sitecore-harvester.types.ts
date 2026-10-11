@@ -5,13 +5,21 @@ export type HarvestContext = {
   signal: AbortSignal;
   rootItem: itemNodeData;
 };
+export type ProgressStep = {
+  stepKey: StepKey;
+  label: string;
+};
 
-export type HarvestStep = {
-  harvestStepKey: HarvestStepKey;
+export type HarvestStep = ProgressStep & {
+  stepKey: StepKey;
   filterKey: keyof SitecoreHarvestFiltersState;
   label: string;
-  build: (buildContext: HarvestContext) => Promise<void>;
+  build: (harvestContext: HarvestContext) => Promise<void>;
 };
+
+export function isHarvestStep(step: ProgressStep): step is HarvestStep {
+  return "filterKey" in step;
+}
 
 export type itemNodeData = {
   name: string | undefined;
@@ -75,7 +83,7 @@ export type SitecoreHarvestField = {
   // Set when a field-link strategy (xxxx.ts) recognized this field's raw
   // markup as a list of other items - e.g. treelist-ex's Insert options - so each one can render
   // as its own clickable node instead of being flattened into `value`.
-  links?: readonly HarvestFieldLink[];
+  links: readonly HarvestFieldLink[];
 };
 export type ParsedDevice = {
   layoutId: string | undefined;
@@ -86,10 +94,24 @@ export type HarvestFieldLink = {
   label: string;
   itemId: string;
 };
-export type HarvestStepKey = "children" | "sections" | "layout" | "controls" | "referrers" | "parent";
 
-export type HarvestStatus = "skipped" | "complete";
-export type HarvestProgressCallback = (step: HarvestStep, status: HarvestStatus) => void;
+export type StepKey =
+  | "fetch-document"
+  | "parse-document"
+  | "root-item"
+  | "children"
+  | "sections"
+  | "layout"
+  | "controls"
+  | "referrers"
+  | "parent"
+  | "build-graph";
+
+export type HarvestProgressStatus =
+  | "active"
+  | "skipped"
+  | "complete";
+export type HarvestProgressCallback = (step: ProgressStep, status: HarvestProgressStatus) => void;
 
 export type BackgroundHarvestContext = {
   url: string;

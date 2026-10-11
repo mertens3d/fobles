@@ -1,5 +1,8 @@
+// @source-path [fobles] src/content/sitecore-harvester/background-tab/sitecore-background-tab-harvester.ts
+
 import type { HarvestSitecoreMessage } from "./sitecore-harvester.messages";
-import type { SitecoreHarvestResult, BackgroundHarvestContext } from "./sitecore-harvester.types";
+import type { SitecoreHarvestResult, BackgroundHarvestContext, HarvestProgressStatus, StepKey } from "../sitecore-harvester.types";
+import { extensionLog } from "../../logger";
 
 async function sendHarvestMessage(
     tabId: number,
@@ -12,14 +15,14 @@ async function sendHarvestMessage(
         attempt++;
 
         try {
-            console.log("HARVEST SEND ATTEMPT", { tabId, attempt });
+            extensionLog.debug("HARVEST SEND ATTEMPT", { tabId, attempt });
 
             result = await chrome.tabs.sendMessage<
                 HarvestSitecoreMessage,
                 SitecoreHarvestResult | undefined
             >(tabId, message, { frameId: 0 });
 
-            console.log("HARVEST SEND SUCCESS", {
+            extensionLog.debug("HARVEST SEND SUCCESS", {
                 tabId,
                 attempt,
                 hasResult: result !== undefined,
@@ -27,7 +30,7 @@ async function sendHarvestMessage(
 
             break;
         } catch (error) {
-            console.log("HARVEST SEND FAILURE", {
+            extensionLog.debug("HARVEST SEND FAILURE", {
                 tabId,
                 attempt,
                 error,
@@ -44,7 +47,7 @@ async function sendHarvestMessage(
         }
     }
     if (attempt >= maxAttempts) {
-        console.log("HARVEST SEND MAX ATTEMPTS REACHED", { tabId, maxAttempts, hasResult: result !== undefined });
+        extensionLog.debug("HARVEST SEND MAX ATTEMPTS REACHED", { tabId, maxAttempts, hasResult: result !== undefined });
     }
     return result;
 }
@@ -63,7 +66,16 @@ export async function harvestSitecoreInBackgroundTab(
     const tabId = tab.id;
 
     try {
-        await chrome.tabs.update(tabId, { url: backgroundHarvestContext.url });
+        await reportProgress(
+            backgroundHarvestContext,
+            "fetch-document",
+            "Fetching Document",
+            "active",
+        );
+
+        await chrome.tabs.update(tabId, {
+            url: backgroundHarvestContext.url,
+        });
 
         const message: HarvestSitecoreMessage = {
             type: "HARVEST_SITECORE",
@@ -72,8 +84,32 @@ export async function harvestSitecoreInBackgroundTab(
             filters: backgroundHarvestContext.filters,
         };
 
-        return await sendHarvestMessage(tabId, message);
+        const result = await sendHarvestMessage(tabId, message);
+
+        await reportProgress(
+            backgroundHarvestContext,
+            "fetch-document",
+            "Fetching Document",
+            "complete",
+        );
+
+        return result;
     } finally {
         await chrome.tabs.remove(tabId);
     }
+}
+
+async function reportProgress(
+    context: BackgroundHarvestContext,
+    stepKey: StepKey,
+    label: string,
+    status: HarvestProgressStatus,
+): Promise<void> {
+    await chrome.tabs.sendMessage(context.originTabId, {
+        type: "SITECORE_HARVEST_PROGRESS",
+        requestId: context.requestId,
+        stepKey,
+        label,
+        status,
+    });
 }

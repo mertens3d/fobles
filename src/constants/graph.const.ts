@@ -1,7 +1,7 @@
 import type cytoscape from "cytoscape";
 import type { SitecoreHarvestFiltersState } from "../content/sitecore-harvester/sitecore-harvester.types";
 import type { LayoutPreset, LayoutGraphPresetName } from "../content/toolbar/reference-graph/graph.types";
-import type { HarvestStepKey } from "../content/sitecore-harvester/sitecore-harvester.types";
+import type { StepKey } from "../content/sitecore-harvester/sitecore-harvester.types";
 import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE";
 
 export const REFERENCE_GRAPH = {
@@ -58,7 +58,7 @@ export const REFERENCE_GRAPH = {
         { key: "referrers", buildStepKey: "referrers", label: "Referrers", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.referrers },
         { key: "sections", buildStepKey: "sections", label: "Sections", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.sections },
         { key: "template", buildStepKey: "template", label: "Template", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.template },
-    ] as ReadonlyArray<{ key: keyof SitecoreHarvestFiltersState; buildStepKey: HarvestStepKey; label: string; className: string; }>,
+    ] as ReadonlyArray<{ key: keyof SitecoreHarvestFiltersState; buildStepKey: StepKey; label: string; className: string; }>,
     DIALOG_ID: "fobles-reference-graph-dialog",
     PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
     PROGRESS_MESSAGE_ID: "fobles-reference-graph-progress-message",

@@ -1,6 +1,7 @@
 import type cytoscape from "cytoscape";
 import type { HarvestGraphControl } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { BooleanTripleState } from "../../macros/ribbon-toggle-macro";
 
 export type GlyphState = "expanded" | "collapsed" | "leaf";
 // POC: harvests the active item's default-device layout straight from the Content Editor's own
@@ -13,8 +14,8 @@ export type GlyphState = "expanded" | "collapsed" | "leaf";
 // reload would otherwise wipe it before the modal can be shown.
 export type PendingReferenceGraph = {
   itemId: string;
-  restoreRawValues: boolean;
-  restoreStandardFields: boolean;
+  restoreRawValues: BooleanTripleState;
+  restoreStandardFields: BooleanTripleState;
   harvested: boolean;
   cancelled: boolean;
   graph: SitecoreHarvestResult | undefined;

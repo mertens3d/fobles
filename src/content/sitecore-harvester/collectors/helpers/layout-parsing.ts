@@ -1,6 +1,6 @@
-import { stripGuidBraces } from "../features/augmentor/shared/guid";
-import type { ParsedDevice } from "./sitecore-harvester.types";
-import type { HarvestGraphControl } from "./sitecore-harvester.types";
+import { stripGuidBraces } from "../../../features/augmentor/shared/guid";
+import type { ParsedDevice } from "../../sitecore-harvester.types";
+import type { HarvestGraphControl } from "../../sitecore-harvester.types";
 
 export function createHarvestGraphControl(control: Element): HarvestGraphControl {
   return {

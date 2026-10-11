@@ -3,8 +3,9 @@
 /// <reference types="chrome" />
 
 import { LOGGER, MESSAGE } from "../constants/constants-b";
-import { harvestSitecoreInBackgroundTab } from "../content/sitecore-harvester/sitecore-background-tab-harvester";
-import type { HarvestSitecoreInBackgroundTabMessage, SitecoreHarvestProgressMessage } from "../content/sitecore-harvester/sitecore-harvester.messages";
+import { extensionLog } from "../content/logger";
+import { harvestSitecoreInBackgroundTab } from "../content/sitecore-harvester/background-tab/sitecore-background-tab-harvester";
+import type { HarvestSitecoreInBackgroundTabMessage, SitecoreHarvestProgressMessage } from "../content/sitecore-harvester/background-tab/sitecore-harvester.messages";
 
 const RELAYED_COMMANDS: readonly string[] = [
   MESSAGE.ACTION.TOGGLE_FOBLES,
@@ -84,4 +85,4 @@ chrome.runtime.onMessage.addListener(
   },
 );
 
-console.log(LOGGER.NAMESPACE, "Background script loaded");
+extensionLog.debug(LOGGER.NAMESPACE, "Background script loaded");

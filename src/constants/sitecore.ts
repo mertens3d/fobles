@@ -1,3 +1,5 @@
+import type { selectorHints } from "./_base/const.types";
+
 export const SITECORE = {
   ACTION_PREFIXES: {
     FILE: "contentfile",
@@ -18,13 +20,13 @@ export const SITECORE = {
     XML_CONTROL: "xmlcontrol",
   },
 
-  HARVEST:{
-// Sections/fields already represented elsewhere in the graph, or not useful for this POC's
+  HARVEST: {
+    // Sections/fields already represented elsewhere in the graph, or not useful for this POC's
     // purposes (Statistics/Security/Appearance are noisy system bookkeeping, not content-shape data).
     // Quick Info is also a differently-shaped table (see getQuickInfoValue), not a field-marker
     // section; Renderings/Final renderings get their own rich subtree (parseDevice) instead of a
     // flat raw-value leaf.
-    EXCLUDED_SECTION_NAMES: new Set(["appearance", "quick info", "security", "statistics"]),
+    EXCLUDED_SECTION_NAMES_LC: new Set(["appearance", "quick info", "security", "statistics"]),
     EXCLUDED_FIELD_LABEL_PREFIXES: ["final renderings", "renderings"],
     //i guessed on this
   },
@@ -51,6 +53,13 @@ export const SITECORE = {
     RAW_VALUES: "Check_BBDED3F008D144C82A983B54F0424BBC1",
     STANDARD_FIELDS: "Check_BC29C1D329FB74DA585083FEC2AF3A81D",
   },
+  IDS: {
+    CONTENT_EDITOR: {
+      NAVIGATION: {
+
+      }
+    }
+  },
   QUICK_INFO: {
     LABEL_PREFIX: {
       ITEM_ID: "Item ID",
@@ -60,6 +69,26 @@ export const SITECORE = {
     },
   },
   SELECTORS: {
+    RIBBON_PANEL: "#RibbonPanel",
+    RAW_VALUES_CHECKBOX: "#Check_BBDED3F008D144C82A983B54F0424BBC1",
+    STANDARD_FIELDS_CHECKBOX: "#Check_BC29C1D329FB74DA585083FEC2AF3A81D",
+    RIBBON: {
+      HOME_TAB: [
+        "a[accesskey='H']",
+        "a[role='tab'][aria-controls$='_Strip_HomeStrip']",
+        "a[id$='_Nav_HomeStrip']",
+        "a[onclick*=\"'_Strip_HomeStrip'\"]",
+      ],
+      NAVIGATION_TAB: [
+        "a[accesskey='N']",
+      ],
+      VIEW_TAB: [
+        "a[accesskey='I']",
+        "a[id$='_Nav_ViewStrip']",
+        "a[onclick*=\"'_Strip_ViewStrip'\"]",
+      ],
+
+    } satisfies Record<string, selectorHints>,
     QUICK_INFO_CELL: "td.scEditorSectionPanelCell > table.scEditorQuickInfo",
     COMBOBOX: ".scCombobox",
     CONTENT_CONTROL: ".scContentControl",

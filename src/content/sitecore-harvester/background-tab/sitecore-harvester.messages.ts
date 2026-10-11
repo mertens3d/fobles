@@ -1,16 +1,18 @@
+// @source-path [fobles] src/content/sitecore-harvester/background-tab/sitecore-harvester.messages.ts
+
 import type {
-  HarvestStatus,
-  HarvestStepKey,
+  HarvestProgressStatus,
+  StepKey,
   SitecoreHarvestFiltersState,
-} from "./sitecore-harvester.types";
+} from "../sitecore-harvester.types";
 
 export type SitecoreHarvestProgressMessage = {
   type: "SITECORE_HARVEST_PROGRESS";
   requestId: string;
   originTabId: number;
-  harvestStepKey: HarvestStepKey;
+  stepKey: StepKey;
   label: string;
-  status: HarvestStatus;
+  status: HarvestProgressStatus;
 };
 
 export type HarvestSitecoreMessage = {
