@@ -1,152 +1,68 @@
 // @source-path [fobles] src/content/sitecore-harvester/harvest-steps.ts
 
-import { CONST } from "../../constants/const";
-import { SITECORE } from "../../constants/sitecore";
-import { buildFoblesUrl } from "../features/augmentor/helper";
-import { resolveDatasourceLink } from "./field-links";
-import { findFieldInput } from "./harvest-helpers";
-import { resolveQuickInfoForRenderingId } from "./harvest-helpers";
-import { collectTreeChildren, collectReferrers } from "./harvest-sitecore";
-import type { HarvestStep, SitecoreHarvestField } from "./sitecore-harvester.types";
-import type { HarvestContext } from "./sitecore-harvester.types";
-import { parseDevice } from "./layout-parsing";
-import { readRawFieldValue } from "./field-harvester";
-import { isHandledElsewhere } from "./field-harvester";
-import { extractFieldLabel } from "./field-harvester";
-import { resolveFieldLinks } from "./field-links";
-import type { SitecoreHarvestSection } from "./sitecore-harvester.types";
-import type { itemNodeData } from "./sitecore-harvester.types";
-import { getParentPath } from "../../shared/path-helpers";
+import { collectLayout } from "./collectors/section-collector/layout-collector/layout-collector";
+import { collectReferrers } from "./collectors/referrer-collector";
+import type { HarvestStep, ProgressStep } from "./sitecore-harvester.types";
+import { collectSections } from "./collectors/section-collector/section-collector";
+import { collectControls } from "./collectors/section-collector/layout-collector/layout-harvest";
+import { collectParent } from "./collectors/parent-collector";
+import { collectChildren } from "./collectors/child-collector";
 
 export const HARVEST_STEPS: readonly HarvestStep[] = [
   {
-    harvestStepKey: "children",
-
+    stepKey: "children",
     filterKey: "children",
     label: "Children",
-    build: async (buildContext: HarvestContext) => {
-      buildContext.result.childItems = await collectTreeChildren(buildContext.doc, buildContext.itemId);
-    },
+    build: collectChildren,
   },
   {
-    harvestStepKey: "sections",
+    stepKey: "sections",
     filterKey: "sections",
     label: "Sections",
-    build: (buildContext: HarvestContext) => {
-      buildContext.result.sections = collectSections(buildContext.doc);
-      return Promise.resolve();
-    },
+    build: collectSections,
   },
   {
-    harvestStepKey: "layout",
+    stepKey: "layout",
     filterKey: "layout",
     label: "Layout",
-    build: async (buildContext: HarvestContext) => {
-
-      const sharedLayoutInput = findFieldInput(buildContext.doc, "Renderings");
-      const finalLayoutInput = findFieldInput(buildContext.doc, "Final renderings") ?? sharedLayoutInput;
-      const sharedDevice = sharedLayoutInput?.value
-        ? parseDevice(sharedLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
-        : { layoutId: undefined, controls: [] };
-      const finalDevice = finalLayoutInput?.value
-        ? parseDevice(finalLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
-        : { layoutId: undefined, controls: [] };
-      const layoutId = finalDevice.layoutId ?? sharedDevice.layoutId;
-
-      const layoutDetailsQuickInfo = layoutId ? await resolveQuickInfoForRenderingId(layoutId, buildContext.signal) : undefined;
-      buildContext.result.sharedLayoutName = layoutDetailsQuickInfo?.itemName;
-      buildContext.result.sharedLayoutLink = layoutId ? buildFoblesUrl(layoutId) : undefined;
-      buildContext.result.sharedLayoutPath = layoutDetailsQuickInfo?.itemPath;
-    },
+    build: collectLayout,
   },
-
   {
-    harvestStepKey: "controls",
+    stepKey: "controls",
     filterKey: "controls",
     label: "Controls",
-    build: async (buildContext: HarvestContext) => {
-      const sharedLayoutInput = findFieldInput(buildContext.doc, "Renderings");
-      const finalLayoutInput = findFieldInput(buildContext.doc, "Final renderings") ?? sharedLayoutInput;
-      const finalDevice = finalLayoutInput?.value
-        ? parseDevice(finalLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
-        : { layoutId: undefined, controls: [] };
-
-      const enrichedControls = await Promise.all(
-
-        finalDevice.controls.map(async (control) => {
-          const details = control.renderingId ? await resolveQuickInfoForRenderingId(control.renderingId, buildContext.signal) : undefined;
-          return {
-            ...control,
-            name: details?.itemName ?? undefined,
-            path: details?.itemPath ?? undefined,
-            template: details?.template ?? undefined,
-            link: control.renderingId ? buildFoblesUrl(control.renderingId) : undefined,
-            datasourceLink: resolveDatasourceLink(control.datasource, buildContext.rootItem.path ?? undefined),
-          };
-        })
-      );
-      buildContext.result.controls = enrichedControls;
-    },
+    build: collectControls,
   },
-
   {
-    harvestStepKey: "referrers",
+    stepKey: "referrers",
     filterKey: "referrers",
     label: "Referrers",
-    build: async (buildContext: HarvestContext) => {
-      buildContext.result.referrers = await collectReferrers(buildContext);
-    },
+    build: collectReferrers,
   },
   {
-    harvestStepKey: "parent",
+    stepKey: "parent",
     filterKey: "parent",
     label: "Parent",
-    build: async (buildContext: HarvestContext) => {
-      const parentPath = getParentPath(buildContext.rootItem.path ?? undefined);
-      const parent: itemNodeData = {
-        name: parentPath?.split("/").filter(Boolean).pop() ?? undefined,
-        itemId: "",
-        link: parentPath ? buildFoblesUrl(parentPath) : undefined,
-        path: parentPath,
-        template: undefined,
-        templateLink: undefined,
-      }
-
-      buildContext.result.parent = parent;
-      return Promise.resolve();
-    },
+    build: collectParent,
   },
 ];
 
-export function collectSections(doc: Document): SitecoreHarvestSection[] {
-  const sections: SitecoreHarvestSection[] = [];
-
-  doc.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.SECTION_CAPTION).forEach((caption) => {
-    const name = caption.textContent?.trim() ?? "";
-    if (!name || CONST.SITECORE.HARVEST.EXCLUDED_SECTION_NAMES.has(name.toLowerCase())) return;
-
-    const panelId = caption.querySelector("img[aria-controls]")?.getAttribute("aria-controls") ?? `${caption.id}_controls`;
-    const panel = doc.getElementById(panelId);
-    if (!panel) return;
-
-    const fields: SitecoreHarvestField[] = [];
-    panel.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.EDITOR_FIELD_MARKER).forEach((marker) => {
-      const label = extractFieldLabel(marker);
-      if (!label || isHandledElsewhere(label)) return;
-
-      const links = resolveFieldLinks(marker);
-      if (links) {
-        fields.push({ label, value: links.map((link) => link.label).join(", "), links });
-        return;
-      }
-
-      const value = readRawFieldValue(marker);
-      if (!value) return;
-      fields.push({ label, value });
-    });
-
-    if (fields.length > 0) sections.push({ name, fields });
-  });
-
-  return sections;
-}
+export const PROGRESS_STEPS: readonly ProgressStep[] = [
+  {
+    stepKey: "fetch-document",
+    label: "Fetching Document",
+  },
+  {
+    stepKey: "parse-document",
+    label: "Parsing Document",
+  },
+  {
+    stepKey: "root-item",
+    label: "Root Item",
+  },
+  ...HARVEST_STEPS,
+  {
+    stepKey: "build-graph",
+    label: "Building Graph",
+  },
+];

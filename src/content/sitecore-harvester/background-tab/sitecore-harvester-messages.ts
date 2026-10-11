@@ -1,7 +1,8 @@
 // @source-path [fobles] src/content/sitecore-harvester/sitecore-harvester-messages.ts
 
 import type { HarvestSitecoreMessage, SitecoreHarvestProgressMessage } from "./sitecore-harvester.messages";
-import { harvestSitecore } from "./harvest-sitecore";
+import { harvestSitecore } from "../harvest-sitecore";
+import { extensionLog } from "../../logger";
 export function registerSitecoreHarvesterMessageHandler(): void {
     if (window.top !== window) {
         return;
@@ -15,6 +16,24 @@ export function registerSitecoreHarvesterMessageHandler(): void {
 
             const controller = new AbortController();
 
+void chrome.runtime.sendMessage({
+    type: "SITECORE_HARVEST_PROGRESS",
+    requestId: message.requestId,
+    originTabId: message.originTabId,
+    stepKey: "fetch-document",
+    label: "Fetching Document",
+    status: "complete",
+} satisfies SitecoreHarvestProgressMessage);
+
+void chrome.runtime.sendMessage({
+    type: "SITECORE_HARVEST_PROGRESS",
+    requestId: message.requestId,
+    originTabId: message.originTabId,
+    stepKey: "parse-document",
+    label: "Parsing Document",
+    status: "complete",
+} satisfies SitecoreHarvestProgressMessage);
+
             void harvestSitecore(
                 document,
                 controller.signal,
@@ -24,13 +43,13 @@ export function registerSitecoreHarvesterMessageHandler(): void {
                         type: "SITECORE_HARVEST_PROGRESS",
                         requestId: message.requestId,
                         originTabId: message.originTabId,
-                        harvestStepKey: step.harvestStepKey,
+                        stepKey: step.stepKey,
                         label: step.label,
                         status,
                     } satisfies SitecoreHarvestProgressMessage);
                 },
             ).then((result) => {
-                console.log("HARVEST HANDLER RESULT", result);
+                extensionLog.debug("HARVEST HANDLER RESULT", result);
                 sendResponse(result);
             });
 
@@ -38,7 +57,7 @@ export function registerSitecoreHarvesterMessageHandler(): void {
         },
     );
 
-    console.log("SENDING SITECORE_HARVESTER_READY", window.top === window);
+    extensionLog.debug("SENDING SITECORE_HARVESTER_READY", window.top === window);
 
     void chrome.runtime.sendMessage({
         type: "SITECORE_HARVESTER_READY",

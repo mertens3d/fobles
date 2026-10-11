@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/toolbar/reference-graph/reference-graph-modal.tsx
+
 import { type SatelliteDescriptor } from "./reference-graph.types";
 import cytoscape from "cytoscape";
 import cytoscapeCoseBilkent from "cytoscape-cose-bilkent";
@@ -15,11 +17,11 @@ import { createSingleFilterState, DEFAULT_RENDERING_GRAPH_FILTERS_STATE, getEnab
 import { kindClass, slugify } from "./graph-helpers";
 import { createRoot } from "react-dom/client";
 import { GraphToolbar } from "./components/graph-toolbar";
-import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
-import { closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
+import { isHarvestStep, type SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
+import { closeReferenceGraphProgressModal, handleHarvestProgress, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import { buildElements } from "./graph-elements";
-import { HARVEST_STEPS } from "../../sitecore-harvester/harvest-steps";
+import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
 
 cytoscape.use(cytoscapeDagre);
 cytoscape.use(cytoscapeCoseBilkent);
@@ -164,11 +166,25 @@ export function openReferenceGraphModal(doc: Document, graph: SitecoreHarvestRes
   });
   dialog.showModal();
 
+  handleHarvestProgress(
+    doc,
+    { stepKey: "build-graph", label: "Building Graph" },
+    "active",
+  );
+
   const initialElements: cytoscape.ElementDefinition[] = buildElements(graph);
+
+  handleHarvestProgress(
+    doc,
+    { stepKey: "build-graph", label: "Building Graph" },
+    "complete",
+  );
+
+  closeReferenceGraphProgressModal(doc);
   // Unconditional (not gated behind extensionLog's debug flag) - this is the enriched shape
   // (with each node's parent/compound nesting already resolved), not the raw harvested graph,
   // deliberately logged here so it can be inspected in devtools without flipping on debug mode.
-  console.log("[Fobles] Reference Graph elements", initialElements);
+  extensionLog.debug("[Fobles] Reference Graph elements", initialElements);
 
   const cy = cytoscape({
     container,
@@ -304,8 +320,8 @@ export function openReferenceGraphModal(doc: Document, graph: SitecoreHarvestRes
 
           initializeReferenceGraphProgressModal(
             doc,
-            HARVEST_STEPS.filter(
-              (step) => step.filterKey === key,
+            PROGRESS_STEPS.filter(
+               (step) => isHarvestStep(step) && step.filterKey === key,
             ),
             requestedFilters,
           );
@@ -313,8 +329,8 @@ export function openReferenceGraphModal(doc: Document, graph: SitecoreHarvestRes
           void harvestForLink(link, requestedFilters).then((partialGraph) => {
             void harvestForLink(link, requestedFilters).then((partialGraph) => {
               closeReferenceGraphProgressModal(doc);
-              console.log("[Fobles] requested filter", key);
-              console.log("[Fobles] partial graph", partialGraph);
+              extensionLog.debug("[Fobles] requested filter", key);
+              extensionLog.debug("[Fobles] partial graph", partialGraph);
               if (cancelled ||
                 !partialGraph ||
                 currentGraph.rootItem.itemId !== graphBeingBuilt.rootItem.itemId) {
@@ -368,7 +384,7 @@ export function openReferenceGraphModal(doc: Document, graph: SitecoreHarvestRes
 
     cy.elements().remove();
     const elements = buildElements(newGraph);
-    console.log("[Fobles] Reference Graph elements", elements);
+    extensionLog.debug("[Fobles] Reference Graph elements", elements);
     cy.add(elements);
     hideActiveTooltip();
     REFERENCE_GRAPH.FILTER_DEFS.forEach(({ key, className }) => {

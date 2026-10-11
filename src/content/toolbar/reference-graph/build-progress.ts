@@ -1,9 +1,9 @@
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import type { HarvestStatus, SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
+import { isHarvestStep, type HarvestProgressStatus, type SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { HarvestStep } from "../../sitecore-harvester/sitecore-harvester.types";
 
 //   let completedSteps = 0;
-
+import type { ProgressStep } from "../../sitecore-harvester/sitecore-harvester.types";
 // export const reportProgress = (progressDoc: Document, buildStep: BuildStep): void => {
 //     completedSteps += 1;
 //     updateReferenceGraphProgressModal(progressDoc, buildStep);
@@ -16,24 +16,32 @@ import type { HarvestStep } from "../../sitecore-harvester/sitecore-harvester.ty
 //   if (buildingMessage) buildingMessage.textContent = `${REFERENCE_GRAPH.TEXT.BUILDING_REFERENCE_GRAPH} (${completedSteps}/${total})`;
 // }
 
-export function initializeReferenceGraphProgressModal(doc: Document, buildSteps: readonly HarvestStep[], filters: SitecoreHarvestFiltersState,): void {
+export function initializeReferenceGraphProgressModal(doc: Document, steps: readonly ProgressStep[], filters: SitecoreHarvestFiltersState,): void {
   const buildingMessage = doc.getElementById(REFERENCE_GRAPH.PROGRESS_MESSAGE_ID,);
   if (!buildingMessage) return;
-  buildingMessage.replaceChildren(...buildSteps.map((step) => {
+  buildingMessage.replaceChildren(...steps.map((step) => {
     const row = doc.createElement("div");
-    row.id = `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${step.harvestStepKey}`;
-    row.textContent = filters[step.filterKey] ? `○ ${step.label}` : `○ ${step.label} - Skipped`;
+    row.id = `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${step.stepKey}`;
+    const status =
+      isHarvestStep(step) && !filters[step.filterKey]
+        ? "skipped"
+        : "pending";
+
+    row.textContent =
+      status === "skipped"
+        ? `○ ${step.label} - Skipped`
+        : `○ ${step.label}`;
     return row;
   }),);
 }
 
 type HarvestProgressStep =
-  Pick<HarvestStep, "harvestStepKey" | "label">;
+  Pick<HarvestStep, "stepKey" | "label">;
 
 export function handleHarvestProgress(
   doc: Document,
   step: HarvestProgressStep,
-  status: HarvestStatus,
+  status: HarvestProgressStatus,
 ): void {
   if (status === "skipped") {
     updateReferenceGraphProgressModalSkipped(doc, step);
@@ -42,7 +50,7 @@ export function handleHarvestProgress(
   updateReferenceGraphProgressModal(doc, step);
 }
 export function updateReferenceGraphProgressModalSkipped(doc: Document, harvestStep: HarvestProgressStep,): void {
-  const row = doc.getElementById(`${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${harvestStep.harvestStepKey}`,);
+  const row = doc.getElementById(`${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${harvestStep.stepKey}`,);
   if (row) {
     row.textContent = `○ ${harvestStep.label} - Skipped`;
   }
@@ -53,7 +61,7 @@ export function updateReferenceGraphProgressModal(
   buildStep: HarvestProgressStep,
 ): void {
   const row = doc.getElementById(
-    `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${buildStep.harvestStepKey}`,
+    `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${buildStep.stepKey}`,
   );
 
   if (row) row.textContent = `✓ ${buildStep.label}`;

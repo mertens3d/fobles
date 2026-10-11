@@ -1,19 +1,21 @@
-import { CONST } from "../../constants/const";
-import { buildFoblesUrl } from "../features/augmentor/helper";
-import { type FieldLink } from "./sitecore-harvester.types";
-import { type FieldLinkResolver } from "./sitecore-harvester.types";
+import { CONST } from "../../../../constants/const";
+import { buildFoblesUrl } from "../../../features/augmentor/helper";
+import { type FieldLink } from "../../sitecore-harvester.types";
+import { type FieldLinkResolver } from "../../sitecore-harvester.types";
 
 // Only treelist-ex is wired up so far (see docs/TODO.md) - every other strategy still falls back
 // to a flat raw value until it gets its own resolver added to FIELD_LINK_RESOLVERS above.
 
-export function resolveFieldLinks(marker: HTMLElement): FieldLink[] | null {
-    for (const resolver of FIELD_LINK_RESOLVERS) {
-        const links = resolver(marker);
-        if (links){
-            return links;
-        }
+export function resolveFieldLinks(marker: HTMLElement): FieldLink[] {
+
+  const foundLinks: FieldLink[] = [];
+  for (const resolver of FIELD_LINK_RESOLVERS) {
+    const links = resolver(marker);
+    if (links) {
+      foundLinks.push(...links);
     }
-    return null;
+  }
+  return foundLinks;
 }
 
 export const resolveTreelistExLinks: FieldLinkResolver = (marker) => {
@@ -21,15 +23,15 @@ export const resolveTreelistExLinks: FieldLinkResolver = (marker) => {
   if (!host) return null;
 
   const links = Array.from(host.children)
-  .filter((child): child is HTMLElement => child.tagName === "DIV" && child.hasAttribute("title"))
-  .map((child) => {
+    .filter((child): child is HTMLElement => child.tagName === "DIV" && child.hasAttribute("title"))
+    .map((child) => {
       const title = child.getAttribute("title")?.trim();
       const label = child.textContent?.trim();
       return title && label ? { itemId: toItemPath(title), label } : null;
     })
     .filter((link): link is FieldLink => link !== null);
-    
-    return links.length > 0 ? links : null;
+
+  return links.length > 0 ? links : null;
 };
 
 export const FIELD_LINK_RESOLVERS: readonly FieldLinkResolver[] = [resolveTreelistExLinks];

@@ -12,7 +12,7 @@ import type { SitecoreHarvestField, SitecoreHarvestResult } from "../../sitecore
 import type { HarvestFieldLink } from "../../sitecore-harvester/sitecore-harvester.types";
 
 export function buildElements(graphReferenceResult: SitecoreHarvestResult): cytoscape.ElementDefinition[] {
-    const nodes: cytoscape.ElementDefinition[] = [
+    const cytoNodes: cytoscape.ElementDefinition[] = [
         {
             data: {
                 id:  graphReferenceResult.rootItem.itemId,
@@ -24,7 +24,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
             classes: kindClass(REFERENCE_GRAPH.NODE_KIND.ITEM),
         },
     ];
-    const edges: cytoscape.ElementDefinition[] = [];
+    const cytoEdges: cytoscape.ElementDefinition[] = [];
 
     // The item itself is the only guaranteed node - everything else (device/layout, controls,
     // template, parent, children, sections) only gets added when there's actual data for it.
@@ -33,7 +33,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
         // Layout wraps Shared Layout (Renderings) and Final Layout (Final renderings), each of which
         // wraps its own Default device - mirrors Sitecore's own Layout Details dialog, where each
         // field independently lists Default/Mobile/Print/... rather than sharing one device node.
-        nodes.push(
+        cytoNodes.push(
             {
                 data: {
                     id: REFERENCE_GRAPH.NODE_ID.LAYOUT_BOX_NODE_ID,
@@ -84,7 +84,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
                 classes: `${kindClass(REFERENCE_GRAPH.NODE_KIND.DEVICE)} ${REFERENCE_GRAPH.FILTER_CLASS.layout}`,
             }
         );
-        edges.push({
+        cytoEdges.push({
             data: {
                 id: CONST.FOBLES.REFERENCE_GRAPH.EDGE_IDS.EDGE_LAYOUT,
                 source: graphReferenceResult.rootItem.itemId,
@@ -92,7 +92,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
             }
         });
 
-        appendCompoundChildren(nodes, REFERENCE_GRAPH.NODE_ID.SHARED_LAYOUT_DEVICE_NODE_ID, [
+        appendCompoundChildren(cytoNodes, REFERENCE_GRAPH.NODE_ID.SHARED_LAYOUT_DEVICE_NODE_ID, [
             {
                 kind: REFERENCE_GRAPH.NODE_KIND.LAYOUT,
                 value: graphReferenceResult.sharedLayoutName,
@@ -103,7 +103,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
         ]);
     }
 
-    appendSatellites(nodes, edges, graphReferenceResult.rootItem.itemId, [
+    appendSatellites(cytoNodes, cytoEdges, graphReferenceResult.rootItem.itemId, [
         {
             kind: REFERENCE_GRAPH.NODE_KIND.TEMPLATE,
             value: lastPathSegment(graphReferenceResult.rootItem.template),
@@ -124,7 +124,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
     // same nesting cytoscape feature Section -> Fields already uses below.
     if (graphReferenceResult.childItems?.length && graphReferenceResult.childItems.length > 0) {
         const childrenId = `${graphReferenceResult.rootItem.itemId}-children`;
-        nodes.push({
+        cytoNodes.push({
             data: {
                 id: childrenId,
                 label: "Children",
@@ -133,10 +133,10 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
             },
             classes: `${kindClass("structural")} ${REFERENCE_GRAPH.FILTER_CLASS.children}`,
         });
-        edges.push({ data: { id: CONST.FOBLES.REFERENCE_GRAPH.EDGE_IDS.CHILDREN, source: graphReferenceResult.rootItem.itemId, target: childrenId } });
+        cytoEdges.push({ data: { id: CONST.FOBLES.REFERENCE_GRAPH.EDGE_IDS.CHILDREN, source: graphReferenceResult.rootItem.itemId, target: childrenId } });
 
         appendCompoundChildren(
-            nodes,
+            cytoNodes,
             childrenId,
             graphReferenceResult.childItems.map((child) => ({
                 kind: REFERENCE_GRAPH.NODE_KIND.CHILD,
@@ -152,7 +152,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
     // edge in. The group's edge keeps the original reverse direction (referrers -> item).
     if (graphReferenceResult.referrers?.length && graphReferenceResult.referrers.length > 0) {
         const referrersId = `${graphReferenceResult.rootItem.itemId}-referrers`;
-        nodes.push({
+        cytoNodes.push({
             data: {
                 id: referrersId,
                 label: "Referrers",
@@ -161,7 +161,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
             },
             classes: `${kindClass("structural")} ${REFERENCE_GRAPH.FILTER_CLASS.referrers}`,
         });
-        edges.push({
+        cytoEdges.push({
             data: {
                 id: CONST.FOBLES.REFERENCE_GRAPH.EDGE_IDS.REFERRERS,
                 source: referrersId,
@@ -170,7 +170,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
         });
 
         appendCompoundChildren(
-            nodes,
+            cytoNodes,
             referrersId,
             graphReferenceResult.referrers.map((referrer) => ({
                 kind: REFERENCE_GRAPH.NODE_KIND.REFERRER,
@@ -210,7 +210,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
         // Every group (including pass-through ancestors with no controls of their own) is pushed
         // before any control, so a control's own parent id always already exists in `nodes`.
         placeholderGroups.forEach((group) => {
-            nodes.push({
+            cytoNodes.push({
                 data: {
                     id: group.id,
                     parent: group.parentId,
@@ -225,7 +225,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
         placeholderGroups.forEach((group) => {
             group.controls.forEach(({ control, index }) => {
                 const controlId = control.renderingId || control.uid || `control-${index}`;
-                nodes.push({
+                cytoNodes.push({
                     data: {
                         id: controlId,
                         parent: group.id,
@@ -238,7 +238,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
                     classes: `${kindClass(REFERENCE_GRAPH.NODE_KIND.CONTROL)} ${REFERENCE_GRAPH.FILTER_CLASS.layout}`,
                 });
 
-                appendCompoundChildren(nodes, controlId, [
+                appendCompoundChildren(cytoNodes, controlId, [
                     {
                         kind: REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
                         value: lastPathSegment(control.datasource) ?? control.datasource,
@@ -261,7 +261,7 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
 
         graphReferenceResult.sections?.forEach((section) => {
             const sectionId = `${graphReferenceResult.rootItem.itemId}-section-${slugify(section.name)}`;
-            nodes.push({
+            cytoNodes.push({
                 data: {
                     id: sectionId,
                     label: buildLabel(REFERENCE_GRAPH.NODE_KIND.SECTION, section.name),
@@ -270,10 +270,10 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
                 },
                 classes: `${kindClass(REFERENCE_GRAPH.NODE_KIND.SECTION)} ${REFERENCE_GRAPH.FILTER_CLASS.sections}`,
             });
-            edges.push({ data: { id: `edge-${sectionId}`, source: graphReferenceResult.rootItem.itemId, target: sectionId } });
+            cytoEdges.push({ data: { id: `edge-${sectionId}`, source: graphReferenceResult.rootItem.itemId, target: sectionId } });
 
             const fieldIds = appendCompoundChildren(
-                nodes,
+                cytoNodes,
                 sectionId,
                 section.fields.map((field: SitecoreHarvestField) => ({
                     kind: field.label,
@@ -289,8 +289,8 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
                 const fieldId = fieldIds[index];
                 if (!fieldId || !field.links) return;
                 appendSatellites(
-                    nodes,
-                    edges,
+                    cytoNodes,
+                    cytoEdges,
                     fieldId,
                     field.links.map((link: HarvestFieldLink) => ({
                         kind: REFERENCE_GRAPH.NODE_KIND.FIELD,
@@ -304,5 +304,5 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
         });
     }
 
-    return [...nodes, ...edges];
+    return [...cytoNodes, ...cytoEdges];
 }
