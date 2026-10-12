@@ -9,7 +9,7 @@ export const REFERENCE_GRAPH = {
     TEXT: {
         BUILDING_REFERENCE_GRAPH: "Building reference graph..."
     },
-    EDGE_IDS:{
+    EDGE_IDS: {
         EDGE_LAYOUT: "edge-layout",
         CHILDREN: "edge-children",
         REFERRERS: "edge-referrers"
@@ -50,7 +50,7 @@ export const REFERENCE_GRAPH = {
         [_REFERENCE_GRAPH_BASE.NODE_KIND.CHILD]: "#d1428a",
         [_REFERENCE_GRAPH_BASE.NODE_KIND.REFERRER]: "#d13f3f",
         [_REFERENCE_GRAPH_BASE.NODE_KIND.FIELD]: "#7a7a7a",
-    } as Record<string, string>,
+    } satisfies Record<string, string>,
     STRUCTURAL_COLOR: "#8a97a8", // Device/Shared Layout/Final Layout wrapper nodes
     DEFAULT_LAYOUT_PRESET_NAME: "dagre" as LayoutGraphPresetName,
     FILTER_DEFS: [
@@ -71,25 +71,42 @@ export const REFERENCE_GRAPH = {
     LAYOUT_PRESETS: {
         dagre: {
             label: "Dagre (tree)",
-            build: () => ({ name: "dagre", rankDir: "TB", nodeSep: 30, rankSep: 60, padding: 20 }) as unknown as cytoscape.LayoutOptions,
+            build: () => ({
+                name: "dagre",
+                rankDir: "TB",
+                nodeSep: 30,
+                rankSep: 60,
+                fit: true,
+                padding: 20,
+            }) as unknown as cytoscape.LayoutOptions,
         },
         "cose-bilkent": {
             label: "CoSE Bilkent (organic)",
             build: () => ({
                 name: "cose-bilkent",
+                fit: true,
                 padding: 20,
-                nodeDimensionsIncludeLabels: true
+                animate: false,
+                nodeDimensionsIncludeLabels: true,
             }) as unknown as cytoscape.LayoutOptions,
         },
         fcose: {
             label: "fCoSE (organic, fast)",
-            build: () => ({ name: "fcose", padding: 20 }) as unknown as cytoscape.LayoutOptions,
+            build: () => ({
+                name: "fcose",
+                fit: true,
+                padding: 20,
+            }) as unknown as cytoscape.LayoutOptions,
         },
         breadthfirst: {
             label: "Breadthfirst (tree, directed)",
-            // circle:true puts the root dead-center with every rank as a ring around it - circle:false
-            // instead stacks ranks as flat rows, root at the top, same as dagre's general shape.
-            build: () => ({ name: "breadthfirst", directed: true, circle: false, padding: 20 }),
+            build: () => ({
+                name: "breadthfirst",
+                directed: true,
+                circle: false,
+                fit: true,
+                padding: 20,
+            }),
         },
     } as Record<LayoutGraphPresetName, LayoutPreset>,
     DEFAULT_LAYOUT_PRESET: { LayoutPresetName: "dagre" },

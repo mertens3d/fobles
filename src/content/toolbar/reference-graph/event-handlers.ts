@@ -23,7 +23,8 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
     getCurrentFilters: () => SitecoreHarvestFiltersState,
     graphHistory: SitecoreHarvestResult[],
     getCurrentGraph: () => SitecoreHarvestResult,
-    renderGraph: (newGraph: SitecoreHarvestResult) => void,
+    onGraphChange: (graph: SitecoreHarvestResult) => void,
+    onHistoryChange: (count: number) => void,
 ): void {
     cy.on("mouseover", "node", (event: cytoscape.EventObject) => {
         const node = getEventNode(event);
@@ -93,10 +94,12 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
 
         void harvestForLink(link, filters).then((newGraph) => {
             closeReferenceGraphProgressModal(doc);
-            // Not every item has a Layout section (templates, media, etc.) - expected, not an error.
+
             if (cancelled || !newGraph) return;
+
             graphHistory.push(getCurrentGraph());
-            renderGraph(newGraph);
+            onHistoryChange(graphHistory.length);
+            onGraphChange(newGraph);
         });
     });
 }

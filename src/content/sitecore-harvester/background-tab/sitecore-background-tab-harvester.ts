@@ -5,8 +5,6 @@ import type { SitecoreHarvestResult, BackgroundHarvestContext, HarvestProgressSt
 import { extensionLog } from "../../logger";
 import { CONST } from "../../../constants/const";
 
-
-
 async function sendHarvestMessage(
     tabId: number,
     message: HarvestSitecoreMessage,

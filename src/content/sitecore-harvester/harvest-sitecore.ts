@@ -2,7 +2,6 @@
 
 import { buildFoblesUrl } from "../features/augmentor/helper";
 import { findFieldInput } from "./collectors/helpers/harvest-helpers";
-import { getTemplateGuid } from "./collectors/helpers/harvest-helpers";
 import { extensionLog } from "../logger";
 import { getGlyphId, getGlyphState, waitForExpansion, readChildNodes } from "../macros/tree-expand-macro";
 import { getCurrentItemId } from "../toolbar/jump-flyout/ai-pages";

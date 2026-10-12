@@ -1,10 +1,9 @@
 import type cytoscape from "cytoscape";
 import { REFERENCE_GRAPH } from "../../../../../constants/graph.const";
 import type { LayoutSectionField, SitecoreHarvestResult } from "../../../../sitecore-harvester/sitecore-harvester.types";
-import { stripDynamicPlaceholderSuffix, slugify, kindClass } from "../../graph-helpers";
+import { kindClass } from "../../graph-helpers";
 import { buildTooltip } from "../../graph-tooltip";
-import type { PlaceholderGroup } from "../../graph.types";
-import { buildLabel } from "../../reference-graph-modal";
+import { buildLabel } from "../../cytoscape/graph-node-helpers";
 import { CONST } from "../../../../../constants/const";
 import { appendCompoundGraphNode, createLayoutTree } from "./new-functions";
 

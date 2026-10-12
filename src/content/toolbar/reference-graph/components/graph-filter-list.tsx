@@ -10,7 +10,7 @@ export function GraphFilterList({ filters, onChange }: GraphFilterListProps) {
       {REFERENCE_GRAPH.FILTER_DEFS.map((filter) => (
         <label key={filter.key} style={{ display: "inline-flex", alignItems: "center", gap: 3, cursor: "pointer", color: "#203047" }}>
           {" "}
-          <input type="checkbox" checked={filters[filter.key]} onChange={(event) => onChange(filter.key, event.target.checked)} /> {filter.label}{" "}
+          <input type="checkbox" checked={filters[filter.key] ?? false} onChange={(event) => onChange(filter.key, event.target.checked)} /> {filter.label}{" "}
         </label>
       ))}{" "}
     </div>

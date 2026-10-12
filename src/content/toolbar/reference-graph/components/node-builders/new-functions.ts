@@ -3,7 +3,8 @@
 import { REFERENCE_GRAPH } from "../../../../../constants/graph.const";
 import type { HarvestGraphControl, LayoutDevice, LayoutSectionField, SitecoreHarvestResult } from "../../../../sitecore-harvester/sitecore-harvester.types";
 import { kindClass, slugify, stripDynamicPlaceholderSuffix } from "../../graph-helpers";
-import { buildLabel, lastPathSegment } from "../../reference-graph-modal";
+import { lastPathSegment } from "../../cytoscape/graph-node-helpers";
+import { buildLabel } from "../../cytoscape/graph-node-helpers";
 import { buildFoblesUrl } from "../../../../features/augmentor/helper";
 import { buildTooltip, buildTooltipContent } from "../../graph-tooltip";
 
