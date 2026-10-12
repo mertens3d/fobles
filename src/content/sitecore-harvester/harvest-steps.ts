@@ -37,7 +37,8 @@ export const HARVEST_STEPS: readonly HarvestStep[] = [
     filterKey: "parent",
     label: "Parent",
     build: collectParent,
-  },
+  }
+
 ];
 
 export const PROGRESS_STEPS: readonly ProgressStep[] = [
@@ -55,7 +56,12 @@ export const PROGRESS_STEPS: readonly ProgressStep[] = [
   },
   ...HARVEST_STEPS,
   {
+    stepKey: "enrichment",
+    label: "Enriching Items",
+  },
+  {
     stepKey: "build-graph",
     label: "Building Graph",
   },
+
 ];

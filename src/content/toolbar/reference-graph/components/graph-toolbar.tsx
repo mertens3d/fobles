@@ -20,17 +20,18 @@ type ToolbarProps = {
   onBack: () => void;
   filters: SitecoreHarvestFiltersState;
   onFilterChange: (key: keyof SitecoreHarvestFiltersState, checked: boolean) => void;
-  cy: cytoscape.Core | undefined
+  cy: cytoscape.Core | undefined;
+  onClearFilters: () => void;
 };
 
-export function GraphToolbar({ graph, layoutPresetName, onLayoutChange, canGoBack, onBack, filters, onFilterChange, cy }: ToolbarProps) {
+export function GraphToolbar({ graph, layoutPresetName, onLayoutChange, canGoBack, onBack, filters, onFilterChange, cy, onClearFilters }: ToolbarProps) {
   return (
-    <div style={{ position: "absolute", top: 10, left: 10, zIndex: 1, display: "flex", flexDirection: "column", gap: 8, background: "rgba(255,255,255,0.92)", padding: "8px 10px", borderRadius: 6, boxShadow: "0 1px 4px rgba(0,0,0,0.2)", fontFamily: "sans-serif" }}>
+    <div className="fobles-reference-graph-toolbar">
       {" "}
       <GraphTypeSelect value={layoutPresetName} onChange={onLayoutChange} />
       <GraphViewControls cy={cy} />
       <BackButton disabled={!canGoBack} onBack={onBack} />
-      <GraphFilterList filters={filters} onChange={onFilterChange} />
+      <GraphFilterList filters={filters} onChange={onFilterChange} onClearFilters={onClearFilters} />
       <RootInfo graph={graph} />
       <InteractionLegend />
     </div>

@@ -1,4 +1,4 @@
-import type { TooltipData } from "./reference-graph.types";
+import type { SatelliteDescriptor, TooltipData } from "./reference-graph.types";
 import { type Instance as TippyInstance } from "tippy.js";
 
 // Lazily creates one tippy instance per node on first click, cached on the node itself (cytoscape's
@@ -8,11 +8,14 @@ import { type Instance as TippyInstance } from "tippy.js";
 let activeReferenceGraphTooltip: TippyInstance | null = null;
 
 export function buildTooltip(
-  name: string | undefined,
-  guid: string | undefined,
-  path: string | undefined,
-  placeholder: string | undefined = undefined): TooltipData {
-  return { name, guid, path, placeholder };
+    descriptor: SatelliteDescriptor,
+): TooltipData {
+    return {
+        name: descriptor.item?.name ?? descriptor.value,
+        guid: descriptor.item?.itemId,
+        path: descriptor.item?.path ?? descriptor.path,
+        placeholder: descriptor.placeholder,
+    };
 }
 
 export function hideActiveTooltip(): void {

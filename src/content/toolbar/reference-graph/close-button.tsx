@@ -1,11 +1,24 @@
 // @source-path [fobles] src/content/toolbar/close-button.tsx
 
-export function createCloseButton(doc: Document, dialog: HTMLDialogElement): HTMLButtonElement {
-  const closeButton = doc.createElement("button");
-  closeButton.type = "button";
-  closeButton.textContent = "Close";
-  closeButton.className = "fobles-reference-graph-button fobles-reference-graph-button--close";
-  closeButton.style.cssText = "position:absolute;top:10px;right:10px;z-index:1;";
-  closeButton.addEventListener("click", () => dialog.close());
-  return closeButton;
+import { ICONS } from "../../../constants/fobles.constants";
+
+export function createCloseButton(
+    doc: Document,
+    dialog: HTMLDialogElement,
+): HTMLButtonElement {
+    const button = doc.createElement("button");
+    button.type = "button";
+    button.className = "fobles-reference-graph-close";
+    button.title = "Close";
+    button.setAttribute("aria-label", "Close");
+
+    const icon = doc.createElement("img");
+    icon.className = "fobles-reference-graph-close-icon";
+    icon.src = ICONS.CLOSE;
+    icon.alt = "";
+
+    button.appendChild(icon);
+    button.addEventListener("click", () => dialog.close());
+
+    return button;
 }

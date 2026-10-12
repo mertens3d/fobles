@@ -1,4 +1,5 @@
-import { buildFoblesUrl } from "../../features/augmentor/helper";
+// @source-path [fobles] src/content/sitecore-harvester/collectors/referrer-collector.ts
+
 import { extractGuid } from "../../features/augmentor/shared/guid";
 import { extensionLog } from "../../logger";
 import { buildGalleryLinksUrl } from "./helpers/harvest-helpers";
@@ -34,9 +35,10 @@ export async function collectReferrers(harvestContext: HarvestContext): Promise<
           const path = fullLabel.match(/ - \[(.*?)\]/)?.[1]?.trim() || undefined;
           if (!referrerId) return undefined;
           return {
+            type: "scItem",
             name,
             itemId: referrerId,
-            link: buildFoblesUrl(referrerId),
+            link: undefined,
             path,
             template: undefined,
           };

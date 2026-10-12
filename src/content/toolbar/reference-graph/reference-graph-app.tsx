@@ -21,6 +21,7 @@ import {
 import { GraphToolbar } from "./components/graph-toolbar";
 import { buildElements } from "./graph-elements";
 import {
+    createAllFiltersState,
     createSingleFilterState,
     getEnabledFilterKeys,
     mergeFilterGraph,
@@ -50,6 +51,15 @@ export function ReferenceGraphApp({
     const containerRef = useRef<HTMLDivElement | null>(null);
     const cyRef = useRef<cytoscape.Core | undefined>(undefined);
     const graphState = useReferenceGraph({ initialGraph, });
+    const setFilters = useCallback(
+        (filters: SitecoreHarvestFiltersState): void => {
+            graphState.currentFiltersRef.current = filters;
+            graphState.setCurrentFilters(filters);
+            void setReferenceGraphFilters(filters);
+        },
+        [graphState],
+    );
+
 
     const renderGraph = useCallback(
         (newGraph: SitecoreHarvestResult): void => {
@@ -75,7 +85,7 @@ export function ReferenceGraphApp({
                 ({ key, className }) => {
                     cy.elements(`.${className}`).style(
                         "display",
-                     graphState.   currentFiltersRef.current[key]
+                        graphState.currentFiltersRef.current[key]
                             ? "element"
                             : "none",
                     );
@@ -123,14 +133,21 @@ export function ReferenceGraphApp({
         const previousGraph =
             graphState.graphHistoryRef.current.pop();
 
-       graphState. setHistoryCount(
-          graphState.graphHistoryRef.current.length,
+        graphState.setHistoryCount(
+            graphState.graphHistoryRef.current.length,
         );
 
         if (previousGraph) {
             renderGraph(previousGraph);
         }
     }, [renderGraph]);
+
+    const handleClearFilters = useCallback((): void => {
+        const filters = createAllFiltersState(false);
+
+        setFilters(filters);
+        renderGraph(graphState.currentGraphRef.current);
+    }, [renderGraph, setFilters]);
 
     const handleFilterChange = useCallback(
         (
@@ -142,11 +159,10 @@ export function ReferenceGraphApp({
                 [key]: checked,
             };
 
-            graphState.currentFiltersRef.current = updatedFilters;
-            graphState.setCurrentFilters(updatedFilters);
-            void setReferenceGraphFilters(updatedFilters);
+            setFilters(updatedFilters);
 
             const currentGraphValue = graphState.currentGraphRef.current;
+
 
             const loadedFilters =
                 graphState.loadedFiltersByItemIdRef.current.get(
@@ -218,22 +234,11 @@ export function ReferenceGraphApp({
                         [key]: false,
                     };
 
-                    graphState.currentFiltersRef.current =
-                        revertedFilters;
-
-                    graphState.setCurrentFilters(
-                        revertedFilters,
-                    );
-
-                    void setReferenceGraphFilters(
-                        revertedFilters,
-                    );
-
+                    setFilters(revertedFilters);
                     return;
                 }
-
                 const mergedGraph = mergeFilterGraph(
-                    currentGraphValue,
+                    graphState.currentGraphRef.current,
                     partialGraph,
                     key,
                 );
@@ -262,22 +267,19 @@ export function ReferenceGraphApp({
         setHistoryCount: graphState.setHistoryCount,
     });
 
+
+
     return (
         <>
             <GraphToolbar
                 graph={graphState.currentGraph}
-                layoutPresetName={
-                    graphState.layoutPresetName
-                }
-                onLayoutChange={
-                    handleLayoutChange
-                }
+                layoutPresetName={graphState.layoutPresetName}
+                onLayoutChange={handleLayoutChange}
                 canGoBack={graphState.historyCount > 0}
                 onBack={handleBack}
                 filters={graphState.currentFilters}
-                onFilterChange={
-                    handleFilterChange
-                }
+                onFilterChange={handleFilterChange}
+                onClearFilters={handleClearFilters}
                 cy={cyRef.current}
             />
 

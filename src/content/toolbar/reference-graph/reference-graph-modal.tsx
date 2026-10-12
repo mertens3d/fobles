@@ -27,41 +27,7 @@ export function openReferenceGraphModal(
     const dialog = doc.createElement("dialog");
 
     dialog.id = REFERENCE_GRAPH.DIALOG_ID;
-    dialog.style.cssText =
-        "width:90vw;height:85vh;padding:0;border:none;border-radius:4px;";
-
-    const toolbarStyle = doc.createElement("style");
-
-    toolbarStyle.textContent = `
-        #${REFERENCE_GRAPH.DIALOG_ID} .fobles-reference-graph-button {
-            border: 1px solid #2f6fed;
-            background: #eaf1fc;
-            color: #203047;
-            border-radius: 4px;
-            padding: 5px 12px;
-            font-size: 12px;
-            font-family: sans-serif;
-            cursor: pointer;
-        }
-
-        #${REFERENCE_GRAPH.DIALOG_ID} .fobles-reference-graph-button:hover:not(:disabled) {
-            background: #d7e4fb;
-        }
-
-        #${REFERENCE_GRAPH.DIALOG_ID} .fobles-reference-graph-button:disabled {
-            opacity: 0.5;
-            cursor: default;
-        }
-
-        #${REFERENCE_GRAPH.DIALOG_ID} .fobles-reference-graph-button--close {
-            border-color: #d13f3f;
-            background: #fbe9e9;
-        }
-
-        #${REFERENCE_GRAPH.DIALOG_ID} .fobles-reference-graph-button--close:hover {
-            background: #f6d4d4;
-        }
-    `;
+    dialog.className = "fobles-reference-graph";
 
     const closeButton = createCloseButton(
         doc,
@@ -76,7 +42,6 @@ export function openReferenceGraphModal(
     const appRoot = createRoot(appHost);
 
     dialog.append(
-        toolbarStyle,
         closeButton,
         appHost,
     );

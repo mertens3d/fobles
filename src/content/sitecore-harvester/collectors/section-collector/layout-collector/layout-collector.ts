@@ -1,5 +1,5 @@
 import { findFieldInput } from "../../helpers/harvest-helpers";
-import { factoryItemGraphNodeData, type HarvestContext, type HarvestGraphControl, type LayoutDevice, type LayoutSectionField } from "../../../sitecore-harvester.types";
+import { factoryItemGraphNodeData, type HarvestContext, type HarvestGraphControl, type ItemGraphNodeData, type LayoutDevice, type LayoutSectionField } from "../../../sitecore-harvester.types";
 import { XMLParser } from "fast-xml-parser";
 import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
 
@@ -12,46 +12,55 @@ export const collectLayouts = async (harvestContext: HarvestContext): Promise<vo
     harvestContext.result.layoutSectionFields = layoutsArray;
     return Promise.resolve();
 };
+const processLayoutFieldValue = (
+    harvestContext: HarvestContext,
+    layoutName: string,
+): LayoutSectionField => {
+    const sectionFieldHtml = findFieldInput(
+        harvestContext.doc,
+        layoutName,
+    );
 
-const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: string): LayoutSectionField => {
     const layoutSectionField: LayoutSectionField = {
         name: layoutName,
-        sectionFieldHtml: findFieldInput(harvestContext.doc, layoutName),
         devices: [],
     };
-    const xml = layoutSectionField.sectionFieldHtml?.value;
+
+    const xml = sectionFieldHtml?.value;
+
     if (xml) {
+        const rawProcessedXml = processLayoutXml(xml);
 
-        const rawProcessedXMl = processLayoutXml(xml);
-        if (rawProcessedXMl) {
-
-            for (const device of rawProcessedXMl.r.d) {
-
+        if (rawProcessedXml) {
+            for (const device of rawProcessedXml.r.d) {
                 const layoutView = factoryItemGraphNodeData();
                 layoutView.itemId = device.l;
 
                 const deviceData: LayoutDevice = {
-                    layoutView: layoutView,
+                    layoutView,
                     deviceId: device.id,
-                    controls: []
+                    controls: [],
                 };
 
                 for (const rendering of device.r ?? []) {
-                    const control: HarvestGraphControl = {
+                    const renderingItem = factoryItemGraphNodeData();
+                    renderingItem.itemId = rendering["s:id"];
 
-                        renderingId: rendering["s:id"],
-                        name: undefined,
-                        path: undefined,
-                        template: undefined,
-                        datasource: rendering["s:ds"],
-                        datasourceLink: undefined,
+                    const datasourceItem = createDatasourceItem(
+                        rendering["s:ds"],
+                        harvestContext.rootItem.path,
+                    );
+
+                    const control: HarvestGraphControl = {
+                        rendering: renderingItem,
+                        datasource: datasourceItem,
                         placeholder: rendering["s:ph"],
                         uid: rendering.uid,
-                        link: undefined,
                         parameters: parseParameters(rendering["s:par"]),
                         p_before: rendering["p:before"],
                         p_after: rendering["p:after"],
                     };
+
                     deviceData.controls.push(control);
                 }
 
@@ -62,6 +71,32 @@ const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: str
 
     return layoutSectionField;
 };
+
+function createDatasourceItem(
+    datasource: string | undefined,
+    currentItemPath: string | undefined,
+): ItemGraphNodeData | undefined {
+    if (!datasource) {
+        return undefined;
+    }
+
+    const item = factoryItemGraphNodeData();
+
+    if (datasource.toLowerCase().startsWith("local:")) {
+        if (currentItemPath) {
+            item.path =
+                currentItemPath +
+                datasource.slice("local:".length);
+        }
+    } else if (datasource.startsWith("/")) {
+        item.path = datasource;
+    } else {
+        item.itemId = datasource;
+    }
+
+    return item;
+}
+
 
 function parseParameters(raw?: string): Record<string, string> {
     return Object.fromEntries(new URLSearchParams(raw ?? ""));

@@ -1,86 +1,154 @@
+// @source-path [fobles] src/content/toolbar/reference-graph/build-progress.ts
+
+import { createElement } from "react";
+import { createRoot, type Root } from "react-dom/client";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { isHarvestStep, type HarvestProgressStatus, type SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
-import type { HarvestStep } from "../../sitecore-harvester/sitecore-harvester.types";
-import type { ProgressStep } from "../../sitecore-harvester/sitecore-harvester.types";
+import {
+    isHarvestStep,
+    type HarvestProgressStatus,
+    type ProgressStep,
+    type SitecoreHarvestFiltersState,
+} from "../../sitecore-harvester/sitecore-harvester.types";
+import {
+    ReferenceGraphProgressDialog,
+    type ProgressItem,
+} from "./components/reference-graph-progress-dialog";
 
-export function initializeReferenceGraphProgressModal(doc: Document, steps: readonly ProgressStep[], filters: SitecoreHarvestFiltersState,): void {
-  const buildingMessage = doc.getElementById(REFERENCE_GRAPH.PROGRESS_MESSAGE_ID,);
-  if (!buildingMessage) return;
-  buildingMessage.replaceChildren(...steps.map((step) => {
-    const row = doc.createElement("div");
-    row.id = `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${step.stepKey}`;
-    const status =
-      isHarvestStep(step) && !filters[step.filterKey]
-        ? "skipped"
-        : "pending";
+let progressRoot: Root | undefined;
+let progressDialog: HTMLDialogElement | undefined;
+let progressSteps: ProgressItem[] = [];
+let progressCancelHandler: (() => void) | undefined;
 
-    row.textContent =
-      status === "skipped"
-        ? `○ ${step.label} - Skipped`
-        : `○ ${step.label}`;
-    return row;
-  }),);
+function renderProgressDialog(): void {
+    progressRoot?.render(
+        createElement(ReferenceGraphProgressDialog, {
+            steps: progressSteps,
+            onCancel: () => {
+                progressCancelHandler?.();
+            },
+        }),
+    );
 }
 
-type HarvestProgressStep =
-  Pick<HarvestStep, "stepKey" | "label">;
+function disposeProgressDialog(): void {
+    progressRoot?.unmount();
+    progressRoot = undefined;
+
+    progressDialog?.remove();
+    progressDialog = undefined;
+
+    progressSteps = [];
+    progressCancelHandler = undefined;
+}
+
+export function initializeReferenceGraphProgressModal(
+    _doc: Document,
+    steps: readonly ProgressStep[],
+    filters: SitecoreHarvestFiltersState,
+): void {
+    progressSteps = steps.map((step): ProgressItem => ({
+        ...step,
+        status:
+            isHarvestStep(step) && !filters[step.filterKey]
+                ? "skipped"
+                : "pending",
+    }));
+
+    renderProgressDialog();
+}
 
 export function handleHarvestProgress(
-  doc: Document,
-  step: HarvestProgressStep,
-  status: HarvestProgressStatus,
+    _doc: Document,
+    step: Pick<ProgressStep, "stepKey" | "label">,
+    status: HarvestProgressStatus,
 ): void {
-  if (status === "skipped") {
-    updateReferenceGraphProgressModalSkipped(doc, step);
-    return;
-  }
-  updateReferenceGraphProgressModal(doc, step);
+    const existingStepIndex = progressSteps.findIndex(
+        (progressStep) =>
+            progressStep.stepKey === step.stepKey,
+    );
+
+    if (existingStepIndex === -1) {
+        progressSteps = [
+            ...progressSteps,
+            {
+                ...step,
+                status,
+            },
+        ];
+    } else {
+        progressSteps = progressSteps.map(
+            (progressStep, index) =>
+                index === existingStepIndex
+                    ? {
+                          ...progressStep,
+                          label: step.label,
+                          status,
+                      }
+                    : progressStep,
+        );
+    }
+
+    renderProgressDialog();
 }
-export function updateReferenceGraphProgressModalSkipped(doc: Document, harvestStep: HarvestProgressStep,): void {
-  const row = doc.getElementById(`${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${harvestStep.stepKey}`,);
-  if (row) {
-    row.textContent = `○ ${harvestStep.label} - Skipped`;
-  }
+
+export function updateReferenceGraphProgressModalSkipped(
+    doc: Document,
+    step: Pick<ProgressStep, "stepKey" | "label">,
+): void {
+    handleHarvestProgress(doc, step, "skipped");
 }
 
 export function updateReferenceGraphProgressModal(
-  doc: Document,
-  buildStep: HarvestProgressStep,
+    doc: Document,
+    step: Pick<ProgressStep, "stepKey" | "label">,
 ): void {
-  const row = doc.getElementById(
-    `${REFERENCE_GRAPH.PROGRESS_MESSAGE_ID}-${buildStep.stepKey}`,
-  );
-
-  if (row) row.textContent = `✓ ${buildStep.label}`;
+    handleHarvestProgress(doc, step, "complete");
 }
 
-export function closeReferenceGraphProgressModal(doc: Document): void {
-  (doc.getElementById(REFERENCE_GRAPH.PROGRESS_DIALOG_ID) as HTMLDialogElement | undefined)?.close();
+export function closeReferenceGraphProgressModal(
+    _doc: Document,
+): void {
+    if (progressDialog?.open) {
+        progressDialog.close();
+    } else {
+        disposeProgressDialog();
+    }
 }
 
-export function openReferenceGraphProgressModal(doc: Document, onCancel: () => void): void {
-  closeReferenceGraphProgressModal(doc);
+export function openReferenceGraphProgressModal(
+    doc: Document,
+    onCancel: () => void,
+): void {
+    disposeProgressDialog();
 
-  const dialog = doc.createElement("dialog");
-  dialog.id = REFERENCE_GRAPH.PROGRESS_DIALOG_ID;
-  dialog.style.cssText =
-    "padding:24px 32px;border:none;border-radius:4px;text-align:center;font-family:sans-serif;";
+    const dialog = doc.createElement("dialog");
+    const reactHost = doc.createElement("div");
 
-  const buildingMessage = doc.createElement("p");
-  buildingMessage.id = REFERENCE_GRAPH.PROGRESS_MESSAGE_ID;
-  buildingMessage.textContent = REFERENCE_GRAPH.TEXT.BUILDING_REFERENCE_GRAPH;
-  buildingMessage.style.cssText = "margin:0 0 16px;";
+    dialog.id = REFERENCE_GRAPH.PROGRESS_DIALOG_ID;
+    dialog.className = "fobles-reference-graph-progress";
 
-  const cancelButton = doc.createElement("button");
-  cancelButton.type = "button";
-  cancelButton.textContent = "Cancel";
-  cancelButton.addEventListener("click", onCancel);
+    dialog.appendChild(reactHost);
+    doc.body.appendChild(dialog);
 
-  dialog.append(buildingMessage, cancelButton);
-  doc.body.appendChild(dialog);
-  dialog.addEventListener("close", () => dialog.remove());
-  dialog.addEventListener("click", (event) => {
-    if (event.target === dialog) onCancel();
-  });
-  dialog.showModal();
+    progressDialog = dialog;
+    progressRoot = createRoot(reactHost);
+    progressCancelHandler = onCancel;
+    progressSteps = [];
+
+    dialog.addEventListener(
+        "close",
+        () => {
+            disposeProgressDialog();
+        },
+        { once: true },
+    );
+
+    dialog.addEventListener("click", (event) => {
+        if (event.target === dialog) {
+            progressCancelHandler?.();
+        }
+    });
+
+    renderProgressDialog();
+    dialog.showModal();
 }

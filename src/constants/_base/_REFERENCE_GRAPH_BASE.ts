@@ -10,7 +10,7 @@ export const _REFERENCE_GRAPH_BASE = {
         DATASOURCE: "Datasource",
         VARIANT: "Variant",
         TEMPLATE: "Template",
-        LAYOUT: "Layout",
+        LAYOUTS: "Layouts",
         SECTION: "Section",
         PARENT: "Parent",
         CHILD: "Child",

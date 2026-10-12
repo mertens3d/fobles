@@ -31,66 +31,6 @@ import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
 // whichever one is currently in flight; a stale/already-settled controller is harmless to abort.
 export let referenceGraphAbortController: AbortController | undefined = undefined;
 
-function findFieldInput(doc: Document, labelPrefix: string): HTMLInputElement | undefined {
-  const label = Array.from(
-    doc.querySelectorAll<HTMLElement>(CONST.SITECORE.SELECTORS.FIELD_LABEL),
-  ).find((element) =>
-    element.textContent?.trim().toLowerCase().startsWith(labelPrefix.toLowerCase()),
-  );
-  return (
-    label
-      ?.closest(CONST.SITECORE.SELECTORS.FIELD_CELL)
-      ?.querySelector<HTMLInputElement>(CONST.SITECORE.SELECTORS.CONTENT_CONTROL) ?? undefined
-  );
-}
-
-async function resolveQuickInfoFromItemId(
-  renderingId: string,
-  signal: AbortSignal,
-): Promise<QuickInfo | undefined> {
-  try {
-    const response = await fetch(buildFoblesUrl(renderingId), { credentials: "same-origin", signal });
-    if (!response.ok) return undefined;
-    const fetchedDoc = new DOMParser().parseFromString(await response.text(), "text/html");
-
-    const quickInfo = getQuickInfo(fetchedDoc);
-    return quickInfo;
-  } catch (error) {
-    extensionLog.warn("Reference graph: failed to resolve rendering details", { renderingId, error });
-    return undefined;
-  }
-}
-
-// "local:" datasource paths are relative to the item the rendering is placed on - everything
-// else (a GUID, or an already-absolute /sitecore/... path) can go straight to buildFoblesUrl.
-function resolveDatasourceLink(datasource: string | undefined, currentItemPath: string | undefined): string | undefined {
-  if (!datasource) return undefined;
-  if (!datasource.toLowerCase().startsWith("local:")) return buildFoblesUrl(datasource);
-  if (!currentItemPath) return undefined;
-  return buildFoblesUrl(`${currentItemPath}${datasource.slice("local:".length)}`);
-}
-
-// Quick Info's Template row carries its guid in a differently-classed readonly input
-// (scEditorHeaderQuickInfoInputID) than every other row (scEditorHeaderQuickInfoInput) -
-// getQuickInfoValue only reads the latter, so the template's guid needs its own lookup.
-function getTemplateGuid(doc: Document): string | undefined {
-  return doc.querySelector<HTMLInputElement>("input.scEditorHeaderQuickInfoInputID[readonly]")?.value.trim() || undefined;
-}
-
-function buildGalleryLinksUrl(itemId: string): string {
-  const origin = `${window.location.protocol}//${window.location.hostname}`;
-  const params = new URLSearchParams({
-    [CONST.SITECORE.SEARCH_PARAMS.XML_CONTROL]: "Gallery.Links",
-    [CONST.SITECORE.SEARCH_PARAMS.ITEM_ID]: formatFoId(itemId),
-    la: "en",
-    vs: "1",
-    db: "master",
-    sc_content: "master",
-    ShowEditor: "1",
-    "Ribbon.RenderTabs": "true",
-  });
-  return `${origin}${CONST.SITECORE.RELATIVE_PATHS_ENCODED.SHELL_DEFAULT}?${params.toString()}`;
-}
 
 function cancelReferenceGraph(doc: Document): void {
   referenceGraphAbortController?.abort();

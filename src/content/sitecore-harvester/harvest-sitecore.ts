@@ -10,6 +10,7 @@ import { HARVEST_STEPS } from "./harvest-steps";
 import { factoryItemGraphNodeData, type HarvestProgressCallback, type ItemGraphNodeData, type SitecoreHarvestResult } from "./sitecore-harvester.types";
 import type { RootItem, SitecoreHarvestFiltersState } from "./sitecore-harvester.types";
 import type { HarvestContext } from "./sitecore-harvester.types";
+import { enrichSitecoreHarvestResult } from "./enrichment/result-enricher";
 
 // Finds itemId's own tree node, expanding it first (and restoring it back to collapsed
 // afterward) if needed, then returns its direct children. Only the live document can actually
@@ -38,9 +39,10 @@ export async function collectTreeChildren(doc: Document, itemId: string): Promis
 
   return children.map(
     (child): ItemGraphNodeData => ({
+      type: "scItem",
       name: child.name,
       itemId: child.itemId,
-      link: buildFoblesUrl(child.itemId),
+      link: undefined,
       path: undefined,
       template: undefined,
     })
@@ -115,6 +117,32 @@ export async function harvestSitecore(
     onProgress?.(harvestStep, "complete");
     await testingDelay(0);
   }
+
+  onProgress?.(
+    {
+      stepKey: "enrichment",
+      label: "Enriching Items",
+    },
+    "active",
+  );
+
+  await enrichSitecoreHarvestResult(
+    result,
+    signal,
+  );
+
+  extensionLog.debug(
+    "ENRICHED SITECORE HARVEST RESULT",
+    result,
+  );
+
+  onProgress?.(
+    {
+      stepKey: "enrichment",
+      label: "Enriching Items",
+    },
+    "complete",
+  );
 
   return result;
 }

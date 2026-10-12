@@ -1,20 +1,33 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/needs-home.ts
+// @source-path [fobles] src/content/toolbar/reference-graph/graph-elements.ts
 
 import type cytoscape from "cytoscape";
-import { buildFoblesUrl } from "../../features/augmentor/helper";
-import { buildTooltip } from "./graph-tooltip";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { appendCompoundChildren } from "./cytoscape/graph-node-helpers";
-import { appendSatellites } from "./cytoscape/graph-node-helpers";
-import { lastPathSegment } from "./cytoscape/graph-node-helpers";
-import { buildLabel } from "./cytoscape/graph-node-helpers";
 import { CONST } from "../../../constants/const";
-import { kindClass, slugify } from "./graph-helpers";
-import type { SitecoreHarvestField, SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
-import type { HarvestFieldLink } from "../../sitecore-harvester/sitecore-harvester.types";
+import type {
+    HarvestFieldLink,
+    SitecoreHarvestField,
+    SitecoreHarvestResult,
+} from "../../sitecore-harvester/sitecore-harvester.types";
+import {
+    appendCompoundChildren,
+    appendSatellites,
+    buildLabel,
+    createItemSatelliteDescriptor,
+} from "./cytoscape/graph-node-helpers";
 import { buildLayoutNodes } from "./components/node-builders/layout-nodes-builder";
+import { kindClass, slugify } from "./graph-helpers";
+import { buildTooltip } from "./graph-tooltip";
+import type { SatelliteDescriptor } from "./reference-graph.types";
 
-export function buildElements(graphReferenceResult: SitecoreHarvestResult): cytoscape.ElementDefinition[] {
+export function buildElements(
+    graphReferenceResult: SitecoreHarvestResult,
+): cytoscape.ElementDefinition[] {
+    const rootDescriptor = createItemSatelliteDescriptor(
+        graphReferenceResult.rootItem,
+        REFERENCE_GRAPH.NODE_KIND.ITEM,
+        "",
+    );
+
     const cytoNodes: cytoscape.ElementDefinition[] = [
         {
             data: {
@@ -22,198 +35,348 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
                 label: buildLabel(
                     REFERENCE_GRAPH.NODE_KIND.ITEM,
                     graphReferenceResult.rootItem.name ??
-                    graphReferenceResult.rootItem.itemId ??
-                    "Unknown item",
+                        graphReferenceResult.rootItem.itemId ??
+                        "Unknown item",
                 ),
                 link: graphReferenceResult.rootItem.link,
-                tooltip: buildTooltip(graphReferenceResult.rootItem.name, graphReferenceResult.rootItem.itemId, graphReferenceResult.rootItem.path),
+                tooltip: buildTooltip(rootDescriptor),
             },
-            classes: kindClass(REFERENCE_GRAPH.NODE_KIND.ITEM),
+            classes: kindClass(
+                REFERENCE_GRAPH.NODE_KIND.ITEM,
+            ),
         },
     ];
+
     const cytoEdges: cytoscape.ElementDefinition[] = [];
 
-    // The item itself is the only guaranteed node - everything else (device/layout, controls,
-    // template, parent, children, sections) only gets added when there's actual data for it.
-    buildLayoutNodes(graphReferenceResult, cytoNodes, cytoEdges);
-    buildTemplateNode(graphReferenceResult, cytoNodes, cytoEdges);
-    buildParentNode(graphReferenceResult, cytoNodes, cytoEdges);
-    buildChildNodes(graphReferenceResult, cytoNodes, cytoEdges);
-    buildReferrerNode(graphReferenceResult, cytoNodes, cytoEdges);
-    buildSectionsNode(graphReferenceResult, cytoNodes, cytoEdges);
-    return [...cytoNodes, ...cytoEdges];
+    buildLayoutNodes(
+        graphReferenceResult,
+        cytoNodes,
+        cytoEdges,
+    );
+
+    buildTemplateNode(
+        graphReferenceResult,
+        cytoNodes,
+        cytoEdges,
+    );
+
+    buildParentNode(
+        graphReferenceResult,
+        cytoNodes,
+        cytoEdges,
+    );
+
+    buildChildNodes(
+        graphReferenceResult,
+        cytoNodes,
+        cytoEdges,
+    );
+
+    buildReferrerNode(
+        graphReferenceResult,
+        cytoNodes,
+        cytoEdges,
+    );
+
+    buildSectionsNode(
+        graphReferenceResult,
+        cytoNodes,
+        cytoEdges,
+    );
+
+    return [
+        ...cytoNodes,
+        ...cytoEdges,
+    ];
 }
 
-function buildParentNode(graphReferenceResult: SitecoreHarvestResult, cytoNodes: cytoscape.ElementDefinition[], cytoEdges: cytoscape.ElementDefinition[]) {
-    appendSatellites(cytoNodes, cytoEdges, graphReferenceResult.rootItem.itemId, [
-        {
-            kind: REFERENCE_GRAPH.NODE_KIND.PARENT,
-            value: graphReferenceResult.parent?.name,
-            link: graphReferenceResult.parent?.link,
-            path: graphReferenceResult.parent?.path,
-            filterClass: REFERENCE_GRAPH.FILTER_CLASS.parent,
-        },
-    ]);
+function buildParentNode(
+    graphReferenceResult: SitecoreHarvestResult,
+    cytoNodes: cytoscape.ElementDefinition[],
+    cytoEdges: cytoscape.ElementDefinition[],
+): void {
+    if (!graphReferenceResult.parent) {
+        return;
+    }
+
+    appendSatellites(
+        cytoNodes,
+        cytoEdges,
+        graphReferenceResult.rootItem.itemId,
+        [
+            createItemSatelliteDescriptor(
+                graphReferenceResult.parent,
+                REFERENCE_GRAPH.NODE_KIND.PARENT,
+                REFERENCE_GRAPH.FILTER_CLASS.parent,
+            ),
+        ],
+    );
 }
 
-function buildTemplateNode(graphReferenceResult: SitecoreHarvestResult, cytoNodes: cytoscape.ElementDefinition[], cytoEdges: cytoscape.ElementDefinition[]) {
-    appendSatellites(cytoNodes, cytoEdges, graphReferenceResult.rootItem.itemId, [
-        {
-            kind: REFERENCE_GRAPH.NODE_KIND.TEMPLATE,
-            value: lastPathSegment(graphReferenceResult.rootItem.template?.path ?? undefined),
-            link: undefined,
-            path: graphReferenceResult.rootItem.template?.path ?? undefined,
-            filterClass: REFERENCE_GRAPH.FILTER_CLASS.template,
-        }
-    ]);
+function buildTemplateNode(
+    graphReferenceResult: SitecoreHarvestResult,
+    cytoNodes: cytoscape.ElementDefinition[],
+    cytoEdges: cytoscape.ElementDefinition[],
+): void {
+    const template =
+        graphReferenceResult.rootItem.template;
+
+    if (!template) {
+        return;
+    }
+
+    appendSatellites(
+        cytoNodes,
+        cytoEdges,
+        graphReferenceResult.rootItem.itemId,
+        [
+            createItemSatelliteDescriptor(
+                template,
+                REFERENCE_GRAPH.NODE_KIND.TEMPLATE,
+                REFERENCE_GRAPH.FILTER_CLASS.template,
+            ),
+        ],
+    );
 }
 
 function buildSectionsNode(
     graphReferenceResult: SitecoreHarvestResult,
     cytoNodes: cytoscape.ElementDefinition[],
     cytoEdges: cytoscape.ElementDefinition[],
-) {
-    if (graphReferenceResult.sections) {
-        const sectionsId = `${graphReferenceResult.rootItem.itemId}-sections`;
-
-        cytoNodes.push({
-            data: {
-                id: sectionsId,
-                label: "Sections",
-                link: undefined,
-                tooltip: buildTooltip("Sections", undefined, undefined),
-            },
-            classes: `${kindClass("structural")} ${REFERENCE_GRAPH.FILTER_CLASS.sections}`,
-        });
-
-        cytoEdges.push({
-            data: {
-                id: `edge-${sectionsId}`,
-                source: graphReferenceResult.rootItem.itemId,
-                target: sectionsId,
-            },
-        });
-
-        const sectionsWithValues = graphReferenceResult.sections?.filter(
-            (section) => section.fields.some((field) => Boolean(field.value)),
+): void {
+    const sectionsWithValues =
+        graphReferenceResult.sections?.filter(
+            (section) =>
+                section.fields.some((field) =>
+                    Boolean(field.value),
+                ),
         ) ?? [];
 
-        sectionsWithValues.forEach((section) => {
-            const sectionId = `${graphReferenceResult.rootItem.itemId}-section-${slugify(section.name)}`;
+    if (sectionsWithValues.length === 0) {
+        return;
+    }
 
-            cytoNodes.push({
-                data: {
-                    id: sectionId,
-                    parent: sectionsId,
-                    label: buildLabel(
-                        REFERENCE_GRAPH.NODE_KIND.SECTION,
-                        section.name,
-                    ),
-                    link: undefined,
-                    tooltip: buildTooltip(
-                        section.name,
-                        undefined,
-                        undefined,
-                    ),
-                },
-                classes: `${kindClass(REFERENCE_GRAPH.NODE_KIND.SECTION)} ${REFERENCE_GRAPH.FILTER_CLASS.sections}`,
-            });
-            console.log("SECTION FIELDS", section.name, section.fields);
-            const fieldIds = appendCompoundChildren(
-                cytoNodes,
-                sectionId,
-                section.fields.map((field: SitecoreHarvestField) => ({
+    const sectionsId =
+        `${graphReferenceResult.rootItem.itemId}-sections`;
+
+    const sectionsDescriptor: SatelliteDescriptor = {
+        kind: "structural",
+        value: "Sections",
+    };
+
+    cytoNodes.push({
+        data: {
+            id: sectionsId,
+            label: sectionsDescriptor.value,
+            link: undefined,
+            tooltip: buildTooltip(
+                sectionsDescriptor,
+            ),
+        },
+        classes:
+            `${kindClass("structural")} ` +
+            REFERENCE_GRAPH.FILTER_CLASS.sections,
+    });
+
+    cytoEdges.push({
+        data: {
+            id: `edge-${sectionsId}`,
+            source:
+                graphReferenceResult.rootItem.itemId,
+            target: sectionsId,
+        },
+    });
+
+    sectionsWithValues.forEach((section) => {
+        const sectionId =
+            `${graphReferenceResult.rootItem.itemId}` +
+            `-section-${slugify(section.name)}`;
+
+        const sectionDescriptor: SatelliteDescriptor = {
+            kind: REFERENCE_GRAPH.NODE_KIND.SECTION,
+            value: section.name,
+        };
+
+        cytoNodes.push({
+            data: {
+                id: sectionId,
+                parent: sectionsId,
+                label: buildLabel(
+                    sectionDescriptor.kind,
+                    sectionDescriptor.value ?? "",
+                ),
+                link: undefined,
+                tooltip: buildTooltip(
+                    sectionDescriptor,
+                ),
+            },
+            classes:
+                `${kindClass(REFERENCE_GRAPH.NODE_KIND.SECTION)} ` +
+                REFERENCE_GRAPH.FILTER_CLASS.sections,
+        });
+
+        const fieldIds = appendCompoundChildren(
+            cytoNodes,
+            sectionId,
+            section.fields.map(
+                (
+                    field: SitecoreHarvestField,
+                ): SatelliteDescriptor => ({
                     kind: field.label,
                     value: field.value,
-                    category: REFERENCE_GRAPH.NODE_KIND.FIELD,
-                    filterClass: REFERENCE_GRAPH.FILTER_CLASS.sections,
-                })),
-            );
+                    category:
+                        REFERENCE_GRAPH.NODE_KIND.FIELD,
+                    filterClass:
+                        REFERENCE_GRAPH.FILTER_CLASS.sections,
+                }),
+            ),
+        );
 
-            section.fields.forEach((field, index) => {
-                const fieldId = fieldIds[index];
-                if (!fieldId || !field.links) return;
+        section.fields.forEach((field, index) => {
+            const fieldId = fieldIds[index];
 
-                appendSatellites(
-                    cytoNodes,
-                    cytoEdges,
-                    fieldId,
-                    field.links.map((link: HarvestFieldLink) => ({
-                        kind: REFERENCE_GRAPH.NODE_KIND.FIELD,
-                        value: link.label,
-                        link: buildFoblesUrl(link.itemId),
-                        path: link.itemId,
-                        filterClass: REFERENCE_GRAPH.FILTER_CLASS.sections,
-                    })),
-                );
-            });
-        });
-    }
-}
-
-function buildReferrerNode(graphReferenceResult: SitecoreHarvestResult, cytoNodes: cytoscape.ElementDefinition[], cytoEdges: cytoscape.ElementDefinition[]) {
-    // Same treatment for referrers - one "Referrers" box instead of each one spraying its own
-    // edge in. The group's edge keeps the original reverse direction (referrers -> item).
-    if (graphReferenceResult.referrers?.length && graphReferenceResult.referrers.length > 0) {
-        const referrersId = `${graphReferenceResult.rootItem.itemId}-referrers`;
-        cytoNodes.push({
-            data: {
-                id: referrersId,
-                label: "Referrers",
-                link: undefined,
-                tooltip: buildTooltip(`${graphReferenceResult.referrers.length} item(s)`, undefined, undefined),
-            },
-            classes: `${kindClass("structural")} ${REFERENCE_GRAPH.FILTER_CLASS.referrers}`,
-        });
-        cytoEdges.push({
-            data: {
-                id: CONST.FOBLES.REFERENCE_GRAPH.EDGE_IDS.REFERRERS,
-                source: referrersId,
-                target: graphReferenceResult.rootItem.itemId
+            if (
+                !fieldId ||
+                !field.links ||
+                field.links.length === 0
+            ) {
+                return;
             }
-        });
 
-        appendCompoundChildren(
-            cytoNodes,
-            referrersId,
-            graphReferenceResult.referrers.map((referrer) => ({
-                kind: REFERENCE_GRAPH.NODE_KIND.REFERRER,
-                value: referrer.name,
-                link: referrer.link,
-                path: referrer.path,
-                filterClass: REFERENCE_GRAPH.FILTER_CLASS.referrers,
-                plainLabel: true,
-            }))
-        );
-    }
+            appendSatellites(
+                cytoNodes,
+                cytoEdges,
+                fieldId,
+                field.links.map(
+                    (
+                        link: HarvestFieldLink,
+                    ): SatelliteDescriptor => ({
+                        ...createItemSatelliteDescriptor(
+                            link.valueItem,
+                            REFERENCE_GRAPH.NODE_KIND.FIELD,
+                            REFERENCE_GRAPH.FILTER_CLASS.sections,
+                        ),
+                        value: link.label,
+                    }),
+                ),
+            );
+        });
+    });
 }
 
-function buildChildNodes(graphReferenceResult: SitecoreHarvestResult, cytoNodes: cytoscape.ElementDefinition[], cytoEdges: cytoscape.ElementDefinition[]) {
-    // One compound "Children" box instead of each child spraying its own edge off the item -
-    // same nesting cytoscape feature Section -> Fields already uses below.
-    if (graphReferenceResult.childItems?.length && graphReferenceResult.childItems.length > 0) {
-        const childrenId = `${graphReferenceResult.rootItem.itemId}-children`;
-        cytoNodes.push({
-            data: {
-                id: childrenId,
-                label: "Children",
-                link: undefined,
-                tooltip: buildTooltip(`${graphReferenceResult.childItems.length} item(s)`, undefined, undefined),
-            },
-            classes: `${kindClass("structural")} ${REFERENCE_GRAPH.FILTER_CLASS.children}`,
-        });
-        cytoEdges.push({ data: { id: CONST.FOBLES.REFERENCE_GRAPH.EDGE_IDS.CHILDREN, source: graphReferenceResult.rootItem.itemId, target: childrenId } });
+function buildReferrerNode(
+    graphReferenceResult: SitecoreHarvestResult,
+    cytoNodes: cytoscape.ElementDefinition[],
+    cytoEdges: cytoscape.ElementDefinition[],
+): void {
+    const referrers =
+        graphReferenceResult.referrers ?? [];
 
-        appendCompoundChildren(
-            cytoNodes,
-            childrenId,
-            graphReferenceResult.childItems.map((child) => ({
-                kind: REFERENCE_GRAPH.NODE_KIND.CHILD,
-                value: child.name,
-                link: child.link,
-                filterClass: REFERENCE_GRAPH.FILTER_CLASS.children,
-                plainLabel: true,
-            }))
-        );
+    if (referrers.length === 0) {
+        return;
     }
+
+    const referrersId =
+        `${graphReferenceResult.rootItem.itemId}-referrers`;
+
+    const referrersDescriptor: SatelliteDescriptor = {
+        kind: "structural",
+        value: `${referrers.length} item(s)`,
+    };
+
+    cytoNodes.push({
+        data: {
+            id: referrersId,
+            label: "Referrers",
+            link: undefined,
+            tooltip: buildTooltip(
+                referrersDescriptor,
+            ),
+        },
+        classes:
+            `${kindClass("structural")} ` +
+            REFERENCE_GRAPH.FILTER_CLASS.referrers,
+    });
+
+    cytoEdges.push({
+        data: {
+            id:
+                CONST.FOBLES.REFERENCE_GRAPH
+                    .EDGE_IDS.REFERRERS,
+            source: referrersId,
+            target:
+                graphReferenceResult.rootItem.itemId,
+        },
+    });
+
+    appendCompoundChildren(
+        cytoNodes,
+        referrersId,
+        referrers.map((referrer) =>
+            createItemSatelliteDescriptor(
+                referrer,
+                REFERENCE_GRAPH.NODE_KIND.REFERRER,
+                REFERENCE_GRAPH.FILTER_CLASS.referrers,
+            ),
+        ),
+    );
+}
+
+function buildChildNodes(
+    graphReferenceResult: SitecoreHarvestResult,
+    cytoNodes: cytoscape.ElementDefinition[],
+    cytoEdges: cytoscape.ElementDefinition[],
+): void {
+    const childItems =
+        graphReferenceResult.childItems ?? [];
+
+    if (childItems.length === 0) {
+        return;
+    }
+
+    const childrenId =
+        `${graphReferenceResult.rootItem.itemId}-children`;
+
+    const childrenDescriptor: SatelliteDescriptor = {
+        kind: "structural",
+        value: `${childItems.length} item(s)`,
+    };
+
+    cytoNodes.push({
+        data: {
+            id: childrenId,
+            label: "Children",
+            link: undefined,
+            tooltip: buildTooltip(
+                childrenDescriptor,
+            ),
+        },
+        classes:
+            `${kindClass("structural")} ` +
+            REFERENCE_GRAPH.FILTER_CLASS.children,
+    });
+
+    cytoEdges.push({
+        data: {
+            id:
+                CONST.FOBLES.REFERENCE_GRAPH
+                    .EDGE_IDS.CHILDREN,
+            source:
+                graphReferenceResult.rootItem.itemId,
+            target: childrenId,
+        },
+    });
+
+    appendCompoundChildren(
+        cytoNodes,
+        childrenId,
+        childItems.map((child) =>
+            createItemSatelliteDescriptor(
+                child,
+                REFERENCE_GRAPH.NODE_KIND.CHILD,
+                REFERENCE_GRAPH.FILTER_CLASS.children,
+            ),
+        ),
+    );
 }

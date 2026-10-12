@@ -1,11 +1,7 @@
 import type cytoscape from "cytoscape";
-import { REFERENCE_GRAPH } from "../../../../../constants/graph.const";
-import type { LayoutSectionField, SitecoreHarvestResult } from "../../../../sitecore-harvester/sitecore-harvester.types";
-import { kindClass } from "../../graph-helpers";
-import { buildTooltip } from "../../graph-tooltip";
-import { buildLabel } from "../../cytoscape/graph-node-helpers";
+import type {  SitecoreHarvestResult } from "../../../../sitecore-harvester/sitecore-harvester.types";
 import { CONST } from "../../../../../constants/const";
-import { appendCompoundGraphNode, createLayoutTree } from "./new-functions";
+import { appendCompoundGraphNode, createLayoutTree } from "./layout-tree-builder";
 
 export function buildLayoutNodes(
     graphReferenceResult: SitecoreHarvestResult,
@@ -28,51 +24,4 @@ export function buildLayoutNodes(
             },
         });
     }
-}
-
-function buildLayoutGroupNodes(layout: LayoutSectionField, cytoNodes: cytoscape.ElementDefinition[]) {
-    const layoutId = REFERENCE_GRAPH.NODE_ID.BASE_LAYOUT_NODE_ID + layout.name?.replace(/\s+/g, "-").toLowerCase();
-    cytoNodes.push(
-        {
-            data: {
-                id: layoutId,
-                parent: REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
-                label: layout.name ?? "",
-                link: undefined,
-                tooltip: buildTooltip(`${layout.name ?? ""} (Renderings field)`, undefined, undefined),
-            },
-            classes: `${kindClass("structural")} ${REFERENCE_GRAPH.FILTER_CLASS.layouts}`,
-        }
-
-    );
-    buildDeviceNodes(layout, cytoNodes);
-}
-
-function buildDeviceNodes(layout: LayoutSectionField, cytoNodes: cytoscape.ElementDefinition[]) {
-    for (const device of layout.devices ?? []) {
-        cytoNodes.push({
-            data: {
-                id: REFERENCE_GRAPH.NODE_ID.BASE_LAYOUT_NODE_ID + layout.name?.replace(/\s+/g, "-").toLowerCase() + "-device-" + device.layoutView?.name?.replace(/\s+/g, "-").toLowerCase(),
-                parent: REFERENCE_GRAPH.NODE_ID.BASE_LAYOUT_NODE_ID + layout.name?.replace(/\s+/g, "-").toLowerCase(),
-                label: buildLabel(REFERENCE_GRAPH.NODE_KIND.DEVICE, device.layoutView?.name ?? ""),
-                link: undefined,
-                tooltip: buildTooltip(device.layoutView?.name ?? "Unknown device", undefined, undefined),
-            },
-            classes: `${kindClass(REFERENCE_GRAPH.NODE_KIND.DEVICE)} ${REFERENCE_GRAPH.FILTER_CLASS.layouts}`,
-        });
-    }
-}
-
-function BuildMainLayoutNode(cytoNodes: cytoscape.ElementDefinition[]) {
-    cytoNodes.push(
-        {
-            data: {
-                id: REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
-                label: "Layout",
-                link: undefined,
-                tooltip: buildTooltip("Layout (device/renderings/datasources)", undefined, undefined),
-            },
-            classes: `${kindClass("structural")} ${REFERENCE_GRAPH.FILTER_CLASS.layouts}`,
-        }
-    );
 }

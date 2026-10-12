@@ -7,6 +7,7 @@ import { lastPathSegment } from "../../cytoscape/graph-node-helpers";
 import { buildLabel } from "../../cytoscape/graph-node-helpers";
 import { buildFoblesUrl } from "../../../../features/augmentor/helper";
 import { buildTooltip, buildTooltipContent } from "../../graph-tooltip";
+import type { SatelliteDescriptor } from "../../reference-graph.types";
 
 function createScopedId(...parts: Array<string | undefined>): string {
     return parts
@@ -26,12 +27,20 @@ type CompoundGraphNode = {
     tooltip?: HTMLElement;
     children: CompoundGraphNode[];
 };
-
 function createDeviceTree(
     layoutId: string,
     device: LayoutDevice,
     deviceIndex: number,
 ): CompoundGraphNode {
+    const item = device.layoutView;
+
+    const descriptor: SatelliteDescriptor = {
+        kind: REFERENCE_GRAPH.NODE_KIND.DEVICE,
+        item,
+        value: item?.name ?? "Unknown device",
+        filterClass: REFERENCE_GRAPH.FILTER_CLASS.layouts,
+    };
+
     const deviceNodeId = createScopedId(
         layoutId,
         "device",
@@ -41,22 +50,18 @@ function createDeviceTree(
     return {
         id: deviceNodeId,
         label: buildLabel(
-            REFERENCE_GRAPH.NODE_KIND.DEVICE,
-            device.layoutView?.name ?? device.deviceId ?? "Unknown",
+            descriptor.kind,
+            descriptor.item?.name ??
+                device.deviceId ??
+                "Unknown",
         ),
-        kind: REFERENCE_GRAPH.NODE_KIND.DEVICE,
-        itemId: device.deviceId,
-        path: undefined,
-        link: device.deviceId
-            ? buildFoblesUrl(device.deviceId)
-            : undefined,
-        drillDown: Boolean(device.deviceId),
+        kind: descriptor.kind,
+        itemId: descriptor.item?.itemId,
+        path: descriptor.item?.path,
+        link: descriptor.item?.link,
+        drillDown: Boolean(descriptor.item?.link),
         tooltip: buildTooltipContent(
-            buildTooltip(
-                device.layoutView?.name ?? "Unknown device",
-                device.deviceId,
-                undefined,
-            ),
+            buildTooltip(descriptor),
         ),
         children: createPlaceholderTrees(
             deviceNodeId,
@@ -70,36 +75,41 @@ function createRenderingTree(
     control: HarvestGraphControl,
     controlIndex: number,
 ): CompoundGraphNode {
+    const rendering = control.rendering;
+
     const renderingNodeId = createScopedId(
         deviceNodeId,
         "rendering",
         control.uid ??
-            control.renderingId ??
+            rendering.itemId ??
             String(controlIndex),
     );
 
     const children: CompoundGraphNode[] = [];
 
     if (control.datasource) {
+        const datasourceDescriptor: SatelliteDescriptor = {
+            kind: REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
+            item: control.datasource,
+        };
+
         children.push({
             id: createScopedId(
                 renderingNodeId,
                 "datasource",
             ),
             label:
-                lastPathSegment(control.datasource) ??
-                control.datasource,
+                control.datasource.name ??
+                lastPathSegment(control.datasource.path) ??
+                control.datasource.itemId ??
+                "Unknown datasource",
             kind: REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
-            itemId: undefined,
-            path: control.datasource,
-            link: control.datasourceLink,
-            drillDown: Boolean(control.datasourceLink),
+            itemId: control.datasource.itemId,
+            path: control.datasource.path,
+            link: control.datasource.link,
+            drillDown: Boolean(control.datasource.link),
             tooltip: buildTooltipContent(
-                buildTooltip(
-                    lastPathSegment(control.datasource),
-                    undefined,
-                    control.datasource,
-                ),
+                buildTooltip(datasourceDescriptor),
             ),
             children: [],
         });
@@ -116,33 +126,38 @@ function createRenderingTree(
         );
     }
 
+    const renderingDescriptor: SatelliteDescriptor = {
+        kind: REFERENCE_GRAPH.NODE_KIND.CONTROL,
+        item: rendering,
+        placeholder: control.placeholder,
+    };
+
     return {
         id: renderingNodeId,
         label:
-            control.name ??
-            control.renderingId ??
+            rendering.name ??
+            rendering.itemId ??
             "Unknown rendering",
         kind: REFERENCE_GRAPH.NODE_KIND.CONTROL,
-        itemId: control.renderingId,
-        path: control.path,
-        link: control.link,
-        drillDown: Boolean(control.renderingId),
+        itemId: rendering.itemId,
+        path: rendering.path,
+        link: rendering.link,
+        drillDown: Boolean(rendering.link),
         tooltip: buildTooltipContent(
-            buildTooltip(
-                control.name,
-                control.renderingId,
-                control.path,
-                control.placeholder,
-            ),
+            buildTooltip(renderingDescriptor),
         ),
         children,
     };
 }
-
 function createRenderingParametersTree(
     renderingNodeId: string,
     parameters: Array<[string, string]>,
 ): CompoundGraphNode {
+    const parametersDescriptor: SatelliteDescriptor = {
+        kind: "structural",
+        value: "Rendering Parameters",
+    };
+
     return {
         id: createScopedId(
             renderingNodeId,
@@ -151,29 +166,29 @@ function createRenderingParametersTree(
         label: "Rendering Parameters",
         kind: "structural",
         tooltip: buildTooltipContent(
-            buildTooltip(
-                "Rendering Parameters",
-                undefined,
-                undefined,
-            ),
+            buildTooltip(parametersDescriptor),
         ),
-        children: parameters.map(([name, value]) => ({
-            id: createScopedId(
-                renderingNodeId,
-                "parameter",
-                name,
-            ),
-            label: value ? `${name}: ${value}` : name,
-            kind: "structural",
-            tooltip: buildTooltipContent(
-                buildTooltip(
+        children: parameters.map(([name, value]) => {
+            const parameterDescriptor: SatelliteDescriptor = {
+                kind: "structural",
+                value: name,
+                path: value || undefined,
+            };
+
+            return {
+                id: createScopedId(
+                    renderingNodeId,
+                    "parameter",
                     name,
-                    undefined,
-                    value || undefined,
                 ),
-            ),
-            children: [],
-        })),
+                label: value ? `${name}: ${value}` : name,
+                kind: "structural",
+                tooltip: buildTooltipContent(
+                    buildTooltip(parameterDescriptor),
+                ),
+                children: [],
+            };
+        }),
     };
 }
 
@@ -208,23 +223,23 @@ export function appendCompoundGraphNode(
 export function createLayoutTree(
     graphReferenceResult: SitecoreHarvestResult,
 ): CompoundGraphNode {
+    const descriptor: SatelliteDescriptor = {
+        kind: "structural",
+        value: "Layouts",
+    };
+
     return {
         id: REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
-        label: "Layout",
-        kind: "structural",
+        label: descriptor.value ?? "",
+        kind: descriptor.kind,
         tooltip: buildTooltipContent(
-            buildTooltip(
-                "Layout",
-                undefined,
-                undefined,
-            ),
+            buildTooltip(descriptor),
         ),
         children: (graphReferenceResult.layoutSectionFields ?? []).map(
             createLayoutSectionTree,
         ),
     };
 }
-
 function createLayoutSectionTree(
     layout: LayoutSectionField,
 ): CompoundGraphNode {
@@ -233,27 +248,28 @@ function createLayoutSectionTree(
         layout.name,
     );
 
+    const descriptor: SatelliteDescriptor = {
+        kind: "structural",
+        value: layout.name ?? "",
+    };
+
     return {
         id: layoutId,
-        label: layout.name ?? "",
-        kind: "structural",
+        label: descriptor.value ?? "",
+        kind: descriptor.kind,
         tooltip: buildTooltipContent(
-            buildTooltip(
-                layout.name,
-                undefined,
-                undefined,
-            ),
+            buildTooltip(descriptor),
         ),
-        children: (layout.devices ?? []).map((device, deviceIndex) =>
-            createDeviceTree(
-                layoutId,
-                device,
-                deviceIndex,
-            ),
+        children: (layout.devices ?? []).map(
+            (device, deviceIndex) =>
+                createDeviceTree(
+                    layoutId,
+                    device,
+                    deviceIndex,
+                ),
         ),
     };
 }
-
 function createPlaceholderTrees(
     deviceNodeId: string,
     controls: HarvestGraphControl[],
@@ -285,6 +301,13 @@ function createPlaceholderTrees(
             let placeholder = placeholders.get(currentPath);
 
             if (!placeholder) {
+                const descriptor: SatelliteDescriptor = {
+                    kind: "structural",
+                    value: segment,
+                    path: currentPath,
+                    placeholder: currentPath,
+                };
+
                 placeholder = {
                     id: createScopedId(
                         deviceNodeId,
@@ -294,11 +317,7 @@ function createPlaceholderTrees(
                     label: segment,
                     kind: "structural",
                     tooltip: buildTooltipContent(
-                        buildTooltip(
-                            segment,
-                            undefined,
-                            currentPath,
-                        ),
+                        buildTooltip(descriptor),
                     ),
                     children: [],
                 };
@@ -321,22 +340,3 @@ function createPlaceholderTrees(
 
     return roots;
 }
-
-/*
-Original equivalent responsibilities:
-
-BuildMainLayoutNode(cytoNodes);
-
-for (const layout of graphReferenceResult.layoutSectionFields) {
-    buildLayoutGroupNodes(layout, cytoNodes);
-}
-
-function buildLayoutGroupNodes(...) {
-    ...
-    buildDeviceNodes(layout, cytoNodes);
-}
-
-function ensurePlaceholderGroup(...) {
-    ...
-}
-*/

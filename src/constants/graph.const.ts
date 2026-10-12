@@ -44,7 +44,7 @@ export const REFERENCE_GRAPH = {
         [_REFERENCE_GRAPH_BASE.NODE_KIND.DATASOURCE]: "#c9820f",
         [_REFERENCE_GRAPH_BASE.NODE_KIND.VARIANT]: "#8a3fd6",
         [_REFERENCE_GRAPH_BASE.NODE_KIND.TEMPLATE]: "#0f9aa0",
-        [_REFERENCE_GRAPH_BASE.NODE_KIND.LAYOUT]: "#9a5b1f",
+        [_REFERENCE_GRAPH_BASE.NODE_KIND.LAYOUTS]: "#9a5b1f",
         [_REFERENCE_GRAPH_BASE.NODE_KIND.SECTION]: "#555566",
         [_REFERENCE_GRAPH_BASE.NODE_KIND.PARENT]: "#b8860b",
         [_REFERENCE_GRAPH_BASE.NODE_KIND.CHILD]: "#d1428a",
@@ -56,7 +56,7 @@ export const REFERENCE_GRAPH = {
     FILTER_DEFS: [
         { key: "parent", stepKey: "parent", label: "Parent", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.parent },
         { key: "children", stepKey: "children", label: "Children", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.children },
-        { key: "layout", stepKey: "layout", label: "Layout", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.layouts },
+        { key: "layouts", stepKey: "layouts", label: "Layouts", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.layouts },
         { key: "referrers", stepKey: "referrers", label: "Referrers", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.referrers },
         { key: "sections", stepKey: "sections", label: "Sections", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.sections },
         { key: "template", stepKey: "template", label: "Template", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.template },

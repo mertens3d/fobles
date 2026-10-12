@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/toolbar/reference-graph/graph-filters.ts
+
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
 
@@ -9,6 +11,16 @@ export const DEFAULT_RENDERING_GRAPH_FILTERS_STATE: SitecoreHarvestFiltersState 
   sections: true,
   template: true,
 };
+
+export function createAllFiltersState(
+    enabled: boolean,
+): SitecoreHarvestFiltersState {
+    return Object.fromEntries(
+        Object.keys(DEFAULT_RENDERING_GRAPH_FILTERS_STATE).map(
+            (key) => [key, enabled],
+        ),
+    ) as SitecoreHarvestFiltersState;
+}
 
 export function createSingleFilterState(enabledKey: keyof SitecoreHarvestFiltersState,): SitecoreHarvestFiltersState {
   return {

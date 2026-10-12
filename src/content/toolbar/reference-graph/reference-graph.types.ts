@@ -1,6 +1,9 @@
+import type { ItemGraphNodeData } from "../../sitecore-harvester/sitecore-harvester.types";
+
 export type SatelliteDescriptor = {
   kind: string;
-  value: string | undefined;
+  item?: ItemGraphNodeData | undefined;
+  value?: string | undefined;
   link?: string | undefined;
   // Defaults to `kind` - set explicitly when `kind` is really a dynamic label (section field
   // names) rather than a fixed category, so coloring still falls into one shared bucket.
@@ -19,6 +22,8 @@ export type SatelliteDescriptor = {
   // Skips the "[kind]" suffix buildLabel normally adds - for kinds whose container already makes
   // that implicit (e.g. a Child inside the "Children" box), same as Control nodes do already.
   plainLabel?: boolean;
+  itemId?: string;
+  placeholder?: string;
 };
 export type TooltipData = {
   name: string | undefined;

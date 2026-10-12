@@ -22,6 +22,7 @@ export function isHarvestStep(step: ProgressStep): step is HarvestStep {
 }
 export function factoryItemGraphNodeData(): ItemGraphNodeData {
   return {
+    type: "scItem",
     name: undefined,
     itemId: undefined,
     link: undefined,
@@ -31,6 +32,7 @@ export function factoryItemGraphNodeData(): ItemGraphNodeData {
 }
 
 export type ItemGraphNodeData = {
+  type: "scItem";
   name: string | undefined;
   itemId: string | undefined;
   link: string | undefined;
@@ -39,7 +41,7 @@ export type ItemGraphNodeData = {
 };
 
 export type RootItem = ItemGraphNodeData & {
-    itemId: string;
+  itemId: string;
 };
 
 export type SitecoreHarvestResult = {
@@ -69,7 +71,7 @@ export type FieldLinkResolver = (marker: HTMLElement) => FieldLink[] | null;
 
 export type FieldLink = {
   label: string;
-  itemId: string;
+  valueItem: ItemGraphNodeData;
 };
 
 export type SitecoreHarvestSection = {
@@ -78,24 +80,18 @@ export type SitecoreHarvestSection = {
 };
 
 export type LayoutSectionField = {
-    name: string | undefined;
-    devices: LayoutDevice[];
-    sectionFieldHtml: HTMLInputElement | undefined;
+  name: string | undefined;
+  devices: LayoutDevice[];
 };
 
 export type HarvestGraphControl = {
-  renderingId: string | undefined;
-  name: string | undefined;
-  path: string | undefined;
-  template: string | undefined;
-  datasource: string | undefined;
-  datasourceLink: string | undefined;
-  placeholder: string | undefined;
-  uid: string | undefined;
-  link: string | undefined;
-  parameters: Record<string, string>;
-  p_before: string | undefined;
-  p_after: string | undefined;
+    uid: string | undefined;
+    rendering: ItemGraphNodeData;
+    datasource: ItemGraphNodeData | undefined;
+    placeholder: string | undefined;
+    parameters: Record<string, string>;
+    p_before: string | undefined;
+    p_after: string | undefined;
 };
 
 export type SitecoreHarvestField = {
@@ -107,7 +103,7 @@ export type SitecoreHarvestField = {
   links: readonly HarvestFieldLink[];
 };
 
-export type LayoutDevice =  {
+export type LayoutDevice = {
   layoutView: ItemGraphNodeData | undefined;
   deviceId: string | undefined;
   controls: HarvestGraphControl[];
@@ -115,7 +111,7 @@ export type LayoutDevice =  {
 
 export type HarvestFieldLink = {
   label: string;
-  itemId: string;
+  valueItem: ItemGraphNodeData;
 };
 
 export type StepKey =
@@ -127,6 +123,7 @@ export type StepKey =
   | "layouts"
   | "referrers"
   | "parent"
+  | "enrichment"
   | "build-graph";
 
 export type HarvestProgressStatus =

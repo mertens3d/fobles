@@ -12,6 +12,7 @@ export function GraphViewControls({
             <legend>View</legend>
 
             <button
+                className="fobles-reference-graph-button"
                 type="button"
                 disabled={!cy}
                 onClick={() => cy?.fit(undefined, 40)}

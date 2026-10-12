@@ -2,6 +2,7 @@ import { CONST } from "../../../../constants/const";
 import { buildFoblesUrl } from "../../../features/augmentor/helper";
 import { type FieldLink } from "../../sitecore-harvester.types";
 import { type FieldLinkResolver } from "../../sitecore-harvester.types";
+import { factoryItemGraphNodeData } from "../../sitecore-harvester.types";
 
 // Only treelist-ex is wired up so far (see docs/TODO.md) - every other strategy still falls back
 // to a flat raw value until it gets its own resolver added to FIELD_LINK_RESOLVERS above.
@@ -19,15 +20,33 @@ export function resolveFieldLinks(marker: HTMLElement): FieldLink[] {
 }
 
 export const resolveTreelistExLinks: FieldLinkResolver = (marker) => {
-  const host = marker.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.TREELIST_EX.ROOT);
+  const host = marker.querySelector<HTMLElement>(
+    CONST.SITECORE.SELECTORS.TREELIST_EX.ROOT
+  );
+
   if (!host) return null;
 
   const links = Array.from(host.children)
-    .filter((child): child is HTMLElement => child.tagName === "DIV" && child.hasAttribute("title"))
-    .map((child) => {
+    .filter(
+      (child): child is HTMLElement =>
+        child.tagName === "DIV" &&
+        child.hasAttribute("title")
+    )
+    .map((child): FieldLink | null => {
       const title = child.getAttribute("title")?.trim();
       const label = child.textContent?.trim();
-      return title && label ? { itemId: toItemPath(title), label } : null;
+
+      if (!title || !label) {
+        return null;
+      }
+
+      const valueItem = factoryItemGraphNodeData();
+      valueItem.path = toItemPath(title);
+
+      return {
+        label,
+        valueItem,
+      };
     })
     .filter((link): link is FieldLink => link !== null);
 
@@ -46,9 +65,3 @@ export function toItemPath(title: string): string {
 }// "local:" datasource paths are relative to the item the rendering is placed on - everything
 // else (a GUID, or an already-absolute /sitecore/... path) can go straight to buildFoblesUrl.
 
-export function resolveDatasourceLink(datasource: string | undefined, currentItemPath: string | undefined): string | undefined {
-  if (!datasource) return undefined;
-  if (!datasource.toLowerCase().startsWith("local:")) return buildFoblesUrl(datasource);
-  if (!currentItemPath) return undefined;
-  return buildFoblesUrl(`${currentItemPath}${datasource.slice("local:".length)}`);
-}
