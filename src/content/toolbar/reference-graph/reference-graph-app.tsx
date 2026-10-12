@@ -2,7 +2,6 @@ import cytoscape from "cytoscape";
 import {
     useCallback,
     useRef,
-    useState,
 } from "react";
 import {
     setReferenceGraphFilters,
@@ -23,7 +22,6 @@ import { GraphToolbar } from "./components/graph-toolbar";
 import { buildElements } from "./graph-elements";
 import {
     createSingleFilterState,
-    DEFAULT_RENDERING_GRAPH_FILTERS_STATE,
     getEnabledFilterKeys,
     mergeFilterGraph,
 } from "./graph-filters";
