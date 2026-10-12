@@ -24,10 +24,9 @@ export const _REFERENCE_GRAPH_BASE = {
         FILTER_CLASS: {
             parent: "fobles-reference-graph-filter-parent",
             children: "fobles-reference-graph-filter-children",
-            layout: "fobles-reference-graph-filter-layout",
+            layouts: "fobles-reference-graph-filter-layout",
             referrers: "fobles-reference-graph-filter-referrers",
             sections: "fobles-reference-graph-filter-sections",
             template: "fobles-reference-graph-filter-template",
-            controls: "fobles-reference-graph-filter-controls",
         } as const satisfies Record<keyof SitecoreHarvestFiltersState, string>,
 };

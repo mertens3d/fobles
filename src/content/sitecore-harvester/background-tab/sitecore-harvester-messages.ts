@@ -34,7 +34,6 @@ export function registerSitecoreHarvesterMessageHandler(): void {
                 status: "complete",
             } satisfies SitecoreHarvestProgressMessage);
 
-
             void harvestSitecore(
                 document,
                 controller.signal,

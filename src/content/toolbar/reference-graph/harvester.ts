@@ -51,8 +51,6 @@ export async function harvestGraphForLink(link: string,
       { stepKey: "parse-document", label: "Parsing Document" },
       "complete",
     );
-
-
     
     result = await harvestSitecore(fetchedDoc, controller.signal, filters, (step, status) => handleHarvestProgress(progressDoc, step, status),);
 

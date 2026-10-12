@@ -2,7 +2,7 @@ import { buildFoblesUrl } from "../../features/augmentor/helper";
 import { extractGuid } from "../../features/augmentor/shared/guid";
 import { extensionLog } from "../../logger";
 import { buildGalleryLinksUrl } from "./helpers/harvest-helpers";
-import type { HarvestContext, itemNodeData } from "../sitecore-harvester.types";
+import type { HarvestContext, ItemGraphNodeData } from "../sitecore-harvester.types";
 
 // Items that reference this one - Sitecore's own "Links" gallery (ribbon: Links -> "Items that
 // refer to the selected item"), fetched directly instead of clicking through the ribbon. Same
@@ -12,7 +12,7 @@ import type { HarvestContext, itemNodeData } from "../sitecore-harvester.types";
 // Scoped to specifically the "refers to" section's own .scRef sibling - #Links can carry other
 // sections too (e.g. items the selected item itself uses), already captured elsewhere.
 export async function collectReferrers(harvestContext: HarvestContext): Promise<void> {
-  let returnValue: itemNodeData[] = [];
+  let returnValue: ItemGraphNodeData[] = [];
   try {
     const fetchURL = buildGalleryLinksUrl(harvestContext.itemId);
     extensionLog.debug(`Fetching referrers from URL: ${fetchURL}`);
@@ -26,7 +26,7 @@ export async function collectReferrers(harvestContext: HarvestContext): Promise<
         );
 
       returnValue = referrerAnchors
-        .map((anchor): itemNodeData | undefined => {
+        .map((anchor): ItemGraphNodeData | undefined => {
           const referrerId = extractGuid(anchor.getAttribute("onclick"));
           // "Name - [/sitecore/full/path] - The reference from 'Field' field. Language: en, ..."
           const fullLabel = anchor.textContent?.replace(/\s+/g, " ").trim() ?? "";
@@ -38,11 +38,10 @@ export async function collectReferrers(harvestContext: HarvestContext): Promise<
             itemId: referrerId,
             link: buildFoblesUrl(referrerId),
             path,
-            templateLink: undefined,
             template: undefined,
           };
         })
-        .filter((referrer): referrer is itemNodeData => referrer !== undefined);
+        .filter((referrer): referrer is ItemGraphNodeData => referrer !== undefined);
       // if (candidateValues.length > 0) {
       //   returnValue = candidateValues;
       // }

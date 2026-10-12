@@ -105,7 +105,7 @@ export async function buildReferenceGraph(
 
   // Not a real percentage (no good way to know total work upfront) - just a ticking counter so
   // Cancel/the progress message reads as "genuinely still working", not hung.
-  const totalSteps = (layoutId ? 1 : 0) + finalDevice.controls.length + 2;
+  const totalSteps = (layoutId ? 1 : 0) + finalDevice.layouts.controls.length + 2;
   let completedSteps = 0;
 
   const reportProgress = (): void => {
@@ -117,7 +117,7 @@ export async function buildReferenceGraph(
   if (layoutId) reportProgress();
 
   const enrichedControls = await Promise.all(
-    finalDevice.controls.map(async (control) => {
+    finalDevice.layouts.controls.map(async (control) => {
       const details = control.renderingId ? await resolveQuickInfoForRenderingId(control.renderingId, signal) : undefined;
       reportProgress();
       return {

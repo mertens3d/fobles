@@ -1,12 +1,11 @@
 // @source-path [fobles] src/content/sitecore-harvester/harvest-steps.ts
 
-import { collectLayout } from "./collectors/section-collector/layout-collector/layout-collector";
 import { collectReferrers } from "./collectors/referrer-collector";
 import type { HarvestStep, ProgressStep } from "./sitecore-harvester.types";
 import { collectSections } from "./collectors/section-collector/section-collector";
-import { collectControls } from "./collectors/section-collector/layout-collector/layout-harvest";
 import { collectParent } from "./collectors/parent-collector";
 import { collectChildren } from "./collectors/child-collector";
+import { collectLayouts } from "./collectors/section-collector/layout-collector/layout-collector";
 
 export const HARVEST_STEPS: readonly HarvestStep[] = [
   {
@@ -22,16 +21,10 @@ export const HARVEST_STEPS: readonly HarvestStep[] = [
     build: collectSections,
   },
   {
-    stepKey: "layout",
-    filterKey: "layout",
-    label: "Layout",
-    build: collectLayout,
-  },
-  {
-    stepKey: "controls",
-    filterKey: "controls",
-    label: "Controls",
-    build: collectControls,
+    stepKey: "layouts",
+    filterKey: "layouts",
+    label: "Layouts",
+    build: collectLayouts,
   },
   {
     stepKey: "referrers",

@@ -61,6 +61,7 @@
     "cytoscape-dagre": "^4.0.1",
     "cytoscape-fcose": "^2.2.0",
     "cytoscape-popper": "^4.0.1",
+    "fast-xml-parser": "^5.11.2",
     "react": "^19.3.0",
     "react-dom": "^19.3.0",
     "strip-ansi": "^7.2.0",

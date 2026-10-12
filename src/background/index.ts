@@ -42,7 +42,7 @@ chrome.runtime.onMessage.addListener(
       chrome.runtime?.reload?.();
       return;
     }
-    
+
     if (
       "type" in request &&
       request.type === "SITECORE_HARVEST_PROGRESS"
@@ -78,9 +78,15 @@ chrome.runtime.onMessage.addListener(
 
       void harvestSitecoreInBackgroundTab(
         backgroundHarvestContext
-      ).then(sendResponse);
+      )
+        .then(sendResponse)
+        .catch((error) => {
+          extensionLog.error("Background Sitecore harvest failed", error);
+          sendResponse(undefined);
+        });
 
       return true;
+
     }
   },
 );

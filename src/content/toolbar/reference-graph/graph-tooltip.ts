@@ -20,7 +20,7 @@ export function hideActiveTooltip(): void {
     activeReferenceGraphTooltip = null;
 }
 
-function buildTooltipContent(data: TooltipData): HTMLElement {
+export function buildTooltipContent(data: TooltipData): HTMLElement {
   const container = document.createElement("div");
   container.style.cssText =
     "background:#203047;color:#fff;padding:8px 10px;border-radius:4px;font:12px/1.6 sans-serif;max-width:320px;";

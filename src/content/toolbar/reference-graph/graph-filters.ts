@@ -4,22 +4,20 @@ import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitec
 export const DEFAULT_RENDERING_GRAPH_FILTERS_STATE: SitecoreHarvestFiltersState = {
   parent: true,
   children: true,
-  layout: true,
+  layouts: true,
   referrers: true,
   sections: true,
   template: true,
-  controls: true,
 };
 
 export function createSingleFilterState(enabledKey: keyof SitecoreHarvestFiltersState,): SitecoreHarvestFiltersState {
   return {
     parent: enabledKey === "parent",
     children: enabledKey === "children",
-    layout: enabledKey === "layout",
+    layouts: enabledKey === "layouts",
     referrers: enabledKey === "referrers",
     sections: enabledKey === "sections",
     template: enabledKey === "template",
-    controls: enabledKey === "controls",
   };
 }
 
@@ -34,11 +32,8 @@ export function mergeFilterGraph(currentGraph: SitecoreHarvestResult, partialGra
       mergedGraph.childItems = partialGraph.childItems;
       break;
 
-    case "layout":
-      mergedGraph.sharedLayoutName = partialGraph.sharedLayoutName;
-      mergedGraph.sharedLayoutLink = partialGraph.sharedLayoutLink;
-      mergedGraph.sharedLayoutPath = partialGraph.sharedLayoutPath;
-      mergedGraph.controls = partialGraph.controls;
+    case "layouts":
+      mergedGraph.layoutSectionFields = partialGraph.layoutSectionFields;
       break;
 
     case "referrers":

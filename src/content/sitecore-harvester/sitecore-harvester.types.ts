@@ -3,7 +3,7 @@ export type HarvestContext = {
   itemId: string;
   result: SitecoreHarvestResult;
   signal: AbortSignal;
-  rootItem: itemNodeData;
+  rootItem: ItemGraphNodeData;
 };
 export type ProgressStep = {
   stepKey: StepKey;
@@ -20,41 +20,57 @@ export type HarvestStep = ProgressStep & {
 export function isHarvestStep(step: ProgressStep): step is HarvestStep {
   return "filterKey" in step;
 }
+export function factoryItemGraphNodeData(): ItemGraphNodeData {
+  return {
+    name: undefined,
+    itemId: undefined,
+    link: undefined,
+    path: undefined,
+    template: undefined,
+  };
+}
 
-export type itemNodeData = {
+export type ItemGraphNodeData = {
   name: string | undefined;
-  itemId: string;
+  itemId: string | undefined;
   link: string | undefined;
   path: string | undefined;
-  templateLink: string | undefined;
-  template: string | undefined;
+  template: ItemGraphNodeData | undefined;
+};
+
+export type RootItem = ItemGraphNodeData & {
+    itemId: string;
 };
 
 export type SitecoreHarvestResult = {
-  rootItem: itemNodeData;
-  parent: itemNodeData | undefined;
-  sharedLayoutName: string | undefined;
-  sharedLayoutLink: string | undefined;
-  sharedLayoutPath: string | undefined;
-  controls: readonly HarvestGraphControl[] | undefined;
+  rootItem: RootItem;
+  parent: ItemGraphNodeData | undefined;
+  layoutSectionFields: LayoutSectionField[] | undefined;
+  // {
+  //   sharedLayoutName: string | undefined;
+  //   sharedLayoutLink: string | undefined;
+  //   sharedLayoutPath: string | undefined;
+  //   controls: readonly HarvestGraphControl[] | undefined;
+  // };
   sections: readonly SitecoreHarvestSection[] | undefined;
-  childItems: readonly itemNodeData[] | undefined;
-  referrers: readonly itemNodeData[] | undefined;
+  childItems: readonly ItemGraphNodeData[] | undefined;
+  referrers: readonly ItemGraphNodeData[] | undefined;
 };
+
 export type SitecoreHarvestFiltersState = {
   parent: boolean;
   children: boolean;
-  layout: boolean;
+  layouts: boolean;
   referrers: boolean;
   sections: boolean;
   template: boolean;
-  controls: boolean;
 };// One resolver per field-strategy, mirroring src/constants/_config.ts's per-strategy
 // FoblesTopSelectors - but reading Sitecore's own raw markup directly (not the augmentor's
 // injected buttons, which don't exist in a fetched/re-rooted document). Returns null when the
 // marker isn't that strategy's shape at all, so collectSections' flat-text fallback still applies.
 
 export type FieldLinkResolver = (marker: HTMLElement) => FieldLink[] | null;
+
 export type FieldLink = {
   label: string;
   itemId: string;
@@ -64,8 +80,15 @@ export type SitecoreHarvestSection = {
   name: string;
   fields: readonly SitecoreHarvestField[];
 };
+
+export type LayoutSectionField = {
+    name: string | undefined;
+    devices: LayoutDevice[];
+    sectionFieldHtml: HTMLInputElement | undefined;
+};
+
 export type HarvestGraphControl = {
-  renderingId: string;
+  renderingId: string | undefined;
   name: string | undefined;
   path: string | undefined;
   template: string | undefined;
@@ -75,6 +98,8 @@ export type HarvestGraphControl = {
   uid: string | undefined;
   link: string | undefined;
   parameters: Record<string, string>;
+  p_before: string | undefined;
+  p_after: string | undefined;
 };
 
 export type SitecoreHarvestField = {
@@ -85,8 +110,10 @@ export type SitecoreHarvestField = {
   // as its own clickable node instead of being flattened into `value`.
   links: readonly HarvestFieldLink[];
 };
-export type ParsedDevice = {
-  layoutId: string | undefined;
+
+export type LayoutDevice =  {
+  layoutView: ItemGraphNodeData | undefined;
+  deviceId: string | undefined;
   controls: HarvestGraphControl[];
 };
 
@@ -101,8 +128,7 @@ export type StepKey =
   | "root-item"
   | "children"
   | "sections"
-  | "layout"
-  | "controls"
+  | "layouts"
   | "referrers"
   | "parent"
   | "build-graph";
@@ -111,6 +137,7 @@ export type HarvestProgressStatus =
   | "active"
   | "skipped"
   | "complete";
+
 export type HarvestProgressCallback = (step: ProgressStep, status: HarvestProgressStatus) => void;
 
 export type BackgroundHarvestContext = {

@@ -23,12 +23,13 @@ export const REFERENCE_GRAPH = {
         // both - only the Default device is harvested today (see reference-graph.ts), so that's the only
         // one nested under each; Mobile/Print/... would nest the exact same way once harvested.
         SHARED_LAYOUT_NODE_ID: "fobles-reference-graph-shared-layout",
+        BASE_LAYOUT_NODE_ID: "fobles-reference-graph-layout-",
         SHARED_LAYOUT_DEVICE_NODE_ID: "fobles-reference-graph-shared-layout-device-default",
         FINAL_LAYOUT_NODE_ID: "fobles-reference-graph-final-layout",
         FINAL_LAYOUT_DEVICE_NODE_ID: "fobles-reference-graph-final-layout-device-default",
         // The one compound box everything above lives inside - its own self-contained subgraph (same
         // internal edges as before), with a single edge back to the root item crossing the box itself.
-        LAYOUT_BOX_NODE_ID: "fobles-reference-graph-layout-box",
+        MAIN_LAYOUT_BOX_NODE_ID: "fobles-reference-graph-layout-box",
 
     },
     NODE_KIND: _REFERENCE_GRAPH_BASE.NODE_KIND,
@@ -52,13 +53,13 @@ export const REFERENCE_GRAPH = {
     STRUCTURAL_COLOR: "#8a97a8", // Device/Shared Layout/Final Layout wrapper nodes
     DEFAULT_LAYOUT_PRESET_NAME: "dagre" as LayoutGraphPresetName,
     FILTER_DEFS: [
-        { key: "parent", buildStepKey: "parent", label: "Parent", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.parent },
-        { key: "children", buildStepKey: "children", label: "Children", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.children },
-        { key: "layout", buildStepKey: "layout", label: "Layout", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.layout },
-        { key: "referrers", buildStepKey: "referrers", label: "Referrers", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.referrers },
-        { key: "sections", buildStepKey: "sections", label: "Sections", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.sections },
-        { key: "template", buildStepKey: "template", label: "Template", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.template },
-    ] as ReadonlyArray<{ key: keyof SitecoreHarvestFiltersState; buildStepKey: StepKey; label: string; className: string; }>,
+        { key: "parent", stepKey: "parent", label: "Parent", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.parent },
+        { key: "children", stepKey: "children", label: "Children", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.children },
+        { key: "layout", stepKey: "layout", label: "Layout", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.layouts },
+        { key: "referrers", stepKey: "referrers", label: "Referrers", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.referrers },
+        { key: "sections", stepKey: "sections", label: "Sections", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.sections },
+        { key: "template", stepKey: "template", label: "Template", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.template },
+    ] as ReadonlyArray<{ key: keyof SitecoreHarvestFiltersState; stepKey: StepKey; label: string; className: string; }>,
     DIALOG_ID: "fobles-reference-graph-dialog",
     PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
     PROGRESS_MESSAGE_ID: "fobles-reference-graph-progress-message",

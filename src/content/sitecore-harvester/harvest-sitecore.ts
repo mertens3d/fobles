@@ -2,17 +2,14 @@
 
 import { buildFoblesUrl } from "../features/augmentor/helper";
 import { findFieldInput } from "./collectors/helpers/harvest-helpers";
-import { resolveQuickInfoForRenderingId } from "./collectors/helpers/harvest-helpers";
 import { getTemplateGuid } from "./collectors/helpers/harvest-helpers";
 import { extensionLog } from "../logger";
 import { getGlyphId, getGlyphState, waitForExpansion, readChildNodes } from "../macros/tree-expand-macro";
 import { getCurrentItemId } from "../toolbar/jump-flyout/ai-pages";
 import { getQuickInfo } from "../toolbar/jump-flyout/quick-info";
 import { HARVEST_STEPS } from "./harvest-steps";
-import { parseDevice } from "./collectors/helpers/layout-parsing";
-import type { HarvestProgressCallback, itemNodeData, SitecoreHarvestResult } from "./sitecore-harvester.types";
-import { CONST } from "../../constants/const";
-import type { SitecoreHarvestFiltersState } from "./sitecore-harvester.types";
+import { factoryItemGraphNodeData, type HarvestProgressCallback, type ItemGraphNodeData, type SitecoreHarvestResult } from "./sitecore-harvester.types";
+import type { RootItem, SitecoreHarvestFiltersState } from "./sitecore-harvester.types";
 import type { HarvestContext } from "./sitecore-harvester.types";
 
 // Finds itemId's own tree node, expanding it first (and restoring it back to collapsed
@@ -20,7 +17,7 @@ import type { HarvestContext } from "./sitecore-harvester.types";
 // expand anything - see waitForExpansion's note - so a fetched/static document just reports
 // whatever children happen to already be rendered (usually none).
 
-export async function collectTreeChildren(doc: Document, itemId: string): Promise<itemNodeData[]> {
+export async function collectTreeChildren(doc: Document, itemId: string): Promise<ItemGraphNodeData[]> {
   const glyphId = getGlyphId(itemId);
   const glyph = doc.getElementById(glyphId) as HTMLImageElement | undefined;
   if (!glyph) return [];
@@ -41,12 +38,11 @@ export async function collectTreeChildren(doc: Document, itemId: string): Promis
   }
 
   return children.map(
-    (child): itemNodeData => ({
+    (child): ItemGraphNodeData => ({
       name: child.name,
       itemId: child.itemId,
       link: buildFoblesUrl(child.itemId),
       path: undefined,
-      templateLink: undefined,
       template: undefined,
     })
   );
@@ -74,29 +70,28 @@ export async function harvestSitecore(
   }
   const docQuickInfo = getQuickInfo(doc);
   const templateGuid = getTemplateGuid(doc);
-  const sharedDevice = sharedLayoutInput?.value
-    ? parseDevice(sharedLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
-    : { layoutId: undefined, controls: [] };
-  const finalDevice = finalLayoutInput?.value
-    ? parseDevice(finalLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
-    : { layoutId: undefined, controls: [] };
-  const layoutId = finalDevice.layoutId ?? sharedDevice.layoutId;
+  // const sharedDevice = sharedLayoutInput?.value
+  //   ? parseDevice(sharedLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
+  //   : { layoutId: undefined, controls: [] };
+  // const finalDevice = finalLayoutInput?.value
+  //   ? parseDevice(finalLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
+  //   : { layoutId: undefined, controls: [] };
+  // const layoutId = finalDevice.layoutId ?? sharedDevice.layoutId;
 
   // Not a real percentage (no good way to know total work upfront) - just a ticking counter so
   // Cancel/the progress message reads as "genuinely still working", not hung.
-  const totalSteps = (layoutId ? 1 : 0) + finalDevice.controls.length + 2;
+  // const totalSteps = (layoutId ? 1 : 0) + finalDevice.layouts.controls.length + 2;
 
-  const layoutDetailsQuickInfo = layoutId ? await resolveQuickInfoForRenderingId(layoutId, signal) : undefined;
+  // const layoutDetailsQuickInfo = layoutId ? await resolveQuickInfoForRenderingId(layoutId, signal) : undefined;
   // if (layoutId) reportProgress(progressDoc, totalSteps);
 
-  const rootItem = {
-    itemId,
-    name: docQuickInfo?.itemName,
-    path: docQuickInfo?.itemPath,
-    template: docQuickInfo?.template,
-    link: buildFoblesUrl(itemId),
-    templateLink: templateGuid ? buildFoblesUrl(templateGuid) : undefined,
-  };
+  const rootItem = factoryItemGraphNodeData() as RootItem;
+  rootItem.itemId = itemId;
+  rootItem.name = docQuickInfo.itemName;
+  rootItem.path = docQuickInfo.itemPath;
+  rootItem.template = factoryItemGraphNodeData();
+  rootItem.template.itemId = docQuickInfo?.template?.id;
+  rootItem.template.path = docQuickInfo?.template?.path;
 
   onProgress?.(
     {
@@ -109,10 +104,13 @@ export async function harvestSitecore(
   const result: SitecoreHarvestResult = {
     rootItem,
     parent: undefined,
-    sharedLayoutName: undefined,
-    sharedLayoutLink: undefined,
-    sharedLayoutPath: undefined,
-    controls: undefined,
+    layoutSectionFields: undefined,
+    // {
+    //   sharedLayoutName: undefined,
+    //   sharedLayoutLink: undefined,
+    //   sharedLayoutPath: undefined,
+    // },
+    // controls: undefined,
     sections: undefined,
     childItems: undefined,
     referrers: undefined,

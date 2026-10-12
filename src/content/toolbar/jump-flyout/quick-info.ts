@@ -1,5 +1,5 @@
 import { CONST } from "../../../constants/const";
-import type { QuickInfo } from "../types";
+import type { QuickInfo, QuickInfoTemplate } from "../types";
 
 export const getQuickInfo = (
     doc: Document
@@ -25,16 +25,57 @@ export const getQuickInfo = (
                 quickInfo.itemPath = getQuickInfoFromRow(row);
             }
             if (label.startsWith(CONST.SITECORE.QUICK_INFO.LABEL_PREFIX.TEMPLATE.toLowerCase())) {
-                quickInfo.template = getQuickInfoFromRow(row);
+                quickInfo.template = getQuickInfoTemplateFromRow(row);
             }
             if (label.startsWith(CONST.SITECORE.QUICK_INFO.LABEL_PREFIX.ITEM_NAME.toLowerCase())) {
-                quickInfo.itemName = getQuickInfoFromRow(row);
+                quickInfo.itemName = getQuickInfoItemNameFromRow(row);
             }
         }
     }
 
     return quickInfo;
 };
+
+function getQuickInfoItemNameFromRow(
+    row: HTMLTableRowElement,
+): string | undefined {
+    const itemName = row.cells
+        .item(1)
+        ?.querySelector<HTMLSpanElement>("span")
+        ?.textContent
+        ?.trim();
+
+    return itemName || undefined;
+}
+
+function getQuickInfoTemplateFromRow(
+    row: HTMLTableRowElement,
+): QuickInfoTemplate | undefined {
+    const cell = row.cells.item(1);
+
+    const path = cell
+        ?.querySelector<HTMLAnchorElement>("a")
+        ?.textContent
+        ?.trim();
+
+    const id = cell
+        ?.querySelector<HTMLInputElement>(
+            "input.scEditorHeaderQuickInfoInputID[readonly]",
+        )
+        ?.value
+        .trim();
+
+    let template: QuickInfoTemplate | undefined;
+
+    if (path || id) {
+        template = {
+            path,
+            id,
+        };
+    }
+
+    return template;
+}
 
 function getQuickInfoFromRow(row: HTMLTableRowElement) {
     const valueElement = row.cells
