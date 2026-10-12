@@ -69,21 +69,6 @@ export async function harvestSitecore(
     );
   }
   const docQuickInfo = getQuickInfo(doc);
-  const templateGuid = getTemplateGuid(doc);
-  // const sharedDevice = sharedLayoutInput?.value
-  //   ? parseDevice(sharedLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
-  //   : { layoutId: undefined, controls: [] };
-  // const finalDevice = finalLayoutInput?.value
-  //   ? parseDevice(finalLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
-  //   : { layoutId: undefined, controls: [] };
-  // const layoutId = finalDevice.layoutId ?? sharedDevice.layoutId;
-
-  // Not a real percentage (no good way to know total work upfront) - just a ticking counter so
-  // Cancel/the progress message reads as "genuinely still working", not hung.
-  // const totalSteps = (layoutId ? 1 : 0) + finalDevice.layouts.controls.length + 2;
-
-  // const layoutDetailsQuickInfo = layoutId ? await resolveQuickInfoForRenderingId(layoutId, signal) : undefined;
-  // if (layoutId) reportProgress(progressDoc, totalSteps);
 
   const rootItem = factoryItemGraphNodeData() as RootItem;
   rootItem.itemId = itemId;
@@ -105,12 +90,6 @@ export async function harvestSitecore(
     rootItem,
     parent: undefined,
     layoutSectionFields: undefined,
-    // {
-    //   sharedLayoutName: undefined,
-    //   sharedLayoutLink: undefined,
-    //   sharedLayoutPath: undefined,
-    // },
-    // controls: undefined,
     sections: undefined,
     childItems: undefined,
     referrers: undefined,

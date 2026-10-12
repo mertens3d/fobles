@@ -141,8 +141,6 @@ export function openReferenceGraphModal(doc: Document, graph: SitecoreHarvestRes
   `;
 
   const closeButton = createCloseButton(doc, dialog);
-
-  // const toolbar = createToolbar(doc,renderGraph);
   const toolbar = doc.createElement("div");
   const toolbarRoot = createRoot(toolbar);
 

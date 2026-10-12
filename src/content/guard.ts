@@ -27,11 +27,7 @@ function toUrl(value: string | Location | URL, baseUrl?: string): URL | null {
 // they're really a path fragment or an "xmlcontrol=..." query fragment.
 function getNormalizedHref(url: URL): string {
   const raw = `${url.pathname}${url.search}`;
-  // try {
-  //   return decodeURIComponent(raw).toLowerCase();
-  // } catch {
     return raw.toLowerCase();
-  // }
 }
 
 function getNormalizedPath(path: string): string {
@@ -42,10 +38,6 @@ export function findAllowedPage(
   locationPath: string ,
   baseUrl?: string,
 ): AllowedPage | null {
-  // const url = toUrl(locationPath, baseUrl);
-  // if (!url) {
-  //   return null;
-  // }
 
   const normalizedHref = getNormalizedPath(locationPath);
   // A media request path can appear nested behind another page's path (e.g. Content Editor.aspx)

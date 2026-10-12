@@ -46,12 +46,6 @@ export type SitecoreHarvestResult = {
   rootItem: RootItem;
   parent: ItemGraphNodeData | undefined;
   layoutSectionFields: LayoutSectionField[] | undefined;
-  // {
-  //   sharedLayoutName: string | undefined;
-  //   sharedLayoutLink: string | undefined;
-  //   sharedLayoutPath: string | undefined;
-  //   controls: readonly HarvestGraphControl[] | undefined;
-  // };
   sections: readonly SitecoreHarvestSection[] | undefined;
   childItems: readonly ItemGraphNodeData[] | undefined;
   referrers: readonly ItemGraphNodeData[] | undefined;
@@ -64,7 +58,9 @@ export type SitecoreHarvestFiltersState = {
   referrers: boolean;
   sections: boolean;
   template: boolean;
-};// One resolver per field-strategy, mirroring src/constants/_config.ts's per-strategy
+};
+
+// One resolver per field-strategy, mirroring src/constants/_config.ts's per-strategy
 // FoblesTopSelectors - but reading Sitecore's own raw markup directly (not the augmentor's
 // injected buttons, which don't exist in a fetched/re-rooted document). Returns null when the
 // marker isn't that strategy's shape at all, so collectSections' flat-text fallback still applies.

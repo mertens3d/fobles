@@ -21,7 +21,6 @@ export async function resolveQuickInfoForRenderingId(
     const response = await fetch(buildFoblesUrl(renderingId), { credentials: "same-origin", signal });
     if (!response.ok) return undefined;
     const fetchedDoc = new DOMParser().parseFromString(await response.text(), "text/html");
-    // const path = getQuickInfoValue(fetchedDoc, "Item path:");
     const fetchDocQuickInfo = getQuickInfo(fetchedDoc);
     return fetchDocQuickInfo;
   } catch (error) {

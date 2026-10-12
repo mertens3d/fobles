@@ -1,20 +1,7 @@
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { isHarvestStep, type HarvestProgressStatus, type SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { HarvestStep } from "../../sitecore-harvester/sitecore-harvester.types";
-
-//   let completedSteps = 0;
 import type { ProgressStep } from "../../sitecore-harvester/sitecore-harvester.types";
-// export const reportProgress = (progressDoc: Document, buildStep: BuildStep): void => {
-//     completedSteps += 1;
-//     updateReferenceGraphProgressModal(progressDoc, buildStep);
-//   };
-// Not a real percentage of actual work remaining (no good way to know that upfront) - just a
-// ticking counter so the user can see something is genuinely progressing, not hung.
-
-// export function updateReferenceGraphProgressModal(doc: Document, completedSteps: number, total: number): void {
-//   const buildingMessage = doc.getElementById(REFERENCE_GRAPH.PROGRESS_MESSAGE_ID);
-//   if (buildingMessage) buildingMessage.textContent = `${REFERENCE_GRAPH.TEXT.BUILDING_REFERENCE_GRAPH} (${completedSteps}/${total})`;
-// }
 
 export function initializeReferenceGraphProgressModal(doc: Document, steps: readonly ProgressStep[], filters: SitecoreHarvestFiltersState,): void {
   const buildingMessage = doc.getElementById(REFERENCE_GRAPH.PROGRESS_MESSAGE_ID,);
@@ -71,9 +58,6 @@ export function closeReferenceGraphProgressModal(doc: Document): void {
   (doc.getElementById(REFERENCE_GRAPH.PROGRESS_DIALOG_ID) as HTMLDialogElement | undefined)?.close();
 }
 
-// Shown immediately on click (and again on every reload the toggle-enable/restore sequence
-// triggers), since harvesting involves a fetch per rendering plus possibly a couple of page
-// reloads - a singleton dialog so re-showing it on each reload just replaces the last one.
 export function openReferenceGraphProgressModal(doc: Document, onCancel: () => void): void {
   closeReferenceGraphProgressModal(doc);
 

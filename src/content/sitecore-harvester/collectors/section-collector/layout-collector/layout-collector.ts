@@ -3,57 +3,17 @@ import { factoryItemGraphNodeData, type HarvestContext, type HarvestGraphControl
 import { XMLParser } from "fast-xml-parser";
 import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
 
-// export const collectLayout = async (harvestContext: HarvestContext) => {
-//     const layouts = await collectLayouts(harvestContext);
-
-//     // const sharedLayoutInput = findFieldInput(harvestContext.doc, "Renderings");
-//     // const sharedLayoutData: LayoutData = {
-//     //     sectionField: sharedLayoutInput,
-//     //     devices: [],
-//     // };
-//     // await collectDevices(sharedLayoutData, harvestContext);
-
-//     // const finalLayoutInput = findFieldInput(harvestContext.doc, "Final renderings") ?? sharedLayoutInput;
-//     // const sharedDevice = sharedLayoutInput?.value
-//     //     ? parseDevice(sharedLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
-//     //     : { layoutId: undefined, controls: [] };
-//     // const finalDevice = finalLayoutInput?.value
-//     //     ? parseDevice(finalLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
-//     //     : { layoutId: undefined, controls: [] };
-
-//     // const layoutId = finalDevice.layoutId ?? sharedDevice.layoutId;
-
-//     // const layoutDetailsQuickInfo = layoutId ? await resolveQuickInfoForRenderingId(layoutId, harvestContext.signal) : undefined;
-//     // harvestContext.result.layouts.sharedLayoutName = layoutDetailsQuickInfo?.itemName;
-//     // harvestContext.result.layouts.sharedLayoutLink = layoutId ? buildFoblesUrl(layoutId) : undefined;
-//     // harvestContext.result.layouts.sharedLayoutPath = layoutDetailsQuickInfo?.itemPath;
-// };
-
 export const collectLayouts = async (harvestContext: HarvestContext): Promise<void> => {
     const layoutsArray: LayoutSectionField[] = [];
 
-    layoutsArray.push( processLayoutFieldValue(harvestContext, "Renderings"));
-    layoutsArray.push( processLayoutFieldValue(harvestContext, "Final renderings"));
+    layoutsArray.push(processLayoutFieldValue(harvestContext, "Renderings"));
+    layoutsArray.push(processLayoutFieldValue(harvestContext, "Final renderings"));
 
-    // const sharedLayoutData : LayoutData = {
-    //   sectionField: findFieldInput(harvestContext.doc, "Renderings"),
-    //   devices: undefined,
-    // };
-    // layoutsArray.push(sharedLayoutData);
-
-    // const finalLayoutData : LayoutData = {
-    //   sectionField: findFieldInput(harvestContext.doc, "Final renderings"),
-    //   devices: undefined,
-    // };
-    // layoutsArray.push(finalLayoutData);
-
-    // setDevices(sharedLayoutData);
-    // setDevices(finalLayoutData);
     harvestContext.result.layoutSectionFields = layoutsArray;
     return Promise.resolve();
 };
 
-const processLayoutFieldValue =  (harvestContext: HarvestContext, layoutName: string): LayoutSectionField => {
+const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: string): LayoutSectionField => {
     const layoutSectionField: LayoutSectionField = {
         name: layoutName,
         sectionFieldHtml: findFieldInput(harvestContext.doc, layoutName),
@@ -100,7 +60,6 @@ const processLayoutFieldValue =  (harvestContext: HarvestContext, layoutName: st
         }
     }
 
-    // await collectDevices(layoutSectionField, harvestContext);
     return layoutSectionField;
 };
 
@@ -125,79 +84,3 @@ function processLayoutXml(xml: string): SitecoreLayoutXml | undefined {
     }
     return result;
 }
-
-// export const collectControls = async (harvestContext: HarvestContext): Promise<void> => {
-//     const sharedLayoutInput = findFieldInput(harvestContext.doc, "Renderings");
-//     const finalLayoutInput = findFieldInput(harvestContext.doc, "Final renderings") ?? sharedLayoutInput;
-//     const finalDevice = finalLayoutInput?.value
-//         ? parseDevice(finalLayoutInput.value, CONST.SITECORE.DEVICES.DEFAULT)
-//         : { layoutId: undefined, controls: [] };
-
-//     const enrichedControls = await Promise.all(
-
-//         finalDevice.controls.map(async (control) => {
-//             const details = control.renderingId ? await resolveQuickInfoForRenderingId(control.renderingId, harvestContext.signal) : undefined;
-//             return {
-//                 ...control,
-//                 name: details?.itemName ?? undefined,
-//                 path: details?.itemPath ?? undefined,
-//                 template: details?.template ?? undefined,
-//                 link: control.renderingId ? buildFoblesUrl(control.renderingId) : undefined,
-//                 datasourceLink: resolveDatasourceLink(control.datasource, harvestContext.rootItem.path ?? undefined),
-//             };
-//         })
-//     );
-//     harvestContext.result.layouts.controls = enrichedControls;
-// };
-
-// const collectDeviceControls = (device: LayoutDevice, harvestContext: HarvestContext) => {
-//     device.controls.map(async (control) => {
-//         const details = control.renderingId ? await resolveQuickInfoForRenderingId(control.renderingId, harvestContext.signal) : undefined;
-//         return {
-//             ...control,
-//             name: details?.itemName ?? undefined,
-//             path: details?.itemPath ?? undefined,
-//             template: details?.template ?? undefined,
-//             link: control.renderingId ? buildFoblesUrl(control.renderingId) : undefined,
-//             datasourceLink: resolveDatasourceLink(control.datasource, harvestContext.rootItem.path ?? undefined),
-//         };
-//     })
-// };
-
-// const collectDevices = async (layoutData: LayoutSectionField, harvestContext: HarvestContext) => {
-
-//     if (layoutData.sectionFieldHtml?.value) {
-//         layoutData.devices = parseDevices(layoutData.sectionFieldHtml.value, CONST.SITECORE.DEVICES.DEFAULT);
-//     } else {
-//         layoutData.devices = [];
-//     }
-
-//     if (layoutData.devices && layoutData.devices.length > 0) {
-//         // layoutData.devices = [{ layoutId: undefined, controls: [], LayoutName: undefined, LayoutLink: undefined, LayoutPath: undefined }];
-//         for (const device of layoutData.devices) {
-//             const layoutDetailsQuickInfo = device.layoutView?.itemId ? await resolveQuickInfoForRenderingId(device.layoutView?.itemId ?? "", harvestContext.signal) : undefined;
-//             if (device.layoutView?.itemId) {
-//                 let templateLink = undefined;
-//                 if (layoutDetailsQuickInfo?.template?.id) {
-//                     templateLink = buildFoblesUrl(layoutDetailsQuickInfo?.template?.id);
-//                 }
-//                 device.layoutView = {
-//                     name: layoutDetailsQuickInfo?.itemName,
-//                     path: layoutDetailsQuickInfo?.itemPath,
-//                     template: {
-//                         path: layoutDetailsQuickInfo?.template?.path ?? undefined,
-//                         link: templateLink,
-//                         itemId: layoutDetailsQuickInfo?.template?.id ?? undefined,
-//                         name: undefined,
-//                         template: undefined,
-//                     },
-//                     link: device.layoutView?.itemId ? buildFoblesUrl(device.layoutView?.itemId) : undefined,
-//                     itemId: device.layoutView?.itemId ?? undefined,
-//                 };
-//             }
-//             collectDeviceControls(device, harvestContext);
-//         }
-
-//     }
-
-// };

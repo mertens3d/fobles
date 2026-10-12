@@ -103,7 +103,6 @@ export function ensurePathShape(
   value: string,
   kind: "sitecore" | "content" | "media" | "template" = "sitecore",
 ): string {
-  // const decoded = value.includes("%20") ? decodeURIComponent(value) : value;
   const trimmed = value.trim();
   const withoutLeadingSlash = trimmed.replace(/^\/+/, "");
 
@@ -157,8 +156,6 @@ export function normalizeFoblesValue(raw: string): string {
   if (isGuidLike(raw)) {
     return stripGuidBraces(raw);
   }
-
-  // const decoded = raw.includes("%20") ? decodeURIComponent(raw) : raw;
   const trimmed = raw.trim();
   const withoutLeadingSlash = trimmed.replace(/^\/+/, "");
 
