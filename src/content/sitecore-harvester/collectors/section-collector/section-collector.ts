@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/sitecore-harvester/collectors/section-collector/section-collector.ts
+
 import { CONST } from "../../../../constants/const";
 import { SITECORE } from "../../../../constants/sitecore";
 import { extractFieldLabel, isHandledElsewhere, readRawFieldValue } from "../helpers/field-harvester";
@@ -47,7 +49,7 @@ const getSectionField = (marker: HTMLElement): SitecoreHarvestField => {
   if (sectionField.label && !isHandledElsewhere(sectionField.label)) {
 
     const fieldLinks: FieldLink[] = resolveFieldLinks(marker);
-    if (fieldLinks) {
+    if (fieldLinks.length > 0) {
      sectionField.value = fieldLinks.map((link) => link.label).join(", ");
      sectionField.links = fieldLinks;
     } else {

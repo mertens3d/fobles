@@ -5,6 +5,7 @@ import type { StepKey } from "../content/sitecore-harvester/sitecore-harvester.t
 import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE";
 
 export const REFERENCE_GRAPH = {
+    DEBUG_BACKGROUND_HARVEST: false,
     TEXT: {
         BUILDING_REFERENCE_GRAPH: "Building reference graph..."
     },

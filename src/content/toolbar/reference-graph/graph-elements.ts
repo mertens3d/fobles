@@ -37,7 +37,6 @@ export function buildElements(graphReferenceResult: SitecoreHarvestResult): cyto
     buildParentNode(graphReferenceResult, cytoNodes, cytoEdges);
     buildChildNodes(graphReferenceResult, cytoNodes, cytoEdges);
     buildReferrerNode(graphReferenceResult, cytoNodes, cytoEdges);
-    // buildLayoutNode(graphReferenceResult, cytoNodes);
     buildSectionsNode(graphReferenceResult, cytoNodes, cytoEdges);
     return [...cytoNodes, ...cytoEdges];
 }
@@ -66,22 +65,57 @@ function buildTemplateNode(graphReferenceResult: SitecoreHarvestResult, cytoNode
     ]);
 }
 
-function buildSectionsNode(graphReferenceResult: SitecoreHarvestResult, cytoNodes: cytoscape.ElementDefinition[], cytoEdges: cytoscape.ElementDefinition[]) {
+function buildSectionsNode(
+    graphReferenceResult: SitecoreHarvestResult,
+    cytoNodes: cytoscape.ElementDefinition[],
+    cytoEdges: cytoscape.ElementDefinition[],
+) {
     if (graphReferenceResult.sections) {
+        const sectionsId = `${graphReferenceResult.rootItem.itemId}-sections`;
 
-        graphReferenceResult.sections?.forEach((section) => {
+        cytoNodes.push({
+            data: {
+                id: sectionsId,
+                label: "Sections",
+                link: undefined,
+                tooltip: buildTooltip("Sections", undefined, undefined),
+            },
+            classes: `${kindClass("structural")} ${REFERENCE_GRAPH.FILTER_CLASS.sections}`,
+        });
+
+        cytoEdges.push({
+            data: {
+                id: `edge-${sectionsId}`,
+                source: graphReferenceResult.rootItem.itemId,
+                target: sectionsId,
+            },
+        });
+
+        const sectionsWithValues = graphReferenceResult.sections?.filter(
+            (section) => section.fields.some((field) => Boolean(field.value)),
+        ) ?? [];
+
+        sectionsWithValues.forEach((section) => {
             const sectionId = `${graphReferenceResult.rootItem.itemId}-section-${slugify(section.name)}`;
+
             cytoNodes.push({
                 data: {
                     id: sectionId,
-                    label: buildLabel(REFERENCE_GRAPH.NODE_KIND.SECTION, section.name),
+                    parent: sectionsId,
+                    label: buildLabel(
+                        REFERENCE_GRAPH.NODE_KIND.SECTION,
+                        section.name,
+                    ),
                     link: undefined,
-                    tooltip: buildTooltip(section.name, undefined, undefined),
+                    tooltip: buildTooltip(
+                        section.name,
+                        undefined,
+                        undefined,
+                    ),
                 },
                 classes: `${kindClass(REFERENCE_GRAPH.NODE_KIND.SECTION)} ${REFERENCE_GRAPH.FILTER_CLASS.sections}`,
             });
-            cytoEdges.push({ data: { id: `edge-${sectionId}`, source: graphReferenceResult.rootItem.itemId, target: sectionId } });
-
+            console.log("SECTION FIELDS", section.name, section.fields);
             const fieldIds = appendCompoundChildren(
                 cytoNodes,
                 sectionId,
@@ -90,14 +124,13 @@ function buildSectionsNode(graphReferenceResult: SitecoreHarvestResult, cytoNode
                     value: field.value,
                     category: REFERENCE_GRAPH.NODE_KIND.FIELD,
                     filterClass: REFERENCE_GRAPH.FILTER_CLASS.sections,
-                }))
+                })),
             );
 
-            // Fields a link-strategy recognized (reference-graph-field-links.ts) get their referenced
-            // items as their own clickable satellites, hung off the field's own compound node.
             section.fields.forEach((field, index) => {
                 const fieldId = fieldIds[index];
                 if (!fieldId || !field.links) return;
+
                 appendSatellites(
                     cytoNodes,
                     cytoEdges,
@@ -108,7 +141,7 @@ function buildSectionsNode(graphReferenceResult: SitecoreHarvestResult, cytoNode
                         link: buildFoblesUrl(link.itemId),
                         path: link.itemId,
                         filterClass: REFERENCE_GRAPH.FILTER_CLASS.sections,
-                    }))
+                    })),
                 );
             });
         });

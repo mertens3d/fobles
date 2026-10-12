@@ -3,8 +3,9 @@
 import type { HarvestSitecoreMessage } from "./sitecore-harvester.messages";
 import type { SitecoreHarvestResult, BackgroundHarvestContext, HarvestProgressStatus, StepKey } from "../sitecore-harvester.types";
 import { extensionLog } from "../../logger";
+import { CONST } from "../../../constants/const";
 
-const DEBUG_BACKGROUND_HARVEST = true;
+
 
 async function sendHarvestMessage(
     tabId: number,
@@ -74,7 +75,7 @@ export async function harvestSitecoreInBackgroundTab(
     backgroundHarvestContext: BackgroundHarvestContext
 ): Promise<SitecoreHarvestResult | undefined> {
     const tab = await chrome.tabs.create({
-        active: DEBUG_BACKGROUND_HARVEST,
+        active: CONST.FOBLES.REFERENCE_GRAPH. DEBUG_BACKGROUND_HARVEST,
     });
 
     if (tab.id === undefined) {
@@ -113,7 +114,7 @@ export async function harvestSitecoreInBackgroundTab(
 
         return result;
     } finally {
-        if (!DEBUG_BACKGROUND_HARVEST) {
+        if (!CONST.FOBLES.REFERENCE_GRAPH. DEBUG_BACKGROUND_HARVEST) {
             await chrome.tabs.remove(tabId);
         }
     }
