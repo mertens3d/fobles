@@ -12,6 +12,8 @@ const RELAYED_COMMANDS: readonly string[] = [
   MESSAGE.ACTION.TOGGLE_LBOLT,
 ];
 
+
+
 chrome.commands?.onCommand?.addListener((command: string) => {
   if (!RELAYED_COMMANDS.includes(command)) return;
 

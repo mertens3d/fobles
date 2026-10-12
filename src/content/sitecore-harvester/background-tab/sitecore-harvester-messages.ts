@@ -34,11 +34,22 @@ export function registerSitecoreHarvesterMessageHandler(): void {
                 status: "complete",
             } satisfies SitecoreHarvestProgressMessage);
 
+            extensionLog.debug("HARVEST HANDLER START", {
+                requestId: message.requestId,
+                url: document.URL,
+            });
+
             void harvestSitecore(
                 document,
                 controller.signal,
                 message.filters,
                 (step, status) => {
+                    extensionLog.debug("HARVEST STEP", {
+                        requestId: message.requestId,
+                        stepKey: step.stepKey,
+                        status,
+                    });
+
                     void chrome.runtime.sendMessage({
                         type: "SITECORE_HARVEST_PROGRESS",
                         requestId: message.requestId,
@@ -48,13 +59,31 @@ export function registerSitecoreHarvesterMessageHandler(): void {
                         status,
                     } satisfies SitecoreHarvestProgressMessage);
                 },
-            ).then((result) => {
-                extensionLog.debug("HARVEST HANDLER RESULT", result);
-                sendResponse(result);
-            });
+            )
+                .then((result) => {
+                    extensionLog.debug("HARVEST HANDLER SUCCESS", {
+                        requestId: message.requestId,
+                        hasResult: Boolean(result),
+                    });
+
+                    sendResponse(result);
+                })
+                .catch((error) => {
+                    extensionLog.error("HARVEST HANDLER FAILED", {
+                        requestId: message.requestId,
+                        error,
+                    });
+
+                    sendResponse(undefined);
+                })
+                .finally(() => {
+                    extensionLog.debug("HARVEST HANDLER SETTLED", {
+                        requestId: message.requestId,
+                    });
+                });
 
             return true;
-        },
+        }
     );
 
     extensionLog.debug("SENDING SITECORE_HARVESTER_READY", window.top === window);

@@ -4,6 +4,8 @@ import type { HarvestSitecoreMessage } from "./sitecore-harvester.messages";
 import type { SitecoreHarvestResult, BackgroundHarvestContext, HarvestProgressStatus, StepKey } from "../sitecore-harvester.types";
 import { extensionLog } from "../../logger";
 
+const DEBUG_BACKGROUND_HARVEST = true;
+
 async function sendHarvestMessage(
     tabId: number,
     message: HarvestSitecoreMessage,
@@ -20,7 +22,11 @@ async function sendHarvestMessage(
             result = await chrome.tabs.sendMessage<
                 HarvestSitecoreMessage,
                 SitecoreHarvestResult | undefined
-            >(tabId, message, { frameId: 0 });
+            >(
+                tabId,
+                message,
+                { frameId: 0 },
+            );
 
             extensionLog.debug("HARVEST SEND SUCCESS", {
                 tabId,
@@ -46,6 +52,18 @@ async function sendHarvestMessage(
             await new Promise((resolve) => setTimeout(resolve, 50));
         }
     }
+
+    extensionLog.debug("HARVEST SEND WAITING FOR RESPONSE", {
+        tabId,
+        attempt,
+    });
+
+    extensionLog.debug("HARVEST SEND RESPONSE RECEIVED", {
+        tabId,
+        attempt,
+        hasResult: Boolean(result),
+    });
+
     if (attempt >= maxAttempts) {
         extensionLog.debug("HARVEST SEND MAX ATTEMPTS REACHED", { tabId, maxAttempts, hasResult: result !== undefined });
     }
@@ -56,7 +74,7 @@ export async function harvestSitecoreInBackgroundTab(
     backgroundHarvestContext: BackgroundHarvestContext
 ): Promise<SitecoreHarvestResult | undefined> {
     const tab = await chrome.tabs.create({
-        active: false,
+        active: DEBUG_BACKGROUND_HARVEST,
     });
 
     if (tab.id === undefined) {
@@ -95,7 +113,9 @@ export async function harvestSitecoreInBackgroundTab(
 
         return result;
     } finally {
-        await chrome.tabs.remove(tabId);
+        if (!DEBUG_BACKGROUND_HARVEST) {
+            await chrome.tabs.remove(tabId);
+        }
     }
 }
 

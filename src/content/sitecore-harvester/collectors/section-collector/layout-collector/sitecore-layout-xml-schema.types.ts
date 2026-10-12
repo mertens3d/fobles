@@ -7,7 +7,7 @@ export type SitecoreLayoutXml = {
 export type SitecoreDeviceXml = {
     id: string;
     l?: string;
-    r: SitecoreRenderingXml[];
+    r?: SitecoreRenderingXml[];
 };
 
 export type SitecoreRenderingXml = {

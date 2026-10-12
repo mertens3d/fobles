@@ -36,7 +36,7 @@ const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: str
                     controls: []
                 };
 
-                for (const rendering of device.r) {
+                for (const rendering of device.r ?? []) {
                     const control: HarvestGraphControl = {
 
                         renderingId: rendering["s:id"],
