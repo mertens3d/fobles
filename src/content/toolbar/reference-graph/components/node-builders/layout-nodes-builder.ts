@@ -1,7 +1,7 @@
 import type cytoscape from "cytoscape";
 import type {  SitecoreHarvestResult } from "../../../../sitecore-harvester/sitecore-harvester.types";
 import { CONST } from "../../../../../constants/const";
-import { appendCompoundGraphNode, createLayoutTree } from "./layout-tree-builder";
+import { appendCompoundGraphNode, createLayoutTree } from "../data-builders/layout-tree-builder";
 
 export function buildLayoutNodes(
     graphReferenceResult: SitecoreHarvestResult,

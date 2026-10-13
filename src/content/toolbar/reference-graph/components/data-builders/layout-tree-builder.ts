@@ -15,9 +15,9 @@ import { buildLabel } from "../../cytoscape/graph-node-helpers";
 import { buildTooltip, buildTooltipContent } from "../../graph-tooltip";
 import type { SatelliteDescriptor } from "../../reference-graph.types";
 import { CONST } from "../../../../../constants/const";
-import { createPlaceholderTreeNodes } from "./placeholder-tree-nodes";
+import { createPlaceholderTreeNodes } from "../node-builders/placeholder-tree-nodes";
 import type { CompoundGraphNode } from "../../graph.types";
-import { createPlaceholderGraphNodes } from "./placeholder-graph-nodes";
+import { createPlaceholderGraphNodes } from "../node-builders/placeholder-graph-nodes";
 
 export function createScopedId(...parts: Array<string | undefined>): string {
   return parts
@@ -26,7 +26,7 @@ export function createScopedId(...parts: Array<string | undefined>): string {
     .join("-");
 }
 
-function createDeviceTree(
+function createDeviceGraphNode(
   layoutId: string,
   device: LayoutDevice,
   deviceIndex: number,
@@ -46,7 +46,7 @@ function createDeviceTree(
     device.scDeviceItem?.scItemId ?? String(deviceIndex),
   );
 
-  const placeholderTrees = createPlaceholderTreeNodes(device.controls); 
+  const placeholderTrees = createPlaceholderTreeNodes(device.controls);
   const placeholderGraphNodes = createPlaceholderGraphNodes(deviceNodeId, placeholderTrees);
 
   return {
@@ -85,17 +85,18 @@ export function createRenderingTree(
       item: control.datasource,
     };
 
+
+    const datasourceLabel = control.datasource.scItemName ?? lastPathSegment(control.datasource.scItemPath) ?? control.datasource.scItemId ?? "Unknown datasource";
+    const enhancedDatasourceLabel = `Datasource: ${datasourceLabel}`;
+
+
     children.push({
       nodeTargetId: createScopedId(
         renderingNodeId,
         CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.DATASOURCE,
       ),
       item: control.datasource,
-      label:
-        control.datasource.scItemName ??
-        lastPathSegment(control.datasource.scItemPath) ??
-        control.datasource.scItemId ??
-        "Unknown datasource",
+      label: enhancedDatasourceLabel,
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
       link: control.datasource.link,
       drillDown: Boolean(control.datasource.link),
@@ -107,7 +108,7 @@ export function createRenderingTree(
   const parameters = Object.entries(control.parameters);
 
   if (parameters.length > 0) {
-    children.push(createRenderingParametersTree(renderingNodeId, parameters));
+    children.push(createRenderingParametersNodes(renderingNodeId, parameters));
   }
 
   const renderingDescriptor: SatelliteDescriptor = {
@@ -121,8 +122,8 @@ export function createRenderingTree(
     label: rendering.scItemName ?? rendering.scItemId ?? "Unknown rendering",
     item: rendering,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CONTROL,
-    
-    relationshipToParent: "edge", 
+
+    relationshipToParent: "edge",
 
     link: rendering.link,
     drillDown: Boolean(rendering.link),
@@ -130,7 +131,9 @@ export function createRenderingTree(
     children,
   };
 }
-function createRenderingParametersTree(
+
+
+function createRenderingParametersNodes(
   renderingNodeId: string,
   parameters: Array<[string, string]>,
 ): CompoundGraphNode {
@@ -139,7 +142,7 @@ function createRenderingParametersTree(
     value: "Rendering Parameters",
   };
 
-  return {
+  const renderingParametersNode: CompoundGraphNode = {
     nodeTargetId: createScopedId(
       renderingNodeId,
       CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETERS,
@@ -148,28 +151,35 @@ function createRenderingParametersTree(
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     item: undefined,
     tooltip: buildTooltipContent(buildTooltip(parametersDescriptor)),
+    
     children: parameters.map(([name, value]): CompoundGraphNode => {
-      const parameterDescriptor: SatelliteDescriptor = {
-        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
-        value: name,
-        path: value || undefined,
-
-      };
-
-      return {
-        nodeTargetId: createScopedId(
-          renderingNodeId,
-          CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETER,
-          name,
-        ),
-        label: value ? `${name}: ${value}` : name,
-        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
-        relationshipToParent: "compound", // <-- contained by rendering
-        tooltip: buildTooltipContent(buildTooltip(parameterDescriptor)),
-        children: [],
-        item: undefined,
-      };
+      return createSingleParameterNode(name, value, renderingNodeId);
     }),
+  };
+
+  return renderingParametersNode;
+
+}
+
+function createSingleParameterNode(name: string, value: string, renderingNodeId: string): CompoundGraphNode {
+  const parameterDescriptor: SatelliteDescriptor = {
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
+    value: name,
+    path: value || undefined,
+  };
+
+  return {
+    nodeTargetId: createScopedId(
+      renderingNodeId,
+      CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETER,
+      name
+    ),
+    label: value ? `${name}: ${value}` : name,
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
+    relationshipToParent: "compound", // <-- contained by rendering
+    tooltip: buildTooltipContent(buildTooltip(parameterDescriptor)),
+    children: [],
+    item: undefined,
   };
 }
 
@@ -252,10 +262,10 @@ function createLayoutSectionTree(
     nodeTargetId: layoutId,
     label: descriptor.value ?? "",
     kind: descriptor.kind,
-    item: undefined,    
+    item: undefined,
     tooltip: buildTooltipContent(buildTooltip(descriptor)),
     children: (layout.devices ?? []).map((device, deviceIndex) =>
-      createDeviceTree(layoutId, device, deviceIndex),
+      createDeviceGraphNode(layoutId, device, deviceIndex),
     ),
   };
 }

@@ -1,6 +1,6 @@
 // @source-path [Fobles] src/content/toolbar/reference-graph/components/node-builders/placeholder-graph-nodes.ts
 
-import { createRenderingTree, createScopedId } from "./layout-tree-builder";
+import { createRenderingTree, createScopedId } from "../data-builders/layout-tree-builder";
 import { type CompoundGraphNode } from "../../graph.types";
 import { CONST } from "../../../../../constants/const";
 import { buildTooltipContent, buildTooltip } from "../../graph-tooltip";
@@ -50,7 +50,7 @@ function createPlaceholderGraphNode(
     ),
     item: undefined,
     label: segment,
-      relationshipToParent: "edge", // <-- HERE
+    relationshipToParent: "edge", // <-- HERE
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     tooltip: buildTooltipContent(buildTooltip(descriptor)),
     children,
