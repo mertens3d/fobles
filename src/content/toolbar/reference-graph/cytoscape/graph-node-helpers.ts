@@ -29,8 +29,7 @@ export function appendSatellites(
         if (!value) return;
 
         const link =
-            descriptor.item?.link ??
-            descriptor.link;
+            descriptor.item?.link;
 
         const nodeId =
             `${parentId}-${slugify(descriptor.kind)}-${index}`;
@@ -87,8 +86,7 @@ export function appendCompoundChildren(
         if (!value) return undefined;
 
         const link =
-            descriptor.item?.link ??
-            descriptor.link;
+            descriptor.item?.link 
 
         const nodeId =
             `${parentId}-${slugify(descriptor.kind)}-${index}`;

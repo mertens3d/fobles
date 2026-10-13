@@ -4,6 +4,12 @@ import type { LayoutPreset, LayoutGraphPresetName } from "../content/toolbar/ref
 import type { StepKey } from "../content/sitecore-harvester/sitecore-harvester.types";
 import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE";
 
+
+export type LayoutScope =
+    typeof REFERENCE_GRAPH.LAYOUT_SCOPE[
+        keyof typeof REFERENCE_GRAPH.LAYOUT_SCOPE
+    ];
+
 export const REFERENCE_GRAPH = {
     DEBUG_BACKGROUND_HARVEST: false,
     TEXT: {
@@ -33,6 +39,12 @@ export const REFERENCE_GRAPH = {
         MAIN_LAYOUT_BOX_NODE_ID: "fobles-reference-graph-layout-box",
 
     },
+    LAYOUT_SCOPE:{
+        DATASOURCE: "Datasource",
+        PARAMETER: "Parameter",
+        PARAMETERS: "Parameters",
+        PLACEHOLDER: "Placeholder",
+    } as const,
     NODE_KIND: _REFERENCE_GRAPH_BASE.NODE_KIND,
     KIND_COLORS: {
         // One distinct color per kind instead of the old flat "dashed = satellite" look - a structural
