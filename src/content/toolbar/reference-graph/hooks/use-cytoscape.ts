@@ -15,7 +15,7 @@ import {
 import { REFERENCE_GRAPH_STYLE } from "../cytoscape/cytoscape-style";
 import { runGraphLayout } from "../cytoscape/graph-layout";
 import { attachGraphEventHandlers } from "../event-handlers";
-import { buildElements } from "../graph-elements";
+import { buildElements } from "../graph-nodes/graph-elements";
 import { getEnabledFilterKeys } from "../graph-filters";
 import { hideActiveTooltip } from "../graph-tooltip";
 import type { LayoutGraphPresetName } from "../graph.types";

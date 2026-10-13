@@ -1,5 +1,5 @@
 import type cytoscape from "cytoscape";
-import { kindClass } from "../graph-helpers";
+import { kindClass } from "../graph-nodes/graph-helpers";
 import { CONST } from "../../../../constants/const";
 
 type CytoscapeStyle = NonNullable<cytoscape.CytoscapeOptions["style"]>;
@@ -78,7 +78,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
         },
     },
     {
-        selector: "edge",
+        selector: "related",
         style: { "curve-style": "bezier", "target-arrow-shape": "triangle", width: 1 },
     },
 

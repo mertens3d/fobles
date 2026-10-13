@@ -1,5 +1,5 @@
 import type cytoscape from "cytoscape";
-import { slugify, kindClass } from "../graph-helpers";
+import { slugify, kindClass } from "../graph-nodes/graph-helpers";
 import { buildTooltip } from "../graph-tooltip";
 import type { SatelliteDescriptor } from "../reference-graph.types";
 import type { ItemGraphNodeData } from "../../../sitecore-harvester/sitecore-harvester.types";

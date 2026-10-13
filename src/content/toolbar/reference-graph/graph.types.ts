@@ -1,11 +1,14 @@
-// @source-path [Fobles] src/content/toolbar/reference-graph/graph.types.ts
+// @source-path [fobles] src/content/toolbar/reference-graph/graph.types.ts
 
 import type cytoscape from "cytoscape";
-import type { ItemGraphNodeData, ScControl } from "../../sitecore-harvester/sitecore-harvester.types";
-import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import type {
+  ScControl,
+  SitecoreHarvestResult,
+} from "../../sitecore-harvester/sitecore-harvester.types";
 import type { BooleanTripleState } from "../../macros/ribbon-toggle-macro";
 
 export type GlyphState = "expanded" | "collapsed" | "leaf";
+
 // POC: harvests the active item's default-device layout straight from the Content Editor's own
 // Layout section, instead of navigating LayoutDetails/DeviceEditor/SelectRendering/Field Editor -
 // requires View > Standard Fields and View > Raw Values both enabled so the raw layout XML field
@@ -22,40 +25,27 @@ export type PendingReferenceGraph = {
   cancelled: boolean;
   graph: SitecoreHarvestResult | undefined;
 };
+
 export type LayoutPreset = {
   label: string;
   build: () => cytoscape.LayoutOptions;
 };
-export type LayoutGraphPresetName = "dagre" | "cose-bilkent" | "fcose" | "breadthfirst";
+
+export type LayoutGraphPresetName =
+  | "dagre"
+  | "cose-bilkent"
+  | "fcose"
+  | "breadthfirst";
 
 export type PlaceholderGroupControl = {
   control: ScControl;
   index: number;
 };
 
-// Placeholder keys are themselves paths (e.g. "main/vert-column-1" is a nested placeholder
-// inside "main") - so groups nest the same way: "main/vert-column-1" is a compound child of
-// "main", not its sibling. A Map keyed by the normalized full path dedupes/links ancestors
-// regardless of which order controls are visited in; ensurePlaceholderGroup recursively
-// creates any ancestor group that doesn't have its own controls yet (just a pass-through box).
 export type PlaceholderGroup = {
   id: string;
   label: string;
   parentId: string;
   controls: PlaceholderGroupControl[];
 };
-
-export type GraphRelationship = "compound" | "edge";
-
-export type CompoundGraphNode = {
-  item: ItemGraphNodeData | undefined;
-  nodeTargetId: string;
-  label: string;
-  kind: string;
-  link?: string;
-  drillDown?: boolean;
-  tooltip?: HTMLElement;
-  relationshipToParent?: GraphRelationship;
-  children: CompoundGraphNode[];
-};
-
+``

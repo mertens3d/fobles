@@ -19,7 +19,7 @@ import {
     openReferenceGraphProgressModal,
 } from "./build-progress";
 import { GraphToolbar } from "./components/graph-toolbar";
-import { buildElements } from "./graph-elements";
+import { buildElements } from "./graph-nodes/graph-elements";
 import {
     createAllFiltersState,
     createSingleFilterState,

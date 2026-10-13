@@ -1,5 +1,5 @@
-import type { ScControl } from "../../../../sitecore-harvester/sitecore-harvester.types";
-import { stripDynamicPlaceholderSuffix } from "../../graph-helpers";
+import type { ScControl } from "../../../sitecore-harvester/sitecore-harvester.types";
+import { stripDynamicPlaceholderSuffix } from "../graph-nodes/graph-helpers";
 
 export type PlaceholderTreeNode = {
   path: string;
