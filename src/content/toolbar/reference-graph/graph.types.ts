@@ -1,3 +1,5 @@
+// @source-path [Fobles] src/content/toolbar/reference-graph/graph.types.ts
+
 import type cytoscape from "cytoscape";
 import type { ItemGraphNodeData, ScControl } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";

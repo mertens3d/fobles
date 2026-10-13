@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/components/node-builders/new-functions.ts
+// @source-path [Fobles] src/content/toolbar/reference-graph/components/node-builders/layout-tree-builder.ts
 
 import type {
   ScControl,
@@ -15,9 +15,9 @@ import { buildLabel } from "../../cytoscape/graph-node-helpers";
 import { buildTooltip, buildTooltipContent } from "../../graph-tooltip";
 import type { SatelliteDescriptor } from "../../reference-graph.types";
 import { CONST } from "../../../../../constants/const";
-import { createPlaceholderTreeNodes } from "./layout-placeholder-tree";
+import { createPlaceholderTreeNodes } from "./placeholder-tree-nodes";
 import type { CompoundGraphNode } from "../../graph.types";
-import { createPlaceholderGraphNodes } from "./layout-placeholder-nodes";
+import { createPlaceholderGraphNodes } from "./placeholder-graph-nodes";
 
 export function createScopedId(...parts: Array<string | undefined>): string {
   return parts

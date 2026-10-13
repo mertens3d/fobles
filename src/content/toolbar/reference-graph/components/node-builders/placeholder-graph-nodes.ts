@@ -1,9 +1,11 @@
+// @source-path [Fobles] src/content/toolbar/reference-graph/components/node-builders/placeholder-graph-nodes.ts
+
 import { createRenderingTree, createScopedId } from "./layout-tree-builder";
 import { type CompoundGraphNode } from "../../graph.types";
 import { CONST } from "../../../../../constants/const";
 import { buildTooltipContent, buildTooltip } from "../../graph-tooltip";
 import type { SatelliteDescriptor } from "../../reference-graph.types";
-import type { PlaceholderTreeNode } from "./layout-placeholder-tree";
+import type { PlaceholderTreeNode } from "./placeholder-tree-nodes";
 
 export function createPlaceholderGraphNodes(
   deviceNodeId: string,
@@ -19,7 +21,7 @@ function createPlaceholderGraphNode(
   placeholder: PlaceholderTreeNode,
 ): CompoundGraphNode {
   const segments = placeholder.path.split("/");
-const segment = segments[segments.length - 1] ?? placeholder.path;
+  const segment = segments[segments.length - 1] ?? placeholder.path;
 
   const descriptor: SatelliteDescriptor = {
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
@@ -32,16 +34,12 @@ const segment = segments[segments.length - 1] ?? placeholder.path;
 
   // Convert child placeholders recursively
   placeholder.placeholders.forEach((childPlaceholder) => {
-    children.push(
-      createPlaceholderGraphNode(deviceNodeId, childPlaceholder),
-    );
+    children.push(createPlaceholderGraphNode(deviceNodeId, childPlaceholder));
   });
 
   // Convert controls/renderings
   placeholder.controls.forEach((control, controlIndex) => {
-    children.push(
-      createRenderingTree(deviceNodeId, control, controlIndex),
-    );
+    children.push(createRenderingTree(deviceNodeId, control, controlIndex));
   });
 
   return {
