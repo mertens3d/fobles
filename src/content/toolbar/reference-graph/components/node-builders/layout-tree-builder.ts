@@ -1,41 +1,29 @@
 // @source-path [fobles] src/content/toolbar/reference-graph/components/node-builders/new-functions.ts
 
 import type {
-  HarvestGraphControl,
+  ScControl,
   LayoutDevice,
   LayoutSectionField,
   SitecoreHarvestResult,
-  ItemGraphNodeData,
 } from "../../../../sitecore-harvester/sitecore-harvester.types";
 import {
   kindClass,
   slugify,
-  stripDynamicPlaceholderSuffix,
 } from "../../graph-helpers";
 import { lastPathSegment } from "../../cytoscape/graph-node-helpers";
 import { buildLabel } from "../../cytoscape/graph-node-helpers";
 import { buildTooltip, buildTooltipContent } from "../../graph-tooltip";
 import type { SatelliteDescriptor } from "../../reference-graph.types";
 import { CONST } from "../../../../../constants/const";
+import { createPlaceholderTrees } from "./layout-placeholder-nodes";
+import type { CompoundGraphNode } from "../../graph.types";
 
-function createScopedId(...parts: Array<string | undefined>): string {
+export function createScopedId(...parts: Array<string | undefined>): string {
   return parts
     .filter((part): part is string => Boolean(part))
     .map(slugify)
     .join("-");
 }
-
-type CompoundGraphNode = {
-  item: ItemGraphNodeData | undefined;
-  nodeTargetId: string;
-  label: string;
-  kind: string;
-  link?: string;
-  drillDown?: boolean;
-  tooltip?: HTMLElement;
-  children: CompoundGraphNode[];
-};
-
 
 function createDeviceTree(
   layoutId: string,
@@ -72,9 +60,9 @@ function createDeviceTree(
   };
 }
 
-function createRenderingTree(
+export function createRenderingTree(
   deviceNodeId: string,
-  control: HarvestGraphControl,
+  control: ScControl,
   controlIndex: number,
 ): CompoundGraphNode {
   const rendering = control.rendering;
@@ -220,6 +208,7 @@ export function createLayoutTree(
     ),
   };
 }
+
 function createLayoutSectionTree(
   layout: LayoutSectionField,
 ): CompoundGraphNode {
@@ -244,65 +233,5 @@ function createLayoutSectionTree(
     ),
   };
 }
-function createPlaceholderTrees(
-  deviceNodeId: string,
-  controls: HarvestGraphControl[],
-): CompoundGraphNode[] {
-  const roots: CompoundGraphNode[] = [];
-  const placeholders = new Map<string, CompoundGraphNode>();
 
-  controls.forEach((control, controlIndex) => {
-    const rawPath = control.placeholder || "(no placeholder)";
 
-    const segments = rawPath
-      .split("/")
-      .filter(Boolean)
-      .map(stripDynamicPlaceholderSuffix);
-
-    const normalizedSegments = segments.length > 0 ? segments : [rawPath];
-
-    let parentChildren = roots;
-    let currentPath = "";
-
-    normalizedSegments.forEach((segment) => {
-      currentPath = currentPath ? `${currentPath}/${segment}` : segment;
-
-      let placeholder = placeholders.get(currentPath);
-
-      if (!placeholder) {
-        const descriptor: SatelliteDescriptor = {
-          kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
-          value: segment,
-          path: currentPath,
-          placeholder: currentPath,
-        };
-
-         const newPlaceholder: CompoundGraphNode =  {
-          nodeTargetId: createScopedId(
-            deviceNodeId,
-            CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
-            currentPath,
-          ),
-          item: undefined,
-          label: segment,
-          kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
-          tooltip: buildTooltipContent(buildTooltip(descriptor)),
-          children: [],
-        };
-
-        placeholders.set(currentPath, newPlaceholder);
-
-        parentChildren.push(newPlaceholder);
-        placeholder = newPlaceholder;
-      }
-
-      parentChildren = placeholder.children;
-    });
-
-    parentChildren.push(
-      createRenderingTree(deviceNodeId, control, controlIndex),
-    );
-  });
-
-  return roots;
-}

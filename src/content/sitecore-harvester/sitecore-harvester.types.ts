@@ -88,7 +88,7 @@ export type LayoutSectionField = {
   devices: LayoutDevice[];
 };
 
-export type HarvestGraphControl = {
+export type ScControl = {
     uid: string | undefined;
     rendering: ItemGraphNodeData;
     datasource: ItemGraphNodeData | undefined;
@@ -110,7 +110,7 @@ export type SitecoreHarvestField = {
 export type LayoutDevice = {
   scLayoutViewItem: ItemGraphNodeData | undefined;
   scDeviceItem: ItemGraphNodeData;
-  controls: HarvestGraphControl[];
+  controls: ScControl[];
 };
 
 export type HarvestFieldLink = {

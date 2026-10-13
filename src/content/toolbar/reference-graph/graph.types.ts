@@ -1,5 +1,5 @@
 import type cytoscape from "cytoscape";
-import type { HarvestGraphControl } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { ItemGraphNodeData, ScControl } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { BooleanTripleState } from "../../macros/ribbon-toggle-macro";
 
@@ -27,7 +27,7 @@ export type LayoutPreset = {
 export type LayoutGraphPresetName = "dagre" | "cose-bilkent" | "fcose" | "breadthfirst";
 
 export type PlaceholderGroupControl = {
-  control: HarvestGraphControl;
+  control: ScControl;
   index: number;
 };
 
@@ -42,3 +42,15 @@ export type PlaceholderGroup = {
   parentId: string;
   controls: PlaceholderGroupControl[];
 };
+
+export type CompoundGraphNode = {
+  item: ItemGraphNodeData | undefined;
+  nodeTargetId: string;
+  label: string;
+  kind: string;
+  link?: string;
+  drillDown?: boolean;
+  tooltip?: HTMLElement;
+  children: CompoundGraphNode[];
+};
+

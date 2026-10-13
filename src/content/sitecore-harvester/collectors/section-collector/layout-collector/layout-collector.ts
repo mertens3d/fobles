@@ -1,5 +1,5 @@
 import { findFieldInput } from "../../helpers/harvest-helpers";
-import { factoryItemGraphNodeData, type HarvestContext, type HarvestGraphControl, type ItemGraphNodeData, type LayoutDevice, type LayoutSectionField } from "../../../sitecore-harvester.types";
+import { factoryItemGraphNodeData, type HarvestContext, type ScControl, type ItemGraphNodeData, type LayoutDevice, type LayoutSectionField } from "../../../sitecore-harvester.types";
 import { XMLParser } from "fast-xml-parser";
 import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
 
@@ -50,7 +50,7 @@ const processLayoutFieldValue = (
                         harvestContext.rootItem.scItemPath,
                     );
 
-                    const control: HarvestGraphControl = {
+                    const control: ScControl = {
                         rendering: renderingItem,
                         datasource: datasourceItem,
                         placeholder: rendering["s:ph"],
