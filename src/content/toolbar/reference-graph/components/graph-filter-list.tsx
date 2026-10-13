@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/reference-graph/components/graph-filter-list.tsx
 
-import { REFERENCE_GRAPH } from "../../../../constants/graph.const";
+import { CONST } from "../../../../constants/const";
 import type { SitecoreHarvestFiltersState } from "../../../sitecore-harvester/sitecore-harvester.types";
 
 type GraphFilterListProps = {
@@ -26,7 +26,7 @@ export function GraphFilterList({
                 Clear
             </button>
 
-            {REFERENCE_GRAPH.FILTER_DEFS.map((filter) => (
+            {CONST.FOBLES.REFERENCE_GRAPH.FILTER_DEFS.map((filter) => (
                 <label
                     key={filter.key}
                     className="fobles-reference-graph-filter"

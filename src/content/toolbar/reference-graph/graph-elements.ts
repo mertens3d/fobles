@@ -1,8 +1,7 @@
 // @source-path [fobles] src/content/toolbar/reference-graph/graph-elements.ts
 
 import type cytoscape from "cytoscape";
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { CONST } from "../../../constants/const";
+    import { CONST } from "../../../constants/const";
 import type {
   HarvestFieldLink,
   SitecoreHarvestField,
@@ -24,7 +23,7 @@ export function buildElements(
 ): cytoscape.ElementDefinition[] {
   const rootDescriptor = createItemSatelliteDescriptor(
     graphReferenceResult.rootItem,
-    REFERENCE_GRAPH.NODE_KIND.ITEM,
+    CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ITEM,
     "",
   );
 
@@ -33,7 +32,7 @@ export function buildElements(
       data: {
         id: graphReferenceResult.rootItem.itemId,
         label: buildLabel(
-          REFERENCE_GRAPH.NODE_KIND.ITEM,
+          CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ITEM,
           graphReferenceResult.rootItem.name ??
             graphReferenceResult.rootItem.itemId ??
             "Unknown item",
@@ -41,7 +40,7 @@ export function buildElements(
         link: graphReferenceResult.rootItem.link,
         tooltip: buildTooltip(rootDescriptor),
       },
-      classes: kindClass(REFERENCE_GRAPH.NODE_KIND.ITEM),
+      classes: kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ITEM),
     },
   ];
 
@@ -74,8 +73,8 @@ function buildParentNode(
   appendSatellites(cytoNodes, cytoEdges, graphReferenceResult.rootItem.itemId, [
     createItemSatelliteDescriptor(
       graphReferenceResult.parent,
-      REFERENCE_GRAPH.NODE_KIND.PARENT,
-      REFERENCE_GRAPH.FILTER_CLASS.parent,
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PARENT,
+      CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.parent,
     ),
   ]);
 }
@@ -94,8 +93,8 @@ function buildTemplateNode(
   appendSatellites(cytoNodes, cytoEdges, graphReferenceResult.rootItem.itemId, [
     createItemSatelliteDescriptor(
       template,
-      REFERENCE_GRAPH.NODE_KIND.TEMPLATE,
-      REFERENCE_GRAPH.FILTER_CLASS.template,
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.TEMPLATE,
+      CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.template,
     ),
   ]);
 }
@@ -117,7 +116,7 @@ function buildSectionsNode(
   const sectionsId = `${graphReferenceResult.rootItem.itemId}-sections`;
 
   const sectionsDescriptor: SatelliteDescriptor = {
-    kind: "Structural",
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     value: "Sections",
   };
 
@@ -129,7 +128,7 @@ function buildSectionsNode(
       tooltip: buildTooltip(sectionsDescriptor),
     },
     classes:
-      `${kindClass("Structural")} ` + REFERENCE_GRAPH.FILTER_CLASS.sections,
+      `${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL)} ` + CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.sections,
   });
 
   cytoEdges.push({
@@ -146,7 +145,7 @@ function buildSectionsNode(
       `-section-${slugify(section.name)}`;
 
     const sectionDescriptor: SatelliteDescriptor = {
-      kind: REFERENCE_GRAPH.NODE_KIND.SECTION,
+      kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.SECTION,
       value: section.name,
     };
 
@@ -162,8 +161,8 @@ function buildSectionsNode(
         tooltip: buildTooltip(sectionDescriptor),
       },
       classes:
-        `${kindClass(REFERENCE_GRAPH.NODE_KIND.SECTION)} ` +
-        REFERENCE_GRAPH.FILTER_CLASS.sections,
+        `${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.SECTION)} ` +
+        CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.sections,
     });
 
     const fieldIds = appendCompoundChildren(
@@ -173,8 +172,8 @@ function buildSectionsNode(
         (field: SitecoreHarvestField): SatelliteDescriptor => ({
           kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.FIELD,
           value: field.value,
-          category: REFERENCE_GRAPH.NODE_KIND.FIELD,
-          filterClass: REFERENCE_GRAPH.FILTER_CLASS.sections,
+          category: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.FIELD,
+          filterClass: CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.sections,
         }),
       ),
     );
@@ -194,8 +193,8 @@ function buildSectionsNode(
           (link: HarvestFieldLink): SatelliteDescriptor => ({
             ...createItemSatelliteDescriptor(
               link.valueItem,
-              REFERENCE_GRAPH.NODE_KIND.FIELD,
-              REFERENCE_GRAPH.FILTER_CLASS.sections,
+              CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.FIELD,
+              CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.sections,
             ),
             value: link.label,
           }),
@@ -219,7 +218,7 @@ function buildReferrerNode(
   const referrersId = `${graphReferenceResult.rootItem.itemId}-referrers`;
 
   const referrersDescriptor: SatelliteDescriptor = {
-    kind: "Structural",
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     value: `${referrers.length} item(s)`,
   };
 
@@ -231,7 +230,7 @@ function buildReferrerNode(
       tooltip: buildTooltip(referrersDescriptor),
     },
     classes:
-      `${kindClass("Structural")} ` + REFERENCE_GRAPH.FILTER_CLASS.referrers,
+      `${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL)} ` + CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.referrers,
   });
 
   cytoEdges.push({
@@ -248,8 +247,8 @@ function buildReferrerNode(
     referrers.map((referrer) =>
       createItemSatelliteDescriptor(
         referrer,
-        REFERENCE_GRAPH.NODE_KIND.REFERRER,
-        REFERENCE_GRAPH.FILTER_CLASS.referrers,
+        CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.REFERRER,
+        CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.referrers,
       ),
     ),
   );
@@ -269,7 +268,7 @@ function buildChildNodes(
   const childrenId = `${graphReferenceResult.rootItem.itemId}-children`;
 
   const childrenDescriptor: SatelliteDescriptor = {
-    kind: "Structural",
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     value: `${childItems.length} item(s)`,
   };
 
@@ -281,7 +280,7 @@ function buildChildNodes(
       tooltip: buildTooltip(childrenDescriptor),
     },
     classes:
-      `${kindClass("Structural")} ` + REFERENCE_GRAPH.FILTER_CLASS.children,
+      `${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL)} ` + CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.children,
   });
 
   cytoEdges.push({
@@ -298,8 +297,8 @@ function buildChildNodes(
     childItems.map((child) =>
       createItemSatelliteDescriptor(
         child,
-        REFERENCE_GRAPH.NODE_KIND.CHILD,
-        REFERENCE_GRAPH.FILTER_CLASS.children,
+        CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CHILD,
+        CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.children,
       ),
     ),
   );

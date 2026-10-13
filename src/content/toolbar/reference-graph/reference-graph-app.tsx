@@ -29,7 +29,7 @@ import {
 import { hideActiveTooltip } from "./graph-tooltip";
 import type { LayoutGraphPresetName } from "./graph.types";
 import { extensionLog } from "../../logger";
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { CONST } from "../../../constants/const";
 import { runGraphLayout } from "./cytoscape/graph-layout";
 import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";
@@ -80,7 +80,7 @@ export function ReferenceGraphApp({
             cy.add(elements);
             hideActiveTooltip();
 
-            REFERENCE_GRAPH.FILTER_DEFS.forEach(
+            CONST.FOBLES.REFERENCE_GRAPH.FILTER_DEFS.forEach(
                 ({ key, className }) => {
                     cy.elements(`.${className}`).style(
                         "display",

@@ -1,6 +1,5 @@
 import cytoscape from "cytoscape";
 import { useEffect } from "react";
-import { REFERENCE_GRAPH } from "../../../../constants/graph.const";
 import {
     getReferenceGraphFilters,
     getReferenceGraphLayoutName,
@@ -21,6 +20,7 @@ import { getEnabledFilterKeys } from "../graph-filters";
 import { hideActiveTooltip } from "../graph-tooltip";
 import type { LayoutGraphPresetName } from "../graph.types";
 import { extensionLog } from "../../../logger";
+import { CONST } from "../../../../constants/const";
 
 type MutableRef<T> = {
     current: T;
@@ -91,8 +91,8 @@ export function useCytoscape({
         const cy = cytoscape({
             container,
             elements: initialElements,
-            layout: REFERENCE_GRAPH.LAYOUT_PRESETS[
-                REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME
+            layout: CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS[
+                CONST.FOBLES.REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME
             ].build(),
             minZoom: 0.2,
             maxZoom: 3,
@@ -150,7 +150,7 @@ export function useCytoscape({
                     !savedLayoutPresetName ||
                     !(
                         savedLayoutPresetName in
-                        REFERENCE_GRAPH.LAYOUT_PRESETS
+                        CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS
                     )
                 ) {
                     return;

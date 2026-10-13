@@ -1,12 +1,12 @@
 import type cytoscape from "cytoscape";
-import { REFERENCE_GRAPH } from "../../../../constants/graph.const";
 import type { LayoutGraphPresetName } from "../graph.types";
+import { CONST } from "../../../../constants/const";
 
 export function runGraphLayout(
     cy: cytoscape.Core,
     presetName: LayoutGraphPresetName,
 ): void {
     cy.layout(
-        REFERENCE_GRAPH.LAYOUT_PRESETS[presetName].build(),
+        CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS[presetName].build(),
     ).run();
 }

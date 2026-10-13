@@ -1,8 +1,8 @@
 import { useRef, useState } from "react";
 import type { SitecoreHarvestFiltersState,  SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
-import { REFERENCE_GRAPH } from "../../../../constants/graph.const";
 import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../graph-filters";
 import type { LayoutGraphPresetName } from "../graph.types";
+import { CONST } from "../../../../constants/const";
 
 type UseReferenceGraphOptions = {
     initialGraph: SitecoreHarvestResult;
@@ -44,11 +44,11 @@ export function useReferenceGraph({ initialGraph }: UseReferenceGraphOptions): G
 
     const [layoutPresetName, setLayoutPresetName] =
         useState<LayoutGraphPresetName>(
-            REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME,
+            CONST.FOBLES.REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME,
         );
 
     const layoutPresetNameRef: MutableRef<LayoutGraphPresetName> = useRef<LayoutGraphPresetName>(
-        REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME,
+        CONST.FOBLES.REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME,
     );
 
     const [historyCount, setHistoryCount] = useState(0);

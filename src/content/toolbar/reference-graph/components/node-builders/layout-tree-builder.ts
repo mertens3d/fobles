@@ -1,12 +1,12 @@
 // @source-path [fobles] src/content/toolbar/reference-graph/components/node-builders/new-functions.ts
 
-import { REFERENCE_GRAPH } from "../../../../../constants/graph.const";
 import type { HarvestGraphControl, LayoutDevice, LayoutSectionField, SitecoreHarvestResult } from "../../../../sitecore-harvester/sitecore-harvester.types";
 import { kindClass, slugify, stripDynamicPlaceholderSuffix } from "../../graph-helpers";
 import { lastPathSegment } from "../../cytoscape/graph-node-helpers";
 import { buildLabel } from "../../cytoscape/graph-node-helpers";
 import { buildTooltip, buildTooltipContent } from "../../graph-tooltip";
 import type { SatelliteDescriptor } from "../../reference-graph.types";
+import { CONST } from "../../../../../constants/const";
 
 function createScopedId(...parts: Array<string | undefined>): string {
     return parts
@@ -34,10 +34,10 @@ function createDeviceTree(
     const item = device.layoutView;
 
     const descriptor: SatelliteDescriptor = {
-        kind: REFERENCE_GRAPH.NODE_KIND.DEVICE,
+        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DEVICE,
         item,
         value: item?.name ?? "Unknown device",
-        filterClass: REFERENCE_GRAPH.FILTER_CLASS.layouts,
+        filterClass: CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.layouts,
     };
 
     const deviceNodeId = createScopedId(
@@ -88,7 +88,7 @@ function createRenderingTree(
 
     if (control.datasource) {
         const datasourceDescriptor: SatelliteDescriptor = {
-            kind: REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
+            kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
             item: control.datasource,
         };
 
@@ -102,7 +102,7 @@ function createRenderingTree(
                 lastPathSegment(control.datasource.path) ??
                 control.datasource.itemId ??
                 "Unknown datasource",
-            kind: REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
+            kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
             itemId: control.datasource.itemId,
             path: control.datasource.path,
             link: control.datasource.link,
@@ -126,7 +126,7 @@ function createRenderingTree(
     }
 
     const renderingDescriptor: SatelliteDescriptor = {
-        kind: REFERENCE_GRAPH.NODE_KIND.CONTROL,
+        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CONTROL,
         item: rendering,
         placeholder: control.placeholder,
     };
@@ -137,7 +137,7 @@ function createRenderingTree(
             rendering.name ??
             rendering.itemId ??
             "Unknown rendering",
-        kind: REFERENCE_GRAPH.NODE_KIND.CONTROL,
+        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CONTROL,
         itemId: rendering.itemId,
         path: rendering.path,
         link: rendering.link,
@@ -153,7 +153,7 @@ function createRenderingParametersTree(
     parameters: Array<[string, string]>,
 ): CompoundGraphNode {
     const parametersDescriptor: SatelliteDescriptor = {
-        kind: "Structural",
+        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
         value: "Rendering Parameters",
     };
 
@@ -163,13 +163,13 @@ function createRenderingParametersTree(
             "parameters",
         ),
         label: "Rendering Parameters",
-        kind: "Structural",
+        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
         tooltip: buildTooltipContent(
             buildTooltip(parametersDescriptor),
         ),
         children: parameters.map(([name, value]) => {
             const parameterDescriptor: SatelliteDescriptor = {
-                kind: "Structural",
+                kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
                 value: name,
                 path: value || undefined,
             };
@@ -181,7 +181,7 @@ function createRenderingParametersTree(
                     name,
                 ),
                 label: value ? `${name}: ${value}` : name,
-                kind: "Structural",
+                kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
                 tooltip: buildTooltipContent(
                     buildTooltip(parameterDescriptor),
                 ),
@@ -207,7 +207,7 @@ export function appendCompoundGraphNode(
             drillDown: node.drillDown,
             tooltip: node.tooltip,
         },
-        classes: `${kindClass(node.kind)} ${REFERENCE_GRAPH.FILTER_CLASS.layouts}`,
+        classes: `${kindClass(node.kind)} ${CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.layouts}`,
     });
 
     node.children.forEach((child) => {
@@ -223,12 +223,12 @@ export function createLayoutTree(
     graphReferenceResult: SitecoreHarvestResult,
 ): CompoundGraphNode {
     const descriptor: SatelliteDescriptor = {
-        kind: "Structural",
+        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
         value: "Layouts",
     };
 
     return {
-        id: REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
+        id: CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
         label: descriptor.value ?? "",
         kind: descriptor.kind,
         tooltip: buildTooltipContent(
@@ -243,12 +243,12 @@ function createLayoutSectionTree(
     layout: LayoutSectionField,
 ): CompoundGraphNode {
     const layoutId = createScopedId(
-        REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
+       CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
         layout.name,
     );
 
     const descriptor: SatelliteDescriptor = {
-        kind: "Structural",
+        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
         value: layout.name ?? "",
     };
 
@@ -301,7 +301,7 @@ function createPlaceholderTrees(
 
             if (!placeholder) {
                 const descriptor: SatelliteDescriptor = {
-                    kind: "Structural",
+                    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
                     value: segment,
                     path: currentPath,
                     placeholder: currentPath,
@@ -314,7 +314,7 @@ function createPlaceholderTrees(
                         currentPath,
                     ),
                     label: segment,
-                    kind: "Structural",
+                    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
                     tooltip: buildTooltipContent(
                         buildTooltip(descriptor),
                     ),

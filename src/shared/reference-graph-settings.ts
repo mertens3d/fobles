@@ -1,7 +1,7 @@
 // @source-path [fobles] src/shared/reference-graph-settings.ts
 
 import { STORAGE } from "../constants/constants-b";
-import { REFERENCE_GRAPH } from "../constants/graph.const";
+import { CONST } from "../constants/const";
 import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../content/toolbar/reference-graph/graph-filters";
 import type {  LayoutGraphPresetName } from "../content/toolbar/reference-graph/graph.types";
 import type { SitecoreHarvestFiltersState } from "../content/sitecore-harvester/sitecore-harvester.types";
@@ -9,7 +9,7 @@ import { getStorageValue, setStorageValue } from "./storage/storage";
 
 export async function getReferenceGraphLayoutName(): Promise<LayoutGraphPresetName > {
   const result = await getStorageValue<LayoutGraphPresetName>([STORAGE.KEY.REFERENCE_GRAPH.LAYOUT]);
-  return result[STORAGE.KEY.REFERENCE_GRAPH.LAYOUT] ?? result[REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME];
+  return result[STORAGE.KEY.REFERENCE_GRAPH.LAYOUT] ?? result[CONST.FOBLES.REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME];
 }
 
 export async function setReferenceGraphLayout(layout: LayoutGraphPresetName ): Promise<void> {

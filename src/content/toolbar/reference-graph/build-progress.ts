@@ -2,7 +2,7 @@
 
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+
 import {
     isHarvestStep,
     type HarvestProgressStatus,
@@ -13,6 +13,7 @@ import {
     ReferenceGraphProgressDialog,
     type ProgressItem,
 } from "./components/reference-graph-progress-dialog";
+import { CONST } from "../../../constants/const";
 
 let progressRoot: Root | undefined;
 let progressDialog: HTMLDialogElement | undefined;
@@ -124,7 +125,7 @@ export function openReferenceGraphProgressModal(
     const dialog = doc.createElement("dialog");
     const reactHost = doc.createElement("div");
 
-    dialog.id = REFERENCE_GRAPH.PROGRESS_DIALOG_ID;
+    dialog.id = CONST.FOBLES.REFERENCE_GRAPH.PROGRESS_DIALOG_ID;
     dialog.className = "fobles-reference-graph-progress";
 
     dialog.appendChild(reactHost);

@@ -1,6 +1,6 @@
 import type cytoscape from "cytoscape";
 import { kindClass } from "../graph-helpers";
-import { REFERENCE_GRAPH } from "../../../../constants/graph.const";
+import { CONST } from "../../../../constants/const";
 
 type CytoscapeStyle = NonNullable<cytoscape.CytoscapeOptions["style"]>;
 
@@ -33,15 +33,15 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
         },
     },
     {
-        selector: `.${kindClass("Structural")}`,
+        selector: `.${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL)}`,
         style: {
             "font-size": 9,
-            "background-color": REFERENCE_GRAPH.STRUCTURAL_COLOR,
+            "background-color": CONST.FOBLES.REFERENCE_GRAPH.STRUCTURAL_COLOR,
             "background-opacity": 0.15,
-            "border-color": REFERENCE_GRAPH.STRUCTURAL_COLOR,
+            "border-color": CONST.FOBLES.REFERENCE_GRAPH.STRUCTURAL_COLOR,
         },
     },
-    ...Object.entries(REFERENCE_GRAPH.KIND_COLORS).map(([kind, color]) => ({
+    ...Object.entries(CONST.FOBLES.REFERENCE_GRAPH.KIND_COLORS).map(([kind, color]) => ({
         selector: `.${kindClass(kind)}`,
         style: {
             "background-color": color,
@@ -53,7 +53,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
         // The root item is the one node every graph always has - bigger/bolder/more saturated
         // than anything else so it still reads as "the root" no matter which layout algorithm
         // (and whichever node that algorithm happens to visually center) is active.
-        selector: `.${kindClass(REFERENCE_GRAPH.NODE_KIND.ITEM)}`,
+        selector: `.${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ITEM)}`,
         style: {
             "font-size": 13,
             "font-weight": "bold",
