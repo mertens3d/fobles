@@ -15,11 +15,13 @@ export const _REFERENCE_GRAPH_BASE = {
         DATASOURCE: "Datasource",
         VARIANT: "Variant",
         TEMPLATE: "Template",
+        PAGE_LAYOUT: "Page Layout",
         LAYOUTS: "Layouts",
         SECTION: "Section",
         PARENT: "Parent",
         CHILD: "Child",
         REFERRER: "Referrer",
+        RENDERING: "Rendering",
         // Not a real label prefix (each field keeps its own field name as its label) - just the color
         // category every section field node shares, since there's no fixed/finite set of field names.
         FIELD: "Field",

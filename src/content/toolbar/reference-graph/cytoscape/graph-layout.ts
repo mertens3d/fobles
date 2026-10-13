@@ -6,7 +6,24 @@ export function runGraphLayout(
     cy: cytoscape.Core,
     presetName: LayoutGraphPresetName,
 ): void {
+    const preset =
+        CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS[presetName];
+
+    const edges = cy.edges();
+
+    if (preset.edgeStyle === "taxi") {
+        edges.style({
+            "curve-style": "taxi",
+            "taxi-direction": "downward",
+        });
+    } else {
+        edges.style({
+            "curve-style": "bezier",
+            "taxi-direction": "auto",
+        });
+    }
+
     cy.layout(
-        CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS[presetName].build(),
+        preset.build(),
     ).run();
 }

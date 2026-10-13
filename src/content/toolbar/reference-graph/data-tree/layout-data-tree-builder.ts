@@ -38,6 +38,11 @@ export function createLayoutDataTree(
   const treeNodeId =
     CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID;
 
+  const pageLayoutItemsByDeviceId =
+    createPageLayoutItemsByDeviceId(
+      graphReferenceResult.layoutSectionFields ?? [],
+    );
+
   return createDataTreeNonItemNode({
     treeNodeId,
     name: "Layouts",
@@ -45,13 +50,48 @@ export function createLayoutDataTree(
     branch: "layouts",
     relationshipToParent: "related",
     children: (graphReferenceResult.layoutSectionFields ?? []).map(
-      createLayoutSectionDataTree,
+      (layout) =>
+        createLayoutSectionDataTree(
+          layout,
+          pageLayoutItemsByDeviceId,
+        ),
     ),
   });
 }
 
+function createPageLayoutItemsByDeviceId(
+  layoutSectionFields: LayoutSectionField[],
+): Map<string, ItemGraphNodeData> {
+  const pageLayoutItemsByDeviceId =
+    new Map<string, ItemGraphNodeData>();
+
+  layoutSectionFields.forEach((layoutSectionField) => {
+    layoutSectionField.devices.forEach((device) => {
+      const deviceId = device.scDeviceItem.scItemId;
+      const pageLayoutItem = device.scPageLayoutItem;
+
+      if (
+        deviceId &&
+        pageLayoutItem?.scItemId &&
+        !pageLayoutItemsByDeviceId.has(deviceId)
+      ) {
+        pageLayoutItemsByDeviceId.set(
+          deviceId,
+          pageLayoutItem,
+        );
+      }
+    });
+  });
+
+  return pageLayoutItemsByDeviceId;
+}
+
 function createLayoutSectionDataTree(
   layout: LayoutSectionField,
+  pageLayoutItemsByDeviceId: Map<
+    string,
+    ItemGraphNodeData
+  >,
 ): DataTreeNonItemNode {
   const treeNodeId = createDataTreeNodeId(
     CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
@@ -69,6 +109,7 @@ function createLayoutSectionDataTree(
           treeNodeId,
           device,
           deviceIndex,
+          pageLayoutItemsByDeviceId,
         ),
     ),
   });
@@ -78,15 +119,62 @@ function createDeviceDataTreeNode(
   layoutTreeNodeId: string,
   device: LayoutDevice,
   deviceIndex: number,
-): DataTreeNode {
+  pageLayoutItemsByDeviceId: Map<
+    string,
+    ItemGraphNodeData
+  >,
+): DataTreeItemNode {
   const treeNodeId = createDataTreeNodeId(
     layoutTreeNodeId,
     "device",
-    device.scDeviceItem?.scItemId ?? String(deviceIndex),
+    device.scDeviceItem.scItemId ?? String(deviceIndex),
+  );
+
+  const pageLayoutItem =
+    device.scPageLayoutItem ??
+    (
+      device.scDeviceItem.scItemId
+        ? pageLayoutItemsByDeviceId.get(
+            device.scDeviceItem.scItemId,
+          )
+        : undefined
+    );
+
+  const children: DataTreeNode[] = [];
+
+  if (pageLayoutItem) {
+    children.push(
+      createPageLayoutDataTreeNode(
+        treeNodeId,
+        pageLayoutItem,
+        device.scControls,
+      ),
+    );
+  }
+
+  return createDataTreeItemNode({
+    treeNodeId,
+    scItem: device.scDeviceItem,
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DEVICE,
+    branch: "layouts",
+    relationshipToParent: "related",
+    children,
+  });
+}
+
+function createPageLayoutDataTreeNode(
+  deviceTreeNodeId: string,
+  pageLayoutItem: ItemGraphNodeData,
+  controls: ScControl[],
+): DataTreeItemNode {
+  const treeNodeId = createDataTreeNodeId(
+    deviceTreeNodeId,
+    "page-layout",
+    pageLayoutItem.scItemId,
   );
 
   const children = createPlaceholderTreeNodes(
-    device.controls,
+    controls,
   ).map((placeholder) =>
     createPlaceholderDataTreeNode(
       treeNodeId,
@@ -94,33 +182,18 @@ function createDeviceDataTreeNode(
     ),
   );
 
-  let deviceTreeNode: DataTreeNode;
-
-  if (device.scLayoutViewItem) {
-    deviceTreeNode = createDataTreeItemNode({
-      treeNodeId,
-      scItem: device.scLayoutViewItem,
-      kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DEVICE,
-      branch: "layouts",
-      children,
-    });
-  } else {
-    deviceTreeNode = createDataTreeNonItemNode({
-      treeNodeId,
-      name:
-        device.scDeviceItem?.scItemId ??
-        "Unknown device",
-      kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DEVICE,
-      branch: "layouts",
-      children,
-    });
-  }
-
-  return deviceTreeNode;
+  return createDataTreeItemNode({
+    treeNodeId,
+    scItem: pageLayoutItem,
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PAGE_LAYOUT,
+    branch: "layouts",
+    relationshipToParent: "related",
+    children,
+  });
 }
 
 function createPlaceholderDataTreeNode(
-  deviceTreeNodeId: string,
+  pageLayoutTreeNodeId: string,
   placeholder: PlaceholderTreeNode,
 ): DataTreeNonItemNode {
   const placeholderSegments =
@@ -137,7 +210,7 @@ function createPlaceholderDataTreeNode(
     (childPlaceholder) => {
       children.push(
         createPlaceholderDataTreeNode(
-          deviceTreeNodeId,
+          pageLayoutTreeNodeId,
           childPlaceholder,
         ),
       );
@@ -147,8 +220,8 @@ function createPlaceholderDataTreeNode(
   placeholder.controls.forEach(
     (control, controlIndex) => {
       children.push(
-        createRenderingDataTree(
-          deviceTreeNodeId,
+        createRenderingDataTreeNode(
+          pageLayoutTreeNodeId,
           control,
           controlIndex,
         ),
@@ -158,7 +231,7 @@ function createPlaceholderDataTreeNode(
 
   return createDataTreeNonItemNode({
     treeNodeId: createDataTreeNodeId(
-      deviceTreeNodeId,
+      pageLayoutTreeNodeId,
       CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
       placeholder.path,
     ),
@@ -170,15 +243,15 @@ function createPlaceholderDataTreeNode(
   });
 }
 
-export function createRenderingDataTree(
-  deviceTreeNodeId: string,
+function createRenderingDataTreeNode(
+  pageLayoutTreeNodeId: string,
   control: ScControl,
   controlIndex: number,
 ): DataTreeItemNode {
   const rendering = control.rendering;
 
-  const treeNodeId = createDataTreeNodeId(
-    deviceTreeNodeId,
+  const renderingTreeNodeId = createDataTreeNodeId(
+    pageLayoutTreeNodeId,
     "rendering",
     control.uid ??
       rendering.scItemId ??
@@ -190,7 +263,7 @@ export function createRenderingDataTree(
   if (control.datasource) {
     children.push(
       createDatasourceDataTreeNode(
-        treeNodeId,
+        renderingTreeNodeId,
         control.datasource,
       ),
     );
@@ -203,16 +276,16 @@ export function createRenderingDataTree(
   if (parameters.length > 0) {
     children.push(
       createRenderingParametersDataTreeNode(
-        treeNodeId,
+        renderingTreeNodeId,
         parameters,
       ),
     );
   }
 
   return createDataTreeItemNode({
-    treeNodeId,
+    treeNodeId: renderingTreeNodeId,
     scItem: rendering,
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CONTROL,
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.RENDERING,
     branch: "layouts",
     relationshipToParent: "related",
     children,
@@ -231,6 +304,7 @@ function createDatasourceDataTreeNode(
     scItem: datasource,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
     branch: "layouts",
+    relationshipToParent: "related",
   });
 }
 
@@ -246,6 +320,7 @@ function createRenderingParametersDataTreeNode(
     name: "Rendering Parameters",
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     branch: "layouts",
+    relationshipToParent: "related",
     children: parameters.map(([name, value]) =>
       createSingleParameterDataTreeNode(
         name,

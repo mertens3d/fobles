@@ -137,7 +137,7 @@ function createTreeNodeLabel(
     treeNode.kind ===
     CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DATASOURCE
   ) {
-    return `Datasource: ${itemName}`;
+    return `ds: ${itemName}`;
   }
 
   return itemName;

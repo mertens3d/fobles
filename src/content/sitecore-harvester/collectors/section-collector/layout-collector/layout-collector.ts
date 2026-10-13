@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/sitecore-harvester/collectors/section-collector/layout-collector/layout-collector.ts
+
 import { findFieldInput } from "../../helpers/harvest-helpers";
 import { factoryItemGraphNodeData, type HarvestContext, type ScControl, type ItemGraphNodeData, type LayoutDevice, type LayoutSectionField } from "../../../sitecore-harvester.types";
 import { XMLParser } from "fast-xml-parser";
@@ -33,17 +35,24 @@ const processLayoutFieldValue = (
 
         if (rawProcessedXml) {
             for (const device of rawProcessedXml.r.d) {
-                const layoutView = factoryItemGraphNodeData({scItemId: device.l});
+                const scPageLayoutItem = factoryItemGraphNodeData({
+                    scItemId: device.l,
+                });
+
+                const scDeviceItem = factoryItemGraphNodeData({
+                    scItemId: device.id,
+                });
 
                 const deviceData: LayoutDevice = {
-                    scLayoutViewItem: layoutView,
-                    scDeviceItem: factoryItemGraphNodeData(),
-                    controls: [],
+                    scDeviceItem: scDeviceItem,
+                    scPageLayoutItem: device.l
+                        ? scPageLayoutItem
+                        : undefined,
+                    scControls: [],
                 };
 
-
                 for (const rendering of device.r ?? []) {
-                    const renderingItem = factoryItemGraphNodeData({scItemId: rendering["s:id"]});
+                    const renderingItem = factoryItemGraphNodeData({ scItemId: rendering["s:id"] });
 
                     const datasourceItem = createDatasourceItem(
                         rendering["s:ds"],
@@ -60,7 +69,7 @@ const processLayoutFieldValue = (
                         p_after: rendering["p:after"],
                     };
 
-                    deviceData.controls.push(control);
+                    deviceData.scControls.push(control);
                 }
 
                 layoutSectionField.devices.push(deviceData);

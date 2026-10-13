@@ -1,13 +1,13 @@
 import type cytoscape from "cytoscape";
 import type { SitecoreHarvestFiltersState } from "../content/sitecore-harvester/sitecore-harvester.types";
-import type { LayoutPreset, LayoutGraphPresetName } from "../content/toolbar/reference-graph/graph.types";
+import type {  LayoutGraphPresetName } from "../content/toolbar/reference-graph/graph.types";
 import type { StepKey } from "../content/sitecore-harvester/sitecore-harvester.types";
 import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE";
 
 
 export type LayoutScope =
     typeof REFERENCE_GRAPH.LAYOUT_SCOPE[
-        keyof typeof REFERENCE_GRAPH.LAYOUT_SCOPE
+    keyof typeof REFERENCE_GRAPH.LAYOUT_SCOPE
     ];
 
 export const REFERENCE_GRAPH = {
@@ -39,7 +39,7 @@ export const REFERENCE_GRAPH = {
         MAIN_LAYOUT_BOX_NODE_ID: "fobles-reference-graph-layout-box",
 
     },
-    LAYOUT_SCOPE:{
+    LAYOUT_SCOPE: {
         DATASOURCE: "Datasource",
         PARAMETER: "Parameter",
         PARAMETERS: "Parameters",
@@ -62,6 +62,7 @@ export const REFERENCE_GRAPH = {
         [_REFERENCE_GRAPH_BASE.NODE_KIND.CHILD]: "#d1428a",
         [_REFERENCE_GRAPH_BASE.NODE_KIND.REFERRER]: "#d13f3f",
         [_REFERENCE_GRAPH_BASE.NODE_KIND.FIELD]: "#7a7a7a",
+        [_REFERENCE_GRAPH_BASE.NODE_KIND.PAGE_LAYOUT]: "#3a6a6a",
     } satisfies Record<string, string>,
     STRUCTURAL_COLOR: "#8a97a8", // Device/Shared Layout/Final Layout wrapper nodes
     DEFAULT_LAYOUT_PRESET_NAME: "dagre" as LayoutGraphPresetName,
@@ -83,6 +84,7 @@ export const REFERENCE_GRAPH = {
     LAYOUT_PRESETS: {
         dagre: {
             label: "Dagre (tree)",
+            edgeStyle: "taxi",
             build: () => ({
                 name: "dagre",
                 rankDir: "TB",
@@ -97,6 +99,7 @@ export const REFERENCE_GRAPH = {
             build: () => ({
                 name: "cose-bilkent",
                 fit: true,
+                edgeStyle: "bezier",
                 padding: 20,
                 animate: false,
                 nodeRepulsion: 8000, // default 4500
@@ -107,6 +110,7 @@ export const REFERENCE_GRAPH = {
             label: "fCoSE (organic, fast)",
             build: () => ({
                 name: "fcose",
+                edgeStyle: "bezier",
                 fit: true,
                 padding: 20,
             }) as unknown as cytoscape.LayoutOptions,
@@ -117,11 +121,21 @@ export const REFERENCE_GRAPH = {
                 name: "breadthfirst",
                 directed: true,
                 circle: false,
+                edgeStyle: "taxi",
                 fit: true,
                 padding: 20,
-            }),
+            }) as unknown as cytoscape.LayoutOptions,
+            edgeStyle: "bezier",
         },
     } as Record<LayoutGraphPresetName, LayoutPreset>,
     DEFAULT_LAYOUT_PRESET: { LayoutPresetName: "dagre" },
 
+};
+
+export type GraphEdgeStyle = "bezier" | "taxi";
+
+export type LayoutPreset = {
+    label: string;
+    edgeStyle: GraphEdgeStyle;
+    build: () => cytoscape.LayoutOptions;
 };

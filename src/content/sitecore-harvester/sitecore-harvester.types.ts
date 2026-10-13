@@ -108,9 +108,9 @@ export type SitecoreHarvestField = {
 };
 
 export type LayoutDevice = {
-  scLayoutViewItem: ItemGraphNodeData | undefined;
   scDeviceItem: ItemGraphNodeData;
-  controls: ScControl[];
+  scPageLayoutItem: ItemGraphNodeData | undefined;
+  scControls: ScControl[];
 };
 
 export type HarvestFieldLink = {
