@@ -1,6 +1,6 @@
 import type cytoscape from "cytoscape";
 import type { SitecoreHarvestFiltersState } from "../content/sitecore-harvester/sitecore-harvester.types";
-import type {  LayoutGraphPresetName } from "../content/toolbar/reference-graph/graph.types";
+import type { LayoutGraphPresetName } from "../content/toolbar/reference-graph/graph.types";
 import type { StepKey } from "../content/sitecore-harvester/sitecore-harvester.types";
 import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE";
 
@@ -88,6 +88,7 @@ export const REFERENCE_GRAPH = {
             build: () => ({
                 name: "dagre",
                 rankDir: "TB",
+                align: "UL",
                 nodeSep: 30,
                 rankSep: 60,
                 fit: true,
@@ -103,7 +104,7 @@ export const REFERENCE_GRAPH = {
                 padding: 20,
                 animate: false,
                 nodeRepulsion: 8000, // default 4500
-                nodeDimensionsIncludeLabels: true,
+                nodeDimensionsIncludeLabels: true, 
             }) as unknown as cytoscape.LayoutOptions,
         },
         fcose: {
