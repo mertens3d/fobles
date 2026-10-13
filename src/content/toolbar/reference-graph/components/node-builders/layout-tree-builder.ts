@@ -121,6 +121,9 @@ export function createRenderingTree(
     label: rendering.scItemName ?? rendering.scItemId ?? "Unknown rendering",
     item: rendering,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CONTROL,
+    
+    relationshipToParent: "edge", 
+
     link: rendering.link,
     drillDown: Boolean(rendering.link),
     tooltip: buildTooltipContent(buildTooltip(renderingDescriptor)),
@@ -161,6 +164,7 @@ function createRenderingParametersTree(
         ),
         label: value ? `${name}: ${value}` : name,
         kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
+        relationshipToParent: "compound", // <-- contained by rendering
         tooltip: buildTooltipContent(buildTooltip(parameterDescriptor)),
         children: [],
         item: undefined,
@@ -172,12 +176,16 @@ function createRenderingParametersTree(
 export function appendCompoundGraphNode(
   node: CompoundGraphNode,
   cytoNodes: cytoscape.ElementDefinition[],
+  cytoEdges: cytoscape.ElementDefinition[],
   parentId?: string,
 ): void {
   cytoNodes.push({
     data: {
       id: node.nodeTargetId,
-      parent: parentId,
+      parent:
+        node.relationshipToParent === "edge"
+          ? undefined
+          : parentId,
       label: node.label,
       itemId: node.item?.scItemId,
       path: node.item?.scItemPath,
@@ -188,8 +196,22 @@ export function appendCompoundGraphNode(
     classes: `${kindClass(node.kind)} ${CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.layouts}`,
   });
 
+  if (parentId && node.relationshipToParent === "edge") {
+    cytoEdges.push({
+      data: {
+        source: parentId,
+        target: node.nodeTargetId,
+      },
+    });
+  }
+
   node.children.forEach((child) => {
-    appendCompoundGraphNode(child, cytoNodes, node.nodeTargetId);
+    appendCompoundGraphNode(
+      child,
+      cytoNodes,
+      cytoEdges,
+      node.nodeTargetId,
+    );
   });
 }
 

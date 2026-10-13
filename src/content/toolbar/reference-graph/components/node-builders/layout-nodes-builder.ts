@@ -14,7 +14,7 @@ export function buildLayoutNodes(
     if (hasLayoutData) {
         const layoutTree = createLayoutTree(graphReferenceResult);
 
-        appendCompoundGraphNode(layoutTree, cytoNodes);
+        appendCompoundGraphNode(layoutTree, cytoNodes, cytoEdges);
 
         cytoEdges.push({
             data: {

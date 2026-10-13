@@ -45,6 +45,8 @@ export type PlaceholderGroup = {
   controls: PlaceholderGroupControl[];
 };
 
+export type GraphRelationship = "compound" | "edge";
+
 export type CompoundGraphNode = {
   item: ItemGraphNodeData | undefined;
   nodeTargetId: string;
@@ -53,6 +55,7 @@ export type CompoundGraphNode = {
   link?: string;
   drillDown?: boolean;
   tooltip?: HTMLElement;
+  relationshipToParent?: GraphRelationship;
   children: CompoundGraphNode[];
 };
 

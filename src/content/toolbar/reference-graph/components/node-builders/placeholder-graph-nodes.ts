@@ -50,6 +50,7 @@ function createPlaceholderGraphNode(
     ),
     item: undefined,
     label: segment,
+      relationshipToParent: "edge", // <-- HERE
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     tooltip: buildTooltipContent(buildTooltip(descriptor)),
     children,
