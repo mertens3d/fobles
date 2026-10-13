@@ -27,11 +27,9 @@ function createScopedId(...parts: Array<string | undefined>): string {
 
 type CompoundGraphNode = {
   item: ItemGraphNodeData | undefined;
-  id: string;
+  nodeTargetId: string;
   label: string;
   kind: string;
-//   scItemId?: string;
-  path?: string;
   link?: string;
   drillDown?: boolean;
   tooltip?: HTMLElement;
@@ -61,13 +59,12 @@ function createDeviceTree(
 
   return {
     item: descriptor.item,
-    id: deviceNodeId,
+    nodeTargetId: deviceNodeId,
     label: buildLabel(
       descriptor.kind,
       descriptor.item?.scItemName ?? device.scDeviceItem?.scItemId ?? "Unknown",
     ),
     kind: descriptor.kind,
-    path: descriptor.item?.scItemPath,
     link: descriptor.item?.link,
     drillDown: Boolean(descriptor.item?.link),
     tooltip: buildTooltipContent(buildTooltip(descriptor)),
@@ -97,18 +94,17 @@ function createRenderingTree(
     };
 
     children.push({
-      id: createScopedId(
+      nodeTargetId: createScopedId(
         renderingNodeId,
         CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.DATASOURCE,
       ),
-      item: undefined,
+      item: control.datasource,
       label:
         control.datasource.scItemName ??
         lastPathSegment(control.datasource.scItemPath) ??
         control.datasource.scItemId ??
         "Unknown datasource",
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
-      path: control.datasource.scItemPath,
       link: control.datasource.link,
       drillDown: Boolean(control.datasource.link),
       tooltip: buildTooltipContent(buildTooltip(datasourceDescriptor)),
@@ -129,11 +125,10 @@ function createRenderingTree(
   };
 
   return {
-    id: renderingNodeId,
+    nodeTargetId: renderingNodeId,
     label: rendering.scItemName ?? rendering.scItemId ?? "Unknown rendering",
-    item: undefined,
+    item: rendering,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CONTROL,
-    path: rendering.scItemPath,
     link: rendering.link,
     drillDown: Boolean(rendering.link),
     tooltip: buildTooltipContent(buildTooltip(renderingDescriptor)),
@@ -150,7 +145,7 @@ function createRenderingParametersTree(
   };
 
   return {
-    id: createScopedId(
+    nodeTargetId: createScopedId(
       renderingNodeId,
       CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETERS,
     ),
@@ -167,7 +162,7 @@ function createRenderingParametersTree(
       };
 
       return {
-        id: createScopedId(
+        nodeTargetId: createScopedId(
           renderingNodeId,
           CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETER,
           name,
@@ -189,11 +184,11 @@ export function appendCompoundGraphNode(
 ): void {
   cytoNodes.push({
     data: {
-      id: node.id,
+      id: node.nodeTargetId,
       parent: parentId,
       label: node.label,
       itemId: node.item?.scItemId,
-      path: node.path,
+      path: node.item?.scItemPath,
       link: node.link,
       drillDown: node.drillDown,
       tooltip: node.tooltip,
@@ -202,7 +197,7 @@ export function appendCompoundGraphNode(
   });
 
   node.children.forEach((child) => {
-    appendCompoundGraphNode(child, cytoNodes, node.id);
+    appendCompoundGraphNode(child, cytoNodes, node.nodeTargetId);
   });
 }
 
@@ -215,7 +210,7 @@ export function createLayoutTree(
   };
 
   return {
-    id: CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
+    nodeTargetId: CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
     label: descriptor.value ?? "",
     kind: descriptor.kind,
     tooltip: buildTooltipContent(buildTooltip(descriptor)),
@@ -239,7 +234,7 @@ function createLayoutSectionTree(
   };
 
   return {
-    id: layoutId,
+    nodeTargetId: layoutId,
     label: descriptor.value ?? "",
     kind: descriptor.kind,
     item: undefined,    
@@ -283,7 +278,7 @@ function createPlaceholderTrees(
         };
 
          const newPlaceholder: CompoundGraphNode =  {
-          id: createScopedId(
+          nodeTargetId: createScopedId(
             deviceNodeId,
             CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
             currentPath,

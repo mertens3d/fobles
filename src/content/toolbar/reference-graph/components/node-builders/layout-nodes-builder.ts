@@ -20,7 +20,7 @@ export function buildLayoutNodes(
             data: {
                 id: CONST.FOBLES.REFERENCE_GRAPH.EDGE_IDS.EDGE_LAYOUT,
                 source: graphReferenceResult.rootItem.scItemId,
-                target: layoutTree.id,
+                target: layoutTree.nodeTargetId,
             },
         });
     }
