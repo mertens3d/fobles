@@ -56,6 +56,10 @@
         line-height: 1.45;
       }
 
+      #view-persisted-logs{
+        margin-bottom: 8px;
+      }
+
       .visibility-setting {
         display: flex;
         align-items: center;
@@ -79,11 +83,7 @@
         min-height: 28px;
         border: 1px solid rgba(47, 111, 237, 0.2);
         border-radius: 3px;
-        background: linear-gradient(
-          180deg,
-          var(--blue) 0%,
-          var(--blue-deep) 100%
-        );
+        background: linear-gradient(180deg, var(--blue) 0%, var(--blue-deep) 100%);
         color: #ffffff;
         cursor: pointer;
         font:
@@ -118,10 +118,7 @@
         <span class="shortcut">Ctrl+Shift+E</span> for Toggle Fobles.
       </li>
     </ol>
-    <p class="hint">
-      Open <strong>chrome://extensions/shortcuts</strong> to manage shortcuts.
-      On macOS, use Command+Shift+E.
-    </p>
+    <p class="hint">Open <strong>chrome://extensions/shortcuts</strong> to manage shortcuts. On macOS, use Command+Shift+E.</p>
     <label class="visibility-setting">
       <input id="fobles-nav-visible" type="checkbox" />
       <span>Fobles navigation visible</span>
@@ -135,6 +132,9 @@
       <span>Turn off Fobles after opening an item</span>
     </label>
     <button id="reload-extension" type="button" hidden>Reload Extension</button>
+
+    <button id="view-persisted-logs" type="button" hidden>View Logs</button>
+
     <button id="open-options" type="button">Additional Settings</button>
     <aside class="build-info">
       <div>Fobles for Sitecore</div>

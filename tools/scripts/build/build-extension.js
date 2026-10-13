@@ -1,6 +1,7 @@
 import { spawnSync } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
 import { fileURLToPath } from "node:url";
+import { copyFileSync } from "node:fs";
 import * as esbuild from "esbuild";
 
 const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
@@ -26,12 +27,22 @@ console.log("Building extension...");
 
 run(process.execPath, [join(projectRoot, "tools/scripts/dev/check-node-version.js")]);
 run(process.execPath, [join(projectRoot, "tools/scripts/build/write-build-info.js")]);
+
 run(process.execPath, [
   "node_modules/sass/sass.js",
   "src/content/styles/fobles-extension.scss",
   "dist/unpacked/fobles.css",
   "--no-source-map",
 ]);
+
+
+run(process.execPath, [
+  "node_modules/sass/sass.js",
+  "src/options/options.scss",
+  "dist/unpacked/options.css",
+  "--no-source-map",
+]);
+
 run(process.execPath, [
   "node_modules/typescript/bin/tsc",
   "--noEmit",

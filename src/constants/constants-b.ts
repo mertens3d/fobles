@@ -13,6 +13,8 @@ export const STORAGE = {
       LAYOUT: "fobles_reference_graph_layout",
       PENDING: "fobles_reference_graph_pending",
     },
+    PERSIST_DEBUG_LOGS: "persistDebugLogs",
+    PERSISTED_LOG_ENTRIES: "persistedLogEntries",
     SHOW_RELOAD_EXTENSION_BUTTON: "showReloadExtensionButton",
     TURN_OFF_FOBLES_AFTER_NAVIGATION: "turnOffFoblesAfterNavigation",
     USER_ADMIN_PAGES: "userAdminPages",
@@ -31,4 +33,6 @@ export const MESSAGE = {
 
 export const LOGGER = {
   NAMESPACE: "[Fobles]",
+  PERSIST_DEBUG_LOGS: "persistDebugLogs",
+  PERSISTED_LOG_ENTRIES: "persistedLogEntries",
 } as const;

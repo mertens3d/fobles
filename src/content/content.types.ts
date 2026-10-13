@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/content.types.ts
+
 export type MessageRequest = {
   action?: string;
 };

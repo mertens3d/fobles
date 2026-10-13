@@ -1,3 +1,5 @@
+// @source-path [fobles] src/popup/index.ts
+
 import { MESSAGE } from "../constants/constants-b";
 import {
   getFoblesNavVisible,
@@ -43,7 +45,13 @@ void getTurnOffFoblesAfterNavigation().then((enabled) => {
 
 void getDebugSettings().then((settings) => {
   if (reloadExtensionButton) {
-    reloadExtensionButton.hidden = !settings.showReloadExtensionButton;
+    reloadExtensionButton.hidden =
+      !settings.showReloadExtensionButton;
+  }
+
+  if (viewPersistedLogsButton) {
+    viewPersistedLogsButton.hidden =
+      !settings.showReloadExtensionButton;
   }
 });
 
@@ -80,5 +88,23 @@ onTurnOffFoblesAfterNavigationChange((enabled) => {
 });
 
 onShowReloadExtensionButtonChange((visible) => {
-  if (reloadExtensionButton) reloadExtensionButton.hidden = !visible;
+  if (reloadExtensionButton) {
+    reloadExtensionButton.hidden = !visible;
+  }
+
+  if (viewPersistedLogsButton) {
+    viewPersistedLogsButton.hidden = !visible;
+  }
+});
+
+const viewPersistedLogsButton = document.getElementById(
+  "view-persisted-logs",
+) as HTMLButtonElement | null;
+
+viewPersistedLogsButton?.addEventListener("click", () => {
+  void chrome.tabs.create({
+    url: chrome.runtime.getURL(
+      "options.html#persisted-logs",
+    ),
+  });
 });

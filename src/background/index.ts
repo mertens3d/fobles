@@ -6,6 +6,8 @@ import { LOGGER, MESSAGE } from "../constants/constants-b";
 import { extensionLog } from "../content/logger";
 import { harvestSitecoreInBackgroundTab } from "../content/sitecore-harvester/background-tab/sitecore-background-tab-harvester";
 import type { HarvestSitecoreInBackgroundTabMessage, SitecoreHarvestProgressMessage } from "../content/sitecore-harvester/background-tab/sitecore-harvester.messages";
+import { appendPersistedLogEntry } from "../shared/logging/persisted-log-storage";
+import type { PersistedLogMessage } from "../shared/persisted-log.types";
 
 const RELAYED_COMMANDS: readonly string[] = [
   MESSAGE.ACTION.TOGGLE_FOBLES,
@@ -26,7 +28,7 @@ chrome.commands?.onCommand?.addListener((command: string) => {
   );
 });
 
-type RuntimeMessage = RuntimeReloadMessage | HarvestSitecoreInBackgroundTabMessage | SitecoreHarvestProgressMessage;;
+type RuntimeMessage = RuntimeReloadMessage | HarvestSitecoreInBackgroundTabMessage | SitecoreHarvestProgressMessage | PersistedLogMessage;
 
 interface RuntimeReloadMessage {
   action: string;
@@ -34,6 +36,22 @@ interface RuntimeReloadMessage {
 
 chrome.runtime.onMessage.addListener(
   (request: RuntimeMessage, sender, sendResponse) => {
+
+    if (
+      "type" in request &&
+      request.type === "FOBLES_PERSIST_LOG"
+    ) {
+      void appendPersistedLogEntry(request.entry).catch((error) => {
+        console.error(
+          LOGGER.NAMESPACE,
+          "Failed to persist log entry",
+          error,
+        );
+      });
+
+      return;
+    }
+
     if ("action" in request && request.action === MESSAGE.ACTION.RELOAD_EXTENSION) {
       if (sender.tab?.id !== undefined) {
         void chrome.tabs?.reload?.(sender.tab.id);

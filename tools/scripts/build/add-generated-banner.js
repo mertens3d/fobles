@@ -1,3 +1,5 @@
+// @source-path [fobles] tools/scripts/build/add-generated-banner.js
+
 import { copyFile, readFile, writeFile } from "fs/promises";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
@@ -28,8 +30,14 @@ const graphIconSourcePath = join(projectRoot, "src", "public", "graph.svg");
 const graphIconOutputPath = join(projectRoot, "dist", "unpacked", "graph.svg");
 const maintainedFiles = [
   "manifest.json",
-  "options.html",
   "popup.html",
+];
+
+const maintainedFileMappings = [
+  {
+    source: "src/options/options.html",
+    output: "dist/unpacked/options.html",
+  },
 ];
 
 async function applyBannerToGeneratedFiles() {
@@ -42,6 +50,14 @@ async function applyBannerToGeneratedFiles() {
     const content = await readFile(sourcePath, "utf8");
     await writeFile(outputPath, content.replaceAll("__BUILD_STAMP__", buildStamp));
   }
+
+  for (const mapping of maintainedFileMappings) {
+    const sourcePath = join(projectRoot, mapping.source);
+    const outputPath = join(projectRoot, mapping.output);
+    const content = await readFile(sourcePath, "utf8");
+    await writeFile(outputPath, content.replaceAll("__BUILD_STAMP__", buildStamp));
+  }
+
 
   for (const fileName of generatedFiles) {
     const filePath = join(projectRoot, "dist", "unpacked", fileName);

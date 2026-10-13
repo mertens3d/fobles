@@ -1,0 +1,501 @@
+@use "sass:color";
+
+$blue: #2f6fed;
+$white: #fff;
+$border: #d8e4f2;
+$text: #203047;
+$muted: #6d7d90;
+$surface: #f5f8fc;
+$error: #b42318;
+$remove-text: #9c2d2d;
+$remove-border: #d7a6a6;
+$button-border: rgba($blue, 0.2);
+
+$radius-small: 3px;
+$radius-medium: 4px;
+$control-height: 32px;
+$checkbox-size: 16px;
+$content-width: 1024px;
+$mobile-breakpoint: 720px;
+
+$font-family:
+  "Open Sans",
+  Arial,
+  sans-serif;
+
+$monospace-font:
+  Consolas,
+  "Courier New",
+  monospace;
+
+@mixin card(
+  $padding: 16px,
+  $radius: $radius-medium,
+  $background: $white
+) {
+  padding: $padding;
+  border: 1px solid $border;
+  border-radius: $radius;
+  background: $background;
+}
+
+@mixin section-divider {
+  margin-top: 10px;
+  padding-top: 10px;
+  border-top: 1px solid $border;
+}
+
+@mixin section-heading {
+  margin-bottom: 6px;
+  color: $text;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@mixin icon-remove-button {
+  padding: 0 4px;
+  border: none;
+  background: none;
+  color: $muted;
+  font-size: 16px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+@mixin checkbox {
+  width: $checkbox-size;
+  height: $checkbox-size;
+  margin: 0;
+}
+
+@mixin text-overflow {
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+@mixin stored-output {
+  max-height: 320px;
+  margin-top: 8px;
+  padding: 10px;
+  overflow: auto;
+  border: 1px solid $border;
+  border-radius: $radius-small;
+  background: $white;
+  color: $text;
+  font-family: $monospace-font;
+  font-size: 12px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+:root {
+  --blue: #{$blue};
+  --border: #{$border};
+  --text: #{$text};
+  --muted: #{$muted};
+  --surface: #{$surface};
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  max-width: $content-width;
+  margin: 32px auto;
+  padding: 0 24px;
+  background: $surface;
+  color: $text;
+  font: 14px $font-family;
+}
+
+h1 {
+  margin: 0;
+  font-size: 24px;
+}
+
+p {
+  color: $muted;
+  line-height: 1.5;
+}
+
+#groups {
+  display: grid;
+  gap: 12px;
+  margin: 24px 0;
+}
+
+.group {
+  @include card;
+
+  display: grid;
+  gap: 14px;
+}
+
+.group-details,
+.mapping {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr auto;
+  gap: 10px;
+  align-items: end;
+}
+
+.mapping {
+  grid-template-columns: 2fr 1fr auto;
+  padding: 12px;
+  border: 1px solid $border;
+  border-radius: $radius-small;
+  background: $surface;
+}
+
+.group-actions {
+  display: flex;
+  gap: 8px;
+}
+
+label {
+  display: grid;
+  gap: 5px;
+  color: $muted;
+  font-size: 12px;
+}
+
+.visibility-setting {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 12px;
+  color: $text;
+  font-size: 14px;
+
+  input {
+    @include checkbox;
+
+    flex-shrink: 0;
+  }
+
+  span {
+    color: $text;
+    line-height: 1.4;
+  }
+}
+
+.field-error {
+  color: $error;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+input {
+  width: 100%;
+  min-height: $control-height;
+  padding: 6px 8px;
+  border: 1px solid $border;
+  border-radius: $radius-small;
+  color: $text;
+  font: inherit;
+
+  &[aria-invalid="true"] {
+    border-color: $error;
+  }
+}
+
+button {
+  min-height: $control-height;
+  padding: 6px 12px;
+  border: 1px solid $button-border;
+  border-radius: $radius-small;
+  background: $blue;
+  color: $white;
+  cursor: pointer;
+  font: inherit;
+}
+
+.remove {
+  border-color: $remove-border;
+  background: $white;
+  color: $remove-text;
+}
+
+#status {
+  min-height: 20px;
+  color: $muted;
+}
+
+details {
+  max-width: 100%;
+  color: $muted;
+}
+
+code {
+  color: $text;
+}
+
+.build-info {
+  margin-top: 24px;
+  padding-top: 12px;
+  border-top: 1px solid $border;
+  color: $muted;
+  line-height: 1.5;
+}
+
+#stored-settings-output {
+  @include stored-output;
+}
+
+.jump-flyout-column {
+  margin-bottom: 10px;
+  padding: 2px 12px 6px;
+  border: 1px solid $border;
+  border-radius: $radius-medium;
+
+  > summary {
+    margin: 0 -12px;
+    padding: 8px 12px;
+    color: $text;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  &[open] > summary {
+    margin-bottom: 6px;
+    border-bottom: 1px solid $border;
+  }
+}
+
+.jump-flyout-button-row {
+  display: grid;
+  grid-template-columns:
+    20px
+    minmax(160px, 280px)
+    minmax(160px, 1fr);
+  align-items: center;
+  column-gap: 10px;
+  padding: 6px 0;
+  border-bottom: 1px solid $border;
+
+  input {
+    &[type="checkbox"] {
+      @include checkbox;
+    }
+
+    &[name="pathSuffix"] {
+      min-height: 26px;
+    }
+  }
+
+  &--no-suffix {
+    .jump-flyout-button-label {
+      grid-column: 2 / -1;
+    }
+  }
+}
+
+.jump-flyout-button-label {
+  @include text-overflow;
+
+  color: $text;
+}
+
+.jump-flyout-entry {
+  padding: 8px 0;
+  border-bottom: 1px solid $border;
+}
+
+.jump-flyout-entry-title {
+  display: flex;
+  width: 200px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 6px;
+  color: $text;
+  font-weight: 700;
+
+  input[type="text"] {
+    flex: 1;
+    font-weight: 700;
+  }
+}
+
+.jump-flyout-entry-fields {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  input {
+    &[type="checkbox"] {
+      @include checkbox;
+
+      flex: 0 0 auto;
+    }
+
+    &[name="pathSuffix"],
+    &[name="url"],
+    &[name="icon"] {
+      flex: 1;
+      min-width: 0;
+      min-height: 26px;
+    }
+  }
+}
+
+.jump-flyout-entry-prefix {
+  flex: 0 0 auto;
+  color: $muted;
+  white-space: nowrap;
+}
+
+.user-tree-jump-section,
+.user-admin-page-section {
+  @include section-divider;
+}
+
+.user-tree-jump-heading,
+.user-admin-page-heading {
+  @include section-heading;
+}
+
+.user-tree-jump-remove,
+.user-admin-page-remove {
+  @include icon-remove-button;
+}
+
+.user-tree-jump-add,
+.user-admin-page-add {
+  margin-top: 8px;
+}
+
+.user-tree-jump-limit-status,
+.user-admin-page-limit-status {
+  margin: 4px 0 0;
+  color: $muted;
+  font-size: 12px;
+}
+
+.settings-section {
+  margin: 0 0 14px;
+  padding: 4px 16px 16px;
+  border: 1px solid $border;
+  border-radius: $radius-medium;
+  background: $white;
+
+  > summary {
+    margin: 0 -16px;
+    padding: 12px 16px;
+    color: $text;
+    font-size: 18px;
+    font-weight: 700;
+    cursor: pointer;
+  }
+
+  &[open] > summary {
+    margin-bottom: 14px;
+    border-bottom: 1px solid $border;
+  }
+}
+
+.settings-actions,
+.button-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.settings-button {
+  min-width: 200px;
+}
+
+#persisted-logs-output {
+  margin-top: 8px;
+  border: 1px solid $border;
+  border-radius: $radius-small;
+  background: $white;
+  max-height: 500px;
+    overflow: auto;
+}
+
+.persisted-log-entry {
+  padding: 3px 6px;
+  border-bottom: 1px solid $border;
+  font-family: $monospace-font;
+  font-size: 12px;
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.persisted-log-line {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 6px;
+  white-space: pre-wrap;
+}
+
+.persisted-log-prefix {
+  flex: 0 0 auto;
+  color: $muted;
+}
+
+.persisted-log-message {
+  color: $text;
+}
+
+.persisted-log-object {
+  display: inline-block;
+  margin-left: 6px;
+  color: $text;
+  left: 40px;
+    position: relative;
+
+  > summary {
+    color: $text;
+    cursor: pointer;
+  }
+
+  > pre {
+    margin: 4px 0 4px 20px;
+    padding: 6px;
+    overflow: auto;
+    border: 1px solid $border;
+    border-radius: $radius-small;
+    background: $surface;
+    color: $text;
+    font-family: $monospace-font;
+    white-space: pre-wrap;
+    word-break: break-word;
+  }
+}
+
+.persisted-log-debug {
+  background: $white;
+}
+
+.persisted-log-info {
+  background: color.mix($white, $blue, 96%);
+}
+
+.persisted-log-warn {
+  background: #fffbe6;
+}
+
+.persisted-log-error {
+  background: #fff0f0;
+
+  .persisted-log-message,
+  .persisted-log-object > summary {
+    color: $error;
+  }
+}
+
+@media (max-width: $mobile-breakpoint) {
+  .group-details,
+  .mapping,
+  .tab-group-rule {
+    grid-template-columns: 1fr;
+  }
+}

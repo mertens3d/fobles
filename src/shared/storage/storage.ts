@@ -1,3 +1,5 @@
+// @source-path [fobles] src/shared/storage/storage.ts
+
 export async function getStorageValue<T = unknown>(
   keys: string[] | null,
   area: "sync" | "local" = "sync",
