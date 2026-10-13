@@ -26,7 +26,6 @@ type MutableRef<T> = {
     current: T;
 };
 
-
 export type refReturn = { containerRef: MutableRef<HTMLDivElement | null>; }
 
 type UseCytoscapeOptions = {

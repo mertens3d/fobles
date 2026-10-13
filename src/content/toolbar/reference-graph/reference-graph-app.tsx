@@ -60,7 +60,6 @@ export function ReferenceGraphApp({
         [graphState],
     );
 
-
     const renderGraph = useCallback(
         (newGraph: SitecoreHarvestResult): void => {
             const cy = cyRef.current;
@@ -162,7 +161,6 @@ export function ReferenceGraphApp({
             setFilters(updatedFilters);
 
             const currentGraphValue = graphState.currentGraphRef.current;
-
 
             const loadedFilters =
                 graphState.loadedFiltersByItemIdRef.current.get(
@@ -266,8 +264,6 @@ export function ReferenceGraphApp({
         setLayoutPresetName: graphState.setLayoutPresetName,
         setHistoryCount: graphState.setHistoryCount,
     });
-
-
 
     return (
         <>

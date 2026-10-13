@@ -68,7 +68,7 @@ export function registerSitecoreHarvesterMessageHandler(): void {
 
                     sendResponse(result);
                 })
-                .catch((error) => {
+                .catch((error:unknown) => {
                     extensionLog.error("HARVEST HANDLER FAILED", {
                         requestId: message.requestId,
                         error,

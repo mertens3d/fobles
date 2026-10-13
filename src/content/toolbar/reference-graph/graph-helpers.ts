@@ -2,9 +2,6 @@
 // "vert-column-1-{1F4F7280-6873-44F8-8A78-20EA0EF3D157}-0") so Sitecore can tell repeated
 // instances of the same placeholder apart - stripped here so every instance of "vert-column-1"
 
-import type { ItemGraphNodeData } from "../../sitecore-harvester/sitecore-harvester.types";
-import type { SatelliteDescriptor } from "./reference-graph.types";
-
 // groups together instead of each becoming its own one-off placeholder group.
 export function stripDynamicPlaceholderSuffix(segment: string): string {
   return segment.replace(/-\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\}-\d+$/i, "");
@@ -20,18 +17,18 @@ export function kindClass(kind: string): string {
   return `fobles-reference-graph-kind-${slugify(kind)}`;
 }
 
-function createItemSatelliteDescriptor(
-    item: ItemGraphNodeData,
-    kind: string,
-    filterClass: string,
-): SatelliteDescriptor {
-    return {
-        kind,
-        value: item.name,
-        itemId: item.itemId,
-        link: item.link,
-        path: item.path,
-        filterClass,
-        plainLabel: true,
-    };
-}
+// function createItemSatelliteDescriptor(
+//     item: ItemGraphNodeData,
+//     kind: NodeKind,
+//     filterClass: string,
+// ): SatelliteDescriptor {
+//     return {
+//         kind,
+//         value: item.name,
+//         itemId: item.itemId,
+//         link: item.link,
+//         path: item.path,
+//         filterClass,
+//         plainLabel: true,
+//     };
+// }

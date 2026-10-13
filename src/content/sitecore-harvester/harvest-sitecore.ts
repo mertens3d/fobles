@@ -1,6 +1,5 @@
 // @source-path [fobles] src/content/sitecore-harvester/harvest-sitecore.ts
 
-import { buildFoblesUrl } from "../features/augmentor/helper";
 import { findFieldInput } from "./collectors/helpers/harvest-helpers";
 import { extensionLog } from "../logger";
 import { getGlyphId, getGlyphState, waitForExpansion, readChildNodes } from "../macros/tree-expand-macro";

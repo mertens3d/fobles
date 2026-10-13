@@ -1,10 +1,8 @@
 // @source-path [fobles] src/content/toolbar/reference-graph/reference-graph.ts
 
 import { STORAGE } from "../../../constants/constants-b";
-import { CONST } from "../../../constants/const";
 import { extensionLog } from "../../logger";
 import { buildFoblesUrl } from "../../features/augmentor/helper";
-import { formatFoId } from "../../features/augmentor/shared/guid";
 import {
   getScRawValuesState,
   getScStandardFieldsState,
@@ -18,8 +16,6 @@ import {
 } from "./reference-graph-modal";
 import { closeReferenceGraphProgressModal, handleHarvestProgress, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
 import { getCurrentItemId } from "../jump-flyout/ai-pages";
-import { getQuickInfo } from "../jump-flyout/quick-info";
-import type { QuickInfo } from "../types";
 import type { PendingReferenceGraph } from "./graph.types";
 import { harvestGraphForLink } from "./harvester";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
@@ -30,7 +26,6 @@ import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
 // Shared by the fast path (harvestAndOpen) and the slow, reload-spanning path - Cancel aborts
 // whichever one is currently in flight; a stale/already-settled controller is harmless to abort.
 export let referenceGraphAbortController: AbortController | undefined = undefined;
-
 
 function cancelReferenceGraph(doc: Document): void {
   referenceGraphAbortController?.abort();

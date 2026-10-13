@@ -23,9 +23,6 @@ export async function enrichItemGraphNodeData(
         return;
     }
 
-
-
-
     const response = await fetch(item.link, {
         credentials: "same-origin",
         signal,

@@ -3,6 +3,7 @@ import { slugify, kindClass } from "../graph-helpers";
 import { buildTooltip } from "../graph-tooltip";
 import type { SatelliteDescriptor } from "../reference-graph.types";
 import type { ItemGraphNodeData } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 
 export function buildLabel(kind: string, name: string): string {
     return `${name}\n[${kind.toLowerCase()}]`;
@@ -119,7 +120,7 @@ export function appendCompoundChildren(
 
 export function createItemSatelliteDescriptor(
     item: ItemGraphNodeData,
-    kind: string,
+    kind: NodeKind,
     filterClass: string,
 ): SatelliteDescriptor {
     return {

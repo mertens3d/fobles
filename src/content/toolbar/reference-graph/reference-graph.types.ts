@@ -1,7 +1,8 @@
+import type { NodeKind } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { ItemGraphNodeData } from "../../sitecore-harvester/sitecore-harvester.types";
 
 export type SatelliteDescriptor = {
-  kind: string;
+  kind: NodeKind;
   item?: ItemGraphNodeData | undefined;
   value?: string | undefined;
   link?: string | undefined;

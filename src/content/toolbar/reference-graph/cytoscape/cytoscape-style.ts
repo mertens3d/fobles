@@ -33,7 +33,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
         },
     },
     {
-        selector: `.${kindClass("structural")}`,
+        selector: `.${kindClass("Structural")}`,
         style: {
             "font-size": 9,
             "background-color": REFERENCE_GRAPH.STRUCTURAL_COLOR,

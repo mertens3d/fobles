@@ -1,5 +1,11 @@
 import type { SitecoreHarvestFiltersState } from "../../content/sitecore-harvester/sitecore-harvester.types";
 
+
+export type NodeKind =
+    typeof _REFERENCE_GRAPH_BASE.NODE_KIND[
+        keyof typeof _REFERENCE_GRAPH_BASE.NODE_KIND
+    ];
+
 export const _REFERENCE_GRAPH_BASE = {
     NODE_KIND: {
         // Prefixed onto every node's label (e.g. "CONTROL\nFobles Header") so it's clear at a glance
@@ -18,7 +24,8 @@ export const _REFERENCE_GRAPH_BASE = {
         // Not a real label prefix (each field keeps its own field name as its label) - just the color
         // category every section field node shares, since there's no fixed/finite set of field names.
         FIELD: "Field",
-    },    // Toggleable node groups - each maps to a cytoscape class applied in buildElements, shown/hidden
+        STRUCTURAL:  "Structural"
+    } as const,    // Toggleable node groups - each maps to a cytoscape class applied in buildElements, shown/hidden
         // via style("display", ...) rather than rebuilding the graph. Hiding a node also hides any edges
         // attached to it (cytoscape's own behavior), so no edge bookkeeping is needed here.
         FILTER_CLASS: {

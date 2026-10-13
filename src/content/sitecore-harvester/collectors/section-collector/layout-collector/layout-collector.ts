@@ -97,7 +97,6 @@ function createDatasourceItem(
     return item;
 }
 
-
 function parseParameters(raw?: string): Record<string, string> {
     return Object.fromEntries(new URLSearchParams(raw ?? ""));
 }

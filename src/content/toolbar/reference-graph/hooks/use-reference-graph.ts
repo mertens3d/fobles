@@ -12,7 +12,6 @@ type MutableRef<T> = {
     current: T;
 };
 
-
 export type GraphState = {
     currentGraph: SitecoreHarvestResult;
     setCurrentGraph: React.Dispatch<React.SetStateAction<SitecoreHarvestResult>>;

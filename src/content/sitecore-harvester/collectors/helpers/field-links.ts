@@ -1,5 +1,4 @@
 import { CONST } from "../../../../constants/const";
-import { buildFoblesUrl } from "../../../features/augmentor/helper";
 import { type FieldLink } from "../../sitecore-harvester.types";
 import { type FieldLinkResolver } from "../../sitecore-harvester.types";
 import { factoryItemGraphNodeData } from "../../sitecore-harvester.types";
@@ -64,4 +63,3 @@ export function toItemPath(title: string): string {
     : `${CONST.SITECORE.RELATIVE_PATHS_ENCODED.ROOT}/content${title}`;
 }// "local:" datasource paths are relative to the item the rendering is placed on - everything
 // else (a GUID, or an already-absolute /sitecore/... path) can go straight to buildFoblesUrl.
-

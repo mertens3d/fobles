@@ -5,7 +5,6 @@ import type { HarvestGraphControl, LayoutDevice, LayoutSectionField, SitecoreHar
 import { kindClass, slugify, stripDynamicPlaceholderSuffix } from "../../graph-helpers";
 import { lastPathSegment } from "../../cytoscape/graph-node-helpers";
 import { buildLabel } from "../../cytoscape/graph-node-helpers";
-import { buildFoblesUrl } from "../../../../features/augmentor/helper";
 import { buildTooltip, buildTooltipContent } from "../../graph-tooltip";
 import type { SatelliteDescriptor } from "../../reference-graph.types";
 
@@ -154,7 +153,7 @@ function createRenderingParametersTree(
     parameters: Array<[string, string]>,
 ): CompoundGraphNode {
     const parametersDescriptor: SatelliteDescriptor = {
-        kind: "structural",
+        kind: "Structural",
         value: "Rendering Parameters",
     };
 
@@ -164,13 +163,13 @@ function createRenderingParametersTree(
             "parameters",
         ),
         label: "Rendering Parameters",
-        kind: "structural",
+        kind: "Structural",
         tooltip: buildTooltipContent(
             buildTooltip(parametersDescriptor),
         ),
         children: parameters.map(([name, value]) => {
             const parameterDescriptor: SatelliteDescriptor = {
-                kind: "structural",
+                kind: "Structural",
                 value: name,
                 path: value || undefined,
             };
@@ -182,7 +181,7 @@ function createRenderingParametersTree(
                     name,
                 ),
                 label: value ? `${name}: ${value}` : name,
-                kind: "structural",
+                kind: "Structural",
                 tooltip: buildTooltipContent(
                     buildTooltip(parameterDescriptor),
                 ),
@@ -224,7 +223,7 @@ export function createLayoutTree(
     graphReferenceResult: SitecoreHarvestResult,
 ): CompoundGraphNode {
     const descriptor: SatelliteDescriptor = {
-        kind: "structural",
+        kind: "Structural",
         value: "Layouts",
     };
 
@@ -249,7 +248,7 @@ function createLayoutSectionTree(
     );
 
     const descriptor: SatelliteDescriptor = {
-        kind: "structural",
+        kind: "Structural",
         value: layout.name ?? "",
     };
 
@@ -302,7 +301,7 @@ function createPlaceholderTrees(
 
             if (!placeholder) {
                 const descriptor: SatelliteDescriptor = {
-                    kind: "structural",
+                    kind: "Structural",
                     value: segment,
                     path: currentPath,
                     placeholder: currentPath,
@@ -315,7 +314,7 @@ function createPlaceholderTrees(
                         currentPath,
                     ),
                     label: segment,
-                    kind: "structural",
+                    kind: "Structural",
                     tooltip: buildTooltipContent(
                         buildTooltip(descriptor),
                     ),
