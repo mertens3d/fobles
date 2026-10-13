@@ -131,6 +131,15 @@ export async function harvestSitecore(
   await enrichSitecoreHarvestResult(
     result,
     signal,
+    (current, total) => {
+      onProgress?.(
+        {
+          stepKey: "enrichment",
+          label: `Enriching Items (${current}/${total})`,
+        },
+        "active",
+      );
+    },
   );
 
   extensionLog.debug(

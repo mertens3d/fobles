@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/sitecore-harvester/enrichment/result-enricher.ts
+
 import type {
     ItemGraphNodeData,
     SitecoreHarvestResult,
@@ -5,30 +7,38 @@ import type {
 import { enrichItemGraphNodeData } from "./item-enricher";
 
 export async function enrichSitecoreHarvestResult(
-    result: SitecoreHarvestResult,
-    signal: AbortSignal,
+  result: SitecoreHarvestResult,
+  signal: AbortSignal,
+  onProgress?: (current: number, total: number) => void,
 ): Promise<void> {
-    const items = collectItemGraphNodeData(result);
-    const enrichedItemsByReference =
-        new Map<string, ItemGraphNodeData>();
+  const items = collectItemGraphNodeData(result);
+  const enrichedItemsByReference =
+    new Map<string, ItemGraphNodeData>();
 
-    for (const item of items) {
-        await enrichItemWithCache(
-            item,
-            signal,
-            enrichedItemsByReference,
-            true,
-        );
+  let current = 0;
 
-        if (item.scTemplate) {
-            await enrichItemWithCache(
-                item.scTemplate,
-                signal,
-                enrichedItemsByReference,
-                false,
-            );
-        }
+  onProgress?.(current, items.length);
+
+  for (const item of items) {
+    await enrichItemWithCache(
+      item,
+      signal,
+      enrichedItemsByReference,
+      true,
+    );
+
+    if (item.scTemplate) {
+      await enrichItemWithCache(
+        item.scTemplate,
+        signal,
+        enrichedItemsByReference,
+        false,
+      );
     }
+
+    current += 1;
+    onProgress?.(current, items.length);
+  }
 }
 
 async function enrichItemWithCache(

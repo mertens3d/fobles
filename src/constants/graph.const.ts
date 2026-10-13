@@ -99,6 +99,7 @@ export const REFERENCE_GRAPH = {
                 fit: true,
                 padding: 20,
                 animate: false,
+                nodeRepulsion: 8000, // default 4500
                 nodeDimensionsIncludeLabels: true,
             }) as unknown as cytoscape.LayoutOptions,
         },
