@@ -1,121 +1,59 @@
-import type { ScControl } from "../../../../sitecore-harvester/sitecore-harvester.types";
 import { createRenderingTree, createScopedId } from "./layout-tree-builder";
 import { type CompoundGraphNode } from "../../graph.types";
-import { stripDynamicPlaceholderSuffix } from "../../graph-helpers";
 import { CONST } from "../../../../../constants/const";
 import { buildTooltipContent, buildTooltip } from "../../graph-tooltip";
 import type { SatelliteDescriptor } from "../../reference-graph.types";
+import type { PlaceholderTreeNode } from "./layout-placeholder-tree";
 
-export function createPlaceholderTrees(
+export function createPlaceholderGraphNodes(
   deviceNodeId: string,
-  scControls: ScControl[],
+  placeholderTreeNodes: PlaceholderTreeNode[],
 ): CompoundGraphNode[] {
-  const roots: CompoundGraphNode[] = [];
-  const placeholders = new Map<string, CompoundGraphNode>();
-
-  scControls.forEach((control, controlIndex) => {
-    processPlaceholderForOneControl(
-      control,
-      roots,
-      placeholders,
-      deviceNodeId,
-      controlIndex,
-    );
-  });
-
-  return roots;
+  return placeholderTreeNodes.map((placeholder) =>
+    createPlaceholderGraphNode(deviceNodeId, placeholder),
+  );
 }
 
-function processPlaceholderForOneControl(
-  control: ScControl,
-  roots: CompoundGraphNode[],
-  placeholders: Map<string, CompoundGraphNode>,
+function createPlaceholderGraphNode(
   deviceNodeId: string,
-  controlIndex: number,
-) {
-  const rawPlaceholderPath = control.placeholder || "(no placeholder)";
+  placeholder: PlaceholderTreeNode,
+): CompoundGraphNode {
+  const segments = placeholder.path.split("/");
+const segment = segments[segments.length - 1] ?? placeholder.path;
 
-  const placeHolderSegments = rawPlaceholderPath
-    .split("/")
-    .filter(Boolean)
-    .map(stripDynamicPlaceholderSuffix);
-
-  const normalizedPlaceholderSegments =
-    placeHolderSegments.length > 0 ? placeHolderSegments : [rawPlaceholderPath];
-
-  let targetChildren = roots;
-  let currentPath = "";
-
-  normalizedPlaceholderSegments.forEach((segment) => {
-    ({ currentPath, targetChildren: targetChildren } = processOnePlaceholderSegment(
-      currentPath,
-      segment,
-      placeholders,
-      deviceNodeId,
-      targetChildren,
-    ));
-  });
-
-  targetChildren.push(createRenderingTree(deviceNodeId, control, controlIndex));
-}
-
-function processOnePlaceholderSegment(
-  currentPath: string,
-  segment: string,
-  placeholders: Map<string, CompoundGraphNode>,
-  deviceNodeId: string,
-  targetChildren: CompoundGraphNode[],
-) {
-  currentPath = currentPath ? `${currentPath}/${segment}` : segment;
-
-  let placeholder = placeholders.get(currentPath);
-
-  if (!placeholder) {
-    placeholder = addPlaceholder(
-      segment,
-      currentPath,
-      deviceNodeId,
-      placeholders,
-      targetChildren,
-      placeholder,
-    );
-  }
-
-  targetChildren = placeholder.children;
-  return { currentPath, targetChildren };
-}
-
-function addPlaceholder(
-  segment: string,
-  currentPath: string,
-  deviceNodeId: string,
-  placeholders: Map<string, CompoundGraphNode>,
-  targetChildren: CompoundGraphNode[],
-  placeholder: CompoundGraphNode | undefined,
-) {
   const descriptor: SatelliteDescriptor = {
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     value: segment,
-    path: currentPath,
-    placeholder: currentPath,
+    path: placeholder.path,
+    placeholder: placeholder.path,
   };
 
-  const newPlaceholder: CompoundGraphNode = {
+  const children: CompoundGraphNode[] = [];
+
+  // Convert child placeholders recursively
+  placeholder.placeholders.forEach((childPlaceholder) => {
+    children.push(
+      createPlaceholderGraphNode(deviceNodeId, childPlaceholder),
+    );
+  });
+
+  // Convert controls/renderings
+  placeholder.controls.forEach((control, controlIndex) => {
+    children.push(
+      createRenderingTree(deviceNodeId, control, controlIndex),
+    );
+  });
+
+  return {
     nodeTargetId: createScopedId(
       deviceNodeId,
       CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
-      currentPath,
+      placeholder.path,
     ),
     item: undefined,
     label: segment,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     tooltip: buildTooltipContent(buildTooltip(descriptor)),
-    children: [],
+    children,
   };
-
-  placeholders.set(currentPath, newPlaceholder);
-
-  targetChildren.push(newPlaceholder);
-  placeholder = newPlaceholder;
-  return placeholder;
 }

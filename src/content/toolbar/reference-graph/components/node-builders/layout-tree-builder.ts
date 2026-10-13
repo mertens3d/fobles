@@ -15,8 +15,9 @@ import { buildLabel } from "../../cytoscape/graph-node-helpers";
 import { buildTooltip, buildTooltipContent } from "../../graph-tooltip";
 import type { SatelliteDescriptor } from "../../reference-graph.types";
 import { CONST } from "../../../../../constants/const";
-import { createPlaceholderTrees } from "./layout-placeholder-nodes";
+import { createPlaceholderTreeNodes } from "./layout-placeholder-tree";
 import type { CompoundGraphNode } from "../../graph.types";
+import { createPlaceholderGraphNodes } from "./layout-placeholder-nodes";
 
 export function createScopedId(...parts: Array<string | undefined>): string {
   return parts
@@ -45,6 +46,9 @@ function createDeviceTree(
     device.scDeviceItem?.scItemId ?? String(deviceIndex),
   );
 
+  const placeholderTrees = createPlaceholderTreeNodes(device.controls); 
+  const placeholderGraphNodes = createPlaceholderGraphNodes(deviceNodeId, placeholderTrees);
+
   return {
     item: descriptor.item,
     nodeTargetId: deviceNodeId,
@@ -56,7 +60,7 @@ function createDeviceTree(
     link: descriptor.item?.link,
     drillDown: Boolean(descriptor.item?.link),
     tooltip: buildTooltipContent(buildTooltip(descriptor)),
-    children: createPlaceholderTrees(deviceNodeId, device.controls),
+    children: placeholderGraphNodes,
   };
 }
 
