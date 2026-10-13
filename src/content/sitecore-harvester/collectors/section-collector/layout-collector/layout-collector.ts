@@ -33,22 +33,21 @@ const processLayoutFieldValue = (
 
         if (rawProcessedXml) {
             for (const device of rawProcessedXml.r.d) {
-                const layoutView = factoryItemGraphNodeData();
-                layoutView.itemId = device.l;
+                const layoutView = factoryItemGraphNodeData({scItemId: device.l});
 
                 const deviceData: LayoutDevice = {
-                    layoutView,
-                    deviceId: device.id,
+                    scLayoutViewItem: layoutView,
+                    scDeviceItem: factoryItemGraphNodeData(),
                     controls: [],
                 };
 
+
                 for (const rendering of device.r ?? []) {
-                    const renderingItem = factoryItemGraphNodeData();
-                    renderingItem.itemId = rendering["s:id"];
+                    const renderingItem = factoryItemGraphNodeData({scItemId: rendering["s:id"]});
 
                     const datasourceItem = createDatasourceItem(
                         rendering["s:ds"],
-                        harvestContext.rootItem.path,
+                        harvestContext.rootItem.scItemPath,
                     );
 
                     const control: HarvestGraphControl = {
@@ -84,14 +83,14 @@ function createDatasourceItem(
 
     if (datasource.toLowerCase().startsWith("local:")) {
         if (currentItemPath) {
-            item.path =
+            item.scItemPath =
                 currentItemPath +
                 datasource.slice("local:".length);
         }
     } else if (datasource.startsWith("/")) {
-        item.path = datasource;
+        item.scItemPath = datasource;
     } else {
-        item.itemId = datasource;
+        item.scItemId = datasource;
     }
 
     return item;

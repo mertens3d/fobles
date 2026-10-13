@@ -5,6 +5,7 @@ import type {
   LayoutDevice,
   LayoutSectionField,
   SitecoreHarvestResult,
+  ItemGraphNodeData,
 } from "../../../../sitecore-harvester/sitecore-harvester.types";
 import {
   kindClass,
@@ -25,45 +26,48 @@ function createScopedId(...parts: Array<string | undefined>): string {
 }
 
 type CompoundGraphNode = {
+  item: ItemGraphNodeData | undefined;
   id: string;
   label: string;
   kind: string;
-  itemId?: string;
+//   scItemId?: string;
   path?: string;
   link?: string;
   drillDown?: boolean;
   tooltip?: HTMLElement;
   children: CompoundGraphNode[];
 };
+
+
 function createDeviceTree(
   layoutId: string,
   device: LayoutDevice,
   deviceIndex: number,
 ): CompoundGraphNode {
-  const item = device.layoutView;
+  const item = device.scLayoutViewItem;
 
   const descriptor: SatelliteDescriptor = {
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DEVICE,
     item,
-    value: item?.name ?? "Unknown device",
+    value: item?.scItemName ?? "Unknown device",
     filterClass: CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS.layouts,
   };
 
   const deviceNodeId = createScopedId(
     layoutId,
     "device",
-    device.deviceId ?? String(deviceIndex),
+    device.scDeviceItem?.scItemId ?? String(deviceIndex),
   );
 
   return {
+    item: descriptor.item,
     id: deviceNodeId,
     label: buildLabel(
       descriptor.kind,
-      descriptor.item?.name ?? device.deviceId ?? "Unknown",
+      descriptor.item?.scItemName ?? device.scDeviceItem?.scItemId ?? "Unknown",
     ),
     kind: descriptor.kind,
-    itemId: descriptor.item?.itemId,
-    path: descriptor.item?.path,
+    path: descriptor.item?.scItemPath,
     link: descriptor.item?.link,
     drillDown: Boolean(descriptor.item?.link),
     tooltip: buildTooltipContent(buildTooltip(descriptor)),
@@ -81,7 +85,7 @@ function createRenderingTree(
   const renderingNodeId = createScopedId(
     deviceNodeId,
     "rendering",
-    control.uid ?? rendering.itemId ?? String(controlIndex),
+    control.uid ?? rendering.scItemId ?? String(controlIndex),
   );
 
   const children: CompoundGraphNode[] = [];
@@ -97,14 +101,14 @@ function createRenderingTree(
         renderingNodeId,
         CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.DATASOURCE,
       ),
+      item: undefined,
       label:
-        control.datasource.name ??
-        lastPathSegment(control.datasource.path) ??
-        control.datasource.itemId ??
+        control.datasource.scItemName ??
+        lastPathSegment(control.datasource.scItemPath) ??
+        control.datasource.scItemId ??
         "Unknown datasource",
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
-      itemId: control.datasource.itemId,
-      path: control.datasource.path,
+      path: control.datasource.scItemPath,
       link: control.datasource.link,
       drillDown: Boolean(control.datasource.link),
       tooltip: buildTooltipContent(buildTooltip(datasourceDescriptor)),
@@ -126,10 +130,10 @@ function createRenderingTree(
 
   return {
     id: renderingNodeId,
-    label: rendering.name ?? rendering.itemId ?? "Unknown rendering",
+    label: rendering.scItemName ?? rendering.scItemId ?? "Unknown rendering",
+    item: undefined,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CONTROL,
-    itemId: rendering.itemId,
-    path: rendering.path,
+    path: rendering.scItemPath,
     link: rendering.link,
     drillDown: Boolean(rendering.link),
     tooltip: buildTooltipContent(buildTooltip(renderingDescriptor)),
@@ -152,12 +156,14 @@ function createRenderingParametersTree(
     ),
     label: "Rendering Parameters",
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
+    item: undefined,
     tooltip: buildTooltipContent(buildTooltip(parametersDescriptor)),
-    children: parameters.map(([name, value]) => {
+    children: parameters.map(([name, value]): CompoundGraphNode => {
       const parameterDescriptor: SatelliteDescriptor = {
         kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
         value: name,
         path: value || undefined,
+
       };
 
       return {
@@ -170,6 +176,7 @@ function createRenderingParametersTree(
         kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
         tooltip: buildTooltipContent(buildTooltip(parameterDescriptor)),
         children: [],
+        item: undefined,
       };
     }),
   };
@@ -185,7 +192,7 @@ export function appendCompoundGraphNode(
       id: node.id,
       parent: parentId,
       label: node.label,
-      itemId: node.itemId,
+      itemId: node.item?.scItemId,
       path: node.path,
       link: node.link,
       drillDown: node.drillDown,
@@ -212,6 +219,7 @@ export function createLayoutTree(
     label: descriptor.value ?? "",
     kind: descriptor.kind,
     tooltip: buildTooltipContent(buildTooltip(descriptor)),
+    item: undefined,
     children: (graphReferenceResult.layoutSectionFields ?? []).map(
       createLayoutSectionTree,
     ),
@@ -234,6 +242,7 @@ function createLayoutSectionTree(
     id: layoutId,
     label: descriptor.value ?? "",
     kind: descriptor.kind,
+    item: undefined,    
     tooltip: buildTooltipContent(buildTooltip(descriptor)),
     children: (layout.devices ?? []).map((device, deviceIndex) =>
       createDeviceTree(layoutId, device, deviceIndex),
@@ -273,20 +282,23 @@ function createPlaceholderTrees(
           placeholder: currentPath,
         };
 
-        placeholder = {
+         const newPlaceholder: CompoundGraphNode =  {
           id: createScopedId(
             deviceNodeId,
             CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
             currentPath,
           ),
+          item: undefined,
           label: segment,
           kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
           tooltip: buildTooltipContent(buildTooltip(descriptor)),
           children: [],
         };
 
-        placeholders.set(currentPath, placeholder);
-        parentChildren.push(placeholder);
+        placeholders.set(currentPath, newPlaceholder);
+
+        parentChildren.push(newPlaceholder);
+        placeholder = newPlaceholder;
       }
 
       parentChildren = placeholder.children;

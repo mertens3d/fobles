@@ -137,7 +137,7 @@ export function useCytoscape({
             setCurrentFilters(filters);
 
             loadedFiltersByItemIdRef.current.set(
-                initialGraph.rootItem.itemId,
+                initialGraph.rootItem.scItemId,
                 getEnabledFilterKeys(filters),
             );
 

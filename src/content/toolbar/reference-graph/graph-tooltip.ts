@@ -11,9 +11,9 @@ export function buildTooltip(
     descriptor: SatelliteDescriptor,
 ): TooltipData {
     return {
-        name: descriptor.item?.name ?? descriptor.value,
-        guid: descriptor.item?.itemId,
-        path: descriptor.item?.path ?? descriptor.path,
+        name: descriptor.item?.scItemName ?? descriptor.value,
+        guid: descriptor.item?.scItemId,
+        path: descriptor.item?.scItemPath ?? descriptor.path,
         placeholder: descriptor.placeholder,
     };
 }

@@ -19,7 +19,7 @@ export function buildLayoutNodes(
         cytoEdges.push({
             data: {
                 id: CONST.FOBLES.REFERENCE_GRAPH.EDGE_IDS.EDGE_LAYOUT,
-                source: graphReferenceResult.rootItem.itemId,
+                source: graphReferenceResult.rootItem.scItemId,
                 target: layoutTree.id,
             },
         });

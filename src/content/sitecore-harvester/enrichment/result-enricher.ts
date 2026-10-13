@@ -20,9 +20,9 @@ export async function enrichSitecoreHarvestResult(
             true,
         );
 
-        if (item.template) {
+        if (item.scTemplate) {
             await enrichItemWithCache(
-                item.template,
+                item.scTemplate,
                 signal,
                 enrichedItemsByReference,
                 false,
@@ -40,7 +40,7 @@ async function enrichItemWithCache(
     >,
     includeTemplate: boolean,
 ): Promise<void> {
-    const itemReference = item.itemId || item.path;
+    const itemReference = item.scItemId || item.scItemPath;
 
     if (!itemReference) {
         return;
@@ -67,16 +67,16 @@ async function enrichItemWithCache(
         includeTemplate,
     );
 
-    if (item.itemId) {
+    if (item.scItemId) {
         enrichedItemsByReference.set(
-            item.itemId.toLowerCase(),
+            item.scItemId.toLowerCase(),
             item,
         );
     }
 
-    if (item.path) {
+    if (item.scItemPath) {
         enrichedItemsByReference.set(
-            item.path.toLowerCase(),
+            item.scItemPath.toLowerCase(),
             item,
         );
     }
@@ -156,12 +156,12 @@ function mergeItemGraphNodeData(
     source: ItemGraphNodeData,
     includeTemplate: boolean,
 ): void {
-    target.itemId ??= source.itemId;
-    target.name ??= source.name;
-    target.path ??= source.path;
+    target.scItemId ??= source.scItemId;
+    target.scItemName ??= source.scItemName;
+    target.scItemPath ??= source.scItemPath;
     target.link ??= source.link;
 
     if (includeTemplate) {
-        target.template ??= source.template;
+        target.scTemplate ??= source.scTemplate;
     }
 }

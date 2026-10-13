@@ -6,7 +6,7 @@ export async function enrichItemGraphNodeData(
     signal: AbortSignal,
     includeTemplate: boolean = true,
 ): Promise<void> {
-    const itemReference = item.itemId || item.path;
+    const itemReference = item.scItemId || item.scItemPath;
 
     if (!itemReference) {
         return;
@@ -15,10 +15,10 @@ export async function enrichItemGraphNodeData(
     item.link ??= buildFoblesUrl(itemReference);
 
     if (
-        item.itemId &&
-        item.name &&
-        item.path &&
-        (!includeTemplate || item.template)
+        item.scItemId &&
+        item.scItemName &&
+        item.scItemPath &&
+        (!includeTemplate || item.scTemplate)
     ) {
         return;
     }
@@ -39,17 +39,18 @@ export async function enrichItemGraphNodeData(
 
     const quickInfo = getQuickInfo(doc);
 
-    item.itemId ??= quickInfo.itemId;
-    item.name ??= quickInfo.itemName;
-    item.path ??= quickInfo.itemPath;
+    item.scItemId ??= quickInfo.itemId;
+    item.scItemName ??= quickInfo.itemName;
+    item.scItemPath ??= quickInfo.itemPath;
 
     if (
         includeTemplate &&
-        !item.template &&
+        !item.scTemplate &&
         quickInfo.template?.id
     ) {
-        item.template = factoryItemGraphNodeData();
-        item.template.itemId = quickInfo.template.id;
-        item.template.path = quickInfo.template.path;
+        item.scTemplate = factoryItemGraphNodeData({
+            scItemId: quickInfo.template.id,
+            scItemPath: quickInfo.template.path,
+        });
     }
 }

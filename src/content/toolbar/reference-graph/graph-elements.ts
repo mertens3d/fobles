@@ -30,11 +30,11 @@ export function buildElements(
   const cytoNodes: cytoscape.ElementDefinition[] = [
     {
       data: {
-        id: graphReferenceResult.rootItem.itemId,
+        id: graphReferenceResult.rootItem.scItemId,
         label: buildLabel(
           CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ITEM,
-          graphReferenceResult.rootItem.name ??
-            graphReferenceResult.rootItem.itemId ??
+          graphReferenceResult.rootItem.scItemName ??
+            graphReferenceResult.rootItem.scItemId ??
             "Unknown item",
         ),
         link: graphReferenceResult.rootItem.link,
@@ -70,7 +70,7 @@ function buildParentNode(
     return;
   }
 
-  appendSatellites(cytoNodes, cytoEdges, graphReferenceResult.rootItem.itemId, [
+  appendSatellites(cytoNodes, cytoEdges, graphReferenceResult.rootItem.scItemId, [
     createItemSatelliteDescriptor(
       graphReferenceResult.parent,
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PARENT,
@@ -84,13 +84,13 @@ function buildTemplateNode(
   cytoNodes: cytoscape.ElementDefinition[],
   cytoEdges: cytoscape.ElementDefinition[],
 ): void {
-  const template = graphReferenceResult.rootItem.template;
+  const template = graphReferenceResult.rootItem.scTemplate;
 
   if (!template) {
     return;
   }
 
-  appendSatellites(cytoNodes, cytoEdges, graphReferenceResult.rootItem.itemId, [
+  appendSatellites(cytoNodes, cytoEdges, graphReferenceResult.rootItem.scItemId, [
     createItemSatelliteDescriptor(
       template,
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.TEMPLATE,
@@ -113,7 +113,7 @@ function buildSectionsNode(
     return;
   }
 
-  const sectionsId = `${graphReferenceResult.rootItem.itemId}-sections`;
+  const sectionsId = `${graphReferenceResult.rootItem.scItemId}-sections`;
 
   const sectionsDescriptor: SatelliteDescriptor = {
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
@@ -134,14 +134,14 @@ function buildSectionsNode(
   cytoEdges.push({
     data: {
       id: `edge-${sectionsId}`,
-      source: graphReferenceResult.rootItem.itemId,
+      source: graphReferenceResult.rootItem.scItemId,
       target: sectionsId,
     },
   });
 
   sectionsWithValues.forEach((section) => {
     const sectionId =
-      `${graphReferenceResult.rootItem.itemId}` +
+      `${graphReferenceResult.rootItem.scItemId}` +
       `-section-${slugify(section.name)}`;
 
     const sectionDescriptor: SatelliteDescriptor = {
@@ -215,7 +215,7 @@ function buildReferrerNode(
     return;
   }
 
-  const referrersId = `${graphReferenceResult.rootItem.itemId}-referrers`;
+  const referrersId = `${graphReferenceResult.rootItem.scItemId}-referrers`;
 
   const referrersDescriptor: SatelliteDescriptor = {
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
@@ -237,7 +237,7 @@ function buildReferrerNode(
     data: {
       id: CONST.FOBLES.REFERENCE_GRAPH.EDGE_IDS.REFERRERS,
       source: referrersId,
-      target: graphReferenceResult.rootItem.itemId,
+      target: graphReferenceResult.rootItem.scItemId,
     },
   });
 
@@ -265,7 +265,7 @@ function buildChildNodes(
     return;
   }
 
-  const childrenId = `${graphReferenceResult.rootItem.itemId}-children`;
+  const childrenId = `${graphReferenceResult.rootItem.scItemId}-children`;
 
   const childrenDescriptor: SatelliteDescriptor = {
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
@@ -286,7 +286,7 @@ function buildChildNodes(
   cytoEdges.push({
     data: {
       id: CONST.FOBLES.REFERENCE_GRAPH.EDGE_IDS.CHILDREN,
-      source: graphReferenceResult.rootItem.itemId,
+      source: graphReferenceResult.rootItem.scItemId,
       target: childrenId,
     },
   });

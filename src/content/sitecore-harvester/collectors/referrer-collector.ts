@@ -36,11 +36,11 @@ export async function collectReferrers(harvestContext: HarvestContext): Promise<
           if (!referrerId) return undefined;
           return {
             type: "scItem",
-            name,
-            itemId: referrerId,
+            scItemName: name,
+            scItemId: referrerId,
             link: undefined,
-            path,
-            template: undefined,
+            scItemPath: path,
+            scTemplate: undefined,
           };
         })
         .filter((referrer): referrer is ItemGraphNodeData => referrer !== undefined);

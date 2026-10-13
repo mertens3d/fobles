@@ -39,11 +39,11 @@ export async function collectTreeChildren(doc: Document, itemId: string): Promis
   return children.map(
     (child): ItemGraphNodeData => ({
       type: "scItem",
-      name: child.name,
-      itemId: child.itemId,
+      scItemName: child.name,
+      scItemId: child.itemId,
       link: undefined,
-      path: undefined,
-      template: undefined,
+      scItemPath: undefined,
+      scTemplate: undefined,
     })
   );
 }
@@ -70,13 +70,16 @@ export async function harvestSitecore(
   }
   const docQuickInfo = getQuickInfo(doc);
 
-  const rootItem = factoryItemGraphNodeData() as RootItem;
-  rootItem.itemId = itemId;
-  rootItem.name = docQuickInfo.itemName;
-  rootItem.path = docQuickInfo.itemPath;
-  rootItem.template = factoryItemGraphNodeData();
-  rootItem.template.itemId = docQuickInfo?.template?.id;
-  rootItem.template.path = docQuickInfo?.template?.path;
+  const rootItem = factoryItemGraphNodeData({
+    scItemId: itemId,
+    scItemName: docQuickInfo.itemName,
+    scItemPath: docQuickInfo.itemPath,
+    scTemplate: factoryItemGraphNodeData({
+      scItemId: docQuickInfo?.template?.id,
+      scItemPath: docQuickInfo?.template?.path,
+    }),
+  }) as RootItem;
+
 
   onProgress?.(
     {

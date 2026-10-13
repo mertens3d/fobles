@@ -39,8 +39,7 @@ export const resolveTreelistExLinks: FieldLinkResolver = (marker) => {
         return null;
       }
 
-      const valueItem = factoryItemGraphNodeData();
-      valueItem.path = toItemPath(title);
+      const valueItem = factoryItemGraphNodeData({ scItemPath: toItemPath(title) });
 
       return {
         label,

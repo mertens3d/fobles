@@ -20,28 +20,32 @@ export type HarvestStep = ProgressStep & {
 export function isHarvestStep(step: ProgressStep): step is HarvestStep {
   return "filterKey" in step;
 }
-export function factoryItemGraphNodeData(): ItemGraphNodeData {
+
+export function factoryItemGraphNodeData(
+  overrides: Partial<Omit<ItemGraphNodeData, "type">> = {},
+): ItemGraphNodeData {
   return {
     type: "scItem",
-    name: undefined,
-    itemId: undefined,
+    scItemName: undefined,
+    scItemId: undefined,
     link: undefined,
-    path: undefined,
-    template: undefined,
+    scItemPath: undefined,
+    scTemplate: undefined,
+    ...overrides,
   };
 }
 
 export type ItemGraphNodeData = {
   type: "scItem";
-  name: string | undefined;
-  itemId: string | undefined;
+  scItemName: string | undefined;
+  scItemId: string | undefined;
   link: string | undefined;
-  path: string | undefined;
-  template: ItemGraphNodeData | undefined;
+  scItemPath: string | undefined;
+  scTemplate: ItemGraphNodeData | undefined;
 };
 
 export type RootItem = ItemGraphNodeData & {
-  itemId: string;
+  scItemId: string;
 };
 
 export type SitecoreHarvestResult = {
@@ -104,8 +108,8 @@ export type SitecoreHarvestField = {
 };
 
 export type LayoutDevice = {
-  layoutView: ItemGraphNodeData | undefined;
-  deviceId: string | undefined;
+  scLayoutViewItem: ItemGraphNodeData | undefined;
+  scDeviceItem: ItemGraphNodeData;
   controls: HarvestGraphControl[];
 };
 

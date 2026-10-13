@@ -24,7 +24,7 @@ export function appendSatellites(
     descriptors.forEach((descriptor, index) => {
         const value =
             descriptor.value ??
-            descriptor.item?.name;
+            descriptor.item?.scItemName;
 
         if (!value) return;
 
@@ -81,7 +81,7 @@ export function appendCompoundChildren(
     return descriptors.map((descriptor, index) => {
         const value =
             descriptor.value ??
-            descriptor.item?.name;
+            descriptor.item?.scItemName;
 
         if (!value) return undefined;
 

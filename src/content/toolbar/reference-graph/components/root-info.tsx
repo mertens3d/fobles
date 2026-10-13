@@ -5,9 +5,9 @@ import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore
 type RootInfoProps = { graph: SitecoreHarvestResult };
 export function RootInfo({ graph }: RootInfoProps) {
   const rows = [
-    ["Name", graph.rootItem.name],
-    ["GUID", graph.rootItem.itemId],
-    ["Path", graph.rootItem.path],
+    ["Name", graph.rootItem.scItemName],
+    ["GUID", graph.rootItem.scItemId],
+    ["Path", graph.rootItem.scItemPath],
   ].filter((row): row is [string, string] => row[1] !== undefined);
   return (
     <div style={{ fontSize: 11, color: "#203047", lineHeight: 1.5, maxWidth: 220, wordBreak: "break-word" }}>

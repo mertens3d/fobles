@@ -98,11 +98,11 @@ export function ReferenceGraphApp({
 
             if (
                 !graphState.loadedFiltersByItemIdRef.current.has(
-                    newGraph.rootItem.itemId,
+                    newGraph.rootItem.scItemId,
                 )
             ) {
                 graphState.loadedFiltersByItemIdRef.current.set(
-                    newGraph.rootItem.itemId,
+                    newGraph.rootItem.scItemId,
                     getEnabledFilterKeys(
                         graphState.currentFiltersRef.current,
                     ),
@@ -164,14 +164,14 @@ export function ReferenceGraphApp({
 
             const loadedFilters =
                 graphState.loadedFiltersByItemIdRef.current.get(
-                    currentGraphValue.rootItem.itemId,
+                    currentGraphValue.rootItem.scItemId,
                 ) ??
                 new Set<
                     keyof SitecoreHarvestFiltersState
                 >();
 
             graphState.loadedFiltersByItemIdRef.current.set(
-                currentGraphValue.rootItem.itemId,
+                currentGraphValue.rootItem.scItemId,
                 loadedFilters,
             );
 
@@ -224,8 +224,8 @@ export function ReferenceGraphApp({
                     cancelled ||
                     !partialGraph ||
                     graphState.currentGraphRef.current.rootItem
-                        .itemId !==
-                    currentGraphValue.rootItem.itemId
+                        .scItemId !==
+                    currentGraphValue.rootItem.scItemId
                 ) {
                     const revertedFilters = {
                         ...graphState.currentFiltersRef.current,
