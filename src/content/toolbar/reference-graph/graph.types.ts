@@ -37,15 +37,3 @@ export type LayoutGraphPresetName =
   | "fcose"
   | "breadthfirst";
 
-export type PlaceholderGroupControl = {
-  control: ScControl;
-  index: number;
-};
-
-export type PlaceholderGroup = {
-  id: string;
-  label: string;
-  parentId: string;
-  controls: PlaceholderGroupControl[];
-};
-``

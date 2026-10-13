@@ -11,6 +11,12 @@ export type DataTreeBranch =
   | "sections"
   | "template";
 
+
+export type TreeChildNode = {
+  name: string | undefined;
+  itemId: string;
+};
+
 type DataTreeNodeBase = {
   treeNodeId: string;
   kind: NodeKind;

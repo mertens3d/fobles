@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/toolbar/reference-graph/components/data-builders/layout-tree-builder.ts
+// @source-path [fobles] src/content/toolbar/reference-graph/data-tree/layout-data-tree-builder.ts
 
 import type {
   ItemGraphNodeData,
@@ -8,12 +8,20 @@ import type {
   SitecoreHarvestResult,
 } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { CONST } from "../../../../constants/const";
-import { slugify } from "../graph-nodes/graph-helpers";
+import {
+  createDataTreeItemNode,
+  createDataTreeNonItemNode,
+} from "./data-tree-node-factory";
+import type {
+  DataTreeItemNode,
+  DataTreeNode,
+  DataTreeNonItemNode,
+} from "./data-tree.types";
 import {
   createPlaceholderTreeNodes,
   type PlaceholderTreeNode,
 } from "./placeholder-data-tree-builder";
-import type { DataTreeNonItemNode, DataTreeNode, DataTreeItemNode } from "./data-tree.types";
+import { slugify } from "../reference-graph-helper";
 
 export function createDataTreeNodeId(
   ...parts: Array<string | undefined>
@@ -30,20 +38,19 @@ export function createLayoutDataTree(
   const treeNodeId =
     CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID;
 
-  return {
+  return createDataTreeNonItemNode({
     treeNodeId,
-    nodeType: "nonItem",
     name: "Layouts",
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     branch: "layouts",
     relationshipToParent: "related",
     children: (graphReferenceResult.layoutSectionFields ?? []).map(
-      createLayoutSectionTree,
+      createLayoutSectionDataTree,
     ),
-  };
+  });
 }
 
-function createLayoutSectionTree(
+function createLayoutSectionDataTree(
   layout: LayoutSectionField,
 ): DataTreeNonItemNode {
   const treeNodeId = createDataTreeNodeId(
@@ -51,19 +58,23 @@ function createLayoutSectionTree(
     layout.name,
   );
 
-  return {
+  return createDataTreeNonItemNode({
     treeNodeId,
-    nodeType: "nonItem",
     name: layout.name ?? "",
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     branch: "layouts",
-    children: (layout.devices ?? []).map((device, deviceIndex) =>
-      createDeviceTreeNode(treeNodeId, device, deviceIndex),
+    children: (layout.devices ?? []).map(
+      (device, deviceIndex) =>
+        createDeviceDataTreeNode(
+          treeNodeId,
+          device,
+          deviceIndex,
+        ),
     ),
-  };
+  });
 }
 
-function createDeviceTreeNode(
+function createDeviceDataTreeNode(
   layoutTreeNodeId: string,
   device: LayoutDevice,
   deviceIndex: number,
@@ -74,78 +85,92 @@ function createDeviceTreeNode(
     device.scDeviceItem?.scItemId ?? String(deviceIndex),
   );
 
-  const children = createPlaceholderTreeNodes(device.controls).map(
-    (placeholder) =>
-      createPlaceholderDataTreeNode(treeNodeId, placeholder),
+  const children = createPlaceholderTreeNodes(
+    device.controls,
+  ).map((placeholder) =>
+    createPlaceholderDataTreeNode(
+      treeNodeId,
+      placeholder,
+    ),
   );
 
+  let deviceTreeNode: DataTreeNode;
+
   if (device.scLayoutViewItem) {
-    return createItemTreeNode(
+    deviceTreeNode = createDataTreeItemNode({
       treeNodeId,
-      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DEVICE,
-      device.scLayoutViewItem,
+      scItem: device.scLayoutViewItem,
+      kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DEVICE,
+      branch: "layouts",
       children,
-    );
+    });
+  } else {
+    deviceTreeNode = createDataTreeNonItemNode({
+      treeNodeId,
+      name:
+        device.scDeviceItem?.scItemId ??
+        "Unknown device",
+      kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DEVICE,
+      branch: "layouts",
+      children,
+    });
   }
 
-  return {
-    treeNodeId,
-    nodeType: "nonItem",
-    name:
-      device.scDeviceItem?.scItemId ??
-      "Unknown device",
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DEVICE,
-    branch: "layouts",
-    children,
-  };
+  return deviceTreeNode;
 }
 
 function createPlaceholderDataTreeNode(
   deviceTreeNodeId: string,
   placeholder: PlaceholderTreeNode,
 ): DataTreeNonItemNode {
-  const placeholderSegments = placeholder.path.split("/");
+  const placeholderSegments =
+    placeholder.path.split("/");
+
   const placeholderName =
-    placeholderSegments[placeholderSegments.length - 1] ??
-    placeholder.path;
+    placeholderSegments[
+      placeholderSegments.length - 1
+    ] ?? placeholder.path;
 
   const children: DataTreeNode[] = [];
 
-  placeholder.placeholders.forEach((childPlaceholder) => {
-    children.push(
-      createPlaceholderDataTreeNode(
-        deviceTreeNodeId,
-        childPlaceholder,
-      ),
-    );
-  });
+  placeholder.placeholders.forEach(
+    (childPlaceholder) => {
+      children.push(
+        createPlaceholderDataTreeNode(
+          deviceTreeNodeId,
+          childPlaceholder,
+        ),
+      );
+    },
+  );
 
-  placeholder.controls.forEach((control, controlIndex) => {
-    children.push(
-      createRenderingTree(
-        deviceTreeNodeId,
-        control,
-        controlIndex,
-      ),
-    );
-  });
+  placeholder.controls.forEach(
+    (control, controlIndex) => {
+      children.push(
+        createRenderingDataTree(
+          deviceTreeNodeId,
+          control,
+          controlIndex,
+        ),
+      );
+    },
+  );
 
-  return {
+  return createDataTreeNonItemNode({
     treeNodeId: createDataTreeNodeId(
       deviceTreeNodeId,
       CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
       placeholder.path,
     ),
-    nodeType: "nonItem",
     name: placeholderName,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     branch: "layouts",
     relationshipToParent: "related",
     children,
-  };
+  });
 }
 
-export function createRenderingTree(
+export function createRenderingDataTree(
   deviceTreeNodeId: string,
   control: ScControl,
   controlIndex: number,
@@ -164,106 +189,88 @@ export function createRenderingTree(
 
   if (control.datasource) {
     children.push(
-      createDatasourceTreeNode(
+      createDatasourceDataTreeNode(
         treeNodeId,
         control.datasource,
       ),
     );
   }
 
-  const parameters = Object.entries(control.parameters);
+  const parameters = Object.entries(
+    control.parameters,
+  );
 
   if (parameters.length > 0) {
     children.push(
-      createRenderingParametersTreeNode(
+      createRenderingParametersDataTreeNode(
         treeNodeId,
         parameters,
       ),
     );
   }
 
-  return {
+  return createDataTreeItemNode({
     treeNodeId,
-    nodeType: "item",
     scItem: rendering,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CONTROL,
     branch: "layouts",
     relationshipToParent: "related",
     children,
-  };
+  });
 }
 
-function createDatasourceTreeNode(
+function createDatasourceDataTreeNode(
   renderingTreeNodeId: string,
   datasource: ItemGraphNodeData,
 ): DataTreeItemNode {
-  return createItemTreeNode(
-    createDataTreeNodeId(
+  return createDataTreeItemNode({
+    treeNodeId: createDataTreeNodeId(
       renderingTreeNodeId,
       CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.DATASOURCE,
     ),
-    CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
-    datasource,
-    [],
-  );
+    scItem: datasource,
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
+    branch: "layouts",
+  });
 }
 
-function createRenderingParametersTreeNode(
+function createRenderingParametersDataTreeNode(
   renderingTreeNodeId: string,
   parameters: Array<[string, string]>,
 ): DataTreeNonItemNode {
-  return {
+  return createDataTreeNonItemNode({
     treeNodeId: createDataTreeNodeId(
       renderingTreeNodeId,
       CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETERS,
     ),
-    nodeType: "nonItem",
     name: "Rendering Parameters",
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     branch: "layouts",
     children: parameters.map(([name, value]) =>
-      createSingleParameterTreeNode(
+      createSingleParameterDataTreeNode(
         name,
         value,
         renderingTreeNodeId,
       ),
     ),
-  };
+  });
 }
 
-function createSingleParameterTreeNode(
+function createSingleParameterDataTreeNode(
   name: string,
   value: string,
   renderingTreeNodeId: string,
 ): DataTreeNonItemNode {
-  return {
+  return createDataTreeNonItemNode({
     treeNodeId: createDataTreeNodeId(
       renderingTreeNodeId,
       CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETER,
       name,
     ),
-    nodeType: "nonItem",
     name: value
       ? `${name}: ${value}`
       : name,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     branch: "layouts",
-    children: [],
-  };
-}
-
-function createItemTreeNode(
-  treeNodeId: string,
-  kind: DataTreeItemNode["kind"],
-  scItem: ItemGraphNodeData,
-  children: DataTreeNode[],
-): DataTreeItemNode {
-  return {
-    treeNodeId,
-    nodeType: "item",
-    scItem,
-    kind,
-    branch: "layouts",
-    children,
-  };
+  });
 }

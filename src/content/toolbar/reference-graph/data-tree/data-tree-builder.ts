@@ -1,18 +1,17 @@
-// @source-path [Fobles] src/content/toolbar/reference-graph/components/data-builders/reference-tree-builder.ts
+// @source-path [fobles] src/content/toolbar/reference-graph/data-tree/data-tree-builder.ts
 
-import type {
-  ItemGraphNodeData,
-  SitecoreHarvestResult,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { CONST } from "../../../../constants/const";
 import {
   createLayoutDataTree,
   createDataTreeNodeId,
 } from "./layout-data-tree-builder";
+import {
+  createDataTreeItemNode,
+  createDataTreeNonItemNode,
+} from "./data-tree-node-factory";
 import type {
-  DataTreeBranch,
   DataTreeItemNode,
-  DataTreeNode,
   DataTreeNonItemNode,
 } from "./data-tree.types";
 
@@ -22,74 +21,79 @@ export function createDataTree(
   const rootTreeNodeId =
     graphReferenceResult.rootItem.scItemId;
 
-  const children: DataTreeNode[] = [];
+  const children = [
+    createParentTreeNode(graphReferenceResult),
+    createTemplateTreeNode(graphReferenceResult),
+    createChildrenTreeNode(graphReferenceResult),
+    createReferrersTreeNode(graphReferenceResult),
+    createSectionsTreeNode(graphReferenceResult),
+    createLayoutTreeNode(graphReferenceResult),
+  ].filter(
+    (
+      treeNode,
+    ): treeNode is
+      | DataTreeItemNode
+      | DataTreeNonItemNode =>
+      treeNode !== undefined,
+  );
 
-  if (graphReferenceResult.parent) {
-    children.push(
-      createItemTreeNode({
-        treeNodeId: createDataTreeNodeId(
-          rootTreeNodeId,
-          "parent",
-        ),
-        scItem: graphReferenceResult.parent,
-        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PARENT,
-        branch: "parent",
-        relationshipToParent: "related",
-      }),
-    );
-  }
-
-  if (graphReferenceResult.rootItem.scTemplate) {
-    children.push(
-      createItemTreeNode({
-        treeNodeId: createDataTreeNodeId(
-          rootTreeNodeId,
-          "template",
-        ),
-        scItem: graphReferenceResult.rootItem.scTemplate,
-        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.TEMPLATE,
-        branch: "template",
-        relationshipToParent: "related",
-      }),
-    );
-  }
-
-  const childrenTreeNode =
-    createChildrenTreeNode(graphReferenceResult);
-
-  if (childrenTreeNode) {
-    children.push(childrenTreeNode);
-  }
-
-  const referrersTreeNode =
-    createReferrersTreeNode(graphReferenceResult);
-
-  if (referrersTreeNode) {
-    children.push(referrersTreeNode);
-  }
-
-  const sectionsTreeNode =
-    createSectionsTreeNode(graphReferenceResult);
-
-  if (sectionsTreeNode) {
-    children.push(sectionsTreeNode);
-  }
-
-  if (
-    (graphReferenceResult.layoutSectionFields?.length ?? 0) > 0
-  ) {
-    children.push(
-      createLayoutDataTree(graphReferenceResult),
-    );
-  }
-
-  return {
+  return createDataTreeItemNode({
     treeNodeId: rootTreeNodeId,
-    nodeType: "item",
     scItem: graphReferenceResult.rootItem,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ITEM,
     children,
-  };
+  });
+}
+
+function createParentTreeNode(
+  graphReferenceResult: SitecoreHarvestResult,
+): DataTreeItemNode | undefined {
+  const parent = graphReferenceResult.parent;
+
+  let parentTreeNode:
+    | DataTreeItemNode
+    | undefined = undefined;
+
+  if (parent) {
+    parentTreeNode = createDataTreeItemNode({
+      treeNodeId: createDataTreeNodeId(
+        graphReferenceResult.rootItem.scItemId,
+        "parent",
+      ),
+      scItem: parent,
+      kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PARENT,
+      branch: "parent",
+      relationshipToParent: "related",
+    });
+  }
+
+  return parentTreeNode;
+}
+
+function createTemplateTreeNode(
+  graphReferenceResult: SitecoreHarvestResult,
+): DataTreeItemNode | undefined {
+  const template =
+    graphReferenceResult.rootItem.scTemplate;
+
+  let templateTreeNode:
+    | DataTreeItemNode
+    | undefined = undefined;
+
+  if (template) {
+    templateTreeNode = createDataTreeItemNode({
+      treeNodeId: createDataTreeNodeId(
+        graphReferenceResult.rootItem.scItemId,
+        "template",
+      ),
+      scItem: template,
+      kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.TEMPLATE,
+      branch: "template",
+      relationshipToParent: "related",
+    });
+  }
+
+  return templateTreeNode;
 }
 
 function createChildrenTreeNode(
@@ -108,15 +112,14 @@ function createChildrenTreeNode(
       "children",
     );
 
-    childrenTreeNode = {
+    childrenTreeNode = createDataTreeNonItemNode({
       treeNodeId,
-      nodeType: "nonItem",
       name: "Children",
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
       branch: "children",
       relationshipToParent: "related",
       children: childItems.map((childItem, index) =>
-        createItemTreeNode({
+        createDataTreeItemNode({
           treeNodeId: createDataTreeNodeId(
             treeNodeId,
             childItem.scItemId,
@@ -127,7 +130,7 @@ function createChildrenTreeNode(
           branch: "children",
         }),
       ),
-    };
+    });
   }
 
   return childrenTreeNode;
@@ -149,16 +152,15 @@ function createReferrersTreeNode(
       "referrers",
     );
 
-    referrersTreeNode = {
+    referrersTreeNode = createDataTreeNonItemNode({
       treeNodeId,
-      nodeType: "nonItem",
       name: "Referrers",
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
       branch: "referrers",
       relationshipToParent: "related",
       reverse: true,
       children: referrers.map((referrer, index) =>
-        createItemTreeNode({
+        createDataTreeItemNode({
           treeNodeId: createDataTreeNodeId(
             treeNodeId,
             referrer.scItemId,
@@ -169,7 +171,7 @@ function createReferrersTreeNode(
           branch: "referrers",
         }),
       ),
-    };
+    });
   }
 
   return referrersTreeNode;
@@ -193,9 +195,8 @@ function createSectionsTreeNode(
       "sections",
     );
 
-    sectionsTreeNode = {
+    sectionsTreeNode = createDataTreeNonItemNode({
       treeNodeId,
-      nodeType: "nonItem",
       name: "Sections",
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
       branch: "sections",
@@ -208,9 +209,8 @@ function createSectionsTreeNode(
           String(sectionIndex),
         );
 
-        return {
+        return createDataTreeNonItemNode({
           treeNodeId: sectionTreeNodeId,
-          nodeType: "nonItem",
           name: section.name,
           kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.SECTION,
           branch: "sections",
@@ -223,15 +223,14 @@ function createSectionsTreeNode(
                 String(fieldIndex),
               );
 
-              return {
+              return createDataTreeNonItemNode({
                 treeNodeId: fieldTreeNodeId,
-                nodeType: "nonItem",
                 name: field.value ?? "",
                 kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.FIELD,
                 branch: "sections",
                 children: (field.links ?? []).map(
                   (fieldLink, linkIndex) =>
-                    createItemTreeNode({
+                    createDataTreeItemNode({
                       treeNodeId: createDataTreeNodeId(
                         fieldTreeNodeId,
                         fieldLink.valueItem.scItemId,
@@ -240,47 +239,35 @@ function createSectionsTreeNode(
                       scItem: fieldLink.valueItem,
                       kind:
                         CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.FIELD,
-                        branch: "sections",
+                      branch: "sections",
                       relationshipToParent: "related",
                     }),
                 ),
-              } satisfies DataTreeNonItemNode;
+              });
             }),
-        } satisfies DataTreeNonItemNode;
+        });
       }),
-    };
+    });
   }
 
   return sectionsTreeNode;
 }
 
-type CreateItemTreeNodeOptions = {
-  treeNodeId: string;
-  scItem: ItemGraphNodeData;
-  kind: DataTreeItemNode["kind"];
-  branch?: DataTreeBranch;
-  relationshipToParent?: DataTreeItemNode["relationshipToParent"];
-  reverse?: boolean;
-  children?: DataTreeNode[];
-};
+function createLayoutTreeNode(
+  graphReferenceResult: SitecoreHarvestResult,
+): DataTreeNonItemNode | undefined {
+  const hasLayoutData =
+    (graphReferenceResult.layoutSectionFields?.length ?? 0) >
+    0;
 
-function createItemTreeNode({
-  treeNodeId,
-  scItem,
-  kind,
-  branch,
-  relationshipToParent,
-  reverse,
-  children = [],
-}: CreateItemTreeNodeOptions): DataTreeItemNode {
-  return {
-    treeNodeId,
-    nodeType: "item",
-    scItem,
-    kind,
-    branch,
-    relationshipToParent,
-    reverse,
-    children,
-  };
+  let layoutTreeNode:
+    | DataTreeNonItemNode
+    | undefined = undefined;
+
+  if (hasLayoutData) {
+    layoutTreeNode =
+      createLayoutDataTree(graphReferenceResult);
+  }
+
+  return layoutTreeNode;
 }

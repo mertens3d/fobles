@@ -78,7 +78,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
         },
     },
     {
-        selector: "related",
+        selector: "edge",
         style: { "curve-style": "bezier", "target-arrow-shape": "triangle", width: 1 },
     },
 

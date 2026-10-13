@@ -1,5 +1,6 @@
+// @source-path [fobles] src/content/toolbar/reference-graph/data-tree/placeholder-data-tree-builder.ts
+
 import type { ScControl } from "../../../sitecore-harvester/sitecore-harvester.types";
-import { stripDynamicPlaceholderSuffix } from "../graph-nodes/graph-helpers";
 
 export type PlaceholderTreeNode = {
   path: string;
@@ -28,30 +29,36 @@ function processPlaceholderForOneControl(
   control: ScControl,
   roots: PlaceholderTreeNode[],
   knownPlaceholders: Map<string, PlaceholderTreeNode>,
-) {
-  const rawPlaceholderPath = control.placeholder || "(no placeholder)";
+): void {
+  const rawPlaceholderPath =
+    control.placeholder || "(no placeholder)";
 
-  const placeHolderSegments = rawPlaceholderPath
+  const placeholderSegments = rawPlaceholderPath
     .split("/")
     .filter(Boolean)
     .map(stripDynamicPlaceholderSuffix);
 
   const normalizedPlaceholderSegments =
-    placeHolderSegments.length > 0 ? placeHolderSegments : [rawPlaceholderPath];
+    placeholderSegments.length > 0
+      ? placeholderSegments
+      : [rawPlaceholderPath];
 
   let targetChildren = roots;
   let currentPath = "";
 
   normalizedPlaceholderSegments.forEach((segment) => {
-    ({ currentPath, targetChildren } = processOnePlaceholderSegment(
-      currentPath,
-      segment,
-      knownPlaceholders,
-      targetChildren,
-    ));
+    ({ currentPath, targetChildren } =
+      processOnePlaceholderSegment(
+        currentPath,
+        segment,
+        knownPlaceholders,
+        targetChildren,
+      ));
   });
 
-  const foundPlaceholderTreeNode = knownPlaceholders.get(currentPath);
+  const foundPlaceholderTreeNode =
+    knownPlaceholders.get(currentPath);
+
   if (foundPlaceholderTreeNode) {
     foundPlaceholderTreeNode.controls.push(control);
   } else {
@@ -60,6 +67,7 @@ function processPlaceholderForOneControl(
     );
   }
 }
+
 function processOnePlaceholderSegment(
   currentPath: string,
   segment: string,
@@ -69,9 +77,12 @@ function processOnePlaceholderSegment(
   currentPath: string;
   targetChildren: PlaceholderTreeNode[];
 } {
-  currentPath = currentPath ? `${currentPath}/${segment}` : segment;
+  currentPath = currentPath
+    ? `${currentPath}/${segment}`
+    : segment;
 
-  let placeholder = knownPlaceholders.get(currentPath);
+  let placeholder =
+    knownPlaceholders.get(currentPath);
 
   if (!placeholder) {
     placeholder = addPlaceholderTreeNode(
@@ -98,8 +109,21 @@ function addPlaceholderTreeNode(
     controls: [],
   };
 
-  knownPlaceholders.set(currentPath, newPlaceholderTreeNode);
+  knownPlaceholders.set(
+    currentPath,
+    newPlaceholderTreeNode,
+  );
 
   targetChildren.push(newPlaceholderTreeNode);
+
   return newPlaceholderTreeNode;
+}
+
+function stripDynamicPlaceholderSuffix(
+  segment: string,
+): string {
+  return segment.replace(
+    /-\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\}-\d+$/i,
+    "",
+  );
 }

@@ -1,12 +1,11 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/components/node-builders/reference-tree-node-builder.ts
+// @source-path [fobles] src/content/toolbar/reference-graph/graph-nodes/graph-node-builder.ts
 
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
+import type { DataTreeNode } from "../data-tree/data-tree.types";
 import { buildLabel } from "../cytoscape/graph-node-helpers";
 import { kindClass } from "./graph-helpers";
-import { buildTooltip } from "../graph-tooltip";
-import type { SatelliteDescriptor } from "../reference-graph.types";
-import type { DataTreeNode } from "../data-tree/data-tree.types";
+import type { TooltipData } from "./graph-node.types";
 
 export function appendGraphNode(
   treeNode: DataTreeNode,
@@ -16,8 +15,6 @@ export function appendGraphNode(
 ): void {
   const relationshipToParent =
     treeNode.relationshipToParent ?? "contained";
-
-  const descriptor = createTreeNodeDescriptor(treeNode);
 
   cytoNodes.push({
     data: {
@@ -43,7 +40,7 @@ export function appendGraphNode(
         treeNode.nodeType === "item"
           ? Boolean(treeNode.scItem.link)
           : false,
-      tooltip: buildTooltip(descriptor),
+      tooltip: createTreeNodeTooltip(treeNode),
     },
     classes: [
       kindClass(treeNode.kind),
@@ -81,6 +78,7 @@ export function appendGraphNode(
     );
   });
 }
+
 function getFilterClass(
   treeNode: DataTreeNode,
 ): string | undefined {
@@ -92,23 +90,24 @@ function getFilterClass(
     treeNode.branch
   ];
 }
-function createTreeNodeDescriptor(
+
+function createTreeNodeTooltip(
   treeNode: DataTreeNode,
-): SatelliteDescriptor {
+): TooltipData {
   if (treeNode.nodeType === "item") {
     return {
-      kind: treeNode.kind,
-      item: treeNode.scItem,
-      filterClass: getFilterClass(treeNode),
-      reverse: treeNode.reverse,
+      name: treeNode.scItem.scItemName,
+      guid: treeNode.scItem.scItemId,
+      path: treeNode.scItem.scItemPath,
+      placeholder: undefined,
     };
   }
 
   return {
-    kind: treeNode.kind,
-    value: treeNode.name,
-    filterClass: getFilterClass(treeNode),
-    reverse: treeNode.reverse,
+    name: treeNode.name,
+    guid: undefined,
+    path: undefined,
+    placeholder: undefined,
   };
 }
 
