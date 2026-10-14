@@ -9,6 +9,11 @@ import {
   type SitecoreHarvestResult,
 } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { CONST } from "../../../../constants/const";
+import { isGuidLike } from "../../augmentor/shared/guid";
+import { extensionLog } from "../../../logger";
+import {
+  slugify,
+} from "../reference-graph-helper";
 import {
   createDataTreeItemNode,
   createDataTreeNonItemNode,
@@ -22,15 +27,16 @@ import {
   createPlaceholderTreeNodes,
   type PlaceholderTreeNode,
 } from "./placeholder-data-tree-builder";
-import { slugify } from "../reference-graph-helper";
-import { isGuidLike } from "../../../features/augmentor/shared/guid";
-import { extensionLog } from "../../../logger";
+import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";
 
 export function createDataTreeNodeId(
   ...parts: Array<string | undefined>
 ): string {
   return parts
-    .filter((part): part is string => Boolean(part))
+    .filter(
+      (part): part is string =>
+        Boolean(part),
+    )
     .map(slugify)
     .join("-");
 }
@@ -39,25 +45,33 @@ export function createLayoutDataTree(
   graphReferenceResult: SitecoreHarvestResult,
 ): DataTreeNonItemNode {
   const treeNodeId =
-    CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID;
+    CONST.FOBLES.REFERENCE_GRAPH.NODE_ID
+      .MAIN_LAYOUT_BOX_NODE_ID;
 
   const pageLayoutItemsByDeviceId =
     createPageLayoutItemsByDeviceId(
-      graphReferenceResult.layoutSectionFields ?? [],
+      graphReferenceResult.layoutSectionFields ??
+      [],
     );
 
   return createDataTreeNonItemNode({
     treeNodeId,
     name: "Layouts",
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
+    kind:
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+        .STRUCTURAL,
+    collapseKey:
+      GRAPH_COLLAPSE_KEY.LAYOUTS,
     branch: "layouts",
     relationshipToParent: "related",
-    children: (graphReferenceResult.layoutSectionFields ?? []).map(
-      (layout) =>
-        createLayoutSectionDataTree(
-          layout,
-          pageLayoutItemsByDeviceId,
-        ),
+    children: (
+      graphReferenceResult.layoutSectionFields ??
+      []
+    ).map((layout) =>
+      createLayoutSectionDataTree(
+        layout,
+        pageLayoutItemsByDeviceId,
+      ),
     ),
   });
 }
@@ -68,23 +82,32 @@ function createPageLayoutItemsByDeviceId(
   const pageLayoutItemsByDeviceId =
     new Map<string, ItemGraphNodeData>();
 
-  layoutSectionFields.forEach((layoutSectionField) => {
-    layoutSectionField.devices.forEach((device) => {
-      const deviceId = device.scDeviceItem.scItemId;
-      const pageLayoutItem = device.scPageLayoutItem;
+  layoutSectionFields.forEach(
+    (layoutSectionField) => {
+      layoutSectionField.devices.forEach(
+        (device) => {
+          const deviceId =
+            device.scDeviceItem.scItemId;
 
-      if (
-        deviceId &&
-        pageLayoutItem?.scItemId &&
-        !pageLayoutItemsByDeviceId.has(deviceId)
-      ) {
-        pageLayoutItemsByDeviceId.set(
-          deviceId,
-          pageLayoutItem,
-        );
-      }
-    });
-  });
+          const pageLayoutItem =
+            device.scPageLayoutItem;
+
+          if (
+            deviceId &&
+            pageLayoutItem?.scItemId &&
+            !pageLayoutItemsByDeviceId.has(
+              deviceId,
+            )
+          ) {
+            pageLayoutItemsByDeviceId.set(
+              deviceId,
+              pageLayoutItem,
+            );
+          }
+        },
+      );
+    },
+  );
 
   return pageLayoutItemsByDeviceId;
 }
@@ -97,16 +120,22 @@ function createLayoutSectionDataTree(
   >,
 ): DataTreeNonItemNode {
   const treeNodeId = createDataTreeNodeId(
-    CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
+    CONST.FOBLES.REFERENCE_GRAPH.NODE_ID
+      .MAIN_LAYOUT_BOX_NODE_ID,
     layout.name,
   );
 
   return createDataTreeNonItemNode({
     treeNodeId,
     name: layout.name ?? "",
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
+    kind:
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+        .STRUCTURAL,
+    collapseKey:
+      GRAPH_COLLAPSE_KEY.LAYOUT_SECTION,
     branch: "layouts",
-    children: (layout.devices ?? []).map(
+    relationshipToParent: "related",
+    children: layout.devices.map(
       (device, deviceIndex) =>
         createDeviceDataTreeNode(
           treeNodeId,
@@ -117,6 +146,7 @@ function createLayoutSectionDataTree(
     ),
   });
 }
+
 function createDeviceDataTreeNode(
   layoutTreeNodeId: string,
   device: LayoutDevice,
@@ -129,18 +159,17 @@ function createDeviceDataTreeNode(
   const treeNodeId = createDataTreeNodeId(
     layoutTreeNodeId,
     "device",
-    device.scDeviceItem.scItemId ?? String(deviceIndex),
+    device.scDeviceItem.scItemId ??
+    String(deviceIndex),
   );
 
   const pageLayoutItem =
     device.scPageLayoutItem ??
-    (
-      device.scDeviceItem.scItemId
-        ? pageLayoutItemsByDeviceId.get(
-            device.scDeviceItem.scItemId,
-          )
-        : undefined
-    );
+    (device.scDeviceItem.scItemId
+      ? pageLayoutItemsByDeviceId.get(
+        device.scDeviceItem.scItemId,
+      )
+      : undefined);
 
   const children: DataTreeNode[] = [];
 
@@ -153,38 +182,56 @@ function createDeviceDataTreeNode(
       ),
     );
   } else {
-    const pageLayoutTreeNodeId =
-      createDataTreeNodeId(
-        treeNodeId,
-        "page-layout",
-      );
-
     children.push(
-      createDataTreeNonItemNode({
-        treeNodeId: pageLayoutTreeNodeId,
-        name: "Page Layout (does not exist)",
-        kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PAGE_LAYOUT,
-        branch: "layouts",
-        relationshipToParent: "related",
-        children: createPlaceholderTreeNodes(
-          device.scControls,
-        ).map((placeholder) =>
-          createPlaceholderDataTreeNode(
-            pageLayoutTreeNodeId,
-            placeholder,
-          ),
-        ),
-      }),
+      createMissingPageLayoutDataTreeNode(
+        treeNodeId,
+        device.scControls,
+      ),
     );
   }
 
   return createDataTreeItemNode({
     treeNodeId,
     scItem: device.scDeviceItem,
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DEVICE,
+    kind:
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+        .DEVICE,
+    collapseKey:
+      GRAPH_COLLAPSE_KEY.DEVICE,
     branch: "layouts",
     relationshipToParent: "related",
     children,
+  });
+}
+
+function createMissingPageLayoutDataTreeNode(
+  deviceTreeNodeId: string,
+  controls: ScControl[],
+): DataTreeNonItemNode {
+  const pageLayoutTreeNodeId =
+    createDataTreeNodeId(
+      deviceTreeNodeId,
+      "page-layout",
+    );
+
+  return createDataTreeNonItemNode({
+    treeNodeId: pageLayoutTreeNodeId,
+    name: "Page Layout (does not exist)",
+    kind:
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+        .PAGE_LAYOUT,
+    collapseKey:
+      GRAPH_COLLAPSE_KEY.PAGE_LAYOUT,
+    branch: "layouts",
+    relationshipToParent: "related",
+    children: createPlaceholderTreeNodes(
+      controls,
+    ).map((placeholder) =>
+      createPlaceholderDataTreeNode(
+        pageLayoutTreeNodeId,
+        placeholder,
+      ),
+    ),
   });
 }
 
@@ -199,19 +246,24 @@ function createPageLayoutDataTreeNode(
     pageLayoutItem.scItemId,
   );
 
-  const children = createPlaceholderTreeNodes(
-    controls,
-  ).map((placeholder) =>
-    createPlaceholderDataTreeNode(
-      treeNodeId,
-      placeholder,
-    ),
-  );
+  const children =
+    createPlaceholderTreeNodes(
+      controls,
+    ).map((placeholder) =>
+      createPlaceholderDataTreeNode(
+        treeNodeId,
+        placeholder,
+      ),
+    );
 
   return createDataTreeItemNode({
     treeNodeId,
     scItem: pageLayoutItem,
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PAGE_LAYOUT,
+    kind:
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+        .PAGE_LAYOUT,
+    collapseKey:
+      GRAPH_COLLAPSE_KEY.PAGE_LAYOUT,
     branch: "layouts",
     relationshipToParent: "related",
     children,
@@ -227,7 +279,7 @@ function createPlaceholderDataTreeNode(
 
   const placeholderName =
     placeholderSegments[
-      placeholderSegments.length - 1
+    placeholderSegments.length - 1
     ] ?? placeholder.path;
 
   const children: DataTreeNode[] = [];
@@ -258,11 +310,16 @@ function createPlaceholderDataTreeNode(
   return createDataTreeNonItemNode({
     treeNodeId: createDataTreeNodeId(
       pageLayoutTreeNodeId,
-      CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
+      CONST.FOBLES.REFERENCE_GRAPH
+        .LAYOUT_SCOPE.PLACEHOLDER,
       placeholder.path,
     ),
     name: placeholderName,
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
+    kind:
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+        .STRUCTURAL,
+    collapseKey:
+      GRAPH_COLLAPSE_KEY.PLACEHOLDER,
     branch: "layouts",
     relationshipToParent: "related",
     children,
@@ -276,13 +333,14 @@ function createRenderingDataTreeNode(
 ): DataTreeItemNode {
   const rendering = control.rendering;
 
-  const renderingTreeNodeId = createDataTreeNodeId(
-    pageLayoutTreeNodeId,
-    "rendering",
-    control.uid ??
+  const renderingTreeNodeId =
+    createDataTreeNodeId(
+      pageLayoutTreeNodeId,
+      "rendering",
+      control.uid ??
       rendering.scItemId ??
       String(controlIndex),
-  );
+    );
 
   const children: DataTreeNode[] = [];
 
@@ -311,7 +369,11 @@ function createRenderingDataTreeNode(
   return createDataTreeItemNode({
     treeNodeId: renderingTreeNodeId,
     scItem: rendering,
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.RENDERING,
+    kind:
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+        .RENDERING,
+    collapseKey:
+      GRAPH_COLLAPSE_KEY.RENDERING,
     branch: "layouts",
     relationshipToParent: "related",
     children,
@@ -325,10 +387,15 @@ function createDatasourceDataTreeNode(
   return createDataTreeItemNode({
     treeNodeId: createDataTreeNodeId(
       renderingTreeNodeId,
-      CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.DATASOURCE,
+      CONST.FOBLES.REFERENCE_GRAPH
+        .LAYOUT_SCOPE.DATASOURCE,
     ),
     scItem: datasource,
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.DATASOURCE,
+    kind:
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+        .DATASOURCE,
+    collapseKey:
+      GRAPH_COLLAPSE_KEY.DATASOURCE,
     branch: "layouts",
     relationshipToParent: "related",
   });
@@ -341,21 +408,29 @@ function createRenderingParametersDataTreeNode(
   return createDataTreeNonItemNode({
     treeNodeId: createDataTreeNodeId(
       renderingTreeNodeId,
-      CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETERS,
+      CONST.FOBLES.REFERENCE_GRAPH
+        .LAYOUT_SCOPE.PARAMETERS,
     ),
     name: "Rendering Parameters",
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
+    kind:
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+        .STRUCTURAL,
+    collapseKey:
+      GRAPH_COLLAPSE_KEY
+        .RENDERING_PARAMETERS,
     branch: "layouts",
     relationshipToParent: "related",
-    children: parameters.map(([name, value]) =>
-      createSingleParameterDataTreeNode(
-        name,
-        value,
-        renderingTreeNodeId,
-      ),
+    children: parameters.map(
+      ([name, value]) =>
+        createSingleParameterDataTreeNode(
+          name,
+          value,
+          renderingTreeNodeId,
+        ),
     ),
   });
 }
+
 function createSingleParameterDataTreeNode(
   name: string,
   value: string,
@@ -363,19 +438,33 @@ function createSingleParameterDataTreeNode(
 ): DataTreeNode {
   const treeNodeId = createDataTreeNodeId(
     renderingTreeNodeId,
-    CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETER,
+    CONST.FOBLES.REFERENCE_GRAPH
+      .LAYOUT_SCOPE.PARAMETER,
     name,
   );
 
-  const candidateValue = decodeURIComponent(value);
-  extensionLog.debug(`Parameter candidate values:`,value, candidateValue,isGuidLike(candidateValue));
+  const candidateValue =
+    decodeURIComponent(value);
+
+  extensionLog.debug(
+    "Parameter candidate values:",
+    value,
+    candidateValue,
+    isGuidLike(candidateValue),
+  );
+
   if (isGuidLike(candidateValue)) {
     return createDataTreeItemNode({
       treeNodeId,
       scItem: factoryItemGraphNodeData({
         scItemId: candidateValue,
       }),
-      kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.RENDERING_PARAMETER,
+      kind:
+        CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+          .RENDERING_PARAMETER,
+      collapseKey:
+        GRAPH_COLLAPSE_KEY
+          .RENDERING_PARAMETER,
       branch: "layouts",
       relationshipToParent: "related",
     });
@@ -383,8 +472,15 @@ function createSingleParameterDataTreeNode(
 
   return createDataTreeNonItemNode({
     treeNodeId,
-    name: value ? `${name}: ${value}` : name,
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.RENDERING_PARAMETER,
+    name: value
+      ? `${name}: ${value}`
+      : name,
+    kind:
+      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
+        .RENDERING_PARAMETER,
+    collapseKey:
+      GRAPH_COLLAPSE_KEY
+        .RENDERING_PARAMETER,
     branch: "layouts",
     relationshipToParent: "related",
   });

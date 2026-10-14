@@ -1,10 +1,21 @@
-import { STORAGE } from "../../constants/constants-b";
-import type { PersistedLogMessage, PersistedLogEntry } from "../persisted-log.types";
+// @source-path [fobles] src/shared/logging/persisted-log-storage.ts
+
+import { STORAGE } from "../../constants/extension-constants";
 import { REFERENCE_GRAPH } from "../../constants/graph.const";
+import type {
+  PersistedLogEntry,
+  PersistedLogMessage,
+} from "../persisted-log.types";
+import {
+  getStorageValue,
+  removeStorageValue,
+  setStorageValue,
+} from "../storage/storage";
 
 const MAX_LOG_ENTRIES = 500;
 
-let writeQueue: Promise<void> = Promise.resolve();
+let writeQueue: Promise<void> =
+  Promise.resolve();
 
 export function isPersistedLogMessage(
   value: unknown,
@@ -13,53 +24,87 @@ export function isPersistedLogMessage(
     typeof value === "object" &&
     value !== null &&
     "type" in value &&
-    value.type ===  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.FOBLES_PERSIST_LOG &&
+    value.type ===
+      REFERENCE_GRAPH
+        .BACKGROUND_HARVEST
+        .MESSAGE
+        .TYPE
+        .FOBLES_PERSIST_LOG &&
     "entry" in value
   );
 }
 
-export async function clearPersistedLogEntries(): Promise<void> {
-  await chrome.storage.local.remove(
+export async function clearPersistedLogEntries():
+  Promise<void> {
+  await removeStorageValue(
     STORAGE.KEY.PERSISTED_LOG_ENTRIES,
+    "local",
   );
 }
 
 export function appendPersistedLogEntry(
   entry: PersistedLogEntry,
 ): Promise<void> {
-  writeQueue = writeQueue.then(async () => {
-    const result = await chrome.storage.local.get(
-      STORAGE.KEY.PERSISTED_LOG_ENTRIES,
-    );
+  writeQueue = writeQueue.then(
+    async (): Promise<void> => {
+      const result =
+        await getStorageValue<unknown>(
+          [
+            STORAGE.KEY
+              .PERSISTED_LOG_ENTRIES,
+          ],
+          "local",
+        );
 
-    const existingEntries = Array.isArray(
-      result[STORAGE.KEY.PERSISTED_LOG_ENTRIES],
-    )
-      ? result[STORAGE.KEY.PERSISTED_LOG_ENTRIES] as PersistedLogEntry[]
-      : [];
+      const candidate =
+        result[
+          STORAGE.KEY
+            .PERSISTED_LOG_ENTRIES
+        ];
 
-    const entries = [
-      ...existingEntries,
-      entry,
-    ].slice(-MAX_LOG_ENTRIES);
+      const existingEntries:
+        PersistedLogEntry[] =
+          Array.isArray(candidate)
+            ? candidate as PersistedLogEntry[]
+            : [];
 
-    await chrome.storage.local.set({
-      [STORAGE.KEY.PERSISTED_LOG_ENTRIES]: entries,
-    });
-  });
+      const entries = [
+        ...existingEntries,
+        entry,
+      ].slice(-MAX_LOG_ENTRIES);
+
+      await setStorageValue(
+        {
+          [STORAGE.KEY
+            .PERSISTED_LOG_ENTRIES]:
+            entries,
+        },
+        "local",
+      );
+    },
+  );
 
   return writeQueue;
 }
 
-export async function getPersistedLogEntries(): Promise<PersistedLogEntry[]> {
-  const result = await chrome.storage.local.get(
-    STORAGE.KEY.PERSISTED_LOG_ENTRIES,
-  );
+export async function getPersistedLogEntries():
+  Promise<PersistedLogEntry[]> {
+  const result =
+    await getStorageValue<unknown>(
+      [
+        STORAGE.KEY
+          .PERSISTED_LOG_ENTRIES,
+      ],
+      "local",
+    );
 
-  const entries =
-    result[STORAGE.KEY.PERSISTED_LOG_ENTRIES];
+  const candidate =
+    result[
+      STORAGE.KEY
+        .PERSISTED_LOG_ENTRIES
+    ];
 
-  return Array.isArray(entries)
-    ? entries as PersistedLogEntry[]
+  return Array.isArray(candidate)
+    ? candidate as PersistedLogEntry[]
     : [];
 }

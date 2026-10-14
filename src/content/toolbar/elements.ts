@@ -5,7 +5,6 @@ import {
   SYMBOLS,
   TEXT
 } from "../../constants/fobles.constants";
-//import { openReferenceGraph } from "../features/reference-graph/reference-graph";
 import { openReferenceGraph } from "../features/reference-graph/reference-graph";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {

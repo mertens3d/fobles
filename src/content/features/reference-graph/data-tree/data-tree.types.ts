@@ -1,7 +1,10 @@
 import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { ItemGraphNodeData } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { GraphCollapseKey } from "../graph-nodes/graph-collapse.types";
 
-export type RelationshipToParent = "contained" | "related";
+export type RelationshipToParent =
+  | "contained"
+  | "related";
 
 export type DataTreeBranch =
   | "parent"
@@ -19,21 +22,24 @@ export type TreeChildNode = {
 type DataTreeNodeBase = {
   treeNodeId: string;
   kind: NodeKind;
+  collapseKey: GraphCollapseKey;
   branch?: DataTreeBranch;
   relationshipToParent?: RelationshipToParent;
   reverse?: boolean;
   children: DataTreeNode[];
 };
 
-export type DataTreeItemNode = DataTreeNodeBase & {
-  nodeType: "item";
-  scItem: ItemGraphNodeData;
-};
+export type DataTreeItemNode =
+  DataTreeNodeBase & {
+    nodeType: "item";
+    scItem: ItemGraphNodeData;
+  };
 
-export type DataTreeNonItemNode = DataTreeNodeBase & {
-  nodeType: "nonItem";
-  name: string;
-};
+export type DataTreeNonItemNode =
+  DataTreeNodeBase & {
+    nodeType: "nonItem";
+    name: string;
+  };
 
 export type DataTreeNode =
   | DataTreeItemNode

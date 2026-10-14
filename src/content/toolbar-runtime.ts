@@ -6,7 +6,7 @@ import {
   SELECTORS,
   TOOLBAR_CORNERS
 } from "../constants/fobles.constants";
-import { MESSAGE, STORAGE } from "../constants/constants-b";
+import { MESSAGE, STORAGE } from "../constants/extension-constants";
 import type { ToolbarPlacement } from "./toolbar.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";
 import { getDebugSettings } from "../shared/debug-settings";
@@ -143,23 +143,24 @@ async function reconcileCurrentPage(): Promise<void> {
   const currentUrl = new URL(window.location.href);
   const kickUsersPath = isKickUsersPath(window.location.pathname);
 
-  extensionLog.debug("Fobles flyout eligibility decision", {
-    hrefEncoded: currentUrl.href,
-    currentAllowedPage,
-    host: currentUrl.host,
-    pathname: window.location.pathname,
-    matchedPage: allowedPage,
-    pageEligible,
-    kickUsersPath,
-    debugLogging: debug.debugLogging,
-    existingToolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
-    existingMenuTrigger: Boolean(document.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)),
-  });
+  // extensionLog.debug("Fobles flyout eligibility decision", {
+  //   hrefEncoded: currentUrl.href,
+  //   currentAllowedPage,
+  //   host: currentUrl.host,
+  //   pathname: window.location.pathname,
+  //   matchedPage: allowedPage,
+  //   pageEligible,
+  //   kickUsersPath,
+  //   debugLogging: debug.debugLogging,
+  //   existingToolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
+  //   existingMenuTrigger: Boolean(document.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)),
+  // });
 
   if (!allowedPage) {
-    extensionLog.debug("Fobles flyout not shown: page is not eligible", {
-      href: currentUrl.href,
-    });
+    // extensionLog.debug("Fobles flyout not shown: page is not eligible", {
+    //   href: currentUrl.href,
+    // });
+
     document.querySelector(SELECTORS.TOOLBAR_CONTAINER)?.remove();
     return;
   }
@@ -174,13 +175,13 @@ async function reconcileCurrentPage(): Promise<void> {
   ]);
   const shouldInitialize = getFoblesState();
 
-  extensionLog.debug("Fobles flyout initialization decision", {
-    shouldInitialize,
-    kickUsersPath,
-    toolbarVisible: foblesNavVisible,
-    currentToolbarPlacement: foblesNavPlacement,
-    existingToolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
-  });
+  // extensionLog.debug("Fobles flyout initialization decision", {
+  //   shouldInitialize,
+  //   kickUsersPath,
+  //   toolbarVisible: foblesNavVisible,
+  //   currentToolbarPlacement: foblesNavPlacement,
+  //   existingToolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
+  // });
 
   if (shouldInitialize || kickUsersPath) {
     showFoblesToolbar();
@@ -193,13 +194,13 @@ async function reconcileCurrentPage(): Promise<void> {
   resumeKickAllUsers(document);
   await resumeReferenceGraph(document);
 
-  setToolbarVisible(getToolbarContext(), foblesNavVisible);
-  extensionLog.debug("Fobles flyout injection result", {
-    toolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
-    lboltButton: Boolean(document.querySelector(SELECTORS.TOOLBAR_LBOLT_BUTTON)),
-    jumpFlyoutTrigger: Boolean(document.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)),
-    foblesUiActive,
-  });
+  // setToolbarVisible(getToolbarContext(), foblesNavVisible);
+  // extensionLog.debug("Fobles flyout injection result", {
+  //   toolbar: Boolean(document.querySelector(SELECTORS.TOOLBAR_CONTAINER)),
+  //   lboltButton: Boolean(document.querySelector(SELECTORS.TOOLBAR_LBOLT_BUTTON)),
+  //   jumpFlyoutTrigger: Boolean(document.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)),
+  //   foblesUiActive,
+  // });
 }
 
 export function startToolbarRuntime(): void {

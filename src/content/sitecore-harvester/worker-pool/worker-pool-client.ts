@@ -2,7 +2,7 @@
 
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import type { WorkerTask, WorkerTaskResult } from "./worker-task.types";
-import type { PoolCancelRequestMessage, PoolRunTaskMessage } from "./worker.messages";
+import type { PoolCancelRequestMessage, PoolDisposeMessage, PoolRunTaskMessage } from "./worker.messages";
 
 const MESSAGE_TYPE = REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
 
@@ -16,6 +16,17 @@ export async function runWorkerTask(task: WorkerTask): Promise<WorkerTaskResult 
   };
 
   return await chrome.runtime.sendMessage<PoolRunTaskMessage, WorkerTaskResult | undefined>(message);
+}
+
+export function disposeBackgroundWorkerPool():
+  Promise<void> {
+  const message: PoolDisposeMessage = {
+    type: MESSAGE_TYPE.POOL_DISPOSE,
+  };
+
+  return chrome.runtime.sendMessage(
+    message,
+  );
 }
 
 export function cancelWorkerRequest(requestId: string): void {

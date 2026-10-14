@@ -1,6 +1,6 @@
 // @source-path [fobles] src/shared/reference-graph-settings.ts
 
-import { STORAGE } from "../constants/constants-b";
+import { STORAGE } from "../constants/extension-constants";
 import { CONST } from "../constants/const";
 import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../content/features/reference-graph/graph-filters";
 import type {  LayoutGraphPresetName } from "../content/features/reference-graph/graph.types";

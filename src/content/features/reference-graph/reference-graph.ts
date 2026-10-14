@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph.ts
 
-import { STORAGE } from "../../../constants/constants-b";
+import { STORAGE } from "../../../constants/extension-constants";
 import { extensionLog } from "../../logger";
 import { buildFoblesUrl } from "../../features/augmentor/helper";
 import {
@@ -23,6 +23,7 @@ import { harvestGraphForLink } from "./harvester";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
 import { getCurrentItemId } from "../../toolbar/jump-flyout/ai-pages";
+import { startReferenceGraphTimer } from "./reference-graph-timing";
 
 // Shared by the fast path (harvestAndOpen) and the slow, reload-spanning path - Cancel aborts
 // whichever one is currently in flight; a stale/already-settled controller is harmless to abort.
@@ -35,62 +36,138 @@ function cancelReferenceGraph(doc: Document): void {
   if (pending) writePendingReferenceGraph({ ...pending, cancelled: true });
   closeReferenceGraphProgressModal(doc);
 }
+async function harvestAndOpen(
+  doc: Document,
+): Promise<void> {
+  const controller =
+    new AbortController();
 
-async function harvestAndOpen(doc: Document): Promise<void> {
-  const controller = new AbortController();
-  const itemId = getCurrentItemId(doc);
+  const itemId =
+    getCurrentItemId(doc);
 
-  if (!itemId) {
-    return;
-  }
-  referenceGraphAbortController = controller;
-  const filters = await getReferenceGraphFilters();
+  if (itemId) {
+    referenceGraphAbortController =
+      controller;
 
-  initializeReferenceGraphProgressModal(doc, PROGRESS_STEPS, filters);
+    const filters =
+      await getReferenceGraphFilters();
 
-  extensionLog.debug("REFERENCE GRAPH: awaiting worker-pool harvest");
-
-  const graph = await harvestSitecoreWithWorkers(
-    {
-      requestId: crypto.randomUUID(),
-      url: buildFoblesUrl(itemId),
-      filters,
-    },
-    {
-      signal: controller.signal,
-      onProgress: (step, status) => handleHarvestProgress(doc, step, status),
-    },
-  );
-
-  extensionLog.debug("REFERENCE GRAPH: worker-pool harvest returned", {
-    graph,
-    isNull: graph === null,
-    isUndefined: graph === undefined,
-  });
-
-  extensionLog.debug("REFERENCE GRAPH: post-harvest", {
-    aborted: controller.signal.aborted,
-    hasGraph: Boolean(graph),
-  });
-
-  if (!controller.signal.aborted && graph) {
-    extensionLog.debug("REFERENCE GRAPH: calling openReferenceGraphModal");
-
-    openReferenceGraphModal(
+    initializeReferenceGraphProgressModal(
       doc,
-      graph,
-      async (link, filters, existingResult) =>
-        await harvestGraphForLink(
-          link,
-          doc,
-          referenceGraphAbortController,
-          filters,
-          existingResult,
-        ),
+      PROGRESS_STEPS,
+      filters,
     );
+
+    try {
+      extensionLog.debug(
+        "REFERENCE GRAPH: awaiting worker-pool harvest",
+      );
+
+      const graph =
+        await harvestSitecoreWithWorkers(
+          {
+            requestId:
+              crypto.randomUUID(),
+            url: buildFoblesUrl(
+              itemId,
+            ),
+            filters,
+          },
+          {
+            signal:
+              controller.signal,
+            onProgress: (
+              step,
+              status,
+            ) =>
+              handleHarvestProgress(
+                doc,
+                step,
+                status,
+              ),
+          },
+        );
+
+      extensionLog.debug(
+        "REFERENCE GRAPH: worker-pool harvest returned",
+        {
+          graph,
+          isNull:
+            graph === null,
+          isUndefined:
+            graph === undefined,
+        },
+      );
+
+      extensionLog.debug(
+        "REFERENCE GRAPH: post-harvest",
+        {
+          aborted:
+            controller.signal
+              .aborted,
+          hasGraph:
+            Boolean(graph),
+        },
+      );
+
+      if (
+        !controller.signal.aborted &&
+        graph
+      ) {
+        openReferenceGraphModal(
+          doc,
+          graph,
+          async (
+            link,
+            graphFilters,
+            existingResult,
+          ) =>
+            await harvestGraphForLink(
+              link,
+              doc,
+              referenceGraphAbortController,
+              graphFilters,
+              existingResult,
+            ),
+        );
+      } else {
+        closeReferenceGraphProgressModal(
+          doc,
+        );
+
+        extensionLog.warn(
+          "REFERENCE GRAPH: harvest did not produce a graph",
+          {
+            aborted:
+              controller.signal
+                .aborted,
+            hasGraph:
+              Boolean(graph),
+          },
+        );
+      }
+    } catch (error) {
+      closeReferenceGraphProgressModal(
+        doc,
+      );
+
+      extensionLog.error(
+        "REFERENCE GRAPH: harvest failed",
+        {
+          itemId,
+          aborted:
+            controller.signal.aborted,
+          error,
+        },
+      );
+    }
   } else {
-    extensionLog.debug(
-      `REFERENCE GRAPH: harvest was aborted: ${controller.signal.aborted} or returned no graph: ${!graph}`,
+    closeReferenceGraphProgressModal(
+      doc,
+    );
+
+    extensionLog.warn(
+      "REFERENCE GRAPH: could not resolve current item id",
     );
   }
 }
@@ -202,40 +279,70 @@ async function advancePendingReferenceGraph(
         await harvestGraphForLink(link, doc, undefined, filters, existingResult),
     );
 }
+export async function openReferenceGraph(
+  doc: Document,
+): Promise<void> {
+  startReferenceGraphTimer();
 
-export async function openReferenceGraph(doc: Document): Promise<void> {
   extensionLog.debug(
     `[${openReferenceGraph.name}] advancing pending reference graph`,
-    { doc: doc.URL },
+    {
+      doc: doc.URL,
+    },
   );
 
-  const itemId = getCurrentItemId(doc);
+  const itemId =
+    getCurrentItemId(doc);
+
   if (!itemId) {
-    extensionLog.warn("Reference graph: could not resolve current item id");
-    return;
+    extensionLog.warn(
+      "Reference graph: could not resolve current item id",
+    );
+  } else {
+    openReferenceGraphProgressModal(
+      doc,
+      () =>
+        cancelReferenceGraph(doc),
+    );
+
+    const rawValuesOn:
+      BooleanTripleState =
+      await getScRawValuesState(doc);
+
+    const standardFieldsOn:
+      BooleanTripleState =
+      await getScStandardFieldsState(
+        doc,
+      );
+
+    if (
+      rawValuesOn &&
+      standardFieldsOn
+    ) {
+      await harvestAndOpen(doc);
+    } else {
+      const pending:
+        PendingReferenceGraph = {
+        itemId,
+        restoreRawValues:
+          rawValuesOn,
+        restoreStandardFields:
+          standardFieldsOn,
+        harvested: false,
+        cancelled: false,
+        graph: undefined,
+      };
+
+      writePendingReferenceGraph(
+        pending,
+      );
+
+      await advancePendingReferenceGraph(
+        doc,
+        pending,
+      );
+    }
   }
-
-  openReferenceGraphProgressModal(doc, () => cancelReferenceGraph(doc));
-
-  const rawValuesOn: BooleanTripleState = await getScRawValuesState(doc);
-  const standardFieldsOn: BooleanTripleState =
-    await getScStandardFieldsState(doc); //= isRibbonCheckboxEnabled(doc, CONST.SITECORE.RIBBON_CHECKBOXES.STANDARD_FIELDS) ?? true;
-
-  if (rawValuesOn && standardFieldsOn) {
-    await harvestAndOpen(doc);
-    return;
-  }
-
-  const pending: PendingReferenceGraph = {
-    itemId,
-    restoreRawValues: rawValuesOn,
-    restoreStandardFields: standardFieldsOn,
-    harvested: false,
-    cancelled: false,
-    graph: undefined,
-  };
-  writePendingReferenceGraph(pending);
-  await advancePendingReferenceGraph(doc, pending);
 }
 
 // Hooked into every page load (see src/content/toolbar-runtime.ts) so the enable/restore

@@ -5,6 +5,7 @@ import { CONST } from "../../../../constants/const";
 export function runGraphLayout(
     cy: cytoscape.Core,
     presetName: LayoutGraphPresetName,
+    onComplete?: () => void,
 ): void {
     const preset =
         CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS[presetName];
@@ -23,7 +24,16 @@ export function runGraphLayout(
         });
     }
 
-    cy.layout(
+    const layout = cy.layout(
         preset.build(),
-    ).run();
+    );
+
+    if (onComplete) {
+        layout.one(
+            "layoutstop",
+            onComplete,
+        );
+    }
+
+    layout.run();
 }

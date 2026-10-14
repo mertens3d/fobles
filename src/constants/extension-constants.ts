@@ -1,3 +1,5 @@
+// @source-path [fobles] src/constants/constants-b.ts
+
 export const STORAGE = {
   KEY: {
     AI_PAGES_MAPPINGS: "aiPagesMappings",
@@ -12,6 +14,12 @@ export const STORAGE = {
       FILTERS: "fobles_reference_graph_filters",
       LAYOUT: "fobles_reference_graph_layout",
       PENDING: "fobles_reference_graph_pending",
+      EXPANDED_BY_COLLAPSE_KEY:
+        "fobles-reference-graph-expanded-by-collapse-key",
+      CONTROLS_EXPANDED:
+        "fobles-reference-graph-controls-expanded",
+      WORKER_POOL_MAX_WORKERS:
+        "fobles-reference-graph-worker-pool-max-workers",
     },
     PERSIST_DEBUG_LOGS: "persistDebugLogs",
     PERSISTED_LOG_ENTRIES: "persistedLogEntries",

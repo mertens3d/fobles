@@ -11,6 +11,8 @@ import {
 } from "./cytoscape/cytoscape-config";
 import { ReferenceGraphApp } from "./reference-graph-app";
 import type { HarvestForLink } from "./graph.types";
+import { disposeBackgroundWorkerPool } from "../../sitecore-harvester/worker-pool/worker-pool-client";
+import { closeReferenceGraphProgressModal } from "./build-progress";
 
 export function openReferenceGraphModal(
     doc: Document,
@@ -53,11 +55,24 @@ export function openReferenceGraphModal(
         dialog.remove();
     });
 
-    dialog.addEventListener("click", (event) => {
-        if (event.target === dialog) {
-            dialog.close();
-        }
-    });
+    dialog.addEventListener(
+        "close",
+        () => {
+            closeReferenceGraphProgressModal(
+                doc,
+            );
+
+            appRoot.unmount();
+
+            setActiveReferenceGraphDialog(
+                undefined,
+            );
+
+            void disposeBackgroundWorkerPool();
+
+            dialog.remove();
+        },
+    );
 
     dialog.showModal();
 

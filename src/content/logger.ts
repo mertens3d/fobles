@@ -1,8 +1,16 @@
 // @source-path [fobles] src/content/logger.ts
 
-import { LOGGER, STORAGE } from "../constants/constants-b";
-import type { PersistedLogContext, PersistedLogLevel, PersistedLogEntry, PersistedLogMessage } from "../shared/persisted-log.types";
+import { LOGGER, STORAGE } from "../constants/extension-constants";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
+import {
+  appendPersistedLogEntry,
+} from "../shared/logging/persisted-log-storage";
+import type {
+  PersistedLogContext,
+  PersistedLogEntry,
+  PersistedLogLevel,
+  PersistedLogMessage,
+} from "../shared/persisted-log.types";
 import type { Logger } from "./content.types";
 
 type FoblesGlobal = typeof globalThis & {
@@ -10,13 +18,16 @@ type FoblesGlobal = typeof globalThis & {
   __sitecoreFoblesPersistLogs?: boolean;
 };
 
-const foblesGlobal = globalThis as FoblesGlobal;
+const foblesGlobal =
+  globalThis as FoblesGlobal;
 
 void chrome.storage?.sync
   ?.get(STORAGE.KEY.PERSIST_DEBUG_LOGS)
   .then((result) => {
     setPersistedLoggingEnabled(
-      result[STORAGE.KEY.PERSIST_DEBUG_LOGS] === true,
+      result[
+        STORAGE.KEY.PERSIST_DEBUG_LOGS
+      ] === true,
     );
   })
   .catch(() => {
@@ -26,37 +37,47 @@ void chrome.storage?.sync
 chrome.storage?.onChanged?.addListener(
   (changes, areaName) => {
     if (
-      areaName !== "sync" ||
-      !(STORAGE.KEY.PERSIST_DEBUG_LOGS in changes)
+      areaName === "sync" &&
+      STORAGE.KEY.PERSIST_DEBUG_LOGS in
+        changes
     ) {
-      return;
+      setPersistedLoggingEnabled(
+        changes[
+          STORAGE.KEY.PERSIST_DEBUG_LOGS
+        ].newValue === true,
+      );
     }
-
-    setPersistedLoggingEnabled(
-      changes[STORAGE.KEY.PERSIST_DEBUG_LOGS].newValue === true,
-    );
   },
 );
 
-const isDebugEnabled = (): boolean =>
-  Boolean(foblesGlobal.__sitecoreFoblesDebug);
+const isDebugEnabled =
+  (): boolean =>
+    Boolean(
+      foblesGlobal.__sitecoreFoblesDebug,
+    );
 
-const isPersistedLoggingEnabled = (): boolean =>
-  Boolean(foblesGlobal.__sitecoreFoblesPersistLogs);
+const isPersistedLoggingEnabled =
+  (): boolean =>
+    Boolean(
+      foblesGlobal.__sitecoreFoblesPersistLogs,
+    );
 
 export function setExtensionDebugEnabled(
   enabled: boolean,
 ): void {
-  foblesGlobal.__sitecoreFoblesDebug = enabled;
+  foblesGlobal.__sitecoreFoblesDebug =
+    enabled;
 }
 
 export function setPersistedLoggingEnabled(
   enabled: boolean,
 ): void {
-  foblesGlobal.__sitecoreFoblesPersistLogs = enabled;
+  foblesGlobal.__sitecoreFoblesPersistLogs =
+    enabled;
 }
 
-function getLogContext(): PersistedLogContext {
+function getLogContext():
+  PersistedLogContext {
   return typeof document === "undefined"
     ? "background"
     : "content";
@@ -98,16 +119,15 @@ function sanitizeValue(
     };
   }
 
-  if (typeof Node !== "undefined" && value instanceof Node) {
+  if (
+    typeof Node !== "undefined" &&
+    value instanceof Node
+  ) {
     return {
       nodeName: value.nodeName,
       textContent: value.textContent,
     };
   }
-
-  // if (typeof value !== "object") {
-  //   return String(value);
-  // }
 
   if (visited.has(value)) {
     return "[Circular]";
@@ -117,25 +137,40 @@ function sanitizeValue(
 
   if (Array.isArray(value)) {
     return value.map((item) =>
-      sanitizeValue(item, visited),
+      sanitizeValue(
+        item,
+        visited,
+      ),
     );
   }
 
-  const result: Record<string, unknown> = {};
+  const result:
+    Record<string, unknown> = {};
 
-  for (const [key, propertyValue] of Object.entries(value)) {
-    result[key] = sanitizeValue(
+  for (
+    const [
+      key,
       propertyValue,
-      visited,
-    );
+    ] of Object.entries(value)
+  ) {
+    result[key] =
+      sanitizeValue(
+        propertyValue,
+        visited,
+      );
   }
 
   return result;
 }
 
-function sanitizeArgs(args: unknown[]): unknown[] {
+function sanitizeArgs(
+  args: unknown[],
+): unknown[] {
   return args.map((arg) =>
-    sanitizeValue(arg, new WeakSet<object>()),
+    sanitizeValue(
+      arg,
+      new WeakSet<object>(),
+    ),
   );
 }
 
@@ -143,57 +178,105 @@ function persistLog(
   level: PersistedLogLevel,
   args: unknown[],
 ): void {
-  if (!isPersistedLoggingEnabled()) {
-    return;
+  if (
+    isPersistedLoggingEnabled()
+  ) {
+    const context =
+      getLogContext();
+
+    const entry:
+      PersistedLogEntry = {
+        id: crypto.randomUUID(),
+        timestamp:
+          new Date().toISOString(),
+        level,
+        context,
+        args: sanitizeArgs(args),
+      };
+
+    if (
+      context === "background"
+    ) {
+      void appendPersistedLogEntry(
+        entry,
+      ).catch(() => {
+        // Persisted logging must not
+        // recursively log its own failure.
+      });
+    } else {
+      const message:
+        PersistedLogMessage = {
+          type:
+            REFERENCE_GRAPH
+              .BACKGROUND_HARVEST
+              .MESSAGE.TYPE
+              .FOBLES_PERSIST_LOG,
+          entry,
+        };
+
+      void chrome.runtime
+        ?.sendMessage(message)
+        .catch(() => {
+          // The extension context may
+          // have been reloaded.
+        });
+    }
   }
-
-  const entry: PersistedLogEntry = {
-    id: crypto.randomUUID(),
-    timestamp: new Date().toISOString(),
-    level,
-    context: getLogContext(),
-    args: sanitizeArgs(args),
-  };
-
-  const message: PersistedLogMessage = {
-    type:  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.FOBLES_PERSIST_LOG,
-    entry,
-  };
-
-  void chrome.runtime
-    ?.sendMessage(message)
-    .catch(() => {
-      // The extension context may have been reloaded.
-    });
 }
 
-export const extensionLog: Logger = {
-  debug: (...args: unknown[]) => {
-    if (isDebugEnabled()) {
-      console.log(LOGGER.NAMESPACE, ...args);
-    }
+export const extensionLog:
+  Logger = {
+    debug: (...args: unknown[]) => {
+      if (isDebugEnabled()) {
+        console.log(
+          LOGGER.NAMESPACE,
+          ...args,
+        );
+      }
 
-    persistLog("debug", args);
-  },
+      persistLog(
+        "debug",
+        args,
+      );
+    },
 
-  info: (...args: unknown[]) => {
-    if (isDebugEnabled()) {
-      console.info(LOGGER.NAMESPACE, ...args);
-    }
+    info: (...args: unknown[]) => {
+      if (isDebugEnabled()) {
+        console.info(
+          LOGGER.NAMESPACE,
+          ...args,
+        );
+      }
 
-    persistLog("info", args);
-  },
+      persistLog(
+        "info",
+        args,
+      );
+    },
 
-  warn: (...args: unknown[]) => {
-    if (isDebugEnabled()) {
-      console.warn(LOGGER.NAMESPACE, ...args);
-    }
+    warn: (...args: unknown[]) => {
+      if (isDebugEnabled()) {
+        console.warn(
+          LOGGER.NAMESPACE,
+          ...args,
+        );
+      }
 
-    persistLog("warn", args);
-  },
+      persistLog(
+        "warn",
+        args,
+      );
+    },
 
-  error: (...args: unknown[]) => {
-    console.error(LOGGER.NAMESPACE, ...args);
-    persistLog("error", args);
-  },
-};
+    error: (...args: unknown[]) => {
+      console.error(
+        LOGGER.NAMESPACE,
+        ...args,
+      );
+
+      persistLog(
+        "error",
+        args,
+      );
+    },
+  };

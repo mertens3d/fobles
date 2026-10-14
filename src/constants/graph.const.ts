@@ -24,11 +24,14 @@ export const REFERENCE_GRAPH = {
         WORKER_TASK_EXECUTE: "WORKER_TASK_EXECUTE",
         // Service worker -> one specific worker tab: best-effort abort of its currently active task.
         WORKER_TASK_CANCEL: "WORKER_TASK_CANCEL",
+        WORKER_SET_OWNED: "FOBLES_REFERENCE_GRAPH_WORKER_SET_OWNED",
+        POOL_DISPOSE: "FOBLES_REFERENCE_GRAPH_POOL_DISPOSE",
+        WORKER_ADOPTED: "FOBLES_REFERENCE_GRAPH_WORKER_ADOPTED",
       },
     } as const,
   },
   WORKER_POOL: {
-    MAX_WORKERS: 2,
+    MAX_WORKERS: 3,
   },
   TEXT: {
     BUILDING_REFERENCE_GRAPH: "Building reference graph...",

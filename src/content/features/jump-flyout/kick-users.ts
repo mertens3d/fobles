@@ -1,4 +1,4 @@
-import { STORAGE } from "../../../constants/constants-b";
+import { STORAGE } from "../../../constants/extension-constants";
 import { CONST} from "../../../constants/const";
 import { extensionLog } from "../../logger";
 

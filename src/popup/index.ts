@@ -1,6 +1,6 @@
 // @source-path [fobles] src/popup/index.ts
 
-import { MESSAGE } from "../constants/constants-b";
+import { MESSAGE } from "../constants/extension-constants";
 import {
   getFoblesNavVisible,
   getFoblesNavWarningVisible,

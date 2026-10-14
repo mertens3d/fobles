@@ -1,4 +1,4 @@
-import { STORAGE } from "../../constants/constants-b";
+import { STORAGE } from "../../constants/extension-constants";
 import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
 import type { JumpFlyoutButtonSetting, JumpFlyoutButtonSettings } from "./jump-flyout.types";
 

@@ -1,4 +1,4 @@
-import { STORAGE } from "../constants/constants-b";
+import { STORAGE } from "../constants/extension-constants";
 import { getStorageValue, onStorageChange, setStorageValue } from "./storage/storage";
 
 export async function getFoblesNavVisible(): Promise<boolean> {

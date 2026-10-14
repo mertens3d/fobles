@@ -1,6 +1,7 @@
 import cytoscape from "cytoscape";
 import {
     useCallback,
+    useEffect,
     useRef,
 } from "react";
 import {
@@ -11,27 +12,57 @@ import type {
     SitecoreHarvestFiltersState,
     SitecoreHarvestResult,
 } from "../../sitecore-harvester/sitecore-harvester.types";
-import { isHarvestStep } from "../../sitecore-harvester/sitecore-harvester.types";
-import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
+import {
+    isHarvestStep,
+} from "../../sitecore-harvester/sitecore-harvester.types";
+import {
+    PROGRESS_STEPS,
+} from "../../sitecore-harvester/harvest-steps";
 import {
     closeReferenceGraphProgressModal,
     initializeReferenceGraphProgressModal,
     openReferenceGraphProgressModal,
 } from "./build-progress";
-import { GraphToolbar } from "./components/graph-toolbar";
-import { buildElements } from "./graph-nodes/graph-elements";
+import {
+    GraphToolbar,
+} from "./components/graph-toolbar";
+import {
+    runGraphLayout,
+} from "./cytoscape/graph-layout";
 import {
     createAllFiltersState,
     createSingleFilterState,
     getEnabledFilterKeys,
 } from "./graph-filters";
-import { hideActiveTooltip } from "./graph-tooltip";
-import type { HarvestForLink, LayoutGraphPresetName } from "./graph.types";
-import { extensionLog } from "../../logger";
-import { CONST } from "../../../constants/const";
-import { runGraphLayout } from "./cytoscape/graph-layout";
-import { useCytoscape } from "./hooks/use-cytoscape";
-import { useReferenceGraph } from "./hooks/use-reference-graph";
+import {
+    getGraphControlsExpanded,
+    setGraphControlsExpanded,
+} from "./graph-controls-settings";
+import {
+    buildElements,
+} from "./graph-nodes/graph-elements";
+import {
+    initializeGraphCollapseState,
+    prepareGraphForExpandedLayout,
+    refreshGraphExpandCollapse,
+} from "./graph-nodes/graph-expand-collapse";
+import {
+    hideActiveTooltip,
+} from "./graph-tooltip";
+import type {
+    HarvestForLink,
+    LayoutGraphPresetName,
+} from "./graph.types";
+import {
+    useCytoscape,
+} from "./hooks/use-cytoscape";
+import {
+    useReferenceGraph,
+} from "./hooks/use-reference-graph";
+import {
+    extensionLog,
+} from "../../logger";
+import { buildFoblesUrl } from "../augmentor/helper";
 
 type ReferenceGraphAppProps = {
     doc: Document;
@@ -39,111 +70,294 @@ type ReferenceGraphAppProps = {
     harvestForLink: HarvestForLink;
 };
 
+
 export function ReferenceGraphApp({
     doc,
     initialGraph,
     harvestForLink,
 }: ReferenceGraphAppProps) {
-    const containerRef = useRef<HTMLDivElement | null>(null);
-    const cyRef = useRef<cytoscape.Core | undefined>(undefined);
-    const graphState = useReferenceGraph({ initialGraph, });
-    const setFilters = useCallback(
-        (filters: SitecoreHarvestFiltersState): void => {
-            graphState.currentFiltersRef.current = filters;
-            graphState.setCurrentFilters(filters);
-            void setReferenceGraphFilters(filters);
-        },
-        [graphState],
-    );
 
-    const renderGraph = useCallback(
-        (sitecoreHarvestResults: SitecoreHarvestResult): void => {
+
+    const handleRelayout = useCallback(
+        (): void => {
             const cy = cyRef.current;
 
-            if (!cy) {
-                return;
-            }
+            if (cy) {
+                prepareGraphForExpandedLayout(cy);
 
-            cy.elements().remove();
-
-            //extensionLog.debug("[Fobles] sitecoreHarvestResults: ", sitecoreHarvestResults);
-            const elements = buildElements(sitecoreHarvestResults);
-
-            extensionLog.debug(
-                "[Fobles] Reference Graph elements",
-                elements,
-            );
-
-            cy.add(elements);
-            hideActiveTooltip();
-
-            CONST.FOBLES.REFERENCE_GRAPH.FILTER_DEFS.forEach(
-                ({ key, className }) => {
-                    cy.elements(`.${className}`).style(
-                        "display",
-                        graphState.currentFiltersRef.current[key]
-                            ? "element"
-                            : "none",
-                    );
-                },
-            );
-
-            runGraphLayout(cy, graphState.layoutPresetNameRef.current);
-
-            graphState.currentGraphRef.current = sitecoreHarvestResults;
-            graphState.setCurrentGraph(sitecoreHarvestResults);
-
-            if (
-                !graphState.loadedFiltersByItemIdRef.current.has(
-                    sitecoreHarvestResults.rootItem.scItemId,
-                )
-            ) {
-                graphState.loadedFiltersByItemIdRef.current.set(
-                    sitecoreHarvestResults.rootItem.scItemId,
-                    getEnabledFilterKeys(
-                        graphState.currentFiltersRef.current,
-                    ),
+                runGraphLayout(
+                    cy,
+                    graphState.layoutPresetNameRef.current,
+                    () => {
+                        refreshGraphExpandCollapse(cy);
+                    },
                 );
             }
         },
         [],
     );
 
-    const handleLayoutChange = useCallback(
-        (value: LayoutGraphPresetName): void => {
+
+    const containerRef =
+        useRef<HTMLDivElement | null>(
+            null,
+        );
+
+    const cyRef =
+        useRef<
+            cytoscape.Core | undefined
+        >(undefined);
+
+    const graphState =
+        useReferenceGraph({
+            initialGraph,
+        });
+
+    useEffect(() => {
+        let disposed = false;
+
+        void getGraphControlsExpanded()
+            .then((controlsExpanded) => {
+                if (!disposed) {
+                    graphState.setControlsExpanded(
+                        controlsExpanded,
+                    );
+                }
+            });
+
+        return () => {
+            disposed = true;
+        };
+    }, []);
+
+    const setFilters = useCallback(
+        (
+            filters:
+                SitecoreHarvestFiltersState,
+        ): void => {
+            graphState.currentFiltersRef.current =
+                filters;
+
+            graphState.setCurrentFilters(
+                filters,
+            );
+
+            void setReferenceGraphFilters(
+                filters,
+            );
+        },
+        [],
+    );
+    const renderGraph = useCallback(
+        (
+            sitecoreHarvestResults:
+                SitecoreHarvestResult,
+        ): void => {
             const cy = cyRef.current;
 
-            graphState.layoutPresetNameRef.current = value;
-            graphState.setLayoutPresetName(value);
-
             if (cy) {
-                runGraphLayout(cy, value);
-            }
+                const elements =
+                    buildElements(
+                        sitecoreHarvestResults,
+                    );
 
-            void setReferenceGraphLayout(value);
+                extensionLog.debug(
+                    "[ReferenceGraph renderGraph] rebuilding",
+                    {
+                        rootItemId:
+                            sitecoreHarvestResults
+                                .rootItem
+                                .scItemId,
+                        elementCount:
+                            elements.length,
+                        nodeCountBefore:
+                            cy.nodes().length,
+                        edgeCountBefore:
+                            cy.edges().length,
+                        filters:
+                            graphState
+                                .currentFiltersRef
+                                .current,
+                    },
+                );
+
+                hideActiveTooltip();
+
+                cy.elements().remove();
+                cy.add(elements);
+
+                extensionLog.debug(
+                    "[ReferenceGraph renderGraph] elements added",
+                    {
+                        nodeCountAfter:
+                            cy.nodes().length,
+                        edgeCountAfter:
+                            cy.edges().length,
+                    },
+                );
+
+                graphState.currentGraphRef.current =
+                    sitecoreHarvestResults;
+
+                graphState.setCurrentGraph(
+                    sitecoreHarvestResults,
+                );
+
+                if (
+                    !graphState
+                        .loadedFiltersByItemIdRef
+                        .current
+                        .has(
+                            sitecoreHarvestResults
+                                .rootItem
+                                .scItemId,
+                        )
+                ) {
+                    graphState
+                        .loadedFiltersByItemIdRef
+                        .current
+                        .set(
+                            sitecoreHarvestResults
+                                .rootItem
+                                .scItemId,
+                            getEnabledFilterKeys(
+                                graphState
+                                    .currentFiltersRef
+                                    .current,
+                            ),
+                        );
+                }
+
+                prepareGraphForExpandedLayout(
+                    cy,
+                );
+
+                runGraphLayout(
+                    cy,
+                    graphState
+                        .layoutPresetNameRef
+                        .current,
+                    () => {
+                        initializeGraphCollapseState(
+                            cy,
+                        );
+
+                        extensionLog.debug(
+                            "[ReferenceGraph renderGraph] layout complete",
+                            {
+                                nodeCount:
+                                    cy.nodes()
+                                        .length,
+                                visibleNodeCount:
+                                    cy.nodes(
+                                        ":visible",
+                                    ).length,
+                                edgeCount:
+                                    cy.edges()
+                                        .length,
+                                visibleEdgeCount:
+                                    cy.edges(
+                                        ":visible",
+                                    ).length,
+                            },
+                        );
+                    },
+                );
+            }
         },
         [],
     );
 
-    const handleBack = useCallback((): void => {
-        const previousGraph =
-            graphState.graphHistoryRef.current.pop();
+    const handleLayoutChange =
+        useCallback(
+            (
+                value:
+                    LayoutGraphPresetName,
+            ): void => {
+                const cy =
+                    cyRef.current;
 
-        graphState.setHistoryCount(
-            graphState.graphHistoryRef.current.length,
+                graphState
+                    .layoutPresetNameRef
+                    .current = value;
+
+                graphState.setLayoutPresetName(
+                    value,
+                );
+
+                if (cy) {
+                    prepareGraphForExpandedLayout(
+                        cy,
+                    );
+
+                    runGraphLayout(
+                        cy,
+                        value,
+                        () => {
+                            refreshGraphExpandCollapse(
+                                cy,
+                            );
+                        },
+                    );
+                }
+
+                void setReferenceGraphLayout(
+                    value,
+                );
+            },
+            [],
         );
 
-        if (previousGraph) {
-            renderGraph(previousGraph);
-        }
-    }, [renderGraph]);
+    const handleBack =
+        useCallback(
+            (): void => {
+                const previousGraph =
+                    graphState
+                        .graphHistoryRef
+                        .current
+                        .pop();
 
-    const handleClearFilters = useCallback((): void => {
-        const filters = createAllFiltersState(false);
+                graphState.setHistoryCount(
+                    graphState
+                        .graphHistoryRef
+                        .current
+                        .length,
+                );
 
-        setFilters(filters);
-        renderGraph(graphState.currentGraphRef.current);
-    }, [renderGraph, setFilters]);
+                if (previousGraph) {
+                    renderGraph(
+                        previousGraph,
+                    );
+                }
+            },
+            [
+                renderGraph,
+            ],
+        );
+
+    const handleClearFilters =
+        useCallback(
+            (): void => {
+                const filters =
+                    createAllFiltersState(
+                        false,
+                    );
+
+                setFilters(filters);
+
+                const cy =
+                    cyRef.current;
+
+                if (cy) {
+                    refreshGraphExpandCollapse(
+                        cy,
+                    );
+                }
+            },
+            [
+                setFilters,
+            ],
+        );
 
     const handleFilterChange = useCallback(
         (
@@ -157,7 +371,8 @@ export function ReferenceGraphApp({
 
             setFilters(updatedFilters);
 
-            const currentGraphValue = graphState.currentGraphRef.current;
+            const currentGraphValue =
+                graphState.currentGraphRef.current;
 
             const loadedFilters =
                 graphState.loadedFiltersByItemIdRef.current.get(
@@ -172,74 +387,116 @@ export function ReferenceGraphApp({
                 loadedFilters,
             );
 
+            const alreadyLoaded =
+                key === "template" ||
+                loadedFilters.has(key);
+
             if (
                 !checked ||
-                key === "template" ||
-                loadedFilters.has(key)
+                alreadyLoaded
             ) {
-                renderGraph(currentGraphValue);
-                return;
-            }
+                const cy = cyRef.current;
 
-            const link =
-                currentGraphValue.rootItem.link;
-
-            if (!link) {
-                return;
-            }
-
-            const requestedFilters =
-                createSingleFilterState(key);
-
-            let cancelled = false;
-
-            openReferenceGraphProgressModal(
-                doc,
-                () => {
-                    cancelled = true;
-                    closeReferenceGraphProgressModal(doc);
-                },
-            );
-
-            initializeReferenceGraphProgressModal(
-                doc,
-                PROGRESS_STEPS.filter(
-                    (step) =>
-                        isHarvestStep(step) &&
-                        step.filterKey === key,
-                ),
-                requestedFilters,
-            );
-
-            void harvestForLink(
-                link,
-                requestedFilters,
-                currentGraphValue,
-            ).then((mergedGraph) => {
-                closeReferenceGraphProgressModal(doc);
-
-                if (
-                    cancelled ||
-                    !mergedGraph ||
-                    graphState.currentGraphRef.current.rootItem
-                        .scItemId !==
-                    currentGraphValue.rootItem.scItemId
-                ) {
-                    const revertedFilters = {
-                        ...graphState.currentFiltersRef.current,
-                        [key]: false,
-                    };
-
-                    setFilters(revertedFilters);
-                    return;
+                if (cy) {
+                    refreshGraphExpandCollapse(
+                        cy,
+                    );
                 }
+            } else {
+                const link =
+                    currentGraphValue.rootItem.link ??
+                    buildFoblesUrl(
+                        currentGraphValue.rootItem.scItemId,
+                    );
 
-                loadedFilters.add(key);
-                renderGraph(mergedGraph);
-            });
+                const requestedFilters =
+                    createSingleFilterState(key);
+
+                let cancelled = false;
+
+                openReferenceGraphProgressModal(
+                    doc,
+                    () => {
+                        cancelled = true;
+
+                        closeReferenceGraphProgressModal(
+                            doc,
+                        );
+                    },
+                );
+
+                initializeReferenceGraphProgressModal(
+                    doc,
+                    PROGRESS_STEPS.filter(
+                        (step) =>
+                            isHarvestStep(step) &&
+                            step.filterKey === key,
+                    ),
+                    requestedFilters,
+                );
+
+                void harvestForLink(
+                    link,
+                    requestedFilters,
+                    currentGraphValue,
+                ).then((mergedGraph) => {
+                    closeReferenceGraphProgressModal(
+                        doc,
+                    );
+
+                    const graphChanged =
+                        graphState.currentGraphRef.current
+                            .rootItem.scItemId !==
+                        currentGraphValue.rootItem.scItemId;
+
+                    if (
+                        cancelled ||
+                        !mergedGraph ||
+                        graphChanged
+                    ) {
+                        const revertedFilters = {
+                            ...graphState.currentFiltersRef.current,
+                            [key]: false,
+                        };
+
+                        setFilters(
+                            revertedFilters,
+                        );
+                    } else {
+                        loadedFilters.add(key);
+
+                        renderGraph(
+                            mergedGraph,
+                        );
+                    }
+                });
+            }
         },
-        [doc, harvestForLink, renderGraph],
+        [
+            doc,
+            harvestForLink,
+            renderGraph,
+            setFilters,
+        ],
     );
+
+    const handleControlsExpandedChange =
+        useCallback(
+            (
+                controlsExpanded:
+                    boolean,
+            ): void => {
+                graphState
+                    .setControlsExpanded(
+                        controlsExpanded,
+                    );
+
+                void setGraphControlsExpanded(
+                    controlsExpanded,
+                );
+            },
+            [],
+        );
 
     useCytoscape({
         doc,
@@ -247,38 +504,87 @@ export function ReferenceGraphApp({
         harvestForLink,
         containerRef,
         cyRef,
-        currentGraphRef: graphState.currentGraphRef,
-        currentFiltersRef: graphState.currentFiltersRef,
-        layoutPresetNameRef: graphState.layoutPresetNameRef,
-        graphHistoryRef: graphState.graphHistoryRef,
-        loadedFiltersByItemIdRef: graphState.loadedFiltersByItemIdRef,
+        currentGraphRef:
+            graphState.currentGraphRef,
+        currentFiltersRef:
+            graphState.currentFiltersRef,
+        layoutPresetNameRef:
+            graphState.layoutPresetNameRef,
+        graphHistoryRef:
+            graphState.graphHistoryRef,
+        loadedFiltersByItemIdRef:
+            graphState
+                .loadedFiltersByItemIdRef,
         renderGraph,
-        setCurrentFilters: graphState.setCurrentFilters,
-        setLayoutPresetName: graphState.setLayoutPresetName,
-        setHistoryCount: graphState.setHistoryCount,
+        setCurrentFilters:
+            graphState
+                .setCurrentFilters,
+        setLayoutPresetName:
+            graphState
+                .setLayoutPresetName,
+        setHistoryCount:
+            graphState
+                .setHistoryCount,
+        setBuildElapsedSeconds:
+            graphState
+                .setBuildElapsedSeconds,
     });
 
     return (
         <>
-            <GraphToolbar
-                graph={graphState.currentGraph}
-                layoutPresetName={graphState.layoutPresetName}
-                onLayoutChange={handleLayoutChange}
-                canGoBack={graphState.historyCount > 0}
-                onBack={handleBack}
-                filters={graphState.currentFilters}
-                onFilterChange={handleFilterChange}
-                onClearFilters={handleClearFilters}
-                cy={cyRef.current}
-            />
+            return (
+            <>
+                <GraphToolbar
+                    graph={
+                        graphState.currentGraph
+                    }
+                    layoutPresetName={
+                        graphState.layoutPresetName
+                    }
+                    onLayoutChange={
+                        handleLayoutChange
+                    }
+                    onRelayout={
+                        handleRelayout
+                    }
+                    canGoBack={
+                        graphState.historyCount > 0
+                    }
+                    onBack={
+                        handleBack
+                    }
+                    filters={
+                        graphState.currentFilters
+                    }
+                    onFilterChange={
+                        handleFilterChange
+                    }
+                    onClearFilters={
+                        handleClearFilters
+                    }
+                    cy={
+                        cyRef.current
+                    }
+                    controlsExpanded={
+                        graphState.controlsExpanded
+                    }
+                    onControlsExpandedChange={
+                        handleControlsExpandedChange
+                    }
+                    buildElapsedSeconds={
+                        graphState.buildElapsedSeconds
+                    }
+                />
 
-            <div
-                ref={containerRef}
-                style={{
-                    width: "100%",
-                    height: "100%",
-                }}
-            />
+                <div
+                    ref={containerRef}
+                    style={{
+                        width: "100%",
+                        height: "100%",
+                    }}
+                />
+            </>
+            );
         </>
     );
 }
