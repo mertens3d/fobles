@@ -1,6 +1,5 @@
 export type HarvestContext = {
   doc: Document;
-  itemId: string;
   result: SitecoreHarvestResult;
   signal: AbortSignal;
   rootItem: ItemGraphNodeData;

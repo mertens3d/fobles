@@ -2,6 +2,7 @@
 
 import { LOGGER, STORAGE } from "../constants/constants-b";
 import type { PersistedLogContext, PersistedLogLevel, PersistedLogEntry, PersistedLogMessage } from "../shared/persisted-log.types";
+import { REFERENCE_GRAPH } from "../constants/graph.const";
 import type { Logger } from "./content.types";
 
 type FoblesGlobal = typeof globalThis & {
@@ -155,7 +156,7 @@ function persistLog(
   };
 
   const message: PersistedLogMessage = {
-    type: "FOBLES_PERSIST_LOG",
+    type:  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.FOBLES_PERSIST_LOG,
     entry,
   };
 

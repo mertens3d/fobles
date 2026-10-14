@@ -4,6 +4,7 @@ import type { HarvestSitecoreMessage } from "./sitecore-harvester.messages";
 import type { SitecoreHarvestResult, BackgroundHarvestContext, HarvestProgressStatus, StepKey } from "../sitecore-harvester.types";
 import { extensionLog } from "../../logger";
 import { CONST } from "../../../constants/const";
+import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 
 async function sendHarvestMessage(
     tabId: number,
@@ -95,7 +96,7 @@ export async function harvestSitecoreInBackgroundTab(
         });
 
         const message: HarvestSitecoreMessage = {
-            type: "HARVEST_SITECORE",
+            type: REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.HARVEST_SITECORE,
             requestId: backgroundHarvestContext.requestId,
             originTabId: backgroundHarvestContext.originTabId,
             filters: backgroundHarvestContext.filters,
@@ -125,7 +126,7 @@ async function reportProgress(
     status: HarvestProgressStatus,
 ): Promise<void> {
     await chrome.tabs.sendMessage(context.originTabId, {
-        type: "SITECORE_HARVEST_PROGRESS",
+        type:  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.SITECORE_HARVEST_PROGRESS,
         requestId: context.requestId,
         stepKey,
         label,

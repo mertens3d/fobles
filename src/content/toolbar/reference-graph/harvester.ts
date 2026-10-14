@@ -21,6 +21,9 @@ export async function harvestGraphForLink(link: string,
   referenceGraphAbortController = controller;
   let result: SitecoreHarvestResult | undefined = undefined;
   try {
+
+    extensionLog.debug(`[${harvestGraphForLink.name}]Reference graph: starting re-harvest for clicked node`, { link });
+    
     handleHarvestProgress(
       progressDoc,
       { stepKey: "fetch-document", label: "Fetching Document" },

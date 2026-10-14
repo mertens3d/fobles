@@ -1,8 +1,13 @@
+// @source-path [Fobles] src/shared/persisted-log.types.ts
+
+import type { REFERENCE_GRAPH } from "../constants/graph.const";
+
 export type PersistedLogLevel =
   | "debug"
   | "info"
   | "warn"
   | "error";
+
 
 export type PersistedLogContext =
   | "content"
@@ -17,6 +22,6 @@ export type PersistedLogEntry = {
 };
 
 export type PersistedLogMessage = {
-  type: "FOBLES_PERSIST_LOG";
+  type: typeof REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.FOBLES_PERSIST_LOG;
   entry: PersistedLogEntry;
 };

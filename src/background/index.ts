@@ -3,6 +3,7 @@
 /// <reference types="chrome" />
 
 import { LOGGER, MESSAGE } from "../constants/constants-b";
+import { REFERENCE_GRAPH } from "../constants/graph.const";
 import { extensionLog } from "../content/logger";
 import { harvestSitecoreInBackgroundTab } from "../content/sitecore-harvester/background-tab/sitecore-background-tab-harvester";
 import type { HarvestSitecoreInBackgroundTabMessage, SitecoreHarvestProgressMessage } from "../content/sitecore-harvester/background-tab/sitecore-harvester.messages";
@@ -33,16 +34,15 @@ type RuntimeMessage = RuntimeReloadMessage | HarvestSitecoreInBackgroundTabMessa
 interface RuntimeReloadMessage {
   action: string;
 }
-
 chrome.runtime.onMessage.addListener(
   (request: RuntimeMessage, sender, sendResponse) => {
-
     if (
       "type" in request &&
-      request.type === "FOBLES_PERSIST_LOG"
+      request.type ===
+        REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.FOBLES_PERSIST_LOG
     ) {
       void appendPersistedLogEntry(request.entry).catch((error) => {
-        console.error(
+        extensionLog.error(
           LOGGER.NAMESPACE,
           "Failed to persist log entry",
           error,
@@ -52,7 +52,10 @@ chrome.runtime.onMessage.addListener(
       return;
     }
 
-    if ("action" in request && request.action === MESSAGE.ACTION.RELOAD_EXTENSION) {
+    if (
+      "action" in request &&
+      request.action === MESSAGE.ACTION.RELOAD_EXTENSION
+    ) {
       if (sender.tab?.id !== undefined) {
         void chrome.tabs?.reload?.(sender.tab.id);
       }
@@ -63,7 +66,9 @@ chrome.runtime.onMessage.addListener(
 
     if (
       "type" in request &&
-      request.type === "SITECORE_HARVEST_PROGRESS"
+      request.type ===
+        REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE
+          .SITECORE_HARVEST_PROGRESS
     ) {
       void chrome.tabs.sendMessage(
         request.originTabId,
@@ -78,7 +83,9 @@ chrome.runtime.onMessage.addListener(
 
     if (
       "type" in request &&
-      request.type === "HARVEST_SITECORE_IN_BACKGROUND_TAB"
+      request.type ===
+        REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE
+          .HARVEST_SITECORE_IN_BACKGROUND_TAB
     ) {
       const originTabId = sender.tab?.id;
 
@@ -95,18 +102,29 @@ chrome.runtime.onMessage.addListener(
       };
 
       void harvestSitecoreInBackgroundTab(
-        backgroundHarvestContext
+        backgroundHarvestContext,
       )
-        .then(sendResponse)
+        .then((result) => {
+          extensionLog.debug(
+            LOGGER.NAMESPACE,
+            "BACKGROUND GOT HARVEST RESULT",
+            result,
+          );
+
+          sendResponse(result);
+        })
         .catch((error) => {
-          extensionLog.error("Background Sitecore harvest failed", error);
+          extensionLog.error(
+            LOGGER.NAMESPACE,
+            "Background Sitecore harvest failed",
+            error,
+          );
+
           sendResponse(undefined);
         });
 
       return true;
-
     }
   },
 );
-
 extensionLog.debug(LOGGER.NAMESPACE, "Background script loaded");

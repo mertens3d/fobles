@@ -6,6 +6,7 @@ import type {
 } from "./sitecore-harvester.messages";
 import { harvestSitecore } from "../harvest-sitecore";
 import { extensionLog } from "../../logger";
+import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 export function registerSitecoreHarvesterMessageHandler(): void {
   if (window.top !== window) {
     return;
@@ -13,14 +14,14 @@ export function registerSitecoreHarvesterMessageHandler(): void {
 
   chrome.runtime.onMessage.addListener(
     (message: HarvestSitecoreMessage, _sender, sendResponse) => {
-      if (message.type !== "HARVEST_SITECORE") {
+      if (message.type !== REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.HARVEST_SITECORE) {
         return;
       }
 
       const controller = new AbortController();
 
       void chrome.runtime.sendMessage({
-        type: "SITECORE_HARVEST_PROGRESS",
+        type: REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.SITECORE_HARVEST_PROGRESS,
         requestId: message.requestId,
         originTabId: message.originTabId,
         stepKey: "fetch-document",
@@ -29,7 +30,7 @@ export function registerSitecoreHarvesterMessageHandler(): void {
       } satisfies SitecoreHarvestProgressMessage);
 
       void chrome.runtime.sendMessage({
-        type: "SITECORE_HARVEST_PROGRESS",
+        type: REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.SITECORE_HARVEST_PROGRESS,
         requestId: message.requestId,
         originTabId: message.originTabId,
         stepKey: "parse-document",
@@ -54,7 +55,7 @@ export function registerSitecoreHarvesterMessageHandler(): void {
           });
 
           void chrome.runtime.sendMessage({
-            type: "SITECORE_HARVEST_PROGRESS",
+            type: REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.SITECORE_HARVEST_PROGRESS,
             requestId: message.requestId,
             originTabId: message.originTabId,
             stepKey: step.stepKey,
@@ -89,9 +90,9 @@ export function registerSitecoreHarvesterMessageHandler(): void {
     },
   );
 
-  extensionLog.debug("SENDING SITECORE_HARVESTER_READY", window.top === window);
+  extensionLog.debug(`SENDING ${REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.SITECORE_HARVESTER_READY}`, window.top === window);
 
   void chrome.runtime.sendMessage({
-    type: "SITECORE_HARVESTER_READY",
+    type:  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.SITECORE_HARVESTER_READY,
   });
 }

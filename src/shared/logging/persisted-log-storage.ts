@@ -1,5 +1,6 @@
 import { STORAGE } from "../../constants/constants-b";
 import type { PersistedLogMessage, PersistedLogEntry } from "../persisted-log.types";
+import { REFERENCE_GRAPH } from "../../constants/graph.const";
 
 const MAX_LOG_ENTRIES = 500;
 
@@ -12,7 +13,7 @@ export function isPersistedLogMessage(
     typeof value === "object" &&
     value !== null &&
     "type" in value &&
-    value.type === "FOBLES_PERSIST_LOG" &&
+    value.type ===  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.FOBLES_PERSIST_LOG &&
     "entry" in value
   );
 }
