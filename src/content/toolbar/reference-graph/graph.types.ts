@@ -2,7 +2,6 @@
 
 import type cytoscape from "cytoscape";
 import type {
-  ScControl,
   SitecoreHarvestResult,
 } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { BooleanTripleState } from "../../macros/ribbon-toggle-macro";
@@ -36,4 +35,3 @@ export type LayoutGraphPresetName =
   | "cose-bilkent"
   | "fcose"
   | "breadthfirst";
-

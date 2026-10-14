@@ -8,7 +8,7 @@ import { RootInfo } from "./root-info";
 import { GraphFilterList } from "./graph-filter-list";
 import { InteractionLegend } from "./interaction-legend";
 import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
-import { GraphViewControls } from "../graph-nodes/graph-view-controls";
+import { GraphViewControls } from "./graph-view-controls";
 
 export type GraphToolbarHandle = { showGraph: ( graph: SitecoreHarvestResult, addCurrentGraphToHistory: boolean, ) => void; };
 

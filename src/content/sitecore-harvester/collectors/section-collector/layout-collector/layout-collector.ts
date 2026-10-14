@@ -4,6 +4,7 @@ import { findFieldInput } from "../../helpers/harvest-helpers";
 import { factoryItemGraphNodeData, type HarvestContext, type ScControl, type ItemGraphNodeData, type LayoutDevice, type LayoutSectionField } from "../../../sitecore-harvester.types";
 import { XMLParser } from "fast-xml-parser";
 import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
+import { extensionLog } from "../../../../logger";
 
 export const collectLayouts = async (harvestContext: HarvestContext): Promise<void> => {
     const layoutsArray: LayoutSectionField[] = [];
@@ -32,6 +33,8 @@ const processLayoutFieldValue = (
 
     if (xml) {
         const rawProcessedXml = processLayoutXml(xml);
+
+       extensionLog.debug("Processed layout XML:", rawProcessedXml);
 
         if (rawProcessedXml) {
             for (const device of rawProcessedXml.r.d) {

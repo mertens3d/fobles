@@ -61,7 +61,7 @@ export function ReferenceGraphApp({
     );
 
     const renderGraph = useCallback(
-        (newGraph: SitecoreHarvestResult): void => {
+        (sitecoreHarvestResults: SitecoreHarvestResult): void => {
             const cy = cyRef.current;
 
             if (!cy) {
@@ -70,7 +70,8 @@ export function ReferenceGraphApp({
 
             cy.elements().remove();
 
-            const elements = buildElements(newGraph);
+            //extensionLog.debug("[Fobles] sitecoreHarvestResults: ", sitecoreHarvestResults);
+            const elements = buildElements(sitecoreHarvestResults);
 
             extensionLog.debug(
                 "[Fobles] Reference Graph elements",
@@ -93,16 +94,16 @@ export function ReferenceGraphApp({
 
             runGraphLayout(cy, graphState.layoutPresetNameRef.current);
 
-            graphState.currentGraphRef.current = newGraph;
-            graphState.setCurrentGraph(newGraph);
+            graphState.currentGraphRef.current = sitecoreHarvestResults;
+            graphState.setCurrentGraph(sitecoreHarvestResults);
 
             if (
                 !graphState.loadedFiltersByItemIdRef.current.has(
-                    newGraph.rootItem.scItemId,
+                    sitecoreHarvestResults.rootItem.scItemId,
                 )
             ) {
                 graphState.loadedFiltersByItemIdRef.current.set(
-                    newGraph.rootItem.scItemId,
+                    sitecoreHarvestResults.rootItem.scItemId,
                     getEnabledFilterKeys(
                         graphState.currentFiltersRef.current,
                     ),

@@ -80,7 +80,6 @@ export async function harvestSitecore(
     }),
   }) as RootItem;
 
-
   onProgress?.(
     {
       stepKey: "root-item",

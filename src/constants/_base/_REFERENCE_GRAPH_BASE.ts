@@ -22,6 +22,7 @@ export const _REFERENCE_GRAPH_BASE = {
         CHILD: "Child",
         REFERRER: "Referrer",
         RENDERING: "Rendering",
+        RENDERING_PARAMETER: "Rendering Parameter",
         // Not a real label prefix (each field keeps its own field name as its label) - just the color
         // category every section field node shares, since there's no fixed/finite set of field names.
         FIELD: "Field",

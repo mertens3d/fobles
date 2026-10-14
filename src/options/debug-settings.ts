@@ -98,8 +98,6 @@ export function initDebugSettings(): void {
     });
   };
 
-
-
   scrollPersistedLogsBottomButton.addEventListener("click", () => {
     persistedLogsOutput.lastElementChild?.scrollIntoView({
       behavior: "smooth",

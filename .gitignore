@@ -29,3 +29,6 @@ auth*.json
 .sitecore/.cache/
 .scindex
 test-artifacts/*
+*zip*copilot.txt
+
+

@@ -4,7 +4,6 @@ import { LOGGER, STORAGE } from "../constants/constants-b";
 import type { PersistedLogContext, PersistedLogLevel, PersistedLogEntry, PersistedLogMessage } from "../shared/persisted-log.types";
 import type { Logger } from "./content.types";
 
-
 type FoblesGlobal = typeof globalThis & {
   __sitecoreFoblesDebug?: boolean;
   __sitecoreFoblesPersistLogs?: boolean;
@@ -105,9 +104,9 @@ function sanitizeValue(
     };
   }
 
-  if (typeof value !== "object") {
-    return String(value);
-  }
+  // if (typeof value !== "object") {
+  //   return String(value);
+  // }
 
   if (visited.has(value)) {
     return "[Circular]";

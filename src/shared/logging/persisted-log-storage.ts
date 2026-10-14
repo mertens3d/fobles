@@ -1,7 +1,5 @@
-import { CONST } from "../../constants/const";
 import { STORAGE } from "../../constants/constants-b";
 import type { PersistedLogMessage, PersistedLogEntry } from "../persisted-log.types";
-
 
 const MAX_LOG_ENTRIES = 500;
 

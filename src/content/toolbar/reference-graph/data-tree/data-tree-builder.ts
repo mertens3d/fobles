@@ -10,16 +10,13 @@ import {
   createDataTreeItemNode,
   createDataTreeNonItemNode,
 } from "./data-tree-node-factory";
-import type {
-  DataTreeItemNode,
-  DataTreeNonItemNode,
-} from "./data-tree.types";
+import type { DataTreeItemNode, DataTreeNonItemNode } from "./data-tree.types";
+import { createSectionsTreeNode } from "./sections-data-tree-builder";
 
 export function createDataTree(
   graphReferenceResult: SitecoreHarvestResult,
 ): DataTreeItemNode {
-  const rootTreeNodeId =
-    graphReferenceResult.rootItem.scItemId;
+  const rootTreeNodeId = graphReferenceResult.rootItem.scItemId;
 
   const children = [
     createParentTreeNode(graphReferenceResult),
@@ -29,11 +26,7 @@ export function createDataTree(
     createSectionsTreeNode(graphReferenceResult),
     createLayoutTreeNode(graphReferenceResult),
   ].filter(
-    (
-      treeNode,
-    ): treeNode is
-      | DataTreeItemNode
-      | DataTreeNonItemNode =>
+    (treeNode): treeNode is DataTreeItemNode | DataTreeNonItemNode =>
       treeNode !== undefined,
   );
 
@@ -50,9 +43,7 @@ function createParentTreeNode(
 ): DataTreeItemNode | undefined {
   const parent = graphReferenceResult.parent;
 
-  let parentTreeNode:
-    | DataTreeItemNode
-    | undefined = undefined;
+  let parentTreeNode: DataTreeItemNode | undefined = undefined;
 
   if (parent) {
     parentTreeNode = createDataTreeItemNode({
@@ -73,12 +64,9 @@ function createParentTreeNode(
 function createTemplateTreeNode(
   graphReferenceResult: SitecoreHarvestResult,
 ): DataTreeItemNode | undefined {
-  const template =
-    graphReferenceResult.rootItem.scTemplate;
+  const template = graphReferenceResult.rootItem.scTemplate;
 
-  let templateTreeNode:
-    | DataTreeItemNode
-    | undefined = undefined;
+  let templateTreeNode: DataTreeItemNode | undefined = undefined;
 
   if (template) {
     templateTreeNode = createDataTreeItemNode({
@@ -99,12 +87,9 @@ function createTemplateTreeNode(
 function createChildrenTreeNode(
   graphReferenceResult: SitecoreHarvestResult,
 ): DataTreeNonItemNode | undefined {
-  const childItems =
-    graphReferenceResult.childItems ?? [];
+  const childItems = graphReferenceResult.childItems ?? [];
 
-  let childrenTreeNode:
-    | DataTreeNonItemNode
-    | undefined = undefined;
+  let childrenTreeNode: DataTreeNonItemNode | undefined = undefined;
 
   if (childItems.length > 0) {
     const treeNodeId = createDataTreeNodeId(
@@ -139,12 +124,9 @@ function createChildrenTreeNode(
 function createReferrersTreeNode(
   graphReferenceResult: SitecoreHarvestResult,
 ): DataTreeNonItemNode | undefined {
-  const referrers =
-    graphReferenceResult.referrers ?? [];
+  const referrers = graphReferenceResult.referrers ?? [];
 
-  let referrersTreeNode:
-    | DataTreeNonItemNode
-    | undefined = undefined;
+  let referrersTreeNode: DataTreeNonItemNode | undefined = undefined;
 
   if (referrers.length > 0) {
     const treeNodeId = createDataTreeNodeId(
@@ -177,96 +159,16 @@ function createReferrersTreeNode(
   return referrersTreeNode;
 }
 
-function createSectionsTreeNode(
-  graphReferenceResult: SitecoreHarvestResult,
-): DataTreeNonItemNode | undefined {
-  const sections =
-    graphReferenceResult.sections?.filter((section) =>
-      section.fields.some((field) => Boolean(field.value)),
-    ) ?? [];
-
-  let sectionsTreeNode:
-    | DataTreeNonItemNode
-    | undefined = undefined;
-
-  if (sections.length > 0) {
-    const treeNodeId = createDataTreeNodeId(
-      graphReferenceResult.rootItem.scItemId,
-      "sections",
-    );
-
-    sectionsTreeNode = createDataTreeNonItemNode({
-      treeNodeId,
-      name: "Sections",
-      kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
-      branch: "sections",
-      relationshipToParent: "related",
-      children: sections.map((section, sectionIndex) => {
-        const sectionTreeNodeId = createDataTreeNodeId(
-          treeNodeId,
-          "section",
-          section.name,
-          String(sectionIndex),
-        );
-
-        return createDataTreeNonItemNode({
-          treeNodeId: sectionTreeNodeId,
-          name: section.name,
-          kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.SECTION,
-          branch: "sections",
-          children: section.fields
-            .filter((field) => Boolean(field.value))
-            .map((field, fieldIndex) => {
-              const fieldTreeNodeId = createDataTreeNodeId(
-                sectionTreeNodeId,
-                "field",
-                String(fieldIndex),
-              );
-
-              return createDataTreeNonItemNode({
-                treeNodeId: fieldTreeNodeId,
-                name: field.value ?? "",
-                kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.FIELD,
-                branch: "sections",
-                children: (field.links ?? []).map(
-                  (fieldLink, linkIndex) =>
-                    createDataTreeItemNode({
-                      treeNodeId: createDataTreeNodeId(
-                        fieldTreeNodeId,
-                        fieldLink.valueItem.scItemId,
-                        String(linkIndex),
-                      ),
-                      scItem: fieldLink.valueItem,
-                      kind:
-                        CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.FIELD,
-                      branch: "sections",
-                      relationshipToParent: "related",
-                    }),
-                ),
-              });
-            }),
-        });
-      }),
-    });
-  }
-
-  return sectionsTreeNode;
-}
-
 function createLayoutTreeNode(
   graphReferenceResult: SitecoreHarvestResult,
 ): DataTreeNonItemNode | undefined {
   const hasLayoutData =
-    (graphReferenceResult.layoutSectionFields?.length ?? 0) >
-    0;
+    (graphReferenceResult.layoutSectionFields?.length ?? 0) > 0;
 
-  let layoutTreeNode:
-    | DataTreeNonItemNode
-    | undefined = undefined;
+  let layoutTreeNode: DataTreeNonItemNode | undefined = undefined;
 
   if (hasLayoutData) {
-    layoutTreeNode =
-      createLayoutDataTree(graphReferenceResult);
+    layoutTreeNode = createLayoutDataTree(graphReferenceResult);
   }
 
   return layoutTreeNode;
