@@ -6,9 +6,9 @@ import {
   GRAPH_COLLAPSE_KEY,
 } from "../graph-nodes/graph-collapse.types";
 import {
-  createLayoutDataTree,
   createDataTreeNodeId,
 } from "./layout-data-tree-builder";
+import { createLayoutDataTree } from "./data-tree-node-id";
 import {
   createDataTreeItemNode,
   createDataTreeNonItemNode,

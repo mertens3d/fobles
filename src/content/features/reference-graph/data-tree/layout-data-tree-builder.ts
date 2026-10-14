@@ -1,19 +1,18 @@
 // @source-path [fobles] src/content/features/reference-graph/data-tree/layout-data-tree-builder.ts
 
-import {
-  factoryItemGraphNodeData,
-  type ItemGraphNodeData,
-  type LayoutDevice,
-  type LayoutSectionField,
-  type ScControl,
-  type SitecoreHarvestResult,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
 import { CONST } from "../../../../constants/const";
-import { isGuidLike } from "../../augmentor/shared/guid";
-import { extensionLog } from "../../../logger";
+import type {
+  ItemGraphNodeData,
+  LayoutDevice,
+  LayoutSectionField,
+  ScControl,
+} from "../../../sitecore-harvester/sitecore-harvester.types";
 import {
   slugify,
 } from "../reference-graph-helper";
+import {
+  GRAPH_COLLAPSE_KEY,
+} from "../graph-nodes/graph-collapse.types";
 import {
   createDataTreeItemNode,
   createDataTreeNonItemNode,
@@ -27,7 +26,9 @@ import {
   createPlaceholderTreeNodes,
   type PlaceholderTreeNode,
 } from "./placeholder-data-tree-builder";
-import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";
+import {
+  createRenderingDataTreeNode,
+} from "./rendering-data-tree-builder";
 
 export function createDataTreeNodeId(
   ...parts: Array<string | undefined>
@@ -41,45 +42,10 @@ export function createDataTreeNodeId(
     .join("-");
 }
 
-export function createLayoutDataTree(
-  graphReferenceResult: SitecoreHarvestResult,
-): DataTreeNonItemNode {
-  const treeNodeId =
-    CONST.FOBLES.REFERENCE_GRAPH.NODE_ID
-      .MAIN_LAYOUT_BOX_NODE_ID;
-
-  const pageLayoutItemsByDeviceId =
-    createPageLayoutItemsByDeviceId(
-      graphReferenceResult.layoutSectionFields ??
-      [],
-    );
-
-  return createDataTreeNonItemNode({
-    treeNodeId,
-    name: "Layouts",
-    kind:
-      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
-        .STRUCTURAL,
-    collapseKey:
-      GRAPH_COLLAPSE_KEY.LAYOUTS,
-    branch: "layouts",
-    relationshipToParent: "related",
-    children: (
-      graphReferenceResult.layoutSectionFields ??
-      []
-    ).map((layout) =>
-      createLayoutSectionDataTree(
-        layout,
-        pageLayoutItemsByDeviceId,
-      ),
-    ),
-  });
-}
-
-function createPageLayoutItemsByDeviceId(
+export function createPageLayoutItemsByDeviceId(
   layoutSectionFields: LayoutSectionField[],
 ): Map<string, ItemGraphNodeData> {
-  const pageLayoutItemsByDeviceId =
+  const pageLayoutItemsByDeviceId = 
     new Map<string, ItemGraphNodeData>();
 
   layoutSectionFields.forEach(
@@ -112,7 +78,7 @@ function createPageLayoutItemsByDeviceId(
   return pageLayoutItemsByDeviceId;
 }
 
-function createLayoutSectionDataTree(
+export function createLayoutSectionDataTree(
   layout: LayoutSectionField,
   pageLayoutItemsByDeviceId: Map<
     string,
@@ -279,7 +245,7 @@ function createPlaceholderDataTreeNode(
 
   const placeholderName =
     placeholderSegments[
-    placeholderSegments.length - 1
+      placeholderSegments.length - 1
     ] ?? placeholder.path;
 
   const children: DataTreeNode[] = [];
@@ -323,165 +289,5 @@ function createPlaceholderDataTreeNode(
     branch: "layouts",
     relationshipToParent: "related",
     children,
-  });
-}
-
-function createRenderingDataTreeNode(
-  pageLayoutTreeNodeId: string,
-  control: ScControl,
-  controlIndex: number,
-): DataTreeItemNode {
-  const rendering = control.rendering;
-
-  const renderingTreeNodeId =
-    createDataTreeNodeId(
-      pageLayoutTreeNodeId,
-      "rendering",
-      control.uid ??
-      rendering.scItemId ??
-      String(controlIndex),
-    );
-
-  const children: DataTreeNode[] = [];
-
-  if (control.datasource) {
-    children.push(
-      createDatasourceDataTreeNode(
-        renderingTreeNodeId,
-        control.datasource,
-      ),
-    );
-  }
-
-  const parameters = Object.entries(
-    control.parameters,
-  );
-
-  if (parameters.length > 0) {
-    children.push(
-      createRenderingParametersDataTreeNode(
-        renderingTreeNodeId,
-        parameters,
-      ),
-    );
-  }
-
-  return createDataTreeItemNode({
-    treeNodeId: renderingTreeNodeId,
-    scItem: rendering,
-    kind:
-      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
-        .RENDERING,
-    collapseKey:
-      GRAPH_COLLAPSE_KEY.RENDERING,
-    branch: "layouts",
-    relationshipToParent: "related",
-    children,
-  });
-}
-
-function createDatasourceDataTreeNode(
-  renderingTreeNodeId: string,
-  datasource: ItemGraphNodeData,
-): DataTreeItemNode {
-  return createDataTreeItemNode({
-    treeNodeId: createDataTreeNodeId(
-      renderingTreeNodeId,
-      CONST.FOBLES.REFERENCE_GRAPH
-        .LAYOUT_SCOPE.DATASOURCE,
-    ),
-    scItem: datasource,
-    kind:
-      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
-        .DATASOURCE,
-    collapseKey:
-      GRAPH_COLLAPSE_KEY.DATASOURCE,
-    branch: "layouts",
-    relationshipToParent: "related",
-  });
-}
-
-function createRenderingParametersDataTreeNode(
-  renderingTreeNodeId: string,
-  parameters: Array<[string, string]>,
-): DataTreeNonItemNode {
-  return createDataTreeNonItemNode({
-    treeNodeId: createDataTreeNodeId(
-      renderingTreeNodeId,
-      CONST.FOBLES.REFERENCE_GRAPH
-        .LAYOUT_SCOPE.PARAMETERS,
-    ),
-    name: "Rendering Parameters",
-    kind:
-      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
-        .STRUCTURAL,
-    collapseKey:
-      GRAPH_COLLAPSE_KEY
-        .RENDERING_PARAMETERS,
-    branch: "layouts",
-    relationshipToParent: "related",
-    children: parameters.map(
-      ([name, value]) =>
-        createSingleParameterDataTreeNode(
-          name,
-          value,
-          renderingTreeNodeId,
-        ),
-    ),
-  });
-}
-
-function createSingleParameterDataTreeNode(
-  name: string,
-  value: string,
-  renderingTreeNodeId: string,
-): DataTreeNode {
-  const treeNodeId = createDataTreeNodeId(
-    renderingTreeNodeId,
-    CONST.FOBLES.REFERENCE_GRAPH
-      .LAYOUT_SCOPE.PARAMETER,
-    name,
-  );
-
-  const candidateValue =
-    decodeURIComponent(value);
-
-  extensionLog.debug(
-    "Parameter candidate values:",
-    value,
-    candidateValue,
-    isGuidLike(candidateValue),
-  );
-
-  if (isGuidLike(candidateValue)) {
-    return createDataTreeItemNode({
-      treeNodeId,
-      scItem: factoryItemGraphNodeData({
-        scItemId: candidateValue,
-      }),
-      kind:
-        CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
-          .RENDERING_PARAMETER,
-      collapseKey:
-        GRAPH_COLLAPSE_KEY
-          .RENDERING_PARAMETER,
-      branch: "layouts",
-      relationshipToParent: "related",
-    });
-  }
-
-  return createDataTreeNonItemNode({
-    treeNodeId,
-    name: value
-      ? `${name}: ${value}`
-      : name,
-    kind:
-      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
-        .RENDERING_PARAMETER,
-    collapseKey:
-      GRAPH_COLLAPSE_KEY
-        .RENDERING_PARAMETER,
-    branch: "layouts",
-    relationshipToParent: "related",
   });
 }
