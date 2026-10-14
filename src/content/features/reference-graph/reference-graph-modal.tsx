@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/reference-graph-modal.tsx
+// @source-path [fobles] src/content/features/reference-graph/reference-graph-modal.tsx
 
 import { createRoot } from "react-dom/client";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";

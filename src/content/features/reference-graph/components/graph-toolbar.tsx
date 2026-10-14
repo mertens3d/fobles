@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/components/graph-toolbar.tsx
+// @source-path [fobles] src/content/features/reference-graph/components/graph-toolbar.tsx
 
 import type { LayoutGraphPresetName } from "../graph.types";
 import type { SitecoreHarvestFiltersState } from "../../../sitecore-harvester/sitecore-harvester.types";

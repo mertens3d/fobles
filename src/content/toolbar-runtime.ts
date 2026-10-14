@@ -27,7 +27,7 @@ import {
 } from "./toolbar";
 import { applyPowerShellIseTabIdentity } from "./ise-tab-title";
 import { toggleLightningBolt } from "./feature-toggle";
-import { resumeReferenceGraph } from "./toolbar/reference-graph/reference-graph";
+import { resumeReferenceGraph } from "./features/reference-graph/reference-graph";
 
 let foblesUiActive = false;
 let foblesNavPlacement: ToolbarPlacement = DEFAULT_TOOLBAR_PLACEMENT;

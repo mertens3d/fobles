@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/graph-tooltip.ts
+// @source-path [fobles] src/content/features/reference-graph/graph-tooltip.ts
 
 import { type Instance as TippyInstance } from "tippy.js";
 import type { TooltipData } from "./graph-nodes/graph-node.types";

@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/cytoscape/cytoscape-config.ts
+// @source-path [fobles] src/content/features/reference-graph/cytoscape/cytoscape-config.ts
 
 import cytoscapeDagre from "cytoscape-dagre";
 import cytoscapeCoseBilkent from "cytoscape-cose-bilkent";

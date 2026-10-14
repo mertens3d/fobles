@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/event-handlers.ts
+// @source-path [fobles] src/content/features/reference-graph/event-handlers.ts
 
 import { extensionLog } from "../../logger";
 import { hideActiveTooltip, toggleTooltip } from "./graph-tooltip";

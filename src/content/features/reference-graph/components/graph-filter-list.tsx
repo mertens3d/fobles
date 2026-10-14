@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/components/graph-filter-list.tsx
+// @source-path [fobles] src/content/features/reference-graph/components/graph-filter-list.tsx
 
 import { CONST } from "../../../../constants/const";
 import type { SitecoreHarvestFiltersState } from "../../../sitecore-harvester/sitecore-harvester.types";

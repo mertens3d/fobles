@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/reference-graph.ts
+// @source-path [fobles] src/content/features/reference-graph/reference-graph.ts
 
 import { STORAGE } from "../../../constants/constants-b";
 import { extensionLog } from "../../logger";
@@ -18,11 +18,11 @@ import {
   initializeReferenceGraphProgressModal,
   openReferenceGraphProgressModal,
 } from "./build-progress";
-import { getCurrentItemId } from "../jump-flyout/ai-pages";
 import type { PendingReferenceGraph } from "./graph.types";
 import { harvestGraphForLink } from "./harvester";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
+import { getCurrentItemId } from "../../toolbar/jump-flyout/ai-pages";
 
 // Shared by the fast path (harvestAndOpen) and the slow, reload-spanning path - Cancel aborts
 // whichever one is currently in flight; a stale/already-settled controller is harmless to abort.

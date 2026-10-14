@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/graph-filters.ts
+// @source-path [fobles] src/content/features/reference-graph/graph-filters.ts
 
 import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
 

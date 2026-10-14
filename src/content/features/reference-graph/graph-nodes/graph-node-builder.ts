@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/toolbar/reference-graph/graph-nodes/graph-node-builder.ts
+// @source-path [Fobles] src/content/features/reference-graph/graph-nodes/graph-node-builder.ts
 
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";

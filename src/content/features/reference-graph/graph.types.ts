@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/graph.types.ts
+// @source-path [fobles] src/content/features/reference-graph/graph.types.ts
 
 import type cytoscape from "cytoscape";
 import type {

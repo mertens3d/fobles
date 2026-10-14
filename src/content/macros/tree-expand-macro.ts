@@ -2,8 +2,8 @@
 
 import { CONST } from "../../constants/const";
 import { formatFoId, stripGuidBraces } from "../features/augmentor/shared/guid";
-import type { TreeChildNode } from "../toolbar/reference-graph/data-tree/data-tree.types";
-import type { GlyphState } from "../toolbar/reference-graph/graph.types";
+import type { TreeChildNode } from "../features/reference-graph/data-tree/data-tree.types";
+import type { GlyphState } from "../features/reference-graph/graph.types";
 
 export function getGlyphId(itemId: string): string {
   return `${CONST.SITECORE.TREE_ID_PREFIXES.GLYPH}${stripGuidBraces(itemId).replace(/-/g, "").toUpperCase()}`;

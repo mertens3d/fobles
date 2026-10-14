@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/harvester.ts
+// @source-path [fobles] src/content/features/reference-graph/harvester.ts
 
 import { extensionLog } from "../../logger";
 import { harvestSitecoreWithWorkers } from "../../sitecore-harvester/coordinator/foreground-harvest-coordinator";

@@ -2,8 +2,8 @@
 
 import { STORAGE } from "../constants/constants-b";
 import { CONST } from "../constants/const";
-import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../content/toolbar/reference-graph/graph-filters";
-import type {  LayoutGraphPresetName } from "../content/toolbar/reference-graph/graph.types";
+import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../content/features/reference-graph/graph-filters";
+import type {  LayoutGraphPresetName } from "../content/features/reference-graph/graph.types";
 import type { SitecoreHarvestFiltersState } from "../content/sitecore-harvester/sitecore-harvester.types";
 import { getStorageValue, setStorageValue } from "./storage/storage";
 

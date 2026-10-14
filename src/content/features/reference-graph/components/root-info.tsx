@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/components/root-info.tsx
+// @source-path [fobles] src/content/features/reference-graph/components/root-info.tsx
 
 import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
 

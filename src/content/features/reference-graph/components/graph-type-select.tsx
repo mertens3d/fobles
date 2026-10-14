@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/components/graph-type-select.tsx
+// @source-path [fobles] src/content/features/reference-graph/components/graph-type-select.tsx
 
 import { CONST } from "../../../../constants/const";
 import type { LayoutGraphPresetName } from "../graph.types";

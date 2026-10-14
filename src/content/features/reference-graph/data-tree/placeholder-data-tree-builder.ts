@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/data-tree/placeholder-data-tree-builder.ts
+// @source-path [fobles] src/content/features/reference-graph/data-tree/placeholder-data-tree-builder.ts
 
 import type { ScControl } from "../../../sitecore-harvester/sitecore-harvester.types";
 

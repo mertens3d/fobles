@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/build-progress.ts
+// @source-path [fobles] src/content/features/reference-graph/build-progress.ts
 
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";

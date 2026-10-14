@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/graph-nodes/graph-helpers.ts
+// @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-helpers.ts
 
 import { slugify } from "../reference-graph-helper";
 

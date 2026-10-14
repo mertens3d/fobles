@@ -1,6 +1,7 @@
 import type cytoscape from "cytoscape";
 import type { SitecoreHarvestFiltersState } from "../content/sitecore-harvester/sitecore-harvester.types";
-import type { LayoutGraphPresetName } from "../content/toolbar/reference-graph/graph.types";
+//import type { LayoutGraphPresetName } from "../content/features/reference-graph/graph.types";
+import type { LayoutGraphPresetName } from "../content/features/reference-graph/graph.types";
 import type { StepKey } from "../content/sitecore-harvester/sitecore-harvester.types";
 import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE";
 
@@ -27,7 +28,7 @@ export const REFERENCE_GRAPH = {
     } as const,
   },
   WORKER_POOL: {
-    MAX_WORKERS: 4,
+    MAX_WORKERS: 2,
   },
   TEXT: {
     BUILDING_REFERENCE_GRAPH: "Building reference graph...",

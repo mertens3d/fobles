@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/data-tree/data-tree-builder.ts
+// @source-path [fobles] src/content/features/reference-graph/data-tree/data-tree-builder.ts
 
 import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { CONST } from "../../../../constants/const";

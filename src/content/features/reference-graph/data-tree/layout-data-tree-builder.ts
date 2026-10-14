@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/toolbar/reference-graph/data-tree/layout-data-tree-builder.ts
+// @source-path [fobles] src/content/features/reference-graph/data-tree/layout-data-tree-builder.ts
 
 import {
   factoryItemGraphNodeData,
