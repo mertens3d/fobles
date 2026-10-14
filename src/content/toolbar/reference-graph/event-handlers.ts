@@ -3,9 +3,9 @@
 import { extensionLog } from "../../logger";
 import { hideActiveTooltip, toggleTooltip } from "./graph-tooltip";
 import { closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
-import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
-import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
+import type { HarvestForLink } from "./graph.types";
 
 function getEventNode(event: cytoscape.EventObject): cytoscape.NodeSingular {
     return event.target as cytoscape.NodeSingular;
@@ -18,7 +18,7 @@ function getNodeLink(node: cytoscape.NodeSingular): string | undefined {
 
 export function attachGraphEventHandlers(cy: cytoscape.Core,
     container: HTMLElement,
-    harvestForLink: (link: string, filters: SitecoreHarvestFiltersState,) => Promise<SitecoreHarvestResult | undefined>,
+    harvestForLink: HarvestForLink,
     doc: Document,
     getCurrentFilters: () => SitecoreHarvestFiltersState,
     graphHistory: SitecoreHarvestResult[],

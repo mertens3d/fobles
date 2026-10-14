@@ -1,6 +1,5 @@
 // @source-path [fobles] src/content/toolbar/reference-graph/graph-filters.ts
 
-import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
 
 export const DEFAULT_RENDERING_GRAPH_FILTERS_STATE: SitecoreHarvestFiltersState = {
@@ -31,37 +30,6 @@ export function createSingleFilterState(enabledKey: keyof SitecoreHarvestFilters
     sections: enabledKey === "sections",
     template: enabledKey === "template",
   };
-}
-
-export function mergeFilterGraph(currentGraph: SitecoreHarvestResult, partialGraph: SitecoreHarvestResult, filterKey: keyof SitecoreHarvestFiltersState,): SitecoreHarvestResult {
-  const mergedGraph = { ...currentGraph };
-
-  switch (filterKey) {
-    case "parent": mergedGraph.parent = partialGraph.parent;
-      break;
-
-    case "children":
-      mergedGraph.childItems = partialGraph.childItems;
-      break;
-
-    case "layouts":
-      mergedGraph.layoutSectionFields = partialGraph.layoutSectionFields;
-      break;
-
-    case "referrers":
-      mergedGraph.referrers = partialGraph.referrers;
-      break;
-
-    case "sections":
-      mergedGraph.sections = partialGraph.sections;
-      break;
-
-    case "template":
-      break;
-
-  }
-
-  return mergedGraph;
 }
 
 export function getEnabledFilterKeys(filters: SitecoreHarvestFiltersState,): Set<keyof SitecoreHarvestFiltersState> {

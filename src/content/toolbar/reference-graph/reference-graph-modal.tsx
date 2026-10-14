@@ -3,7 +3,6 @@
 import { createRoot } from "react-dom/client";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import type {
-    SitecoreHarvestFiltersState,
     SitecoreHarvestResult,
 } from "../../sitecore-harvester/sitecore-harvester.types";
 import { createCloseButton } from "./close-button";
@@ -11,14 +10,12 @@ import {
     setActiveReferenceGraphDialog,
 } from "./cytoscape/cytoscape-config";
 import { ReferenceGraphApp } from "./reference-graph-app";
+import type { HarvestForLink } from "./graph.types";
 
 export function openReferenceGraphModal(
     doc: Document,
     graph: SitecoreHarvestResult,
-    harvestForLink: (
-        link: string,
-        filters: SitecoreHarvestFiltersState,
-    ) => Promise<SitecoreHarvestResult | undefined>,
+    harvestForLink: HarvestForLink,
 ): void {
     doc.getElementById(
         REFERENCE_GRAPH.DIALOG_ID,

@@ -12,14 +12,22 @@ export const REFERENCE_GRAPH = {
   BACKGROUND_HARVEST: {
     MESSAGE: {
       TYPE: {
-        HARVEST_SITECORE_IN_BACKGROUND_TAB:
-          "HARVEST_SITECORE_IN_BACKGROUND_TAB",
-        SITECORE_HARVEST_PROGRESS: "SITECORE_HARVEST_PROGRESS",
         FOBLES_PERSIST_LOG: "FOBLES_PERSIST_LOG",
-        SITECORE_HARVESTER_READY: "SITECORE_HARVESTER_READY",
-        HARVEST_SITECORE: "HARVEST_SITECORE"
+        // Foreground (any tab) -> service worker: run one WorkerTask on the pool, awaits the result.
+        POOL_RUN_TASK: "POOL_RUN_TASK",
+        // Foreground -> service worker: drop queued/active tasks for a requestId (fire-and-forget).
+        POOL_CANCEL_REQUEST: "POOL_CANCEL_REQUEST",
+        // Worker tab content script -> service worker: announces readiness after every (re)navigation.
+        WORKER_READY: "WORKER_READY",
+        // Service worker -> one specific worker tab: run a single WorkerTask, respond with WorkerTaskResult.
+        WORKER_TASK_EXECUTE: "WORKER_TASK_EXECUTE",
+        // Service worker -> one specific worker tab: best-effort abort of its currently active task.
+        WORKER_TASK_CANCEL: "WORKER_TASK_CANCEL",
       },
     } as const,
+  },
+  WORKER_POOL: {
+    MAX_WORKERS: 4,
   },
   TEXT: {
     BUILDING_REFERENCE_GRAPH: "Building reference graph...",

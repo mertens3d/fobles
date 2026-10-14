@@ -5,8 +5,18 @@
 import { LOGGER, MESSAGE } from "../constants/constants-b";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
 import { extensionLog } from "../content/logger";
-import { harvestSitecoreInBackgroundTab } from "../content/sitecore-harvester/background-tab/sitecore-background-tab-harvester";
-import type { HarvestSitecoreInBackgroundTabMessage, SitecoreHarvestProgressMessage } from "../content/sitecore-harvester/background-tab/sitecore-harvester.messages";
+import {
+  cancelPoolRequest,
+  disposeWorkerPool,
+  handleWorkerReady,
+  handleWorkerTabRemoved,
+  runPoolTask,
+} from "../content/sitecore-harvester/worker-pool/background-worker-pool";
+import type {
+  PoolCancelRequestMessage,
+  PoolRunTaskMessage,
+  WorkerReadyMessage,
+} from "../content/sitecore-harvester/worker-pool/worker.messages";
 import { appendPersistedLogEntry } from "../shared/logging/persisted-log-storage";
 import type { PersistedLogMessage } from "../shared/persisted-log.types";
 
@@ -29,11 +39,25 @@ chrome.commands?.onCommand?.addListener((command: string) => {
   );
 });
 
-type RuntimeMessage = RuntimeReloadMessage | HarvestSitecoreInBackgroundTabMessage | SitecoreHarvestProgressMessage | PersistedLogMessage;
+type RuntimeMessage =
+  | RuntimeReloadMessage
+  | PoolRunTaskMessage
+  | PoolCancelRequestMessage
+  | WorkerReadyMessage
+  | PersistedLogMessage;
 
 interface RuntimeReloadMessage {
   action: string;
 }
+
+chrome.tabs?.onRemoved?.addListener((tabId: number) => {
+  handleWorkerTabRemoved(tabId);
+});
+
+chrome.runtime.onSuspend?.addListener(() => {
+  void disposeWorkerPool();
+});
+
 chrome.runtime.onMessage.addListener(
   (request: RuntimeMessage, sender, sendResponse) => {
     if (
@@ -66,57 +90,32 @@ chrome.runtime.onMessage.addListener(
 
     if (
       "type" in request &&
-      request.type ===
-        REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE
-          .SITECORE_HARVEST_PROGRESS
+      request.type === REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.WORKER_READY
     ) {
-      void chrome.tabs.sendMessage(
-        request.originTabId,
-        request,
-        {
-          frameId: 0,
-        },
-      );
-
+      handleWorkerReady(sender.tab?.id);
       return;
     }
 
     if (
       "type" in request &&
-      request.type ===
-        REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE
-          .HARVEST_SITECORE_IN_BACKGROUND_TAB
+      request.type === REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.POOL_CANCEL_REQUEST
     ) {
-      const originTabId = sender.tab?.id;
+      cancelPoolRequest(request.requestId);
+      return;
+    }
 
-      if (originTabId === undefined) {
-        sendResponse(undefined);
-        return;
-      }
-
-      const backgroundHarvestContext = {
-        url: request.url,
-        filters: request.filters,
-        requestId: request.requestId,
-        originTabId,
-      };
-
-      void harvestSitecoreInBackgroundTab(
-        backgroundHarvestContext,
-      )
+    if (
+      "type" in request &&
+      request.type === REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.POOL_RUN_TASK
+    ) {
+      void runPoolTask(request.task)
         .then((result) => {
-          extensionLog.debug(
-            LOGGER.NAMESPACE,
-            "BACKGROUND GOT HARVEST RESULT",
-            result,
-          );
-
           sendResponse(result);
         })
-        .catch((error) => {
+        .catch((error: unknown) => {
           extensionLog.error(
             LOGGER.NAMESPACE,
-            "Background Sitecore harvest failed",
+            "Worker pool task failed",
             error,
           );
 

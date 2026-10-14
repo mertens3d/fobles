@@ -3,9 +3,9 @@
 /// <reference types="chrome" />
 
 import { extensionLog } from "./logger";
-import { registerSitecoreHarvesterMessageHandler } from "./sitecore-harvester/background-tab/sitecore-harvester-messages";
+import { registerWorkerTabHandler } from "./sitecore-harvester/background-tab/worker-tab-handler";
 import { startToolbarRuntime } from "./toolbar-runtime";
 
 extensionLog.info("Content script loaded. Press Ctrl+Shift+E to toggle.");
-registerSitecoreHarvesterMessageHandler();
+registerWorkerTabHandler();
 startToolbarRuntime();

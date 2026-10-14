@@ -136,9 +136,11 @@ export type HarvestProgressStatus =
 
 export type HarvestProgressCallback = (step: ProgressStep, status: HarvestProgressStatus) => void;
 
-export type BackgroundHarvestContext = {
+// Unified request model: both initial harvest and lazy-filter harvest build one of these and
+// pass it to the same foreground harvest coordinator (harvestSitecoreWithWorkers).
+export type HarvestRequest = {
+  requestId: string;
   url: string;
   filters: SitecoreHarvestFiltersState;
-  requestId: string;
-  originTabId: number;
+  existingResult?: SitecoreHarvestResult;
 };

@@ -24,10 +24,9 @@ import {
     createAllFiltersState,
     createSingleFilterState,
     getEnabledFilterKeys,
-    mergeFilterGraph,
 } from "./graph-filters";
 import { hideActiveTooltip } from "./graph-tooltip";
-import type { LayoutGraphPresetName } from "./graph.types";
+import type { HarvestForLink, LayoutGraphPresetName } from "./graph.types";
 import { extensionLog } from "../../logger";
 import { CONST } from "../../../constants/const";
 import { runGraphLayout } from "./cytoscape/graph-layout";
@@ -37,10 +36,7 @@ import { useReferenceGraph } from "./hooks/use-reference-graph";
 type ReferenceGraphAppProps = {
     doc: Document;
     initialGraph: SitecoreHarvestResult;
-    harvestForLink: (
-        link: string,
-        filters: SitecoreHarvestFiltersState,
-    ) => Promise<SitecoreHarvestResult | undefined>;
+    harvestForLink: HarvestForLink;
 };
 
 export function ReferenceGraphApp({
@@ -218,12 +214,13 @@ export function ReferenceGraphApp({
             void harvestForLink(
                 link,
                 requestedFilters,
-            ).then((partialGraph) => {
+                currentGraphValue,
+            ).then((mergedGraph) => {
                 closeReferenceGraphProgressModal(doc);
 
                 if (
                     cancelled ||
-                    !partialGraph ||
+                    !mergedGraph ||
                     graphState.currentGraphRef.current.rootItem
                         .scItemId !==
                     currentGraphValue.rootItem.scItemId
@@ -236,11 +233,6 @@ export function ReferenceGraphApp({
                     setFilters(revertedFilters);
                     return;
                 }
-                const mergedGraph = mergeFilterGraph(
-                    graphState.currentGraphRef.current,
-                    partialGraph,
-                    key,
-                );
 
                 loadedFilters.add(key);
                 renderGraph(mergedGraph);

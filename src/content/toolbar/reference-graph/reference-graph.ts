@@ -10,7 +10,7 @@ import {
   setScStandardFieldsState,
   type BooleanTripleState,
 } from "../../macros/ribbon-toggle-macro";
-import { harvestSitecore } from "../../sitecore-harvester/harvest-sitecore";
+import { harvestSitecoreWithWorkers } from "../../sitecore-harvester/coordinator/foreground-harvest-coordinator";
 import { openReferenceGraphModal } from "./reference-graph-modal";
 import {
   closeReferenceGraphProgressModal,
@@ -22,16 +22,7 @@ import { getCurrentItemId } from "../jump-flyout/ai-pages";
 import type { PendingReferenceGraph } from "./graph.types";
 import { harvestGraphForLink } from "./harvester";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
-import type {
-  HarvestSitecoreInBackgroundTabMessage,
-  SitecoreHarvestProgressMessage,
-} from "../../sitecore-harvester/background-tab/sitecore-harvester.messages";
-import type {
-  SitecoreHarvestFiltersState,
-  SitecoreHarvestResult,
-} from "../../sitecore-harvester/sitecore-harvester.types";
 import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 
 // Shared by the fast path (harvestAndOpen) and the slow, reload-spanning path - Cancel aborts
 // whichever one is currently in flight; a stale/already-settled controller is harmless to abort.
@@ -57,15 +48,21 @@ async function harvestAndOpen(doc: Document): Promise<void> {
 
   initializeReferenceGraphProgressModal(doc, PROGRESS_STEPS, filters);
 
-  extensionLog.debug("REFERENCE GRAPH: awaiting background harvest");
+  extensionLog.debug("REFERENCE GRAPH: awaiting worker-pool harvest");
 
-  const graph = await harvestInBackgroundTab({
-    doc,
-    url: buildFoblesUrl(itemId),
-    filters,
-  });
+  const graph = await harvestSitecoreWithWorkers(
+    {
+      requestId: crypto.randomUUID(),
+      url: buildFoblesUrl(itemId),
+      filters,
+    },
+    {
+      signal: controller.signal,
+      onProgress: (step, status) => handleHarvestProgress(doc, step, status),
+    },
+  );
 
-  extensionLog.debug("REFERENCE GRAPH: background harvest returned", {
+  extensionLog.debug("REFERENCE GRAPH: worker-pool harvest returned", {
     graph,
     isNull: graph === null,
     isUndefined: graph === undefined,
@@ -82,12 +79,13 @@ async function harvestAndOpen(doc: Document): Promise<void> {
     openReferenceGraphModal(
       doc,
       graph,
-      async (link, filters) =>
+      async (link, filters, existingResult) =>
         await harvestGraphForLink(
           link,
           doc,
           referenceGraphAbortController,
           filters,
+          existingResult,
         ),
     );
   } else {
@@ -151,7 +149,17 @@ async function advancePendingReferenceGraph(
     const controller = new AbortController();
     referenceGraphAbortController = controller;
     const filters = await getReferenceGraphFilters();
-    void harvestSitecore(doc, controller.signal, filters).then(
+    void harvestSitecoreWithWorkers(
+      {
+        requestId: crypto.randomUUID(),
+        url: buildFoblesUrl(pending.itemId),
+        filters,
+      },
+      {
+        signal: controller.signal,
+        onProgress: (step, status) => handleHarvestProgress(doc, step, status),
+      },
+    ).then(
       async (graph) => {
         // Re-read rather than trust the closed-over pending - Cancel may have flagged it while fetches were in flight.
         const latest = readPendingReferenceGraph() ?? pending;
@@ -190,7 +198,8 @@ async function advancePendingReferenceGraph(
     openReferenceGraphModal(
       doc,
       pending.graph,
-      async (link) => await harvestGraphForLink(link, doc, undefined, filters),
+      async (link, _filters, existingResult) =>
+        await harvestGraphForLink(link, doc, undefined, filters, existingResult),
     );
 }
 
@@ -243,59 +252,4 @@ export async function resumeReferenceGraph(doc: Document): Promise<void> {
   if (!pending.cancelled)
     openReferenceGraphProgressModal(doc, () => cancelReferenceGraph(doc));
   await advancePendingReferenceGraph(doc, pending);
-}
-
-type ReferenceGraphBackgroundHarvestContext = {
-  doc: Document;
-  url: string;
-  filters: SitecoreHarvestFiltersState;
-};
-
-async function harvestInBackgroundTab(
-  context: ReferenceGraphBackgroundHarvestContext,
-): Promise<SitecoreHarvestResult | undefined> {
-  const requestId = crypto.randomUUID();
-
-  const progressListener = addProgressListener(requestId, context);
-
-  let result: SitecoreHarvestResult | undefined;
-
-  try {
-    const message: HarvestSitecoreInBackgroundTabMessage = {
-      type:  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.HARVEST_SITECORE_IN_BACKGROUND_TAB,
-      requestId,
-      url: context.url,
-      filters: context.filters,
-    };
-
-    result = await chrome.runtime.sendMessage(message);
-  } finally {
-    chrome.runtime.onMessage.removeListener(progressListener);
-  }
-
-  return result;
-}
-
-function addProgressListener(
-  requestId: string,
-  context: ReferenceGraphBackgroundHarvestContext,
-) {
-  const progressListener = (message: SitecoreHarvestProgressMessage): void => {
-    if (
-      message.type === REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.SITECORE_HARVEST_PROGRESS &&
-      message.requestId === requestId
-    ) {
-      handleHarvestProgress(
-        context.doc,
-        {
-          stepKey: message.stepKey,
-          label: message.label,
-        },
-        message.status,
-      );
-    }
-  };
-
-  chrome.runtime.onMessage.addListener(progressListener);
-  return progressListener;
 }

@@ -1,56 +1,25 @@
-import { buildFoblesUrl } from "../../features/augmentor/helper";
 import { getQuickInfo } from "../../toolbar/jump-flyout/quick-info";
 import { factoryItemGraphNodeData, type ItemGraphNodeData } from "../sitecore-harvester.types";
-export async function enrichItemGraphNodeData(
-    item: ItemGraphNodeData,
-    signal: AbortSignal,
-    includeTemplate: boolean = true,
-): Promise<void> {
-    const itemReference = item.scItemId || item.scItemPath;
 
-    if (!itemReference) {
-        return;
-    }
+export function isItemGraphNodeDataResolved(item: ItemGraphNodeData): boolean {
+    return Boolean(item.scItemId && item.scItemName && item.scItemPath && item.scTemplate);
+}
 
-    item.link ??= buildFoblesUrl(itemReference);
-
-    if (
-        item.scItemId &&
-        item.scItemName &&
-        item.scItemPath &&
-        (!includeTemplate || item.scTemplate)
-    ) {
-        return;
-    }
-
-    const response = await fetch(item.link, {
-        credentials: "same-origin",
-        signal,
-    });
-
-    if (!response.ok) {
-        return;
-    }
-
-    const doc = new DOMParser().parseFromString(
-        await response.text(),
-        "text/html",
-    );
-
+// Pure read of an already-loaded quick-info document - the worker-pool task executor's enrich-item
+// task calls this directly, since its worker tab is already navigated to item.link by the time
+// its task runs (no fetch needed here).
+export function buildItemGraphNodeDataFromDoc(doc: Document): ItemGraphNodeData {
     const quickInfo = getQuickInfo(doc);
 
-    item.scItemId ??= quickInfo.itemId;
-    item.scItemName ??= quickInfo.itemName;
-    item.scItemPath ??= quickInfo.itemPath;
-
-    if (
-        includeTemplate &&
-        !item.scTemplate &&
-        quickInfo.template?.id
-    ) {
-        item.scTemplate = factoryItemGraphNodeData({
-            scItemId: quickInfo.template.id,
-            scItemPath: quickInfo.template.path,
-        });
-    }
+    return factoryItemGraphNodeData({
+        scItemId: quickInfo.itemId,
+        scItemName: quickInfo.itemName,
+        scItemPath: quickInfo.itemPath,
+        scTemplate: quickInfo.template?.id
+            ? factoryItemGraphNodeData({
+                scItemId: quickInfo.template.id,
+                scItemPath: quickInfo.template.path,
+            })
+            : undefined,
+    });
 }

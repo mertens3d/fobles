@@ -18,7 +18,7 @@ import { attachGraphEventHandlers } from "../event-handlers";
 import { buildElements } from "../graph-nodes/graph-elements";
 import { getEnabledFilterKeys } from "../graph-filters";
 import { hideActiveTooltip } from "../graph-tooltip";
-import type { LayoutGraphPresetName } from "../graph.types";
+import type { HarvestForLink, LayoutGraphPresetName } from "../graph.types";
 import { extensionLog } from "../../../logger";
 import { CONST } from "../../../../constants/const";
 
@@ -31,10 +31,7 @@ export type refReturn = { containerRef: MutableRef<HTMLDivElement | null>; }
 type UseCytoscapeOptions = {
     doc: Document;
     initialGraph: SitecoreHarvestResult;
-    harvestForLink: (
-        link: string,
-        filters: SitecoreHarvestFiltersState,
-    ) => Promise<SitecoreHarvestResult | undefined>;
+    harvestForLink: HarvestForLink;
     containerRef: MutableRef<HTMLDivElement | null>;
     cyRef: MutableRef<cytoscape.Core | undefined>;
     currentGraphRef: MutableRef<SitecoreHarvestResult>;
