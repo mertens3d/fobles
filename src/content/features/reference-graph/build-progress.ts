@@ -125,8 +125,11 @@ export function openReferenceGraphProgressModal(
     const dialog = doc.createElement("dialog");
     const reactHost = doc.createElement("div");
 
-    dialog.id = CONST.FOBLES.REFERENCE_GRAPH.PROGRESS_DIALOG_ID;
-    dialog.className = "fobles-reference-graph-progress";
+    dialog.id =
+        CONST.FOBLES.REFERENCE_GRAPH.PROGRESS_DIALOG_ID;
+
+    dialog.className =
+        "fobles-reference-graph-progress";
 
     dialog.appendChild(reactHost);
     doc.body.appendChild(dialog);
@@ -144,11 +147,12 @@ export function openReferenceGraphProgressModal(
         { once: true },
     );
 
-    dialog.addEventListener("click", (event) => {
-        if (event.target === dialog) {
-            progressCancelHandler?.();
-        }
-    });
+    dialog.addEventListener(
+        "cancel",
+        (event) => {
+            event.preventDefault();
+        },
+    );
 
     renderProgressDialog();
     dialog.showModal();

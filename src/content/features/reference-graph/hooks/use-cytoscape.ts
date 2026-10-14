@@ -1,9 +1,12 @@
-import cytoscape from "cytoscape";
+import type cytoscape from "cytoscape";
+import cytoscapeFactory from "cytoscape";
 import { useEffect } from "react";
+import { CONST } from "../../../../constants/const";
 import {
     getReferenceGraphFilters,
     getReferenceGraphLayoutName,
 } from "../../../../shared/reference-graph-settings";
+import { extensionLog } from "../../../logger";
 import type {
     SitecoreHarvestFiltersState,
     SitecoreHarvestResult,
@@ -12,53 +15,93 @@ import {
     closeReferenceGraphProgressModal,
     handleHarvestProgress,
 } from "../build-progress";
-import { REFERENCE_GRAPH_STYLE } from "../cytoscape/cytoscape-style";
-import { runGraphLayout } from "../cytoscape/graph-layout";
-import { attachGraphEventHandlers } from "../event-handlers";
-import { buildElements } from "../graph-nodes/graph-elements";
-import { getEnabledFilterKeys } from "../graph-filters";
-import { hideActiveTooltip } from "../graph-tooltip";
-import type { HarvestForLink, LayoutGraphPresetName } from "../graph.types";
-import { extensionLog } from "../../../logger";
-import { CONST } from "../../../../constants/const";
-import { attachGraphExpandCollapse, detachGraphExpandCollapse, initializeGraphCollapseState, prepareGraphForExpandedLayout } from "../graph-nodes/graph-expand-collapse";
-import { finishReferenceGraphTimer } from "../reference-graph-timing";
+import {
+    REFERENCE_GRAPH_STYLE,
+} from "../cytoscape/cytoscape-style";
+import {
+    runGraphLayout,
+} from "../cytoscape/graph-layout";
+import {
+    attachGraphEventHandlers,
+} from "../event-handlers";
+import {
+    getEnabledFilterKeys,
+} from "../graph-filters";
+import {
+    attachGraphExpandCollapse,
+    detachGraphExpandCollapse,
+    initializeGraphCollapseState,
+    prepareGraphForExpandedLayout,
+} from "../graph-nodes/graph-expand-collapse";
+import {
+    hideActiveTooltip,
+} from "../graph-tooltip";
+import type {
+    HarvestForLink,
+    LayoutGraphPresetName,
+} from "../graph.types";
+import {
+    finishReferenceGraphTimer,
+} from "../reference-graph-timing";
 
 type MutableRef<T> = {
     current: T;
 };
 
-export type refReturn = { containerRef: MutableRef<HTMLDivElement | null>; }
+export type refReturn = {
+    containerRef:
+        MutableRef<HTMLDivElement | null>;
+};
 
 type UseCytoscapeOptions = {
     doc: Document;
     initialGraph: SitecoreHarvestResult;
+    initialElements:
+        cytoscape.ElementDefinition[];
     harvestForLink: HarvestForLink;
-    containerRef: MutableRef<HTMLDivElement | null>;
-    cyRef: MutableRef<cytoscape.Core | undefined>;
-    currentGraphRef: MutableRef<SitecoreHarvestResult>;
-    currentFiltersRef: MutableRef<SitecoreHarvestFiltersState>;
-    layoutPresetNameRef: MutableRef<LayoutGraphPresetName>;
-    graphHistoryRef: MutableRef<SitecoreHarvestResult[]>;
+    containerRef:
+        MutableRef<HTMLDivElement | null>;
+    cyRef:
+        MutableRef<cytoscape.Core | undefined>;
+    currentGraphRef:
+        MutableRef<SitecoreHarvestResult>;
+    currentFiltersRef:
+        MutableRef<SitecoreHarvestFiltersState>;
+    layoutPresetNameRef:
+        MutableRef<LayoutGraphPresetName>;
+    graphHistoryRef:
+        MutableRef<SitecoreHarvestResult[]>;
     loadedFiltersByItemIdRef: MutableRef<
-        Map<string, Set<keyof SitecoreHarvestFiltersState>>
+        Map<
+            string,
+            Set<
+                keyof SitecoreHarvestFiltersState
+            >
+        >
     >;
-    renderGraph: (graph: SitecoreHarvestResult) => void;
+    renderGraph: (
+        graph: SitecoreHarvestResult,
+    ) => void;
     setCurrentFilters: (
-        filters: SitecoreHarvestFiltersState,
+        filters:
+            SitecoreHarvestFiltersState,
     ) => void;
     setLayoutPresetName: (
         name: LayoutGraphPresetName,
     ) => void;
-    setHistoryCount: (count: number) => void;
+    setHistoryCount: (
+        count: number,
+    ) => void;
     setBuildElapsedSeconds: (
-        elapsedSeconds: number | undefined,
+        elapsedSeconds:
+            number | undefined,
     ) => void;
 };
 
 export function useCytoscape({
     doc,
     initialGraph,
+    initialElements,
     harvestForLink,
     containerRef,
     cyRef,
@@ -74,173 +117,197 @@ export function useCytoscape({
     setBuildElapsedSeconds,
 }: UseCytoscapeOptions): void {
     useEffect(() => {
-        const container = containerRef.current;
+        const container =
+            containerRef.current;
 
-        let cy: cytoscape.Core | undefined;
+        let cy:
+            | cytoscape.Core
+            | undefined = undefined;
+
         let disposed = false;
-        let firstAnimationFrameId: number | undefined;
-        let secondAnimationFrameId: number | undefined;
 
-        const initialize = async (): Promise<void> => {
-            if (!container) {
-                return;
-            }
+        let firstAnimationFrameId:
+            | number
+            | undefined = undefined;
 
-            handleHarvestProgress(
-                doc,
-                {
-                    stepKey: "build-graph",
-                    label: "Building Graph",
-                },
-                "active",
-            );
+        let secondAnimationFrameId:
+            | number
+            | undefined = undefined;
 
-            const [
-                savedFilters,
-                savedLayoutPresetName,
-            ] = await Promise.all([
-                getReferenceGraphFilters(),
-                getReferenceGraphLayoutName(),
-            ]);
+        const initialize =
+            async (): Promise<void> => {
+                if (container) {
+                    handleHarvestProgress(
+                        doc,
+                        {
+                            stepKey:
+                                "build-graph",
+                            label:
+                                "Building Graph",
+                        },
+                        "active",
+                    );
 
-            if (!disposed) {
-                const layoutPresetName =
-                    savedLayoutPresetName &&
-                        savedLayoutPresetName in
-                        CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS
-                        ? savedLayoutPresetName
-                        : CONST.FOBLES.REFERENCE_GRAPH
-                            .DEFAULT_LAYOUT_PRESET_NAME;
-
-                currentFiltersRef.current =
-                    savedFilters;
-
-                layoutPresetNameRef.current =
-                    layoutPresetName;
-
-                setCurrentFilters(
-                    savedFilters,
-                );
-
-                setLayoutPresetName(
-                    layoutPresetName,
-                );
-
-                loadedFiltersByItemIdRef.current.set(
-                    initialGraph.rootItem.scItemId,
-                    getEnabledFilterKeys(
+                    const [
                         savedFilters,
-                    ),
-                );
+                        savedLayoutPresetName,
+                    ] = await Promise.all([
+                        getReferenceGraphFilters(),
+                        getReferenceGraphLayoutName(),
+                    ]);
 
-                const initialElements =
-                    buildElements(initialGraph);
+                    if (!disposed) {
+                        const layoutPresetName =
+                            savedLayoutPresetName &&
+                            savedLayoutPresetName in
+                                CONST.FOBLES
+                                    .REFERENCE_GRAPH
+                                    .LAYOUT_PRESETS
+                                ? savedLayoutPresetName
+                                : CONST.FOBLES
+                                    .REFERENCE_GRAPH
+                                    .DEFAULT_LAYOUT_PRESET_NAME;
 
-                cy = cytoscape({
-                    container,
-                    elements: initialElements,
-                    layout: {
-                        name: "preset",
-                    },
-                    minZoom: 0.2,
-                    maxZoom: 3,
-                    style: REFERENCE_GRAPH_STYLE,
-                });
+                        currentFiltersRef.current =
+                            savedFilters;
 
-                cyRef.current = cy;
-                currentGraphRef.current =
-                    initialGraph;
+                        layoutPresetNameRef.current =
+                            layoutPresetName;
 
-                attachGraphEventHandlers(
-                    cy,
-                    container,
-                    harvestForLink,
-                    doc,
-                    () =>
-                        currentFiltersRef.current,
-                    graphHistoryRef.current,
-                    () =>
-                        currentGraphRef.current,
-                    renderGraph,
-                    setHistoryCount,
-                );
+                        setCurrentFilters(
+                            savedFilters,
+                        );
 
-                await attachGraphExpandCollapse(
-                    cy,
-                    container,
-                    () =>
-                        currentFiltersRef.current,
-                    () =>
-                        layoutPresetNameRef.current,
-                );
+                        setLayoutPresetName(
+                            layoutPresetName,
+                        );
 
-                if (!disposed) {
-                    firstAnimationFrameId =
-                        requestAnimationFrame(() => {
-                            secondAnimationFrameId =
-                                requestAnimationFrame(() => {
-                                    if (
-                                        !disposed &&
-                                        cy
-                                    ) {
-                                        cy.resize();
+                        loadedFiltersByItemIdRef
+                            .current
+                            .set(
+                                initialGraph
+                                    .rootItem
+                                    .scItemId,
+                                getEnabledFilterKeys(
+                                    savedFilters,
+                                ),
+                            );
 
-                                        prepareGraphForExpandedLayout(
-                                            cy,
-                                        );
+                        cy =
+                            cytoscapeFactory({
+                                container,
+                                elements:
+                                    initialElements,
+                                layout: {
+                                    name:
+                                        "preset",
+                                },
+                                minZoom: 0.2,
+                                maxZoom: 3,
+                                style:
+                                    REFERENCE_GRAPH_STYLE,
+                            });
 
-                                        runGraphLayout(
-                                            cy,
-                                            layoutPresetNameRef.current,
-                                            () => {
-                                                if (
-                                                    !disposed &&
-                                                    cy
-                                                ) {
-                                                    initializeGraphCollapseState(
-                                                        cy,
-                                                    );
+                        cyRef.current = cy;
 
-                                                    const elapsedSeconds =
-                                                        finishReferenceGraphTimer();
+                        currentGraphRef.current =
+                            initialGraph;
 
-                                                    setBuildElapsedSeconds(
-                                                        elapsedSeconds,
-                                                    );
+                        attachGraphEventHandlers(
+                            cy,
+                            container,
+                            harvestForLink,
+                            doc,
+                            () =>
+                                currentFiltersRef.current,
+                            graphHistoryRef.current,
+                            () =>
+                                currentGraphRef.current,
+                            renderGraph,
+                            setHistoryCount,
+                        );
 
-                                                    handleHarvestProgress(
-                                                        doc,
-                                                        {
-                                                            stepKey:
-                                                                "build-graph",
-                                                            label:
-                                                                "Building Graph",
-                                                        },
-                                                        "complete",
-                                                    );
+                        await attachGraphExpandCollapse(
+                            cy,
+                            container,
+                            () =>
+                                currentFiltersRef.current,
+                            () =>
+                                layoutPresetNameRef.current,
+                        );
 
-                                                    closeReferenceGraphProgressModal(
-                                                        doc,
-                                                    );
+                        if (!disposed) {
+                            firstAnimationFrameId =
+                                requestAnimationFrame(
+                                    () => {
+                                        secondAnimationFrameId =
+                                            requestAnimationFrame(
+                                                () => {
+                                                    if (
+                                                        !disposed &&
+                                                        cy
+                                                    ) {
+                                                        cy.resize();
 
-                                                    extensionLog.debug(
-                                                        "Reference graph ready",
-                                                        {
-                                                            nodeCount:
-                                                                cy.nodes()
-                                                                    .length,
-                                                            elapsedSeconds,
-                                                        },
-                                                    );
-                                                }
-                                            },
-                                        );
-                                    }
-                                });
-                        });
+                                                        prepareGraphForExpandedLayout(
+                                                            cy,
+                                                        );
+
+                                                        runGraphLayout(
+                                                            cy,
+                                                            layoutPresetNameRef.current,
+                                                            () => {
+                                                                if (
+                                                                    !disposed &&
+                                                                    cy
+                                                                ) {
+                                                                    initializeGraphCollapseState(
+                                                                        cy,
+                                                                    );
+
+                                                                    const elapsedSeconds =
+                                                                        finishReferenceGraphTimer();
+
+                                                                    setBuildElapsedSeconds(
+                                                                        elapsedSeconds,
+                                                                    );
+
+                                                                    handleHarvestProgress(
+                                                                        doc,
+                                                                        {
+                                                                            stepKey:
+                                                                                "build-graph",
+                                                                            label:
+                                                                                "Building Graph",
+                                                                        },
+                                                                        "complete",
+                                                                    );
+
+                                                                    closeReferenceGraphProgressModal(
+                                                                        doc,
+                                                                    );
+
+                                                                    extensionLog.debug(
+                                                                        "Reference graph ready",
+                                                                        {
+                                                                            nodeCount:
+                                                                                cy.nodes()
+                                                                                    .length,
+                                                                            elapsedSeconds,
+                                                                        },
+                                                                    );
+                                                                }
+                                                            },
+                                                        );
+                                                    }
+                                                },
+                                            );
+                                    },
+                                );
+                        }
+                    }
                 }
-            }
-        };
+            };
 
         void initialize();
 
@@ -285,6 +352,7 @@ export function useCytoscape({
         doc,
         graphHistoryRef,
         harvestForLink,
+        initialElements,
         initialGraph,
         layoutPresetNameRef,
         loadedFiltersByItemIdRef,

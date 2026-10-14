@@ -2,7 +2,7 @@
 
 import { buildFoblesUrl } from "../../features/augmentor/helper";
 import { isItemGraphNodeDataResolved } from "../enrichment/item-enricher";
-import type { ItemGraphNodeData, SitecoreHarvestResult } from "../sitecore-harvester.types";
+import type { ItemGraphNodeData } from "../sitecore-harvester.types";
 import type { EnrichItemTask } from "../worker-pool/worker-task.types";
 
 function lookupKeyFor(item: ItemGraphNodeData): string | undefined {
@@ -54,13 +54,11 @@ function collectRecursive(
   }
 }
 
-// Groups every discovered ItemGraphNodeData reference by stable lookup identity (scItemId or
-// scItemPath, case-insensitively), regardless of where in SitecoreHarvestResult it lives.
 export function collectItemGraphNodeDataGroups(
-  result: SitecoreHarvestResult,
+  value: unknown,
 ): Map<string, ItemGraphNodeData[]> {
   const groups = new Map<string, ItemGraphNodeData[]>();
-  collectRecursive(result, groups, new WeakSet<object>());
+  collectRecursive(value, groups, new WeakSet<object>());
   return groups;
 }
 

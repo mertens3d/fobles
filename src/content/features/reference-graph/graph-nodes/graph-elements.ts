@@ -1,19 +1,72 @@
+// @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-elements.ts
+
 import type cytoscape from "cytoscape";
-import { createDataTree } from "../data-tree/data-tree-builder";
-import { appendGraphNode } from "./graph-node-builder";
-import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { extensionLog } from "../../../logger";
+import type {
+  HarvestProgressCallback,
+  SitecoreHarvestResult,
+} from "../../../sitecore-harvester/sitecore-harvester.types";
+import {
+  createDataTree,
+} from "../data-tree/data-tree-builder";
+import {
+  enrichDataTree,
+} from "../data-tree/data-tree-enricher";
+import {
+  appendGraphNode,
+} from "./graph-node-builder";
 
-export function buildElements(
+type BuildElementsOptions = {
+  signal?: AbortSignal;
+  onProgress?: HarvestProgressCallback;
+};
+
+export async function buildElements(
   graphReferenceResult: SitecoreHarvestResult,
-): cytoscape.ElementDefinition[] {
-  const dataTree = createDataTree(graphReferenceResult);
-  extensionLog.debug("[Fobles] dataTree: ", dataTree);
+  {
+    signal,
+    onProgress,
+  }: BuildElementsOptions = {},
+): Promise<cytoscape.ElementDefinition[]> {
+  const dataTree =
+    createDataTree(
+      graphReferenceResult,
+    );
 
-  const cytoNodes: cytoscape.ElementDefinition[] = [];
-  const cytoEdges: cytoscape.ElementDefinition[] = [];
+  await enrichDataTree(
+    dataTree,
+    {
+      signal,
+      onProgress,
+    },
+  );
 
-  appendGraphNode(dataTree, cytoNodes, cytoEdges);
+  const cytoNodes:
+    cytoscape.ElementDefinition[] = [];
 
-  return [...cytoNodes, ...cytoEdges];
+  const cytoEdges:
+    cytoscape.ElementDefinition[] = [];
+
+  if (!signal?.aborted) {
+    appendGraphNode(
+      dataTree,
+      cytoNodes,
+      cytoEdges,
+    );
+
+    extensionLog.debug(
+      "Reference graph: data tree projected",
+      {
+        nodeCount:
+          cytoNodes.length,
+        edgeCount:
+          cytoEdges.length,
+      },
+    );
+  }
+
+  return [
+    ...cytoNodes,
+    ...cytoEdges,
+  ];
 }

@@ -3,6 +3,8 @@
 import { STORAGE } from "../../../constants/extension-constants";
 import { extensionLog } from "../../logger";
 import { buildFoblesUrl } from "../../features/augmentor/helper";
+import type cytoscape from "cytoscape";
+import { buildElements } from "./graph-nodes/graph-elements";
 import {
   getScRawValuesState,
   getScStandardFieldsState,
@@ -68,55 +70,67 @@ async function harvestAndOpen(
           {
             requestId:
               crypto.randomUUID(),
-            url: buildFoblesUrl(
-              itemId,
-            ),
+            url:
+              buildFoblesUrl(
+                itemId,
+              ),
             filters,
           },
           {
             signal:
               controller.signal,
-            onProgress: (
-              step,
-              status,
-            ) =>
-              handleHarvestProgress(
-                doc,
+            onProgress:
+              (
                 step,
                 status,
-              ),
+              ) => {
+                handleHarvestProgress(
+                  doc,
+                  step,
+                  status,
+                );
+              },
           },
         );
 
-      extensionLog.debug(
-        "REFERENCE GRAPH: worker-pool harvest returned",
-        {
-          graph,
-          isNull:
-            graph === null,
-          isUndefined:
-            graph === undefined,
-        },
-      );
-
-      extensionLog.debug(
-        "REFERENCE GRAPH: post-harvest",
-        {
-          aborted:
-            controller.signal
-              .aborted,
-          hasGraph:
-            Boolean(graph),
-        },
-      );
+      let initialElements:
+        | cytoscape.ElementDefinition[]
+        | undefined = undefined;
 
       if (
         !controller.signal.aborted &&
         graph
       ) {
+        initialElements =
+          await buildElements(
+            graph,
+            {
+              signal:
+                controller.signal,
+              onProgress:
+                (
+                  step,
+                  status,
+                ) => {
+                  handleHarvestProgress(
+                    doc,
+                    step,
+                    status,
+                  );
+                },
+            },
+          );
+      }
+
+      if (
+        !controller.signal.aborted &&
+        graph &&
+        initialElements
+      ) {
         openReferenceGraphModal(
           doc,
           graph,
+          initialElements,
           async (
             link,
             graphFilters,
@@ -136,13 +150,15 @@ async function harvestAndOpen(
         );
 
         extensionLog.warn(
-          "REFERENCE GRAPH: harvest did not produce a graph",
+          "REFERENCE GRAPH: harvest did not produce a prepared graph",
           {
             aborted:
               controller.signal
                 .aborted,
             hasGraph:
               Boolean(graph),
+            hasInitialElements:
+              Boolean(initialElements),
           },
         );
       }
@@ -152,11 +168,12 @@ async function harvestAndOpen(
       );
 
       extensionLog.error(
-        "REFERENCE GRAPH: harvest failed",
+        "REFERENCE GRAPH: harvest or graph preparation failed",
         {
           itemId,
           aborted:
-            controller.signal.aborted,
+            controller.signal
+              .aborted,
           error,
         },
       );
@@ -267,18 +284,42 @@ async function advancePendingReferenceGraph(
     await setScRawValuesState(doc, pending.restoreRawValues);
     return;
   }
-
   clearPendingReferenceGraph();
-  closeReferenceGraphProgressModal(doc);
+
   const filters = await getReferenceGraphFilters();
-  if (pending.graph)
+
+  if (pending.graph) {
+    const initialElements = await buildElements(
+      pending.graph,
+      {
+        onProgress: (step, status) =>
+          handleHarvestProgress(doc, step, status),
+      },
+    );
+
+    closeReferenceGraphProgressModal(doc);
+
     openReferenceGraphModal(
       doc,
       pending.graph,
+      initialElements,
       async (link, _filters, existingResult) =>
-        await harvestGraphForLink(link, doc, undefined, filters, existingResult),
+        await harvestGraphForLink(
+          link,
+          doc,
+          undefined,
+          filters,
+          existingResult,
+        ),
     );
+   } else {
+    closeReferenceGraphProgressModal(
+      doc,
+    );
+  }
 }
+
+
 export async function openReferenceGraph(
   doc: Document,
 ): Promise<void> {

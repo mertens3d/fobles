@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/sitecore-harvester/enrichment/item-enricher.ts
+
 import { getQuickInfo } from "../../toolbar/jump-flyout/quick-info";
 import { factoryItemGraphNodeData, type ItemGraphNodeData } from "../sitecore-harvester.types";
 

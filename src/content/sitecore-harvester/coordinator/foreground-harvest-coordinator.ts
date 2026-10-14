@@ -71,43 +71,6 @@ async function dispatchTasks(
   );
 }
 
-async function enrichResult(
-  requestId: string,
-  result: SitecoreHarvestResult,
-  onProgress: HarvestProgressCallback | undefined,
-): Promise<void> {
-  const groups = collectItemGraphNodeDataGroups(result);
-  const tasks = buildEnrichItemTasks(requestId, groups);
-
-  onProgress?.({ stepKey: "enrichment", label: `Enriching Items (0/${tasks.length})` }, "active");
-
-  let completed = 0;
-
-  await Promise.all(
-    tasks.map(async (task) => {
-      const response = await runWorkerTask(task);
-      completed += 1;
-
-      onProgress?.(
-        { stepKey: "enrichment", label: `Enriching Items (${completed}/${tasks.length})` },
-        "active",
-      );
-
-      if (response?.status === "success" && response.type === "enrich-item") {
-        const lookupKey = (task.lookup.scItemId || task.lookup.scItemPath)?.toLowerCase();
-        if (lookupKey) {
-          mergeEnrichedItem(groups, lookupKey, response.payload.item);
-        }
-      } else if (response?.status === "error") {
-        extensionLog.warn("Reference graph: enrichment task failed", { task, response });
-      }
-    }),
-  );
-
-  extensionLog.debug("ENRICHED SITECORE HARVEST RESULT", result);
-
-  onProgress?.({ stepKey: "enrichment", label: "Enriching Items" }, "complete");
-}
 
 // Single public entry point for both initial harvest and lazy-filter harvest (and reroot, which
 // is just an initial harvest at a different url). The foreground owns the authoritative
@@ -157,8 +120,6 @@ export async function harvestSitecoreWithWorkers(
     if (signal?.aborted) {
       return undefined;
     }
-
-    await enrichResult(request.requestId, result, onProgress);
   } finally {
     signal?.removeEventListener("abort", abortListener);
   }
