@@ -30,6 +30,7 @@ export function factoryItemGraphNodeData(
     link: undefined,
     scItemPath: undefined,
     scTemplate: undefined,
+    rawMarkup: undefined,
     ...overrides,
   };
 }
@@ -41,6 +42,9 @@ export type ItemGraphNodeData = {
   link: string | undefined;
   scItemPath: string | undefined;
   scTemplate: ItemGraphNodeData | undefined;
+  // Diagnostics only: the raw quick-info/anchor markup that was scraped+parsed to produce this
+  // item's fields above. Never read by business logic - inspect-only.
+  rawMarkup: string | undefined;
 };
 
 export type RootItem = ItemGraphNodeData & {
@@ -85,6 +89,8 @@ export type SitecoreHarvestSection = {
 export type LayoutSectionField = {
   name: string | undefined;
   devices: LayoutDevice[];
+  // Diagnostics only: the raw Renderings/Final renderings field XML this was parsed from.
+  rawMarkup: string | undefined;
 };
 
 export type ScControl = {
@@ -104,6 +110,8 @@ export type SitecoreHarvestField = {
   // markup as a list of other items - e.g. treelist-ex's Insert options - so each one can render
   // as its own clickable node instead of being flattened into `value`.
   links: readonly HarvestFieldLink[];
+  // Diagnostics only: the raw field-marker outerHTML this label/value/links were parsed from.
+  rawMarkup: string | undefined;
 };
 
 export type LayoutDevice = {

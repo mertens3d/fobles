@@ -2,6 +2,7 @@
 
 import type { ItemGraphNodeData } from "../../../sitecore-harvester/sitecore-harvester.types";
 import type { GraphCollapseKey } from "../graph-nodes/graph-collapse.types";
+import type { DataTreeProvenance } from "./data-tree-provenance.types";
 import type {
   DataTreeBranch,
   DataTreeItemNode,
@@ -14,6 +15,7 @@ type DataTreeNodeOptions = {
   treeNodeId: string;
   kind: DataTreeNode["kind"];
   collapseKey: GraphCollapseKey;
+  provenance: DataTreeProvenance;
   branch?: DataTreeBranch;
   relationshipToParent: RelationshipToParent;
   reverse?: boolean;
@@ -34,6 +36,7 @@ export function createDataTreeItemNode({
   treeNodeId,
   kind,
   collapseKey,
+  provenance,
   branch,
   relationshipToParent,
   reverse,
@@ -46,6 +49,7 @@ export function createDataTreeItemNode({
     scItem,
     kind,
     collapseKey,
+    provenance,
     branch,
     relationshipToParent,
     reverse,
@@ -57,6 +61,7 @@ export function createDataTreeNonItemNode({
   treeNodeId,
   kind,
   collapseKey,
+  provenance,
   branch,
   relationshipToParent,
   reverse,
@@ -69,6 +74,7 @@ export function createDataTreeNonItemNode({
     name,
     kind,
     collapseKey,
+    provenance,
     branch,
     relationshipToParent,
     reverse,

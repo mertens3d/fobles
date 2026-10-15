@@ -44,7 +44,7 @@ const collectSectionFields = (section: SitecoreHarvestSection, caption: HTMLElem
 
 const getSectionField = (marker: HTMLElement): SitecoreHarvestField => {
   
-  const sectionField: SitecoreHarvestField = { label: "", value: "" , links: [] };
+  const sectionField: SitecoreHarvestField = { label: "", value: "" , links: [], rawMarkup: marker.outerHTML };
   sectionField.label = extractFieldLabel(marker);
   if (sectionField.label && !isHandledElsewhere(sectionField.label)) {
 

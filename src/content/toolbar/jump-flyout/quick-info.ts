@@ -12,6 +12,9 @@ export const getQuickInfo = (
         itemPath: undefined,
         template: undefined,
         itemName: undefined,
+        rawMarkup: Array.from(quickInfoTables)
+            .map((table) => table.outerHTML)
+            .join("\n") || undefined,
     }
 
     for (const table of quickInfoTables) {

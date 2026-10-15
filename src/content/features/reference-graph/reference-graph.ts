@@ -1,6 +1,5 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph.ts
 
-import type cytoscape from "cytoscape";
 import { buildFoblesUrl } from "../augmentor/helper";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { extensionLog } from "../../logger";
@@ -18,7 +17,7 @@ import {
   initializeReferenceGraphProgressModal,
   openReferenceGraphProgressModal,
 } from "./build-progress";
-import { buildGraphElements } from "./graph-nodes/graph-elements";
+import { prepareReferenceGraph } from "./prepared-reference-graph";
 import { harvestGraphForLink } from "./harvester";
 import {
   advancePendingReferenceGraph,
@@ -69,11 +68,10 @@ async function harvestAndOpen(doc: Document): Promise<void> {
         },
       );
 
-      let initialElements: cytoscape.ElementDefinition[] | undefined =
-        undefined;
+      let preparedGraph: Awaited<ReturnType<typeof prepareReferenceGraph>>;
 
       if (!controller.signal.aborted && graph) {
-        initialElements = await buildGraphElements(graph, {
+        preparedGraph = await prepareReferenceGraph(graph, {
           signal: controller.signal,
           onProgress: (step, status) => {
             handleHarvestProgress(doc, step, status);
@@ -81,11 +79,10 @@ async function harvestAndOpen(doc: Document): Promise<void> {
         });
       }
 
-      if (!controller.signal.aborted && graph && initialElements) {
+      if (!controller.signal.aborted && preparedGraph) {
         openReferenceGraphModal(
           doc,
-          graph,
-          initialElements,
+          preparedGraph,
           async (link, graphFilters, existingResult) =>
             await harvestGraphForLink(
               link,
@@ -103,7 +100,7 @@ async function harvestAndOpen(doc: Document): Promise<void> {
           {
             aborted: controller.signal.aborted,
             hasGraph: Boolean(graph),
-            hasInitialElements: Boolean(initialElements),
+            hasPreparedGraph: Boolean(preparedGraph),
           },
         );
       }

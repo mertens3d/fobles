@@ -110,6 +110,7 @@ export function mergeEnrichedItem(
     item.scItemName ??= enriched.scItemName;
     item.scItemPath ??= enriched.scItemPath;
     item.scTemplate ??= enriched.scTemplate;
+    item.rawMarkup ??= enriched.rawMarkup;
 
     const itemReference = item.scItemId || item.scItemPath;
     if (itemReference) {

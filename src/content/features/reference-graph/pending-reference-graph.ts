@@ -16,7 +16,7 @@ import {
   closeReferenceGraphProgressModal,
   handleHarvestProgress,
 } from "./build-progress";
-import { buildGraphElements } from "./graph-nodes/graph-elements";
+import { prepareReferenceGraph } from "./prepared-reference-graph";
 import type { PendingReferenceGraph } from "./graph.types";
 import { harvestGraphForLink } from "./harvester";
 import { openReferenceGraphModal } from "./reference-graph-modal";
@@ -171,25 +171,26 @@ export async function advancePendingReferenceGraph(
   const filters = await getReferenceGraphFilters();
 
   if (pending.graph) {
-    const initialElements = await buildGraphElements(pending.graph, {
+    const preparedGraph = await prepareReferenceGraph(pending.graph, {
       onProgress: (step, status) => handleHarvestProgress(doc, step, status),
     });
 
     closeReferenceGraphProgressModal(doc);
 
-    openReferenceGraphModal(
-      doc,
-      pending.graph,
-      initialElements,
-      async (link, _filters, existingResult) =>
-        await harvestGraphForLink(
-          link,
-          doc,
-          undefined,
-          filters,
-          existingResult,
-        ),
-    );
+    if (preparedGraph) {
+      openReferenceGraphModal(
+        doc,
+        preparedGraph,
+        async (link, _filters, existingResult) =>
+          await harvestGraphForLink(
+            link,
+            doc,
+            undefined,
+            filters,
+            existingResult,
+          ),
+      );
+    }
   } else {
     closeReferenceGraphProgressModal(doc);
   }

@@ -5,6 +5,13 @@ import { CONST } from "../../../../constants/const";
 import type {
   SitecoreHarvestFiltersState,
 } from "../../../sitecore-harvester/sitecore-harvester.types";
+import {
+  DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS,
+  type GraphParameterVisibilitySettings,
+} from "../graph-parameter-visibility-settings";
+import {
+  GRAPH_COLLAPSE_KEY,
+} from "./graph-collapse.types";
 
 export type ExpandCollapseButtonController = {
   collapsedTreeNodeIds: Set<string>;
@@ -12,6 +19,19 @@ export type ExpandCollapseButtonController = {
     Map<string, HTMLButtonElement>;
   overlay: HTMLDivElement;
 };
+
+const PARAMETER_VISIBILITY_SCRATCH_KEY =
+  "_foblesParameterVisibilitySettings";
+
+export function setGraphParameterVisibility(
+  cy: cytoscape.Core,
+  settings: GraphParameterVisibilitySettings,
+): void {
+  cy.scratch(
+    PARAMETER_VISIBILITY_SCRATCH_KEY,
+    settings,
+  );
+}
 
 export function createExpandCollapseOverlay(
   container: HTMLElement,
@@ -170,7 +190,7 @@ function createExpandCollapseButton(
       onToggle(
         treeNodeId,
         event.ctrlKey ||
-        event.metaKey,
+          event.metaKey,
       );
     },
   );
@@ -191,7 +211,7 @@ export function positionExpandCollapseControls(
       if (
         node.empty() ||
         node.style("display") ===
-        "none"
+          "none"
       ) {
         button.style.display = "none";
       } else {
@@ -202,8 +222,10 @@ export function positionExpandCollapseControls(
           });
 
         button.style.display = "block";
+
         button.style.left =
           `${bounds.x2 - 7}px`;
+
         button.style.top =
           `${bounds.y1 - 7}px`;
       }
@@ -218,24 +240,40 @@ export function applyGraphVisibility(
   filters:
     SitecoreHarvestFiltersState,
 ): void {
+  const parameterVisibilitySettings =
+    readGraphParameterVisibility(
+      cy,
+    );
+
+  const filteredTreeNodeIds =
+    collectFilteredTreeNodeIds(
+      cy,
+      filters,
+      parameterVisibilitySettings,
+    );
+
+  collectEmptyRenderingParameterContainerIds(
+    cy,
+    filteredTreeNodeIds,
+  ).forEach((treeNodeId) => {
+    filteredTreeNodeIds.add(
+      treeNodeId,
+    );
+  });
+
   const hiddenTreeNodeIds =
     collectCollapsedDescendantIds(
       cy,
       collapsedTreeNodeIds,
     );
 
-  cy.nodes().forEach((node) => {
-    if (
-      isNodeHiddenByFilter(
-        node,
-        filters,
-      )
-    ) {
+  filteredTreeNodeIds.forEach(
+    (treeNodeId) => {
       hiddenTreeNodeIds.add(
-        node.id(),
+        treeNodeId,
       );
-    }
-  });
+    },
+  );
 
   cy.nodes().forEach((node) => {
     node.style(
@@ -267,6 +305,158 @@ export function applyGraphVisibility(
         : "element",
     );
   });
+}
+
+function collectFilteredTreeNodeIds(
+  cy: cytoscape.Core,
+  filters:
+    SitecoreHarvestFiltersState,
+  parameterVisibilitySettings:
+    GraphParameterVisibilitySettings,
+): Set<string> {
+  const filteredTreeNodeIds =
+    new Set<string>();
+
+  cy.nodes().forEach((node) => {
+    if (
+      isNodeHiddenByFilter(
+        node,
+        filters,
+      ) ||
+      isNodeHiddenByParameterVisibility(
+        node,
+        parameterVisibilitySettings,
+      )
+    ) {
+      filteredTreeNodeIds.add(
+        node.id(),
+      );
+    }
+  });
+
+  return filteredTreeNodeIds;
+}
+
+function collectEmptyRenderingParameterContainerIds(
+  cy: cytoscape.Core,
+  filteredTreeNodeIds:
+    ReadonlySet<string>,
+): Set<string> {
+  const emptyContainerTreeNodeIds =
+    new Set<string>();
+
+  cy.nodes().forEach((node) => {
+    const collapseKey: unknown =
+      node.data("collapseKey");
+
+    if (
+      collapseKey ===
+      GRAPH_COLLAPSE_KEY.RENDERING_PARAMETERS
+    ) {
+      const childTreeNodeIds =
+        readChildTreeNodeIds(
+          node,
+        );
+
+      const hasVisibleChild =
+        childTreeNodeIds.some(
+          (childTreeNodeId) =>
+            !filteredTreeNodeIds.has(
+              childTreeNodeId,
+            ),
+        );
+
+      if (!hasVisibleChild) {
+        emptyContainerTreeNodeIds.add(
+          node.id(),
+        );
+      }
+    }
+  });
+
+  return emptyContainerTreeNodeIds;
+}
+
+function readGraphParameterVisibility(
+  cy: cytoscape.Core,
+): GraphParameterVisibilitySettings {
+  const storedValue: unknown =
+    cy.scratch(
+      PARAMETER_VISIBILITY_SCRATCH_KEY,
+    );
+
+  let settings =
+    DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS;
+
+  if (
+    storedValue &&
+    typeof storedValue === "object"
+  ) {
+    const candidate =
+      storedValue as Partial<
+        GraphParameterVisibilitySettings
+      >;
+
+    if (
+      typeof candidate.hideEmptyParameters ===
+        "boolean" &&
+      typeof candidate.hideNonGuidParameters ===
+        "boolean"
+    ) {
+      settings = {
+        hideEmptyParameters:
+          candidate.hideEmptyParameters,
+        hideNonGuidParameters:
+          candidate.hideNonGuidParameters,
+      };
+    }
+  }
+
+  return settings;
+}
+
+function isNodeHiddenByParameterVisibility(
+  node: cytoscape.NodeSingular,
+  settings:
+    GraphParameterVisibilitySettings,
+): boolean {
+  const parameterIsItemReference:
+    unknown =
+    node.data(
+      "renderingParameterIsItemReference",
+    );
+
+  const parameterValue:
+    unknown =
+    node.data(
+      "renderingParameterValue",
+    );
+
+  const isRenderingParameter =
+    typeof parameterIsItemReference ===
+      "boolean" ||
+    typeof parameterValue === "string";
+
+  let hidden = false;
+
+  if (isRenderingParameter) {
+    if (
+      settings.hideEmptyParameters &&
+      typeof parameterValue === "string" &&
+      parameterValue.trim().length === 0
+    ) {
+      hidden = true;
+    }
+
+    if (
+      settings.hideNonGuidParameters &&
+      parameterIsItemReference === false
+    ) {
+      hidden = true;
+    }
+  }
+
+  return hidden;
 }
 
 function isNodeHiddenByFilter(
@@ -355,13 +545,15 @@ export function readChildTreeNodeIds(
   const value: unknown =
     node.data("childTreeNodeIds");
 
-  let childTreeNodeIds: string[] = [];
+  let childTreeNodeIds:
+    string[] = [];
 
   if (Array.isArray(value)) {
-    childTreeNodeIds = value.filter(
-      (entry): entry is string =>
-        typeof entry === "string",
-    );
+    childTreeNodeIds =
+      value.filter(
+        (entry): entry is string =>
+          typeof entry === "string",
+      );
   }
 
   return childTreeNodeIds;

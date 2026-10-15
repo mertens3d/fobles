@@ -28,7 +28,7 @@ export async function enrichDataTree(
     signal,
     onProgress,
   }: EnrichDataTreeOptions = {},
-): Promise<void> {
+): Promise<DataTreeNode> {
   const requestId =
     crypto.randomUUID();
 
@@ -147,4 +147,6 @@ export async function enrichDataTree(
       abortListener,
     );
   }
+
+  return dataTree;
 }

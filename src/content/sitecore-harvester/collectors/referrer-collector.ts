@@ -65,6 +65,7 @@ export async function collectReferrers(
               link: undefined,
               scItemPath: path,
               scTemplate: undefined,
+              rawMarkup: anchor.outerHTML,
             };
           })
           .filter(

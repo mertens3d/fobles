@@ -1,20 +1,17 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph-modal.tsx
 
-import type cytoscape from "cytoscape";
 import { createRoot } from "react-dom/client";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import { disposeBackgroundWorkerPool } from "../../sitecore-harvester/worker-pool/worker-pool-client";
 import { closeReferenceGraphProgressModal } from "./build-progress";
-import { createCloseButton } from "./close-button";
-import { setActiveReferenceGraphDialog } from "./cytoscape/cytoscape-config";
 import type { HarvestForLink } from "./graph.types";
+import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 import { ReferenceGraphApp } from "./reference-graph-app";
+import { createCloseButton } from "./close-button";
 
 export function openReferenceGraphModal(
   doc: Document,
-  graph: SitecoreHarvestResult,
-  initialElements: cytoscape.ElementDefinition[],
+  preparedGraph: PreparedReferenceGraph,
   harvestForLink: HarvestForLink,
 ): void {
   doc.getElementById(REFERENCE_GRAPH.DIALOG_ID)?.remove();
@@ -37,14 +34,10 @@ export function openReferenceGraphModal(
 
   doc.body.appendChild(dialog);
 
-  setActiveReferenceGraphDialog(dialog);
-
   dialog.addEventListener("close", () => {
     closeReferenceGraphProgressModal(doc);
 
     appRoot.unmount();
-
-    setActiveReferenceGraphDialog(undefined);
 
     void disposeBackgroundWorkerPool();
 
@@ -56,8 +49,7 @@ export function openReferenceGraphModal(
   appRoot.render(
     <ReferenceGraphApp
       doc={doc}
-      initialGraph={graph}
-      initialElements={initialElements}
+      initialPreparedGraph={preparedGraph}
       harvestForLink={harvestForLink}
     />,
   );

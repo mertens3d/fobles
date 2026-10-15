@@ -10,6 +10,10 @@ import {
   createDataTreeNonItemNode,
 } from "./data-tree-node-factory";
 import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";
+import {
+  createSitecoreItemProvenance,
+  createSyntheticProvenance,
+} from "./data-tree-provenance.types";
 import type {
   DataTreeNode,
   DataTreeNonItemNode,
@@ -46,6 +50,7 @@ export function createSectionsTreeNode(
         kind:
           CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
             .STRUCTURAL,
+        provenance: createSyntheticProvenance("Sections"),
         collapseKey:
           GRAPH_COLLAPSE_KEY.SECTIONS,
         branch: "sections",
@@ -80,6 +85,7 @@ function mapSections(
         kind:
           CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
             .SECTION,
+        provenance: { type: "section", section },
         collapseKey:
           GRAPH_COLLAPSE_KEY.SECTION,
         branch: "sections",
@@ -113,6 +119,12 @@ function mapSectionFields(
         kind:
           CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
             .FIELD,
+        provenance: {
+          type: "section-field",
+          fieldName: field.label,
+          fieldValue: field.value ?? "",
+          field,
+        },
         collapseKey:
           GRAPH_COLLAPSE_KEY.FIELD,
         branch: "sections",
@@ -141,6 +153,7 @@ function mapFieldLinks(
         kind:
           CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
             .FIELD,
+        provenance: createSitecoreItemProvenance(fieldLink.valueItem),
         collapseKey:
           GRAPH_COLLAPSE_KEY.FIELD,
         branch: "sections",

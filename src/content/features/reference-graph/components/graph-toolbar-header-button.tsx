@@ -1,4 +1,3 @@
-
 export function GraphToolBarHeaderButton({ controlsExpanded, onControlsExpandedChange }: { controlsExpanded: boolean; onControlsExpandedChange: (expanded: boolean) => void; }) {
   return (<button
     type="button"

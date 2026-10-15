@@ -27,6 +27,7 @@ const processLayoutFieldValue = (
     const layoutSectionField: LayoutSectionField = {
         name: layoutName,
         devices: [],
+        rawMarkup: sectionFieldHtml?.value,
     };
 
     const xml = sectionFieldHtml?.value;

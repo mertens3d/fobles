@@ -20,14 +20,14 @@ export async function changeReferenceGraphFilter(
 
     setFilters(updatedFilters);
 
-    const currentGraph = graphState.currentGraphRef.current;
+    const currentHarvestedData = graphState.currentPreparedGraphRef.current.harvestedData;
 
     const loadedFilters = graphState.loadedFiltersByItemIdRef.current.get(
-        currentGraph.rootItem.scItemId
+        currentHarvestedData.rootItem.scItemId
     ) ?? new Set<keyof SitecoreHarvestFiltersState>();
 
     graphState.loadedFiltersByItemIdRef.current.set(
-        currentGraph.rootItem.scItemId,
+        currentHarvestedData.rootItem.scItemId,
         loadedFilters
     );
 
@@ -40,8 +40,8 @@ export async function changeReferenceGraphFilter(
             refreshGraphExpandCollapse(cy);
         }
     } else {
-        const link = currentGraph.rootItem.link ??
-            buildFoblesUrl(currentGraph.rootItem.scItemId);
+        const link = currentHarvestedData.rootItem.link ??
+            buildFoblesUrl(currentHarvestedData.rootItem.scItemId);
 
         const requestedFilters = createSingleFilterState(key);
 
@@ -63,11 +63,11 @@ export async function changeReferenceGraphFilter(
         const mergedGraph = await harvestForLink(
             link,
             requestedFilters,
-            currentGraph
+            currentHarvestedData
         );
 
-        const graphChanged = graphState.currentGraphRef.current.rootItem.scItemId !==
-            currentGraph.rootItem.scItemId;
+        const graphChanged = graphState.currentPreparedGraphRef.current.harvestedData.rootItem.scItemId !==
+            currentHarvestedData.rootItem.scItemId;
 
         if (cancelled || !mergedGraph || graphChanged) {
             setFilters({

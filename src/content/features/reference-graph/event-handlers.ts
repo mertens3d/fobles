@@ -1,11 +1,11 @@
 // @source-path [fobles] src/content/features/reference-graph/event-handlers.ts
 
 import { extensionLog } from "../../logger";
-import { hideActiveTooltip, toggleTooltip } from "./graph-tooltip";
 import { closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
 import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
 import type { HarvestForLink } from "./graph.types";
+import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 
 function getEventNode(event: cytoscape.EventObject): cytoscape.NodeSingular {
     return event.target as cytoscape.NodeSingular;
@@ -21,10 +21,11 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
     harvestForLink: HarvestForLink,
     doc: Document,
     getCurrentFilters: () => SitecoreHarvestFiltersState,
-    graphHistory: SitecoreHarvestResult[],
-    getCurrentGraph: () => SitecoreHarvestResult,
+    graphHistory: PreparedReferenceGraph[],
+    getCurrentPreparedGraph: () => PreparedReferenceGraph,
     onGraphChange: (graph: SitecoreHarvestResult) => Promise<void>,
     onHistoryChange: (count: number) => void,
+    onNodeSelect: (treeNodeId: string | undefined) => void,
 ): void {
     cy.on("mouseover", "node", (event: cytoscape.EventObject) => {
         const node = getEventNode(event);
@@ -34,11 +35,9 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
         container.style.cursor = "default";
     });
 
-    // Click vs double-click on the same node both fire "tap" (twice, for a double-click) before
-    // cytoscape's own "dbltap" also fires - a short pending timer tells them apart: a second tap
-    // arriving before it elapses cancels the single-click (tooltip) action in favor of "dbltap"'s
-    // navigate action below, same debounce technique used for any click/dblclick disambiguation.
-    let pendingTapTimeout: ReturnType<typeof setTimeout> | null = null;
+    // Selection has no visible artifact to suppress (unlike the old tooltip-toggle), so a
+    // double-click's leading "tap" selecting the node right before "dbltap" re-roots it is
+    // harmless - no debounce needed to tell single- from double-click apart anymore.
     cy.on("tap", "node", (event) => {
         const node = getEventNode(event);
         const link = getNodeLink(node);
@@ -49,33 +48,19 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
             if (link) window.open(link, "_blank", "noopener,noreferrer");
             return;
         }
-        if (!link) return;
 
-        if (pendingTapTimeout) {
-            clearTimeout(pendingTapTimeout);
-            pendingTapTimeout = null;
-            return;
-        }
-        pendingTapTimeout = setTimeout(() => {
-            pendingTapTimeout = null;
-            toggleTooltip(node);
-        }, 250);
+        onNodeSelect(node.id());
     });
 
-    // Tapping the empty canvas (not a node) dismisses whichever tooltip is still open.
+    // Tapping the empty canvas (not a node) clears the current selection.
     cy.on("tap", (event) => {
-        if (event.target === cy) hideActiveTooltip();
+        if (event.target === cy) onNodeSelect(undefined);
     });
 
     cy.on("dbltap", "node", (event) => {
-        if (pendingTapTimeout) {
-            clearTimeout(pendingTapTimeout);
-            pendingTapTimeout = null;
-        }
         const node = getEventNode(event);
         const link = getNodeLink(node);
         if (!link) return;
-        hideActiveTooltip();
 
         extensionLog.debug("Reference graph: re-rooting at clicked node", { link });
         let cancelled = false;
@@ -97,7 +82,7 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
 
             if (cancelled || !newGraph) return;
 
-            graphHistory.push(getCurrentGraph());
+            graphHistory.push(getCurrentPreparedGraph());
             onHistoryChange(graphHistory.length);
             void onGraphChange(newGraph);
         });

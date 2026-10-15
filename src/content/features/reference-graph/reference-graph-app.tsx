@@ -2,93 +2,197 @@
 
 import type cytoscape from "cytoscape";
 import { useRef } from "react";
-import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
-import { TreeDataViewer } from "./components/TreeDataViewerProps";
 import { GraphToolbar } from "./components/graph-toolbar";
-import type { HarvestForLink } from "./graph.types";
-import { useCytoscape } from "./hooks/use-cytoscape";
-import { useReferenceGraph } from "./hooks/use-reference-graph";
-import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
+import { NodeDetailsPanel } from "./components/node-details-panel";
+import { TreeDataViewer } from "./components/TreeDataViewerProps";
+import type {
+  HarvestForLink,
+} from "./graph.types";
+import {
+  useCytoscape,
+} from "./hooks/use-cytoscape";
+import {
+  useReferenceGraph,
+} from "./hooks/use-reference-graph";
+import {
+  useReferenceGraphActions,
+} from "./hooks/use-reference-graph-actions";
+import type {
+  PreparedReferenceGraph,
+} from "./prepared-reference-graph.types";
 
 type ReferenceGraphAppProps = {
   doc: Document;
-  initialGraph: SitecoreHarvestResult;
-  initialElements: cytoscape.ElementDefinition[];
-  harvestForLink: HarvestForLink;
+  initialPreparedGraph:
+    PreparedReferenceGraph;
+  harvestForLink:
+    HarvestForLink;
 };
 
 export function ReferenceGraphApp({
   doc,
-  initialGraph,
-  initialElements,
+  initialPreparedGraph,
   harvestForLink,
 }: ReferenceGraphAppProps) {
-  const containerRef = useRef<HTMLDivElement | null>(null);
+  const containerRef =
+    useRef<HTMLDivElement | null>(
+      null,
+    );
 
-  const cyRef = useRef<cytoscape.Core | undefined>(undefined);
+  const cyRef =
+    useRef<
+      cytoscape.Core | undefined
+    >(undefined);
 
-  const graphState = useReferenceGraph({ initialGraph });
+  const graphState =
+    useReferenceGraph({
+      initialPreparedGraph,
+    });
 
   const {
     handleBack,
     handleClearFilters,
     handleControlsExpandedChange,
     handleFilterChange,
+    handleParameterVisibilityChange,
     handleLayoutChange,
     handleRelayout,
     renderGraph,
     handleViewTreeData,
     handleCloseTreeData,
-  } = useReferenceGraphActions({
-    doc,
-    harvestForLink,
-    cyRef,
-    graphState,
-  });
+  } =
+    useReferenceGraphActions({
+      doc,
+      harvestForLink,
+      cyRef,
+      graphState,
+    });
 
   useCytoscape({
     doc,
-    initialGraph,
-    initialElements,
+    initialPreparedGraph,
     harvestForLink,
     containerRef,
     cyRef,
-    currentGraphRef: graphState.currentGraphRef,
-    currentFiltersRef: graphState.currentFiltersRef,
-    layoutPresetNameRef: graphState.layoutPresetNameRef,
-    graphHistoryRef: graphState.graphHistoryRef,
-    loadedFiltersByItemIdRef: graphState.loadedFiltersByItemIdRef,
+    currentPreparedGraphRef:
+      graphState
+        .currentPreparedGraphRef,
+    currentFiltersRef:
+      graphState
+        .currentFiltersRef,
+    parameterVisibilitySettingsRef:
+      graphState
+        .parameterVisibilitySettingsRef,
+    layoutPresetNameRef:
+      graphState
+        .layoutPresetNameRef,
+    graphHistoryRef:
+      graphState
+        .graphHistoryRef,
+    loadedFiltersByItemIdRef:
+      graphState
+        .loadedFiltersByItemIdRef,
     renderGraph,
-    setCurrentFilters: graphState.setCurrentFilters,
-    setLayoutPresetName: graphState.setLayoutPresetName,
-    setHistoryCount: graphState.setHistoryCount,
-    setBuildElapsedSeconds: graphState.setBuildElapsedSeconds,
+    setCurrentFilters:
+      graphState
+        .setCurrentFilters,
+    setParameterVisibilitySettings:
+      graphState
+        .setParameterVisibilitySettings,
+    setLayoutPresetName:
+      graphState
+        .setLayoutPresetName,
+    setHistoryCount:
+      graphState
+        .setHistoryCount,
+    setBuildElapsedSeconds:
+      graphState
+        .setBuildElapsedSeconds,
+    setSelectedTreeNodeId:
+      graphState
+        .setSelectedTreeNodeId,
   });
 
   return (
     <>
       {graphState.treeDataVisible && (
         <TreeDataViewer
-          data={graphState.currentGraph}
-          onClose={handleCloseTreeData}
+          data={
+            graphState
+              .currentPreparedGraph
+              .dataTree
+          }
+          onClose={
+            handleCloseTreeData
+          }
         />
       )}
 
       <GraphToolbar
-        graph={graphState.currentGraph}
-        layoutPresetName={graphState.layoutPresetName}
-        onLayoutChange={handleLayoutChange}
-        onRelayout={handleRelayout}
-        canGoBack={graphState.historyCount > 0}
+        graph={
+          graphState
+            .currentPreparedGraph
+            .harvestedData
+        }
+        layoutPresetName={
+          graphState
+            .layoutPresetName
+        }
+        onLayoutChange={
+          handleLayoutChange
+        }
+        onRelayout={
+          handleRelayout
+        }
+        canGoBack={
+          graphState.historyCount >
+          0
+        }
         onBack={handleBack}
-        filters={graphState.currentFilters}
-        onFilterChange={handleFilterChange}
-        onClearFilters={handleClearFilters}
+        filters={
+          graphState
+            .currentFilters
+        }
+        onFilterChange={
+          handleFilterChange
+        }
+        parameterVisibilitySettings={
+          graphState
+            .parameterVisibilitySettings
+        }
+        onParameterVisibilityChange={
+          handleParameterVisibilityChange
+        }
+        onClearFilters={
+          handleClearFilters
+        }
         cy={cyRef.current}
-        controlsExpanded={graphState.controlsExpanded}
-        onControlsExpandedChange={handleControlsExpandedChange}
-        buildElapsedSeconds={graphState.buildElapsedSeconds}
-        onViewTreeData={handleViewTreeData}
+        controlsExpanded={
+          graphState
+            .controlsExpanded
+        }
+        onControlsExpandedChange={
+          handleControlsExpandedChange
+        }
+        buildElapsedSeconds={
+          graphState
+            .buildElapsedSeconds
+        }
+        onViewTreeData={
+          handleViewTreeData
+        }
+      />
+
+      <NodeDetailsPanel
+        selectedTreeNodeId={
+          graphState
+            .selectedTreeNodeId
+        }
+        nodesById={
+          graphState
+            .currentPreparedGraph
+            .nodesById
+        }
       />
 
       <div

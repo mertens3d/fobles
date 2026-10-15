@@ -1,16 +1,29 @@
 // @source-path [Fobles] src/content/features/reference-graph/hooks/use-reference-graph.ts
 
-import { useRef, useState } from "react";
+import {
+  useRef,
+  useState,
+} from "react";
+import { CONST } from "../../../../constants/const";
 import type {
   SitecoreHarvestFiltersState,
-  SitecoreHarvestResult,
 } from "../../../sitecore-harvester/sitecore-harvester.types";
-import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../graph-filters";
-import type { LayoutGraphPresetName } from "../graph.types";
-import { CONST } from "../../../../constants/const";
+import {
+  DEFAULT_RENDERING_GRAPH_FILTERS_STATE,
+} from "../graph-filters";
+import {
+  DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS,
+  type GraphParameterVisibilitySettings,
+} from "../graph-parameter-visibility-settings";
+import type {
+  LayoutGraphPresetName,
+} from "../graph.types";
+import type {
+  PreparedReferenceGraph,
+} from "../prepared-reference-graph.types";
 
 type UseReferenceGraphOptions = {
-  initialGraph: SitecoreHarvestResult;
+  initialPreparedGraph: PreparedReferenceGraph;
 };
 
 type MutableRef<T> = {
@@ -18,95 +31,189 @@ type MutableRef<T> = {
 };
 
 export type GraphState = {
-  currentGraph: SitecoreHarvestResult;
-  setCurrentGraph: React.Dispatch<React.SetStateAction<SitecoreHarvestResult>>;
-  currentGraphRef: MutableRef<SitecoreHarvestResult>;
+  currentPreparedGraph: PreparedReferenceGraph;
+  setCurrentPreparedGraph: React.Dispatch<
+    React.SetStateAction<PreparedReferenceGraph>
+  >;
+  currentPreparedGraphRef:
+    MutableRef<PreparedReferenceGraph>;
 
   currentFilters: SitecoreHarvestFiltersState;
   setCurrentFilters: React.Dispatch<
     React.SetStateAction<SitecoreHarvestFiltersState>
   >;
-  currentFiltersRef: MutableRef<SitecoreHarvestFiltersState>;
+  currentFiltersRef:
+    MutableRef<SitecoreHarvestFiltersState>;
+
+  parameterVisibilitySettings:
+    GraphParameterVisibilitySettings;
+  setParameterVisibilitySettings: React.Dispatch<
+    React.SetStateAction<GraphParameterVisibilitySettings>
+  >;
+  parameterVisibilitySettingsRef:
+    MutableRef<GraphParameterVisibilitySettings>;
 
   layoutPresetName: LayoutGraphPresetName;
   setLayoutPresetName: React.Dispatch<
     React.SetStateAction<LayoutGraphPresetName>
   >;
-  layoutPresetNameRef: MutableRef<LayoutGraphPresetName>;
+  layoutPresetNameRef:
+    MutableRef<LayoutGraphPresetName>;
 
   historyCount: number;
-  setHistoryCount: React.Dispatch<React.SetStateAction<number>>;
-  graphHistoryRef: MutableRef<SitecoreHarvestResult[]>;
-
-  loadedFiltersByItemIdRef: MutableRef<
-    Map<string, Set<keyof SitecoreHarvestFiltersState>>
+  setHistoryCount: React.Dispatch<
+    React.SetStateAction<number>
   >;
 
-  buildElapsedSeconds: number | undefined;
+  graphHistoryRef:
+    MutableRef<PreparedReferenceGraph[]>;
+
+  loadedFiltersByItemIdRef:
+    MutableRef<
+      Map<
+        string,
+        Set<keyof SitecoreHarvestFiltersState>
+      >
+    >;
+
+  buildElapsedSeconds:
+    number | undefined;
   setBuildElapsedSeconds: React.Dispatch<
     React.SetStateAction<number | undefined>
   >;
 
   controlsExpanded: boolean;
-  setControlsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
+  setControlsExpanded: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
 
   treeDataVisible: boolean;
-  setTreeDataVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setTreeDataVisible: React.Dispatch<
+    React.SetStateAction<boolean>
+  >;
+
+  selectedTreeNodeId:
+    string | undefined;
+  setSelectedTreeNodeId: React.Dispatch<
+    React.SetStateAction<string | undefined>
+  >;
 };
 
 export function useReferenceGraph({
-  initialGraph,
+  initialPreparedGraph,
 }: UseReferenceGraphOptions): GraphState {
-  const [currentGraph, setCurrentGraph] = useState(initialGraph);
+  const [
+    currentPreparedGraph,
+    setCurrentPreparedGraph,
+  ] = useState(initialPreparedGraph);
 
-  const currentGraphRef: MutableRef<SitecoreHarvestResult> =
-    useRef(initialGraph);
+  const currentPreparedGraphRef:
+    MutableRef<PreparedReferenceGraph> =
+    useRef(initialPreparedGraph);
 
-  const [treeDataVisible, setTreeDataVisible] = useState(false);
+  const [
+    treeDataVisible,
+    setTreeDataVisible,
+  ] = useState(false);
 
-  const [currentFilters, setCurrentFilters] =
+  const [
+    selectedTreeNodeId,
+    setSelectedTreeNodeId,
+  ] = useState<string | undefined>(
+    undefined,
+  );
+
+  const [
+    currentFilters,
+    setCurrentFilters,
+  ] =
     useState<SitecoreHarvestFiltersState>(
       DEFAULT_RENDERING_GRAPH_FILTERS_STATE,
     );
 
-  const currentFiltersRef: MutableRef<SitecoreHarvestFiltersState> = useRef(
-    DEFAULT_RENDERING_GRAPH_FILTERS_STATE,
-  );
+  const currentFiltersRef:
+    MutableRef<SitecoreHarvestFiltersState> =
+    useRef(
+      DEFAULT_RENDERING_GRAPH_FILTERS_STATE,
+    );
 
-  const [layoutPresetName, setLayoutPresetName] =
+  const [
+    parameterVisibilitySettings,
+    setParameterVisibilitySettings,
+  ] =
+    useState<GraphParameterVisibilitySettings>({
+      ...DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS,
+    });
+
+  const parameterVisibilitySettingsRef:
+    MutableRef<GraphParameterVisibilitySettings> =
+    useRef({
+      ...DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS,
+    });
+
+  const [
+    layoutPresetName,
+    setLayoutPresetName,
+  ] =
     useState<LayoutGraphPresetName>(
-      CONST.FOBLES.REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME,
+      CONST.FOBLES.REFERENCE_GRAPH
+        .DEFAULT_LAYOUT_PRESET_NAME,
     );
 
-  const layoutPresetNameRef: MutableRef<LayoutGraphPresetName> =
+  const layoutPresetNameRef:
+    MutableRef<LayoutGraphPresetName> =
     useRef<LayoutGraphPresetName>(
-      CONST.FOBLES.REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME,
+      CONST.FOBLES.REFERENCE_GRAPH
+        .DEFAULT_LAYOUT_PRESET_NAME,
     );
 
-  const [historyCount, setHistoryCount] = useState(0);
+  const [
+    historyCount,
+    setHistoryCount,
+  ] = useState(0);
 
-  const graphHistoryRef: MutableRef<SitecoreHarvestResult[]> = useRef<
-    SitecoreHarvestResult[]
-  >([]);
+  const graphHistoryRef:
+    MutableRef<PreparedReferenceGraph[]> =
+    useRef<PreparedReferenceGraph[]>([]);
 
-  const loadedFiltersByItemIdRef: MutableRef<
-    Map<string, Set<keyof SitecoreHarvestFiltersState>>
-  > = useRef(new Map<string, Set<keyof SitecoreHarvestFiltersState>>());
+  const loadedFiltersByItemIdRef:
+    MutableRef<
+      Map<
+        string,
+        Set<keyof SitecoreHarvestFiltersState>
+      >
+    > =
+    useRef(
+      new Map<
+        string,
+        Set<keyof SitecoreHarvestFiltersState>
+      >(),
+    );
 
-  const [buildElapsedSeconds, setBuildElapsedSeconds] = useState<
+  const [
+    buildElapsedSeconds,
+    setBuildElapsedSeconds,
+  ] = useState<
     number | undefined
   >(undefined);
 
-  const [controlsExpanded, setControlsExpanded] = useState(true);
+  const [
+    controlsExpanded,
+    setControlsExpanded,
+  ] = useState(true);
 
   return {
-    currentGraph,
-    setCurrentGraph,
-    currentGraphRef,
+    currentPreparedGraph,
+    setCurrentPreparedGraph,
+    currentPreparedGraphRef,
 
     currentFilters,
     setCurrentFilters,
     currentFiltersRef,
+
+    parameterVisibilitySettings,
+    setParameterVisibilitySettings,
+    parameterVisibilitySettingsRef,
 
     layoutPresetName,
     setLayoutPresetName,
@@ -115,7 +222,6 @@ export function useReferenceGraph({
     historyCount,
     setHistoryCount,
     graphHistoryRef,
-
     loadedFiltersByItemIdRef,
 
     buildElapsedSeconds,
@@ -126,5 +232,8 @@ export function useReferenceGraph({
 
     treeDataVisible,
     setTreeDataVisible,
+
+    selectedTreeNodeId,
+    setSelectedTreeNodeId,
   };
 }

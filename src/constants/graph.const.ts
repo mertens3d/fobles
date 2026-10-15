@@ -68,26 +68,6 @@ export const REFERENCE_GRAPH = {
     PLACEHOLDER: "Placeholder",
   } as const,
   NODE_KIND: _REFERENCE_GRAPH_BASE.NODE_KIND,
-  KIND_COLORS: {
-    // One distinct color per kind instead of the old flat "dashed = satellite" look - a structural
-    // (non-identity) container cue, like the Section compound box's dashed border below, still
-    // layers on top of this independently.
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.ITEM]: "#2f6fed",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.DEVICE]: "#5a6b80",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.CONTROL]: "#1f9d55",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.DATASOURCE]: "#c9820f",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.VARIANT]: "#8a3fd6",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.TEMPLATE]: "#0f9aa0",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.LAYOUTS]: "#9a5b1f",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.SECTION]: "#555566",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.PARENT]: "#b8860b",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.CHILD]: "#d1428a",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.REFERRER]: "#d13f3f",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.FIELD]: "#7a7a7a",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.PAGE_LAYOUT]: "#3a6a6a",
-    [_REFERENCE_GRAPH_BASE.NODE_KIND.RENDERING_PARAMETER]: "#6a3a6a",
-  } satisfies Record<string, string>,
-  STRUCTURAL_COLOR: "#8a97a8", // Device/Shared Layout/Final Layout wrapper nodes
   DEFAULT_LAYOUT_PRESET_NAME: "dagre" as LayoutGraphPresetName,
   FILTER_DEFS: [
     {

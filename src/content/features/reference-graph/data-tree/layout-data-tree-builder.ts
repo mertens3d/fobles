@@ -17,6 +17,10 @@ import {
   createDataTreeItemNode,
   createDataTreeNonItemNode,
 } from "./data-tree-node-factory";
+import {
+  createSitecoreItemProvenance,
+  createSyntheticProvenance,
+} from "./data-tree-provenance.types";
 import type {
   DataTreeItemNode,
   DataTreeNode,
@@ -97,6 +101,9 @@ export function createLayoutSectionDataTree(
     kind:
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
         .STRUCTURAL,
+    provenance: layout.rawMarkup
+      ? { type: "layout-xml", label: layout.name ?? "Layout", rawMarkup: layout.rawMarkup }
+      : createSyntheticProvenance(layout.name ?? "Layout"),
     collapseKey:
       GRAPH_COLLAPSE_KEY.LAYOUT_SECTION,
     branch: "layouts",
@@ -162,6 +169,7 @@ function createDeviceDataTreeNode(
     kind:
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
         .DEVICE,
+    provenance: { type: "layout-device", device },
     collapseKey:
       GRAPH_COLLAPSE_KEY.DEVICE,
     branch: "layouts",
@@ -186,6 +194,7 @@ function createMissingPageLayoutDataTreeNode(
     kind:
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
         .PAGE_LAYOUT,
+    provenance: createSyntheticProvenance("Page Layout (does not exist)"),
     collapseKey:
       GRAPH_COLLAPSE_KEY.PAGE_LAYOUT,
     branch: "layouts",
@@ -228,6 +237,7 @@ function createPageLayoutDataTreeNode(
     kind:
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
         .PAGE_LAYOUT,
+    provenance: createSitecoreItemProvenance(pageLayoutItem),
     collapseKey:
       GRAPH_COLLAPSE_KEY.PAGE_LAYOUT,
     branch: "layouts",
@@ -284,6 +294,11 @@ function createPlaceholderDataTreeNode(
     kind:
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
         .STRUCTURAL,
+    provenance: {
+      type: "placeholder",
+      placeholderPath: placeholder.path,
+      displayName: placeholderName,
+    },
     collapseKey:
       GRAPH_COLLAPSE_KEY.PLACEHOLDER,
     branch: "layouts",

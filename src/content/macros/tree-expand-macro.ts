@@ -28,13 +28,13 @@ export function readChildNodes(glyph: HTMLImageElement): TreeChildNode[] {
   if (!childrenContainer) return [];
 
   return Array.from(childrenContainer.querySelectorAll<HTMLElement>(`:scope > ${CONST.SITECORE.SELECTORS.TREE.NODE}`))
-    .map((childNode) => {
+    .map((childNode): TreeChildNode | undefined => {
       const childGlyph = childNode.querySelector<HTMLImageElement>(CONST.SITECORE.SELECTORS.TREE.GLYPH);
       const childAnchor = childNode.querySelector<HTMLAnchorElement>(CONST.SITECORE.SELECTORS.TREE.NODE_LINK);
       const rawId = childGlyph?.id.replace(CONST.SITECORE.TREE_ID_PREFIXES.GLYPH, "");
       const name = childAnchor?.textContent?.trim() ?? undefined;
       if (!rawId) return undefined;
-      return { name, itemId: formatFoId(rawId) };
+      return { name, itemId: formatFoId(rawId), rawMarkup: childNode.outerHTML };
     })
     .filter((child): child is TreeChildNode => child !== undefined);
 }

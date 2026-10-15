@@ -1,6 +1,7 @@
 import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { ItemGraphNodeData } from "../../../sitecore-harvester/sitecore-harvester.types";
 import type { GraphCollapseKey } from "../graph-nodes/graph-collapse.types";
+import type { DataTreeProvenance } from "./data-tree-provenance.types";
 
 export type RelationshipToParent =
   | "contained"
@@ -17,12 +18,15 @@ export type DataTreeBranch =
 export type TreeChildNode = {
   name: string | undefined;
   itemId: string;
+  // Diagnostics only: the raw tree-row outerHTML this was parsed from.
+  rawMarkup: string | undefined;
 };
 
 type DataTreeNodeBase = {
   treeNodeId: string;
   kind: NodeKind;
   collapseKey: GraphCollapseKey;
+  provenance: DataTreeProvenance;
   branch?: DataTreeBranch;
   relationshipToParent?: RelationshipToParent;
   reverse?: boolean;

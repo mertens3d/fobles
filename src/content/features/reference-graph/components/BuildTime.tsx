@@ -1,6 +1,3 @@
-
-
-
 export function BuildTime({ buildElapsedSeconds }: { buildElapsedSeconds: number | undefined; }) {
   return <div className="fobles-reference-graph-build-time">
     {buildElapsedSeconds !== undefined

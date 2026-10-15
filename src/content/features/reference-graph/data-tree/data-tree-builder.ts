@@ -9,6 +9,10 @@ import {
   createDataTreeItemNode,
   createDataTreeNonItemNode,
 } from "./data-tree-node-factory";
+import {
+  createSitecoreItemProvenance,
+  createSyntheticProvenance,
+} from "./data-tree-provenance.types";
 import type { DataTreeItemNode, DataTreeNonItemNode } from "./data-tree.types";
 import { createSectionsTreeNode } from "./sections-data-tree-builder";
 
@@ -32,7 +36,8 @@ export function createDataTree(
   return createDataTreeItemNode({
     treeNodeId: rootTreeNodeId,
     scItem: graphReferenceResult.rootItem,
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ITEM,
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ROOT,
+    provenance: createSitecoreItemProvenance(graphReferenceResult.rootItem),
     relationshipToParent: "related",
     collapseKey: GRAPH_COLLAPSE_KEY.ROOT,
     children,
@@ -54,6 +59,7 @@ function createParentTreeNode(
       ),
       scItem: parent,
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PARENT,
+      provenance: createSitecoreItemProvenance(parent),
       collapseKey: GRAPH_COLLAPSE_KEY.PARENT,
       branch: "parent",
       relationshipToParent: "related",
@@ -78,6 +84,7 @@ function createTemplateTreeNode(
       ),
       scItem: template,
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.TEMPLATE,
+      provenance: createSitecoreItemProvenance(template),
       collapseKey: GRAPH_COLLAPSE_KEY.TEMPLATE,
       branch: "template",
       relationshipToParent: "related",
@@ -104,6 +111,7 @@ function createChildrenTreeNode(
       treeNodeId,
       name: "Children",
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
+      provenance: createSyntheticProvenance("Children"),
       collapseKey: GRAPH_COLLAPSE_KEY.CHILDREN,
       branch: "children",
       relationshipToParent: "related",
@@ -116,6 +124,7 @@ function createChildrenTreeNode(
           ),
           scItem: childItem,
           kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CHILD,
+          provenance: createSitecoreItemProvenance(childItem),
           collapseKey: GRAPH_COLLAPSE_KEY.CHILD,
           branch: "children",
           relationshipToParent: "related",
@@ -144,6 +153,7 @@ function createReferrersTreeNode(
       treeNodeId,
       name: "Referrers",
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
+      provenance: createSyntheticProvenance("Referrers"),
       collapseKey: GRAPH_COLLAPSE_KEY.REFERRERS,
       branch: "referrers",
       relationshipToParent: "related",
@@ -157,6 +167,7 @@ function createReferrersTreeNode(
           ),
           scItem: referrer,
           kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.REFERRER,
+          provenance: createSitecoreItemProvenance(referrer),
           collapseKey: GRAPH_COLLAPSE_KEY.REFERRER,
           branch: "referrers",
           relationshipToParent: "related",

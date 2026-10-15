@@ -13,12 +13,6 @@ export type GraphNodeData = {
   path: string | undefined;
   link: string | undefined;
   drillDown: boolean;
-  tooltip: TooltipData;
-};
-
-export type TooltipData = {
-  name: string | undefined;
-  guid: string | undefined;
-  path: string | undefined;
-  placeholder: string | undefined;
+  renderingParameterValue: string | undefined;
+  renderingParameterIsItemReference: boolean | undefined;
 };

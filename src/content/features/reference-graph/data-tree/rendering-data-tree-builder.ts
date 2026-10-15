@@ -18,6 +18,10 @@ import {
   createDataTreeNonItemNode,
 } from "./data-tree-node-factory";
 import {
+  createSitecoreItemProvenance,
+  createSyntheticProvenance,
+} from "./data-tree-provenance.types";
+import {
   createDataTreeNodeId,
 } from "./layout-data-tree-builder";
 import type {
@@ -72,6 +76,7 @@ export function createRenderingDataTreeNode(
     kind:
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
         .RENDERING,
+    provenance: { type: "rendering-control", control },
     collapseKey:
       GRAPH_COLLAPSE_KEY.RENDERING,
     branch: "layouts",
@@ -94,6 +99,7 @@ function createDatasourceDataTreeNode(
     kind:
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
         .DATASOURCE,
+    provenance: createSitecoreItemProvenance(datasource),
     collapseKey:
       GRAPH_COLLAPSE_KEY.DATASOURCE,
     branch: "layouts",
@@ -115,6 +121,7 @@ function createRenderingParametersDataTreeNode(
     kind:
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
         .STRUCTURAL,
+    provenance: createSyntheticProvenance("Rendering Parameters"),
     collapseKey:
       GRAPH_COLLAPSE_KEY
         .RENDERING_PARAMETERS,
@@ -162,6 +169,13 @@ function createSingleParameterDataTreeNode(
       kind:
         CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
           .RENDERING_PARAMETER,
+      provenance: {
+        type: "rendering-parameter",
+        parameterName: name,
+        parameterValue: value,
+        decodedValue: candidateValue,
+        isItemReference: true,
+      },
       collapseKey:
         GRAPH_COLLAPSE_KEY
           .RENDERING_PARAMETER,
@@ -178,6 +192,13 @@ function createSingleParameterDataTreeNode(
     kind:
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
         .RENDERING_PARAMETER,
+    provenance: {
+      type: "rendering-parameter",
+      parameterName: name,
+      parameterValue: value,
+      decodedValue: candidateValue,
+      isItemReference: false,
+    },
     collapseKey:
       GRAPH_COLLAPSE_KEY
         .RENDERING_PARAMETER,

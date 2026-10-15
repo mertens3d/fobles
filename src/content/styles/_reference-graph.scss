@@ -13,6 +13,7 @@
   color: $fobles-text;
   font-family: "Open Sans", Arial, sans-serif;
   box-shadow: 0 18px 48px $fobles-shadow-dialog;
+  overflow: hidden;
 
   &::backdrop {
     background: $fobles-backdrop;
@@ -20,17 +21,81 @@
 
   .fobles-tree-data-viewer {
     position: absolute;
+    top: 10%;
+    left: 10%;
     z-index: 100;
-    height: auto;
-    width: auto;
-    background-color: white;
+
+    display: flex;
+    flex-direction: column;
+
+    width: 80%;
+    height: 80%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+
+    overflow: hidden;
+
+    border: 1px solid $fobles-border;
+    border-radius: 6px;
+    background: $fobles-white;
+    color: $fobles-text;
+    box-shadow: 0 18px 48px $fobles-shadow-dialog;
+
+    &-close {
+      appearance: none;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 2;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      width: $fobles-toolbar-control-size;
+      height: $fobles-toolbar-control-size;
+      margin: 0;
+      padding: 0;
+
+      border: 1px solid transparent;
+      border-radius: $fobles-radius-small;
+      background: transparent;
+      cursor: pointer;
+
+      &:hover {
+        background: $fobles-surface-hover;
+      }
+    }
+
+    &-close-icon {
+      display: block;
+      width: 16px;
+      height: 16px;
+      filter: brightness(0.745);
+    }
+
+    .scroller {
+      position: relative;
+      top: 30px;
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 0;
+      padding: 12px;
+      padding-top: 36px;
+      overflow: auto;
+    }
+
+    pre {
+      margin: 0;
+    }
   }
 
   &-toolbar {
     position: absolute;
     top: 10px;
     left: 10px;
-    z-index: 1;
+    z-index: 99;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -123,6 +188,16 @@
     display: grid !important;
     gap: 4px !important;
     margin-top: 4px !important;
+  }
+
+  &-parameter-filters {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid rgba($fobles-border, 0.7);
   }
 
   &-filter {

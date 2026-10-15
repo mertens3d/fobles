@@ -56,6 +56,7 @@ export async function collectTreeChildren(
         link: undefined,
         scItemPath: undefined,
         scTemplate: undefined,
+        rawMarkup: child.rawMarkup,
       }),
     );
   }
@@ -75,6 +76,7 @@ export function harvestStepRootItem(doc: Document): RootItem | undefined {
       scItemId: docQuickInfo.itemId,
       scItemName: docQuickInfo.itemName,
       scItemPath: docQuickInfo.itemPath,
+      rawMarkup: docQuickInfo.rawMarkup,
       scTemplate: factoryItemGraphNodeData({
         scItemId: docQuickInfo?.template?.id,
         scItemPath: docQuickInfo?.template?.path,
