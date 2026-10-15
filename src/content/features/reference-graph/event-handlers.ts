@@ -23,7 +23,7 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
     getCurrentFilters: () => SitecoreHarvestFiltersState,
     graphHistory: SitecoreHarvestResult[],
     getCurrentGraph: () => SitecoreHarvestResult,
-    onGraphChange: (graph: SitecoreHarvestResult) => void,
+    onGraphChange: (graph: SitecoreHarvestResult) => Promise<void>,
     onHistoryChange: (count: number) => void,
 ): void {
     cy.on("mouseover", "node", (event: cytoscape.EventObject) => {
@@ -99,7 +99,7 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
 
             graphHistory.push(getCurrentGraph());
             onHistoryChange(graphHistory.length);
-            onGraphChange(newGraph);
+            void onGraphChange(newGraph);
         });
     });
 }

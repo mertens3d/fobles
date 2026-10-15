@@ -52,8 +52,6 @@ export type WorkerPoolMessage =
   | WorkerTaskExecuteMessage
   | WorkerTaskCancelMessage;
 
-
-
 type WorkerTabIncomingMessage =
   | WorkerSetOwnedMessage
   | WorkerTaskExecuteMessage

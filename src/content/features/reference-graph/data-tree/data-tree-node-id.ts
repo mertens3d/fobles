@@ -5,7 +5,6 @@ import { createDataTreeNonItemNode } from "./data-tree-node-factory";
 import type { DataTreeNonItemNode } from "./data-tree.types";
 import { createPageLayoutItemsByDeviceId, createLayoutSectionDataTree } from "./layout-data-tree-builder";
 
-
 export function createLayoutDataTree(
   graphReferenceResult: SitecoreHarvestResult
 ): DataTreeNonItemNode {

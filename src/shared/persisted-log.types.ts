@@ -8,7 +8,6 @@ export type PersistedLogLevel =
   | "warn"
   | "error";
 
-
 export type PersistedLogContext =
   | "content"
   | "background";
