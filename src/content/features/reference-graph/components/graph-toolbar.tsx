@@ -9,9 +9,12 @@ import type { LayoutGraphPresetName } from "../graph.types";
 import { BackButton } from "./back-button";
 import { GraphFilterList } from "./graph-filter-list";
 import { GraphTypeSelect } from "./graph-type-select";
+import { GraphToolBarHeaderButton } from "./graph-toolbar-header-button";
 import { GraphViewControls } from "./graph-view-controls";
 import { InteractionLegend } from "./interaction-legend";
+import { BuildTime } from "./BuildTime";
 import { RootInfo } from "./root-info";
+import { ViewTreeDataButton } from "./view-tree-data-button";
 
 export type GraphToolbarHandle = {
   showGraph: (
@@ -37,6 +40,7 @@ type ToolbarProps = {
   controlsExpanded: boolean;
   onControlsExpandedChange: (expanded: boolean) => void;
   buildElapsedSeconds: number | undefined;
+  onViewTreeData: () => void;
 };
 
 export function GraphToolbar({
@@ -53,18 +57,14 @@ export function GraphToolbar({
   controlsExpanded,
   onControlsExpandedChange,
   buildElapsedSeconds,
+  onViewTreeData
 }: ToolbarProps) {
   return (
     <div className="fobles-reference-graph-toolbar">
-      <button
-        type="button"
-        className="fobles-reference-graph-controls-header"
-        aria-expanded={controlsExpanded}
-        onClick={() => onControlsExpandedChange(!controlsExpanded)}
-      >
-        Graph Controls
-      </button>
-
+      <GraphToolBarHeaderButton
+        controlsExpanded={controlsExpanded}
+        onControlsExpandedChange={onControlsExpandedChange}
+      />
       {controlsExpanded && (
         <div className="fobles-reference-graph-controls-content">
           <GraphTypeSelect value={layoutPresetName} onChange={onLayoutChange} />
@@ -77,11 +77,8 @@ export function GraphToolbar({
           />
           <RootInfo graph={graph} />
           <InteractionLegend />
-          <div className="fobles-reference-graph-build-time">
-            {buildElapsedSeconds !== undefined
-              ? `Built in ${buildElapsedSeconds.toFixed(3)}s`
-              : "Building graph"}
-          </div>
+          <ViewTreeDataButton onViewTreeData={onViewTreeData} />
+          <BuildTime buildElapsedSeconds={buildElapsedSeconds} />
         </div>
       )}
     </div>

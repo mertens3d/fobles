@@ -16,36 +16,24 @@ import {
   closeReferenceGraphProgressModal,
   handleHarvestProgress,
 } from "./build-progress";
-import { buildElements } from "./graph-nodes/graph-elements";
-import type {
-  PendingReferenceGraph,
-} from "./graph.types";
+import { buildGraphElements } from "./graph-nodes/graph-elements";
+import type { PendingReferenceGraph } from "./graph.types";
 import { harvestGraphForLink } from "./harvester";
 import { openReferenceGraphModal } from "./reference-graph-modal";
 
-type AbortControllerCallback = (
-  controller: AbortController,
-) => void;
+type AbortControllerCallback = (controller: AbortController) => void;
 
-export function readPendingReferenceGraph():
-  PendingReferenceGraph | undefined {
+export function readPendingReferenceGraph(): PendingReferenceGraph | undefined {
   try {
-    const raw =
-      localStorage.getItem(
-        STORAGE.KEY.REFERENCE_GRAPH.PENDING,
-      );
+    const raw = localStorage.getItem(STORAGE.KEY.REFERENCE_GRAPH.PENDING);
 
-    return raw
-      ? JSON.parse(raw) as PendingReferenceGraph
-      : undefined;
+    return raw ? (JSON.parse(raw) as PendingReferenceGraph) : undefined;
   } catch {
     return undefined;
   }
 }
 
-function writePendingReferenceGraph(
-  pending: PendingReferenceGraph,
-): void {
+function writePendingReferenceGraph(pending: PendingReferenceGraph): void {
   localStorage.setItem(
     STORAGE.KEY.REFERENCE_GRAPH.PENDING,
     JSON.stringify(pending),
@@ -53,9 +41,7 @@ function writePendingReferenceGraph(
 }
 
 function clearPendingReferenceGraph(): void {
-  localStorage.removeItem(
-    STORAGE.KEY.REFERENCE_GRAPH.PENDING,
-  );
+  localStorage.removeItem(STORAGE.KEY.REFERENCE_GRAPH.PENDING);
 }
 
 export function createPendingReferenceGraph(
@@ -63,8 +49,7 @@ export function createPendingReferenceGraph(
   restoreRawValues: BooleanTripleState,
   restoreStandardFields: BooleanTripleState,
 ): PendingReferenceGraph {
-  const pending:
-    PendingReferenceGraph = {
+  const pending: PendingReferenceGraph = {
     itemId,
     restoreRawValues,
     restoreStandardFields,
@@ -73,18 +58,13 @@ export function createPendingReferenceGraph(
     graph: undefined,
   };
 
-  writePendingReferenceGraph(
-    pending,
-  );
+  writePendingReferenceGraph(pending);
 
   return pending;
 }
 
-export function cancelPendingReferenceGraph(
-  clear = false,
-): void {
-  const pending =
-    readPendingReferenceGraph();
+export function cancelPendingReferenceGraph(clear = false): void {
+  const pending = readPendingReferenceGraph();
 
   if (pending) {
     if (clear) {
@@ -101,8 +81,7 @@ export function cancelPendingReferenceGraph(
 export async function advancePendingReferenceGraph(
   doc: Document,
   pending: PendingReferenceGraph,
-  onControllerCreated:
-    AbortControllerCallback,
+  onControllerCreated: AbortControllerCallback,
 ): Promise<void> {
   extensionLog.debug(
     `[${advancePendingReferenceGraph.name}] advancing pending reference graph`,
@@ -111,179 +90,98 @@ export async function advancePendingReferenceGraph(
     },
   );
 
-  if (
-    !pending.cancelled &&
-    !pending.harvested
-  ) {
+  if (!pending.cancelled && !pending.harvested) {
     if (!pending.restoreRawValues) {
-      const currentState =
-        await getScRawValuesState(
-          doc,
-        );
+      const currentState = await getScRawValuesState(doc);
 
       if (!currentState) {
-        await setScRawValuesState(
-          doc,
-          true,
-        );
+        await setScRawValuesState(doc, true);
 
         return;
       }
     }
 
     if (!pending.restoreStandardFields) {
-      const currentState =
-        await getScStandardFieldsState(
-          doc,
-        );
+      const currentState = await getScStandardFieldsState(doc);
 
       if (!currentState) {
-        await setScStandardFieldsState(
-          doc,
-          true,
-        );
+        await setScStandardFieldsState(doc, true);
 
         return;
       }
     }
 
-    const controller =
-      new AbortController();
+    const controller = new AbortController();
 
-    onControllerCreated(
-      controller,
-    );
+    onControllerCreated(controller);
 
-    const filters =
-      await getReferenceGraphFilters();
+    const filters = await getReferenceGraphFilters();
 
     void harvestSitecoreWithWorkers(
       {
-        requestId:
-          crypto.randomUUID(),
-        url:
-          buildFoblesUrl(
-            pending.itemId,
-          ),
+        requestId: crypto.randomUUID(),
+        url: buildFoblesUrl(pending.itemId),
         filters,
       },
       {
-        signal:
-          controller.signal,
-        onProgress:
-          (
-            step,
-            status,
-          ) =>
-            handleHarvestProgress(
-              doc,
-              step,
-              status,
-            ),
+        signal: controller.signal,
+        onProgress: (step, status) => handleHarvestProgress(doc, step, status),
       },
-    ).then(
-      async (
-        graph,
-      ): Promise<void> => {
-        const latest =
-          readPendingReferenceGraph() ??
-          pending;
+    ).then(async (graph): Promise<void> => {
+      const latest = readPendingReferenceGraph() ?? pending;
 
-        const harvestedPending:
-          PendingReferenceGraph = {
-          ...latest,
-          harvested: true,
-          graph:
-            latest.cancelled
-              ? undefined
-              : graph,
-        };
+      const harvestedPending: PendingReferenceGraph = {
+        ...latest,
+        harvested: true,
+        graph: latest.cancelled ? undefined : graph,
+      };
 
-        writePendingReferenceGraph(
-          harvestedPending,
-        );
+      writePendingReferenceGraph(harvestedPending);
 
-        await advancePendingReferenceGraph(
-          doc,
-          harvestedPending,
-          onControllerCreated,
-        );
-      },
-    );
+      await advancePendingReferenceGraph(
+        doc,
+        harvestedPending,
+        onControllerCreated,
+      );
+    });
 
     return;
   }
 
   if (
     pending.restoreStandardFields &&
-    (
-      await getScStandardFieldsState(
-        doc,
-      )
-    ) !==
-      pending.restoreStandardFields
+    (await getScStandardFieldsState(doc)) !== pending.restoreStandardFields
   ) {
-    await setScStandardFieldsState(
-      doc,
-      pending.restoreStandardFields,
-    );
+    await setScStandardFieldsState(doc, pending.restoreStandardFields);
 
     return;
   }
 
   if (
     pending.restoreRawValues &&
-    (
-      await getScRawValuesState(
-        doc,
-      )
-    ) !==
-      pending.restoreRawValues
+    (await getScRawValuesState(doc)) !== pending.restoreRawValues
   ) {
-    await setScRawValuesState(
-      doc,
-      pending.restoreRawValues,
-    );
+    await setScRawValuesState(doc, pending.restoreRawValues);
 
     return;
   }
 
   clearPendingReferenceGraph();
 
-  const filters =
-    await getReferenceGraphFilters();
+  const filters = await getReferenceGraphFilters();
 
   if (pending.graph) {
-    const initialElements =
-      await buildElements(
-        pending.graph,
-        {
-          onProgress:
-            (
-              step,
-              status,
-            ) =>
-              handleHarvestProgress(
-                doc,
-                step,
-                status,
-              ),
-        },
-      );
+    const initialElements = await buildGraphElements(pending.graph, {
+      onProgress: (step, status) => handleHarvestProgress(doc, step, status),
+    });
 
-    closeReferenceGraphProgressModal(
-      doc,
-    );
+    closeReferenceGraphProgressModal(doc);
 
     openReferenceGraphModal(
       doc,
       pending.graph,
       initialElements,
-      async (
-        link,
-        _filters,
-        existingResult,
-      ) =>
+      async (link, _filters, existingResult) =>
         await harvestGraphForLink(
           link,
           doc,
@@ -293,8 +191,6 @@ export async function advancePendingReferenceGraph(
         ),
     );
   } else {
-    closeReferenceGraphProgressModal(
-      doc,
-    );
+    closeReferenceGraphProgressModal(doc);
   }
 }

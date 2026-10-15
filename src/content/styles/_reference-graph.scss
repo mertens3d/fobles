@@ -18,6 +18,14 @@
     background: $fobles-backdrop;
   }
 
+  .fobles-tree-data-viewer {
+    position: absolute;
+    z-index: 100;
+    height: auto;
+    width: auto;
+    background-color: white;
+  }
+
   &-toolbar {
     position: absolute;
     top: 10px;
@@ -96,7 +104,10 @@
     border-radius: 4px;
     background: $fobles-white;
     color: $fobles-text;
-    font: 400 12px "Open Sans", Arial, sans-serif;
+    font:
+      400 12px "Open Sans",
+      Arial,
+      sans-serif;
   }
 
   &-filters {
@@ -173,7 +184,10 @@
     border-radius: 6px;
     background: $fobles-white;
     color: $fobles-text;
-    font: 400 13px/1.5 "Open Sans", Arial, sans-serif;
+    font:
+      400 13px/1.5 "Open Sans",
+      Arial,
+      sans-serif;
     box-shadow: 0 18px 48px $fobles-shadow-dialog;
 
     &::backdrop {

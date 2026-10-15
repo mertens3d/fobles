@@ -3,6 +3,7 @@
 import type cytoscape from "cytoscape";
 import { useRef } from "react";
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import { TreeDataViewer } from "./components/TreeDataViewerProps";
 import { GraphToolbar } from "./components/graph-toolbar";
 import type { HarvestForLink } from "./graph.types";
 import { useCytoscape } from "./hooks/use-cytoscape";
@@ -26,9 +27,7 @@ export function ReferenceGraphApp({
 
   const cyRef = useRef<cytoscape.Core | undefined>(undefined);
 
-  const graphState = useReferenceGraph({
-    initialGraph,
-  });
+  const graphState = useReferenceGraph({ initialGraph });
 
   const {
     handleBack,
@@ -38,6 +37,8 @@ export function ReferenceGraphApp({
     handleLayoutChange,
     handleRelayout,
     renderGraph,
+    handleViewTreeData,
+    handleCloseTreeData,
   } = useReferenceGraphActions({
     doc,
     harvestForLink,
@@ -66,6 +67,13 @@ export function ReferenceGraphApp({
 
   return (
     <>
+      {graphState.treeDataVisible && (
+        <TreeDataViewer
+          data={graphState.currentGraph}
+          onClose={handleCloseTreeData}
+        />
+      )}
+
       <GraphToolbar
         graph={graphState.currentGraph}
         layoutPresetName={graphState.layoutPresetName}
@@ -80,6 +88,7 @@ export function ReferenceGraphApp({
         controlsExpanded={graphState.controlsExpanded}
         onControlsExpandedChange={handleControlsExpandedChange}
         buildElapsedSeconds={graphState.buildElapsedSeconds}
+        onViewTreeData={handleViewTreeData}
       />
 
       <div

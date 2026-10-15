@@ -14,7 +14,7 @@ import {
   getGraphControlsExpanded,
   setGraphControlsExpanded,
 } from "../graph-controls-settings";
-import { buildElements } from "../graph-nodes/graph-elements";
+import { buildGraphElements } from "../graph-nodes/graph-elements";
 import {
   initializeGraphCollapseState,
   prepareGraphForExpandedLayout,
@@ -47,6 +47,8 @@ type ReferenceGraphActions = {
   handleLayoutChange: (value: LayoutGraphPresetName) => void;
   handleRelayout: () => void;
   renderGraph: (graph: SitecoreHarvestResult) => Promise<void>;
+  handleViewTreeData: () => void;
+  handleCloseTreeData: () => void;
 };
 
 export function useReferenceGraphActions({
@@ -69,12 +71,20 @@ export function useReferenceGraphActions({
     };
   }, []);
 
+  const handleViewTreeData = useCallback((): void => {
+    graphState.setTreeDataVisible(true);
+  }, []);
+
+  const handleCloseTreeData = useCallback((): void => {
+    graphState.setTreeDataVisible(false);
+  }, []);
+
   const renderGraph = useCallback(
     async (graph: SitecoreHarvestResult): Promise<void> => {
       const cy = cyRef.current;
 
       if (cy) {
-        const elements = await buildElements(graph, {
+        const graphElements = await buildGraphElements(graph, {
           onProgress: (step, status) => {
             handleHarvestProgress(doc, step, status);
           },
@@ -84,7 +94,7 @@ export function useReferenceGraphActions({
           hideActiveTooltip();
 
           cy.elements().remove();
-          cy.add(elements);
+          cy.add(graphElements);
 
           graphState.currentGraphRef.current = graph;
 
@@ -181,5 +191,7 @@ export function useReferenceGraphActions({
     handleLayoutChange,
     handleRelayout,
     renderGraph,
+    handleViewTreeData,
+    handleCloseTreeData,
   };
 }

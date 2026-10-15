@@ -3,102 +3,62 @@
 import type cytoscape from "cytoscape";
 import { createRoot } from "react-dom/client";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import type {
-    SitecoreHarvestResult,
-} from "../../sitecore-harvester/sitecore-harvester.types";
-import {
-    disposeBackgroundWorkerPool,
-} from "../../sitecore-harvester/worker-pool/worker-pool-client";
-import {
-    closeReferenceGraphProgressModal,
-} from "./build-progress";
-import {
-    createCloseButton,
-} from "./close-button";
-import {
-    setActiveReferenceGraphDialog,
-} from "./cytoscape/cytoscape-config";
-import type {
-    HarvestForLink,
-} from "./graph.types";
-import {
-    ReferenceGraphApp,
-} from "./reference-graph-app";
+import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import { disposeBackgroundWorkerPool } from "../../sitecore-harvester/worker-pool/worker-pool-client";
+import { closeReferenceGraphProgressModal } from "./build-progress";
+import { createCloseButton } from "./close-button";
+import { setActiveReferenceGraphDialog } from "./cytoscape/cytoscape-config";
+import type { HarvestForLink } from "./graph.types";
+import { ReferenceGraphApp } from "./reference-graph-app";
 
 export function openReferenceGraphModal(
-    doc: Document,
-    graph: SitecoreHarvestResult,
-    initialElements: cytoscape.ElementDefinition[],
-    harvestForLink: HarvestForLink,
+  doc: Document,
+  graph: SitecoreHarvestResult,
+  initialElements: cytoscape.ElementDefinition[],
+  harvestForLink: HarvestForLink,
 ): void {
-    doc.getElementById(
-        REFERENCE_GRAPH.DIALOG_ID,
-    )?.remove();
+  doc.getElementById(REFERENCE_GRAPH.DIALOG_ID)?.remove();
 
-    const dialog =
-        doc.createElement("dialog");
+  const dialog = doc.createElement("dialog");
 
-    dialog.id =
-        REFERENCE_GRAPH.DIALOG_ID;
+  dialog.id = REFERENCE_GRAPH.DIALOG_ID;
 
-    dialog.className =
-        "fobles-reference-graph";
+  dialog.className = "fobles-reference-graph";
 
-    const closeButton =
-        createCloseButton(
-            doc,
-            dialog,
-        );
+  const closeButton = createCloseButton(doc, dialog);
 
-    const appHost =
-        doc.createElement("div");
+  const appHost = doc.createElement("div");
 
-    appHost.style.cssText =
-        "position:relative;width:100%;height:100%;";
+  appHost.style.cssText = "position:relative;width:100%;height:100%;";
 
-    const appRoot =
-        createRoot(appHost);
+  const appRoot = createRoot(appHost);
 
-    dialog.append(
-        closeButton,
-        appHost,
-    );
+  dialog.append(closeButton, appHost);
 
-    doc.body.appendChild(
-        dialog,
-    );
+  doc.body.appendChild(dialog);
 
-    setActiveReferenceGraphDialog(
-        dialog,
-    );
+  setActiveReferenceGraphDialog(dialog);
 
-    dialog.addEventListener(
-        "close",
-        () => {
-            closeReferenceGraphProgressModal(
-                doc,
-            );
+  dialog.addEventListener("close", () => {
+    closeReferenceGraphProgressModal(doc);
 
-            appRoot.unmount();
+    appRoot.unmount();
 
-            setActiveReferenceGraphDialog(
-                undefined,
-            );
+    setActiveReferenceGraphDialog(undefined);
 
-            void disposeBackgroundWorkerPool();
+    void disposeBackgroundWorkerPool();
 
-            dialog.remove();
-        },
-    );
+    dialog.remove();
+  });
 
-    dialog.showModal();
+  dialog.showModal();
 
-    appRoot.render(
-        <ReferenceGraphApp
-            doc={doc}
-            initialGraph={graph}
-            initialElements={initialElements}
-            harvestForLink={harvestForLink}
-        />,
-    );
+  appRoot.render(
+    <ReferenceGraphApp
+      doc={doc}
+      initialGraph={graph}
+      initialElements={initialElements}
+      harvestForLink={harvestForLink}
+    />,
+  );
 }
