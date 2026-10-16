@@ -251,7 +251,7 @@ export function NodeDetailsPanel({
         position: "absolute",
         left: 12,
         bottom: 12,
-        zIndex: 5,
+        zIndex: 50,
         maxWidth: 500,
         maxHeight: "40%",
         overflowY: "auto",

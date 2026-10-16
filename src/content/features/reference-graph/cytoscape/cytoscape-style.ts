@@ -1,11 +1,9 @@
 import type cytoscape from "cytoscape";
-import { kindClass } from "../graph-nodes/graph-helpers";
-import { NODE_PRESENTATION_BY_KIND } from "../graph-nodes/node-presentation";
 import { CONST } from "../../../../constants/const";
+import { kindClass } from "../graph-nodes/graph-helpers";
+import { ELLIPSE_SIZE, NODE_PRESENTATION_BY_KIND } from "../graph-nodes/node-presentation";
 
-type CytoscapeStyle = NonNullable<
-  cytoscape.CytoscapeOptions["style"]
->;
+type CytoscapeStyle = NonNullable<cytoscape.CytoscapeOptions["style"]>;
 
 export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
   {
@@ -22,12 +20,10 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
       "text-valign": "center",
       "text-halign": "center",
       "text-wrap": "wrap",
+      "text-overflow-wrap": "anywhere",
     },
   },
   {
-    // Fixed, label-based sizing only makes sense for leaf nodes - a compound parent (a
-    // Section, via its Fields' data.parent) needs to auto-size to fit its children instead,
-    // which only happens when width/height aren't explicitly set on it at all.
     selector: "node:childless",
     style: {
       width: "label",
@@ -35,29 +31,28 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
       padding: "10px",
     },
   },
-  ...Object.entries(NODE_PRESENTATION_BY_KIND).map(
-    ([kind, presentation]) => ({
-      selector: `.${kindClass(kind)}`,
-      style: {
-        "background-color": presentation.color,
-        "background-opacity": 0.15,
-        "border-color": presentation.color,
-        ...(presentation.shape
-          ? { shape: presentation.shape }
-          : {}),
-      },
-    }),
-  ),
+  ...Object.entries(NODE_PRESENTATION_BY_KIND).map(([kind, presentation]) => ({
+    selector: `.${kindClass(kind)}`,
+    style: {
+      width: presentation.width,
+      height: presentation.height,
+      "text-max-width": `${presentation.width - 16}px`,
+      "background-color": presentation.color,
+      "background-opacity": 0.15,
+      "border-color": presentation.color,
+      ...(presentation.shape ? { shape: presentation.shape } : {}),
+    },
+  })),
   {
-    selector: `.${kindClass(
-      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
-    )}`,
+    selector: `.${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL)}`,
     style: {
       "font-size": 9,
+      shape: "ellipse",
+      width: ELLIPSE_SIZE,
+      height: ELLIPSE_SIZE,
     },
   },
   {
-    // Compound nodes auto-size around their contained children.
     selector: ":parent",
     style: {
       shape: "round-rectangle",
@@ -70,10 +65,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
     },
   },
   {
-    // A flat-top regular hexagon has a bounding-box height of sqrt(3) / 2 times its width.
-    selector: `.${kindClass(
-      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ROOT,
-    )}`,
+    selector: `.${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ROOT)}`,
     style: {
       shape: "hexagon",
       width: 90,
@@ -83,8 +75,6 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
       "font-weight": "bold",
       "border-width": 3,
       "background-opacity": 0.35,
-      "text-valign": "center",
-      "text-halign": "center",
     },
   },
   {

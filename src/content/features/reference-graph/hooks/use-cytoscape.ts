@@ -218,6 +218,7 @@ export function useCytoscape({
                   runGraphLayout(
                     cy,
                     layoutPresetNameRef.current,
+                    initialPreparedGraph.harvestedData.rootItem.scItemId,
                     () => {
                       if (!disposed && cy) {
                         initializeGraphCollapseState(cy);

@@ -28,14 +28,14 @@ import {
 type GraphExpandCollapseController = {
   collapsedTreeNodeIds: Set<string>;
   expandedByCollapseKey:
-    ExpandedByCollapseKey | undefined;
+  ExpandedByCollapseKey | undefined;
   overlay: HTMLDivElement;
   buttonsByTreeNodeId:
-    Map<string, HTMLButtonElement>;
+  Map<string, HTMLButtonElement>;
   getCurrentFilters:
-    () => SitecoreHarvestFiltersState;
+  () => SitecoreHarvestFiltersState;
   getCurrentLayoutPresetName:
-    () => LayoutGraphPresetName;
+  () => LayoutGraphPresetName;
   updateControls: () => void;
 };
 
@@ -216,7 +216,7 @@ function initializeCollapsedTreeNodeIds(
         node.data("expandable") === true &&
         collapseKey &&
         !expandedByCollapseKey[
-          collapseKey
+        collapseKey
         ]
       ) {
         controller.collapsedTreeNodeIds.add(
@@ -226,33 +226,20 @@ function initializeCollapsedTreeNodeIds(
     });
   }
 }
-
 function toggleGraphNodeCollapsed(
   cy: cytoscape.Core,
   treeNodeId: string,
   recursivelyExpand: boolean,
 ): void {
-  const controller =
-    controllerByCore.get(cy);
+  const controller = controllerByCore.get(cy);
+  const node = cy.getElementById(treeNodeId);
 
-  const node =
-    cy.getElementById(
-      treeNodeId,
-    );
-
-  if (
-    controller &&
-    !node.empty()
-  ) {
+  if (controller && !node.empty()) {
     const currentlyCollapsed =
-      controller.collapsedTreeNodeIds.has(
-        treeNodeId,
-      );
+      controller.collapsedTreeNodeIds.has(treeNodeId);
 
     if (currentlyCollapsed) {
-      controller.collapsedTreeNodeIds.delete(
-        treeNodeId,
-      );
+      controller.collapsedTreeNodeIds.delete(treeNodeId);
 
       if (recursivelyExpand) {
         expandDescendants(
@@ -267,19 +254,20 @@ function toggleGraphNodeCollapsed(
           controller.collapsedTreeNodeIds,
         );
       }
-    } else {
-      controller.collapsedTreeNodeIds.add(
+    } else if (recursivelyExpand) {
+      collapseSameTypeNodes(
+        cy,
         treeNodeId,
+        controller.collapsedTreeNodeIds,
       );
+    } else {
+      controller.collapsedTreeNodeIds.add(treeNodeId);
     }
 
     const expanded =
-      !controller.collapsedTreeNodeIds.has(
-        treeNodeId,
-      );
+      !controller.collapsedTreeNodeIds.has(treeNodeId);
 
-    const collapseKey =
-      readCollapseKey(node);
+    const collapseKey = readCollapseKey(node);
 
     if (
       collapseKey &&
@@ -295,9 +283,7 @@ function toggleGraphNodeCollapsed(
       );
     }
 
-    refreshGraphExpandCollapse(
-      cy,
-    );
+    refreshGraphExpandCollapse(cy);
   }
 }
 
@@ -334,7 +320,28 @@ function collapseExpandableChildren(
     );
   }
 }
+function collapseSameTypeNodes(
+  cy: cytoscape.Core,
+  treeNodeId: string,
+  collapsedTreeNodeIds: Set<string>,
+): void {
+  const node = cy.getElementById(treeNodeId);
 
+  if (!node.empty()) {
+    const collapseKey = readCollapseKey(node);
+
+    if (collapseKey) {
+      cy.nodes().forEach((candidate) => {
+        if (
+          candidate.data("expandable") === true &&
+          readCollapseKey(candidate) === collapseKey
+        ) {
+          collapsedTreeNodeIds.add(candidate.id());
+        }
+      });
+    }
+  }
+}
 function expandDescendants(
   cy: cytoscape.Core,
   treeNodeId: string,
@@ -387,4 +394,47 @@ function readCollapseKey(
   }
 
   return collapseKey;
+}
+
+function collapseSameTypeSiblings(
+  cy: cytoscape.Core,
+  treeNodeId: string,
+  collapsedTreeNodeIds: Set<string>,
+): void {
+  const node = cy.getElementById(treeNodeId);
+
+  if (!node.empty()) {
+    collapsedTreeNodeIds.add(treeNodeId);
+
+    const collapseKey = readCollapseKey(node);
+    const parentTreeNodeId: unknown =
+      node.data("parentTreeNodeId");
+
+    if (
+      collapseKey &&
+      typeof parentTreeNodeId === "string"
+    ) {
+      const parentNode =
+        cy.getElementById(parentTreeNodeId);
+
+      if (!parentNode.empty()) {
+        readChildTreeNodeIds(parentNode).forEach(
+          (siblingTreeNodeId) => {
+            const siblingNode =
+              cy.getElementById(siblingTreeNodeId);
+
+            if (
+              !siblingNode.empty() &&
+              siblingNode.data("expandable") === true &&
+              readCollapseKey(siblingNode) === collapseKey
+            ) {
+              collapsedTreeNodeIds.add(
+                siblingTreeNodeId,
+              );
+            }
+          },
+        );
+      }
+    }
+  }
 }

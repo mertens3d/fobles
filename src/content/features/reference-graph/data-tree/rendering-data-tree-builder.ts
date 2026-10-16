@@ -117,10 +117,8 @@ function createRenderingParametersDataTreeNode(
       CONST.FOBLES.REFERENCE_GRAPH
         .LAYOUT_SCOPE.PARAMETERS,
     ),
-    name: "Rendering Parameters",
-    kind:
-      CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
-        .STRUCTURAL,
+    name: "Rendering\nParameters",
+    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
     provenance: createSyntheticProvenance("Rendering Parameters"),
     collapseKey:
       GRAPH_COLLAPSE_KEY

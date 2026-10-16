@@ -2,21 +2,16 @@
 
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
-import type {
-  SitecoreHarvestFiltersState,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../sitecore-harvester/sitecore-harvester.types";
 import {
   DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS,
   type GraphParameterVisibilitySettings,
 } from "../graph-parameter-visibility-settings";
-import {
-  GRAPH_COLLAPSE_KEY,
-} from "./graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
 
 export type ExpandCollapseButtonController = {
   collapsedTreeNodeIds: Set<string>;
-  buttonsByTreeNodeId:
-    Map<string, HTMLButtonElement>;
+  buttonsByTreeNodeId: Map<string, HTMLButtonElement>;
   overlay: HTMLDivElement;
 };
 
@@ -36,15 +31,11 @@ export function setGraphParameterVisibility(
 export function createExpandCollapseOverlay(
   container: HTMLElement,
 ): HTMLDivElement {
-  if (
-    getComputedStyle(container).position ===
-    "static"
-  ) {
+  if (getComputedStyle(container).position === "static") {
     container.style.position = "relative";
   }
 
-  const overlay =
-    document.createElement("div");
+  const overlay = document.createElement("div");
 
   overlay.className =
     "fobles-reference-graph-expand-collapse-controls";
@@ -64,8 +55,7 @@ export function createExpandCollapseOverlay(
 
 export function synchronizeExpandCollapseControls(
   cy: cytoscape.Core,
-  controller:
-    ExpandCollapseButtonController,
+  controller: ExpandCollapseButtonController,
   onToggle: (
     treeNodeId: string,
     recursivelyExpand: boolean,
@@ -78,9 +68,7 @@ export function synchronizeExpandCollapseControls(
     if (node.data("expandable") === true) {
       const treeNodeId = node.id();
 
-      expandableTreeNodeIds.add(
-        treeNodeId,
-      );
+      expandableTreeNodeIds.add(treeNodeId);
 
       let button =
         controller.buttonsByTreeNodeId.get(
@@ -88,20 +76,17 @@ export function synchronizeExpandCollapseControls(
         );
 
       if (!button) {
-        button =
-          createExpandCollapseButton(
-            treeNodeId,
-            onToggle,
-          );
+        button = createExpandCollapseButton(
+          treeNodeId,
+          onToggle,
+        );
 
         controller.buttonsByTreeNodeId.set(
           treeNodeId,
           button,
         );
 
-        controller.overlay.appendChild(
-          button,
-        );
+        controller.overlay.appendChild(button);
       }
 
       const collapsed =
@@ -109,12 +94,11 @@ export function synchronizeExpandCollapseControls(
           treeNodeId,
         );
 
-      button.textContent =
-        collapsed ? "+" : "−";
+      button.textContent = collapsed ? "+" : "−";
 
       button.title = collapsed
         ? "Expand descendants; Ctrl/Cmd-click expands the entire subtree"
-        : "Collapse descendants";
+        : "Collapse descendants; Ctrl/Cmd-click collapses same-type siblings";
 
       button.setAttribute(
         "aria-label",
@@ -127,16 +111,10 @@ export function synchronizeExpandCollapseControls(
   });
 
   for (
-    const [
-      treeNodeId,
-      button,
-    ] of controller.buttonsByTreeNodeId
+    const [treeNodeId, button] of
+    controller.buttonsByTreeNodeId
   ) {
-    if (
-      !expandableTreeNodeIds.has(
-        treeNodeId,
-      )
-    ) {
+    if (!expandableTreeNodeIds.has(treeNodeId)) {
       button.remove();
 
       controller.buttonsByTreeNodeId.delete(
@@ -189,8 +167,7 @@ function createExpandCollapseButton(
 
       onToggle(
         treeNodeId,
-        event.ctrlKey ||
-          event.metaKey,
+        event.ctrlKey || event.metaKey,
       );
     },
   );
@@ -200,8 +177,7 @@ function createExpandCollapseButton(
 
 export function positionExpandCollapseControls(
   cy: cytoscape.Core,
-  controller:
-    ExpandCollapseButtonController,
+  controller: ExpandCollapseButtonController,
 ): void {
   controller.buttonsByTreeNodeId.forEach(
     (button, treeNodeId) => {
@@ -210,8 +186,7 @@ export function positionExpandCollapseControls(
 
       if (
         node.empty() ||
-        node.style("display") ===
-          "none"
+        node.style("display") === "none"
       ) {
         button.style.display = "none";
       } else {
@@ -222,12 +197,8 @@ export function positionExpandCollapseControls(
           });
 
         button.style.display = "block";
-
-        button.style.left =
-          `${bounds.x2 - 7}px`;
-
-        button.style.top =
-          `${bounds.y1 - 7}px`;
+        button.style.left = `${bounds.x2 - 7}px`;
+        button.style.top = `${bounds.y1 - 7}px`;
       }
     },
   );
@@ -235,15 +206,11 @@ export function positionExpandCollapseControls(
 
 export function applyGraphVisibility(
   cy: cytoscape.Core,
-  collapsedTreeNodeIds:
-    ReadonlySet<string>,
-  filters:
-    SitecoreHarvestFiltersState,
+  collapsedTreeNodeIds: ReadonlySet<string>,
+  filters: SitecoreHarvestFiltersState,
 ): void {
   const parameterVisibilitySettings =
-    readGraphParameterVisibility(
-      cy,
-    );
+    readGraphParameterVisibility(cy);
 
   const filteredTreeNodeIds =
     collectFilteredTreeNodeIds(
@@ -256,9 +223,7 @@ export function applyGraphVisibility(
     cy,
     filteredTreeNodeIds,
   ).forEach((treeNodeId) => {
-    filteredTreeNodeIds.add(
-      treeNodeId,
-    );
+    filteredTreeNodeIds.add(treeNodeId);
   });
 
   const hiddenTreeNodeIds =
@@ -267,20 +232,14 @@ export function applyGraphVisibility(
       collapsedTreeNodeIds,
     );
 
-  filteredTreeNodeIds.forEach(
-    (treeNodeId) => {
-      hiddenTreeNodeIds.add(
-        treeNodeId,
-      );
-    },
-  );
+  filteredTreeNodeIds.forEach((treeNodeId) => {
+    hiddenTreeNodeIds.add(treeNodeId);
+  });
 
   cy.nodes().forEach((node) => {
     node.style(
       "display",
-      hiddenTreeNodeIds.has(
-        node.id(),
-      )
+      hiddenTreeNodeIds.has(node.id())
         ? "none"
         : "element",
     );
@@ -295,12 +254,8 @@ export function applyGraphVisibility(
 
     edge.style(
       "display",
-      hiddenTreeNodeIds.has(
-        sourceTreeNodeId,
-      ) ||
-        hiddenTreeNodeIds.has(
-          targetTreeNodeId,
-        )
+      hiddenTreeNodeIds.has(sourceTreeNodeId) ||
+        hiddenTreeNodeIds.has(targetTreeNodeId)
         ? "none"
         : "element",
     );
@@ -309,8 +264,7 @@ export function applyGraphVisibility(
 
 function collectFilteredTreeNodeIds(
   cy: cytoscape.Core,
-  filters:
-    SitecoreHarvestFiltersState,
+  filters: SitecoreHarvestFiltersState,
   parameterVisibilitySettings:
     GraphParameterVisibilitySettings,
 ): Set<string> {
@@ -319,18 +273,13 @@ function collectFilteredTreeNodeIds(
 
   cy.nodes().forEach((node) => {
     if (
-      isNodeHiddenByFilter(
-        node,
-        filters,
-      ) ||
+      isNodeHiddenByFilter(node, filters) ||
       isNodeHiddenByParameterVisibility(
         node,
         parameterVisibilitySettings,
       )
     ) {
-      filteredTreeNodeIds.add(
-        node.id(),
-      );
+      filteredTreeNodeIds.add(node.id());
     }
   });
 
@@ -339,8 +288,7 @@ function collectFilteredTreeNodeIds(
 
 function collectEmptyRenderingParameterContainerIds(
   cy: cytoscape.Core,
-  filteredTreeNodeIds:
-    ReadonlySet<string>,
+  filteredTreeNodeIds: ReadonlySet<string>,
 ): Set<string> {
   const emptyContainerTreeNodeIds =
     new Set<string>();
@@ -353,10 +301,7 @@ function collectEmptyRenderingParameterContainerIds(
       collapseKey ===
       GRAPH_COLLAPSE_KEY.RENDERING_PARAMETERS
     ) {
-      const childTreeNodeIds =
-        readChildTreeNodeIds(
-          node,
-        );
+      const childTreeNodeIds = readChildTreeNodeIds(node);
 
       const hasVisibleChild =
         childTreeNodeIds.some(
@@ -393,15 +338,13 @@ function readGraphParameterVisibility(
     typeof storedValue === "object"
   ) {
     const candidate =
-      storedValue as Partial<
-        GraphParameterVisibilitySettings
-      >;
+      storedValue as Partial<GraphParameterVisibilitySettings>;
 
     if (
       typeof candidate.hideEmptyParameters ===
-        "boolean" &&
+      "boolean" &&
       typeof candidate.hideNonGuidParameters ===
-        "boolean"
+      "boolean"
     ) {
       settings = {
         hideEmptyParameters:
@@ -417,24 +360,16 @@ function readGraphParameterVisibility(
 
 function isNodeHiddenByParameterVisibility(
   node: cytoscape.NodeSingular,
-  settings:
-    GraphParameterVisibilitySettings,
+  settings: GraphParameterVisibilitySettings,
 ): boolean {
-  const parameterIsItemReference:
-    unknown =
-    node.data(
-      "renderingParameterIsItemReference",
-    );
+  const parameterIsItemReference: unknown =
+    node.data("renderingParameterIsItemReference");
 
-  const parameterValue:
-    unknown =
-    node.data(
-      "renderingParameterValue",
-    );
+  const parameterValue: unknown =
+    node.data("renderingParameterValue");
 
   const isRenderingParameter =
-    typeof parameterIsItemReference ===
-      "boolean" ||
+    typeof parameterIsItemReference === "boolean" ||
     typeof parameterValue === "string";
 
   let hidden = false;
@@ -461,30 +396,27 @@ function isNodeHiddenByParameterVisibility(
 
 function isNodeHiddenByFilter(
   node: cytoscape.NodeSingular,
-  filters:
-    SitecoreHarvestFiltersState,
+  filters: SitecoreHarvestFiltersState,
 ): boolean {
   let hidden = false;
 
-  CONST.FOBLES.REFERENCE_GRAPH
-    .FILTER_DEFS.forEach(
-      ({ key, className }) => {
-        if (
-          !filters[key] &&
-          node.hasClass(className)
-        ) {
-          hidden = true;
-        }
-      },
-    );
+  CONST.FOBLES.REFERENCE_GRAPH.FILTER_DEFS.forEach(
+    ({ key, className }) => {
+      if (
+        !filters[key] &&
+        node.hasClass(className)
+      ) {
+        hidden = true;
+      }
+    },
+  );
 
   return hidden;
 }
 
 function collectCollapsedDescendantIds(
   cy: cytoscape.Core,
-  collapsedTreeNodeIds:
-    ReadonlySet<string>,
+  collapsedTreeNodeIds: ReadonlySet<string>,
 ): Set<string> {
   const descendantTreeNodeIds =
     new Set<string>();
@@ -505,17 +437,14 @@ function collectCollapsedDescendantIds(
 function collectDescendantTreeNodeIds(
   cy: cytoscape.Core,
   treeNodeId: string,
-  descendantTreeNodeIds:
-    Set<string>,
+  descendantTreeNodeIds: Set<string>,
 ): void {
   const treeNode =
     cy.getElementById(treeNodeId);
 
   if (!treeNode.empty()) {
     const childTreeNodeIds =
-      readChildTreeNodeIds(
-        treeNode,
-      );
+      readChildTreeNodeIds(treeNode);
 
     childTreeNodeIds.forEach(
       (childTreeNodeId) => {
@@ -545,8 +474,7 @@ export function readChildTreeNodeIds(
   const value: unknown =
     node.data("childTreeNodeIds");
 
-  let childTreeNodeIds:
-    string[] = [];
+  let childTreeNodeIds: string[] = [];
 
   if (Array.isArray(value)) {
     childTreeNodeIds =
@@ -561,20 +489,15 @@ export function readChildTreeNodeIds(
 
 export function removeMissingCollapsedTreeNodeIds(
   cy: cytoscape.Core,
-  collapsedTreeNodeIds:
-    Set<string>,
+  collapsedTreeNodeIds: Set<string>,
 ): void {
-  collapsedTreeNodeIds.forEach(
-    (treeNodeId) => {
-      if (
-        cy.getElementById(
-          treeNodeId,
-        ).empty()
-      ) {
-        collapsedTreeNodeIds.delete(
-          treeNodeId,
-        );
-      }
-    },
-  );
+  collapsedTreeNodeIds.forEach((treeNodeId) => {
+    if (
+      cy.getElementById(treeNodeId).empty()
+    ) {
+      collapsedTreeNodeIds.delete(
+        treeNodeId,
+      );
+    }
+  });
 }

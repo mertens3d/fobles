@@ -102,31 +102,25 @@ export function useReferenceGraphViewActions({
       graphState.setTreeDataVisible,
     ]);
 
-  const handleRelayout =
-    useCallback((): void => {
-      const cy = cyRef.current;
+  const handleRelayout = useCallback((): void => {
+    const cy = cyRef.current;
 
-      if (cy) {
-        prepareGraphForExpandedLayout(
-          cy,
-        );
+    if (cy) {
+      refreshGraphExpandCollapse(cy);
 
-        runGraphLayout(
-          cy,
-          graphState
-            .layoutPresetNameRef
-            .current,
-          () => {
-            refreshGraphExpandCollapse(
-              cy,
-            );
-          },
-        );
-      }
-    }, [
-      cyRef,
-      graphState.layoutPresetNameRef,
-    ]);
+      runGraphLayout(
+        cy,
+        graphState.layoutPresetNameRef.current,
+        graphState.currentPreparedGraphRef.current.harvestedData.rootItem.scItemId,
+        () => {
+          refreshGraphExpandCollapse(cy);
+        },
+      );
+    }
+  }, [
+    cyRef,
+    graphState.layoutPresetNameRef,
+  ]);
 
   const handleLayoutChange =
     useCallback(
@@ -151,7 +145,8 @@ export function useReferenceGraphViewActions({
 
           runGraphLayout(
             cy,
-            value,
+            graphState.layoutPresetNameRef.current,
+            graphState.currentPreparedGraphRef.current.harvestedData.rootItem.scItemId,
             () => {
               refreshGraphExpandCollapse(
                 cy,
@@ -219,7 +214,10 @@ export function useReferenceGraphViewActions({
           refreshGraphExpandCollapse(
             cy,
           );
+
+
         }
+
       },
       [
         cyRef,

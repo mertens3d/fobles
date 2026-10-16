@@ -123,7 +123,7 @@ export const REFERENCE_GRAPH = {
     dagre: {
       label: "Dagre (tree)",
       edgeStyle: "taxi",
-      build: () =>
+      build: (_rootTreeNodeId: string) =>
         ({
           name: "dagre",
 
@@ -144,43 +144,50 @@ export const REFERENCE_GRAPH = {
     },
     "cose-bilkent": {
       label: "CoSE Bilkent (organic)",
-      build: () =>
+      build: (_rootTreeNodeId: string) =>
         ({
           name: "cose-bilkent",
-          fit: true,
+          fit: false,
           edgeStyle: "bezier",
           padding: 20,
           animate: false,
           nodeRepulsion: 8000, // default 4500
           nodeDimensionsIncludeLabels: true,
+          randomize: false,
+          initialEnergyOnIncremental: 0.2,
+
         }) as unknown as cytoscape.LayoutOptions,
     },
     fcose: {
       label: "fCoSE (organic, fast)",
-      build: () =>
+      build: (_rootTreeNodeId: string) =>
         ({
           name: "fcose",
           edgeStyle: "bezier",
-          fit: true,
+          fit: false,
           padding: 20,
+          randomize: false,
+          initialEnergyOnIncremental: 0.2,
         }) as unknown as cytoscape.LayoutOptions,
     },
     breadthfirst: {
       label: "Breadthfirst (tree, directed)",
       edgeStyle: "taxi",
-      build: () =>
+      build: (rootTreeNodeId: string) =>
         ({
           name: "breadthfirst",
           directed: true,
           direction: "downward",
+          roots: `[id = "${rootTreeNodeId}"]`,
+          maximal: false,
           circle: false,
-          grid: false,
+          grid: true,
 
-          spacingFactor: 1.25,
+          spacingFactor: 1.1,
           avoidOverlap: true,
           nodeDimensionsIncludeLabels: true,
 
-          fit: true,
+          fit: false,
           padding: 20,
         }) as unknown as cytoscape.LayoutOptions,
     },
@@ -193,5 +200,6 @@ export type GraphEdgeStyle = "bezier" | "taxi";
 export type LayoutPreset = {
   label: string;
   edgeStyle: GraphEdgeStyle;
-  build: () => cytoscape.LayoutOptions;
+  build: (rootTreeNodeId: string) => cytoscape.LayoutOptions;
+
 };

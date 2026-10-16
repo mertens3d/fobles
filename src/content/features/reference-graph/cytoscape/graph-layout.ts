@@ -5,6 +5,7 @@ import { CONST } from "../../../../constants/const";
 export function runGraphLayout(
     cy: cytoscape.Core,
     presetName: LayoutGraphPresetName,
+    rootTreeNodeId: string,
     onComplete?: () => void,
 ): void {
     const preset =
@@ -24,8 +25,10 @@ export function runGraphLayout(
         });
     }
 
-    const layout = cy.layout(
-        preset.build(),
+    const visibleElements = cy.elements().filter((element) => element.visible());
+
+    const layout = visibleElements.layout(
+        preset.build(rootTreeNodeId),
     );
 
     if (onComplete) {

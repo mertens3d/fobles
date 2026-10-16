@@ -25,87 +25,6 @@ export type ProjectedGraphNode = {
   classes: string[];
 };
 
-export function projectGraphNode(
-  treeNode: DataTreeNode,
-  parentTreeNodeId?: string,
-): ProjectedGraphNode {
-  const relationshipToParent =
-    treeNode.relationshipToParent ??
-    "contained";
-
-  const renderingParameter =
-    treeNode.provenance.type ===
-    "rendering-parameter"
-      ? treeNode.provenance
-      : undefined;
-
-  const graphNodeData:
-    GraphNodeData = {
-      id: treeNode.treeNodeId,
-      parent:
-        relationshipToParent ===
-        "contained"
-          ? parentTreeNodeId
-          : undefined,
-      label: resolveNodeLabel(
-        treeNode,
-        NODE_PRESENTATION_BY_KIND[
-          treeNode.kind
-        ],
-      ),
-      childTreeNodeIds:
-        treeNode.children.map(
-          (childTreeNode) =>
-            childTreeNode.treeNodeId,
-        ),
-      expandable:
-        treeNode.children.length > 0,
-      collapseKey:
-        treeNode.collapseKey,
-      itemId:
-        treeNode.nodeType === "item"
-          ? treeNode.scItem.scItemId
-          : undefined,
-      path:
-        treeNode.nodeType === "item"
-          ? treeNode.scItem.scItemPath
-          : undefined,
-      link:
-        treeNode.nodeType === "item"
-          ? treeNode.scItem.link
-          : undefined,
-      drillDown:
-        treeNode.nodeType === "item"
-          ? Boolean(
-              treeNode.scItem.link,
-            )
-          : false,
-      renderingParameterValue:
-        renderingParameter
-          ?.parameterValue,
-      renderingParameterIsItemReference:
-        renderingParameter
-          ?.isItemReference,
-      enrichmentStatus:
-        treeNode.nodeType === "item"
-          ? treeNode.enrichmentStatus
-          : undefined,
-    };
-
-  const classes = [
-    kindClass(treeNode.kind),
-    getFilterClass(treeNode),
-  ].filter(
-    (className): className is string =>
-      Boolean(className),
-  );
-
-  return {
-    data: graphNodeData,
-    classes,
-  };
-}
-
 export function getGraphOwnedClasses(): string[] {
   const kindClasses = Object.keys(
     NODE_PRESENTATION_BY_KIND,
@@ -187,7 +106,73 @@ export function appendGraphNode(
     },
   );
 }
+export function projectGraphNode(
+  treeNode: DataTreeNode,
+  parentTreeNodeId?: string,
+): ProjectedGraphNode {
+  const relationshipToParent =
+    treeNode.relationshipToParent ?? "contained";
 
+  const renderingParameter =
+    treeNode.provenance.type === "rendering-parameter"
+      ? treeNode.provenance
+      : undefined;
+
+  const graphNodeData: GraphNodeData = {
+    id: treeNode.treeNodeId,
+    parentTreeNodeId,
+    parent:
+      relationshipToParent === "contained"
+        ? parentTreeNodeId
+        : undefined,
+    label: resolveNodeLabel(
+      treeNode,
+      NODE_PRESENTATION_BY_KIND[treeNode.kind],
+    ),
+    childTreeNodeIds: treeNode.children.map(
+      (childTreeNode) => childTreeNode.treeNodeId,
+    ),
+    expandable: treeNode.children.length > 0,
+    collapseKey: treeNode.collapseKey,
+    itemId:
+      treeNode.nodeType === "item"
+        ? treeNode.scItem.scItemId
+        : undefined,
+    path:
+      treeNode.nodeType === "item"
+        ? treeNode.scItem.scItemPath
+        : undefined,
+    link:
+      treeNode.nodeType === "item"
+        ? treeNode.scItem.link
+        : undefined,
+    drillDown:
+      treeNode.nodeType === "item"
+        ? Boolean(treeNode.scItem.link)
+        : false,
+    renderingParameterValue:
+      renderingParameter?.parameterValue,
+    renderingParameterIsItemReference:
+      renderingParameter?.isItemReference,
+    enrichmentStatus:
+      treeNode.nodeType === "item"
+        ? treeNode.enrichmentStatus
+        : undefined,
+  };
+
+  const classes = [
+    kindClass(treeNode.kind),
+    getFilterClass(treeNode),
+  ].filter(
+    (className): className is string =>
+      Boolean(className),
+  );
+
+  return {
+    data: graphNodeData,
+    classes,
+  };
+}
 function getFilterClass(
   treeNode: DataTreeNode,
 ): string | undefined {

@@ -24,6 +24,8 @@ export type NodePresentation = {
   shape?: cytoscape.Css.NodeShape;
   icon?: string;
   secondaryLabel?: string;
+  width: number;
+  height: number;
 };
 
 export type NodePresentationByKind =

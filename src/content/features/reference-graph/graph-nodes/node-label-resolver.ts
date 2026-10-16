@@ -38,7 +38,7 @@ function resolvePrimaryLabel(
 
     case "datasourceName":
       label =
-        `ds: ${baseName(treeNode)}`;
+        `${baseName(treeNode)}`;
       break;
 
     case "fieldName":
@@ -66,15 +66,22 @@ function resolvePrimaryLabel(
   return label;
 }
 
+function clampMiddle(value: string, edgeLength = 12): string {
+  return value.length > edgeLength * 2 + 3
+    ? `${value.slice(0, edgeLength)}...${value.slice(-edgeLength)}`
+    : value;
+}
+
 export function resolveNodeLabel(
   treeNode: DataTreeNode,
   presentation: NodePresentation,
 ): string {
-  const primaryLabel =
+  const primaryLabel = clampMiddle(
     resolvePrimaryLabel(
       treeNode,
       presentation,
-    );
+    ),
+  );
 
   let label = primaryLabel;
 

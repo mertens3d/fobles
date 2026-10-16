@@ -133,6 +133,7 @@ export function useReferenceGraphRenderActions({
             graphState
               .layoutPresetNameRef
               .current,
+            prepared.harvestedData.rootItem.scItemId,
             () => {
               initializeGraphCollapseState(
                 cy,

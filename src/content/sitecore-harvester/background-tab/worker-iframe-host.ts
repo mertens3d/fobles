@@ -9,7 +9,7 @@ import {
   type WorkerIframeHostMessage,
 } from "../worker-pool/worker.messages";
 
-const HIDE_WORKER_IFRAMES = false;
+const HIDE_WORKER_IFRAMES = true;
 
 const WORKER_IFRAME_CONTAINER_ID =
   "fobles-worker-iframe-container";
