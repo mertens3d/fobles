@@ -33,6 +33,11 @@ import {
 import {
   setGraphParameterVisibility,
 } from "../graph-nodes/graph-expand-collapse-view";
+import {
+  disposeActiveEnrichmentController,
+  startEnrichmentController,
+} from "../enrichment/enrichment-controller";
+import type { EnrichmentProgress } from "../enrichment/enrichment.types";
 import type {
   HarvestForLink,
   LayoutGraphPresetName,
@@ -86,6 +91,9 @@ type UseCytoscapeOptions = {
   setSelectedTreeNodeId: (
     treeNodeId: string | undefined,
   ) => void;
+  setEnrichmentProgress: (
+    progress: EnrichmentProgress | undefined,
+  ) => void;
 };
 
 export function useCytoscape({
@@ -107,6 +115,7 @@ export function useCytoscape({
   setHistoryCount,
   setBuildElapsedSeconds,
   setSelectedTreeNodeId,
+  setEnrichmentProgress,
 }: UseCytoscapeOptions): void {
   useEffect(() => {
     const container = containerRef.current;
@@ -265,6 +274,15 @@ export function useCytoscape({
                                     cy,
                                   );
 
+                                  startEnrichmentController({
+                                    dataTree:
+                                      initialPreparedGraph.dataTree,
+                                    nodesById:
+                                      initialPreparedGraph.nodesById,
+                                    getCy: () => cyRef.current,
+                                    onProgress: setEnrichmentProgress,
+                                  });
+
                                   const elapsedSeconds =
                                     finishReferenceGraphTimer();
 
@@ -340,6 +358,8 @@ export function useCytoscape({
         cy.destroy();
       }
 
+      disposeActiveEnrichmentController();
+
       cyRef.current = undefined;
     };
   }, [
@@ -357,6 +377,7 @@ export function useCytoscape({
     renderGraph,
     setBuildElapsedSeconds,
     setCurrentFilters,
+    setEnrichmentProgress,
     setHistoryCount,
     setLayoutPresetName,
     setParameterVisibilitySettings,

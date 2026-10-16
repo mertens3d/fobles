@@ -3,6 +3,7 @@
 import type cytoscape from "cytoscape";
 import { useRef } from "react";
 import { GraphToolbar } from "./components/graph-toolbar";
+import { EnrichmentProgress } from "./components/enrichment-progress";
 import { NodeDetailsPanel } from "./components/node-details-panel";
 import { TreeDataViewer } from "./components/TreeDataViewerProps";
 import type {
@@ -111,6 +112,9 @@ export function ReferenceGraphApp({
     setSelectedTreeNodeId:
       graphState
         .setSelectedTreeNodeId,
+    setEnrichmentProgress:
+      graphState
+        .setEnrichmentProgress,
   });
 
   return (
@@ -180,6 +184,13 @@ export function ReferenceGraphApp({
         }
         onViewTreeData={
           handleViewTreeData
+        }
+      />
+
+      <EnrichmentProgress
+        progress={
+          graphState
+            .enrichmentProgress
         }
       />
 

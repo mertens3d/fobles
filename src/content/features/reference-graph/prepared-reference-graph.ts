@@ -6,36 +6,33 @@ import type {
   SitecoreHarvestResult,
 } from "../../sitecore-harvester/sitecore-harvester.types";
 import { createDataTree } from "./data-tree/data-tree-builder";
-import { enrichDataTree } from "./data-tree/data-tree-enricher";
 import { buildDataTreeNodeLookup } from "./data-tree/data-tree-node-lookup";
 import { projectDataTreeToGraphElements } from "./graph-nodes/graph-elements";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 
 type PrepareReferenceGraphOptions = {
   signal?: AbortSignal;
+  // Not used while preparation is structural-only (enrichment now runs separately, after the
+  // graph is already built/rendered) - kept so existing callers don't need to change yet.
   onProgress?: HarvestProgressCallback;
 };
 
-// Single orchestration point for createDataTree -> enrichDataTree -> node lookup -> graph
-// projection. Both the initial harvest and every lazy-filter/reroot/back re-render call this
-// same function instead of duplicating the pipeline.
-export async function prepareReferenceGraph(
+// Single orchestration point for createDataTree -> node lookup -> graph projection. Both the
+// initial harvest and every lazy-filter/reroot/back re-render call this same function instead
+// of duplicating the pipeline. Enrichment is intentionally NOT run here - the graph must
+// build/render from the structural DataTree first; enrichment patches it in afterward.
+export function prepareReferenceGraph(
   harvestedData: SitecoreHarvestResult,
-  { signal, onProgress }: PrepareReferenceGraphOptions = {},
+  { signal }: PrepareReferenceGraphOptions = {},
 ): Promise<PreparedReferenceGraph | undefined> {
   const dataTree = createDataTree(harvestedData);
-
-  const enrichedDataTree = await enrichDataTree(dataTree, {
-    signal,
-    onProgress,
-  });
 
   let prepared: PreparedReferenceGraph | undefined;
 
   if (!signal?.aborted) {
-    const nodesById = buildDataTreeNodeLookup(enrichedDataTree);
+    const nodesById = buildDataTreeNodeLookup(dataTree);
 
-    const graphElements = projectDataTreeToGraphElements(enrichedDataTree);
+    const graphElements = projectDataTreeToGraphElements(dataTree);
 
     extensionLog.debug("Reference graph: prepared", {
       nodeCount: nodesById.size,
@@ -43,11 +40,11 @@ export async function prepareReferenceGraph(
 
     prepared = {
       harvestedData,
-      dataTree: enrichedDataTree,
+      dataTree,
       nodesById,
       graphElements,
     };
   }
 
-  return prepared;
+  return Promise.resolve(prepared);
 }

@@ -24,6 +24,9 @@ import {
   setGraphParameterVisibility,
 } from "../graph-nodes/graph-expand-collapse-view";
 import {
+  startEnrichmentController,
+} from "../enrichment/enrichment-controller";
+import {
   prepareReferenceGraph,
 } from "../prepared-reference-graph";
 import type {
@@ -134,6 +137,13 @@ export function useReferenceGraphRenderActions({
               initializeGraphCollapseState(
                 cy,
               );
+
+              startEnrichmentController({
+                dataTree: prepared.dataTree,
+                nodesById: prepared.nodesById,
+                getCy: () => cyRef.current,
+                onProgress: graphState.setEnrichmentProgress,
+              });
             },
           );
         }
@@ -146,6 +156,7 @@ export function useReferenceGraphRenderActions({
         graphState.loadedFiltersByItemIdRef,
         graphState.parameterVisibilitySettingsRef,
         graphState.setCurrentPreparedGraph,
+        graphState.setEnrichmentProgress,
         graphState.setSelectedTreeNodeId,
       ],
     );

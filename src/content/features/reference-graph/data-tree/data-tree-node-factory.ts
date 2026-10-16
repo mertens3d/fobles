@@ -8,6 +8,7 @@ import type {
   DataTreeItemNode,
   DataTreeNode,
   DataTreeNonItemNode,
+  DataTreeTruncation,
   RelationshipToParent,
 } from "./data-tree.types";
 
@@ -19,6 +20,7 @@ type DataTreeNodeOptions = {
   branch?: DataTreeBranch;
   relationshipToParent: RelationshipToParent;
   reverse?: boolean;
+  truncation?: DataTreeTruncation;
   children?: DataTreeNode[];
 };
 
@@ -40,6 +42,7 @@ export function createDataTreeItemNode({
   branch,
   relationshipToParent,
   reverse,
+  truncation,
   children = [],
   scItem,
 }: DataTreeItemNodeOptions): DataTreeItemNode {
@@ -53,6 +56,7 @@ export function createDataTreeItemNode({
     branch,
     relationshipToParent,
     reverse,
+    truncation,
     children,
   };
 }
@@ -65,6 +69,7 @@ export function createDataTreeNonItemNode({
   branch,
   relationshipToParent,
   reverse,
+  truncation,
   children = [],
   name,
 }: DataTreeNonItemNodeOptions): DataTreeNonItemNode {
@@ -78,6 +83,7 @@ export function createDataTreeNonItemNode({
     branch,
     relationshipToParent,
     reverse,
+    truncation,
     children,
   };
 }

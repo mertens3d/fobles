@@ -5,6 +5,7 @@ import { CONST } from "../../../../constants/const";
 import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";
 import { createDataTreeNodeId } from "./layout-data-tree-builder";
 import { createLayoutDataTree } from "./data-tree-node-id";
+import { DATA_TREE_FAN_OUT_LIMITS } from "./data-tree-fan-out-limits";
 import {
   createDataTreeItemNode,
   createDataTreeNonItemNode,
@@ -13,7 +14,7 @@ import {
   createSitecoreItemProvenance,
   createSyntheticProvenance,
 } from "./data-tree-provenance.types";
-import type { DataTreeItemNode, DataTreeNonItemNode } from "./data-tree.types";
+import type { DataTreeItemNode, DataTreeNonItemNode, DataTreeTruncation } from "./data-tree.types";
 import { createSectionsTreeNode } from "./sections-data-tree-builder";
 
 export function createDataTree(
@@ -107,6 +108,16 @@ function createChildrenTreeNode(
       "children",
     );
 
+    const truncation = createFanOutTruncation(
+      childItems.length,
+      DATA_TREE_FAN_OUT_LIMITS.MAX_CHILDREN_PER_ITEM,
+    );
+
+    const includedChildItems = childItems.slice(
+      0,
+      DATA_TREE_FAN_OUT_LIMITS.MAX_CHILDREN_PER_ITEM,
+    );
+
     childrenTreeNode = createDataTreeNonItemNode({
       treeNodeId,
       name: "Children",
@@ -115,7 +126,8 @@ function createChildrenTreeNode(
       collapseKey: GRAPH_COLLAPSE_KEY.CHILDREN,
       branch: "children",
       relationshipToParent: "related",
-      children: childItems.map((childItem, index) =>
+      truncation,
+      children: includedChildItems.map((childItem, index) =>
         createDataTreeItemNode({
           treeNodeId: createDataTreeNodeId(
             treeNodeId,
@@ -149,6 +161,16 @@ function createReferrersTreeNode(
       "referrers",
     );
 
+    const truncation = createFanOutTruncation(
+      referrers.length,
+      DATA_TREE_FAN_OUT_LIMITS.MAX_REFERRERS_PER_ITEM,
+    );
+
+    const includedReferrers = referrers.slice(
+      0,
+      DATA_TREE_FAN_OUT_LIMITS.MAX_REFERRERS_PER_ITEM,
+    );
+
     const referrersTreeNode = createDataTreeNonItemNode({
       treeNodeId,
       name: "Referrers",
@@ -158,7 +180,8 @@ function createReferrersTreeNode(
       branch: "referrers",
       relationshipToParent: "related",
       reverse: true,
-      children: referrers.map((referrer, index) =>
+      truncation,
+      children: includedReferrers.map((referrer, index) =>
         createDataTreeItemNode({
           treeNodeId: createDataTreeNodeId(
             treeNodeId,
@@ -177,6 +200,17 @@ function createReferrersTreeNode(
 
     return referrersTreeNode;
   }
+}
+
+function createFanOutTruncation(
+  availableCount: number,
+  limit: number,
+): DataTreeTruncation {
+  return {
+    availableCount,
+    includedCount: Math.min(availableCount, limit),
+    truncated: availableCount > limit,
+  };
 }
 function createLayoutTreeNode(
   graphReferenceResult: SitecoreHarvestResult,

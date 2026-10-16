@@ -15,6 +15,7 @@ import {
   DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS,
   type GraphParameterVisibilitySettings,
 } from "../graph-parameter-visibility-settings";
+import type { EnrichmentProgress } from "../enrichment/enrichment.types";
 import type {
   LayoutGraphPresetName,
 } from "../graph.types";
@@ -97,6 +98,12 @@ export type GraphState = {
   setSelectedTreeNodeId: React.Dispatch<
     React.SetStateAction<string | undefined>
   >;
+
+  enrichmentProgress:
+    EnrichmentProgress | undefined;
+  setEnrichmentProgress: React.Dispatch<
+    React.SetStateAction<EnrichmentProgress | undefined>
+  >;
 };
 
 export function useReferenceGraph({
@@ -120,6 +127,13 @@ export function useReferenceGraph({
     selectedTreeNodeId,
     setSelectedTreeNodeId,
   ] = useState<string | undefined>(
+    undefined,
+  );
+
+  const [
+    enrichmentProgress,
+    setEnrichmentProgress,
+  ] = useState<EnrichmentProgress | undefined>(
     undefined,
   );
 
@@ -235,5 +249,8 @@ export function useReferenceGraph({
 
     selectedTreeNodeId,
     setSelectedTreeNodeId,
+
+    enrichmentProgress,
+    setEnrichmentProgress,
   };
 }

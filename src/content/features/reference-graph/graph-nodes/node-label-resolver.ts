@@ -84,5 +84,21 @@ export function resolveNodeLabel(
       presentation.secondaryLabel;
   }
 
+  if (isAwaitingEnrichment(treeNode)) {
+    label = `*${label}`;
+  }
+
   return label;
+}
+
+// Minimal "awaiting enrichment" indicator - removed as soon as an attempt finishes, regardless
+// of outcome. No special not-found/failed styling yet.
+function isAwaitingEnrichment(
+  treeNode: DataTreeNode,
+): boolean {
+  return (
+    treeNode.nodeType === "item" &&
+    (treeNode.enrichmentStatus === "pending" ||
+      treeNode.enrichmentStatus === "enriching")
+  );
 }

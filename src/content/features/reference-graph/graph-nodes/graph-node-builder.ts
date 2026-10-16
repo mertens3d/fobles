@@ -20,14 +20,15 @@ import type {
   GraphNodeData,
 } from "./graph-node.types";
 
-export function appendGraphNode(
+export type ProjectedGraphNode = {
+  data: GraphNodeData;
+  classes: string[];
+};
+
+export function projectGraphNode(
   treeNode: DataTreeNode,
-  cytoNodes:
-    cytoscape.ElementDefinition[],
-  cytoEdges:
-    cytoscape.ElementDefinition[],
   parentTreeNodeId?: string,
-): void {
+): ProjectedGraphNode {
   const relationshipToParent =
     treeNode.relationshipToParent ??
     "contained";
@@ -85,16 +86,67 @@ export function appendGraphNode(
       renderingParameterIsItemReference:
         renderingParameter
           ?.isItemReference,
+      enrichmentStatus:
+        treeNode.nodeType === "item"
+          ? treeNode.enrichmentStatus
+          : undefined,
     };
 
-  cytoNodes.push({
+  const classes = [
+    kindClass(treeNode.kind),
+    getFilterClass(treeNode),
+  ].filter(
+    (className): className is string =>
+      Boolean(className),
+  );
+
+  return {
     data: graphNodeData,
-    classes: [
-      kindClass(treeNode.kind),
-      getFilterClass(treeNode),
-    ]
-      .filter(Boolean)
-      .join(" "),
+    classes,
+  };
+}
+
+export function getGraphOwnedClasses(): string[] {
+  const kindClasses = Object.keys(
+    NODE_PRESENTATION_BY_KIND,
+  ).map((kind) =>
+    kindClass(kind),
+  );
+
+  const filterClasses: string[] =
+    Object.values(
+      CONST.FOBLES.REFERENCE_GRAPH
+        .FILTER_CLASS,
+    );
+
+  return [
+    ...kindClasses,
+    ...filterClasses,
+  ];
+}
+
+export function appendGraphNode(
+  treeNode: DataTreeNode,
+  cytoNodes:
+    cytoscape.ElementDefinition[],
+  cytoEdges:
+    cytoscape.ElementDefinition[],
+  parentTreeNodeId?: string,
+): void {
+  const relationshipToParent =
+    treeNode.relationshipToParent ??
+    "contained";
+
+  const projectedNode =
+    projectGraphNode(
+      treeNode,
+      parentTreeNodeId,
+    );
+
+  cytoNodes.push({
+    data: projectedNode.data,
+    classes:
+      projectedNode.classes.join(" "),
   });
 
   if (

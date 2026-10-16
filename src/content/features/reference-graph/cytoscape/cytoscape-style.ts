@@ -17,7 +17,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
       shape: "round-rectangle",
       "background-color": "#eaf1fc",
       "background-opacity": 1,
-      "border-width": 1,
+      "border-width": 2,
       "border-color": "#2f6fed",
       "text-valign": "center",
       "text-halign": "center",
