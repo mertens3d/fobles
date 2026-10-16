@@ -2,55 +2,106 @@
 
 import { createRoot } from "react-dom/client";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { disposeBackgroundWorkerPool } from "../../sitecore-harvester/worker-pool/worker-pool-client";
-import { closeReferenceGraphProgressModal } from "./build-progress";
-import type { HarvestForLink } from "./graph.types";
-import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
-import { ReferenceGraphApp } from "./reference-graph-app";
-import { createCloseButton } from "./close-button";
+import {
+  disposeBackgroundWorkerPool,
+} from "../../sitecore-harvester/worker-pool/worker-pool-client";
+import {
+  closeReferenceGraphProgressModal,
+} from "./build-progress";
+import {
+  createCloseButton,
+} from "./close-button";
+import {
+  disposeActiveEnrichmentController,
+} from "./enrichment/enrichment-controller";
+import type {
+  HarvestForLink,
+} from "./graph.types";
+import type {
+  PreparedReferenceGraph,
+} from "./prepared-reference-graph.types";
+import {
+  ReferenceGraphApp,
+} from "./reference-graph-app";
 
 export function openReferenceGraphModal(
   doc: Document,
-  preparedGraph: PreparedReferenceGraph,
-  harvestForLink: HarvestForLink,
+  preparedGraph:
+    PreparedReferenceGraph,
+  harvestForLink:
+    HarvestForLink,
 ): void {
-  doc.getElementById(REFERENCE_GRAPH.DIALOG_ID)?.remove();
+  doc
+    .getElementById(
+      REFERENCE_GRAPH.DIALOG_ID,
+    )
+    ?.remove();
 
-  const dialog = doc.createElement("dialog");
+  const dialog =
+    doc.createElement("dialog");
 
-  dialog.id = REFERENCE_GRAPH.DIALOG_ID;
+  dialog.id =
+    REFERENCE_GRAPH.DIALOG_ID;
 
-  dialog.className = "fobles-reference-graph";
+  dialog.className =
+    "fobles-reference-graph";
 
-  const closeButton = createCloseButton(doc, dialog);
+  const closeButton =
+    createCloseButton(
+      doc,
+      dialog,
+    );
 
-  const appHost = doc.createElement("div");
+  const appHost =
+    doc.createElement("div");
 
-  appHost.style.cssText = "position:relative;width:100%;height:100%;";
+  appHost.style.cssText =
+    "position:relative;width:100%;height:100%;";
 
-  const appRoot = createRoot(appHost);
+  const appRoot =
+    createRoot(appHost);
 
-  dialog.append(closeButton, appHost);
+  dialog.append(
+    closeButton,
+    appHost,
+  );
 
-  doc.body.appendChild(dialog);
+  doc.body.appendChild(
+    dialog,
+  );
 
-  dialog.addEventListener("close", () => {
-    closeReferenceGraphProgressModal(doc);
+  dialog.addEventListener(
+    "close",
+    () => {
+      disposeActiveEnrichmentController();
 
-    appRoot.unmount();
+      closeReferenceGraphProgressModal(
+        doc,
+      );
 
-    void disposeBackgroundWorkerPool();
+      appRoot.unmount();
 
-    dialog.remove();
-  });
+      void disposeBackgroundWorkerPool()
+        .finally(() => {
+          dialog.remove();
+        });
+    },
+    {
+      once: true,
+    },
+  );
 
   dialog.showModal();
 
   appRoot.render(
     <ReferenceGraphApp
       doc={doc}
-      initialPreparedGraph={preparedGraph}
-      harvestForLink={harvestForLink}
+      initialPreparedGraph={
+        preparedGraph
+      }
+      harvestForLink={
+        harvestForLink
+      }
     />,
   );
 }

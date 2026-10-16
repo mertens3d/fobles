@@ -27,6 +27,7 @@ import {
 } from "./pending-reference-graph";
 import { openReferenceGraphModal } from "./reference-graph-modal";
 import { startReferenceGraphTimer } from "./reference-graph-timing";
+import { disposeBackgroundWorkerPool } from "../../sitecore-harvester/worker-pool/worker-pool-client";
 
 export let referenceGraphAbortController: AbortController | undefined =
   undefined;
@@ -37,6 +38,8 @@ function cancelReferenceGraph(doc: Document): void {
   cancelPendingReferenceGraph();
 
   closeReferenceGraphProgressModal(doc);
+
+  void disposeBackgroundWorkerPool();
 }
 
 async function harvestAndOpen(doc: Document): Promise<void> {

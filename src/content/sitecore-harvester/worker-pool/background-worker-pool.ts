@@ -3,7 +3,6 @@
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { extensionLog } from "../../logger";
 import {
-  closeWorkerTab,
   sendCancelToWorkerTab,
 } from "../background-tab/worker-tab-service";
 import {
@@ -14,11 +13,15 @@ import {
   type WorkerExecutorContext,
 } from "./worker-executor";
 import {
+  disposeWorkerPoolLifecycle,
+  getWorkerPoolGeneration,
+  isWorkerPoolGenerationCurrent,
+} from "./worker-pool-lifecycle";
+import {
   getWorkerPoolMaxWorkers,
   onWorkerPoolMaxWorkersChange,
 } from "./worker-pool-settings";
 import {
-  clearWorkerReadiness,
   markWorkerReady,
   resetWorkerReadiness,
 } from "./worker-readiness";
@@ -104,12 +107,19 @@ function createPendingWorker():
 
 function createExecutorContext():
   WorkerExecutorContext {
+  const generation =
+    getWorkerPoolGeneration();
+
   return {
     activeTaskByTabId,
     cancelledRequestIds,
     createPendingWorker,
     removeWorker,
     scheduleNext,
+    isCurrentGeneration: () =>
+      isWorkerPoolGenerationCurrent(
+        generation,
+      ),
   };
 }
 
@@ -122,17 +132,24 @@ export function handleWorkerReady(
 export function handleWorkerTabRemoved(
   tabId: number,
 ): void {
-  const worker = workers.find(
-    (candidate) =>
-      candidate.tabId === tabId,
-  );
+  const worker =
+    workers.find(
+      (candidate) =>
+        candidate.tabId === tabId,
+    );
 
   if (worker) {
     removeWorker(worker);
   }
 
-  activeTaskByTabId.delete(tabId);
-  resetWorkerReadiness(tabId);
+  activeTaskByTabId.delete(
+    tabId,
+  );
+
+  resetWorkerReadiness(
+    tabId,
+  );
+
   scheduleNext();
 }
 
@@ -167,7 +184,8 @@ function scheduleNext(): void {
       if (idleWorker) {
         queue.shift();
 
-        idleWorker.status = "busy";
+        idleWorker.status =
+          "busy";
 
         void runWorkerTask(
           createExecutorContext(),
@@ -191,6 +209,7 @@ function scheduleNext(): void {
     }
   }
 }
+
 export async function runPoolTask(
   task: WorkerTask,
 ): Promise<WorkerTaskResult> {
@@ -221,6 +240,8 @@ export async function runPoolTask(
           maxWorkers,
           workerCount: workers.length,
           queueLength: queue.length,
+          poolGeneration:
+            getWorkerPoolGeneration(),
         },
       );
 
@@ -271,21 +292,30 @@ export function cancelPoolRequest(
       }
     },
   );
+
+  scheduleNext();
 }
 
 export function adoptWorkerTab(
   tabId: number | undefined,
 ): void {
   if (tabId !== undefined) {
-    const worker = workers.find(
-      (candidate) =>
-        candidate.tabId === tabId,
-    );
+    const worker =
+      workers.find(
+        (candidate) =>
+          candidate.tabId === tabId,
+      );
 
     if (worker) {
       removeWorker(worker);
-      resetWorkerReadiness(tabId);
-      activeTaskByTabId.delete(tabId);
+
+      resetWorkerReadiness(
+        tabId,
+      );
+
+      activeTaskByTabId.delete(
+        tabId,
+      );
 
       extensionLog.debug(
         "Worker pool: tab adopted by user",
@@ -301,38 +331,23 @@ export function adoptWorkerTab(
 
 export async function disposeWorkerPool():
   Promise<void> {
-  const tabIds = workers
-    .filter(
-      (worker) =>
-        worker.tabId !== -1,
-    )
-    .map(
-      (worker) =>
-        worker.tabId,
-    );
+  const workersToDispose = [
+    ...workers,
+  ];
+
+  const queuedTasks = [
+    ...queue,
+  ];
 
   workers = [];
-
-  queue.forEach(
-    (queued) => {
-      queued.resolve(
-        createCancelledResult(
-          queued.task,
-        ),
-      );
-    },
-  );
-
   queue = [];
 
-  activeTaskByTabId.clear();
-  cancelledRequestIds.clear();
-  clearWorkerReadiness();
-
-  await Promise.all(
-    tabIds.map(
-      (tabId) =>
-        closeWorkerTab(tabId),
-    ),
-  );
+  await disposeWorkerPoolLifecycle({
+    workers: workersToDispose,
+    queue: queuedTasks,
+    activeTaskByTabId,
+    cancelledRequestIds,
+    generation:
+      getWorkerPoolGeneration(),
+  });
 }

@@ -2,354 +2,343 @@
 
 import type cytoscape from "cytoscape";
 import {
-    extensionLog,
+  extensionLog,
 } from "../../../logger";
 import {
-    mergeEnrichedItem,
+  mergeEnrichedItem,
 } from "../../../sitecore-harvester/coordinator/enrichment-task-planner";
 import {
-    runWorkerTask,
+  cancelWorkerRequest,
+  runWorkerTask,
 } from "../../../sitecore-harvester/worker-pool/worker-pool-client";
 import type {
-    EnrichItemTask,
-    WorkerTaskResult,
+  EnrichItemTask,
+  WorkerTaskResult,
 } from "../../../sitecore-harvester/worker-pool/worker-task.types";
 import {
-    buildFoblesUrl,
+  buildFoblesUrl,
 } from "../../augmentor/helper";
 import {
-    collectEnrichmentGuidLookup,
+  collectEnrichmentGuidLookup,
 } from "../data-tree/data-tree-enrichment-lookup";
 import type {
-    DataTreeNode,
-    EnrichmentStatus,
+  DataTreeNode,
+  EnrichmentStatus,
 } from "../data-tree/data-tree.types";
 import {
-    patchCytoscapeNodes,
+  patchCytoscapeNodes,
 } from "./enrichment-graph-patcher";
 import {
-    firstItemNode,
-    itemsFor,
-    markTreeNodes,
+  firstItemNode,
+  itemsFor,
+  markTreeNodes,
 } from "./enrichment-tree-state";
 import type {
-    EnrichmentController,
-    EnrichmentProgressCallback,
+  EnrichmentController,
+  EnrichmentProgressCallback,
 } from "./enrichment.types";
 
 type StartEnrichmentControllerOptions = {
-    dataTree: DataTreeNode;
-    nodesById:
+  dataTree: DataTreeNode;
+  nodesById:
     Map<string, DataTreeNode>;
-    getCy: () =>
-        cytoscape.Core | undefined;
-    onProgress?:
+  getCy: () =>
+    cytoscape.Core | undefined;
+  onProgress?:
     EnrichmentProgressCallback;
 };
 
 let activeController:
-    | EnrichmentController
-    | undefined;
+  | EnrichmentController
+  | undefined;
 
 export function disposeActiveEnrichmentController():
-    void {
-    activeController?.dispose();
-    activeController = undefined;
+  void {
+  activeController?.dispose();
+  activeController = undefined;
 }
 
 export function startEnrichmentController({
-    dataTree,
-    nodesById,
-    getCy,
-    onProgress,
+  dataTree,
+  nodesById,
+  getCy,
+  onProgress,
 }: StartEnrichmentControllerOptions):
-    EnrichmentController {
-    disposeActiveEnrichmentController();
+  EnrichmentController {
+  disposeActiveEnrichmentController();
 
-    let disposed = false;
+  let disposed = false;
 
-    const requestId =
-        crypto.randomUUID();
+  const requestId =
+    crypto.randomUUID();
 
-    const guidLookup =
-        collectEnrichmentGuidLookup(
-            dataTree,
-        );
+  const guidLookup =
+    collectEnrichmentGuidLookup(
+      dataTree,
+    );
 
-    const guids =
-        Array.from(
-            guidLookup.keys(),
-        );
+  const guids =
+    Array.from(
+      guidLookup.keys(),
+    );
 
-    const maxItemCount =
-        guids.length;
+  const maxItemCount =
+    guids.length;
 
-    const controller:
-        EnrichmentController = {
-        dispose: () => {
-            disposed = true;
-        },
+  const controller:
+    EnrichmentController = {
+      dispose: () => {
+        if (!disposed) {
+          disposed = true;
+
+          cancelWorkerRequest(
+            requestId,
+          );
+        }
+      },
     };
 
-    activeController = controller;
+  activeController = controller;
+
+  markTreeNodes(
+    guids,
+    guidLookup,
+    nodesById,
+    "pending",
+  );
+
+  patchCytoscapeNodes(
+    getCy(),
+    guids.flatMap(
+      (guid) =>
+        guidLookup.get(guid) ?? [],
+    ),
+    nodesById,
+  );
+
+  reportProgress(
+    0,
+    maxItemCount,
+    maxItemCount > 0
+      ? "running"
+      : "complete",
+  );
+
+  void runSequentially();
+
+  async function runSequentially():
+    Promise<void> {
+    let completedItemCount = 0;
+
+    for (const guid of guids) {
+      if (disposed) {
+        break;
+      }
+
+      await enrichOneGuid(guid);
+
+      if (!disposed) {
+        completedItemCount += 1;
+
+        reportProgress(
+          completedItemCount,
+          maxItemCount,
+          "running",
+        );
+      }
+    }
+
+    if (!disposed) {
+      reportProgress(
+        completedItemCount,
+        maxItemCount,
+        "complete",
+      );
+    }
+  }
+
+  async function enrichOneGuid(
+    guid: string,
+  ): Promise<void> {
+    const treeNodeIds =
+      guidLookup.get(guid) ?? [];
 
     markTreeNodes(
-        guids,
-        guidLookup,
-        nodesById,
-        "pending",
+      [guid],
+      guidLookup,
+      nodesById,
+      "enriching",
     );
 
     patchCytoscapeNodes(
-        getCy(),
-        guids.flatMap(
-            (guid) =>
-                guidLookup.get(guid) ?? [],
-        ),
+      getCy(),
+      treeNodeIds,
+      nodesById,
+    );
+
+    const representative =
+      firstItemNode(
+        treeNodeIds,
         nodesById,
-    );
+      );
 
-    reportProgress(
-        0,
-        maxItemCount,
-        maxItemCount > 0
-            ? "running"
-            : "complete",
-    );
+    const reference =
+      representative?.scItem
+        .scItemId ||
+      representative?.scItem
+        .scItemPath;
 
-    void runSequentially();
+    let status:
+      EnrichmentStatus = "failed";
 
-    async function runSequentially():
-        Promise<void> {
-        let completedItemCount = 0;
-
-        for (const guid of guids) {
-            if (disposed) {
-                break;
-            }
-
-            await enrichOneGuid(guid);
-
-            if (!disposed) {
-                completedItemCount += 1;
-
-                reportProgress(
-                    completedItemCount,
-                    maxItemCount,
-                    "running",
-                );
-            }
-        }
-
-        if (!disposed) {
-            reportProgress(
-                completedItemCount,
-                maxItemCount,
-                "complete",
-            );
-        }
-    }
-
-    async function enrichOneGuid(
-        guid: string,
-    ): Promise<void> {
-        const treeNodeIds =
-            guidLookup.get(guid) ?? [];
-
-        markTreeNodes(
-            [guid],
-            guidLookup,
-            nodesById,
-            "enriching",
+    if (
+      representative &&
+      reference
+    ) {
+      const result =
+        await requestEnrichment(
+          representative.scItem
+            .scItemId,
+          representative.scItem
+            .scItemPath,
+          reference,
         );
 
-        patchCytoscapeNodes(
-            getCy(),
+      if (!disposed) {
+        status =
+          applyEnrichmentResult(
+            guid,
+            treeNodeIds,
+            result,
+          );
+      }
+    }
+
+    if (!disposed) {
+      markTreeNodes(
+        [guid],
+        guidLookup,
+        nodesById,
+        status,
+      );
+
+      patchCytoscapeNodes(
+        getCy(),
+        treeNodeIds,
+        nodesById,
+      );
+    }
+  }
+
+  async function requestEnrichment(
+    scItemId:
+      | string
+      | undefined,
+    scItemPath:
+      | string
+      | undefined,
+    reference: string,
+  ): Promise<
+    WorkerTaskResult | undefined
+  > {
+    const task:
+      EnrichItemTask = {
+        requestId,
+        taskId:
+          crypto.randomUUID(),
+        type: "enrich-item",
+        url:
+          buildFoblesUrl(
+            reference,
+          ),
+        lookup: {
+          scItemId,
+          scItemPath,
+        },
+      };
+
+    let result:
+      | WorkerTaskResult
+      | undefined = undefined;
+
+    try {
+      result =
+        await runWorkerTask(
+          task,
+        );
+    } catch (error) {
+      if (!disposed) {
+        extensionLog.warn(
+          "Reference graph: incremental enrichment task failed",
+          {
+            task,
+            error,
+          },
+        );
+      }
+    }
+
+    return result;
+  }
+
+  function applyEnrichmentResult(
+    guid: string,
+    treeNodeIds:
+      string[],
+    result:
+      | WorkerTaskResult
+      | undefined,
+  ): EnrichmentStatus {
+    let status:
+      EnrichmentStatus = "failed";
+
+    if (
+      result?.status === "success" &&
+      result.type === "enrich-item"
+    ) {
+      const enriched =
+        result.payload.item;
+
+      if (
+        enriched.scItemId ||
+        enriched.scItemPath
+      ) {
+        const items =
+          itemsFor(
             treeNodeIds,
             nodesById,
+          );
+
+        mergeEnrichedItem(
+          new Map([
+            [guid, items],
+          ]),
+          guid,
+          enriched,
         );
 
-        const representative =
-            firstItemNode(
-                treeNodeIds,
-                nodesById,
-            );
-
-        const reference =
-            representative?.scItem
-                .scItemId ||
-            representative?.scItem
-                .scItemPath;
-
-        let status:
-            EnrichmentStatus = "failed";
-
-        if (
-            representative &&
-            reference
-        ) {
-            const result =
-                await requestEnrichment(
-                    representative.scItem
-                        .scItemId,
-                    representative.scItem
-                        .scItemPath,
-                    reference,
-                );
-
-            if (!disposed) {
-                status =
-                    applyEnrichmentResult(
-                        guid,
-                        treeNodeIds,
-                        result,
-                    );
-                extensionLog.debug(
-                    "Reference graph enrichment applied",
-                    treeNodeIds.map((treeNodeId) => {
-                        const treeNode =
-                            nodesById.get(treeNodeId);
-
-                        return {
-                            treeNodeId,
-                            status,
-                            scItemName:
-                                treeNode?.nodeType === "item"
-                                    ? treeNode.scItem.scItemName
-                                    : undefined,
-                            scItemId:
-                                treeNode?.nodeType === "item"
-                                    ? treeNode.scItem.scItemId
-                                    : undefined,
-                        };
-                    }),
-                );
-            }
-        }
-
-        if (!disposed) {
-            markTreeNodes(
-                [guid],
-                guidLookup,
-                nodesById,
-                status,
-            );
-
-            patchCytoscapeNodes(
-                getCy(),
-                treeNodeIds,
-                nodesById,
-            );
-        }
+        status = "enriched";
+      } else {
+        status = "not-found";
+      }
     }
 
-    async function requestEnrichment(
-        scItemId:
-            | string
-            | undefined,
-        scItemPath:
-            | string
-            | undefined,
-        reference: string,
-    ): Promise<
-        WorkerTaskResult | undefined
-    > {
-        const task:
-            EnrichItemTask = {
-            requestId,
-            taskId:
-                crypto.randomUUID(),
-            type: "enrich-item",
-            url:
-                buildFoblesUrl(
-                    reference,
-                ),
-            lookup: {
-                scItemId,
-                scItemPath,
-            },
-        };
+    return status;
+  }
 
-        let result:
-            | WorkerTaskResult
-            | undefined = undefined;
+  function reportProgress(
+    completedItemCount: number,
+    totalItemCount: number,
+    status:
+      "running" | "complete",
+  ): void {
+    onProgress?.({
+      completedItemCount,
+      maxItemCount:
+        totalItemCount,
+      status,
+    });
+  }
 
-        try {
-            result =
-                await runWorkerTask(
-                    task,
-                );
-        } catch (error) {
-            extensionLog.warn(
-                "Reference graph: incremental enrichment task failed",
-                {
-                    task,
-                    error,
-                },
-            );
-        }
-
-        return result;
-    }
-
-    function applyEnrichmentResult(
-        guid: string,
-        treeNodeIds:
-            string[],
-        result:
-            | WorkerTaskResult
-            | undefined,
-    ): EnrichmentStatus {
-        let status:
-            EnrichmentStatus = "failed";
-
-        if (
-            result?.status === "success" &&
-            result.type === "enrich-item"
-        ) {
-            const enriched =
-                result.payload.item;
-
-            if (
-                enriched.scItemId ||
-                enriched.scItemPath
-            ) {
-                const items =
-                    itemsFor(
-                        treeNodeIds,
-                        nodesById,
-                    );
-
-                mergeEnrichedItem(
-                    new Map([
-                        [guid, items],
-                    ]),
-                    guid,
-                    enriched,
-                );
-
-                status = "enriched";
-            } else {
-                status = "not-found";
-            }
-        }
-
-        return status;
-    }
-
-    function reportProgress(
-        completedItemCount: number,
-        totalItemCount: number,
-        status:
-            "running" | "complete",
-    ): void {
-        onProgress?.({
-            completedItemCount,
-            maxItemCount:
-                totalItemCount,
-            status,
-        });
-    }
-
-    return controller;
+  return controller;
 }
