@@ -13,7 +13,6 @@ import type {
 // parameterName  - a rendering parameter's own name (falls back to name otherwise).
 export type NodeLabelMode =
   | "name"
-  | "nameAndKind"
   | "datasourceName"
   | "kindOnly"
   | "fieldName"

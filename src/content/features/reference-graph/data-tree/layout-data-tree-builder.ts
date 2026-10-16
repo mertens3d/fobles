@@ -49,7 +49,7 @@ export function createDataTreeNodeId(
 export function createPageLayoutItemsByDeviceId(
   layoutSectionFields: LayoutSectionField[],
 ): Map<string, ItemGraphNodeData> {
-  const pageLayoutItemsByDeviceId = 
+  const pageLayoutItemsByDeviceId =
     new Map<string, ItemGraphNodeData>();
 
   layoutSectionFields.forEach(
@@ -250,13 +250,9 @@ function createPlaceholderDataTreeNode(
   pageLayoutTreeNodeId: string,
   placeholder: PlaceholderTreeNode,
 ): DataTreeNonItemNode {
-  const placeholderSegments =
-    placeholder.path.split("/");
+  const placeholderSegments = placeholder.path.split("/");
 
-  const placeholderName =
-    placeholderSegments[
-      placeholderSegments.length - 1
-    ] ?? placeholder.path;
+  const placeholderName = placeholderSegments[placeholderSegments.length - 1] ?? placeholder.path;
 
   const children: DataTreeNode[] = [];
 
@@ -293,7 +289,7 @@ function createPlaceholderDataTreeNode(
     name: placeholderName,
     kind:
       CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
-        .STRUCTURAL,
+        .PLACEHOLDER,
     provenance: {
       type: "placeholder",
       placeholderPath: placeholder.path,

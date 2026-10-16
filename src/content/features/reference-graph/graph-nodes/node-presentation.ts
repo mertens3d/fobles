@@ -31,10 +31,12 @@ export const NODE_PRESENTATION_BY_KIND:
   [NODE_KIND.DATASOURCE]: {
     labelMode: "datasourceName",
     color: "#c9820f",
+    secondaryLabel: "(datasource)",
   },
   [NODE_KIND.DEVICE]: {
-    labelMode: "nameAndKind",
+    labelMode: "name",
     color: "#5a6b80",
+    secondaryLabel: "(device)",
   },
   [NODE_KIND.FIELD]: {
     labelMode: "fieldName",
@@ -43,6 +45,11 @@ export const NODE_PRESENTATION_BY_KIND:
   [NODE_KIND.ITEM]: {
     labelMode: "name",
     color: "#2f6fed",
+  },
+  [NODE_KIND.PLACEHOLDER]: {
+    labelMode: "name",
+    color: "#2f6fed",
+    secondaryLabel: "(placeholder)",
   },
   [NODE_KIND.LAYOUTS]: {
     labelMode: "name",
@@ -61,13 +68,14 @@ export const NODE_PRESENTATION_BY_KIND:
     color: "#d13f3f",
   },
   [NODE_KIND.RENDERING]: {
-    labelMode: "kindOnly",
+    labelMode: "name",
     color: "#2f8f6f",
+    secondaryLabel: "(rendering)",
   },
   [NODE_KIND.RENDERING_PARAMETER]: {
     labelMode: "parameterName",
     color: "#6a3a6a",
-    secondaryLabel: "ᴘᴀʀᴀᴍᴇᴛᴇʀ",
+    secondaryLabel: "(parameter)",
   },
   [NODE_KIND.SECTION]: {
     labelMode: "name",

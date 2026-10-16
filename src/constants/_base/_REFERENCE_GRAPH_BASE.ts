@@ -21,6 +21,7 @@ export const _REFERENCE_GRAPH_BASE = {
         SECTION: "Section",
         PARENT: "Parent",
         CHILD: "Child",
+        PLACEHOLDER: "Placeholder",
         REFERRER: "Referrer",
         RENDERING: "Rendering",
         RENDERING_PARAMETER: "Rendering Parameter",

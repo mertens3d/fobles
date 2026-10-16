@@ -36,12 +36,6 @@ function resolvePrimaryLabel(
         `[${treeNode.kind.toLowerCase()}]`;
       break;
 
-    case "nameAndKind":
-      label =
-        `${baseName(treeNode)}\n` +
-        `[${treeNode.kind.toLowerCase()}]`;
-      break;
-
     case "datasourceName":
       label =
         `ds: ${baseName(treeNode)}`;
