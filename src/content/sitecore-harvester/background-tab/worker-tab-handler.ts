@@ -1,14 +1,17 @@
 // @source-path [fobles] src/content/sitecore-harvester/background-tab/worker-tab-handler.ts
 
-import { extensionLog } from "../../logger";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { executeWorkerTask } from "./worker-task-executor";
-import type {
-  WorkerAdoptedMessage,
-  WorkerReadyMessage,
-  WorkerSetOwnedMessage,
-  WorkerTaskCancelMessage,
-  WorkerTaskExecuteMessage,
+import { extensionLog } from "../../logger";
+import {
+  executeWorkerTask,
+} from "./worker-task-executor";
+import {
+  WORKER_IFRAME_READY_MESSAGE_TYPE,
+  type WorkerAdoptedMessage,
+  type WorkerIframeReadyMessage,
+  type WorkerReadyMessage,
+  type WorkerSetOwnedMessage,
+  type WorkerTabIncomingMessage,
 } from "../worker-pool/worker.messages";
 
 const MESSAGE_TYPE =
@@ -17,10 +20,8 @@ const MESSAGE_TYPE =
 const WORKER_BANNER_ID =
   "fobles-background-worker-banner";
 
-type WorkerTabIncomingMessage =
-  | WorkerSetOwnedMessage
-  | WorkerTaskExecuteMessage
-  | WorkerTaskCancelMessage;
+const WORKER_ID_QUERY_PARAMETER =
+  "foblesWorker";
 
 const activeTaskControllers =
   new Map<string, AbortController>();
@@ -31,18 +32,55 @@ function taskKey(
 ): string {
   return `${requestId}:${taskId}`;
 }
-export function registerWorkerTabHandler(): void {
-  if (window.top !== window) {
+
+function readIframeWorkerId():
+  string | undefined {
+  const workerId =
+    new URL(
+      window.location.href,
+    ).searchParams.get(
+      WORKER_ID_QUERY_PARAMETER,
+    );
+
+  let iframeWorkerId:
+    | string
+    | undefined = undefined;
+
+  if (
+    window.top !== window &&
+    workerId
+  ) {
+    iframeWorkerId =
+      workerId;
+  }
+
+  return iframeWorkerId;
+}
+
+export function registerWorkerTabHandler():
+  void {
+  const iframeWorkerId =
+    readIframeWorkerId();
+
+  const isTopLevel =
+    window.top === window;
+
+  if (
+    !isTopLevel &&
+    !iframeWorkerId
+  ) {
     return;
   }
 
   chrome.runtime.onMessage.addListener(
     (
-      message: WorkerTabIncomingMessage,
+      message:
+        WorkerTabIncomingMessage,
       _sender,
       sendResponse,
     ) => {
-      let keepMessageChannelOpen = false;
+      let keepMessageChannelOpen =
+        false;
 
       if (
         message.type ===
@@ -65,7 +103,9 @@ export function registerWorkerTabHandler(): void {
         message.type ===
         MESSAGE_TYPE.WORKER_TASK_EXECUTE
       ) {
-        const { task } = message;
+        const { task } =
+          message;
+
         const controller =
           new AbortController();
 
@@ -83,17 +123,21 @@ export function registerWorkerTabHandler(): void {
           controller.signal,
         )
           .then(sendResponse)
-          .catch((error: unknown) => {
-            extensionLog.error(
-              "Worker tab task failed",
-              {
-                task,
-                error,
-              },
-            );
+          .catch(
+            (error: unknown) => {
+              extensionLog.error(
+                "Worker task failed",
+                {
+                  task,
+                  error,
+                },
+              );
 
-            sendResponse(undefined);
-          })
+              sendResponse(
+                undefined,
+              );
+            },
+          )
           .finally(() => {
             activeTaskControllers.delete(
               taskKey(
@@ -103,29 +147,43 @@ export function registerWorkerTabHandler(): void {
             );
           });
 
-        keepMessageChannelOpen = true;
+        keepMessageChannelOpen =
+          true;
       }
 
       return keepMessageChannelOpen;
     },
   );
 
-  void chrome.runtime.sendMessage({
-    type: MESSAGE_TYPE.WORKER_READY,
-  } satisfies WorkerReadyMessage);
+  if (iframeWorkerId) {
+    void chrome.runtime.sendMessage({
+      type:
+        WORKER_IFRAME_READY_MESSAGE_TYPE,
+      workerId:
+        iframeWorkerId,
+    } satisfies WorkerIframeReadyMessage);
+  } else {
+    void chrome.runtime.sendMessage({
+      type:
+        MESSAGE_TYPE.WORKER_READY,
+    } satisfies WorkerReadyMessage);
+  }
 }
 
 function addWorkerBanner(
   doc: Document,
 ): void {
-  doc.getElementById(
-    WORKER_BANNER_ID,
-  )?.remove();
+  doc
+    .getElementById(
+      WORKER_BANNER_ID,
+    )
+    ?.remove();
 
   const overlay =
     doc.createElement("div");
 
-  overlay.id = WORKER_BANNER_ID;
+  overlay.id =
+    WORKER_BANNER_ID;
 
   overlay.style.cssText = [
     "position:fixed",
@@ -174,7 +232,7 @@ function addWorkerBanner(
     doc.createElement("div");
 
   message.textContent =
-    "This tab is temporarily being used by Fobles for background processing. Avoid using or closing this tab.";
+    "This page is temporarily being used by Fobles for background processing.";
 
   message.style.cssText = [
     "font-size:18px",
@@ -184,7 +242,8 @@ function addWorkerBanner(
   const adoptButton =
     doc.createElement("button");
 
-  adoptButton.type = "button";
+  adoptButton.type =
+    "button";
 
   adoptButton.textContent =
     "Use this tab instead";
@@ -213,7 +272,8 @@ function addWorkerBanner(
       overlay.remove();
 
       void chrome.runtime.sendMessage({
-        type: MESSAGE_TYPE.WORKER_ADOPTED,
+        type:
+          MESSAGE_TYPE.WORKER_ADOPTED,
       } satisfies WorkerAdoptedMessage);
     },
   );
@@ -224,6 +284,11 @@ function addWorkerBanner(
     adoptButton,
   );
 
-  overlay.appendChild(panel);
-  doc.documentElement.appendChild(overlay);
+  overlay.appendChild(
+    panel,
+  );
+
+  doc.documentElement.appendChild(
+    overlay,
+  );
 }

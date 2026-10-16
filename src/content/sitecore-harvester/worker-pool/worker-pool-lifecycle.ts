@@ -1,35 +1,23 @@
 // @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-pool-lifecycle.ts
 
+import { extensionLog } from "../../logger";
 import {
-  extensionLog,
-} from "../../logger";
-import {
-  closeWorkerTab,
-  sendCancelToWorkerTab,
-} from "../background-tab/worker-tab-service";
-import {
-  clearWorkerReadiness,
-} from "./worker-readiness";
-import {
-  createCancelledResult,
-} from "./worker-task.types";
+  closeWorkerTarget,
+  sendCancelToWorkerTarget,
+} from "../background-tab/worker-target-service";
 import type {
+  ActiveWorkerTask,
   PoolWorker,
   QueuedTask,
 } from "./worker-executor";
-
-type ActiveTask = {
-  requestId: string;
-  taskId: string;
-};
+import { clearWorkerReadiness } from "./worker-readiness";
+import { createCancelledResult } from "./worker-task.types";
 
 type DisposeWorkerPoolOptions = {
   workers: PoolWorker[];
   queue: QueuedTask[];
-  activeTaskByTabId:
-    Map<number, ActiveTask>;
-  cancelledRequestIds:
-    Set<string>;
+  activeTaskByWorkerKey: Map<string, ActiveWorkerTask>;
+  cancelledRequestIds: Set<string>;
   generation: number;
 };
 
@@ -39,128 +27,103 @@ export type WorkerPoolDisposalResult = {
 
 let poolGeneration = 0;
 
-export function getWorkerPoolGeneration():
-  number {
+export function getWorkerPoolGeneration(): number {
   return poolGeneration;
 }
 
 export function isWorkerPoolGenerationCurrent(
   generation: number,
 ): boolean {
-  return (
-    generation ===
-    poolGeneration
-  );
+  return generation === poolGeneration;
 }
 
 export async function disposeWorkerPoolLifecycle({
   workers,
   queue,
-  activeTaskByTabId,
+  activeTaskByWorkerKey,
   cancelledRequestIds,
   generation,
-}: DisposeWorkerPoolOptions):
-  Promise<WorkerPoolDisposalResult> {
-  let nextGeneration =
-    poolGeneration;
+}: DisposeWorkerPoolOptions): Promise<WorkerPoolDisposalResult> {
+  let nextGeneration = poolGeneration;
 
-  if (
-    generation ===
-    poolGeneration
-  ) {
+  if (generation === poolGeneration) {
     poolGeneration += 1;
-    nextGeneration =
-      poolGeneration;
+    nextGeneration = poolGeneration;
   }
 
-  const tabIds =
-    collectWorkerTabIds(
-      workers,
-    );
-
   queue.forEach((queued) => {
-    queued.resolve(
-      createCancelledResult(
-        queued.task,
-      ),
+    queued.resolve(createCancelledResult(queued.task));
+  });
+
+  activeTaskByWorkerKey.forEach((active) => {
+    cancelledRequestIds.add(active.requestId);
+
+    sendCancelToWorkerTarget(
+      active.target,
+      active.requestId,
+      active.taskId,
     );
   });
 
-  activeTaskByTabId.forEach(
-    (active, tabId) => {
-      cancelledRequestIds.add(
-        active.requestId,
-      );
-
-      sendCancelToWorkerTab(
-        tabId,
-        active.requestId,
-        active.taskId,
-      );
-    },
-  );
-
-  activeTaskByTabId.clear();
+  activeTaskByWorkerKey.clear();
   clearWorkerReadiness();
 
-  extensionLog.debug(
-    "Worker pool: disposing",
-    {
-      previousGeneration:
-        generation,
-      nextGeneration,
-      workerCount:
-        workers.length,
-      queuedTaskCount:
-        queue.length,
-      tabIds,
-    },
-  );
+  const targets = collectWorkerTargets(workers);
+
+  extensionLog.debug("Worker pool: disposing", {
+    previousGeneration: generation,
+    nextGeneration,
+    workerCount: workers.length,
+    queuedTaskCount: queue.length,
+    targets,
+  });
 
   await Promise.all(
-    tabIds.map(
-      async (tabId) => {
-        await closeWorkerTab(
-          tabId,
-        );
-      },
+    targets.map((target) =>
+      closeWorkerTarget(target),
     ),
   );
 
   cancelledRequestIds.clear();
 
-  extensionLog.debug(
-    "Worker pool: disposed",
-    {
-      generation:
-        nextGeneration,
-      closedTabIds:
-        tabIds,
-    },
-  );
+  extensionLog.debug("Worker pool: disposed", {
+    generation: nextGeneration,
+    closedTargets: targets,
+  });
 
   return {
-    generation:
-      nextGeneration,
+    generation: nextGeneration,
   };
 }
 
-function collectWorkerTabIds(
-  workers:
-    readonly PoolWorker[],
-): number[] {
-  const tabIds =
-    workers
-      .filter(
-        (worker) =>
-          worker.tabId !== -1,
-      )
-      .map(
-        (worker) =>
-          worker.tabId,
-      );
+function collectWorkerTargets(
+  workers: readonly PoolWorker[],
+): NonNullable<PoolWorker["target"]>[] {
+  const targetsByKey = new Map<
+    string,
+    NonNullable<PoolWorker["target"]>
+  >();
 
-  return Array.from(
-    new Set(tabIds),
-  );
+  workers.forEach((worker) => {
+    const target = worker.target;
+
+    if (target) {
+      const key =
+        target.kind === "tab"
+          ? `tab:${target.tabId}`
+          : `iframe:${target.workerId}`;
+
+      targetsByKey.set(key, target);
+    }
+  });
+
+  return Array.from(targetsByKey.values());
+}
+
+function resetTabReadiness(
+  tabId: number,
+): void {
+  // clearWorkerReadiness() already clears the readiness registry globally.
+  // This function preserves an explicit tab-target lifecycle boundary.
+  void tabId;
 }

@@ -18,7 +18,7 @@ import {
   findAllowedPage,
   isKickUsersPath,
 } from "./guard";
-import { resumeKickAllUsers} from "./features/jump-flyout";
+import { resumeKickAllUsers } from "./features/jump-flyout";
 import {
   injectToolbar,
   setToolbarPlacement,
@@ -28,6 +28,7 @@ import {
 import { applyPowerShellIseTabIdentity } from "./ise-tab-title";
 import { toggleLightningBolt } from "./feature-toggle";
 import { resumeReferenceGraph } from "./features/reference-graph/reference-graph";
+import { registerWorkerIframeHost } from "./sitecore-harvester/background-tab/worker-iframe-host";
 
 let foblesUiActive = false;
 let foblesNavPlacement: ToolbarPlacement = DEFAULT_TOOLBAR_PLACEMENT;
@@ -204,6 +205,13 @@ async function reconcileCurrentPage(): Promise<void> {
 }
 
 export function startToolbarRuntime(): void {
+  if (window.top === window) {
+    registerWorkerIframeHost(
+      document,
+    );
+  }
+
   listenForStorageChanges();
+
   void reconcileCurrentPage();
 }

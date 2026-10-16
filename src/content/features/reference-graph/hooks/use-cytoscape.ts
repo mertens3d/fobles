@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/features/reference-graph/hooks/use-cytoscape.ts
+
 import type cytoscape from "cytoscape";
 import { useEffect } from "react";
 import { CONST } from "../../../../constants/const";
@@ -17,6 +19,11 @@ import {
 import { cytoscapeFactory } from "../cytoscape/cytoscape-config";
 import { REFERENCE_GRAPH_STYLE } from "../cytoscape/cytoscape-style";
 import { runGraphLayout } from "../cytoscape/graph-layout";
+import {
+  disposeActiveEnrichmentController,
+  startEnrichmentController,
+} from "../enrichment/enrichment-controller";
+import type { EnrichmentProgress } from "../enrichment/enrichment.types";
 import { attachGraphEventHandlers } from "../event-handlers";
 import { getEnabledFilterKeys } from "../graph-filters";
 import {
@@ -30,21 +37,12 @@ import {
   prepareGraphForExpandedLayout,
   refreshGraphExpandCollapse,
 } from "../graph-nodes/graph-expand-collapse";
-import {
-  setGraphParameterVisibility,
-} from "../graph-nodes/graph-expand-collapse-view";
-import {
-  disposeActiveEnrichmentController,
-  startEnrichmentController,
-} from "../enrichment/enrichment-controller";
-import type { EnrichmentProgress } from "../enrichment/enrichment.types";
+import { setGraphParameterVisibility } from "../graph-nodes/graph-expand-collapse-view";
 import type {
   HarvestForLink,
   LayoutGraphPresetName,
 } from "../graph.types";
-import type {
-  PreparedReferenceGraph,
-} from "../prepared-reference-graph.types";
+import type { PreparedReferenceGraph } from "../prepared-reference-graph.types";
 import { finishReferenceGraphTimer } from "../reference-graph-timing";
 
 type MutableRef<T> = {
@@ -63,8 +61,7 @@ type UseCytoscapeOptions = {
   cyRef: MutableRef<cytoscape.Core | undefined>;
   currentPreparedGraphRef: MutableRef<PreparedReferenceGraph>;
   currentFiltersRef: MutableRef<SitecoreHarvestFiltersState>;
-  parameterVisibilitySettingsRef:
-    MutableRef<GraphParameterVisibilitySettings>;
+  parameterVisibilitySettingsRef: MutableRef<GraphParameterVisibilitySettings>;
   layoutPresetNameRef: MutableRef<LayoutGraphPresetName>;
   graphHistoryRef: MutableRef<PreparedReferenceGraph[]>;
   loadedFiltersByItemIdRef: MutableRef<
@@ -120,246 +117,187 @@ export function useCytoscape({
   useEffect(() => {
     const container = containerRef.current;
 
-    let cy: cytoscape.Core | undefined = undefined;
+    let cy: cytoscape.Core | undefined;
     let disposed = false;
+    let firstAnimationFrameId: number | undefined;
+    let secondAnimationFrameId: number | undefined;
 
-    let firstAnimationFrameId:
-      | number
-      | undefined = undefined;
+    const initialize = async (): Promise<void> => {
+      if (container) {
+        handleHarvestProgress(
+          doc,
+          {
+            stepKey: "build-graph",
+            label: "Building Graph",
+          },
+          "active",
+        );
 
-    let secondAnimationFrameId:
-      | number
-      | undefined = undefined;
+        const [
+          savedFilters,
+          savedLayoutPresetName,
+          savedParameterVisibilitySettings,
+        ] = await Promise.all([
+          getReferenceGraphFilters(),
+          getReferenceGraphLayoutName(),
+          getGraphParameterVisibilitySettings(),
+        ]);
 
-    const initialize =
-      async (): Promise<void> => {
-        if (container) {
-          handleHarvestProgress(
-            doc,
-            {
-              stepKey: "build-graph",
-              label: "Building Graph",
-            },
-            "active",
+        if (!disposed) {
+          const layoutPresetName =
+            savedLayoutPresetName &&
+            savedLayoutPresetName in CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS
+              ? savedLayoutPresetName
+              : CONST.FOBLES.REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME;
+
+          currentFiltersRef.current = savedFilters;
+          parameterVisibilitySettingsRef.current =
+            savedParameterVisibilitySettings;
+          layoutPresetNameRef.current = layoutPresetName;
+
+          setCurrentFilters(savedFilters);
+          setParameterVisibilitySettings(
+            savedParameterVisibilitySettings,
+          );
+          setLayoutPresetName(layoutPresetName);
+
+          loadedFiltersByItemIdRef.current.set(
+            initialPreparedGraph.harvestedData.rootItem.scItemId,
+            getEnabledFilterKeys(savedFilters),
           );
 
-          const [
-            savedFilters,
-            savedLayoutPresetName,
+          cy = cytoscapeFactory({
+            container,
+            elements: initialPreparedGraph.graphElements,
+            layout: {
+              name: "preset",
+            },
+            minZoom: 0.2,
+            maxZoom: 3,
+            style: REFERENCE_GRAPH_STYLE,
+          });
+
+          cyRef.current = cy;
+          currentPreparedGraphRef.current =
+            initialPreparedGraph;
+
+          setGraphParameterVisibility(
+            cy,
             savedParameterVisibilitySettings,
-          ] = await Promise.all([
-            getReferenceGraphFilters(),
-            getReferenceGraphLayoutName(),
-            getGraphParameterVisibilitySettings(),
-          ]);
+          );
+
+          attachGraphEventHandlers(
+            cy,
+            container,
+            harvestForLink,
+            doc,
+            () => currentFiltersRef.current,
+            graphHistoryRef.current,
+            () => currentPreparedGraphRef.current,
+            renderGraph,
+            setHistoryCount,
+            setSelectedTreeNodeId,
+          );
+
+          await attachGraphExpandCollapse(
+            cy,
+            container,
+            () => currentFiltersRef.current,
+            () => layoutPresetNameRef.current,
+          );
+
+          refreshGraphExpandCollapse(cy);
 
           if (!disposed) {
-            const layoutPresetName =
-              savedLayoutPresetName &&
-              savedLayoutPresetName in
-                CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS
-                ? savedLayoutPresetName
-                : CONST.FOBLES.REFERENCE_GRAPH
-                    .DEFAULT_LAYOUT_PRESET_NAME;
+            firstAnimationFrameId = requestAnimationFrame(() => {
+              secondAnimationFrameId = requestAnimationFrame(() => {
+                if (!disposed && cy) {
+                  cy.resize();
+                  prepareGraphForExpandedLayout(cy);
 
-            currentFiltersRef.current =
-              savedFilters;
+                  runGraphLayout(
+                    cy,
+                    layoutPresetNameRef.current,
+                    () => {
+                      if (!disposed && cy) {
+                        initializeGraphCollapseState(cy);
 
-            parameterVisibilitySettingsRef.current =
-              savedParameterVisibilitySettings;
+                        startEnrichmentController({
+                          dataTree: initialPreparedGraph.dataTree,
+                          nodesById: initialPreparedGraph.nodesById,
+                          getCy: () => cyRef.current,
+                          onProgress: (progress) => {
+                            setEnrichmentProgress(progress);
 
-            layoutPresetNameRef.current =
-              layoutPresetName;
+                            if (
+                              !disposed &&
+                              progress.status === "complete"
+                            ) {
+                              const elapsedSeconds =
+                                finishReferenceGraphTimer();
 
-            setCurrentFilters(
-              savedFilters,
-            );
+                              setBuildElapsedSeconds(
+                                elapsedSeconds,
+                              );
 
-            setParameterVisibilitySettings(
-              savedParameterVisibilitySettings,
-            );
+                              extensionLog.debug(
+                                "Reference graph complete",
+                                {
+                                  nodeCount: cy?.nodes().length,
+                                  elapsedSeconds,
+                                },
+                              );
+                            }
+                          },
+                        });
 
-            setLayoutPresetName(
-              layoutPresetName,
-            );
+                        handleHarvestProgress(
+                          doc,
+                          {
+                            stepKey: "build-graph",
+                            label: "Building Graph",
+                          },
+                          "complete",
+                        );
 
-            loadedFiltersByItemIdRef.current.set(
-              initialPreparedGraph
-                .harvestedData
-                .rootItem
-                .scItemId,
-              getEnabledFilterKeys(
-                savedFilters,
-              ),
-            );
+                        closeReferenceGraphProgressModal(doc);
 
-            cy = cytoscapeFactory({
-              container,
-              elements:
-                initialPreparedGraph
-                  .graphElements,
-              layout: {
-                name: "preset",
-              },
-              minZoom: 0.2,
-              maxZoom: 3,
-              style:
-                REFERENCE_GRAPH_STYLE,
+                        extensionLog.debug(
+                          "Reference graph ready",
+                          {
+                            nodeCount: cy.nodes().length,
+                          },
+                        );
+                      }
+                    },
+                  );
+                }
+              });
             });
-
-            cyRef.current = cy;
-
-            currentPreparedGraphRef.current =
-              initialPreparedGraph;
-
-            setGraphParameterVisibility(
-              cy,
-              savedParameterVisibilitySettings,
-            );
-
-            attachGraphEventHandlers(
-              cy,
-              container,
-              harvestForLink,
-              doc,
-              () =>
-                currentFiltersRef.current,
-              graphHistoryRef.current,
-              () =>
-                currentPreparedGraphRef.current,
-              renderGraph,
-              setHistoryCount,
-              setSelectedTreeNodeId,
-            );
-
-            await attachGraphExpandCollapse(
-              cy,
-              container,
-              () =>
-                currentFiltersRef.current,
-              () =>
-                layoutPresetNameRef.current,
-            );
-
-            refreshGraphExpandCollapse(
-              cy,
-            );
-
-            if (!disposed) {
-              firstAnimationFrameId =
-                requestAnimationFrame(
-                  () => {
-                    secondAnimationFrameId =
-                      requestAnimationFrame(
-                        () => {
-                          if (
-                            !disposed &&
-                            cy
-                          ) {
-                            cy.resize();
-
-                            prepareGraphForExpandedLayout(
-                              cy,
-                            );
-
-                            runGraphLayout(
-                              cy,
-                              layoutPresetNameRef.current,
-                              () => {
-                                if (
-                                  !disposed &&
-                                  cy
-                                ) {
-                                  initializeGraphCollapseState(
-                                    cy,
-                                  );
-
-                                  startEnrichmentController({
-                                    dataTree:
-                                      initialPreparedGraph.dataTree,
-                                    nodesById:
-                                      initialPreparedGraph.nodesById,
-                                    getCy: () => cyRef.current,
-                                    onProgress: setEnrichmentProgress,
-                                  });
-
-                                  const elapsedSeconds =
-                                    finishReferenceGraphTimer();
-
-                                  setBuildElapsedSeconds(
-                                    elapsedSeconds,
-                                  );
-
-                                  handleHarvestProgress(
-                                    doc,
-                                    {
-                                      stepKey:
-                                        "build-graph",
-                                      label:
-                                        "Building Graph",
-                                    },
-                                    "complete",
-                                  );
-
-                                  closeReferenceGraphProgressModal(
-                                    doc,
-                                  );
-
-                                  extensionLog.debug(
-                                    "Reference graph ready",
-                                    {
-                                      nodeCount:
-                                        cy.nodes()
-                                          .length,
-                                      elapsedSeconds,
-                                    },
-                                  );
-                                }
-                              },
-                            );
-                          }
-                        },
-                      );
-                  },
-                );
-            }
           }
         }
-      };
+      }
+    };
 
     void initialize();
 
     return () => {
       disposed = true;
 
-      if (
-        firstAnimationFrameId !==
-        undefined
-      ) {
-        cancelAnimationFrame(
-          firstAnimationFrameId,
-        );
+      if (firstAnimationFrameId !== undefined) {
+        cancelAnimationFrame(firstAnimationFrameId);
       }
 
-      if (
-        secondAnimationFrameId !==
-        undefined
-      ) {
-        cancelAnimationFrame(
-          secondAnimationFrameId,
-        );
+      if (secondAnimationFrameId !== undefined) {
+        cancelAnimationFrame(secondAnimationFrameId);
       }
 
       if (cy) {
-        detachGraphExpandCollapse(
-          cy,
-        );
-
+        detachGraphExpandCollapse(cy);
         cy.destroy();
       }
 
       disposeActiveEnrichmentController();
-
       cyRef.current = undefined;
     };
   }, [

@@ -2,9 +2,20 @@
 
 /// <reference types="chrome" />
 
-import { LOGGER, MESSAGE } from "../constants/extension-constants";
-import { REFERENCE_GRAPH } from "../constants/graph.const";
-import { extensionLog } from "../content/logger";
+import {
+  LOGGER,
+  MESSAGE,
+} from "../constants/extension-constants";
+import {
+  REFERENCE_GRAPH,
+} from "../constants/graph.const";
+import {
+  extensionLog,
+} from "../content/logger";
+import {
+  clearHostWorkerIframeTargets,
+  markWorkerIframeReady,
+} from "../content/sitecore-harvester/background-tab/worker-iframe-service";
 import {
   adoptWorkerTab,
   cancelPoolRequest,
@@ -13,34 +24,27 @@ import {
   handleWorkerTabRemoved,
   runPoolTask,
 } from "../content/sitecore-harvester/worker-pool/background-worker-pool";
-import type {
-  PoolCancelRequestMessage,
-  PoolDisposeMessage,
-  WorkerAdoptedMessage,
-  PoolRunTaskMessage,
-  WorkerReadyMessage,
+import {
+  WORKER_IFRAME_READY_MESSAGE_TYPE,
+  type PoolCancelRequestMessage,
+  type PoolDisposeMessage,
+  type PoolRunTaskMessage,
+  type WorkerAdoptedMessage,
+  type WorkerIframeReadyMessage,
+  type WorkerReadyMessage,
 } from "../content/sitecore-harvester/worker-pool/worker.messages";
-import { appendPersistedLogEntry } from "../shared/logging/persisted-log-storage";
-import type { PersistedLogMessage } from "../shared/persisted-log.types";
+import {
+  appendPersistedLogEntry,
+} from "../shared/logging/persisted-log-storage";
+import type {
+  PersistedLogMessage,
+} from "../shared/persisted-log.types";
 
-const RELAYED_COMMANDS: readonly string[] = [
-  MESSAGE.ACTION.TOGGLE_FOBLES,
-  MESSAGE.ACTION.TOGGLE_LBOLT,
-];
-
-chrome.commands?.onCommand?.addListener((command: string) => {
-  if (!RELAYED_COMMANDS.includes(command)) return;
-
-  chrome.tabs?.query(
-    { active: true, currentWindow: true },
-    (tabs: Array<{ id?: number }>) => {
-      const activeTab = tabs[0];
-      if (activeTab?.id !== undefined) {
-        void chrome.tabs?.sendMessage(activeTab.id, { action: command });
-      }
-    },
-  );
-});
+const RELAYED_COMMANDS:
+  readonly string[] = [
+    MESSAGE.ACTION.TOGGLE_FOBLES,
+    MESSAGE.ACTION.TOGGLE_LBOLT,
+  ];
 
 type RuntimeMessage =
   | RuntimeReloadMessage
@@ -48,6 +52,7 @@ type RuntimeMessage =
   | PoolCancelRequestMessage
   | PoolDisposeMessage
   | WorkerReadyMessage
+  | WorkerIframeReadyMessage
   | WorkerAdoptedMessage
   | PersistedLogMessage;
 
@@ -55,13 +60,61 @@ interface RuntimeReloadMessage {
   action: string;
 }
 
-chrome.tabs?.onRemoved?.addListener((tabId: number) => {
-  handleWorkerTabRemoved(tabId);
-});
+chrome.commands?.onCommand?.addListener(
+  (command: string) => {
+    if (
+      RELAYED_COMMANDS.includes(
+        command,
+      )
+    ) {
+      chrome.tabs?.query(
+        {
+          active: true,
+          currentWindow: true,
+        },
+        (
+          tabs:
+            Array<{
+              id?: number;
+            }>,
+        ) => {
+          const activeTab =
+            tabs[0];
 
-chrome.runtime.onSuspend?.addListener(() => {
-  void disposeWorkerPool();
-});
+          if (
+            activeTab?.id !==
+            undefined
+          ) {
+            void chrome.tabs?.sendMessage(
+              activeTab.id,
+              {
+                action: command,
+              },
+            );
+          }
+        },
+      );
+    }
+  },
+);
+
+chrome.tabs?.onRemoved?.addListener(
+  (tabId: number) => {
+    clearHostWorkerIframeTargets(
+      tabId,
+    );
+
+    handleWorkerTabRemoved(
+      tabId,
+    );
+  },
+);
+
+chrome.runtime.onSuspend?.addListener(
+  () => {
+    void disposeWorkerPool();
+  },
+);
 
 chrome.runtime.onMessage.addListener(
   (
@@ -69,16 +122,17 @@ chrome.runtime.onMessage.addListener(
     sender,
     sendResponse,
   ) => {
-    let keepMessageChannelOpen = false;
+    let keepMessageChannelOpen =
+      false;
 
     if (
       "type" in request &&
       request.type ===
-        REFERENCE_GRAPH
-          .BACKGROUND_HARVEST
-          .MESSAGE
-          .TYPE
-          .FOBLES_PERSIST_LOG
+      REFERENCE_GRAPH
+        .BACKGROUND_HARVEST
+        .MESSAGE
+        .TYPE
+        .FOBLES_PERSIST_LOG
     ) {
       void appendPersistedLogEntry(
         request.entry,
@@ -92,10 +146,12 @@ chrome.runtime.onMessage.addListener(
     } else if (
       "action" in request &&
       request.action ===
-        MESSAGE.ACTION.RELOAD_EXTENSION
+      MESSAGE.ACTION
+        .RELOAD_EXTENSION
     ) {
       if (
-        sender.tab?.id !== undefined
+        sender.tab?.id !==
+        undefined
       ) {
         void chrome.tabs?.reload?.(
           sender.tab.id,
@@ -106,11 +162,46 @@ chrome.runtime.onMessage.addListener(
     } else if (
       "type" in request &&
       request.type ===
-        REFERENCE_GRAPH
-          .BACKGROUND_HARVEST
-          .MESSAGE
-          .TYPE
-          .WORKER_READY
+      WORKER_IFRAME_READY_MESSAGE_TYPE
+    ) {
+      const hostTabId =
+        sender.tab?.id;
+
+      const frameId =
+        sender.frameId;
+
+      if (
+        hostTabId !== undefined &&
+        frameId !== undefined &&
+        frameId !== 0
+      ) {
+        const target =
+          markWorkerIframeReady(
+            request.workerId,
+            hostTabId,
+            frameId,
+          );
+
+        extensionLog.debug(
+          "Worker iframe: ready",
+          {
+            workerId:
+              target.workerId,
+            hostTabId:
+              target.hostTabId,
+            frameId:
+              target.frameId,
+          },
+        );
+      }
+    } else if (
+      "type" in request &&
+      request.type ===
+      REFERENCE_GRAPH
+        .BACKGROUND_HARVEST
+        .MESSAGE
+        .TYPE
+        .WORKER_READY
     ) {
       handleWorkerReady(
         sender.tab?.id,
@@ -118,11 +209,11 @@ chrome.runtime.onMessage.addListener(
     } else if (
       "type" in request &&
       request.type ===
-        REFERENCE_GRAPH
-          .BACKGROUND_HARVEST
-          .MESSAGE
-          .TYPE
-          .WORKER_ADOPTED
+      REFERENCE_GRAPH
+        .BACKGROUND_HARVEST
+        .MESSAGE
+        .TYPE
+        .WORKER_ADOPTED
     ) {
       adoptWorkerTab(
         sender.tab?.id,
@@ -130,11 +221,11 @@ chrome.runtime.onMessage.addListener(
     } else if (
       "type" in request &&
       request.type ===
-        REFERENCE_GRAPH
-          .BACKGROUND_HARVEST
-          .MESSAGE
-          .TYPE
-          .POOL_CANCEL_REQUEST
+      REFERENCE_GRAPH
+        .BACKGROUND_HARVEST
+        .MESSAGE
+        .TYPE
+        .POOL_CANCEL_REQUEST
     ) {
       cancelPoolRequest(
         request.requestId,
@@ -142,56 +233,75 @@ chrome.runtime.onMessage.addListener(
     } else if (
       "type" in request &&
       request.type ===
-        REFERENCE_GRAPH
-          .BACKGROUND_HARVEST
-          .MESSAGE
-          .TYPE
-          .POOL_DISPOSE
+      REFERENCE_GRAPH
+        .BACKGROUND_HARVEST
+        .MESSAGE
+        .TYPE
+        .POOL_DISPOSE
     ) {
       void disposeWorkerPool()
         .then(() => {
-          sendResponse(undefined);
-        })
-        .catch((error: unknown) => {
-          extensionLog.error(
-            LOGGER.NAMESPACE,
-            "Failed to dispose worker pool",
-            error,
+          sendResponse(
+            undefined,
           );
+        })
+        .catch(
+          (error: unknown) => {
+            extensionLog.error(
+              LOGGER.NAMESPACE,
+              "Failed to dispose worker pool",
+              error,
+            );
 
-          sendResponse(undefined);
-        });
+            sendResponse(
+              undefined,
+            );
+          },
+        );
 
-      keepMessageChannelOpen = true;
+      keepMessageChannelOpen =
+        true;
     } else if (
       "type" in request &&
       request.type ===
-        REFERENCE_GRAPH
-          .BACKGROUND_HARVEST
-          .MESSAGE
-          .TYPE
-          .POOL_RUN_TASK
+      REFERENCE_GRAPH
+        .BACKGROUND_HARVEST
+        .MESSAGE
+        .TYPE
+        .POOL_RUN_TASK
     ) {
       void runPoolTask(
         request.task,
+        sender.tab?.id,
       )
         .then((result) => {
-          sendResponse(result);
-        })
-        .catch((error: unknown) => {
-          extensionLog.error(
-            LOGGER.NAMESPACE,
-            "Worker pool task failed",
-            error,
+          sendResponse(
+            result,
           );
+        })
+        .catch(
+          (error: unknown) => {
+            extensionLog.error(
+              LOGGER.NAMESPACE,
+              "Worker pool task failed",
+              error,
+            );
 
-          sendResponse(undefined);
-        });
+            sendResponse(
+              undefined,
+            );
+          },
+        );
 
-      keepMessageChannelOpen = true;
+      keepMessageChannelOpen =
+        true;
     }
 
     return keepMessageChannelOpen;
   },
 );
-extensionLog.debug(LOGGER.NAMESPACE, "Background script loaded");
+
+extensionLog.debug(
+  LOGGER.NAMESPACE,
+  "Background script loaded",
+);

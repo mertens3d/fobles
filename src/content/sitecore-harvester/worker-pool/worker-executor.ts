@@ -3,12 +3,13 @@
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { extensionLog } from "../../logger";
 import {
-  closeWorkerTab,
-  createWorkerTab,
-  markWorkerTabOwned,
-  navigateWorkerTab,
-  sendTaskToWorkerTab,
-} from "../background-tab/worker-tab-service";
+  closeWorkerTarget,
+  createWorkerTarget,
+  getWorkerTargetKey,
+  markWorkerTargetOwned,
+  navigateWorkerTarget,
+  sendTaskToWorkerTarget,
+} from "../background-tab/worker-target-service";
 import {
   resetWorkerReadiness,
   waitForWorkerReady,
@@ -19,59 +20,70 @@ import {
   type WorkerTask,
   type WorkerTaskResult,
 } from "./worker-task.types";
+import {
+  isWorkerTabTarget,
+  type WorkerTarget,
+} from "./worker-target";
 
 const READY_TIMEOUT_MS = 20000;
 
 export type PoolWorker = {
-  tabId: number;
+  target: WorkerTarget | undefined;
   status: "idle" | "busy";
   currentUrl: string | undefined;
 };
 
 export type QueuedTask = {
   task: WorkerTask;
+  hostTabId: number | undefined;
   retried: boolean;
-  resolve: (
-    result: WorkerTaskResult,
-  ) => void;
+  resolve: (result: WorkerTaskResult) => void;
+};
+
+export type ActiveWorkerTask = {
+  target: WorkerTarget;
+  requestId: string;
+  taskId: string;
 };
 
 export type WorkerExecutorContext = {
-  activeTaskByTabId: Map<
-    number,
-    {
-      requestId: string;
-      taskId: string;
-    }
-  >;
+  activeTaskByWorkerKey: Map<string, ActiveWorkerTask>;
   cancelledRequestIds: Set<string>;
-  createPendingWorker:
-    () => PoolWorker;
-  removeWorker: (
-    worker: PoolWorker,
-  ) => void;
+  createPendingWorker: () => PoolWorker;
+  removeWorker: (worker: PoolWorker) => void;
   scheduleNext: () => void;
-  isCurrentGeneration:
-    () => boolean;
+  isCurrentGeneration: () => boolean;
 };
 
-async function closeStaleWorker(
+async function closeWorker(
   context: WorkerExecutorContext,
   worker: PoolWorker,
 ): Promise<void> {
-  const tabId = worker.tabId;
+  const target = worker.target;
 
   context.removeWorker(worker);
 
-  if (tabId !== -1) {
-    context.activeTaskByTabId.delete(
-      tabId,
+  if (target) {
+    context.activeTaskByWorkerKey.delete(
+      getWorkerTargetKey(target),
     );
 
-    resetWorkerReadiness(tabId);
+    if (isWorkerTabTarget(target)) {
+      resetWorkerReadiness(target.tabId);
+    }
 
-    await closeWorkerTab(tabId);
+    await closeWorkerTarget(target);
+    worker.target = undefined;
   }
+}
+
+async function cancelStaleWorker(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+): Promise<void> {
+  await closeWorker(context, worker);
+  queued.resolve(createCancelledResult(queued.task));
 }
 
 async function retryOrResolveError(
@@ -80,32 +92,14 @@ async function retryOrResolveError(
   queued: QueuedTask,
   errorMessage: string,
 ): Promise<void> {
-  const tabId = worker.tabId;
+  await closeWorker(context, worker);
 
-  context.removeWorker(worker);
-
-  if (tabId !== -1) {
-    context.activeTaskByTabId.delete(
-      tabId,
-    );
-
-    resetWorkerReadiness(tabId);
-
-    await closeWorkerTab(tabId);
-  }
-
-  if (
-    !context.isCurrentGeneration()
-  ) {
-    queued.resolve(
-      createCancelledResult(
-        queued.task,
-      ),
-    );
+  if (!context.isCurrentGeneration()) {
+    queued.resolve(createCancelledResult(queued.task));
   } else if (!queued.retried) {
     queued.retried = true;
 
-    void runOnNewWorker(
+    runTaskOnNewWorker(
       context,
       context.createPendingWorker(),
       queued,
@@ -113,100 +107,70 @@ async function retryOrResolveError(
 
     context.scheduleNext();
   } else {
-    queued.resolve(
-      createErrorResult(
-        queued.task,
-        errorMessage,
-      ),
-    );
-
+    queued.resolve(createErrorResult(queued.task, errorMessage));
     context.scheduleNext();
   }
 }
 
-async function runTaskOnWorkerTab(
+async function runTaskOnWorker(
   context: WorkerExecutorContext,
   worker: PoolWorker,
   queued: QueuedTask,
 ): Promise<void> {
-  if (
-    !context.isCurrentGeneration()
-  ) {
-    await closeStaleWorker(
-      context,
-      worker,
-    );
+  const target = worker.target;
 
-    queued.resolve(
-      createCancelledResult(
-        queued.task,
-      ),
-    );
-
+  if (!target || !context.isCurrentGeneration()) {
+    await cancelStaleWorker(context, worker, queued);
     return;
   }
 
-  context.activeTaskByTabId.set(
-    worker.tabId,
-    {
-      requestId:
-        queued.task.requestId,
-      taskId:
-        queued.task.taskId,
-    },
-  );
+  const workerKey = getWorkerTargetKey(target);
 
-  let result:
-    | WorkerTaskResult
-    | undefined = undefined;
+  context.activeTaskByWorkerKey.set(workerKey, {
+    target,
+    requestId: queued.task.requestId,
+    taskId: queued.task.taskId,
+  });
+
+  let result: WorkerTaskResult | undefined;
 
   try {
-    result =
-      await sendTaskToWorkerTab(
-        worker.tabId,
-        queued.task,
-      );
+
+    extensionLog.debug(`Worker pool[${workerKey}]: executing task`, {
+      workerKey: getWorkerTargetKey(target),
+      taskId: queued.task.taskId,
+      taskType: queued.task.type,
+      url: queued.task.url,
+    });
+
+
+    result = await sendTaskToWorkerTarget(target, queued.task);
   } catch (error) {
-    extensionLog.warn(
-      "Worker pool: task execution failed",
-      {
-        tabId: worker.tabId,
-        task: queued.task,
-        error,
-      },
-    );
+    extensionLog.warn("Worker pool: task execution failed", {
+      workerKey,
+      task: queued.task,
+      error,
+    });
   }
 
-  context.activeTaskByTabId.delete(
-    worker.tabId,
-  );
+  context.activeTaskByWorkerKey.delete(workerKey);
 
-  if (
-    !context.isCurrentGeneration()
-  ) {
-    await closeStaleWorker(
-      context,
-      worker,
-    );
+  extensionLog.debug(`Worker pool[${workerKey}]: task completed`, {
+  taskId: queued.task.taskId,
+  taskType: queued.task.type,
+  resultStatus: result?.status,
+});
 
-    queued.resolve(
-      createCancelledResult(
-        queued.task,
-      ),
-    );
-  } else if (
-    context.cancelledRequestIds.has(
-      queued.task.requestId,
-    )
-  ) {
+
+  if (!context.isCurrentGeneration()) {
+    await cancelStaleWorker(context, worker, queued);
+  } else if (context.cancelledRequestIds.has(queued.task.requestId)) {
+    
+    
+    extensionLog.debug(`Worker pool[${workerKey}]: becoming idle`);
+    
     worker.status = "idle";
-
-    queued.resolve(
-      createCancelledResult(
-        queued.task,
-      ),
-    );
-
+    queued.resolve(createCancelledResult(queued.task));
     context.scheduleNext();
   } else if (!result) {
     await retryOrResolveError(
@@ -217,11 +181,37 @@ async function runTaskOnWorkerTab(
     );
   } else {
     worker.status = "idle";
-
     queued.resolve(result);
-
     context.scheduleNext();
   }
+}
+
+async function prepareCreatedTarget(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+  target: WorkerTarget,
+): Promise<boolean> {
+  worker.target = target;
+  worker.currentUrl = queued.task.url;
+
+  if (isWorkerTabTarget(target)) {
+    await waitForWorkerReady(target.tabId, READY_TIMEOUT_MS);
+  }
+
+  if (!context.isCurrentGeneration()) {
+    await cancelStaleWorker(context, worker, queued);
+    return false;
+  }
+
+  await markWorkerTargetOwned(target);
+
+  if (!context.isCurrentGeneration()) {
+    await cancelStaleWorker(context, worker, queued);
+    return false;
+  }
+
+  return true;
 }
 
 async function runOnNewWorker(
@@ -229,118 +219,107 @@ async function runOnNewWorker(
   worker: PoolWorker,
   queued: QueuedTask,
 ): Promise<void> {
-  const tabId =
-    await createWorkerTab(
-      queued.task.url,
-      REFERENCE_GRAPH
-        .DEBUG_BACKGROUND_HARVEST,
-    );
-
-  if (
-    !context.isCurrentGeneration()
-  ) {
-    if (tabId !== undefined) {
-      worker.tabId = tabId;
-
-      await closeStaleWorker(
-        context,
-        worker,
-      );
-    } else {
-      context.removeWorker(worker);
-    }
-
-    queued.resolve(
-      createCancelledResult(
-        queued.task,
-      ),
-    );
-
-    return;
-  }
-
-  if (tabId === undefined) {
-    await retryOrResolveError(
-      context,
-      worker,
-      queued,
-      "Failed to create worker tab",
-    );
-
-    return;
-  }
-
-  worker.tabId = tabId;
-  worker.currentUrl =
-    queued.task.url;
+  let target: WorkerTarget | undefined;
 
   try {
-    await waitForWorkerReady(
-      tabId,
-      READY_TIMEOUT_MS,
+    target = await createWorkerTarget(
+      queued.hostTabId,
+      queued.task.url,
+      REFERENCE_GRAPH.DEBUG_BACKGROUND_HARVEST,
     );
+  } catch (error) {
+    extensionLog.warn("Worker pool: failed to create worker", {
+      hostTabId: queued.hostTabId,
+      task: queued.task,
+      error,
+    });
+  }
 
-    if (
-      !context.isCurrentGeneration()
-    ) {
-      await closeStaleWorker(
-        context,
-        worker,
-      );
-
-      queued.resolve(
-        createCancelledResult(
-          queued.task,
-        ),
-      );
-
-      return;
+  if (!context.isCurrentGeneration()) {
+    if (target) {
+      worker.target = target;
     }
 
-    await markWorkerTabOwned(
-      tabId,
-    );
+    await cancelStaleWorker(context, worker, queued);
+    return;
+  }
 
-    if (
-      !context.isCurrentGeneration()
-    ) {
-      await closeStaleWorker(
-        context,
-        worker,
-      );
-
-      queued.resolve(
-        createCancelledResult(
-          queued.task,
-        ),
-      );
-
-      return;
-    }
-
-    await runTaskOnWorkerTab(
+  if (!target) {
+    await retryOrResolveError(
       context,
       worker,
       queued,
+      "Failed to create worker",
     );
+    return;
+  }
+
+  try {
+    const ready = await prepareCreatedTarget(
+      context,
+      worker,
+      queued,
+      target,
+    );
+
+    if (ready) {
+      await runTaskOnWorker(context, worker, queued);
+    }
   } catch (error) {
-    extensionLog.warn(
-      "Worker pool: worker tab failed to become ready",
-      {
-        tabId,
-        task: queued.task,
-        retried: queued.retried,
-        error,
-      },
-    );
+    extensionLog.warn("Worker pool: worker failed to become ready", {
+      target,
+      task: queued.task,
+      retried: queued.retried,
+      error,
+    });
 
     await retryOrResolveError(
       context,
       worker,
       queued,
-      "Worker tab failed to become ready",
+      "Worker failed to become ready",
     );
   }
+}
+
+async function navigateExistingWorker(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+): Promise<boolean> {
+  const target = worker.target;
+
+  if (!target) {
+    return false;
+  }
+
+  if (isWorkerTabTarget(target)) {
+    resetWorkerReadiness(target.tabId);
+  }
+
+  const updatedTarget = await navigateWorkerTarget(
+    target,
+    queued.task.url,
+  );
+
+  worker.target = updatedTarget;
+
+  if (isWorkerTabTarget(updatedTarget)) {
+    await waitForWorkerReady(
+      updatedTarget.tabId,
+      READY_TIMEOUT_MS,
+    );
+  }
+
+  if (!context.isCurrentGeneration()) {
+    await cancelStaleWorker(context, worker, queued);
+    return false;
+  }
+
+  await markWorkerTargetOwned(updatedTarget);
+  worker.currentUrl = queued.task.url;
+
+  return true;
 }
 
 export async function runWorkerTask(
@@ -349,99 +328,37 @@ export async function runWorkerTask(
   queued: QueuedTask,
 ): Promise<void> {
   let canRunTask =
-    context.isCurrentGeneration();
+    context.isCurrentGeneration() &&
+    worker.target !== undefined;
 
-  if (
-    canRunTask &&
-    worker.currentUrl !==
-      queued.task.url
-  ) {
-    resetWorkerReadiness(
-      worker.tabId,
-    );
-
+  if (canRunTask && worker.currentUrl !== queued.task.url) {
     try {
-      await navigateWorkerTab(
-        worker.tabId,
-        queued.task.url,
+      canRunTask = await navigateExistingWorker(
+        context,
+        worker,
+        queued,
       );
-
-      if (
-        !context.isCurrentGeneration()
-      ) {
-        canRunTask = false;
-
-        await closeStaleWorker(
-          context,
-          worker,
-        );
-
-        queued.resolve(
-          createCancelledResult(
-            queued.task,
-          ),
-        );
-      } else {
-        await waitForWorkerReady(
-          worker.tabId,
-          READY_TIMEOUT_MS,
-        );
-
-        if (
-          !context.isCurrentGeneration()
-        ) {
-          canRunTask = false;
-
-          await closeStaleWorker(
-            context,
-            worker,
-          );
-
-          queued.resolve(
-            createCancelledResult(
-              queued.task,
-            ),
-          );
-        } else {
-          await markWorkerTabOwned(
-            worker.tabId,
-          );
-
-          worker.currentUrl =
-            queued.task.url;
-        }
-      }
     } catch (error) {
       canRunTask = false;
 
-      extensionLog.warn(
-        "Worker pool: failed to navigate worker tab",
-        {
-          tabId: worker.tabId,
-          task: queued.task,
-          retried: queued.retried,
-          error,
-        },
-      );
+      extensionLog.warn("Worker pool: failed to navigate worker", {
+        target: worker.target,
+        task: queued.task,
+        retried: queued.retried,
+        error,
+      });
 
       await retryOrResolveError(
         context,
         worker,
         queued,
-        "Worker tab failed to navigate",
+        "Worker failed to navigate",
       );
     }
   }
 
-  if (
-    canRunTask &&
-    context.isCurrentGeneration()
-  ) {
-    await runTaskOnWorkerTab(
-      context,
-      worker,
-      queued,
-    );
+  if (canRunTask && context.isCurrentGeneration()) {
+    await runTaskOnWorker(context, worker, queued);
   }
 }
 
@@ -450,9 +367,5 @@ export function runTaskOnNewWorker(
   worker: PoolWorker,
   queued: QueuedTask,
 ): void {
-  void runOnNewWorker(
-    context,
-    worker,
-    queued,
-  );
+  void runOnNewWorker(context, worker, queued);
 }

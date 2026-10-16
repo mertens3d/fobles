@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/features/reference-graph/reference-graph-timing.ts
+
 const REFERENCE_GRAPH_STARTED_AT_KEY =
   "fobles-reference-graph-started-at";
 

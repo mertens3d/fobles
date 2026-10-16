@@ -48,6 +48,7 @@ async function harvestAndOpen(doc: Document): Promise<void> {
   const itemId = getCurrentItemId(doc);
 
   if (itemId) {
+
     referenceGraphAbortController = controller;
 
     const filters = await getReferenceGraphFilters();

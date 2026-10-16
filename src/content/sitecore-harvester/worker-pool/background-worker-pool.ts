@@ -3,11 +3,12 @@
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { extensionLog } from "../../logger";
 import {
-  sendCancelToWorkerTab,
-} from "../background-tab/worker-tab-service";
+  sendCancelToWorkerTarget,
+} from "../background-tab/worker-target-service";
 import {
   runTaskOnNewWorker,
   runWorkerTask,
+  type ActiveWorkerTask,
   type PoolWorker,
   type QueuedTask,
   type WorkerExecutorContext,
@@ -30,6 +31,9 @@ import {
   type WorkerTask,
   type WorkerTaskResult,
 } from "./worker-task.types";
+import {
+  isWorkerTabTarget,
+} from "./worker-target";
 
 let maxWorkers =
   REFERENCE_GRAPH.WORKER_POOL.MAX_WORKERS;
@@ -40,38 +44,28 @@ let queue: QueuedTask[] = [];
 const cancelledRequestIds =
   new Set<string>();
 
-const activeTaskByTabId =
-  new Map<
-    number,
-    {
-      requestId: string;
-      taskId: string;
-    }
-  >();
+const activeTaskByWorkerKey =
+  new Map<string, ActiveWorkerTask>();
 
 void initializeWorkerPoolSettings();
 
-onWorkerPoolMaxWorkersChange(
-  (newMaxWorkers) => {
-    maxWorkers = newMaxWorkers;
+onWorkerPoolMaxWorkersChange((newMaxWorkers) => {
+  maxWorkers = newMaxWorkers;
 
-    extensionLog.debug(
-      "Worker pool: maximum worker count changed",
-      {
-        maxWorkers,
-        workerCount: workers.length,
-        queueLength: queue.length,
-      },
-    );
+  extensionLog.debug(
+    "Worker pool: maximum worker count changed",
+    {
+      maxWorkers,
+      workerCount: workers.length,
+      queueLength: queue.length,
+    },
+  );
 
-    scheduleNext();
-  },
-);
+  scheduleNext();
+});
 
-async function initializeWorkerPoolSettings():
-  Promise<void> {
-  maxWorkers =
-    await getWorkerPoolMaxWorkers();
+async function initializeWorkerPoolSettings(): Promise<void> {
+  maxWorkers = await getWorkerPoolMaxWorkers();
 
   extensionLog.debug(
     "Worker pool: settings initialized",
@@ -83,19 +77,15 @@ async function initializeWorkerPoolSettings():
   scheduleNext();
 }
 
-function removeWorker(
-  worker: PoolWorker,
-): void {
+function removeWorker(worker: PoolWorker): void {
   workers = workers.filter(
-    (candidate) =>
-      candidate !== worker,
+    (candidate) => candidate !== worker,
   );
 }
 
-function createPendingWorker():
-  PoolWorker {
+function createPendingWorker(): PoolWorker {
   const worker: PoolWorker = {
-    tabId: -1,
+    target: undefined,
     status: "busy",
     currentUrl: undefined,
   };
@@ -105,21 +95,18 @@ function createPendingWorker():
   return worker;
 }
 
-function createExecutorContext():
-  WorkerExecutorContext {
+function createExecutorContext(): WorkerExecutorContext {
   const generation =
     getWorkerPoolGeneration();
 
   return {
-    activeTaskByTabId,
+    activeTaskByWorkerKey,
     cancelledRequestIds,
     createPendingWorker,
     removeWorker,
     scheduleNext,
     isCurrentGeneration: () =>
-      isWorkerPoolGenerationCurrent(
-        generation,
-      ),
+      isWorkerPoolGenerationCurrent(generation),
   };
 }
 
@@ -132,34 +119,29 @@ export function handleWorkerReady(
 export function handleWorkerTabRemoved(
   tabId: number,
 ): void {
-  const worker =
-    workers.find(
-      (candidate) =>
-        candidate.tabId === tabId,
-    );
+  const worker = workers.find(
+    (candidate) =>
+      candidate.target !== undefined &&
+      isWorkerTabTarget(candidate.target) &&
+      candidate.target.tabId === tabId,
+  );
 
-  if (worker) {
+  if (worker?.target) {
+    const workerKey =
+      `tab:${tabId}`;
+
     removeWorker(worker);
+    activeTaskByWorkerKey.delete(workerKey);
   }
 
-  activeTaskByTabId.delete(
-    tabId,
-  );
-
-  resetWorkerReadiness(
-    tabId,
-  );
-
+  resetWorkerReadiness(tabId);
   scheduleNext();
 }
 
 function scheduleNext(): void {
   let scheduling = true;
 
-  while (
-    scheduling &&
-    queue.length > 0
-  ) {
+  while (scheduling && queue.length > 0) {
     const next = queue[0];
 
     if (
@@ -168,11 +150,8 @@ function scheduleNext(): void {
       )
     ) {
       queue.shift();
-
       next.resolve(
-        createCancelledResult(
-          next.task,
-        ),
+        createCancelledResult(next.task),
       );
     } else {
       const idleWorker =
@@ -183,9 +162,7 @@ function scheduleNext(): void {
 
       if (idleWorker) {
         queue.shift();
-
-        idleWorker.status =
-          "busy";
+        idleWorker.status = "busy";
 
         void runWorkerTask(
           createExecutorContext(),
@@ -193,8 +170,7 @@ function scheduleNext(): void {
           next,
         );
       } else if (
-        workers.length <
-        maxWorkers
+        workers.length < maxWorkers
       ) {
         queue.shift();
 
@@ -212,6 +188,7 @@ function scheduleNext(): void {
 
 export async function runPoolTask(
   task: WorkerTask,
+  hostTabId: number | undefined,
 ): Promise<WorkerTaskResult> {
   maxWorkers =
     await getWorkerPoolMaxWorkers();
@@ -223,69 +200,61 @@ export async function runPoolTask(
     },
   );
 
-  return new Promise(
-    (resolve) => {
-      queue.push({
-        task,
-        retried: false,
-        resolve,
-      });
+  return new Promise((resolve) => {
+    queue.push({
+      task,
+      hostTabId,
+      retried: false,
+      resolve,
+    });
 
-      extensionLog.debug(
-        `Worker pool: task queued - maxWorkers=${maxWorkers}, workers=${workers.length}, queue=${queue.length}`,
-        {
-          taskType: task.type,
-          taskId: task.taskId,
-          requestId: task.requestId,
-          maxWorkers,
-          workerCount: workers.length,
-          queueLength: queue.length,
-          poolGeneration:
-            getWorkerPoolGeneration(),
-        },
-      );
+    extensionLog.debug(
+      `Worker pool: task queued - maxWorkers=${maxWorkers}, workers=${workers.length}, queue=${queue.length}`,
+      {
+        taskType: task.type,
+        taskId: task.taskId,
+        requestId: task.requestId,
+        hostTabId,
+        maxWorkers,
+        workerCount: workers.length,
+        queueLength: queue.length,
+        poolGeneration:
+          getWorkerPoolGeneration(),
+      },
+    );
 
-      scheduleNext();
-    },
-  );
+    scheduleNext();
+  });
 }
 
 export function cancelPoolRequest(
   requestId: string,
 ): void {
-  cancelledRequestIds.add(
-    requestId,
-  );
+  cancelledRequestIds.add(requestId);
 
-  queue = queue.filter(
-    (queued) => {
-      let keepTask = true;
+  queue = queue.filter((queued) => {
+    let keepTask = true;
 
+    if (
+      queued.task.requestId === requestId
+    ) {
+      queued.resolve(
+        createCancelledResult(queued.task),
+      );
+
+      keepTask = false;
+    }
+
+    return keepTask;
+  });
+
+  activeTaskByWorkerKey.forEach(
+    (active) => {
       if (
-        queued.task.requestId ===
-        requestId
+        active.requestId === requestId
       ) {
-        queued.resolve(
-          createCancelledResult(
-            queued.task,
-          ),
-        );
-
-        keepTask = false;
-      }
-
-      return keepTask;
-    },
-  );
-
-  activeTaskByTabId.forEach(
-    (active, tabId) => {
-      if (
-        active.requestId ===
-        requestId
-      ) {
-        sendCancelToWorkerTab(
-          tabId,
+        sendCancelToWorkerTarget(
+          active.target,
           active.requestId,
           active.taskId,
         );
@@ -299,45 +268,38 @@ export function cancelPoolRequest(
 export function adoptWorkerTab(
   tabId: number | undefined,
 ): void {
-  if (tabId !== undefined) {
-    const worker =
-      workers.find(
-        (candidate) =>
-          candidate.tabId === tabId,
-      );
+  if (tabId === undefined) {
+    return;
+  }
 
-    if (worker) {
-      removeWorker(worker);
+  const worker = workers.find(
+    (candidate) =>
+      candidate.target !== undefined &&
+      isWorkerTabTarget(candidate.target) &&
+      candidate.target.tabId === tabId,
+  );
 
-      resetWorkerReadiness(
+  if (worker?.target) {
+    removeWorker(worker);
+    resetWorkerReadiness(tabId);
+    activeTaskByWorkerKey.delete(
+      `tab:${tabId}`,
+    );
+
+    extensionLog.debug(
+      "Worker pool: tab adopted by user",
+      {
         tabId,
-      );
+      },
+    );
 
-      activeTaskByTabId.delete(
-        tabId,
-      );
-
-      extensionLog.debug(
-        "Worker pool: tab adopted by user",
-        {
-          tabId,
-        },
-      );
-
-      scheduleNext();
-    }
+    scheduleNext();
   }
 }
 
-export async function disposeWorkerPool():
-  Promise<void> {
-  const workersToDispose = [
-    ...workers,
-  ];
-
-  const queuedTasks = [
-    ...queue,
-  ];
+export async function disposeWorkerPool(): Promise<void> {
+  const workersToDispose = [...workers];
+  const queuedTasks = [...queue];
 
   workers = [];
   queue = [];
@@ -345,7 +307,7 @@ export async function disposeWorkerPool():
   await disposeWorkerPoolLifecycle({
     workers: workersToDispose,
     queue: queuedTasks,
-    activeTaskByTabId,
+    activeTaskByWorkerKey,
     cancelledRequestIds,
     generation:
       getWorkerPoolGeneration(),
