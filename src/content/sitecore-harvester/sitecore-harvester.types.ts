@@ -1,9 +1,17 @@
+// @source-path [fobles] src/content/sitecore-harvester/sitecore-harvester.types.ts
+
+import type {
+  SitecoreDeviceXml,
+  SitecoreRenderingXml,
+} from "./collectors/section-collector/layout-collector/sitecore-layout-xml-schema.types";
+
 export type HarvestContext = {
   doc: Document;
   result: SitecoreHarvestResult;
   signal: AbortSignal;
   rootItem: ItemGraphNodeData;
 };
+
 export type ProgressStep = {
   stepKey: StepKey;
   label: string;
@@ -73,8 +81,9 @@ export type SitecoreHarvestFiltersState = {
 // FoblesTopSelectors - but reading Sitecore's own raw markup directly (not the augmentor's
 // injected buttons, which don't exist in a fetched/re-rooted document). Returns null when the
 // marker isn't that strategy's shape at all, so collectSections' flat-text fallback still applies.
-
-export type FieldLinkResolver = (marker: HTMLElement) => FieldLink[] | null;
+export type FieldLinkResolver = (
+  marker: HTMLElement,
+) => FieldLink[] | null;
 
 export type FieldLink = {
   label: string;
@@ -94,13 +103,14 @@ export type LayoutSectionField = {
 };
 
 export type ScControl = {
-    uid: string | undefined;
-    rendering: ItemGraphNodeData;
-    datasource: ItemGraphNodeData | undefined;
-    placeholder: string | undefined;
-    parameters: Record<string, string>;
-    p_before: string | undefined;
-    p_after: string | undefined;
+  uid: string | undefined;
+  rendering: ItemGraphNodeData;
+  datasource: ItemGraphNodeData | undefined;
+  placeholder: string | undefined;
+  parameters: Record<string, string>;
+  p_before: string | undefined;
+  p_after: string | undefined;
+  rawData: SitecoreRenderingXml;
 };
 
 export type SitecoreHarvestField = {
@@ -118,6 +128,7 @@ export type LayoutDevice = {
   scDeviceItem: ItemGraphNodeData;
   scPageLayoutItem: ItemGraphNodeData | undefined;
   scControls: ScControl[];
+  rawData: SitecoreDeviceXml;
 };
 
 export type HarvestFieldLink = {
@@ -142,10 +153,11 @@ export type HarvestProgressStatus =
   | "skipped"
   | "complete";
 
-export type HarvestProgressCallback = (step: ProgressStep, status: HarvestProgressStatus) => void;
+export type HarvestProgressCallback = (
+  step: ProgressStep,
+  status: HarvestProgressStatus,
+) => void;
 
-// Unified request model: both initial harvest and lazy-filter harvest build one of these and
-// pass it to the same foreground harvest coordinator (harvestSitecoreWithWorkers).
 export type HarvestRequest = {
   requestId: string;
   url: string;

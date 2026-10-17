@@ -294,6 +294,9 @@ function createPlaceholderDataTreeNode(
       type: "placeholder",
       placeholderPath: placeholder.path,
       displayName: placeholderName,
+      rawData: placeholder.controls.map((control) => ({
+        "s:ph": control.rawData["s:ph"],
+      })),
     },
     collapseKey:
       GRAPH_COLLAPSE_KEY.PLACEHOLDER,

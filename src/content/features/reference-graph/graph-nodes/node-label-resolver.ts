@@ -3,9 +3,11 @@
 import type {
   DataTreeNode,
 } from "../data-tree/data-tree.types";
+import type { LabelBreakResult } from "./text-line-breaker";
 import type {
   NodePresentation,
 } from "./node-presentation.types";
+import { LINE_BREAKER, tryBreakLabel, clampMiddle } from "./text-line-breaker";
 
 function baseName(
   treeNode: DataTreeNode,
@@ -44,7 +46,7 @@ function resolvePrimaryLabel(
     case "fieldName":
       label =
         treeNode.provenance.type ===
-        "section-field"
+          "section-field"
           ? treeNode.provenance.fieldName
           : baseName(treeNode);
       break;
@@ -52,7 +54,7 @@ function resolvePrimaryLabel(
     case "parameterName":
       label =
         treeNode.provenance.type ===
-        "rendering-parameter"
+          "rendering-parameter"
           ? treeNode.provenance.parameterName
           : baseName(treeNode);
       break;
@@ -66,36 +68,52 @@ function resolvePrimaryLabel(
   return label;
 }
 
-function clampMiddle(value: string, edgeLength = 12): string {
-  return value.length > edgeLength * 2 + 3
-    ? `${value.slice(0, edgeLength)}...${value.slice(-edgeLength)}`
-    : value;
-}
-
 export function resolveNodeLabel(
   treeNode: DataTreeNode,
   presentation: NodePresentation,
 ): string {
-  const primaryLabel = clampMiddle(
-    resolvePrimaryLabel(
-      treeNode,
-      presentation,
-    ),
+
+  const primaryLabel = resolvePrimaryLabel(
+    treeNode,
+    presentation,
   );
 
-  let label = primaryLabel;
-
-  if (presentation.secondaryLabel) {
-    label =
-      `${primaryLabel}\n` +
-      presentation.secondaryLabel;
+  let labelBreakResult: LabelBreakResult = {success:false,  label: primaryLabel };
+  if(primaryLabel.length <= LINE_BREAKER.MAX_LABEL_LINE_LENGTH){
+    labelBreakResult.success = true;
+    labelBreakResult.label += "\n";
+  }
+  
+  if ( ! labelBreakResult.success) {
+    tryBreakLabel(labelBreakResult, LINE_BREAKER.LINE_BREAK_REGEX.SPACE);
+  }
+  if (!labelBreakResult.success) {
+    tryBreakLabel(labelBreakResult, LINE_BREAKER.LINE_BREAK_REGEX.DASH);
   }
 
-  if (isAwaitingEnrichment(treeNode)) {
-    label = `*${label}`;
+  if (!labelBreakResult.success) {
+    tryBreakLabel(labelBreakResult, LINE_BREAKER.LINE_BREAK_REGEX.CAMEL_CASE);
   }
 
-  return label;
+  if (!labelBreakResult.success) {
+    clampMiddle(labelBreakResult);
+    
+  }
+
+
+let label = labelBreakResult.label;
+
+if (presentation.secondaryLabel) {
+  label =
+    `${label}\n` +
+    presentation.secondaryLabel;
+}
+
+if (isAwaitingEnrichment(treeNode)) {
+  label = `*${label}`;
+}
+
+return label;
 }
 
 // Minimal "awaiting enrichment" indicator - removed as soon as an attempt finishes, regardless

@@ -5,10 +5,7 @@ import type {
   SitecoreHarvestResult,
   SitecoreHarvestSection,
 } from "../../../sitecore-harvester/sitecore-harvester.types";
-import {
-  createDataTreeItemNode,
-  createDataTreeNonItemNode,
-} from "./data-tree-node-factory";
+import {  createDataTreeItemNode, createDataTreeNonItemNode,} from "./data-tree-node-factory";
 import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";
 import {
   createSitecoreItemProvenance,

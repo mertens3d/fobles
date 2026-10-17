@@ -85,4 +85,12 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
       width: 1,
     },
   },
+  {
+    selector: 'node[enrichmentStatus = "not-found"]',
+    style: {
+      "background-color": "#ffdddd",
+      "border-color": "#d13f3f",
+      "border-style": "dashed",
+    },
+  },
 ];

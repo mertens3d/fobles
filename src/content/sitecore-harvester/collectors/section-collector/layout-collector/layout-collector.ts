@@ -1,132 +1,148 @@
 // @source-path [fobles] src/content/sitecore-harvester/collectors/section-collector/layout-collector/layout-collector.ts
 
-import { findFieldInput } from "../../helpers/harvest-helpers";
-import { factoryItemGraphNodeData, type HarvestContext, type ScControl, type ItemGraphNodeData, type LayoutDevice, type LayoutSectionField } from "../../../sitecore-harvester.types";
 import { XMLParser } from "fast-xml-parser";
-import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
 import { extensionLog } from "../../../../logger";
+import {
+  factoryItemGraphNodeData,
+  type HarvestContext,
+  type ItemGraphNodeData,
+  type LayoutDevice,
+  type LayoutSectionField,
+  type ScControl,
+} from "../../../sitecore-harvester.types";
+import { findFieldInput } from "../../helpers/harvest-helpers";
+import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
 
-export const collectLayouts = async (harvestContext: HarvestContext): Promise<void> => {
-    const layoutsArray: LayoutSectionField[] = [];
+export const collectLayouts = async (
+  harvestContext: HarvestContext,
+): Promise<void> => {
+  const layoutsArray: LayoutSectionField[] = [];
 
-    layoutsArray.push(processLayoutFieldValue(harvestContext, "Renderings"));
-    layoutsArray.push(processLayoutFieldValue(harvestContext, "Final renderings"));
+  layoutsArray.push(processLayoutFieldValue(harvestContext, "Renderings"));
+  layoutsArray.push(processLayoutFieldValue(harvestContext, "Final renderings"));
 
-    harvestContext.result.layoutSectionFields = layoutsArray;
-    return Promise.resolve();
+  harvestContext.result.layoutSectionFields = layoutsArray;
+
+  return Promise.resolve();
 };
+
 const processLayoutFieldValue = (
-    harvestContext: HarvestContext,
-    layoutName: string,
+  harvestContext: HarvestContext,
+  layoutName: string,
 ): LayoutSectionField => {
-    const sectionFieldHtml = findFieldInput(
-        harvestContext.doc,
-        layoutName,
-    );
+  const sectionFieldHtml = findFieldInput(harvestContext.doc, layoutName);
 
-    const layoutSectionField: LayoutSectionField = {
-        name: layoutName,
-        devices: [],
-        rawMarkup: sectionFieldHtml?.value,
-    };
+  const layoutSectionField: LayoutSectionField = {
+    name: layoutName,
+    devices: [],
+    rawMarkup: sectionFieldHtml?.value,
+  };
 
-    const xml = sectionFieldHtml?.value;
+  const xml = sectionFieldHtml?.value;
 
-    if (xml) {
-        const rawProcessedXml = processLayoutXml(xml);
+  if (xml) {
+    const rawProcessedXml = processLayoutXml(xml);
 
-       extensionLog.debug("Processed layout XML:", rawProcessedXml);
+    extensionLog.debug("Processed layout XML:", rawProcessedXml);
 
-        if (rawProcessedXml) {
-            for (const device of rawProcessedXml.r.d) {
-                const scPageLayoutItem = factoryItemGraphNodeData({
-                    scItemId: device.l,
-                });
+    if (rawProcessedXml) {
+      for (const device of rawProcessedXml.r.d) {
+        const scPageLayoutItem = factoryItemGraphNodeData({
+          scItemId: device.l,
+        });
 
-                const scDeviceItem = factoryItemGraphNodeData({
-                    scItemId: device.id,
-                });
+        const scDeviceItem = factoryItemGraphNodeData({
+          scItemId: device.id,
+        });
 
-                const deviceData: LayoutDevice = {
-                    scDeviceItem: scDeviceItem,
-                    scPageLayoutItem: device.l
-                        ? scPageLayoutItem
-                        : undefined,
-                    scControls: [],
-                };
+        const deviceData: LayoutDevice = {
+          scDeviceItem,
+          scPageLayoutItem: device.l
+            ? scPageLayoutItem
+            : undefined,
+          scControls: [],
+          rawData: device,
+        };
 
-                for (const rendering of device.r ?? []) {
-                    const renderingItem = factoryItemGraphNodeData({ scItemId: rendering["s:id"] });
+        for (const rendering of device.r ?? []) {
+          const renderingItem = factoryItemGraphNodeData({
+            scItemId: rendering["s:id"],
+          });
 
-                    const datasourceItem = createDatasourceItem(
-                        rendering["s:ds"],
-                        harvestContext.rootItem.scItemPath,
-                    );
+          const datasourceItem = createDatasourceItem(
+            rendering["s:ds"],
+            harvestContext.rootItem.scItemPath,
+          );
 
-                    const control: ScControl = {
-                        rendering: renderingItem,
-                        datasource: datasourceItem,
-                        placeholder: rendering["s:ph"],
-                        uid: rendering.uid,
-                        parameters: parseParameters(rendering["s:par"]),
-                        p_before: rendering["p:before"],
-                        p_after: rendering["p:after"],
-                    };
+          const control: ScControl = {
+            rendering: renderingItem,
+            datasource: datasourceItem,
+            placeholder: rendering["s:ph"],
+            uid: rendering.uid,
+            parameters: parseParameters(rendering["s:par"]),
+            p_before: rendering["p:before"],
+            p_after: rendering["p:after"],
+            rawData: rendering,
+          };
 
-                    deviceData.scControls.push(control);
-                }
-
-                layoutSectionField.devices.push(deviceData);
-            }
+          deviceData.scControls.push(control);
         }
-    }
 
-    return layoutSectionField;
+        layoutSectionField.devices.push(deviceData);
+      }
+    }
+  }
+
+  return layoutSectionField;
 };
 
 function createDatasourceItem(
-    datasource: string | undefined,
-    currentItemPath: string | undefined,
+  datasource: string | undefined,
+  currentItemPath: string | undefined,
 ): ItemGraphNodeData | undefined {
-    if (!datasource) {
-        return undefined;
-    }
+  let item: ItemGraphNodeData | undefined;
 
-    const item = factoryItemGraphNodeData();
+  if (datasource) {
+    item = factoryItemGraphNodeData();
 
     if (datasource.toLowerCase().startsWith("local:")) {
-        if (currentItemPath) {
-            item.scItemPath =
-                currentItemPath +
-                datasource.slice("local:".length);
-        }
+      if (currentItemPath) {
+        item.scItemPath =
+          currentItemPath +
+          datasource.slice("local:".length);
+      }
     } else if (datasource.startsWith("/")) {
-        item.scItemPath = datasource;
+      item.scItemPath = datasource;
     } else {
-        item.scItemId = datasource;
+      item.scItemId = datasource;
     }
+  }
 
-    return item;
+  return item;
 }
 
 function parseParameters(raw?: string): Record<string, string> {
-    return Object.fromEntries(new URLSearchParams(raw ?? ""));
+  return Object.fromEntries(new URLSearchParams(raw ?? ""));
 }
 
-function processLayoutXml(xml: string): SitecoreLayoutXml | undefined {
-    let result: SitecoreLayoutXml | undefined;
-    const parser = new XMLParser({
-        ignoreAttributes: false,
-        attributeNamePrefix: "",
-        isArray: (_name, jPath) =>
-            jPath === "r.d" ||
-            jPath === "r.d.r",
-    });
-    try {
-        result = parser.parse(xml) as SitecoreLayoutXml;
+function processLayoutXml(
+  xml: string,
+): SitecoreLayoutXml | undefined {
+  let result: SitecoreLayoutXml | undefined;
 
-    } catch (error) {
-        console.error("Failed to parse layout XML:", error);
-    }
-    return result;
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: "",
+    isArray: (_name, jPath) =>
+      jPath === "r.d" ||
+      jPath === "r.d.r",
+  });
+
+  try {
+    result = parser.parse(xml) as SitecoreLayoutXml;
+  } catch (error) {
+    console.error("Failed to parse layout XML:", error);
+  }
+
+  return result;
 }
