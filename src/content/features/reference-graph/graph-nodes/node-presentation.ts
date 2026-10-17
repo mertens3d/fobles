@@ -89,7 +89,7 @@ export const NODE_PRESENTATION_BY_KIND:
   },
   [NODE_KIND.REFERRER]: {
     labelMode: "name",
-    color: "#d13f3f",
+    color:  "#3f7f74",
     width: DEFAULT_WIDTH,
     height: DEFAULT_HEIGHT,
   },
