@@ -8,7 +8,11 @@ import type {
   ProgressStep,
   SitecoreHarvestResult,
 } from "../sitecore-harvester.types";
-import { cancelWorkerRequest, runWorkerTask } from "../worker-pool/worker-pool-client";
+import {
+  cancelWorkerRequest,
+  cancelWorkerTask,
+  runWorkerTask,
+} from "../worker-pool/worker-pool-client";
 import {
   createErrorResult,
   isSuccessResult,
@@ -16,28 +20,122 @@ import {
   type WorkerTaskResult,
   type WorkerTaskType,
 } from "../worker-pool/worker-task.types";
-
-import { createBaseResult, extractRootItem, mergeCollectorResult } from "./harvest-result-merger";
-import { FILTER_KEY_BY_COLLECTOR_TASK_TYPE, planCollectorTasks } from "./harvest-task-planner";
+import {
+  createBaseResult,
+  extractRootItem,
+  mergeCollectorResult,
+} from "./harvest-result-merger";
+import {
+  FILTER_KEY_BY_COLLECTOR_TASK_TYPE,
+  planCollectorTasks,
+} from "./harvest-task-planner";
 
 type HarvestOptions = {
   onProgress?: HarvestProgressCallback;
   signal?: AbortSignal;
 };
 
-const HARVEST_STEP_BY_FILTER_KEY = new Map(HARVEST_STEPS.map((step) => [step.filterKey, step] as const));
+const TASK_TIMEOUT_MS = 30000;
 
-function stepForTaskType(type: WorkerTaskType): ProgressStep | undefined {
+const HARVEST_STEP_BY_FILTER_KEY = new Map(
+  HARVEST_STEPS.map((step) => [step.filterKey, step] as const),
+);
+
+function stepForTaskType(
+  type: WorkerTaskType,
+): ProgressStep | undefined {
   const filterKey = FILTER_KEY_BY_COLLECTOR_TASK_TYPE.get(type);
   return filterKey ? HARVEST_STEP_BY_FILTER_KEY.get(filterKey) : undefined;
 }
 
-function reportSkippedSteps(request: HarvestRequest, onProgress: HarvestProgressCallback | undefined): void {
-  for (const harvestStep of HARVEST_STEPS) {
-    if (!request.filters[harvestStep.filterKey]) {
-      onProgress?.(harvestStep, "skipped");
+function reportSkippedSteps(
+  request: HarvestRequest,
+  onProgress: HarvestProgressCallback | undefined,
+): void {
+  for (const step of HARVEST_STEPS) {
+    if (!request.filters[step.filterKey]) {
+      onProgress?.(step, "skipped");
     }
   }
+}
+
+async function runWorkerTaskWithTimeout(
+  task: WorkerTask,
+): Promise<WorkerTaskResult> {
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+
+  extensionLog.debug("Reference graph: dispatching worker task", {
+    requestId: task.requestId,
+    taskId: task.taskId,
+    taskType: task.type,
+  });
+
+  const timeoutResult = new Promise<WorkerTaskResult>((resolve) => {
+    timeoutId = setTimeout(() => {
+      extensionLog.warn("Reference graph: worker task timed out", {
+        requestId: task.requestId,
+        taskId: task.taskId,
+        taskType: task.type,
+        timeoutMs: TASK_TIMEOUT_MS,
+      });
+
+      cancelWorkerTask(task.requestId, task.taskId);
+
+      resolve(
+        createErrorResult(
+          task,
+          `Worker task timed out after ${TASK_TIMEOUT_MS}ms`,
+        ),
+      );
+    }, TASK_TIMEOUT_MS);
+  });
+
+  const workerResult = runWorkerTask(task).then(
+    (response): WorkerTaskResult => {
+      const result =
+        response ??
+        createErrorResult(task, "No response from worker pool");
+
+      extensionLog.debug("Reference graph: worker task returned", {
+        requestId: task.requestId,
+        taskId: task.taskId,
+        taskType: task.type,
+        status: result.status,
+      });
+
+      return result;
+    },
+    (error: unknown): WorkerTaskResult => {
+      extensionLog.warn("Reference graph: worker task rejected", {
+        requestId: task.requestId,
+        taskId: task.taskId,
+        taskType: task.type,
+        error,
+      });
+
+      return createErrorResult(
+        task,
+        error instanceof Error
+          ? error.message
+          : "Worker task rejected",
+      );
+    },
+  );
+
+  let result: WorkerTaskResult;
+
+  try {
+    result = await Promise.race([
+      workerResult,
+      timeoutResult,
+    ]);
+  } finally {
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
+  }
+
+  return result;
 }
 
 async function dispatchTasks(
@@ -47,19 +145,27 @@ async function dispatchTasks(
   return await Promise.all(
     tasks.map(async (task): Promise<WorkerTaskResult> => {
       const step = stepForTaskType(task.type);
+
       if (step) {
         onProgress?.(step, "active");
       }
 
-      const response = await runWorkerTask(task);
-      const result = response ?? createErrorResult(task, "No response from worker pool");
+      const result = await runWorkerTaskWithTimeout(task);
 
       if (result.status === "error") {
-        extensionLog.warn("Reference graph: collector task failed", { task, result });
+        extensionLog.warn("Reference graph: collector task failed", {
+          task,
+          result,
+        });
       }
 
       if (step) {
-        onProgress?.(step, result.status === "success" ? "complete" : "skipped");
+        onProgress?.(
+          step,
+          result.status === "success"
+            ? "complete"
+            : "skipped",
+        );
       }
 
       return result;
@@ -67,57 +173,99 @@ async function dispatchTasks(
   );
 }
 
-// Single public entry point for both initial harvest and lazy-filter harvest (and reroot, which
-// is just an initial harvest at a different url). The foreground owns the authoritative
-// SitecoreHarvestResult, task scheduling, result merging, enrichment scheduling, progress, and
-// cancellation - worker tabs only ever execute one WorkerTask and return one WorkerTaskResult.
 export async function harvestSitecoreWithWorkers(
   request: HarvestRequest,
   options: HarvestOptions = {},
 ): Promise<SitecoreHarvestResult | undefined> {
   const { onProgress, signal } = options;
+  const abortListener = (): void => {
+    cancelWorkerRequest(request.requestId);
+  };
 
-  const abortListener = (): void => cancelWorkerRequest(request.requestId);
   signal?.addEventListener("abort", abortListener);
 
-  onProgress?.({ stepKey: "fetch-document", label: "Fetching Document" }, "active");
-  onProgress?.({ stepKey: "parse-document", label: "Parsing Document" }, "active");
+  onProgress?.(
+    {
+      stepKey: "fetch-document",
+      label: "Fetching Document",
+    },
+    "active",
+  );
+
+  onProgress?.(
+    {
+      stepKey: "parse-document",
+      label: "Parsing Document",
+    },
+    "active",
+  );
+
   reportSkippedSteps(request, onProgress);
 
   let result: SitecoreHarvestResult | undefined;
 
   try {
     const collectorTasks = planCollectorTasks(request);
-    const collectorResults = await dispatchTasks(collectorTasks, onProgress);
+    const collectorResults = await dispatchTasks(
+      collectorTasks,
+      onProgress,
+    );
 
-    onProgress?.({ stepKey: "fetch-document", label: "Fetching Document" }, "complete");
-    onProgress?.({ stepKey: "parse-document", label: "Parsing Document" }, "complete");
+    onProgress?.(
+      {
+        stepKey: "fetch-document",
+        label: "Fetching Document",
+      },
+      "complete",
+    );
 
-    if (signal?.aborted) {
-      return undefined;
-    }
+    onProgress?.(
+      {
+        stepKey: "parse-document",
+        label: "Parsing Document",
+      },
+      "complete",
+    );
 
-    const successfulCollectorResults = collectorResults.filter(isSuccessResult);
-    const rootItem = extractRootItem(request, successfulCollectorResults);
+    if (!signal?.aborted) {
+      const successfulResults =
+        collectorResults.filter(isSuccessResult);
 
-    if (!rootItem) {
-      return undefined;
-    }
+      const rootItem = extractRootItem(
+        request,
+        successfulResults,
+      );
 
-    onProgress?.({ stepKey: "root-item", label: "Root Item" }, "complete");
+      if (rootItem) {
+        onProgress?.(
+          {
+            stepKey: "root-item",
+            label: "Root Item",
+          },
+          "complete",
+        );
 
-    result = createBaseResult(request, rootItem);
+        result = createBaseResult(
+          request,
+          rootItem,
+        );
 
-    for (const collectorResult of successfulCollectorResults) {
-      mergeCollectorResult(result, collectorResult);
-    }
-
-    if (signal?.aborted) {
-      return undefined;
+        for (const collectorResult of successfulResults) {
+          mergeCollectorResult(
+            result,
+            collectorResult,
+          );
+        }
+      }
     }
   } finally {
-    signal?.removeEventListener("abort", abortListener);
+    signal?.removeEventListener(
+      "abort",
+      abortListener,
+    );
   }
 
-  return signal?.aborted ? undefined : result;
+  return signal?.aborted
+    ? undefined
+    : result;
 }

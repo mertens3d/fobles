@@ -36,7 +36,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
     style: {
       width: presentation.width,
       height: presentation.height,
-      "text-max-width": `${presentation.width - 16}px`,
+      "text-max-width": `${presentation.width - 4}px`,
       "background-color": presentation.color,
       "background-opacity": 0.15,
       "border-color": presentation.color,

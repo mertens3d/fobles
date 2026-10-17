@@ -3,36 +3,62 @@
 import { isItemGraphNodeDataResolved } from "../../../sitecore-harvester/enrichment/item-enricher";
 import type { DataTreeNode } from "./data-tree.types";
 
-// Unique Sitecore GUID -> every treeNodeId representing that same item, for item nodes that are
-// GUID-backed (scItemId) but not yet fully resolved. Only GUIDs actually represented in the
-// DataTree become enrichment candidates - this is the sole source of that candidate set.
+// Item reference -> every treeNodeId representing that same unresolved item.
+// Prefer GUID when available; otherwise use the Sitecore path.
+// Only items represented in the DataTree become enrichment candidates.
 export function collectEnrichmentGuidLookup(
   dataTree: DataTreeNode,
 ): Map<string, string[]> {
-  const treeNodeIdsByGuid = new Map<string, string[]>();
+  const treeNodeIdsByReference =
+    new Map<string, string[]>();
 
-  collectRecursive(dataTree, treeNodeIdsByGuid);
+  collectRecursive(
+    dataTree,
+    treeNodeIdsByReference,
+  );
 
-  return treeNodeIdsByGuid;
+  return treeNodeIdsByReference;
 }
 
 function collectRecursive(
   treeNode: DataTreeNode,
-  treeNodeIdsByGuid: Map<string, string[]>,
+  treeNodeIdsByReference: Map<string, string[]>,
 ): void {
   if (
     treeNode.nodeType === "item" &&
-    treeNode.scItem.scItemId &&
     !isItemGraphNodeDataResolved(treeNode.scItem)
   ) {
-    const guidKey = treeNode.scItem.scItemId.toLowerCase();
-    const treeNodeIds = treeNodeIdsByGuid.get(guidKey) ?? [];
+    const reference =
+      treeNode.scItem.scItemId ??
+      treeNode.scItem.scItemPath;
 
-    treeNodeIds.push(treeNode.treeNodeId);
-    treeNodeIdsByGuid.set(guidKey, treeNodeIds);
+    if (reference) {
+      const referenceKey =
+        reference.toLowerCase();
+
+      const treeNodeIds =
+        treeNodeIdsByReference.get(
+          referenceKey,
+        ) ?? [];
+
+      treeNodeIds.push(
+        treeNode.treeNodeId,
+      );
+
+      treeNodeIdsByReference.set(
+        referenceKey,
+        treeNodeIds,
+      );
+    }
   }
 
-  treeNode.children.forEach((childTreeNode) => {
-    collectRecursive(childTreeNode, treeNodeIdsByGuid);
-  });
+  treeNode.children.forEach(
+    (childTreeNode) => {
+      collectRecursive(
+        childTreeNode,
+        treeNodeIdsByReference,
+      );
+    },
+  );
 }
+

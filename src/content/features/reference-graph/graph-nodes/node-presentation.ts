@@ -12,7 +12,7 @@ const NODE_KIND =
 
 export const DEFAULT_WIDTH = 110;
 export const DEFAULT_HEIGHT = 30;
-export const ELLIPSE_SIZE = 50;
+export const ELLIPSE_SIZE = 55;
 
 export const NODE_PRESENTATION_BY_KIND:
   NodePresentationByKind = {
@@ -25,7 +25,7 @@ export const NODE_PRESENTATION_BY_KIND:
   },
   [NODE_KIND.CHILD]: {
     labelMode: "name",
-    color: "#d1428a",
+    color: "#4f7cac",
     width: DEFAULT_WIDTH,
     height: DEFAULT_HEIGHT,
   },

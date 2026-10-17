@@ -1,13 +1,8 @@
 // @source-path [fobles] src/content/features/reference-graph/hooks/use-reference-graph-view-actions.ts
 
 import type cytoscape from "cytoscape";
-import {
-  useCallback,
-  useEffect,
-} from "react";
-import {
-  setReferenceGraphLayout,
-} from "../../../../shared/reference-graph-settings";
+import { useCallback, useEffect } from "react";
+import { setReferenceGraphLayout } from "../../../../shared/reference-graph-settings";
 import {
   getGraphControlsExpanded,
   setGraphControlsExpanded,
@@ -16,44 +11,22 @@ import {
   setGraphParameterVisibilitySettings,
   type GraphParameterVisibilitySettings,
 } from "../graph-parameter-visibility-settings";
-import {
-  prepareGraphForExpandedLayout,
-  refreshGraphExpandCollapse,
-} from "../graph-nodes/graph-expand-collapse";
-import {
-  setGraphParameterVisibility,
-} from "../graph-nodes/graph-expand-collapse-view";
-import {
-  runGraphLayout,
-} from "../cytoscape/graph-layout";
-import type {
-  LayoutGraphPresetName,
-} from "../graph.types";
-import type {
-  GraphState,
-} from "./use-reference-graph";
+import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
+import { setGraphParameterVisibility } from "../graph-nodes/graph-expand-collapse-view";
+import type { LayoutGraphPresetName } from "../graph.types";
+import type { GraphState } from "./use-reference-graph";
 
-type MutableRef<T> = {
-  current: T;
-};
+type MutableRef<T> = { current: T };
 
 type UseReferenceGraphViewActionsOptions = {
-  cyRef: MutableRef<
-    cytoscape.Core | undefined
-  >;
+  cyRef: MutableRef<cytoscape.Core | undefined>;
   graphState: GraphState;
 };
 
 export type ReferenceGraphViewActions = {
-  handleControlsExpandedChange: (
-    controlsExpanded: boolean,
-  ) => void;
-  handleParameterVisibilityChange: (
-    settings: GraphParameterVisibilitySettings,
-  ) => void;
-  handleLayoutChange: (
-    value: LayoutGraphPresetName,
-  ) => void;
+  handleControlsExpandedChange: (controlsExpanded: boolean) => void;
+  handleParameterVisibilityChange: (settings: GraphParameterVisibilitySettings) => void;
+  handleLayoutChange: (value: LayoutGraphPresetName) => void;
   handleRelayout: () => void;
   handleViewTreeData: () => void;
   handleCloseTreeData: () => void;
@@ -62,169 +35,84 @@ export type ReferenceGraphViewActions = {
 export function useReferenceGraphViewActions({
   cyRef,
   graphState,
-}: UseReferenceGraphViewActionsOptions):
-  ReferenceGraphViewActions {
+}: UseReferenceGraphViewActionsOptions): ReferenceGraphViewActions {
   useEffect(() => {
     let disposed = false;
 
-    void getGraphControlsExpanded().then(
-      (controlsExpanded) => {
-        if (!disposed) {
-          graphState.setControlsExpanded(
-            controlsExpanded,
-          );
-        }
-      },
-    );
+    void getGraphControlsExpanded().then((controlsExpanded) => {
+      if (!disposed) {
+        graphState.setControlsExpanded(controlsExpanded);
+      }
+    });
 
     return () => {
       disposed = true;
     };
-  }, [
-    graphState.setControlsExpanded,
-  ]);
+  }, [graphState.setControlsExpanded]);
 
-  const handleViewTreeData =
-    useCallback((): void => {
-      graphState.setTreeDataVisible(
-        true,
-      );
-    }, [
-      graphState.setTreeDataVisible,
-    ]);
+  const handleViewTreeData = useCallback((): void => {
+    graphState.setTreeDataVisible(true);
+  }, [graphState.setTreeDataVisible]);
 
-  const handleCloseTreeData =
-    useCallback((): void => {
-      graphState.setTreeDataVisible(
-        false,
-      );
-    }, [
-      graphState.setTreeDataVisible,
-    ]);
+  const handleCloseTreeData = useCallback((): void => {
+    graphState.setTreeDataVisible(false);
+  }, [graphState.setTreeDataVisible]);
 
   const handleRelayout = useCallback((): void => {
     const cy = cyRef.current;
 
     if (cy) {
-      refreshGraphExpandCollapse(cy);
-
-      runGraphLayout(
-        cy,
-        graphState.layoutPresetNameRef.current,
-        graphState.currentPreparedGraphRef.current.harvestedData.rootItem.scItemId,
-        () => {
-          refreshGraphExpandCollapse(cy);
-        },
-      );
+      refreshGraphVisibilityAndLayout(cy);
     }
-  }, [
-    cyRef,
-    graphState.layoutPresetNameRef,
-  ]);
+  }, [cyRef]);
 
-  const handleLayoutChange =
-    useCallback(
-      (
-        value:
-          LayoutGraphPresetName,
-      ): void => {
-        const cy = cyRef.current;
+  const handleLayoutChange = useCallback(
+    (value: LayoutGraphPresetName): void => {
+      graphState.layoutPresetNameRef.current = value;
+      graphState.setLayoutPresetName(value);
 
-        graphState
-          .layoutPresetNameRef
-          .current = value;
+      const cy = cyRef.current;
 
-        graphState.setLayoutPresetName(
-          value,
-        );
+      if (cy) {
+        refreshGraphVisibilityAndLayout(cy);
+      }
 
-        if (cy) {
-          prepareGraphForExpandedLayout(
-            cy,
-          );
+      void setReferenceGraphLayout(value);
+    },
+    [
+      cyRef,
+      graphState.layoutPresetNameRef,
+      graphState.setLayoutPresetName,
+    ],
+  );
 
-          runGraphLayout(
-            cy,
-            graphState.layoutPresetNameRef.current,
-            graphState.currentPreparedGraphRef.current.harvestedData.rootItem.scItemId,
-            () => {
-              refreshGraphExpandCollapse(
-                cy,
-              );
-            },
-          );
-        }
+  const handleControlsExpandedChange = useCallback(
+    (controlsExpanded: boolean): void => {
+      graphState.setControlsExpanded(controlsExpanded);
+      void setGraphControlsExpanded(controlsExpanded);
+    },
+    [graphState.setControlsExpanded],
+  );
 
-        void setReferenceGraphLayout(
-          value,
-        );
-      },
-      [
-        cyRef,
-        graphState.layoutPresetNameRef,
-        graphState.setLayoutPresetName,
-      ],
-    );
+  const handleParameterVisibilityChange = useCallback(
+    (settings: GraphParameterVisibilitySettings): void => {
+      graphState.parameterVisibilitySettingsRef.current = settings;
+      graphState.setParameterVisibilitySettings(settings);
+      void setGraphParameterVisibilitySettings(settings);
 
-  const handleControlsExpandedChange =
-    useCallback(
-      (
-        controlsExpanded:
-          boolean,
-      ): void => {
-        graphState.setControlsExpanded(
-          controlsExpanded,
-        );
+      const cy = cyRef.current;
 
-        void setGraphControlsExpanded(
-          controlsExpanded,
-        );
-      },
-      [
-        graphState.setControlsExpanded,
-      ],
-    );
-
-  const handleParameterVisibilityChange =
-    useCallback(
-      (
-        settings:
-          GraphParameterVisibilitySettings,
-      ): void => {
-        graphState
-          .parameterVisibilitySettingsRef
-          .current = settings;
-
-        graphState.setParameterVisibilitySettings(
-          settings,
-        );
-
-        void setGraphParameterVisibilitySettings(
-          settings,
-        );
-
-        const cy = cyRef.current;
-
-        if (cy) {
-          setGraphParameterVisibility(
-            cy,
-            settings,
-          );
-
-          refreshGraphExpandCollapse(
-            cy,
-          );
-
-
-        }
-
-      },
-      [
-        cyRef,
-        graphState.parameterVisibilitySettingsRef,
-        graphState.setParameterVisibilitySettings,
-      ],
-    );
+      if (cy) {
+        setGraphParameterVisibility(cy, settings);
+        refreshGraphVisibilityAndLayout(cy);
+      }
+    },
+    [
+      cyRef,
+      graphState.parameterVisibilitySettingsRef,
+      graphState.setParameterVisibilitySettings,
+    ],
+  );
 
   return {
     handleControlsExpandedChange,

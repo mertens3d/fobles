@@ -1,0 +1,45 @@
+/* @source-path [fobles] src/content/styles/reference-graph/_progress.scss */
+
+@use "../tokens" as *;
+@use "../mixins" as *;
+
+.fobles-reference-graph {
+  &-progress {
+    width: min(420px, calc(100vw - 32px));
+    padding: 20px;
+    border: 1px solid $fobles-border;
+    border-radius: 6px;
+    background: $fobles-white;
+    color: $fobles-text;
+    font:
+      400 13px/1.5 "Open Sans",
+      Arial,
+      sans-serif;
+    box-shadow: 0 18px 48px $fobles-shadow-dialog;
+
+    &::backdrop {
+      background: $fobles-backdrop;
+    }
+
+    &-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      margin: 0 0 16px;
+    }
+
+    &-action {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    &-cancel {
+      @include fobles-button-base;
+
+      &:hover {
+        filter: brightness(1.04);
+        box-shadow: 0 5px 12px $fobles-shadow-button-hover;
+      }
+    }
+  }
+}

@@ -1,440 +1,323 @@
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-expand-collapse.ts
 
 import type cytoscape from "cytoscape";
-import type {
-  SitecoreHarvestFiltersState,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
-import type {
-  LayoutGraphPresetName,
-} from "../graph.types";
+import type { SitecoreHarvestFiltersState } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { LayoutGraphPresetName } from "../graph.types";
 import {
   getExpandedByCollapseKey,
   setExpandedStateForCollapseKey,
 } from "./graph-collapse-settings";
 import {
-  isGraphCollapseKey,
-  type ExpandedByCollapseKey,
-  type GraphCollapseKey,
-} from "./graph-collapse.types";
+  collapseDescendants,
+  collapseExpandableChildren,
+  collapseSameTypeNodes,
+  expandDescendants,
+  expandSameTypeNodes,
+  initializeCollapsedTreeNodeIds,
+  readCollapseKey,
+} from "./graph-collapse-state";
+import type { ExpandedByCollapseKey } from "./graph-collapse.types";
 import {
   applyGraphVisibility,
   createExpandCollapseOverlay,
   positionExpandCollapseControls,
-  readChildTreeNodeIds,
   removeMissingCollapsedTreeNodeIds,
   synchronizeExpandCollapseControls,
+  type ExpandCollapseAction,
+  type ExpandCollapseButtonController,
 } from "./graph-expand-collapse-view";
+import {
+  runInitialVisibilityLayout,
+  runVisibilityLayout,
+  type GraphVisibilityLayoutContext,
+} from "./graph-visibility-layout";
 
-type GraphExpandCollapseController = {
-  collapsedTreeNodeIds: Set<string>;
-  expandedByCollapseKey:
-  ExpandedByCollapseKey | undefined;
-  overlay: HTMLDivElement;
-  buttonsByTreeNodeId:
-  Map<string, HTMLButtonElement>;
-  getCurrentFilters:
-  () => SitecoreHarvestFiltersState;
-  getCurrentLayoutPresetName:
-  () => LayoutGraphPresetName;
-  updateControls: () => void;
-};
+type GraphExpandCollapseController =
+  ExpandCollapseButtonController & {
+    expandedByCollapseKey: ExpandedByCollapseKey | undefined;
+    getCurrentFilters: () => SitecoreHarvestFiltersState;
+    getCurrentLayoutPresetName: () => LayoutGraphPresetName;
+    getRootTreeNodeId: () => string;
+    updateControls: () => void;
+  };
+
+const CONTROL_EVENTS = [
+  "render",
+  "position",
+  "pan",
+  "zoom",
+  "resize",
+  "layoutstop",
+  "add",
+  "remove",
+  "data",
+].join(" ");
 
 const controllerByCore =
-  new WeakMap<
-    cytoscape.Core,
-    GraphExpandCollapseController
-  >();
+  new WeakMap<cytoscape.Core, GraphExpandCollapseController>();
+
+function refreshGraphVisibility(
+  cy: cytoscape.Core,
+  controller: GraphExpandCollapseController,
+): void {
+  removeMissingCollapsedTreeNodeIds(
+    cy,
+    controller.collapsedTreeNodeIds,
+  );
+
+  applyGraphVisibility(
+    cy,
+    controller.collapsedTreeNodeIds,
+    controller.getCurrentFilters(),
+  );
+
+  controller.updateControls();
+}
+
+function createLayoutContext(
+  cy: cytoscape.Core,
+  controller: GraphExpandCollapseController,
+): GraphVisibilityLayoutContext {
+  return {
+    getCurrentLayoutPresetName:
+      controller.getCurrentLayoutPresetName,
+    getRootTreeNodeId:
+      controller.getRootTreeNodeId,
+    refreshVisibility: () => {
+      refreshGraphVisibility(cy, controller);
+    },
+  };
+}
 
 export async function attachGraphExpandCollapse(
   cy: cytoscape.Core,
   container: HTMLElement,
-  getCurrentFilters:
-    () => SitecoreHarvestFiltersState,
-  getCurrentLayoutPresetName:
-    () => LayoutGraphPresetName,
+  getCurrentFilters: () => SitecoreHarvestFiltersState,
+  getCurrentLayoutPresetName: () => LayoutGraphPresetName,
+  getRootTreeNodeId: () => string,
 ): Promise<void> {
   detachGraphExpandCollapse(cy);
 
-  const overlay =
-    createExpandCollapseOverlay(
-      container,
-    );
-
-  const controller:
-    GraphExpandCollapseController = {
-    collapsedTreeNodeIds:
-      new Set<string>(),
+  const controller: GraphExpandCollapseController = {
+    collapsedTreeNodeIds: new Set<string>(),
     expandedByCollapseKey: undefined,
-    overlay,
-    buttonsByTreeNodeId:
-      new Map<string, HTMLButtonElement>(),
+    overlay: createExpandCollapseOverlay(container),
+    buttonsByTreeNodeId: new Map<string, HTMLButtonElement>(),
+    spinnersByTreeNodeId: new Map<string, HTMLImageElement>(),
     getCurrentFilters,
     getCurrentLayoutPresetName,
-    updateControls:
-      () => undefined,
+    getRootTreeNodeId,
+    updateControls: () => undefined,
   };
 
-  controller.updateControls =
-    (): void => {
-      synchronizeExpandCollapseControls(
-        cy,
-        controller,
-        (
+  controller.updateControls = (): void => {
+    synchronizeExpandCollapseControls(
+      cy,
+      controller,
+      (treeNodeId, action) => {
+        toggleGraphNodeCollapsed(
+          cy,
           treeNodeId,
-          recursivelyExpand,
-        ) => {
-          toggleGraphNodeCollapsed(
-            cy,
-            treeNodeId,
-            recursivelyExpand,
-          );
-        },
-      );
+          action,
+        );
+      },
+    );
 
-      positionExpandCollapseControls(
-        cy,
-        controller,
-      );
-    };
+    positionExpandCollapseControls(
+      cy,
+      controller,
+    );
+  };
 
-  controllerByCore.set(
-    cy,
-    controller,
-  );
-
-  cy.on(
-    [
-      "render",
-      "position",
-      "pan",
-      "zoom",
-      "resize",
-      "layoutstop",
-      "add",
-      "remove",
-    ].join(" "),
-    controller.updateControls,
-  );
+  controllerByCore.set(cy, controller);
+  cy.on(CONTROL_EVENTS, controller.updateControls);
 
   controller.expandedByCollapseKey =
     await getExpandedByCollapseKey();
 
-  initializeCollapsedTreeNodeIds(
-    cy,
-    controller,
-  );
+  if (controller.expandedByCollapseKey) {
+    initializeCollapsedTreeNodeIds(
+      cy,
+      controller.expandedByCollapseKey,
+      controller.collapsedTreeNodeIds,
+    );
+  }
 
-  refreshGraphExpandCollapse(cy);
+  refreshGraphVisibility(cy, controller);
 }
 
 export function initializeGraphCollapseState(
   cy: cytoscape.Core,
 ): void {
-  const controller =
-    controllerByCore.get(cy);
+  const controller = controllerByCore.get(cy);
 
-  if (
-    controller &&
-    controller.expandedByCollapseKey
-  ) {
+  if (controller?.expandedByCollapseKey) {
     initializeCollapsedTreeNodeIds(
       cy,
-      controller,
+      controller.expandedByCollapseKey,
+      controller.collapsedTreeNodeIds,
     );
 
-    refreshGraphExpandCollapse(cy);
+    refreshGraphVisibility(cy, controller);
   }
 }
 
 export function refreshGraphExpandCollapse(
   cy: cytoscape.Core,
 ): void {
-  const controller =
-    controllerByCore.get(cy);
+  const controller = controllerByCore.get(cy);
 
   if (controller) {
-    removeMissingCollapsedTreeNodeIds(
-      cy,
-      controller.collapsedTreeNodeIds,
-    );
+    refreshGraphVisibility(cy, controller);
+  }
+}
 
-    applyGraphVisibility(
-      cy,
-      controller.collapsedTreeNodeIds,
-      controller.getCurrentFilters(),
-    );
+export function layoutInitialGraphVisibility(
+  cy: cytoscape.Core,
+  onComplete?: () => void,
+): void {
+  const controller = controllerByCore.get(cy);
 
-    controller.updateControls();
+  if (controller) {
+    runInitialVisibilityLayout(
+      cy,
+      createLayoutContext(cy, controller),
+      onComplete,
+    );
+  } else {
+    onComplete?.();
+  }
+}
+
+export function refreshGraphVisibilityAndLayout(
+  cy: cytoscape.Core,
+  onComplete?: () => void,
+): void {
+  const controller = controllerByCore.get(cy);
+
+  if (controller) {
+    runVisibilityLayout(
+      cy,
+      createLayoutContext(cy, controller),
+      onComplete,
+    );
+  } else {
+    onComplete?.();
   }
 }
 
 export function detachGraphExpandCollapse(
   cy: cytoscape.Core,
 ): void {
-  const controller =
-    controllerByCore.get(cy);
+  const controller = controllerByCore.get(cy);
 
   if (controller) {
     cy.off(
-      [
-        "render",
-        "position",
-        "pan",
-        "zoom",
-        "resize",
-        "layoutstop",
-        "add",
-        "remove",
-      ].join(" "),
+      CONTROL_EVENTS,
       controller.updateControls,
     );
 
     controller.overlay.remove();
-
     controller.buttonsByTreeNodeId.clear();
-
+    controller.spinnersByTreeNodeId.clear();
     controllerByCore.delete(cy);
   }
 }
 
-function initializeCollapsedTreeNodeIds(
-  cy: cytoscape.Core,
-  controller:
-    GraphExpandCollapseController,
+function updatePersistedCollapseKeyState(
+  controller: GraphExpandCollapseController,
+  node: cytoscape.NodeSingular,
+  expanded: boolean,
 ): void {
-  const expandedByCollapseKey =
-    controller.expandedByCollapseKey;
+  const collapseKey = readCollapseKey(node);
 
-  if (expandedByCollapseKey) {
-    controller.collapsedTreeNodeIds.clear();
+  if (
+    collapseKey &&
+    controller.expandedByCollapseKey
+  ) {
+    controller.expandedByCollapseKey[
+      collapseKey
+    ] = expanded;
 
-    cy.nodes().forEach((node) => {
-      const collapseKey =
-        readCollapseKey(node);
-
-      if (
-        node.data("expandable") === true &&
-        collapseKey &&
-        !expandedByCollapseKey[
-        collapseKey
-        ]
-      ) {
-        controller.collapsedTreeNodeIds.add(
-          node.id(),
-        );
-      }
-    });
+    void setExpandedStateForCollapseKey(
+      collapseKey,
+      expanded,
+    );
   }
 }
+
 function toggleGraphNodeCollapsed(
   cy: cytoscape.Core,
   treeNodeId: string,
-  recursivelyExpand: boolean,
+  action: ExpandCollapseAction,
 ): void {
   const controller = controllerByCore.get(cy);
   const node = cy.getElementById(treeNodeId);
 
   if (controller && !node.empty()) {
     const currentlyCollapsed =
-      controller.collapsedTreeNodeIds.has(treeNodeId);
+      controller.collapsedTreeNodeIds.has(
+        treeNodeId,
+      );
 
     if (currentlyCollapsed) {
-      controller.collapsedTreeNodeIds.delete(treeNodeId);
-
-      if (recursivelyExpand) {
-        expandDescendants(
+      if (action === "same-kind") {
+        expandSameTypeNodes(
           cy,
           treeNodeId,
           controller.collapsedTreeNodeIds,
+        );
+
+        updatePersistedCollapseKeyState(
+          controller,
+          node,
+          true,
         );
       } else {
-        collapseExpandableChildren(
-          cy,
+        controller.collapsedTreeNodeIds.delete(
           treeNodeId,
-          controller.collapsedTreeNodeIds,
         );
+
+        if (action === "subtree") {
+          expandDescendants(
+            cy,
+            treeNodeId,
+            controller.collapsedTreeNodeIds,
+          );
+        } else {
+          collapseExpandableChildren(
+            cy,
+            treeNodeId,
+            controller.collapsedTreeNodeIds,
+          );
+        }
       }
-    } else if (recursivelyExpand) {
+    } else if (action === "same-kind") {
       collapseSameTypeNodes(
         cy,
         treeNodeId,
         controller.collapsedTreeNodeIds,
       );
-    } else {
-      controller.collapsedTreeNodeIds.add(treeNodeId);
-    }
 
-    const expanded =
-      !controller.collapsedTreeNodeIds.has(treeNodeId);
-
-    const collapseKey = readCollapseKey(node);
-
-    if (
-      collapseKey &&
-      controller.expandedByCollapseKey
-    ) {
-      controller.expandedByCollapseKey[
-        collapseKey
-      ] = expanded;
-
-      void setExpandedStateForCollapseKey(
-        collapseKey,
-        expanded,
+      updatePersistedCollapseKeyState(
+        controller,
+        node,
+        false,
       );
-    }
+    } else {
+      controller.collapsedTreeNodeIds.add(
+        treeNodeId,
+      );
 
-    refreshGraphExpandCollapse(cy);
-  }
-}
-
-function collapseExpandableChildren(
-  cy: cytoscape.Core,
-  treeNodeId: string,
-  collapsedTreeNodeIds:
-    Set<string>,
-): void {
-  const node =
-    cy.getElementById(
-      treeNodeId,
-    );
-
-  if (!node.empty()) {
-    readChildTreeNodeIds(node).forEach(
-      (childTreeNodeId) => {
-        const childNode =
-          cy.getElementById(
-            childTreeNodeId,
-          );
-
-        if (
-          !childNode.empty() &&
-          childNode.data(
-            "expandable",
-          ) === true
-        ) {
-          collapsedTreeNodeIds.add(
-            childTreeNodeId,
-          );
-        }
-      },
-    );
-  }
-}
-function collapseSameTypeNodes(
-  cy: cytoscape.Core,
-  treeNodeId: string,
-  collapsedTreeNodeIds: Set<string>,
-): void {
-  const node = cy.getElementById(treeNodeId);
-
-  if (!node.empty()) {
-    const collapseKey = readCollapseKey(node);
-
-    if (collapseKey) {
-      cy.nodes().forEach((candidate) => {
-        if (
-          candidate.data("expandable") === true &&
-          readCollapseKey(candidate) === collapseKey
-        ) {
-          collapsedTreeNodeIds.add(candidate.id());
-        }
-      });
-    }
-  }
-}
-function expandDescendants(
-  cy: cytoscape.Core,
-  treeNodeId: string,
-  collapsedTreeNodeIds:
-    Set<string>,
-): void {
-  const node =
-    cy.getElementById(
-      treeNodeId,
-    );
-
-  if (!node.empty()) {
-    readChildTreeNodeIds(node).forEach(
-      (childTreeNodeId) => {
-        collapsedTreeNodeIds.delete(
-          childTreeNodeId,
-        );
-
-        expandDescendants(
+      if (action === "subtree") {
+        collapseDescendants(
           cy,
-          childTreeNodeId,
-          collapsedTreeNodeIds,
-        );
-      },
-    );
-  }
-}
-
-export function prepareGraphForExpandedLayout(
-  cy: cytoscape.Core,
-): void {
-  cy.elements().style(
-    "display",
-    "element",
-  );
-}
-
-function readCollapseKey(
-  node: cytoscape.NodeSingular,
-): GraphCollapseKey | undefined {
-  const value: unknown =
-    node.data("collapseKey");
-
-  let collapseKey:
-    | GraphCollapseKey
-    | undefined = undefined;
-
-  if (isGraphCollapseKey(value)) {
-    collapseKey = value;
-  }
-
-  return collapseKey;
-}
-
-function collapseSameTypeSiblings(
-  cy: cytoscape.Core,
-  treeNodeId: string,
-  collapsedTreeNodeIds: Set<string>,
-): void {
-  const node = cy.getElementById(treeNodeId);
-
-  if (!node.empty()) {
-    collapsedTreeNodeIds.add(treeNodeId);
-
-    const collapseKey = readCollapseKey(node);
-    const parentTreeNodeId: unknown =
-      node.data("parentTreeNodeId");
-
-    if (
-      collapseKey &&
-      typeof parentTreeNodeId === "string"
-    ) {
-      const parentNode =
-        cy.getElementById(parentTreeNodeId);
-
-      if (!parentNode.empty()) {
-        readChildTreeNodeIds(parentNode).forEach(
-          (siblingTreeNodeId) => {
-            const siblingNode =
-              cy.getElementById(siblingTreeNodeId);
-
-            if (
-              !siblingNode.empty() &&
-              siblingNode.data("expandable") === true &&
-              readCollapseKey(siblingNode) === collapseKey
-            ) {
-              collapsedTreeNodeIds.add(
-                siblingTreeNodeId,
-              );
-            }
-          },
+          treeNodeId,
+          controller.collapsedTreeNodeIds,
         );
       }
     }
+
+    refreshGraphVisibilityAndLayout(cy);
   }
 }

@@ -64,6 +64,7 @@ function createParentTreeNode(
       collapseKey: GRAPH_COLLAPSE_KEY.PARENT,
       branch: "parent",
       relationshipToParent: "related",
+      reverse: true,
     });
   }
 

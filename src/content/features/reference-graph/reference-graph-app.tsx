@@ -2,8 +2,8 @@
 
 import type cytoscape from "cytoscape";
 import { useRef } from "react";
-import { EnrichmentProgress } from "./components/enrichment-progress";
 import { GraphToolbar } from "./components/graph-toolbar";
+import { GraphZoomControls } from "./components/graph-zoom-controls";
 import { NodeDetailsPanel } from "./components/node-details-panel";
 import { TreeDataViewer } from "./components/TreeDataViewerProps";
 import type { HarvestForLink } from "./graph.types";
@@ -11,7 +11,6 @@ import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";
 import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
-import { GraphZoomControls } from "./components/graph-zoom-controls";
 
 const ZOOM_FACTOR = 1.2;
 
@@ -28,10 +27,7 @@ export function ReferenceGraphApp({
 }: ReferenceGraphAppProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cyRef = useRef<cytoscape.Core | undefined>(undefined);
-
-  const graphState = useReferenceGraph({
-    initialPreparedGraph,
-  });
+  const graphState = useReferenceGraph({ initialPreparedGraph });
 
   const {
     handleBack,
@@ -71,6 +67,7 @@ export function ReferenceGraphApp({
     setBuildElapsedSeconds: graphState.setBuildElapsedSeconds,
     setSelectedTreeNodeId: graphState.setSelectedTreeNodeId,
     setEnrichmentProgress: graphState.setEnrichmentProgress,
+    setGraphBusy: graphState.setGraphBusy,
   });
 
   const handleZoom = (factor: number): void => {
@@ -117,10 +114,9 @@ export function ReferenceGraphApp({
         controlsExpanded={graphState.controlsExpanded}
         onControlsExpandedChange={handleControlsExpandedChange}
         buildElapsedSeconds={graphState.buildElapsedSeconds}
+        enrichmentProgress={graphState.enrichmentProgress}
         onViewTreeData={handleViewTreeData}
       />
-
-      <EnrichmentProgress progress={graphState.enrichmentProgress} />
 
       <NodeDetailsPanel
         selectedTreeNodeId={graphState.selectedTreeNodeId}
@@ -129,11 +125,15 @@ export function ReferenceGraphApp({
 
       <div
         ref={containerRef}
-        style={{
-          width: "100%",
-          height: "100%",
-        }}
+        className="fobles-reference-graph-canvas"
       />
+
+      {graphState.graphBusy && (
+        <div
+          className="fobles-reference-graph-canvas-blocker"
+          aria-hidden="true"
+        />
+      )}
 
       <GraphZoomControls
         onZoomIn={() => handleZoom(ZOOM_FACTOR)}

@@ -1,0 +1,186 @@
+/* @source-path [fobles] src/content/styles/reference-graph/_toolbar.scss */
+
+@use "../tokens" as *;
+@use "../mixins" as *;
+
+.fobles-reference-graph {
+  &-toolbar {
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    z-index: 99;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 350px;
+    padding: 8px 10px;
+    border: 1px solid rgba($fobles-blue, 0.35);
+    border-radius: 6px;
+    background: rgba($fobles-white, 0.96);
+    box-shadow: 0 10px 22px $fobles-shadow-panel;
+  }
+
+  &-button {
+    @include fobles-button-base;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 0;
+
+    &:hover:not(:disabled) {
+      filter: brightness(1.04);
+      box-shadow: 0 5px 12px $fobles-shadow-button-hover;
+    }
+
+    &:disabled {
+      opacity: 0.45;
+      cursor: default;
+      box-shadow: none;
+    }
+  }
+
+  &-controls-header {
+    @include fobles-button-base;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    min-width: 0;
+    font-weight: 600;
+
+    &:hover {
+      filter: brightness(1.04);
+      box-shadow: 0 5px 12px $fobles-shadow-button-hover;
+    }
+  }
+
+  &-controls-content {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+  }
+
+  &-controls-content > &-select {
+    grid-column: 1 / -1;
+    width: 100%;
+  }
+
+  &-controls-content > &-button {
+    width: 100% !important;
+  }
+
+  &-controls-content > :not(&-button):not(&-select):not(&-filters) {
+    grid-column: 1 / -1;
+  }
+
+  &-select {
+    min-height: 30px;
+    padding: 4px 8px;
+    border: 1px solid $fobles-border-input;
+    border-radius: 4px;
+    background: $fobles-white;
+    color: $fobles-text;
+    font:
+      400 12px "Open Sans",
+      Arial,
+      sans-serif;
+  }
+
+  &-filters {
+    display: contents;
+  }
+
+  &-filters > &-button {
+    width: 100% !important;
+  }
+
+  &-filters > div {
+    grid-column: 1 / -1;
+    display: grid !important;
+    gap: 4px !important;
+    margin-top: 4px !important;
+  }
+
+  &-parameter-filters {
+    grid-column: 1 / -1;
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 4px;
+    margin-top: 4px;
+    padding-top: 6px;
+    border-top: 1px solid rgba($fobles-border, 0.7);
+  }
+
+  &-filter {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    color: $fobles-text;
+    font-size: 11px;
+    cursor: pointer;
+
+    input {
+      margin: 0;
+    }
+  }
+
+  &-toolbar-footer {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    gap: 12px;
+    min-height: 16px;
+    padding-top: 6px;
+    border-top: 1px solid rgba($fobles-border, 0.7);
+  }
+
+  &-enrichment-progress {
+    display: flex;
+    flex: 1 1 auto;
+    align-items: center;
+    gap: 6px;
+    min-width: 0;
+    color: rgba($fobles-text, 0.75);
+    font-size: 10px;
+
+    &-spinner {
+      flex: 0 0 auto;
+      width: 16px;
+      height: 16px;
+    }
+
+    &-content {
+      flex: 1 1 auto;
+      min-width: 0;
+    }
+
+    &-label {
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    &-track {
+      height: 3px;
+      margin-top: 3px;
+      overflow: hidden;
+      border-radius: 2px;
+      background: #dbe3ef;
+    }
+
+    &-value {
+      height: 100%;
+      border-radius: 2px;
+      background: $fobles-blue;
+    }
+  }
+
+  &-build-time {
+    color: rgba($fobles-text, 0.75);
+    font-size: 10px;
+    text-align: right;
+    white-space: nowrap;
+  }
+}

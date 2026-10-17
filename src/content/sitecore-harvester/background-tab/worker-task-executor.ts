@@ -1,14 +1,18 @@
 // @source-path [fobles] src/content/sitecore-harvester/background-tab/worker-task-executor.ts
 
-import { collectParent } from "../collectors/parent-collector";
 import { collectChildren } from "../collectors/child-collector";
+import { collectParent } from "../collectors/parent-collector";
 import { collectReferrers } from "../collectors/referrer-collector";
-import { collectSections } from "../collectors/section-collector/section-collector";
 import { collectLayouts } from "../collectors/section-collector/layout-collector/layout-collector";
+import { collectSections } from "../collectors/section-collector/section-collector";
 import { buildItemGraphNodeDataFromDoc } from "../enrichment/item-enricher";
 import { harvestStepRootItem } from "../harvest-sitecore";
-import type { HarvestContext, SitecoreHarvestResult } from "../sitecore-harvester.types";
+import type {
+  HarvestContext,
+  SitecoreHarvestResult,
+} from "../sitecore-harvester.types";
 import {
+  createCancelledResult,
   createErrorResult,
   type WorkerTask,
   type WorkerTaskPayloadByType,
@@ -16,26 +20,40 @@ import {
   type WorkerTaskType,
 } from "../worker-pool/worker-task.types";
 
-function buildHarvestContext(doc: Document, signal: AbortSignal): HarvestContext | undefined {
+function buildHarvestContext(
+  doc: Document,
+  signal: AbortSignal,
+): HarvestContext | undefined {
   const rootItem = harvestStepRootItem(doc);
-  if (!rootItem) {
-    return undefined;
+  let harvestContext: HarvestContext | undefined;
+
+  if (rootItem) {
+    const result: SitecoreHarvestResult = {
+      rootItem,
+      parent: undefined,
+      layoutSectionFields: undefined,
+      sections: undefined,
+      childItems: undefined,
+      referrers: undefined,
+    };
+
+    harvestContext = {
+      doc,
+      result,
+      signal,
+      rootItem,
+    };
   }
 
-  const result: SitecoreHarvestResult = {
-    rootItem,
-    parent: undefined,
-    layoutSectionFields: undefined,
-    sections: undefined,
-    childItems: undefined,
-    referrers: undefined,
-  };
-
-  return { doc, result, signal, rootItem };
+  return harvestContext;
 }
 
 function successResult<TType extends WorkerTaskType>(
-  task: { requestId: string; taskId: string; type: TType },
+  task: {
+    requestId: string;
+    taskId: string;
+    type: TType;
+  },
   payload: WorkerTaskPayloadByType[TType],
 ): WorkerTaskResult {
   return {
@@ -47,58 +65,148 @@ function successResult<TType extends WorkerTaskType>(
   } as WorkerTaskResult;
 }
 
+function cancelledResultIfAborted(
+  task: WorkerTask,
+  signal: AbortSignal,
+): WorkerTaskResult | undefined {
+  let result: WorkerTaskResult | undefined;
+
+  if (signal.aborted) {
+    result = createCancelledResult(task);
+  }
+
+  return result;
+}
+
 export async function executeWorkerTask(
   doc: Document,
   task: WorkerTask,
   signal: AbortSignal,
 ): Promise<WorkerTaskResult> {
-  if (task.type === "collect-root-item") {
-    const rootItem = harvestStepRootItem(doc);
-    return rootItem
-      ? successResult(task, { rootItem })
-      : createErrorResult(task, "Could not resolve current item id");
-  }
+  let result =
+    cancelledResultIfAborted(
+      task,
+      signal,
+    );
 
-  if (task.type === "enrich-item") {
-    const item = buildItemGraphNodeDataFromDoc(doc);
-    return item.scItemId || item.scItemPath
-      ? successResult(task, { item })
-      : createErrorResult(task, "Could not resolve item at navigated url");
-  }
+  if (!result) {
+    if (task.type === "collect-root-item") {
+      const rootItem = harvestStepRootItem(doc);
 
-  const harvestContext = buildHarvestContext(doc, signal);
-  if (!harvestContext) {
-    return createErrorResult(task, "Could not resolve current item id");
-  }
+      result = rootItem
+        ? successResult(task, { rootItem })
+        : createErrorResult(
+            task,
+            "Could not resolve current item id",
+          );
+    } else if (task.type === "enrich-item") {
+      const item =
+        buildItemGraphNodeDataFromDoc(doc);
 
-  switch (task.type) {
-    case "collect-parent":
-      await collectParent(harvestContext);
-      return successResult(task, { parent: harvestContext.result.parent });
-    case "collect-children":
-      await collectChildren(harvestContext);
-      return successResult(task, {
-        childItems: harvestContext.result.childItems ?? [],
-      });
-    case "collect-referrers":
-      await collectReferrers(harvestContext);
-      return successResult(task, {
-        referrers: harvestContext.result.referrers ?? [],
-      });
-    case "collect-sections":
-      await collectSections(harvestContext);
-      return successResult(task, {
-        sections: harvestContext.result.sections ?? [],
-      });
-    case "collect-layouts":
-      await collectLayouts(harvestContext);
-      return successResult(task, {
-        layoutSectionFields: harvestContext.result.layoutSectionFields ?? [],
-      });
-    default: {
-      const unreachable: never = task;
-      const fallbackTask = unreachable as WorkerTask;
-      return createErrorResult(fallbackTask, `Unsupported worker task type: ${fallbackTask.type}`);
+      result = item.scItemId || item.scItemPath
+        ? successResult(task, { item })
+        : createErrorResult(
+            task,
+            "Could not resolve item at navigated url",
+          );
+    } else {
+      const harvestContext =
+        buildHarvestContext(
+          doc,
+          signal,
+        );
+
+      if (!harvestContext) {
+        result = createErrorResult(
+          task,
+          "Could not resolve current item id",
+        );
+      } else {
+        switch (task.type) {
+          case "collect-parent":
+            await collectParent(harvestContext);
+            result =
+              cancelledResultIfAborted(
+                task,
+                signal,
+              ) ??
+              successResult(task, {
+                parent:
+                  harvestContext.result.parent,
+              });
+            break;
+
+          case "collect-children":
+            await collectChildren(harvestContext);
+            result =
+              cancelledResultIfAborted(
+                task,
+                signal,
+              ) ??
+              successResult(task, {
+                childItems:
+                  harvestContext.result.childItems ??
+                  [],
+              });
+            break;
+
+          case "collect-referrers":
+            await collectReferrers(harvestContext);
+            result =
+              cancelledResultIfAborted(
+                task,
+                signal,
+              ) ??
+              successResult(task, {
+                referrers:
+                  harvestContext.result.referrers ??
+                  [],
+              });
+            break;
+
+          case "collect-sections":
+            await collectSections(harvestContext);
+            result =
+              cancelledResultIfAborted(
+                task,
+                signal,
+              ) ??
+              successResult(task, {
+                sections:
+                  harvestContext.result.sections ??
+                  [],
+              });
+            break;
+
+          case "collect-layouts":
+            await collectLayouts(harvestContext);
+            result =
+              cancelledResultIfAborted(
+                task,
+                signal,
+              ) ??
+              successResult(task, {
+                layoutSectionFields:
+                  harvestContext.result
+                    .layoutSectionFields ??
+                  [],
+              });
+            break;
+
+          default: {
+            const unreachable: never = task;
+            const fallbackTask =
+              unreachable as WorkerTask;
+
+            result = createErrorResult(
+              fallbackTask,
+              `Unsupported worker task type: ${fallbackTask.type}`,
+            );
+          }
+        }
+      }
     }
   }
+
+  return result;
 }

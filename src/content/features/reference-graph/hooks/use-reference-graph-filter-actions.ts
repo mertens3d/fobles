@@ -8,14 +8,12 @@ import type {
   SitecoreHarvestResult,
 } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { createAllFiltersState } from "../graph-filters";
-import { refreshGraphExpandCollapse } from "../graph-nodes/graph-expand-collapse";
+import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
 import type { HarvestForLink } from "../graph.types";
-import type { GraphState } from "./use-reference-graph";
 import { changeReferenceGraphFilter } from "./changeReferenceGraphFilter";
+import type { GraphState } from "./use-reference-graph";
 
-type MutableRef<T> = {
-  current: T;
-};
+type MutableRef<T> = { current: T };
 
 export type UseReferenceGraphFilterActionsOptions = {
   doc: Document;
@@ -43,9 +41,7 @@ export function useReferenceGraphFilterActions({
   const setFilters = useCallback(
     (filters: SitecoreHarvestFiltersState): void => {
       graphState.currentFiltersRef.current = filters;
-
       graphState.setCurrentFilters(filters);
-
       void setReferenceGraphFilters(filters);
     },
     [],
@@ -53,18 +49,20 @@ export function useReferenceGraphFilterActions({
 
   const handleClearFilters = useCallback((): void => {
     const filters = createAllFiltersState(false);
-
     setFilters(filters);
 
     const cy = cyRef.current;
 
     if (cy) {
-      refreshGraphExpandCollapse(cy);
+      refreshGraphVisibilityAndLayout(cy);
     }
-  }, [setFilters]);
+  }, [cyRef, setFilters]);
 
   const handleFilterChange = useCallback(
-    (key: keyof SitecoreHarvestFiltersState, checked: boolean): void => {
+    (
+      key: keyof SitecoreHarvestFiltersState,
+      checked: boolean,
+    ): void => {
       void changeReferenceGraphFilter(
         key,
         checked,
@@ -78,7 +76,14 @@ export function useReferenceGraphFilterActions({
         setFilters,
       );
     },
-    [doc, harvestForLink, renderGraph, setFilters],
+    [
+      doc,
+      harvestForLink,
+      cyRef,
+      graphState,
+      renderGraph,
+      setFilters,
+    ],
   );
 
   return {

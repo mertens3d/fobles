@@ -1,0 +1,159 @@
+/* @source-path [fobles] src/content/styles/reference-graph/_panels.scss */
+
+@use "../tokens" as *;
+
+.fobles-reference-graph {
+  &-node-details {
+    position: absolute;
+    left: 12px;
+    bottom: 12px;
+    z-index: 101;
+    width: min(620px, calc(100% - 24px));
+    max-height: 70%;
+    padding: 10px 12px;
+    overflow: auto;
+    border: 1px solid rgba($fobles-blue, 0.35);
+    border-radius: 6px;
+    background: #203047;
+    color: $fobles-white;
+    box-shadow: 0 10px 22px $fobles-shadow-panel;
+    font:
+      400 13px/1.6 "Open Sans",
+      Arial,
+      sans-serif;
+
+    &-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      margin-bottom: 8px;
+      padding-bottom: 6px;
+      border-bottom: 1px solid rgba($fobles-white, 0.2);
+    }
+
+    &-copy {
+      flex: 0 0 auto;
+      min-width: 64px;
+    }
+
+    &-row {
+      margin-bottom: 4px;
+      overflow-wrap: anywhere;
+    }
+
+    details {
+      margin-top: 8px;
+      padding-top: 6px;
+      border-top: 1px solid rgba($fobles-white, 0.2);
+    }
+
+    summary {
+      font-weight: 600;
+      cursor: pointer;
+    }
+
+    pre {
+      margin: 6px 0 0;
+      white-space: pre-wrap;
+      overflow-wrap: anywhere;
+      color: $fobles-white;
+      font: 400 11px/1.5 monospace;
+    }
+  }
+
+  .fobles-tree-data-viewer {
+    position: absolute;
+    top: 10%;
+    left: 10%;
+    z-index: 100;
+    display: flex;
+    flex-direction: column;
+    width: 80%;
+    height: 80%;
+    min-width: 0;
+    min-height: 0;
+    padding: 0;
+    overflow: hidden;
+    border: 1px solid $fobles-border;
+    border-radius: 6px;
+    background: $fobles-white;
+    color: $fobles-text;
+    box-shadow: 0 18px 48px $fobles-shadow-dialog;
+
+    &-close {
+      appearance: none;
+      position: absolute;
+      top: 8px;
+      right: 8px;
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: $fobles-toolbar-control-size;
+      height: $fobles-toolbar-control-size;
+      margin: 0;
+      padding: 0;
+      border: 1px solid transparent;
+      border-radius: $fobles-radius-small;
+      background: transparent;
+      cursor: pointer;
+
+      &:hover {
+        background: $fobles-surface-hover;
+      }
+    }
+
+    &-close-icon {
+      display: block;
+      width: 16px;
+      height: 16px;
+      filter: brightness(0.745);
+    }
+
+    .scroller {
+      position: relative;
+      top: 30px;
+      flex: 1 1 0;
+      min-width: 0;
+      min-height: 0;
+      padding: 12px;
+      padding-top: 36px;
+      overflow: auto;
+    }
+
+    pre {
+      margin: 0;
+    }
+  }
+
+  &-close {
+    appearance: none;
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    z-index: 2;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: $fobles-toolbar-control-size;
+    height: $fobles-toolbar-control-size;
+    margin: 0;
+    padding: 0;
+    border: 1px solid transparent;
+    border-radius: $fobles-radius-small;
+    background: transparent;
+    cursor: pointer;
+
+    &:hover {
+      background: $fobles-surface-hover;
+    }
+  }
+
+  &-close-icon {
+    display: block;
+    width: 16px;
+    height: 16px;
+    filter: brightness(0.745);
+  }
+}

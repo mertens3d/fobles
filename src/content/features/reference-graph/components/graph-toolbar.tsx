@@ -5,22 +5,20 @@ import type {
   SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../../sitecore-harvester/sitecore-harvester.types";
-import type {
-  GraphParameterVisibilitySettings,
-} from "../graph-parameter-visibility-settings";
-import type {
-  LayoutGraphPresetName,
-} from "../graph.types";
+import type { EnrichmentProgress as EnrichmentProgressData } from "../enrichment/enrichment.types";
+import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
+import type { LayoutGraphPresetName } from "../graph.types";
 import { BackButton } from "./back-button";
 import { BuildTime } from "./BuildTime";
+import { EnrichmentProgress } from "./enrichment-progress";
 import { GraphFilterList } from "./graph-filter-list";
 import { GraphToolBarHeaderButton } from "./graph-toolbar-header-button";
 import { GraphTypeSelect } from "./graph-type-select";
 import { GraphViewControls } from "./graph-view-controls";
 import { InteractionLegend } from "./interaction-legend";
+import { ParameterVisibilityControls } from "./parameter-visibility-controls";
 import { RootInfo } from "./root-info";
 import { ViewTreeDataButton } from "./view-tree-data-button";
-import { ParameterVisibilityControls } from "./parameter-visibility-controls";
 
 export type GraphToolbarHandle = {
   showGraph: (
@@ -32,9 +30,7 @@ export type GraphToolbarHandle = {
 type ToolbarProps = {
   graph: SitecoreHarvestResult;
   layoutPresetName: LayoutGraphPresetName;
-  onLayoutChange: (
-    value: LayoutGraphPresetName,
-  ) => void;
+  onLayoutChange: (value: LayoutGraphPresetName) => void;
   onRelayout: () => void;
   canGoBack: boolean;
   onBack: () => void;
@@ -43,19 +39,16 @@ type ToolbarProps = {
     key: keyof SitecoreHarvestFiltersState,
     checked: boolean,
   ) => void;
-  parameterVisibilitySettings:
-    GraphParameterVisibilitySettings;
+  parameterVisibilitySettings: GraphParameterVisibilitySettings;
   onParameterVisibilityChange: (
     settings: GraphParameterVisibilitySettings,
   ) => void;
   cy: cytoscape.Core | undefined;
   onClearFilters: () => void;
   controlsExpanded: boolean;
-  onControlsExpandedChange: (
-    expanded: boolean,
-  ) => void;
-  buildElapsedSeconds:
-    number | undefined;
+  onControlsExpandedChange: (expanded: boolean) => void;
+  buildElapsedSeconds: number | undefined;
+  enrichmentProgress: EnrichmentProgressData | undefined;
   onViewTreeData: () => void;
 };
 
@@ -75,15 +68,14 @@ export function GraphToolbar({
   controlsExpanded,
   onControlsExpandedChange,
   buildElapsedSeconds,
+  enrichmentProgress,
   onViewTreeData,
 }: ToolbarProps) {
   return (
     <div className="fobles-reference-graph-toolbar">
       <GraphToolBarHeaderButton
         controlsExpanded={controlsExpanded}
-        onControlsExpandedChange={
-          onControlsExpandedChange
-        }
+        onControlsExpandedChange={onControlsExpandedChange}
       />
 
       {controlsExpanded && (
@@ -106,37 +98,32 @@ export function GraphToolbar({
           <GraphFilterList
             filters={filters}
             onChange={onFilterChange}
-            onClearFilters={
-              onClearFilters
-            }
+            onClearFilters={onClearFilters}
           />
 
           <ParameterVisibilityControls
-            settings={
-              parameterVisibilitySettings
-            }
-            onChange={
-              onParameterVisibilityChange
-            }
+            settings={parameterVisibilitySettings}
+            onChange={onParameterVisibilityChange}
           />
 
           <RootInfo graph={graph} />
-
           <InteractionLegend />
 
           <ViewTreeDataButton
-            onViewTreeData={
-              onViewTreeData
-            }
-          />
-
-          <BuildTime
-            buildElapsedSeconds={
-              buildElapsedSeconds
-            }
+            onViewTreeData={onViewTreeData}
           />
         </div>
       )}
+
+      <div className="fobles-reference-graph-toolbar-footer">
+        <EnrichmentProgress
+          progress={enrichmentProgress}
+        />
+
+        <BuildTime
+          buildElapsedSeconds={buildElapsedSeconds}
+        />
+      </div>
     </div>
   );
 }
