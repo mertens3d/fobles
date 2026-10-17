@@ -2,9 +2,17 @@
 
 import { CONST } from "../../../../constants/const";
 import { SITECORE } from "../../../../constants/sitecore";
+import { isGuidLike } from "../../../features/augmentor/shared/guid";
+import { resolveFieldReferences } from "../../../field-reference-resolution/field-reference-resolution";
 import { extractFieldLabel, isHandledElsewhere, readRawFieldValue } from "../helpers/field-harvester";
-import { resolveFieldLinks } from "../helpers/field-links";
-import type { FieldLink, HarvestContext, SitecoreHarvestField, SitecoreHarvestSection } from "../../sitecore-harvester.types";
+import {
+  factoryItemGraphNodeData,
+  type HarvestContext,
+  type HarvestFieldLink,
+  type ItemGraphNodeData,
+  type SitecoreHarvestField,
+  type SitecoreHarvestSection,
+} from "../../sitecore-harvester.types";
 
 export function collectSections(harvestContext: HarvestContext): Promise<void>{
   const sections: SitecoreHarvestSection[] = [];
@@ -42,22 +50,25 @@ const collectSectionFields = (section: SitecoreHarvestSection, caption: HTMLElem
   return fields;
 };
 
+function buildReferenceValueItem(target: string): ItemGraphNodeData {
+  return isGuidLike(target)
+    ? factoryItemGraphNodeData({ scItemId: target })
+    : factoryItemGraphNodeData({ scItemPath: target });
+}
+
 const getSectionField = (marker: HTMLElement): SitecoreHarvestField => {
-  
+
   const sectionField: SitecoreHarvestField = { label: "", value: "" , links: [], rawMarkup: marker.outerHTML };
   sectionField.label = extractFieldLabel(marker);
   if (sectionField.label && !isHandledElsewhere(sectionField.label)) {
+    const rawValue = readRawFieldValue(marker);
+    const resolution = resolveFieldReferences(marker, rawValue);
 
-    const fieldLinks: FieldLink[] = resolveFieldLinks(marker);
-    if (fieldLinks.length > 0) {
-     sectionField.value = fieldLinks.map((link) => link.label).join(", ");
-     sectionField.links = fieldLinks;
-    } else {
-      const value = readRawFieldValue(marker);
-      if (value) {
-        sectionField.value = value;
-      }
-    }
+    sectionField.value = resolution.displayValue;
+    sectionField.links = resolution.references.map((reference): HarvestFieldLink => ({
+      ...reference,
+      valueItem: buildReferenceValueItem(reference.target),
+    }));
   }
 
   return sectionField;

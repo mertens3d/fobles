@@ -1,5 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/data-tree/data-tree-provenance.types.ts
 
+import type { FoblesStrategy } from "../../augmentor/fobles.types";
+import type { FieldReferenceConfidence } from "../../../field-reference-resolution/field-reference.types";
 import type {
   ItemGraphNodeData,
   LayoutDevice,
@@ -23,6 +25,15 @@ export type DataTreeProvenance =
     fieldName: string;
     fieldValue: string;
     field: SitecoreHarvestField;
+  }
+  | {
+    type: "field-reference";
+    item: ItemGraphNodeData;
+    sectionName: string;
+    fieldName: string;
+    sourceValue: string;
+    confidence: FieldReferenceConfidence;
+    strategy?: FoblesStrategy;
   }
   | {
     type: "layout-device";
@@ -71,5 +82,24 @@ export function createSyntheticProvenance(
   return {
     type: "synthetic",
     label,
+  };
+}
+
+export function createFieldReferenceProvenance(
+  item: ItemGraphNodeData,
+  sectionName: string,
+  fieldName: string,
+  sourceValue: string,
+  confidence: FieldReferenceConfidence,
+  strategy: FoblesStrategy | undefined,
+): DataTreeProvenance {
+  return {
+    type: "field-reference",
+    item: { ...item },
+    sectionName,
+    fieldName,
+    sourceValue,
+    confidence,
+    strategy,
   };
 }

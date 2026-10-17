@@ -13,6 +13,9 @@ const NODE_KIND =
 export const DEFAULT_WIDTH = 110;
 export const DEFAULT_HEIGHT = 30;
 export const ELLIPSE_SIZE = 55;
+// Field nodes show both their name and their value (up to ~4 wrapped lines total), so they need
+// more vertical room than every other node kind's single-line label.
+export const FIELD_HEIGHT = 56;
 
 export const NODE_PRESENTATION_BY_KIND:
   NodePresentationByKind = {
@@ -53,7 +56,7 @@ export const NODE_PRESENTATION_BY_KIND:
     labelMode: "fieldName",
     color: "#7a7a7a",
     width: DEFAULT_WIDTH,
-    height: DEFAULT_HEIGHT,
+    height: FIELD_HEIGHT,
   },
   [NODE_KIND.ITEM]: {
     labelMode: "name",

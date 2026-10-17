@@ -63,6 +63,14 @@ function provenanceDetailRows(
       ["Field Name", provenance.fieldName],
       ["Field Value", provenance.fieldValue],
     ];
+  } else if (provenance.type === "field-reference") {
+    rows = [
+      ["Section", provenance.sectionName],
+      ["Field Name", provenance.fieldName],
+      ["Confidence", provenance.confidence],
+      ["Strategy", provenance.strategy ?? ""],
+      ["Source Value", provenance.sourceValue],
+    ];
   } else if (provenance.type === "layout-device") {
     rows = [[
       "Device",
@@ -110,6 +118,8 @@ function resolveRawSource(
     rawSource =
       provenance.field.rawMarkup ??
       provenance.fieldValue;
+  } else if (provenance.type === "field-reference") {
+    rawSource = provenance.sourceValue;
   } else if (provenance.type === "layout-device") {
     rawSource = JSON.stringify(
       provenance.device.rawData,

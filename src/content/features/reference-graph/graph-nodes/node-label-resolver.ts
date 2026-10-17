@@ -64,22 +64,14 @@ function resolvePrimaryLabel(
   return label;
 }
 
-export function resolveNodeLabel(
-  treeNode: DataTreeNode,
-  presentation: NodePresentation,
-): string {
-  const primaryLabel = resolvePrimaryLabel(
-    treeNode,
-    presentation,
-  );
-
+function wrapLabelText(text: string): string {
   const labelBreakResult: LabelBreakResult = {
     success: false,
-    label: primaryLabel,
+    label: text,
   };
 
   if (
-    primaryLabel.length <=
+    text.length <=
     LINE_BREAKER.MAX_LABEL_LINE_LENGTH
   ) {
     labelBreakResult.success = true;
@@ -111,7 +103,27 @@ export function resolveNodeLabel(
     clampMiddle(labelBreakResult);
   }
 
-  let label = labelBreakResult.label;
+  return labelBreakResult.label;
+}
+
+export function resolveNodeLabel(
+  treeNode: DataTreeNode,
+  presentation: NodePresentation,
+): string {
+  const primaryLabel = resolvePrimaryLabel(
+    treeNode,
+    presentation,
+  );
+
+  let label = wrapLabelText(primaryLabel);
+
+  if (
+    presentation.labelMode === "fieldName" &&
+    treeNode.provenance.type === "section-field" &&
+    treeNode.provenance.fieldValue
+  ) {
+    label = `${label}:\n${wrapLabelText(treeNode.provenance.fieldValue)}`;
+  }
 
   if (presentation.secondaryLabel) {
     label =

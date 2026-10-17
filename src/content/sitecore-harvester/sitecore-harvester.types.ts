@@ -1,5 +1,6 @@
 // @source-path [fobles] src/content/sitecore-harvester/sitecore-harvester.types.ts
 
+import type { FieldReference } from "../field-reference-resolution/field-reference.types";
 import type {
   SitecoreDeviceXml,
   SitecoreRenderingXml,
@@ -77,19 +78,6 @@ export type SitecoreHarvestFiltersState = {
   template: boolean;
 };
 
-// One resolver per field-strategy, mirroring src/constants/_config.ts's per-strategy
-// FoblesTopSelectors - but reading Sitecore's own raw markup directly (not the augmentor's
-// injected buttons, which don't exist in a fetched/re-rooted document). Returns null when the
-// marker isn't that strategy's shape at all, so collectSections' flat-text fallback still applies.
-export type FieldLinkResolver = (
-  marker: HTMLElement,
-) => FieldLink[] | null;
-
-export type FieldLink = {
-  label: string;
-  valueItem: ItemGraphNodeData;
-};
-
 export type SitecoreHarvestSection = {
   name: string;
   fields: readonly SitecoreHarvestField[];
@@ -116,9 +104,8 @@ export type ScControl = {
 export type SitecoreHarvestField = {
   label: string;
   value: string | undefined;
-  // Set when a field-link strategy (xxxx.ts) recognized this field's raw
-  // markup as a list of other items - e.g. treelist-ex's Insert options - so each one can render
-  // as its own clickable node instead of being flattened into `value`.
+  // One per resolved Sitecore item reference found in this field's raw value - see
+  // field-reference-resolution/field-reference-resolution.ts for how these are produced.
   links: readonly HarvestFieldLink[];
   // Diagnostics only: the raw field-marker outerHTML this label/value/links were parsed from.
   rawMarkup: string | undefined;
@@ -131,8 +118,7 @@ export type LayoutDevice = {
   rawData: SitecoreDeviceXml;
 };
 
-export type HarvestFieldLink = {
-  label: string;
+export type HarvestFieldLink = FieldReference & {
   valueItem: ItemGraphNodeData;
 };
 

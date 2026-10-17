@@ -8,7 +8,7 @@ import type {
 import {  createDataTreeItemNode, createDataTreeNonItemNode,} from "./data-tree-node-factory";
 import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";
 import {
-  createSitecoreItemProvenance,
+  createFieldReferenceProvenance,
   createSyntheticProvenance,
 } from "./data-tree-provenance.types";
 import type {
@@ -90,6 +90,7 @@ function mapSections(
         children: mapSectionFields(
           sectionTreeNodeId,
           section.fields,
+          section.name,
         ),
       });
     },
@@ -99,6 +100,7 @@ function mapSections(
 function mapSectionFields(
   sectionTreeNodeId: string,
   fields: readonly SitecoreHarvestField[],
+  sectionName: string,
 ): DataTreeNonItemNode[] {
   return fields
     .filter((field) => Boolean(field.value))
@@ -129,6 +131,8 @@ function mapSectionFields(
         children: mapFieldLinks(
           fieldTreeNodeId,
           field.links,
+          sectionName,
+          field.label,
         ),
       });
     });
@@ -137,8 +141,10 @@ function mapSectionFields(
 function mapFieldLinks(
   fieldTreeNodeId: string,
   fieldLinks: readonly HarvestFieldLink[],
+  sectionName: string,
+  fieldName: string,
 ): DataTreeNode[] {
-  return fieldLinks.map(
+  return dedupeFieldLinks(fieldLinks).map(
     (fieldLink, linkIndex) =>
       createDataTreeItemNode({
         treeNodeId: createDataTreeNodeId(
@@ -149,12 +155,38 @@ function mapFieldLinks(
         scItem: fieldLink.valueItem,
         kind:
           CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND
-            .FIELD,
-        provenance: createSitecoreItemProvenance(fieldLink.valueItem),
+            .ITEM,
+        provenance: createFieldReferenceProvenance(
+          fieldLink.valueItem,
+          sectionName,
+          fieldName,
+          fieldLink.sourceValue,
+          fieldLink.confidence,
+          fieldLink.strategy,
+        ),
         collapseKey:
           GRAPH_COLLAPSE_KEY.FIELD,
         branch: "sections",
         relationshipToParent: "related",
       }),
   );
+}
+
+// A field may resolve the same target through more than one raw occurrence (e.g. the generic
+// GUID fallback scanning a value that repeats a GUID) - keep only the first reference per target.
+function dedupeFieldLinks(
+  fieldLinks: readonly HarvestFieldLink[],
+): HarvestFieldLink[] {
+  const seenTargets = new Set<string>();
+
+  return fieldLinks.filter((fieldLink) => {
+    const target = fieldLink.target.toLowerCase();
+
+    if (seenTargets.has(target)) {
+      return false;
+    }
+
+    seenTargets.add(target);
+    return true;
+  });
 }
