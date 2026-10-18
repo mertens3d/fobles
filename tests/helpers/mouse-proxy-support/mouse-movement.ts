@@ -1,5 +1,5 @@
 import type { Page } from "../../fixtures/playwright";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { showBillboard } from "../billboard";
 import { pauseForHuman } from "../wait-helpers";
 import type { CornerPosition, MouseCoordinates } from "../mouse-proxy.types";
@@ -18,7 +18,7 @@ export function resolveCornerPosition(
   const viewport = page.viewportSize();
   if (!viewport)
     throw new Error(
-      CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_READ_VIEWPORT,
+      TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_READ_VIEWPORT,
     );
 
   const x = cornerPosition.corner.endsWith("right")
@@ -85,11 +85,11 @@ function calculateTotalMouseSteps(
   );
   const durationMs =
     (distance /
-      (CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED]
+      (TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED]
         .MOUSE_PX_PER_SECOND *
-        CONST.TESTING.MOUSE.ROOT.SPEED_MULTIPLIER)) *
+        TEST_CONST.TESTING.MOUSE.ROOT.SPEED_MULTIPLIER)) *
     1000;
-  const mouseStepDelay = 1000 / CONST.TESTING.MOUSE.ROOT.UPDATE_HZ;
+  const mouseStepDelay = 1000 / TEST_CONST.TESTING.MOUSE.ROOT.UPDATE_HZ;
   const mouseSteps = Math.max(1, Math.ceil(durationMs / mouseStepDelay));
   // console.log(
   //   `[fobles] Mouse move '${label}': start=(${initialPosition.x.toFixed(1)}, ${initialPosition.y.toFixed(1)}), end=(${targetPosition.x.toFixed(1)}, ${targetPosition.y.toFixed(1)}), distance=${distance.toFixed(1)}px, steps=${mouseSteps}`
@@ -107,13 +107,13 @@ export async function moveMouseToDefault(page: Page): Promise<void> {
   }));
   await showBillboard(
     page,
-    CONST.TESTING.MOUSE.PROXY.DEFAULT_LABELS.MOUSE_TO_DEFAULT,
+    TEST_CONST.TESTING.MOUSE.PROXY.DEFAULT_LABELS.MOUSE_TO_DEFAULT,
   );
   const center = { x: viewport.width / 2, y: viewport.height / 2 };
   await moveMouseToPosition(
     page,
     center,
-    CONST.TESTING.MOUSE.PROXY.DEFAULT_LABELS.CENTER_OF_MONITOR,
+    TEST_CONST.TESTING.MOUSE.PROXY.DEFAULT_LABELS.CENTER_OF_MONITOR,
   );
 }
 

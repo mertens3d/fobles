@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import { pauseForHuman } from "./wait-helpers";
 
 const foregroundPages = new WeakMap<object, Page>();
@@ -10,7 +10,7 @@ export async function bringPageToFront(
   page: Page,
   pauseMs?: number,
 ): Promise<void> {
-  if (CONST.TESTING.SPEED.SELECTED !== "SPRINT") {
+  if (TEST_CONST.TESTING.SPEED.SELECTED !== "SPRINT") {
     const context = page.context();
     const switchedPage = foregroundPages.get(context) !== page;
     await page.bringToFront();

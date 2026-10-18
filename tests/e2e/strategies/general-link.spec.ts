@@ -1,5 +1,5 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { fieldScreenshotName } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
@@ -9,7 +9,7 @@ import { factoryStrategyTestContext } from "../../helpers/strategy-test-context"
 import { setupContentEditorForTesting } from "../../helpers/fobles-helpers-support/test-setup";
 import { showBillboard } from "../../helpers/billboard";
 
-const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 const SCENARIO = STRATEGY_SCENARIOS.GENERAL_LINK;
 
 foblesTest.describe("Strategy scenario: general link", () => {

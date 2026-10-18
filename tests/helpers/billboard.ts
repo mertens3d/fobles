@@ -1,4 +1,4 @@
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import { type Page } from "../fixtures/playwright";
 import { isSprintMode } from "./mouse-proxy";
 
@@ -73,7 +73,7 @@ export async function showBillboard(
         }, 600);
       }, 3000);
     },
-    { config: CONST.TESTING.BILLBOARD, text, xPercent, yPercent },
+    { config: TEST_CONST.TESTING.BILLBOARD, text, xPercent, yPercent },
   );
 }
 

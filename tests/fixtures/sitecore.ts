@@ -1,5 +1,5 @@
 import { expect, type Page } from "@playwright/test";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import { getTestEnvironment } from "./environment";
 import { ensureAuthenticatedUrl } from "./auto-login";
 import { bringPageToFront } from "../helpers/page-switch";
@@ -34,14 +34,14 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
 }
 
 export async function openContentEditor(page: Page, foValue:string = ""): Promise<void> {
-  const path = CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED + (foValue ? `?sc_bw=1&fo=${foValue}` : "");
+  const path = TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED + (foValue ? `?sc_bw=1&fo=${foValue}` : "");
   await openSitecorePage(page, path);
 }
 
 export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   await bringPageToFront(page);
   // Sitecore only reads this cookie at load time, so it must be set before navigating, not after.
-  await setTreePanelWidth(page, CONST.TESTING.TREE_PANEL_WIDTH_PX);
+  await setTreePanelWidth(page, TEST_CONST.TESTING.TREE_PANEL_WIDTH_PX);
   const { baseUrl } = getTestEnvironment();
   const url = new URL(path || baseUrl, baseUrl).toString();
   // page.goto() issues a CDP Page.navigate command from outside the page - Chromium tags it as a
@@ -80,7 +80,7 @@ export async function logoutCurrentSitecoreSession(page: Page): Promise<boolean>
       // Sitecore renders "Log out" as plain text inside a <li> (ul.sc-accountInformation), not a
       // semantic <a> - getByRole("link") never matches it, regardless of how it looks visually.
       const logout = frame
-        .locator(CONST.SITECORE.SELECTORS.ACCOUNT_INFO)
+        .locator(TEST_CONST.SITECORE.SELECTORS.ACCOUNT_INFO)
         .getByText(/log\s*out/i)
         .first();
       if (await logout.isVisible()) {
@@ -96,19 +96,19 @@ export async function logoutCurrentSitecoreSession(page: Page): Promise<boolean>
 
 export async function enableFobles(page: Page): Promise<void> {
   const jumpFlyoutTrigger = page
-    .locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER)
+    .locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER)
     .first();
   await expect(jumpFlyoutTrigger).toBeVisible({
-    timeout: CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS,
+    timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS,
   });
 
   await openFoblesJumpFlyout(page);
 
-  const jumpFlyout = page.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
-  await expect(jumpFlyout).toBeVisible({ timeout: CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
+  const jumpFlyout = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
+  await expect(jumpFlyout).toBeVisible({ timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
 
   const toggle = page
-    .getByRole("button", { name: CONST.FOBLES.LABELS.TOGGLE_FOBLES })
+    .getByRole("button", { name: TEST_CONST.FOBLES.LABELS.TOGGLE_FOBLES })
     .first();
   if (await toggle.isVisible().catch(() => false)) {
     await toggle.click();
@@ -116,12 +116,12 @@ export async function enableFobles(page: Page): Promise<void> {
 }
 
 export async function openFoblesJumpFlyout(page: Page): Promise<void> {
-  const trigger = page.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
+  const trigger = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
 
   await page.waitForLoadState("domcontentloaded");
   await expect
     .poll(async () => await trigger.count(), {
-      timeout: CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS,
+      timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS,
     })
     .toBeGreaterThan(0);
 
@@ -129,6 +129,6 @@ export async function openFoblesJumpFlyout(page: Page): Promise<void> {
   await trigger.hover();
   await trigger.click();
 
-  const jumpFlyout = page.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
-  await expect(jumpFlyout).toBeVisible({ timeout: CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
+  const jumpFlyout = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
+  await expect(jumpFlyout).toBeVisible({ timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
 }

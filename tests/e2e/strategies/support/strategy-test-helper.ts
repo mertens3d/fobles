@@ -1,4 +1,4 @@
-import { CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../CONST";
 import { expectFoblesButtonNewTabNavigationStrategy, expectFoblesButtonSameTabNavigation } from "../../../helpers/fobles-helpers-support/navigation-assertions";
 import { clickLbolt } from "../../../macros/fobles-macros";
 import { clickWithMouseMarker, ensureMouseMarkerExists, highlightClickTarget } from "../../../helpers/mouse-proxy";
@@ -28,7 +28,7 @@ export async function stepExpectFoblesInitialConditions(testContext: StrategyTes
       throw new Error(`[fobles] Field table is not visible`);
     }
 
-    await expect(fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+    await expect(fieldTable.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
     await expect(fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"));
 
     await pauseForHuman(testContext.page, testContext.STEP_WAIT_MS);
@@ -78,7 +78,7 @@ export async function stepExpectFoblesOnConditions(testContext: StrategyTestCont
 
       await clickLbolt(testContext.page);
       await expect(locatorFirstResult).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-      const foblesButton = fieldTable.locator(testContext.SCENARIO.foblesButtonSelector ?? CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
+      const foblesButton = fieldTable.locator(testContext.SCENARIO.foblesButtonSelector ?? TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
       await expect(foblesButton).toBeVisible();
       await expect(foblesButton).toHaveText(testContext.SCENARIO.expectedButtonText);
       await expect(fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "FOBLES_ON"));
@@ -100,7 +100,7 @@ export async function stepExpectFoblesCtrlClick(testContext: StrategyTestContext
       const popupPromise = testContext.page.context().waitForEvent("page");
 
       const fieldTable = await testContext.getFieldTable();
-      const foblesButton = fieldTable.locator(testContext.SCENARIO.foblesButtonSelector ?? CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
+      const foblesButton = fieldTable.locator(testContext.SCENARIO.foblesButtonSelector ?? TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
 
       console.log(`about to ctrl+click`);
       await clickWithMouseMarker(
@@ -130,11 +130,11 @@ export async function stepExpectFoblesOffConditions(testContext: StrategyTestCon
     const locatorFirstResult = await testContext.getScLocatorFirstResult();
     await highlightClickTarget(locatorFirstResult, "locatorFirstResult");
     await expect(locatorFirstResult).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-    await expect(locatorFirstResult).not.toHaveAttribute(CONST.FOBLES.ATTRIBUTES.PROCESSED, "1");
+    await expect(locatorFirstResult).not.toHaveAttribute(TEST_CONST.FOBLES.ATTRIBUTES.PROCESSED, "1");
 
     const fieldTable = await testContext.getFieldTable();
-    await highlightClickTarget(fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER), "wrapper");
-    await expect(fieldTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+    await highlightClickTarget(fieldTable.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER), "wrapper");
+    await expect(fieldTable.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
 
     await pauseForHuman(testContext.page, testContext.STEP_WAIT_MS);
 
@@ -148,7 +148,7 @@ export async function stepExpectFoblesClick(testContext: StrategyTestContext) {
   await testContext.step(
     `Click navigates to the target item: "${testContext.SCENARIO.expectedFoValue}"`,
     async (fullTitle) => {
-      const foblesButton = (await testContext.getFieldTable()).locator(testContext.SCENARIO.foblesButtonSelector ?? CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
+      const foblesButton = (await testContext.getFieldTable()).locator(testContext.SCENARIO.foblesButtonSelector ?? TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
       await expectFoblesButtonSameTabNavigation(testContext.page, testContext.testInfo, foblesButton, testContext.SCENARIO.expectedFoValue, fullTitle);
     },
     { screenshot: false },

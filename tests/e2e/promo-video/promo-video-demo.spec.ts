@@ -1,5 +1,5 @@
 import { foblesTest, type Page } from "../../fixtures/playwright";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import {   clickTreeJump,  scrollTreeContainer } from "../../macros/sitecore-macros";
 import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
@@ -14,7 +14,7 @@ import { demoSightings } from "./demo-sightings";
 
 foblesTest.describe("Promo Video", () => {
   foblesTest("promo video", async ({ page: sharedPage, sharedBrowserContext }) => {
-    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     let testError: unknown;
 
     const page = RECORD_VIDEO ? await sharedBrowserContext.newPage() : sharedPage;
@@ -48,7 +48,7 @@ async function demoLBoltToggle(page: Page) {
     init: async () => {
       await openSitecorePage(
         page,
-        `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=75D27C2B-5F88-4CC8-B1DE-8412A1628408&sc_lang=en`,
+        `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=75D27C2B-5F88-4CC8-B1DE-8412A1628408&sc_lang=en`,
       );
       await ensureMouseMarkerExists(page);
     },
@@ -61,7 +61,7 @@ async function demoTreeJumpFlyout(page: Page) {
 
   await clickLbolt(page)
   await showSpeakBubble(page, "Click opens the tree jump path in the same tab. <br/>Ctrl + Click opens it in a new tab.");
-  await clickTreeJump(page, CONST.SITECORE.TREE_JUMP_PATHS.LAYOUT_RENDERINGS);
+  await clickTreeJump(page, TEST_CONST.SITECORE.TREE_JUMP_PATHS.LAYOUT_RENDERINGS);
   // await playDemoBeat(page, {
   //   name: "DemoTreeJumpFlyout-ClickSameTab",
   //   speechText: "Click opens the tree jump path in the same tab",
@@ -107,13 +107,13 @@ async function demoToolbarDrag(page: Page) {
   //   highlightResult: false,
   // });
  
-  await showSpeakBubble(page, "Drag the toolbar anywhere on the page", CONST.TESTING.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION);
-  await dragToolbarToCornerLocation  (page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL);
+  await showSpeakBubble(page, "Drag the toolbar anywhere on the page", TEST_CONST.TESTING.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION);
+  await dragToolbarToCornerLocation  (page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL);
 
   await moveMouseTowardCenter(page);
 
-  await dragToolbarToCornerLocation  (page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR);
+  await dragToolbarToCornerLocation  (page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR);
   await moveMouseTowardCenter(page);
 
-  await dragToolbarToCornerLocation  (page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR);
+  await dragToolbarToCornerLocation  (page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR);
 }

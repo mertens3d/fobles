@@ -1,5 +1,5 @@
 import type { BrowserContext } from "@playwright/test";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { type Page } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { findFrameWithSelector } from "../../helpers/frame-finder";
@@ -47,7 +47,7 @@ export async function demoSightings(
   for (const sighting of sightings) {
     console.log(`[fobles] demoSightings: visiting ${sighting.title} (${sighting.itemId})`);
     try {
-      await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${sighting.itemId}`);
+      await openSitecorePage(page, `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${sighting.itemId}`);
 
       const sectionSelector = buildSectionSelector(sighting);
       const contentFrame = await findFrameWithSelector(page, sectionSelector, `${sighting.title} section`, 10_000);

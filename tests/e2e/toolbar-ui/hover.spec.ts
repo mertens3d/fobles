@@ -1,4 +1,4 @@
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import {
     getLastKnownMousePosition,
     moveMouseOutsideHoverArea,
@@ -13,15 +13,15 @@ foblesTest.describe("Fobles Hover", () => {
     foblesTest(`'content-editor-root-item-lbolt' creates expected Fobles`, async ({ page }) => {
         await activateFobles(page);
         const lboltButton = page
-            .locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON)
+            .locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON)
             .first();
         const editorTabs = page.locator("#EditorTabs");
         await expect(editorTabs).toBeVisible();
         await ensureMouseMarkerExists(page);
 
-        const jumpFlyoutButton = page.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
+        const jumpFlyoutButton = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
         await expect(jumpFlyoutButton).toBeVisible();
-        const jumpFlyout = page.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
+        const jumpFlyout = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
         const mousePosition = getLastKnownMousePosition();
 
         await hoverAndGrow(page, {

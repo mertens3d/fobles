@@ -11,6 +11,13 @@ export const _FOBLES_BASE_CONST = {
   CLASSES: {
     HIDDEN: "fobles-hidden",
   },
+  DOM: {
+    IDS: {
+      DIALOG_ID: "fobles-reference-graph-dialog",
+      PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
+      
+    },
+  },
   // Must match src/shared/constants.ts's MESSAGE.ACTION / src/public/manifest.json's "commands"
   // keys - page.keyboard.press(...) can't simulate these (CDP key events never reach Chrome's own
   // global accelerator table), so tests trigger the relay logic directly via the background
@@ -27,7 +34,7 @@ export const _FOBLES_BASE_CONST = {
     DATA_PAGE_JUMP_URL: "[data-fobles-page-jump-url]",
   },
   SELECTORS: {
-    DATA:{
+    DATA: {
       FOBLES_TREE_JUMP_PATH: "[data-fobles-tree-jump-path]",
 
     },

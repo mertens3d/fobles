@@ -5,7 +5,7 @@ import {
   type TestInfo,
 } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import {
   attachUiPathNote,
@@ -27,20 +27,20 @@ import { toBracedGuid } from "../../helpers/guid-helpers";
 import type { FoblesStep } from "../../helpers/fobles-test-step.types";
 
 const STEP_WAIT_MS =
-  CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+  TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 function assertToolbarFlavor(
   foblesFrame: Awaited<ReturnType<typeof findFrameWithSelector>>,
   toolbarType: ToolbarType,
 ) {
   const jumpFlyoutTrigger = foblesFrame.locator(
-    CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER,
+    TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER,
   );
   const proxyButtonsTrigger = foblesFrame.locator(
-    CONST.FOBLES.SELECTORS.PROXY_BUTTONS_TRIGGER,
+    TEST_CONST.FOBLES.SELECTORS.PROXY_BUTTONS_TRIGGER,
   );
   const closeButton = foblesFrame.locator(
-    CONST.FOBLES.SELECTORS.TOOLBAR_CLOSE_BUTTON,
+    TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CLOSE_BUTTON,
   );
 
   if (toolbarType === "compact") {
@@ -61,7 +61,7 @@ function assertToolbarFlavor(
 foblesTest.describe(
   "Pages: toolbar visibility, Fobles activation, and button navigation",
   () => {
-    for (const pageCase of CONST.TESTING.FOBLES_PAGES) {
+    for (const pageCase of TEST_CONST.TESTING.FOBLES_PAGES) {
       // const runTest = pageCase.skip
       //   ? foblesTest.skip.bind(foblesTest)
       //   : foblesTest.bind(foblesTest);
@@ -210,7 +210,7 @@ async function stepVisibility(
 
       if (!pageCase.foblesEligible) {
         await expectNeverAppears(
-          page.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER),
+          page.locator(TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER),
           2000,
           `Fobles toolbar appeared on ${pageCase.label}, which is supposed to be ineligible`,
         );
@@ -218,17 +218,17 @@ async function stepVisibility(
       } else {
         const foblesFrame = await findFrameWithSelector(
           page,
-          CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER,
+          TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER,
           `Fobles toolbar on ${pageCase.label}`,
           10000,
         );
         await ensureMouseMarkerExists(foblesFrame);
 
         await expect(
-          foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER),
+          foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER),
         ).toBeVisible();
         await expect(
-          foblesFrame.locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON),
+          foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON),
         ).toBeVisible();
         await assertToolbarFlavor(foblesFrame, pageCase.toolbarType);
       }

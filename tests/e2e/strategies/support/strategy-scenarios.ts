@@ -1,4 +1,4 @@
-import { CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../CONST";
 import { MODULE_ROOT_YML_REF, STRATEGY_YML_REFS } from "./yml-strategy-refs.CONST";
 import type {
   StrategyScenarioData,
@@ -56,7 +56,7 @@ export const STRATEGY_SCENARIOS = {
     expectedFoValue: STRATEGY_YML_REFS.DROP_LINK.targetItemId,
     friendlyName: "Drop Link",
     visibleToFobles: true,
-    scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.DROP_LINK,
+    scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.DROP_LINK,
     SCREENSHOT_BASE_NAME : "droplink-1x"
   },
   DROP_TREE: {
@@ -69,7 +69,7 @@ export const STRATEGY_SCENARIOS = {
     expectedFoValue: displayResolvedFoValue(STRATEGY_YML_REFS.DROP_TREE.targetItemPath),
     friendlyName: "Drop Tree",
     visibleToFobles: true,
-    scElemLocator:CONST.SITECORE.SELECTORS.STRATEGIES.DROP_TREE,
+    scElemLocator:TEST_CONST.SITECORE.SELECTORS.STRATEGIES.DROP_TREE,
     SCREENSHOT_BASE_NAME : "drop-tree-1x" 
   },
   DROP_LIST: {
@@ -79,7 +79,7 @@ export const STRATEGY_SCENARIOS = {
     expectedFoValue: "NOT IMPLEMENTED",
     friendlyName: "Drop List",
     visibleToFobles: false,
-    scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.DROP_LIST,
+    scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.DROP_LIST,
     SCREENSHOT_BASE_NAME : "drop-list-1x"
   },
   GENERAL_LINK: {
@@ -93,7 +93,7 @@ export const STRATEGY_SCENARIOS = {
     expectedFoValue: STRATEGY_YML_REFS.GENERAL_LINK.targetItemPath,
     friendlyName: "General Link",
     visibleToFobles: true,
-    scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.GENERAL_LINK,
+    scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.GENERAL_LINK,
     SCREENSHOT_BASE_NAME : "general-link-1x"
 
   },
@@ -106,7 +106,7 @@ export const STRATEGY_SCENARIOS = {
     expectedFoValue: STRATEGY_YML_REFS.INTERNAL_LINK.targetItemPath,
     friendlyName: "Internal Link",
     visibleToFobles: true,
-    scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.INTERNAL_LINK,
+    scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.INTERNAL_LINK,
     SCREENSHOT_BASE_NAME : "internal-link-1x"
   },
   MULTILIST_OPTIONS: {
@@ -116,7 +116,7 @@ export const STRATEGY_SCENARIOS = {
     expectedFoValue: STRATEGY_YML_REFS.MULTILIST_OPTIONS.targetItemId,
     friendlyName: "Multilist Options",
     visibleToFobles: true,
-    scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.MULTILIST,
+    scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.MULTILIST,
     SCREENSHOT_BASE_NAME : "multilist-1x"
   },
   MULTILIST_WITH_SEARCH: {
@@ -129,8 +129,8 @@ export const STRATEGY_SCENARIOS = {
     expectedFoValue: STRATEGY_YML_REFS.MULTILIST_WITH_SEARCH.targetItemId,
     friendlyName: "Multilist With Search",
     visibleToFobles: true,
-    scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.MULTILIST_WITH_SEARCH,
-    foblesButtonSelector: CONST.FOBLES.SELECTORS.SELECTED_PANE_BUTTON,
+    scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.MULTILIST_WITH_SEARCH,
+    foblesButtonSelector: TEST_CONST.FOBLES.SELECTORS.SELECTED_PANE_BUTTON,
     SCREENSHOT_BASE_NAME : "multilist-with-search-1x"     
   },
   TAG_LIST: {
@@ -141,7 +141,7 @@ export const STRATEGY_SCENARIOS = {
     friendlyName: "Tag List",
     visibleToFobles: false,
     expectedFoValue: "NOT IMPLEMENTED",
-    scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.TAG_LIST,
+    scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.TAG_LIST,
     SCREENSHOT_BASE_NAME : "tag-list-1x"
   },
   TREE_LIST: {
@@ -151,8 +151,8 @@ export const STRATEGY_SCENARIOS = {
     expectedFoValue: STRATEGY_YML_REFS.TREE_LIST.targetItemId,
     friendlyName: "Tree List",
     visibleToFobles: true,
-    scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.TREE_LIST,
-    foblesButtonSelector: CONST.FOBLES.SELECTORS.SELECTED_PANE_BUTTON,
+    scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.TREE_LIST,
+    foblesButtonSelector: TEST_CONST.FOBLES.SELECTORS.SELECTED_PANE_BUTTON,
     SCREENSHOT_BASE_NAME : "tree-list-1x"
   },
   TREELIST_EX: {
@@ -164,7 +164,7 @@ export const STRATEGY_SCENARIOS = {
     expectedFoValue: STRATEGY_YML_REFS.TREELIST_EX.targetItemPath,
     friendlyName: "Treelist Ex",
     visibleToFobles: true,
-    scElemLocator: CONST.SITECORE.SELECTORS.STRATEGIES.TREELISTEX,
+    scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.TREELISTEX,
     SCREENSHOT_BASE_NAME : "treelist-ex-1x"
   },
 } satisfies Record<string, StrategyScenarioData >

@@ -1,16 +1,16 @@
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import { expect, type Frame, type Page } from "../fixtures/playwright";
 import { getScSearchParams, normalizeFoValueForCompare, normalizePath } from "../helpers/path-helpers";
 import { findFoblesFrame } from "../helpers/frame-finder";
 
 export async function expectJumpFlyoutFlyoutVisible(foblesFrame: Frame) {
-  const jumpFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
-  await expect(jumpFlyout).toHaveAttribute(CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE, "true");
+  const jumpFlyout = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
+  await expect(jumpFlyout).toHaveAttribute(TEST_CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE, "true");
 }
 
 export async function expectJumpFlyoutFlyoutHidden(foblesFrame: Frame) {
-  const jumpFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
-  await expect(jumpFlyout).toHaveAttribute(CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE, "false");
+  const jumpFlyout = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
+  await expect(jumpFlyout).toHaveAttribute(TEST_CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE, "false");
 }
 
 export function expectFoValue(page: Page, expectedFoValue: string) {
@@ -31,19 +31,19 @@ export function expectCurrentUrlContains(page: Page, path: string) {
 }
 
 export async function expectLBoltButton(foblesFrame: Frame) {
-  const lboltButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON).first();
+  const lboltButton = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON).first();
   await expect(lboltButton).toBeVisible();
 }
 
 export async function expectFoblesContainerVisible(page: Page) {
   const foblesFrame = await findFoblesFrame(page);
-  const container = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER).first();
+  const container = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER).first();
   await expect(container).toBeVisible();
 }
 
 export async function expectFoblesContainerDom(page: Page, position: string) {
   const foblesFrame = await findFoblesFrame(page);
-  const container = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER).first();
+  const container = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER).first();
   await expect(container).toBeVisible();
   await expect(container).not.toHaveClass(/fobles-toolbar-dragging/);
   await expect(container).toHaveAttribute("data-position", position);

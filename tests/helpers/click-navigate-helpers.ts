@@ -1,6 +1,6 @@
 import type { Page, Locator, TestInfo } from "../fixtures/playwright";
 import { isContentEditor } from "./path-helpers";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import { clickWithMouseMarker, ensureMouseMarkerExists } from "./mouse-proxy";
 import { getLastTwoPathItems } from "./path-helpers";
 import { dismissFoblesConfirmDialogIfPresent } from "../macros/fobles-macros";
@@ -70,8 +70,8 @@ async function postClickCommon(page: Page, clickNavigationExpect: ClickNavigatio
     await attachItemPathScreenshot(page, testInfo, label);
   }
 
-  await pauseForHuman(page, CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
-    CONST.TESTING.NAVIGATION.HOLD_MULTIPLIER);
+  await pauseForHuman(page, TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
+    TEST_CONST.TESTING.NAVIGATION.HOLD_MULTIPLIER);
 }
 
 export async function ctrlClickFoblesNavigationButton(page: Page, foblesButton: Locator, expectedUrlContainsPath: string, testInfo: TestInfo, sharedBrowserContext: BrowserContext, fullTitle: string) {
@@ -87,8 +87,8 @@ export async function ctrlClickFoblesNavigationButton(page: Page, foblesButton: 
     .waitForLoadState("domcontentloaded")
     .catch(() => undefined);
 
-  const newTabHoldMs = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
-    CONST.TESTING.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
+  const newTabHoldMs = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
+    TEST_CONST.TESTING.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
   await bringPageToFront(newTab, newTabHoldMs);
 
   await postClickCommon(newTab, { url: expectedUrlContainsPath }, testInfo, `Ctrl-click jump ${getLastTwoPathItems(expectedUrlContainsPath)}`);

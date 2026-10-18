@@ -1,8 +1,8 @@
 import { expect, type Locator, type Page } from "../../fixtures/playwright";
 import { clickExtensionControl, fillExtensionInput } from "../../fixtures/extension";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 
-export const TESTING = CONST.TESTING;
+export const TESTING = TEST_CONST.TESTING;
 
 export type StoredSettingsSnapshot = {
   local: Record<string, unknown>;
@@ -56,7 +56,7 @@ export async function findGroupByName(page: Page, name: string): Promise<Locator
   const groups = page.locator(TESTING.OPTIONS.AI_PAGES.GROUP_SELECTOR);
   for (let index = 0; index < (await groups.count()); index += 1) {
     const group = groups.nth(index);
-    if ((await group.locator(CONST.TESTING.SELECTORS.AI_MAPPING_NAME_INPUT).inputValue()) === name) {
+    if ((await group.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_NAME_INPUT).inputValue()) === name) {
       return group;
     }
   }

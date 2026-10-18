@@ -1,6 +1,6 @@
 // Shared by every field-strategy test (strategies/*.spec.ts) - navigates to the scenario item,
 // shows the mouse marker (matching the toolbar suite's visual style), and locates the field's
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import { findFoblesFrame } from "./frame-finder";
 import type { Locator, Page, TestInfo } from "@playwright/test";
 import type { StrategyScenarioData, StrategyTestContext } from "../e2e/strategies/support/scenario.types";
@@ -19,7 +19,7 @@ export async function factoryStrategyTestContext(
     fieldTable: undefined as unknown as Locator,
     locatorFirstResult: undefined as unknown as Locator,
     getScLocatorFirstResult: getScLocatorFirstResult,
-    STEP_WAIT_MS: CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS,
+    STEP_WAIT_MS: TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS,
     step: () =>
       Promise.reject(new Error("step not initialized")),
     SCENARIO: scenario,

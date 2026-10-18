@@ -81,10 +81,10 @@ export function handleHarvestProgress(
             (progressStep, index) =>
                 index === existingStepIndex
                     ? {
-                          ...progressStep,
-                          label: step.label,
-                          status,
-                      }
+                        ...progressStep,
+                        label: step.label,
+                        status,
+                    }
                     : progressStep,
         );
     }
@@ -125,8 +125,7 @@ export function openReferenceGraphProgressModal(
     const dialog = doc.createElement("dialog");
     const reactHost = doc.createElement("div");
 
-    dialog.id =
-        CONST.FOBLES.REFERENCE_GRAPH.PROGRESS_DIALOG_ID;
+    dialog.id = CONST.FOBLES.REFERENCE_GRAPH.DOM.IDS.PROGRESS_DIALOG_ID;
 
     dialog.className =
         "fobles-reference-graph-progress";

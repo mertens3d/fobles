@@ -1,6 +1,6 @@
 /// <reference types="chrome" />
 import type { BrowserContext, Frame, Locator, Page } from "@playwright/test";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import {
     clickWithMouseMarker,
     moveMouseToPosition,
@@ -19,7 +19,7 @@ export async function ClickFoblesJumpButton(
     page: Page, expectFlyoutVisible = true) {
     const foblesFrame = await findFoblesFrame(page);
     console.log(`[fobles Macro] ClickFoblesJumpButton`);
-    const jumpFlyoutButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
+    const jumpFlyoutButton = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
     await clickWithMouseMarker(page, jumpFlyoutButton, "Fobles Jump Button");
     if (expectFlyoutVisible) {
         await expectJumpFlyoutFlyoutVisible(foblesFrame);
@@ -33,9 +33,9 @@ export async function ClickFoblesJumpButton(
 export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<void> {
     console.log("[Macro: openJumpFlyout] - Start");
     console.log("[fobles] Checking whether the Jump flyout is already visible");
-    const jumpFlyout = foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT);
+    const jumpFlyout = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT);
     const isOpen =
-        (await jumpFlyout.getAttribute(CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE).catch(() => null)) === "true";
+        (await jumpFlyout.getAttribute(TEST_CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE).catch(() => null)) === "true";
     if (isOpen) {
         console.log("[fobles] Jump flyout already visible - skipping trigger click");
         return;
@@ -70,10 +70,10 @@ export async function dragToolbarToCornerLocation(page: Page, cornerPosition: Co
     console.log(`[macro] dragToolbarToCornerLocation ${cornerPosition.corner}`)
 
     // await showBillboard(page, `Find Fobles toolbar`);
-    const foblesFrame = await findFrameWithSelector(page, CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
+    const foblesFrame = await findFrameWithSelector(page, TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar");
 
     // await showBillboard(page, `Find Toolbar grip`);
-    const toolbarGrip = foblesFrame.locator(CONST.FOBLES.SELECTORS.TOOLBAR_GRIP).first();
+    const toolbarGrip = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.TOOLBAR_GRIP).first();
     //await highlightClickTarget(toolbarGrip, "Toolbar grip");
 
     // console.log(`[macro] Found toolbar grip`);
@@ -93,7 +93,7 @@ export async function clickFoblesTreeButton(
     options?: { turnOffWarning?: boolean; skipDialogDismiss?: boolean },
 ): Promise<void> {
     console.log("[Macro: clickFoblesTreeButton] - Start");
-    const buttonSelector = `${CONST.FOBLES.SELECTORS.TREE_FOBLES_BUTTON}[data-fobles-item-id="${itemId}"]`;
+    const buttonSelector = `${TEST_CONST.FOBLES.SELECTORS.TREE_FOBLES_BUTTON}[data-fobles-item-id="${itemId}"]`;
     const treeFrame = await findFrameWithSelector(page, buttonSelector, "tree fobles button", 10_000);
     await ensureMouseMarkerExists(page);
     await ensureMouseMarkerExists(treeFrame);
@@ -118,26 +118,26 @@ export async function dismissFoblesConfirmDialogIfPresent(
        
         console.log("[Macro: dismissFoblesConfirmDialogIfPresent] - Start");
         console.log(
-            `[fobles] Polling up to ${CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS}ms for a visible confirm dialog (selector: ${CONST.FOBLES.SELECTORS.CONFIRM_DIALOG})`,
+            `[fobles] Polling up to ${TEST_CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS}ms for a visible confirm dialog (selector: ${TEST_CONST.FOBLES.SELECTORS.CONFIRM_DIALOG})`,
         );
-        const deadline = Date.now() + CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS;
+        const deadline = Date.now() + TEST_CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS;
         let dismissed = false;
         do {
             await walkFrameDocuments(page, async (frame) => {
-                const dialog = frame.locator(CONST.FOBLES.SELECTORS.CONFIRM_DIALOG).first();
+                const dialog = frame.locator(TEST_CONST.FOBLES.SELECTORS.CONFIRM_DIALOG).first();
                 if (await dialog.isVisible().catch(() => false)) {
                     dismissed = true;
                     console.log("[fobles] Confirm dialog found - dismissing");
                     if (options?.turnOffWarning) {
                         const warningCheckbox = dialog
-                            .locator(CONST.FOBLES.SELECTORS.CONFIRM_DIALOG_SETTING)
+                            .locator(TEST_CONST.FOBLES.SELECTORS.CONFIRM_DIALOG_SETTING)
                             .locator("input[type='checkbox']");
                         await clickWithMouseMarker(page, warningCheckbox, "Turn off same-tab navigation warning");
 
                     }
                     await clickWithMouseMarker(
                         page,
-                        dialog.locator(CONST.FOBLES.SELECTORS.CONFIRM_DIALOG_CONTINUE),
+                        dialog.locator(TEST_CONST.FOBLES.SELECTORS.CONFIRM_DIALOG_CONTINUE),
                         "Confirm dialog Continue",
                     );
                 }
@@ -149,7 +149,7 @@ export async function dismissFoblesConfirmDialogIfPresent(
         } while (!dismissed && Date.now() < deadline);
         if (!dismissed) {
             console.log(
-                `[fobles] No confirm dialog appeared within ${CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS}ms - treating as not shown`,
+                `[fobles] No confirm dialog appeared within ${TEST_CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS}ms - treating as not shown`,
             );
         }
     }else{
@@ -166,7 +166,7 @@ export async function clickLbolt(page: Page): Promise<void> {
     const foblesFrame = await findFoblesFrame(page);
     await ensureMouseMarkerExists(page);
     await ensureMouseMarkerExists(foblesFrame);
-    const lboltButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON);
+    const lboltButton = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON);
     await clickWithMouseMarker(page, lboltButton, "LBolt button");
 }
 
@@ -194,7 +194,7 @@ async function triggerExtensionCommand(context: BrowserContext, command: string)
 // button's own click handler, and works even when the toolbar itself is hidden.
 export async function pressToggleLboltHotkey(context: BrowserContext): Promise<void> {
     console.log("[Macro: pressToggleLboltHotkey] - Start");
-    await triggerExtensionCommand(context, CONST.FOBLES.HOTKEYS.TOGGLE_LBOLT_COMMAND);
+    await triggerExtensionCommand(context, TEST_CONST.FOBLES.HOTKEYS.TOGGLE_LBOLT_COMMAND);
 }
 
 // Triggers the chrome.commands "toggle-fobles" shortcut's relay logic - flips Fobles nav
@@ -202,5 +202,5 @@ export async function pressToggleLboltHotkey(context: BrowserContext): Promise<v
 // showFoblesToolbar/hideFoblesToolbar vs. the nav-visible toggle in src/content/toolbar-runtime.ts).
 export async function pressToggleFoblesToolbarHotkey(context: BrowserContext): Promise<void> {
     console.log("[Macro: pressToggleFoblesToolbarHotkey] - Start");
-    await triggerExtensionCommand(context, CONST.FOBLES.HOTKEYS.TOGGLE_FOBLES_COMMAND);
+    await triggerExtensionCommand(context, TEST_CONST.FOBLES.HOTKEYS.TOGGLE_FOBLES_COMMAND);
 }

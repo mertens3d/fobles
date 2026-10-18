@@ -1,7 +1,7 @@
 import { expect, foblesTest } from "../../../fixtures/playwright";
 import { clickExtensionControl, getExtensionId, openExtensionPage } from "../../../fixtures/extension";
 import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
-import { CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../CONST";
 import {
   clickOptionsButton,
   fillOptionsInput,
@@ -86,7 +86,7 @@ foblesTest.describe("Additional Settings Persistence", () => {
       await clickOptionsButton(optionsPage, TESTING.OPTIONS.AI_PAGES.ADD_GROUP_BUTTON);
       groupAdded = true;
       const newGroup = optionsPage.locator(TESTING.OPTIONS.AI_PAGES.GROUP_SELECTOR).last();
-      await expect(newGroup.locator(CONST.TESTING.SELECTORS.AI_MAPPING_NAME_INPUT)).toBeVisible();
+      await expect(newGroup.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_NAME_INPUT)).toBeVisible();
 
       await clickOptionsButton(optionsPage, TESTING.OPTIONS.AI_PAGES.SAVE_MAPPINGS_BUTTON);
       await expect(optionsPage.locator(TESTING.OPTIONS.AI_PAGES.STATUS_SELECTOR)).toHaveText(
@@ -96,27 +96,27 @@ foblesTest.describe("Additional Settings Persistence", () => {
 
       await fillOptionsInput(
         optionsPage,
-        newGroup.locator(CONST.TESTING.SELECTORS.AI_MAPPING_NAME_INPUT),
+        newGroup.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_NAME_INPUT),
         groupName,
       );
       await fillOptionsInput(
         optionsPage,
-        newGroup.locator(CONST.TESTING.SELECTORS.AI_MAPPING_ORGANIZATION_INPUT),
+        newGroup.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_ORGANIZATION_INPUT),
         TESTING.ADDITIONAL_SETTINGS.AI_PAGES.ORGANIZATION,
       );
       await fillOptionsInput(
         optionsPage,
-        newGroup.locator(CONST.TESTING.SELECTORS.AI_MAPPING_TENANT_NAME_INPUT),
+        newGroup.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_TENANT_NAME_INPUT),
         TESTING.ADDITIONAL_SETTINGS.AI_PAGES.TENANT_NAME,
       );
       await fillOptionsInput(
         optionsPage,
-        newGroup.locator(CONST.TESTING.SELECTORS.AI_MAPPING_CONTENT_ROOT_INPUT),
+        newGroup.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_CONTENT_ROOT_INPUT),
         TESTING.ADDITIONAL_SETTINGS.AI_PAGES.CONTENT_ROOT,
       );
       await fillOptionsInput(
         optionsPage,
-        newGroup.locator(CONST.TESTING.SELECTORS.AI_MAPPING_SITE_INPUT),
+        newGroup.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_SITE_INPUT),
         TESTING.ADDITIONAL_SETTINGS.AI_PAGES.SITE,
       );
       await clickOptionsButton(optionsPage, TESTING.OPTIONS.AI_PAGES.SAVE_MAPPINGS_BUTTON);
@@ -128,16 +128,16 @@ foblesTest.describe("Additional Settings Persistence", () => {
       await openSettingsSection(optionsPage, TESTING.OPTIONS.AI_PAGES.SECTION_TITLE);
       const savedGroup = await findGroupByName(optionsPage, groupName);
       expect(savedGroup).not.toBeNull();
-      await expect(savedGroup!.locator(CONST.TESTING.SELECTORS.AI_MAPPING_ORGANIZATION_INPUT)).toHaveValue(
+      await expect(savedGroup!.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_ORGANIZATION_INPUT)).toHaveValue(
         TESTING.ADDITIONAL_SETTINGS.AI_PAGES.ORGANIZATION,
       );
-      await expect(savedGroup!.locator(CONST.TESTING.SELECTORS.AI_MAPPING_TENANT_NAME_INPUT)).toHaveValue(
+      await expect(savedGroup!.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_TENANT_NAME_INPUT)).toHaveValue(
         TESTING.ADDITIONAL_SETTINGS.AI_PAGES.TENANT_NAME,
       );
-      await expect(savedGroup!.locator(CONST.TESTING.SELECTORS.AI_MAPPING_CONTENT_ROOT_INPUT)).toHaveValue(
+      await expect(savedGroup!.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_CONTENT_ROOT_INPUT)).toHaveValue(
         TESTING.ADDITIONAL_SETTINGS.AI_PAGES.NORMALIZED_CONTENT_ROOT,
       );
-      await expect(savedGroup!.locator(CONST.TESTING.SELECTORS.AI_MAPPING_SITE_INPUT)).toHaveValue(
+      await expect(savedGroup!.locator(TEST_CONST.TESTING.SELECTORS.AI_MAPPING_SITE_INPUT)).toHaveValue(
         TESTING.ADDITIONAL_SETTINGS.AI_PAGES.SITE,
       );
       await attachPageScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.AI_MAPPINGS_SAVED);

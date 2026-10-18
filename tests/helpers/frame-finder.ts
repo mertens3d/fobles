@@ -1,5 +1,5 @@
 import type { Frame, Page } from "../fixtures/playwright";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import { pauseForBrowser } from "./wait-helpers";
 
 // Retries across page.frames() since a frame (e.g. a Sitecore gallery) can load asynchronously
@@ -36,5 +36,5 @@ export async function findFrameWithSelector(
 // A freshly navigated page's toolbar takes a moment for the content script to inject - unlike
 // findFrameWithSelector's own zero-timeout default, this always needs to actually wait for it.
 export async function findFoblesFrame(page: Page): Promise<Frame> {
-  return findFrameWithSelector(page, CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar", 10_000);
+  return findFrameWithSelector(page, TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar", 10_000);
 }

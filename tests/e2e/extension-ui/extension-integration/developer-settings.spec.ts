@@ -1,6 +1,6 @@
 import { expect, foblesTest, type Page } from "../../../fixtures/playwright";
 import { getExtensionId, openExtensionPage, setExtensionCheckbox } from "../../../fixtures/extension";
-import { CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../CONST";
 import { openContentEditor } from "../../../fixtures/sitecore";
 import { findFoblesFrame } from "../../../helpers/frame-finder";
 import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
@@ -61,7 +61,7 @@ foblesTest.describe("Extension UI Integration", () => {
       );
 
       await bringPageToFront(page);
-      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
       await findFoblesFrame(page);
       debugMessages.length = 0;
       await setExtensionCheckbox(
@@ -96,7 +96,7 @@ foblesTest.describe("Extension UI Integration", () => {
       );
       debugMessages.length = 0;
       await bringPageToFront(page);
-      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
       await findFoblesFrame(page);
       expect(
         debugMessages.some((message) => message.includes(TESTING.CONTENT_EDITOR_DEBUG.LOG_MARKER)),

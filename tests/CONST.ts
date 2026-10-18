@@ -3,7 +3,7 @@ import { _SITECORE_BASE_CONST } from "./constants_partials/base/_sitecore-consta
 import { TESTING } from "./constants_partials/testing-constants";
 import { BLUR_KEEP } from "./constants_partials/blur-keep-selectors";
 
-export const CONST = {
+export const TEST_CONST = {
   BLUR_KEEP,
   DOM: {
     SELECTORS: {

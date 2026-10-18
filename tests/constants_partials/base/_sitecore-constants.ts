@@ -3,6 +3,7 @@ export const _SITECORE_BASE_CONST = {
     TREE_NODE_IDS: {
       CONTENT: "Tree_Node_" + "0DE95AE4-41AB-4D01-9EB0-67441B7C2450",
     },
+
   },
   ITEMS: {
     CONTENT_ITEM_ID: "0DE95AE4-41AB-4D01-9EB0-67441B7C2450",
@@ -31,6 +32,16 @@ export const _SITECORE_BASE_CONST = {
     CONTENT_TAB: '#ContentEditor #EditorTabs span:has(:text-is("Content"))',
     LOGIN_PAGE: ".login-page",
     QUICK_INFO_TABLE: ".scEditorQuickInfo",
+    STANDARD_FIELDS_CHECKBOX: "#Check_BC29C1D329FB74DA585083FEC2AF3A81D",
+    RAW_VALUES_CHECKBOX: "#Check_BBDED3F008D144C82A983B54F0424BBC1",
+    RIBBON_PANEL: "#RibbonPanel",
+    RIBBON: {
+      VIEW_TAB: [
+        "a[accesskey='I']",
+        "a[id$='_Nav_ViewStrip']",
+        "a[onclick*=\"'_Strip_ViewStrip'\"]",
+      ],
+    },
     RIBBON_TAB: {
       NAVIGATE: {
         LINKS_GALLERY_BUTTON: 'a[title="Show referenced and referred items."]',

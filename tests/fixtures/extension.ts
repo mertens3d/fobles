@@ -1,7 +1,7 @@
 import type { BrowserContext, Locator, Page } from "@playwright/test";
 import { clickWithMouseMarker, ensureMouseMarkerExists } from "../helpers/mouse-proxy";
 import { bringPageToFront } from "../helpers/page-switch";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 
 // MV3 service workers register asynchronously - if the worker hasn't spun up yet (e.g. right
 // after launchPersistentContext), wait for it instead of assuming serviceWorkers() is non-empty.
@@ -66,9 +66,9 @@ export async function setFoblesNavVisible(
   visible: boolean,
 ): Promise<void> {
   const popupPage = await openExtensionPage(context, extensionId, "popup");
-  const preferenceId = CONST.TESTING.POPUP.PREFERENCE_IDS[0];
+  const preferenceId = TEST_CONST.TESTING.POPUP.PREFERENCE_IDS[0];
   const checkbox = popupPage.locator(
-    `${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${preferenceId}`,
+    `${TEST_CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${preferenceId}`,
   );
   await setExtensionCheckbox(popupPage, checkbox, visible, preferenceId);
   await popupPage.close();
@@ -83,9 +83,9 @@ export async function setFoblesNavWarningVisible(
   visible: boolean,
 ): Promise<void> {
   const popupPage = await openExtensionPage(context, extensionId, "popup");
-  const preferenceId = CONST.TESTING.POPUP.PREFERENCE_IDS[1];
+  const preferenceId = TEST_CONST.TESTING.POPUP.PREFERENCE_IDS[1];
   const checkbox = popupPage.locator(
-    `${CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${preferenceId}`,
+    `${TEST_CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${preferenceId}`,
   );
   await setExtensionCheckbox(popupPage, checkbox, visible, preferenceId);
   await popupPage.close();

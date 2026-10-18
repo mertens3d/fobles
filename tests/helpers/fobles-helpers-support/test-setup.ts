@@ -1,5 +1,5 @@
 import { expect, type Frame, type Locator, type Page } from "@playwright/test";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { openContentEditor, openSitecorePage } from "../../fixtures/sitecore";
 import { clickWithMouseMarker, ensureMouseMarkerExists, moveMouseToDefault } from "../mouse-proxy";
 import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
@@ -24,7 +24,7 @@ export async function setupContentEditorForTesting(
   console.log(`[fobles] Opening strategy item ${scenario.itemId}`);
   await openSitecorePage(
     page,
-    `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${scenario.itemId}`,
+    `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${scenario.itemId}`,
   );
   // &fo=${scenario.itemId}`);
   console.log(`[fobles] Navigation finished at ${page.url()}`);
@@ -64,7 +64,7 @@ async function logActivationState(
 export async function activateFobles(page: Page): Promise<Frame> {
   await openContentEditor(
     page,
-    CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT,
+    TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT,
   );
 
   await expect
@@ -73,7 +73,7 @@ export async function activateFobles(page: Page): Promise<Frame> {
         for (const frame of page.frames()) {
           if (
             (await frame
-              .locator(`#${CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`)
+              .locator(`#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`)
               .count()) > 0
           ) {
             return true;
@@ -87,12 +87,12 @@ export async function activateFobles(page: Page): Promise<Frame> {
 
   const treeFrame = await findFrameWithSelector(
     page,
-    `#${CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
-    `tree node #${CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
+    `#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
+    `tree node #${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
   );
   await clickWithMouseMarker(
     page,
-    treeFrame.locator(`#${CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`),
+    treeFrame.locator(`#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`),
     "Tree node",
   );
 

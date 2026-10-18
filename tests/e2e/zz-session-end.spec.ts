@@ -2,7 +2,7 @@ import { expect, foblesTest } from "../fixtures/playwright";
 import { getTestEnvironment } from "../fixtures/environment";
 import { attachPageScreenshot } from "../helpers/fobles-helpers-support/screenshots";
 import { logoutCurrentSitecoreSession } from "../fixtures/sitecore";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 
 // Filename sorts after "strategies/" and "toolbar/" so this always runs last across the whole
@@ -11,7 +11,7 @@ import { RECORD_VIDEO } from "../settings/settings";
 foblesTest.describe("Session", () => {
   foblesTest("IsLoggedOut", async ({ page }, testInfo) => {
     const { baseUrl, version } = getTestEnvironment();
-    const contentEditorUrl = new URL(CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED, baseUrl).toString();
+    const contentEditorUrl = new URL(TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED, baseUrl).toString();
 
     await page.goto(contentEditorUrl, { waitUntil: "domcontentloaded" });
     const loggedOut = await logoutCurrentSitecoreSession(page);
@@ -30,7 +30,7 @@ foblesTest.describe("Session", () => {
     // Universal Login form it redirects to instead; either one unambiguously identifies the
     // logged-out end state.
     const loginPage = page.locator(
-      version === "ai" ? CONST.SITECORE.SELECTORS.AI_LOGIN_FORM : CONST.SITECORE.SELECTORS.LOGIN_PAGE,
+      version === "ai" ? TEST_CONST.SITECORE.SELECTORS.AI_LOGIN_FORM : TEST_CONST.SITECORE.SELECTORS.LOGIN_PAGE,
     ).first();
     await expect(loginPage).toBeVisible();
     // Skipped during a promoVideo recording session - see 00-session-start.spec.ts's own check.

@@ -2,7 +2,7 @@ import { expect, type Page } from "@playwright/test";
 import { getActiveTestUserCredentials, getTestEnvironment } from "./environment";
 import { logDiagnostic } from "./logging";
 import type { AutoLoginContext } from "./auto-login.types";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import { normalizePath } from "../helpers/path-helpers";
 
 function toDisplayUrl(url: string): string {
@@ -28,7 +28,7 @@ function assertLicenseAvailable(page: Page): void {
 
   if (licenseExhausted) throw new Error(licenseMessage);
 
-  if (normalizePath(page.url()).includes(CONST.SITECORE.PATHS.LICENSE_STARTPAGE)) {
+  if (normalizePath(page.url()).includes(TEST_CONST.SITECORE.PATHS.LICENSE_STARTPAGE)) {
     licenseExhausted = true;
     throw new Error(licenseMessage);
   }
@@ -95,7 +95,7 @@ async function attemptAiAutoLogin(
     await page.locator(AI_LOGIN_SELECTORS.USERNAME_SUBMIT).click();
     await page
       .locator(AI_LOGIN_SELECTORS.PASSWORD)
-      .waitFor({ state: "attached", timeout: CONST.TESTING.TIMEOUTS.AUTO_LOGIN_WAIT_MS })
+      .waitFor({ state: "attached", timeout: TEST_CONST.TESTING.TIMEOUTS.AUTO_LOGIN_WAIT_MS })
       .catch(() => {});
   }
 
@@ -159,7 +159,7 @@ async function assertLoggedIn(page: Page): Promise<void> {
   const loginFormPresent = await loginForm
     .waitFor({
       state: "attached",
-      timeout: CONST.TESTING.TIMEOUTS.LOGIN_FORM_DETECT_MS,
+      timeout: TEST_CONST.TESTING.TIMEOUTS.LOGIN_FORM_DETECT_MS,
     })
     .then(() => true)
     .catch(() => false);
@@ -168,7 +168,7 @@ async function assertLoggedIn(page: Page): Promise<void> {
   if (await attemptAutoLogin(page)) {
     try {
       await expect(loginForm).toHaveCount(0, {
-        timeout: CONST.TESTING.TIMEOUTS.AUTO_LOGIN_WAIT_MS,
+        timeout: TEST_CONST.TESTING.TIMEOUTS.AUTO_LOGIN_WAIT_MS,
       });
       return;
     } catch {
@@ -188,7 +188,7 @@ async function assertLoggedIn(page: Page): Promise<void> {
   const reprintInterval = setInterval(() => printBanner(page), 20_000);
   try {
     await expect(loginForm).toHaveCount(0, {
-      timeout: CONST.TESTING.TIMEOUTS.LOGIN_WAIT_MS,
+      timeout: TEST_CONST.TESTING.TIMEOUTS.LOGIN_WAIT_MS,
     });
   } finally {
     clearInterval(reprintInterval);
@@ -252,7 +252,7 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
           // return true;
         },
         {
-          timeout: CONST.TESTING.TIMEOUTS.DISCOVERY_MS,
+          timeout: TEST_CONST.TESTING.TIMEOUTS.DISCOVERY_MS,
           intervals: [1_000],
           message: `Waiting for the Fobles flyout to appear (started at ${initialUrl})`,
         },

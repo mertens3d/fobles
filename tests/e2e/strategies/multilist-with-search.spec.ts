@@ -1,5 +1,5 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import {
   setupContentEditorForTesting,
 } from "../../helpers/fobles-helpers-support/test-setup";
@@ -12,7 +12,7 @@ import { factoryStrategyTestContext } from "../../helpers/strategy-test-context"
 import { showBillboard } from "../../helpers/billboard";
 import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./support/strategy-test-helper";
 
-const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Multilist with Search replaces BOTH panes independently
 // (src/content/features/augmentor/field-strategies/sc-multilistwithsearch.ts): the "all items"

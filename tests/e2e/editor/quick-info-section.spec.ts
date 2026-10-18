@@ -1,6 +1,6 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import {
   expectFoblesButtonNewTabNavigation,
@@ -14,7 +14,7 @@ import { clickLbolt } from "../../macros/fobles-macros";
 import { pauseForHuman } from "../../helpers/wait-helpers";
 import { FOBLES_HIDDEN_CLASS_PATTERN } from "../strategies/support/CONST";
 
-const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Quick Info (src/content/features/augmentor/editor-strategies/quick-info-section.ts) decorates
 // Content Editor's own built-in Quick Info panel, always present at the top of any open item, so
@@ -27,25 +27,25 @@ const SCENARIO = EDITOR_SCENARIOS.QUICK_INFO_SECTION;
 foblesTest.describe("Editor scenario: quick info section", () => {
   foblesTest("toggling Fobles decorates and restores the Quick Info panel", async ({ page }, testInfo) => {
    
-    await openSitecorePage(page, `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`);
+    await openSitecorePage(page, `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`);
 
     const foblesFrame = await findFoblesFrame(page);
     await ensureMouseMarkerExists(foblesFrame);
 
-    const quickInfoTable = foblesFrame.locator(CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE).first();
-    const lboltButton = foblesFrame.locator(CONST.FOBLES.SELECTORS.LBOLT_BUTTON).first();
+    const quickInfoTable = foblesFrame.locator(TEST_CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE).first();
+    const lboltButton = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON).first();
     const step = createFoblesStep(page, testInfo, quickInfoTable, "Quick Info");
 
     await step("Default stage: Quick Info renders as plain Sitecore text", async () => {
       await expect(quickInfoTable).toBeVisible();
-      await expect(quickInfoTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+      await expect(quickInfoTable.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await pauseForHuman(page, STEP_WAIT_MS);
     });
 
     await step("Toggle Fobles on: Item ID, Item path, and Template each get a Fobles button", async () => {
       await clickLbolt(page);
 
-      await expect(quickInfoTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(4);
+      await expect(quickInfoTable.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(4);
       for (const button of [
         SCENARIO.itemIdButton,
         SCENARIO.itemPathButton,
@@ -53,13 +53,13 @@ foblesTest.describe("Editor scenario: quick info section", () => {
         SCENARIO.templateIdButton,
       ]) {
         await expect(
-          quickInfoTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, { hasText: button.expectedButtonText }),
+          quickInfoTable.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, { hasText: button.expectedButtonText }),
         ).toHaveText(button.expectedButtonText);
       }
       await pauseForHuman(page, STEP_WAIT_MS);
     });
 
-    const itemPathButton = quickInfoTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
+    const itemPathButton = quickInfoTable.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
       hasText: SCENARIO.itemPathButton.expectedButtonText,
     });
 
@@ -76,7 +76,7 @@ foblesTest.describe("Editor scenario: quick info section", () => {
 
     await step("Toggle Fobles off: the panel returns to its original shape", async () => {
       await clickLbolt(page);
-      await expect(quickInfoTable.locator(CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+      await expect(quickInfoTable.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
       await expect(quickInfoTable.locator("span.scEditorHeaderQuickInfoPath, input.scEditorHeaderQuickInfoInput").first()).not.toHaveClass(
         FOBLES_HIDDEN_CLASS_PATTERN,
       );
@@ -84,7 +84,7 @@ foblesTest.describe("Editor scenario: quick info section", () => {
 
     await clickLbolt(page);
 
-    const itemIdButton = quickInfoTable.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
+    const itemIdButton = quickInfoTable.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
       hasText: SCENARIO.itemIdButton.expectedButtonText,
     });
 

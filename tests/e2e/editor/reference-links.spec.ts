@@ -5,13 +5,13 @@ import { openScLinksGallery } from "../../macros/sitecore-macros";
 import { findFoblesFrame } from "../../helpers/frame-finder";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
 import { clickLbolt } from "../../macros/fobles-macros";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { pauseForHuman } from "../../helpers/wait-helpers";
 import { FOBLES_HIDDEN_CLASS_PATTERN } from "../strategies/support/CONST";
 
-const STEP_WAIT_MS: number = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS: number = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Reference Links (src/content/features/augmentor/editor-strategies/reference-links.ts) doesn't
 // decorate a single field like the strategies/*.spec.ts suite - it decorates Content Editor's own
@@ -36,7 +36,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
     async ({ page }, testInfo) => {
       await openSitecorePage(
         page,
-        `${CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`,
+        `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`,
       );
 
       const foblesFrame = await findFoblesFrame(page);
@@ -59,7 +59,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
         "Default stage: gallery renders as plain Sitecore links",
         async () => {
           await expect(
-            linksPanel.locator(CONST.FOBLES.SELECTORS.WRAPPER),
+            linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER),
           ).toHaveCount(0);
 
           for (const expectedButtonText of knownLabels) {
@@ -80,7 +80,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
 
           for (const expectedButtonText of knownLabels) {
             await expect(
-              linksPanel.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, { hasText: expectedButtonText }),
+              linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, { hasText: expectedButtonText }),
               expectedReferenceNotFoundMessage(expectedButtonText),
             ).toBeVisible();
           }
@@ -91,7 +91,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
 
       const [firstReferringItem] = SCENARIO.referringItems;
 
-      const firstButton = linksPanel.locator(CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
+      const firstButton = linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
         hasText: firstReferringItem.expectedButtonText,
       });
 
@@ -101,7 +101,7 @@ foblesTest.describe("Editor scenario: reference links", () => {
           await clickLbolt(page);
 
           await expect(
-            linksPanel.locator(CONST.FOBLES.SELECTORS.WRAPPER),
+            linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER),
           ).toHaveCount(0);
 
           for (const expectedButtonText of knownLabels) {

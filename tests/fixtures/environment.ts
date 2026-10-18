@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import {
   getActiveTestEnvironment as getActiveConfigEnvironment,
   getTestEnvironments as getConfigEnvironments,
@@ -55,8 +55,8 @@ export function getActiveTestUserCredentials(): TestUserCredentials {
 
 export function ensureAuthDir(): string {
   const authDir =
-    process.env[CONST.ENVIRONMENT.AUTH_DIR_ENV_VAR] ??
-    CONST.ENVIRONMENT.AUTH_DIR;
+    process.env[TEST_CONST.ENVIRONMENT.AUTH_DIR_ENV_VAR] ??
+    TEST_CONST.ENVIRONMENT.AUTH_DIR;
   const resolved = path.resolve(authDir);
   fs.mkdirSync(resolved, { recursive: true });
   return resolved;

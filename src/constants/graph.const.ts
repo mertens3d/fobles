@@ -111,9 +111,12 @@ export const REFERENCE_GRAPH = {
     className: string;
   }>,
 
-  DIALOG_ID: "fobles-reference-graph-dialog",
-  PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
-  PROGRESS_MESSAGE_ID: "fobles-reference-graph-progress-message",
+  DOM: {
+    IDS: {
+      DIALOG_ID: "fobles-reference-graph-dialog",
+      PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
+    }
+  },
 
   LAYOUT_PRESETS: {
     dagre: {

@@ -1,4 +1,4 @@
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import type { Page } from "../fixtures/playwright";
 
 export const getLastTwoPathItems = (path?: string): string =>
@@ -7,7 +7,7 @@ export const getLastTwoPathItems = (path?: string): string =>
 export const isContentEditor = (page: Page): boolean => {
   //return encodeURI(page.url())
   return normalizePath(page.url())
-    .includes(normalizePath(CONST.SITECORE.PATHS.CONTENT_EDITOR_ENCODED));
+    .includes(normalizePath(TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_ENCODED));
 }
 
 export function normalizeFoValueForCompare(value: string): string {
@@ -16,7 +16,7 @@ export function normalizeFoValueForCompare(value: string): string {
 
 export const isAIPage = (page: Page): boolean => {
   return new URL(page.url()).origin
-    .includes(CONST.SITECORE.PATHS.SC_AI_DOMAIN);
+    .includes(TEST_CONST.SITECORE.PATHS.SC_AI_DOMAIN);
 };
 
 export function sanitizeFileName(value: string): string {
@@ -33,7 +33,7 @@ export type SitecoreSearchParams = {
 
 export function getScSearchParams(url: URL): SitecoreSearchParams {
   const result: SitecoreSearchParams = {
-    fo: url.searchParams.get(CONST.SITECORE.SEARCH_PARAMS.FO),
+    fo: url.searchParams.get(TEST_CONST.SITECORE.SEARCH_PARAMS.FO),
   };
 
   return result;

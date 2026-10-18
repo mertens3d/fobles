@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page } from "../fixtures/playwright";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 
 export async function pauseForBrowser(page: Page, timeout: number, noLog: boolean = false): Promise<void> {
     if (!noLog) console.log(`[fobles] s) pauseForBrowser ${timeout}ms`);
@@ -10,10 +10,10 @@ export async function pauseForBrowser(page: Page, timeout: number, noLog: boolea
 
 export async function pauseForHuman(
     page: Page,
-    durationMs: number = CONST.TESTING.HUMAN_PAUSE_MS,
+    durationMs: number = TEST_CONST.TESTING.HUMAN_PAUSE_MS,
     noLog: boolean = false,
 ): Promise<void> {
-    const isSprintMode = CONST.TESTING.SPEED.SELECTED === "SPRINT";
+    const isSprintMode = TEST_CONST.TESTING.SPEED.SELECTED === "SPRINT";
     if (!isSprintMode) {
         if (!noLog) {
             console.log(`[fobles] humanPause for ${durationMs}ms`);

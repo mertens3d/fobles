@@ -1,6 +1,6 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { showBillboard } from "../../helpers/billboard";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
 import {
   setupContentEditorForTesting,
@@ -11,7 +11,7 @@ import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
 import type { StrategyTestContext } from "./support/scenario.types";
 import { stepExpectFoblesCtrlClick, stepExpectFoblesInitialConditions, stepExpectFoblesOffConditions, stepExpectFoblesOnConditions, stepExpectSitecoreInitialConditions } from "./support/strategy-test-helper";
 
-const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Drop Tree's readonly combobox-edit input renders Sitecore's resolved display name (not the raw
 // GUID), and its button has no strategy variant class - just the base "fobles-button"

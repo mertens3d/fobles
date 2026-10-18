@@ -1,5 +1,5 @@
 import type { Page } from "../../fixtures/playwright";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import type { MouseCoordinates } from "../mouse-proxy.types";
 
 export async function drawMousePath(
@@ -70,7 +70,7 @@ export async function drawMousePath(
       startY: startPosition.y,
       endX: targetPosition.x,
       endY: targetPosition.y,
-      config: CONST.TESTING.MOUSE.PATH,
+      config: TEST_CONST.TESTING.MOUSE.PATH,
     },
   );
 }
@@ -119,7 +119,7 @@ export async function updateMousePath(
     },
     {
       progress,
-      config: CONST.TESTING.MOUSE.PATH,
+      config: TEST_CONST.TESTING.MOUSE.PATH,
     },
   );
 }

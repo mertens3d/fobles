@@ -4,7 +4,7 @@ import {
   getExtensionId,
   openExtensionPage,
 } from "../../../fixtures/extension";
-import { CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../CONST";
 import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
 
 foblesTest.describe("Extension UI Integration", () => {
@@ -15,7 +15,7 @@ foblesTest.describe("Extension UI Integration", () => {
       const popupPage = await openExtensionPage(
         sharedBrowserContext,
         extensionId,
-        CONST.TESTING.EXTENSION_PAGES.POPUP,
+        TEST_CONST.TESTING.EXTENSION_PAGES.POPUP,
       );
       let optionsPage: Page | undefined;
 
@@ -23,29 +23,29 @@ foblesTest.describe("Extension UI Integration", () => {
         await attachPageScreenshot(
           testInfo,
           popupPage,
-          CONST.TESTING.REPORT_SCREENSHOTS.POPUP_DEFAULT,
+          TEST_CONST.TESTING.REPORT_SCREENSHOTS.POPUP_DEFAULT,
         );
         const optionsPagePromise = sharedBrowserContext.waitForEvent("page");
         await clickExtensionControl(
           popupPage,
           popupPage.getByRole("button", {
-            name: CONST.TESTING.POPUP.ADDITIONAL_SETTINGS_BUTTON,
+            name: TEST_CONST.TESTING.POPUP.ADDITIONAL_SETTINGS_BUTTON,
           }),
-          CONST.TESTING.POPUP.ADDITIONAL_SETTINGS_BUTTON,
+          TEST_CONST.TESTING.POPUP.ADDITIONAL_SETTINGS_BUTTON,
         );
         optionsPage = await optionsPagePromise;
         await expect(optionsPage).toHaveURL(
-          CONST.TESTING.EXTENSION_PAGES.OPTIONS_URL_PATTERN,
+          TEST_CONST.TESTING.EXTENSION_PAGES.OPTIONS_URL_PATTERN,
         );
         await expect(
           optionsPage.getByRole("heading", {
-            name: CONST.TESTING.POPUP.HEADING,
+            name: TEST_CONST.TESTING.POPUP.HEADING,
           }),
         ).toBeVisible();
         await attachPageScreenshot(
           testInfo,
           optionsPage,
-          CONST.TESTING.REPORT_SCREENSHOTS.DEVELOPER_SETTINGS,
+          TEST_CONST.TESTING.REPORT_SCREENSHOTS.DEVELOPER_SETTINGS,
         );
       } finally {
         if (optionsPage && !optionsPage.isClosed()) await optionsPage.close();

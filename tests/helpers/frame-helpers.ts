@@ -1,7 +1,7 @@
 // @source-path [fobles] tests/e2e/helpers/framesHelper.ts
 
 import type { Frame, Page } from "@playwright/test";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 
 const getFrameDocument = (frame: Element): Document | null => {
   const frameElement = frame as HTMLIFrameElement | HTMLFrameElement;
@@ -17,7 +17,7 @@ const getFrameDocument = (frame: Element): Document | null => {
 const getChildFrameDocuments = (
   root: ParentNode,
 ): Document[] =>
-  Array.from(root.querySelectorAll(CONST.DOM.SELECTORS.FRAMES))
+  Array.from(root.querySelectorAll(TEST_CONST.DOM.SELECTORS.FRAMES))
     .map((frame) => getFrameDocument(frame))
     .filter((frameDoc): frameDoc is Document => frameDoc !== null);
 

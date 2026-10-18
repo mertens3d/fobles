@@ -5,7 +5,7 @@ import {
   openExtensionPage,
   setExtensionCheckbox,
 } from "../../../fixtures/extension";
-import { CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../CONST";
 import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
 import { openContentEditor } from "../../../fixtures/sitecore";
 import { findFoblesFrame } from "../../../helpers/frame-finder";
@@ -25,7 +25,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
     sharedBrowserContext,
     page,
   }, testInfo) => {
-    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(
       sharedBrowserContext,
@@ -52,14 +52,14 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
       );
 
       await bringPageToFront(page);
-      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
       const foblesFrame = await findFoblesFrame(page);
       await ClickFoblesJumpButton(page);
       await expect(foblesFrame.getByRole("button", { name: label, exact: true })).toBeVisible();
       await expect(foblesFrame.getByText(TESTING.JUMP_FLYOUT.ADMIN_PAGES_GROUP_LABEL)).toBeVisible();
       await attachLocatorScreenshot(
         testInfo,
-        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
+        foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
         TESTING.REPORT_SCREENSHOTS.ADMIN_PAGE_ENABLED,
       );
 
@@ -77,7 +77,7 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
       await expect(foblesFrame.getByText(TESTING.JUMP_FLYOUT.ADMIN_PAGES_GROUP_LABEL)).toHaveCount(0);
       await attachLocatorScreenshot(
         testInfo,
-        foblesFrame.locator(CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
+        foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
         TESTING.REPORT_SCREENSHOTS.ADMIN_PAGE_DISABLED,
       );
 

@@ -9,12 +9,8 @@ import {
   markWorkerTargetOwned,
   navigateWorkerTarget,
   sendTaskToWorkerTarget,
-  waitForWorkerTargetReload,
 } from "../background-tab/worker-target-service";
-import {
-  resetWorkerReadiness,
-  waitForWorkerReady,
-} from "./worker-readiness";
+import { resetWorkerReadiness, waitForWorkerReady } from "./worker-readiness";
 import {
   createCancelledResult,
   createErrorResult,
@@ -22,16 +18,9 @@ import {
   type WorkerTask,
   type WorkerTaskResult,
 } from "./worker-task.types";
-import {
-  isWorkerTabTarget,
-  type WorkerTarget,
-} from "./worker-target";
+import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
 
 const READY_TIMEOUT_MS = 20000;
-// Raw Values and Standard Fields can each need their own self-triggered reload on a worker's
-// first task - this caps how many times we'll wait-and-resend the same task to the same worker
-// before giving up and falling back to the existing new-worker retry.
-const MAX_EDITOR_STATE_RELOADS = 2;
 const MAX_EDITOR_STATE_CHANGES = 2;
 
 export type PoolWorker = {
@@ -63,23 +52,13 @@ export type WorkerExecutorContext = {
   isCurrentGeneration: () => boolean;
 };
 
-async function closeWorker(
-  context: WorkerExecutorContext,
-  worker: PoolWorker,
-): Promise<void> {
+async function closeWorker(context: WorkerExecutorContext, worker: PoolWorker): Promise<void> {
   const target = worker.target;
-
   context.removeWorker(worker);
 
   if (target) {
-    context.activeTaskByWorkerKey.delete(
-      getWorkerTargetKey(target),
-    );
-
-    if (isWorkerTabTarget(target)) {
-      resetWorkerReadiness(target.tabId);
-    }
-
+    context.activeTaskByWorkerKey.delete(getWorkerTargetKey(target));
+    if (isWorkerTabTarget(target)) resetWorkerReadiness(target.tabId);
     await closeWorkerTarget(target);
     worker.target = undefined;
   }
@@ -94,31 +73,6 @@ async function cancelStaleWorker(
   queued.resolve(createCancelledResult(queued.task));
 }
 
-// Resends the same task to the same target each time the worker reports it needs to reload
-// first (e.g. to enable Raw Values/Standard Fields on its own page) - as opposed to the
-// retry-on-a-new-worker path below, which is reserved for actual worker failures.
-async function sendTaskAwaitingEditorState(
-  target: WorkerTarget,
-  task: WorkerTask,
-): Promise<WorkerTaskResult | undefined> {
-  let result = await sendTaskToWorkerTarget(target, task);
-  let reloadCount = 0;
-
-  while (
-    result &&
-    isReloadResult(result) &&
-    reloadCount < MAX_EDITOR_STATE_RELOADS
-  ) {
-    reloadCount += 1;
-
-    await waitForWorkerTargetReload(target);
-
-    result = await sendTaskToWorkerTarget(target, task);
-  }
-
-  return result && isReloadResult(result) ? undefined : result;
-}
-
 async function retryOrResolveError(
   context: WorkerExecutorContext,
   worker: PoolWorker,
@@ -131,18 +85,42 @@ async function retryOrResolveError(
     queued.resolve(createCancelledResult(queued.task));
   } else if (!queued.retried) {
     queued.retried = true;
-
-    runTaskOnNewWorker(
-      context,
-      context.createPendingWorker(),
-      queued,
-    );
-
+    runTaskOnNewWorker(context, context.createPendingWorker(), queued);
     context.scheduleNext();
   } else {
     queued.resolve(createErrorResult(queued.task, errorMessage));
     context.scheduleNext();
   }
+}
+
+async function retryAfterDocumentInvalidation(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+): Promise<void> {
+  await closeWorker(context, worker);
+
+  if (queued.editorStateChangeCount >= MAX_EDITOR_STATE_CHANGES) {
+    queued.resolve(
+      createErrorResult(
+        queued.task,
+        `Worker document did not stabilize after ${MAX_EDITOR_STATE_CHANGES} state changes`,
+      ),
+    );
+    context.scheduleNext();
+    return;
+  }
+
+  queued.editorStateChangeCount += 1;
+
+  extensionLog.debug("Worker pool: document invalidated; retrying task on fresh worker", {
+    taskId: queued.task.taskId,
+    taskType: queued.task.type,
+    editorStateChangeCount: queued.editorStateChangeCount,
+  });
+
+  runTaskOnNewWorker(context, context.createPendingWorker(), queued);
+  context.scheduleNext();
 }
 
 async function runTaskOnWorker(
@@ -174,7 +152,6 @@ async function runTaskOnWorker(
       taskType: queued.task.type,
       url: queued.task.url,
     });
-
     executionResult = await sendTaskToWorkerTarget(target, queued.task);
   } catch (error) {
     extensionLog.warn("Worker pool: task execution failed", {
@@ -205,45 +182,14 @@ async function runTaskOnWorker(
   }
 
   if (executionResult && isReloadResult(executionResult)) {
-    await closeWorker(context, worker);
-
-    if (queued.editorStateChangeCount >= MAX_EDITOR_STATE_CHANGES) {
-      queued.resolve(
-        createErrorResult(
-          queued.task,
-          `Worker editor state did not stabilize after ${MAX_EDITOR_STATE_CHANGES} changes`,
-        ),
-      );
-      context.scheduleNext();
-      return;
-    }
-
-    queued.editorStateChangeCount += 1;
-
-    extensionLog.debug(
-      "Worker pool: editor state changed; waiting before fresh-worker verification",
-      {
-        taskId: queued.task.taskId,
-        taskType: queued.task.type,
-        editorStateChangeCount: queued.editorStateChangeCount,
-        delayMs: 500,
-      },
-    );
-
-    runTaskOnNewWorker(context, context.createPendingWorker(), queued);
-    context.scheduleNext();
+    await retryAfterDocumentInvalidation(context, worker, queued);
     return;
   }
 
   const result: WorkerTaskResult | undefined = executionResult;
 
   if (!result) {
-    await retryOrResolveError(
-      context,
-      worker,
-      queued,
-      "Worker task failed with no result",
-    );
+    await retryOrResolveError(context, worker, queued, "Worker task failed with no result");
     return;
   }
 
@@ -261,9 +207,7 @@ async function prepareCreatedTarget(
   worker.target = target;
   worker.currentUrl = queued.task.url;
 
-  if (isWorkerTabTarget(target)) {
-    await waitForWorkerReady(target.tabId, READY_TIMEOUT_MS);
-  }
+  if (isWorkerTabTarget(target)) await waitForWorkerReady(target.tabId, READY_TIMEOUT_MS);
 
   if (!context.isCurrentGeneration()) {
     await cancelStaleWorker(context, worker, queued);
@@ -302,35 +246,19 @@ async function runOnNewWorker(
   }
 
   if (!context.isCurrentGeneration()) {
-    if (target) {
-      worker.target = target;
-    }
-
+    if (target) worker.target = target;
     await cancelStaleWorker(context, worker, queued);
     return;
   }
 
   if (!target) {
-    await retryOrResolveError(
-      context,
-      worker,
-      queued,
-      "Failed to create worker",
-    );
+    await retryOrResolveError(context, worker, queued, "Failed to create worker");
     return;
   }
 
   try {
-    const ready = await prepareCreatedTarget(
-      context,
-      worker,
-      queued,
-      target,
-    );
-
-    if (ready) {
-      await runTaskOnWorker(context, worker, queued);
-    }
+    const ready = await prepareCreatedTarget(context, worker, queued, target);
+    if (ready) await runTaskOnWorker(context, worker, queued);
   } catch (error) {
     extensionLog.warn("Worker pool: worker failed to become ready", {
       target,
@@ -339,12 +267,7 @@ async function runOnNewWorker(
       error,
     });
 
-    await retryOrResolveError(
-      context,
-      worker,
-      queued,
-      "Worker failed to become ready",
-    );
+    await retryOrResolveError(context, worker, queued, "Worker failed to become ready");
   }
 }
 
@@ -354,27 +277,15 @@ async function navigateExistingWorker(
   queued: QueuedTask,
 ): Promise<boolean> {
   const target = worker.target;
+  if (!target) return false;
 
-  if (!target) {
-    return false;
-  }
+  if (isWorkerTabTarget(target)) resetWorkerReadiness(target.tabId);
 
-  if (isWorkerTabTarget(target)) {
-    resetWorkerReadiness(target.tabId);
-  }
-
-  const updatedTarget = await navigateWorkerTarget(
-    target,
-    queued.task.url,
-  );
-
+  const updatedTarget = await navigateWorkerTarget(target, queued.task.url);
   worker.target = updatedTarget;
 
   if (isWorkerTabTarget(updatedTarget)) {
-    await waitForWorkerReady(
-      updatedTarget.tabId,
-      READY_TIMEOUT_MS,
-    );
+    await waitForWorkerReady(updatedTarget.tabId, READY_TIMEOUT_MS);
   }
 
   if (!context.isCurrentGeneration()) {
@@ -384,7 +295,6 @@ async function navigateExistingWorker(
 
   await markWorkerTargetOwned(updatedTarget);
   worker.currentUrl = queued.task.url;
-
   return true;
 }
 
@@ -393,17 +303,11 @@ export async function runWorkerTask(
   worker: PoolWorker,
   queued: QueuedTask,
 ): Promise<void> {
-  let canRunTask =
-    context.isCurrentGeneration() &&
-    worker.target !== undefined;
+  let canRunTask = context.isCurrentGeneration() && worker.target !== undefined;
 
   if (canRunTask && worker.currentUrl !== queued.task.url) {
     try {
-      canRunTask = await navigateExistingWorker(
-        context,
-        worker,
-        queued,
-      );
+      canRunTask = await navigateExistingWorker(context, worker, queued);
     } catch (error) {
       canRunTask = false;
 
@@ -414,12 +318,7 @@ export async function runWorkerTask(
         error,
       });
 
-      await retryOrResolveError(
-        context,
-        worker,
-        queued,
-        "Worker failed to navigate",
-      );
+      await retryOrResolveError(context, worker, queued, "Worker failed to navigate");
     }
   }
 

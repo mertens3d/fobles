@@ -1,6 +1,6 @@
 import { expect, foblesTest, type Locator } from "../../fixtures/playwright";
 import { getExtensionId, setFoblesNavWarningVisible } from "../../fixtures/extension";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
 import { clickTreeJump } from "../../macros/sitecore-macros";
 import { openContentEditor } from "../../fixtures/sitecore";
@@ -12,7 +12,7 @@ foblesTest.describe("Same-tab navigation warning setting", () => {
     sharedBrowserContext,
     page,
   }, testInfo) => {
-    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const step = createFoblesStep(page, testInfo, page, "Nav Warning Setting");
 
@@ -20,9 +20,9 @@ foblesTest.describe("Same-tab navigation warning setting", () => {
     // jump test uses - then hands back whatever (if anything) shows up as a "dialog". Skips the
     // macro's own auto-dismiss since this test needs to inspect/click the dialog itself.
     const jumpAndGetDialog = async (): Promise<Locator> => {
-      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
       const foblesFrame = await findFoblesFrame(page);
-      await clickTreeJump(page, CONST.SITECORE.TREE_JUMP_PATHS.TEMPLATES, {
+      await clickTreeJump(page, TEST_CONST.SITECORE.TREE_JUMP_PATHS.TEMPLATES, {
         skipDialogDismiss: true,
       });
       return foblesFrame.getByRole("dialog");
@@ -35,7 +35,7 @@ foblesTest.describe("Same-tab navigation warning setting", () => {
         await expect(dialog).toBeVisible();
         await clickWithMouseMarker(
           page,
-          dialog.getByRole("button", { name: CONST.FOBLES.LABELS.CONTINUE_BUTTON }),
+          dialog.getByRole("button", { name: TEST_CONST.FOBLES.LABELS.CONTINUE_BUTTON }),
           "Confirm dialog Continue",
         );
       });
@@ -52,7 +52,7 @@ foblesTest.describe("Same-tab navigation warning setting", () => {
         await expect(dialog).toBeVisible();
         await clickWithMouseMarker(
           page,
-          dialog.getByRole("button", { name: CONST.FOBLES.LABELS.CONTINUE_BUTTON }),
+          dialog.getByRole("button", { name: TEST_CONST.FOBLES.LABELS.CONTINUE_BUTTON }),
           "Confirm dialog Continue",
         );
       });

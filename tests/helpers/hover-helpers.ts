@@ -4,12 +4,12 @@ import {
   moveMouseOutsideHoverArea,
   moveMouseToLocatorCenter,
 } from "./mouse-proxy";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import type { MouseCoordinates } from "./mouse-proxy.types";
 import { pauseForHuman } from "./wait-helpers";
 
 const STEP_WAIT_MS =
-  CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+  TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 export type HoverAndGrowOptions = {
   name: string;

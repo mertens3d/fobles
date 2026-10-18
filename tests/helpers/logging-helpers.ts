@@ -1,4 +1,4 @@
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 
 export function logStepDividerStart(name: string) {
   // console.log(`${CONST.TESTING.LOG.STEP_DIVIDER}`);
@@ -7,9 +7,9 @@ export function logStepDividerStart(name: string) {
 }
 
 export function logTestDividerStart(name: string) {
-  console.log(`${CONST.TESTING.LOG.TEST_DIVIDER}`);
+  console.log(`${TEST_CONST.TESTING.LOG.TEST_DIVIDER}`);
   console.log(`s) ${name}`);
-  console.log(`${CONST.TESTING.LOG.TEST_DIVIDER}`);
+  console.log(`${TEST_CONST.TESTING.LOG.TEST_DIVIDER}`);
 }
 
 export function logStepDividerEnd(name: string) {

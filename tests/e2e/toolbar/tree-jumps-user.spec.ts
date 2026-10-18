@@ -1,6 +1,6 @@
 import { expect, foblesTest, type Locator } from "../../fixtures/playwright";
 import { getExtensionId, openExtensionPage } from "../../fixtures/extension";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
 import { openContentEditor } from "../../fixtures/sitecore";
 import { findFoblesFrame } from "../../helpers/frame-finder";
@@ -13,7 +13,7 @@ import { normalizePath } from "../../helpers/path-helpers";
 foblesTest.describe("User Tree Jumps", () => {
   foblesTest.describe("Persistence", () => {
   foblesTest("Additional Settings adds and normalizes a User Tree Jump", async ({ sharedBrowserContext }) => {
-    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(sharedBrowserContext, extensionId, "options");
 
@@ -26,11 +26,11 @@ foblesTest.describe("User Tree Jumps", () => {
       await optionsPage.reload();
       const treeJumpsColumn = await openTreeJumpsColumn(optionsPage);
       const row = treeJumpsColumn.locator(".user-tree-jump-row").last();
-      await expect(row.locator("input[name='label']")).toHaveValue(CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label);
+      await expect(row.locator("input[name='label']")).toHaveValue(TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label);
       await expect(row.locator("input[name='pathSuffix']")).toHaveValue(
-        CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.pathSuffixRaw.replace(/^\/+/, ""),
+        TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.pathSuffixRaw.replace(/^\/+/, ""),
       );
-      await expect(row.locator("input[name='icon']")).toHaveValue(CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_ICON_NORMALIZED);
+      await expect(row.locator("input[name='icon']")).toHaveValue(TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_ICON_NORMALIZED);
       await expect(row.locator("input[name='enabled']")).toBeChecked();
     } finally {
       await removeTestRowIfPresent(optionsPage);
@@ -44,14 +44,14 @@ foblesTest.describe("User Tree Jumps", () => {
     sharedBrowserContext,
     page,
   }, testInfo) => {
-    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(sharedBrowserContext, extensionId, "options");
     const step = createFoblesStep(page, testInfo, page, "User Tree Jump");
 
     try {
       await removeTestRowIfPresent(optionsPage);
-      await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
       const foblesFrame = await findFoblesFrame(page);
 
       await ClickFoblesJumpButton(page);
@@ -64,7 +64,7 @@ foblesTest.describe("User Tree Jumps", () => {
       await step("appears live after saving, without a page refresh", async () => {
         row = await addTestRow(optionsPage);
         await expect(foblesFrame.getByText("User Tree Jumps")).toBeVisible();
-        await expect(foblesFrame.getByRole("button", { name: CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label })).toBeVisible();
+        await expect(foblesFrame.getByRole("button", { name: TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label })).toBeVisible();
       });
 
       await step("hides live again once disabled", async () => {
@@ -72,28 +72,28 @@ foblesTest.describe("User Tree Jumps", () => {
         await expect(foblesFrame.getByText("User Tree Jumps")).toHaveCount(0);
       });
 
-      await step(`re-enabled entry navigates to "${CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH}"`, async () => {
+      await step(`re-enabled entry navigates to "${TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH}"`, async () => {
         await setTestRowEnabled(optionsPage, row, true);
-        const jumpButton = foblesFrame.getByRole("button", { name: CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label });
+        const jumpButton = foblesFrame.getByRole("button", { name: TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label });
         await expect(jumpButton).toBeVisible();
-        await expect(jumpButton).toHaveAttribute(CONST.FOBLES.ATTRIBUTES.TREE_JUMP_PATH, CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH);
+        await expect(jumpButton).toHaveAttribute(TEST_CONST.FOBLES.ATTRIBUTES.TREE_JUMP_PATH, TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH);
         await jumpButton.scrollIntoViewIfNeeded();
-        await clickWithMouseMarker(page, jumpButton, CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label);
+        await clickWithMouseMarker(page, jumpButton, TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label);
 
         const confirmationDialog = foblesFrame.getByRole("dialog");
         await expect(confirmationDialog).toBeVisible();
         await Promise.all([
           page.waitForURL((url) => normalizePath(url.toString()).includes(
-           normalizePath(CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH)), {
-            timeout: CONST.TESTING.TIMEOUTS.URL_WAIT_MS,
+           normalizePath(TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH)), {
+            timeout: TEST_CONST.TESTING.TIMEOUTS.URL_WAIT_MS,
           }),
           clickWithMouseMarker(
             page,
-            confirmationDialog.getByRole("button", { name: CONST.FOBLES.LABELS.CONTINUE_BUTTON }),
+            confirmationDialog.getByRole("button", { name: TEST_CONST.FOBLES.LABELS.CONTINUE_BUTTON }),
             "Confirm dialog Continue",
           ),
         ]);
-        expectCurrentUrlContains(page, CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH);
+        expectCurrentUrlContains(page, TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH);
       }, { screenshot: false });
     } finally {
       await removeTestRowIfPresent(optionsPage);

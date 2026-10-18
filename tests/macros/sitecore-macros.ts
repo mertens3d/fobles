@@ -1,5 +1,5 @@
-import { type Frame, type Locator, type Page } from "../fixtures/playwright";
-import { CONST } from "../CONST";
+import { expect, type Frame, type Locator, type Page } from "../fixtures/playwright";
+import { TEST_CONST } from "../CONST";
 import { getTestEnvironment } from "../fixtures/environment";
 import {
   clickWithMouseMarker,
@@ -41,11 +41,11 @@ export async function clickContentTabIfPresent(page: Page): Promise<void> {
   console.log("[Macro: clickContentTabIfPresent] - Start");
   const foblesFrame = await findFoblesFrame(page);
   const contentTab = foblesFrame
-    .locator(CONST.SITECORE.SELECTORS.CONTENT_TAB)
+    .locator(TEST_CONST.SITECORE.SELECTORS.CONTENT_TAB)
     .first();
 
   console.log(
-    `[fobles] Checking for a visible Content tab (selector: ${CONST.SITECORE.SELECTORS.CONTENT_TAB})`,
+    `[fobles] Checking for a visible Content tab (selector: ${TEST_CONST.SITECORE.SELECTORS.CONTENT_TAB})`,
   );
   if (await contentTab.isVisible().catch(() => false)) {
     // await moveMouseToLocator(page, contentTab,  "Content Editor tab header");
@@ -112,17 +112,17 @@ export async function highlightQuickInfoPath(page: Page): Promise<void> {
   await clickContentTabIfPresent(page);
 
   const itemPathRow = foblesFrame
-    .locator(`${CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, {
-      hasText: CONST.SITECORE.LABELS.ITEM_PATH,
+    .locator(`${TEST_CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, {
+      hasText: TEST_CONST.SITECORE.LABELS.ITEM_PATH,
     })
     .first();
   const itemPathValue = itemPathRow.locator("input").first();
   console.log(
-    `[fobles] Waiting for the Item path value (selector: ${CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr input, text: "${CONST.SITECORE.LABELS.ITEM_PATH}")`,
+    `[fobles] Waiting for the Item path value (selector: ${TEST_CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr input, text: "${TEST_CONST.SITECORE.LABELS.ITEM_PATH}")`,
   );
   await itemPathValue.waitFor({
     state: "visible",
-    timeout: CONST.TESTING.TIMEOUTS.QUICK_INFO_VISIBLE_MS,
+    timeout: TEST_CONST.TESTING.TIMEOUTS.QUICK_INFO_VISIBLE_MS,
   });
   await clickWithMouseMarker(page, itemPathValue, "Item path", {
     clickCount: 3,
@@ -145,7 +145,7 @@ export async function openScLinksGallery(
     page,
     frame
       .locator(
-        CONST.SITECORE.SELECTORS.RIBBON_TAB.NAVIGATE.LINKS_GALLERY_BUTTON,
+        TEST_CONST.SITECORE.SELECTORS.RIBBON_TAB.NAVIGATE.LINKS_GALLERY_BUTTON,
       )
       .first(),
     "Links gallery button",
@@ -153,12 +153,12 @@ export async function openScLinksGallery(
 
   const galleryFrame = await findFrameWithSelector(
     page,
-    CONST.SITECORE.SELECTORS.RIBBON_TAB.NAVIGATE.LINKS,
+    TEST_CONST.SITECORE.SELECTORS.RIBBON_TAB.NAVIGATE.LINKS,
     "Links gallery panel",
     10_000,
   );
   const linksPanel = galleryFrame.locator(
-    CONST.SITECORE.SELECTORS.RIBBON_TAB.NAVIGATE.LINKS,
+    TEST_CONST.SITECORE.SELECTORS.RIBBON_TAB.NAVIGATE.LINKS,
   );
   await linksPanel.waitFor({ state: "visible" });
   return linksPanel;
@@ -188,6 +188,9 @@ export async function scrollTreeContainer(
   await pauseForHuman(page, 600);
 }
 
+
+
+
 // Sets the scContentEditorFoldersWidth cookie Sitecore's tree/editor splitter reads its width
 // from on page load - call before navigating, since Sitecore only reads it at load time (setting
 // it after the fact and dragging the splitter live fights the splitter's own internal state).
@@ -216,4 +219,80 @@ export async function ceRibbonOpenHome(page: Page) {
   )
     .then((frame) => clickScRibbonTab(page, frame, "H"))
     .catch(() => undefined);
+}
+
+export async function getScRawValuesState(page: Page): Promise<boolean> {
+  const frame = await ceRibbonOpenView(page);
+  const checkbox = frame.locator(TEST_CONST.SITECORE.SELECTORS.RAW_VALUES_CHECKBOX);
+  await checkbox.waitFor({ state: "attached" });
+  return await checkbox.isChecked();
+}
+
+export async function getScStandardFieldsState(page: Page): Promise<boolean> {
+  const frame = await ceRibbonOpenView(page);
+  const checkbox = frame.locator(TEST_CONST.SITECORE.SELECTORS.STANDARD_FIELDS_CHECKBOX);
+  await checkbox.waitFor({ state: "attached" });
+  return await checkbox.isChecked();
+}
+
+export async function setScRawValuesState(page: Page, desiredState: boolean): Promise<void> {
+  const frame = await ceRibbonOpenView(page);
+  const checkbox = frame.locator(TEST_CONST.SITECORE.SELECTORS.RAW_VALUES_CHECKBOX);
+  await checkbox.waitFor({ state: "attached" });
+
+  if ((await checkbox.isChecked()) !== desiredState) {
+    await clickWithMouseMarker(page, checkbox, `Raw Values ${desiredState ? "ON" : "OFF"}`);
+  }
+}
+
+export async function setScStandardFieldsState(page: Page, desiredState: boolean): Promise<void> {
+  const frame = await ceRibbonOpenView(page);
+  const checkbox = frame.locator(TEST_CONST.SITECORE.SELECTORS.STANDARD_FIELDS_CHECKBOX);
+  await checkbox.waitFor({ state: "attached" });
+
+  if ((await checkbox.isChecked()) !== desiredState) {
+    await clickWithMouseMarker(page, checkbox, `Standard Fields ${desiredState ? "ON" : "OFF"}`);
+  }
+}
+
+async function findRibbonElementFromHints(frame: Frame, selectorHints: readonly string[]): Promise<Locator> {
+  const ribbonPanel = frame.locator(TEST_CONST.SITECORE.SELECTORS.RIBBON_PANEL).first();
+  await ribbonPanel.waitFor({ state: "attached" });
+
+  for (const selector of selectorHints) {
+    const candidate = ribbonPanel.locator(selector).first();
+    if (await candidate.count()) return candidate;
+  }
+
+  throw new Error(`Could not find ribbon element from hints: ${selectorHints.join(", ")}`);
+}
+
+async function waitForRibbonTabActive(tab: Locator, timeout = 2000): Promise<void> {
+  await expect
+    .poll(
+      async () => (await tab.getAttribute("class") ?? "")
+        .split(/\s+/)
+        .some((className) => className.toLowerCase().includes("active")),
+      { timeout },
+    )
+    .toBe(true);
+}
+
+export async function ceRibbonOpenView(page: Page): Promise<Frame> {
+  const frame = await findFrameWithSelector(
+    page,
+    TEST_CONST.SITECORE.SELECTORS.RIBBON_PANEL,
+    "Content Editor ribbon panel",
+    10_000,
+  );
+
+  const viewTab = await findRibbonElementFromHints(
+    frame,
+    TEST_CONST.SITECORE.SELECTORS.RIBBON.VIEW_TAB,
+  );
+
+  await clickWithMouseMarker(page, viewTab, "View ribbon tab");
+  await waitForRibbonTabActive(viewTab);
+
+  return frame;
 }

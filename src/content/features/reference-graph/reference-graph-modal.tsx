@@ -33,18 +33,16 @@ export function openReferenceGraphModal(
 ): void {
   doc
     .getElementById(
-      REFERENCE_GRAPH.DIALOG_ID,
+      REFERENCE_GRAPH.DOM.IDS.DIALOG_ID,
     )
     ?.remove();
 
   const dialog =
     doc.createElement("dialog");
 
-  dialog.id =
-    REFERENCE_GRAPH.DIALOG_ID;
+  dialog.id = REFERENCE_GRAPH.DOM.IDS.DIALOG_ID;
 
-  dialog.className =
-    "fobles-reference-graph";
+  dialog.className = "fobles-reference-graph";
 
   const closeButton =
     createCloseButton(

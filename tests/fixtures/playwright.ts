@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { installConsoleLogging, logDiagnostic } from "./logging";
 import { logoutCurrentSitecoreSession } from "./sitecore";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";
@@ -55,19 +55,19 @@ function renamePromoVideoFiles(): void {
 // don't clutter the diagnostic log with them.
 
 function isIgnorableDiagnosticUrl(url: string): boolean {
-  return CONST.TESTING.DIAGNOSTIC.IGNORED_DIAGNOSTIC_URL_PATTERN.test(url);
+  return TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_DIAGNOSTIC_URL_PATTERN.test(url);
 }
 
 // Chromium logs this on every Sitecore iframe navigation regardless of Fobles - always the same
 // text, never actionable, and floods the log enough to bury real warnings.
 
 function isIgnorableConsoleWarning(text: string): boolean {
-  return CONST.TESTING.DIAGNOSTIC.IGNORED_CONSOLE_WARNING_PATTERN.test(text);
+  return TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_CONSOLE_WARNING_PATTERN.test(text);
 }
 
 function isIgnorableConsoleError( text: string): boolean {
   let isIgnoreable = false;
-  if (CONST.TESTING.DIAGNOSTIC.IGNORABLE_CONSOLE_MESSAGES.some((msg) => text.includes(msg))) {
+  if (TEST_CONST.TESTING.DIAGNOSTIC.IGNORABLE_CONSOLE_MESSAGES.some((msg) => text.includes(msg))) {
     isIgnoreable = true;
   }
   return isIgnoreable;
@@ -76,7 +76,7 @@ function isIgnorableConsoleError( text: string): boolean {
 function isIgnorableRequestFailure(request: Request): boolean {
   const errorText = request.failure()?.errorText ?? '';
   let isIgnorable = false;
-  if (!CONST.TESTING.DIAGNOSTIC.IGNORED_REQUEST_FAILURES.some((ignored) =>
+  if (!TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_REQUEST_FAILURES.some((ignored) =>
     errorText.includes(ignored),
   )) {
     isIgnorable = true;
@@ -96,7 +96,7 @@ async function logoutSitecoreSessions(
     const { getTestEnvironment } = await import("./environment");
     const { baseUrl } = getTestEnvironment();
     await page.goto(
-      new URL(CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED, baseUrl).toString(),
+      new URL(TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED, baseUrl).toString(),
       {
         waitUntil: "domcontentloaded",
       },
@@ -223,7 +223,7 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
       context.on("page", attachPageDiagnostics);
       await use(context);
       // Settle time for a human watching the last test's final state - skip it in SPRINT.
-      if (CONST.TESTING.SPEED.SELECTED !== "SPRINT") {
+      if (TEST_CONST.TESTING.SPEED.SELECTED !== "SPRINT") {
         await new Promise((resolve) => setTimeout(resolve, 10_000));
       }
       await logoutSitecoreSessions(context);

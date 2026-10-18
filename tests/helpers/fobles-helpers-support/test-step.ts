@@ -1,5 +1,5 @@
 import { test, type Page, type TestInfo } from "@playwright/test";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import type { FoblesStep } from "../fobles-test-step.types";
 import { attachPageScreenshot, type Screenshottable } from "./screenshots";
 import { buildStepMatchKey } from "./step-match-key";
@@ -56,9 +56,9 @@ export function createFoblesStep(
 ): FoblesStep {
   return async (title, body, options) => {
     const fullTitle = titlePrefix ? `${titlePrefix}: ${title}` : title;
-    console.log(`${CONST.TESTING.LOG.STEP_DIVIDER}`);
+    console.log(`${TEST_CONST.TESTING.LOG.STEP_DIVIDER}`);
     console.log(`[fobles] Step starting: ${fullTitle}`);
-    console.log(`${CONST.TESTING.LOG.STEP_DIVIDER}`);
+    console.log(`${TEST_CONST.TESTING.LOG.STEP_DIVIDER}`);
     await test.step(
       fullTitle,
       async () => {
@@ -98,6 +98,6 @@ export function createFoblesStep(
     console.log(
       `[fobles] Step finished: ${titlePrefix ? `${titlePrefix}: ${title}` : title}`,
     );
-    console.log(`${CONST.TESTING.LOG.STEP_DIVIDER}`);
+    console.log(`${TEST_CONST.TESTING.LOG.STEP_DIVIDER}`);
   };
 }

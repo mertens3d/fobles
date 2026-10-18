@@ -1,6 +1,6 @@
 import { expect, type BrowserContext } from "@playwright/test";
 import { clickExtensionControl, getExtensionId, openExtensionPage } from "./extension";
-import { CONST } from "../CONST";
+import { TEST_CONST } from "../CONST";
 
 // A named, swappable starting state for every Fobles setting - applied once per test (see the
 // foblesTest.extend auto fixture in playwright.ts) so a test never inherits leftover state from
@@ -20,27 +20,27 @@ export const applyDefaultSettingsProfile: SettingsProfile = async (context) => {
   const extensionId = await getExtensionId(context);
   const optionsPage = await openExtensionPage(context, extensionId, "options");
   try {
-    const section = optionsPage.locator(CONST.TESTING.OPTIONS.SECTION_SELECTOR).filter({
-      has: optionsPage.locator(CONST.TESTING.OPTIONS.SUMMARY_SELECTOR, {
-        hasText: CONST.TESTING.OPTIONS.STORAGE.SECTION_TITLE,
+    const section = optionsPage.locator(TEST_CONST.TESTING.OPTIONS.SECTION_SELECTOR).filter({
+      has: optionsPage.locator(TEST_CONST.TESTING.OPTIONS.SUMMARY_SELECTOR, {
+        hasText: TEST_CONST.TESTING.OPTIONS.STORAGE.SECTION_TITLE,
       }),
     });
     await expect(section).toHaveCount(1);
     const isOpen = await section.evaluate((element) => (element as HTMLDetailsElement).open);
     if (!isOpen) {
-      const summary = section.locator(CONST.TESTING.OPTIONS.SUMMARY_DIRECT_CHILD_SELECTOR);
-      await clickExtensionControl(optionsPage, summary, CONST.TESTING.OPTIONS.STORAGE.SECTION_TITLE);
+      const summary = section.locator(TEST_CONST.TESTING.OPTIONS.SUMMARY_DIRECT_CHILD_SELECTOR);
+      await clickExtensionControl(optionsPage, summary, TEST_CONST.TESTING.OPTIONS.STORAGE.SECTION_TITLE);
     }
 
     const clearButton = optionsPage.getByRole("button", {
-      name: CONST.TESTING.OPTIONS.STORAGE.CLEAR_BUTTON,
+      name: TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_BUTTON,
     });
     const confirmation = optionsPage.waitForEvent("dialog").then((dialog) => dialog.accept());
-    await clickExtensionControl(optionsPage, clearButton, CONST.TESTING.OPTIONS.STORAGE.CLEAR_BUTTON);
+    await clickExtensionControl(optionsPage, clearButton, TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_BUTTON);
     await confirmation;
     await expect(
-      optionsPage.locator(CONST.TESTING.OPTIONS.STORAGE.CLEAR_STATUS_SELECTOR),
-    ).toHaveText(CONST.TESTING.OPTIONS.STORAGE.CLEAR_STATUS);
+      optionsPage.locator(TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_STATUS_SELECTOR),
+    ).toHaveText(TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_STATUS);
   } finally {
     await optionsPage.close();
   }

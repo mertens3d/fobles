@@ -1,5 +1,5 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import {
   setupContentEditorForTesting,
 } from "../../helpers/fobles-helpers-support/test-setup";
@@ -12,7 +12,7 @@ import { showBillboard } from "../../helpers/billboard";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./support/strategy-test-helper";
 
-const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Tag List replaces TWO panes independently (src/content/features/augmentor/field-strategies
 // /sc-taglist.ts): the "all items" tree pane and the "selected items" select pane, each getting

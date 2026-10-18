@@ -1,5 +1,5 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
 import {
   setupContentEditorForTesting,
@@ -12,7 +12,7 @@ import type { StrategyTestContext } from "./support/scenario.types";
 import { showBillboard } from "../../helpers/billboard";
 import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./support/strategy-test-helper";
 
-const STEP_WAIT_MS = CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 // Treelist Ex has a single host element (div.scContentControl.scTreelistEx) that IS the pane -
 // each selected item is a direct child <div title="{resolved path}">{label}</div>

@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page, type TestInfo } from "@playwright/test";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { clickWithMouseMarker, highlightClickTarget } from "../mouse-proxy";
 import { clickContentTabIfPresent } from "../../macros/sitecore-macros";
 import { dismissFoblesConfirmDialogIfPresent } from "../../macros/fobles-macros";
@@ -22,7 +22,7 @@ function assertFoblesTargetUrl(
 ): void {
   const url = new URL(actualUrl);
   expect(normalizePath(url.pathname)).toBe(
-    normalizePath(CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED.split("?")[0]),
+    normalizePath(TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED.split("?")[0]),
   );
   const scSearchParams =  getScSearchParams(url);
   expect(
@@ -156,8 +156,8 @@ export async function expectFoblesButtonNewTabNavigation(
   console.log(`expectFoblesButtonNewTabNavigation s)`);
 
   const newTabHoldMs =
-    CONST.TESTING.SPEED.SETTINGS[CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
-    CONST.TESTING.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
+    TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS *
+    TEST_CONST.TESTING.NAVIGATION.NEW_TAB_HOLD_MULTIPLIER;
   await bringPageToFront(popup, newTabHoldMs);
 
   await popup.waitForLoadState("domcontentloaded");
@@ -189,12 +189,12 @@ export async function attachItemPathScreenshot(
 
   const frame = await findFrameWithSelector(
     page,
-    CONST.SITECORE.SELECTORS.CONTENT_TAB,
+    TEST_CONST.SITECORE.SELECTORS.CONTENT_TAB,
     "Content Editor tab header",
   );
   const itemPathRow :Locator = frame
-    .locator(`${CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, {
-      hasText: CONST.SITECORE.LABELS.ITEM_PATH,
+    .locator(`${TEST_CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, {
+      hasText: TEST_CONST.SITECORE.LABELS.ITEM_PATH,
     })
     .first();
   

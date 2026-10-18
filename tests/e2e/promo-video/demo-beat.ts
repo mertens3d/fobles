@@ -1,4 +1,4 @@
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { type Page } from "../../fixtures/playwright";
 import { pauseForHuman } from "../../helpers/wait-helpers";
 import { highlightQuickInfoPath } from "../../macros/sitecore-macros";
@@ -13,7 +13,7 @@ export async function playDemoBeat(page: Page, beat: DemoBeat): Promise<void> {
         await beat.init();
     }
 
-    await showSpeakBubble(page, beat.speechText, beat.speechPosition ?? CONST.TESTING.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION);
+    await showSpeakBubble(page, beat.speechText, beat.speechPosition ?? TEST_CONST.TESTING.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION);
     await beat.action();
 
     if (beat.highlightResult !== false) {

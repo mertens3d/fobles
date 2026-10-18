@@ -1,4 +1,4 @@
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import type { MouseCoordinates } from "../mouse-proxy.types";
 
 let lastKnownMousePosition: MouseCoordinates | null = null;
@@ -24,5 +24,5 @@ export function hasLastKnownMousePosition(): boolean {
 }
 
 export function isSprintMode(): boolean {
-  return CONST.TESTING.SPEED.SELECTED === "SPRINT";
+  return TEST_CONST.TESTING.SPEED.SELECTED === "SPRINT";
 }

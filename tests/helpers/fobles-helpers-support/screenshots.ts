@@ -1,5 +1,5 @@
 import { type Frame, type Locator, type Page, type TestInfo } from "@playwright/test";
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { CAPTURE_STEP_SCREENSHOTS } from "../../settings/settings";
 import { highlightScreenShot } from "../mouse-proxy-support/mouse-interactions";
 import { sanitizeFileName } from "../path-helpers";
@@ -31,7 +31,7 @@ export async function attachLocatorScreenshot(
         animations: "disabled",
         caret: "hide",
         mask: mask.length ? mask : undefined,
-        maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
+        maskColor: TEST_CONST.TESTING.SCREENSHOT.MASK_COLOR,
       });
     } catch (error) {
       console.error(`Failed to capture screenshot for ${name}:`, error);
@@ -62,7 +62,7 @@ export async function attachPageScreenshot(
         animations: "disabled",
         caret: "hide",
         mask: mask.length ? mask : undefined,
-        maskColor: CONST.TESTING.SCREENSHOT.MASK_COLOR,
+        maskColor: TEST_CONST.TESTING.SCREENSHOT.MASK_COLOR,
       });
     } finally {
       await removeBlur(blurTargets);
@@ -165,7 +165,7 @@ async function applyBlur(locators: Locator[]): Promise<void> {
         for (const element of elements) {
           (element as HTMLElement).style.filter = `blur(${blurPx}px)`;
         }
-      }, CONST.TESTING.SCREENSHOT.BLUR_PX)
+      }, TEST_CONST.TESTING.SCREENSHOT.BLUR_PX)
       .catch(() => {
         // Best-effort - a since-removed element must never mask the screenshot's own outcome.
       });
@@ -353,30 +353,30 @@ async function getSensitiveAutoMasks(
   // baselines (those pass their own explicit mask option directly, independent of this function).
   // Keep lists live in CONST.BLUR_KEEP (constants/blur-keep-selectors.ts) - add more kept
   // selectors there, never inline them here.
-  for (const frame of await framesWithSelector(page, CONST.BLUR_KEEP.CONTENT_TREE.CE_CONTAINER_SELECTOR)) {
+  for (const frame of await framesWithSelector(page, TEST_CONST.BLUR_KEEP.CONTENT_TREE.CE_CONTAINER_SELECTOR)) {
     blurTargets.push(
       ...await blurTreeExcept(
         frame,
         [
-          CONST.BLUR_KEEP.CONTENT_TREE.CE_CONTAINER_SELECTOR,
-          CONST.BLUR_KEEP.CONTENT_TREE.INSERT_FROM_TEMPLATE_CONTAINER_SELECTOR,
-          CONST.BLUR_KEEP.CONTENT_TREE.SELECT_THE_TEMPLATE_CONTAINER_SELECTOR,
+          TEST_CONST.BLUR_KEEP.CONTENT_TREE.CE_CONTAINER_SELECTOR,
+          TEST_CONST.BLUR_KEEP.CONTENT_TREE.INSERT_FROM_TEMPLATE_CONTAINER_SELECTOR,
+          TEST_CONST.BLUR_KEEP.CONTENT_TREE.SELECT_THE_TEMPLATE_CONTAINER_SELECTOR,
         ],
-        [...CONST.BLUR_KEEP.CONTENT_TREE.KEEP_SELECTORS],
-        [...CONST.BLUR_KEEP.CONTENT_TREE.FURNITURE_SELECTORS],
-        [...CONST.BLUR_KEEP.CONTENT_TREE.KEEP_SUBTREE_SELECTORS],
+        [...TEST_CONST.BLUR_KEEP.CONTENT_TREE.KEEP_SELECTORS],
+        [...TEST_CONST.BLUR_KEEP.CONTENT_TREE.FURNITURE_SELECTORS],
+        [...TEST_CONST.BLUR_KEEP.CONTENT_TREE.KEEP_SUBTREE_SELECTORS],
       ),
     );
   }
 
   // Content Editor's ribbon - same tree-prune technique, keeping every standard tab's button
   // strip sharp and blurring any other (e.g. My Toolbar, Developer).
-  for (const frame of await framesWithSelector(page, CONST.BLUR_KEEP.RIBBON_BUTTONS.CONTAINER_SELECTOR)) {
+  for (const frame of await framesWithSelector(page, TEST_CONST.BLUR_KEEP.RIBBON_BUTTONS.CONTAINER_SELECTOR)) {
     blurTargets.push(
       ...await blurTreeExcept(
         frame,
-        [CONST.BLUR_KEEP.RIBBON_BUTTONS.CONTAINER_SELECTOR],
-        [...CONST.BLUR_KEEP.RIBBON_BUTTONS.KEEP_SELECTORS],
+        [TEST_CONST.BLUR_KEEP.RIBBON_BUTTONS.CONTAINER_SELECTOR],
+        [...TEST_CONST.BLUR_KEEP.RIBBON_BUTTONS.KEEP_SELECTORS],
       ),
     );
   }

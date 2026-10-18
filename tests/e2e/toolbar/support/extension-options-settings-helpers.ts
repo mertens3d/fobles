@@ -1,14 +1,14 @@
 import { expect, type Locator, type Page } from "../../../fixtures/playwright";
 import { clickExtensionControl, fillExtensionInput, setExtensionCheckbox } from "../../../fixtures/extension";
-import { CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../CONST";
 
-const TESTING = CONST.TESTING;
+const TESTING = TEST_CONST.TESTING;
 
 export async function saveJumpFlyoutButtons(optionsPage: Page): Promise<void> {
   await clickExtensionControl(
     optionsPage,
-    optionsPage.getByRole("button", { name: CONST.TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON }),
-    CONST.TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON,
+    optionsPage.getByRole("button", { name: TEST_CONST.TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON }),
+    TEST_CONST.TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON,
   );
   await expect(optionsPage.locator("#jump-flyout-buttons-status")).toHaveText(
     "Jump flyout buttons saved.",
@@ -25,7 +25,7 @@ export async function removeTestRowIfPresent(optionsPage: Page): Promise<void> {
 
   for (let index = rowCount - 1; index >= 0; index -= 1) {
     const row = rows.nth(index);
-    if ((await row.locator("input[name='label']").inputValue()) === CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label) {
+    if ((await row.locator("input[name='label']").inputValue()) === TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label) {
       await clickExtensionControl(
         optionsPage,
         row.locator(".user-tree-jump-remove"),
@@ -51,19 +51,19 @@ export async function addTestRow(optionsPage: Page): Promise<Locator> {
   await fillExtensionInput(
     optionsPage,
     row.locator("input[name='label']"),
-    CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label,
+    TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label,
     "Tree Jump label",
   );
   await fillExtensionInput(
     optionsPage,
     row.locator("input[name='pathSuffix']"),
-    CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.pathSuffixRaw,
+    TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.pathSuffixRaw,
     "Tree Jump path",
   );
   await fillExtensionInput(
     optionsPage,
     row.locator("input[name='icon']"),
-    CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.iconRaw,
+    TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.iconRaw,
     "Tree Jump icon",
   );
   await saveJumpFlyoutButtons(optionsPage);

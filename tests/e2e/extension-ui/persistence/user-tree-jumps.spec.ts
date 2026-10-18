@@ -1,6 +1,6 @@
 import { expect, foblesTest } from "../../../fixtures/playwright";
 import { getExtensionId, openExtensionPage } from "../../../fixtures/extension";
-import { CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../CONST";
 import {
   openTreeJumpsColumn,
   addTestRow,
@@ -9,12 +9,12 @@ import {
 
 foblesTest.describe("User Tree Jump Persistence", () => {
   foblesTest("Additional Settings adds and normalizes a User Tree Jump", async ({ sharedBrowserContext }) => {
-    foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+    foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     const extensionId = await getExtensionId(sharedBrowserContext);
     const optionsPage = await openExtensionPage(
       sharedBrowserContext,
       extensionId,
-      CONST.TESTING.EXTENSION_PAGES.OPTIONS,
+      TEST_CONST.TESTING.EXTENSION_PAGES.OPTIONS,
     );
 
     try {
@@ -24,13 +24,13 @@ foblesTest.describe("User Tree Jump Persistence", () => {
       const treeJumpsColumn = await openTreeJumpsColumn(optionsPage);
       const row = treeJumpsColumn.locator(".user-tree-jump-row").last();
       await expect(row.locator("input[name='label']")).toHaveValue(
-        CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label,
+        TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label,
       );
       await expect(row.locator("input[name='pathSuffix']")).toHaveValue(
-        CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.pathSuffixRaw.replace(/^\/+/, ""),
+        TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.pathSuffixRaw.replace(/^\/+/, ""),
       );
       await expect(row.locator("input[name='icon']")).toHaveValue(
-        CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_ICON_NORMALIZED,
+        TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_ICON_NORMALIZED,
       );
       await expect(row.locator("input[name='enabled']")).toBeChecked();
     } finally {

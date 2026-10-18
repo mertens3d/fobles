@@ -1,4 +1,4 @@
-import { CONST } from "../../CONST";
+import { TEST_CONST } from "../../CONST";
 import { openContentEditor } from "../../fixtures/sitecore";
 import { getPageJumpFlyoutButton } from "../../helpers/element-finders";
 import { foblesTest, type Locator } from "../../fixtures/playwright";
@@ -10,12 +10,12 @@ import { attachLocatorScreenshot } from "../../helpers/fobles-helpers-support/sc
 
 foblesTest.describe("Tree Navigation", () => {
 
-    for (const pageJumpTarget of CONST.TESTING.PAGE_JUMP_TARGETS) {
+    for (const pageJumpTarget of TEST_CONST.TESTING.PAGE_JUMP_TARGETS) {
 
         foblesTest(pageJumpTarget.label, async ({
             page, sharedBrowserContext
         }, testInfo) => {
-            foblesTest.setTimeout(CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+            foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
             await setupContentEditorForTestingBasic(page);
 
             if (isAIPage(page) && pageJumpTarget.skipTestingAI) {
@@ -31,7 +31,7 @@ foblesTest.describe("Tree Navigation", () => {
 
                 async (fullTitle) => {
                     if (pageJumpTarget.clickNavigationExpect?.url) {
-                        await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+                        await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
                         jumpFlyoutButton = await getPageJumpFlyoutButton(page, pageJumpTarget.clickNavigationExpect.url);
                         await attachLocatorScreenshot(testInfo, jumpFlyoutButton, `fobles-navigation-button-${getLastTwoPathItems(pageJumpTarget.clickNavigationExpect.url)}.png`);
                         if (jumpFlyoutButton) {
@@ -42,7 +42,7 @@ foblesTest.describe("Tree Navigation", () => {
                     }
                 },
                 {
-                    timeout: CONST.TESTING.TIMEOUTS.STEP_TIMEOUT_MS,
+                    timeout: TEST_CONST.TESTING.TIMEOUTS.STEP_TIMEOUT_MS,
                     screenshot: false
                 }
             );
@@ -52,7 +52,7 @@ foblesTest.describe("Tree Navigation", () => {
                 async () => {
                     if (pageJumpTarget.clickNavigationExpect.url) {
 
-                        await openContentEditor(page, CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+                        await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
                         jumpFlyoutButton = await getPageJumpFlyoutButton(page, pageJumpTarget.clickNavigationExpect.url);
                         await attachLocatorScreenshot(testInfo, jumpFlyoutButton, `fobles-navigation-button-${getLastTwoPathItems(pageJumpTarget.clickNavigationExpect.url)}.png`);
                         if (jumpFlyoutButton) {
@@ -63,7 +63,7 @@ foblesTest.describe("Tree Navigation", () => {
                     }
                 },
                 {
-                    timeout: CONST.TESTING.TIMEOUTS.STEP_TIMEOUT_MS,
+                    timeout: TEST_CONST.TESTING.TIMEOUTS.STEP_TIMEOUT_MS,
                     screenshot: true
                 }
             );
