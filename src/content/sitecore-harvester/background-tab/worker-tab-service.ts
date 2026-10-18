@@ -8,7 +8,7 @@ import type {
 } from "../worker-pool/worker.messages";
 import type {
   WorkerTask,
-  WorkerTaskResult,
+  WorkerTaskExecutionResult,
 } from "../worker-pool/worker-task.types";
 
 const MESSAGE_TYPE =
@@ -73,7 +73,7 @@ export async function markWorkerTabOwned(
 export async function sendTaskToWorkerTab(
   tabId: number,
   task: WorkerTask,
-): Promise<WorkerTaskResult | undefined> {
+): Promise<WorkerTaskExecutionResult | undefined> {
   const message: WorkerTaskExecuteMessage = {
     type: MESSAGE_TYPE.WORKER_TASK_EXECUTE,
     task,
@@ -83,7 +83,7 @@ export async function sendTaskToWorkerTab(
   const maxAttempts = 50;
 
   let result:
-    | WorkerTaskResult
+    | WorkerTaskExecutionResult
     | undefined = undefined;
 
   while (attempt < maxAttempts) {
@@ -93,7 +93,7 @@ export async function sendTaskToWorkerTab(
       result =
         await chrome.tabs.sendMessage<
           WorkerTaskExecuteMessage,
-          WorkerTaskResult | undefined
+          WorkerTaskExecutionResult | undefined
         >(
           tabId,
           message,

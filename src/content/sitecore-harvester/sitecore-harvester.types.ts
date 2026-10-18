@@ -5,6 +5,7 @@ import type {
   SitecoreDeviceXml,
   SitecoreRenderingXml,
 } from "./collectors/section-collector/layout-collector/sitecore-layout-xml-schema.types";
+import type { HarvestSession } from "./harvest-session.types";
 
 export type HarvestContext = {
   doc: Document;
@@ -148,5 +149,6 @@ export type HarvestRequest = {
   requestId: string;
   url: string;
   filters: SitecoreHarvestFiltersState;
+  session?: HarvestSession;
   existingResult?: SitecoreHarvestResult;
 };

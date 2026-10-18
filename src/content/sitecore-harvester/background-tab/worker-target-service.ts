@@ -7,6 +7,7 @@ import {
   removeWorkerIframeTarget,
   sendCancelToWorkerIframe,
   sendTaskToWorkerIframe,
+  waitForWorkerIframeReload,
 } from "./worker-iframe-service";
 import {
   closeWorkerTab,
@@ -18,8 +19,12 @@ import {
 } from "./worker-tab-service";
 import type {
   WorkerTask,
-  WorkerTaskResult,
+  WorkerTaskExecutionResult,
 } from "../worker-pool/worker-task.types";
+import {
+  resetWorkerReadiness,
+  waitForWorkerReady,
+} from "../worker-pool/worker-readiness";
 import {
   isWorkerIframeTarget,
   isWorkerTabTarget,
@@ -27,6 +32,7 @@ import {
 } from "../worker-pool/worker-target";
 
 const USE_WORKER_IFRAMES = true;
+const READY_TIMEOUT_MS = 20000;
 
 export async function createWorkerTarget(
   hostTabId: number | undefined,
@@ -113,9 +119,9 @@ export async function markWorkerTargetOwned(
 export async function sendTaskToWorkerTarget(
   target: WorkerTarget,
   task: WorkerTask,
-): Promise<WorkerTaskResult | undefined> {
+): Promise<WorkerTaskExecutionResult | undefined> {
   let result:
-    | WorkerTaskResult
+    | WorkerTaskExecutionResult
     | undefined;
 
   if (isWorkerIframeTarget(target)) {
@@ -133,6 +139,17 @@ export async function sendTaskToWorkerTarget(
   }
 
   return result;
+}
+
+export async function waitForWorkerTargetReload(
+  target: WorkerTarget,
+): Promise<void> {
+  if (isWorkerIframeTarget(target)) {
+    await waitForWorkerIframeReload(target.workerId);
+  } else {
+    resetWorkerReadiness(target.tabId);
+    await waitForWorkerReady(target.tabId, READY_TIMEOUT_MS);
+  }
 }
 
 export function sendCancelToWorkerTarget(

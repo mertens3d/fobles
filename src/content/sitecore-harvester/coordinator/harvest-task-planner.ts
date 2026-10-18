@@ -1,14 +1,17 @@
 // @source-path [fobles] src/content/sitecore-harvester/coordinator/harvest-task-planner.ts
 
 import type { HarvestRequest, SitecoreHarvestFiltersState } from "../sitecore-harvester.types";
-import type { WorkerTask, WorkerTaskType } from "../worker-pool/worker-task.types";
+import type { WorkerEditorState, WorkerTask, WorkerTaskType } from "../worker-pool/worker-task.types";
 
 export type CollectorFilterKey = Exclude<keyof SitecoreHarvestFiltersState, "template">;
+type CollectorTaskType = Exclude<WorkerTaskType, "enrich-item" | "collect-root-item" | "set-editor-state">;
 
-// Centralized mapping from filter key to the worker task type that collects it - the one place
-// that knows "parent -> collect-parent", "children -> collect-children", etc. HarvestResultMerger
-// mirrors this same mapping on the way back in (worker task type -> SitecoreHarvestResult field).
-export const COLLECTOR_TASK_TYPE_BY_FILTER_KEY: Readonly<Record<CollectorFilterKey, Exclude<WorkerTaskType, "enrich-item" | "collect-root-item">>> = {
+export type CollectorTaskPlan = {
+  normalTasks: WorkerTask[];
+  layoutTasks: WorkerTask[];
+};
+
+export const COLLECTOR_TASK_TYPE_BY_FILTER_KEY: Readonly<Record<CollectorFilterKey, CollectorTaskType>> = {
   parent: "collect-parent",
   children: "collect-children",
   referrers: "collect-referrers",
@@ -22,10 +25,7 @@ export const FILTER_KEY_BY_COLLECTOR_TASK_TYPE: ReadonlyMap<WorkerTaskType, Coll
   ),
 );
 
-function createTask(
-  request: HarvestRequest,
-  type: Exclude<WorkerTaskType, "enrich-item">,
-): WorkerTask {
+function createTask(request: HarvestRequest, type: Exclude<WorkerTaskType, "enrich-item" | "set-editor-state">): WorkerTask {
   return {
     requestId: request.requestId,
     taskId: crypto.randomUUID(),
@@ -34,22 +34,42 @@ function createTask(
   };
 }
 
-// Initial harvest (no existingResult) always needs a fresh root item; lazy-filter harvest
-// (existingResult supplied) reuses existingResult.rootItem instead, so no root-item task is
-// planned - this is also what keeps "request only the newly enabled filter" true: only the
-// requested filter keys produce tasks, nothing else is re-collected.
+export function createEditorStateTask(
+  request: HarvestRequest,
+  editorState: WorkerEditorState,
+): WorkerTask {
+  const url = new URL(request.url);
+  url.searchParams.set("foblesEditorState", crypto.randomUUID());
+
+  return {
+    requestId: request.requestId,
+    taskId: crypto.randomUUID(),
+    type: "set-editor-state",
+    url: url.toString(),
+    editorState,
+  };
+}
+
 export function planCollectorTasks(request: HarvestRequest): WorkerTask[] {
   const tasks: WorkerTask[] = [];
 
-  if (!request.existingResult) {
-    tasks.push(createTask(request, "collect-root-item"));
-  }
+  if (!request.existingResult) tasks.push(createTask(request, "collect-root-item"));
 
   for (const filterKey of Object.keys(COLLECTOR_TASK_TYPE_BY_FILTER_KEY) as CollectorFilterKey[]) {
-    if (request.filters[filterKey]) {
-      tasks.push(createTask(request, COLLECTOR_TASK_TYPE_BY_FILTER_KEY[filterKey]));
-    }
+    if (request.filters[filterKey]) tasks.push(createTask(request, COLLECTOR_TASK_TYPE_BY_FILTER_KEY[filterKey]));
   }
 
   return tasks;
+}
+
+export function planCollectorTaskGroups(request: HarvestRequest): CollectorTaskPlan {
+  const normalTasks: WorkerTask[] = [];
+  const layoutTasks: WorkerTask[] = [];
+
+  for (const task of planCollectorTasks(request)) {
+    if (task.type === "collect-layouts") layoutTasks.push(task);
+    else normalTasks.push(task);
+  }
+
+  return { normalTasks, layoutTasks };
 }

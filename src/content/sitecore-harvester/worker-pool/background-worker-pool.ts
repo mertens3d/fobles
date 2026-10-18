@@ -161,22 +161,32 @@ export async function runPoolTask(
 
   extensionLog.debug("Worker pool: settings loaded for task", {
     maxWorkers,
+    workerCount: workers.length,
+    queueLength: queue.length,
+    taskType: task.type,
+    taskId: task.taskId,
   });
 
-  return new Promise((resolve) => {
+  return await new Promise<WorkerTaskResult>((resolve) => {
+    if (cancelledRequestIds.has(task.requestId)) {
+      resolve(createCancelledResult(task));
+      return;
+    }
+
     queue.push({
       task,
       hostTabId,
       retried: false,
+      editorStateChangeCount: 0,
       resolve,
     });
 
     extensionLog.debug(
       `Worker pool: task queued - maxWorkers=${maxWorkers}, workers=${workers.length}, queue=${queue.length}`,
       {
-        taskType: task.type,
-        taskId: task.taskId,
         requestId: task.requestId,
+        taskId: task.taskId,
+        taskType: task.type,
         hostTabId,
         maxWorkers,
         workerCount: workers.length,

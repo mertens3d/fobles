@@ -11,6 +11,7 @@ export type FieldReferenceConfidence = "strategy" | "inferred";
 // value instead.
 export type FieldReference = {
   target: string;
+  label?: string;
   confidence: FieldReferenceConfidence;
   strategy?: FoblesStrategy;
   sourceValue: string;

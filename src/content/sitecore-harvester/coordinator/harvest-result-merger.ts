@@ -46,6 +46,8 @@ export function mergeCollectorResult(
     case "collect-layouts":
       target.layoutSectionFields = result.payload.layoutSectionFields;
       break;
+    case "set-editor-state":
+      break;
     case "enrich-item":
       break;
   }

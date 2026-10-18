@@ -1,11 +1,7 @@
 // @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-task.types.ts
 
-import type {
-  ItemGraphNodeData,
-  LayoutSectionField,
-  RootItem,
-  SitecoreHarvestSection,
-} from "../sitecore-harvester.types";
+import type { BooleanTripleState } from "../../macros/ribbon-toggle-macro";
+import type { ItemGraphNodeData, LayoutSectionField, RootItem, SitecoreHarvestSection } from "../sitecore-harvester.types";
 
 export type WorkerTaskType =
   | "collect-root-item"
@@ -14,11 +10,17 @@ export type WorkerTaskType =
   | "collect-referrers"
   | "collect-sections"
   | "collect-layouts"
+  | "set-editor-state"
   | "enrich-item";
 
 export type ItemLookup = {
   scItemId: string | undefined;
   scItemPath: string | undefined;
+};
+
+export type WorkerEditorState = {
+  rawValues: BooleanTripleState;
+  standardFields: BooleanTripleState;
 };
 
 type WorkerTaskBase<TType extends WorkerTaskType> = {
@@ -36,6 +38,10 @@ export type CollectReferrersTask = WorkerTaskBase<"collect-referrers">;
 export type CollectSectionsTask = WorkerTaskBase<"collect-sections">;
 export type CollectLayoutsTask = WorkerTaskBase<"collect-layouts">;
 
+export type SetEditorStateTask = WorkerTaskBase<"set-editor-state"> & {
+  editorState: WorkerEditorState;
+};
+
 export type EnrichItemTask = WorkerTaskBase<"enrich-item"> & {
   lookup: ItemLookup;
 };
@@ -47,6 +53,7 @@ export type WorkerTask =
   | CollectReferrersTask
   | CollectSectionsTask
   | CollectLayoutsTask
+  | SetEditorStateTask
   | EnrichItemTask;
 
 export type WorkerTaskPayloadByType = {
@@ -56,6 +63,7 @@ export type WorkerTaskPayloadByType = {
   "collect-referrers": { referrers: readonly ItemGraphNodeData[] };
   "collect-sections": { sections: readonly SitecoreHarvestSection[] };
   "collect-layouts": { layoutSectionFields: LayoutSectionField[] };
+  "set-editor-state": { editorState: WorkerEditorState };
   "enrich-item": { item: ItemGraphNodeData };
 };
 
@@ -71,9 +79,7 @@ type WorkerTaskSuccessResultFor<TType extends WorkerTaskType> =
     payload: WorkerTaskPayloadByType[TType];
   };
 
-// Distributing the mapped type over WorkerTaskType builds a true discriminated union (one
-// member per task type, each with its own `payload` shape) instead of a single generic type
-// whose `payload` can't be narrowed by checking `.type`.
+// Distributing the mapped type over WorkerTaskType builds a true discriminated union.
 export type WorkerTaskSuccessResult =
   { [TType in WorkerTaskType]: WorkerTaskSuccessResultFor<TType> }[WorkerTaskType];
 
@@ -93,10 +99,30 @@ export type WorkerTaskResult =
   | WorkerTaskErrorResult
   | WorkerTaskCancelledResult;
 
-export function isSuccessResult(
-  result: WorkerTaskResult,
-): result is WorkerTaskSuccessResult {
+// The worker changed Sitecore editor state, invalidating the current document. The pool replaces
+// that worker with a fresh document and retries the same task without consuming the failure retry.
+export type WorkerTaskReloadResult =
+  { [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & {
+      status: "needs-reload";
+    } }[WorkerTaskType];
+
+export type WorkerTaskExecutionResult = WorkerTaskResult | WorkerTaskReloadResult;
+
+export function isSuccessResult(result: WorkerTaskResult): result is WorkerTaskSuccessResult {
   return result.status === "success";
+}
+
+export function isReloadResult(result: WorkerTaskExecutionResult): result is WorkerTaskReloadResult {
+  return result.status === "needs-reload";
+}
+
+export function createNeedsReloadResult(task: WorkerTask): WorkerTaskReloadResult {
+  return {
+    requestId: task.requestId,
+    taskId: task.taskId,
+    type: task.type,
+    status: "needs-reload",
+  };
 }
 
 export function createErrorResult(task: WorkerTask, errorMessage: string): WorkerTaskErrorResult {

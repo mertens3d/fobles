@@ -4,40 +4,38 @@ import { extractAllGuids } from "./field-reference-guid";
 import { KNOWN_FIELD_REFERENCE_RESOLVERS } from "./field-reference-resolvers";
 import type { FieldReference, FieldReferenceResolution } from "./field-reference.types";
 
-// Single entry point: try every known strategy resolver against the field's own marker; the
-// first one whose shape matches wins, even if it claims zero references. Only when NO known
-// strategy claims the field at all does every distinct GUID in the raw value become an inferred
-// reference instead - never both for the same field. displayValue stays the field's own raw
-// stored value either way - each reference gets its own child node (and its own resolved name
-// once enriched), so the field node doesn't need to re-derive a friendlier summary from them.
-export function resolveFieldReferences(
-  marker: HTMLElement,
-  rawValue: string | undefined,
-): FieldReferenceResolution {
+// A known strategy wins even when it returns no references. Generic GUID inference runs only when
+// no known strategy claims the field. Friendly strategy labels are preferred for graph display;
+// sourceValue continues to preserve the raw stored field value.
+export function resolveFieldReferences(marker: HTMLElement, rawValue: string | undefined): FieldReferenceResolution {
   const strategyReferences = resolveKnownStrategyReferences(marker);
+  const references = strategyReferences ?? resolveInferredReferences(rawValue);
 
   return {
-    displayValue: rawValue,
-    references: strategyReferences ?? resolveInferredReferences(rawValue),
+    displayValue: resolveFriendlyDisplayValue(references) ?? rawValue,
+    references,
   };
 }
 
 function resolveKnownStrategyReferences(marker: HTMLElement): FieldReference[] | undefined {
   for (const resolver of KNOWN_FIELD_REFERENCE_RESOLVERS) {
     const references = resolver(marker);
-
-    if (references) {
-      return references;
-    }
+    if (references !== undefined) return references;
   }
 
   return undefined;
 }
 
+function resolveFriendlyDisplayValue(references: readonly FieldReference[]): string | undefined {
+  const labels = references
+    .map((reference) => reference.label?.trim())
+    .filter((label): label is string => Boolean(label));
+
+  return labels.length > 0 ? labels.join(", ") : undefined;
+}
+
 function resolveInferredReferences(rawValue: string | undefined): FieldReference[] {
-  if (!rawValue) {
-    return [];
-  }
+  if (!rawValue) return [];
 
   return extractAllGuids(rawValue).map((guid) => ({
     target: guid,

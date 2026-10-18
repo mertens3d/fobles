@@ -26,7 +26,9 @@ import {
   mergeCollectorResult,
 } from "./harvest-result-merger";
 import {
+  createEditorStateTask,
   FILTER_KEY_BY_COLLECTOR_TASK_TYPE,
+  planCollectorTaskGroups,
   planCollectorTasks,
 } from "./harvest-task-planner";
 
@@ -172,100 +174,163 @@ async function dispatchTasks(
     }),
   );
 }
+function throwForFailedResults(results: readonly WorkerTaskResult[]): void {
+  const failedResults = results.filter((result) => result.status === "error");
+
+  if (failedResults.length > 0) {
+    throw new Error(
+      failedResults
+        .map((result) => `${result.type}: ${result.errorMessage}`)
+        .join("; "),
+    );
+  }
+}
+
+async function setEditorState(
+  request: HarvestRequest,
+  rawValues: boolean | undefined,
+  standardFields: boolean | undefined,
+): Promise<void> {
+  const task = createEditorStateTask(request, { rawValues, standardFields });
+
+  extensionLog.debug("Reference graph: requesting editor state", {
+    requestId: request.requestId,
+    taskId: task.taskId,
+    rawValues,
+    standardFields,
+  });
+
+  const result = await runWorkerTaskWithTimeout(task);
+
+  extensionLog.debug("Reference graph: editor-state task returned", {
+    requestId: request.requestId,
+    taskId: task.taskId,
+    requestedRawValues: rawValues,
+    requestedStandardFields: standardFields,
+    status: result.status,
+    payload: result.status === "success" && result.type === "set-editor-state"
+      ? result.payload.editorState
+      : undefined,
+  });
+
+  throwForFailedResults([result]);
+
+  if (result.status !== "success") {
+    throw new Error(`set-editor-state: ${result.status}`);
+  }
+
+  if (
+    result.type !== "set-editor-state" ||
+    result.payload.editorState.rawValues !== rawValues ||
+    result.payload.editorState.standardFields !== standardFields
+  ) {
+    throw new Error(
+      `Editor-state verification failed: requested Raw=${String(rawValues)}, Standard=${String(standardFields)}`,
+    );
+  }
+}
+
+async function dispatchSessionTasks(
+  request: HarvestRequest,
+  onProgress: HarvestProgressCallback | undefined,
+): Promise<WorkerTaskResult[]> {
+  if (!request.session) {
+    return await dispatchTasks(planCollectorTasks(request), onProgress);
+  }
+
+  const { normalTasks, layoutTasks } = planCollectorTaskGroups(request);
+  const collectorResults: WorkerTaskResult[] = [];
+
+  if (normalTasks.length > 0) {
+    await setEditorState(request, false, true);
+    collectorResults.push(...await dispatchTasks(normalTasks, onProgress));
+  }
+
+  if (layoutTasks.length > 0) {
+    await setEditorState(request, true, true);
+    collectorResults.push(...await dispatchTasks(layoutTasks, onProgress));
+  }
+
+  return collectorResults;
+}
 
 export async function harvestSitecoreWithWorkers(
   request: HarvestRequest,
   options: HarvestOptions = {},
 ): Promise<SitecoreHarvestResult | undefined> {
   const { onProgress, signal } = options;
+
   const abortListener = (): void => {
     cancelWorkerRequest(request.requestId);
   };
 
   signal?.addEventListener("abort", abortListener);
 
-  onProgress?.(
-    {
-      stepKey: "fetch-document",
-      label: "Fetching Document",
-    },
-    "active",
-  );
-
-  onProgress?.(
-    {
-      stepKey: "parse-document",
-      label: "Parsing Document",
-    },
-    "active",
-  );
-
+  onProgress?.({ stepKey: "fetch-document", label: "Fetching Document" }, "active");
+  onProgress?.({ stepKey: "parse-document", label: "Parsing Document" }, "active");
   reportSkippedSteps(request, onProgress);
 
   let result: SitecoreHarvestResult | undefined;
+  let harvestError: unknown;
 
   try {
-    const collectorTasks = planCollectorTasks(request);
-    const collectorResults = await dispatchTasks(
-      collectorTasks,
-      onProgress,
-    );
+    const collectorResults = await dispatchSessionTasks(request, onProgress);
+    throwForFailedResults(collectorResults);
 
-    onProgress?.(
-      {
-        stepKey: "fetch-document",
-        label: "Fetching Document",
-      },
-      "complete",
-    );
-
-    onProgress?.(
-      {
-        stepKey: "parse-document",
-        label: "Parsing Document",
-      },
-      "complete",
-    );
+    onProgress?.({ stepKey: "fetch-document", label: "Fetching Document" }, "complete");
+    onProgress?.({ stepKey: "parse-document", label: "Parsing Document" }, "complete");
 
     if (!signal?.aborted) {
-      const successfulResults =
-        collectorResults.filter(isSuccessResult);
-
-      const rootItem = extractRootItem(
-        request,
-        successfulResults,
-      );
+      const successfulResults = collectorResults.filter(isSuccessResult);
+      const rootItem = extractRootItem(request, successfulResults);
 
       if (rootItem) {
-        onProgress?.(
-          {
-            stepKey: "root-item",
-            label: "Root Item",
-          },
-          "complete",
-        );
-
-        result = createBaseResult(
-          request,
-          rootItem,
-        );
+        onProgress?.({ stepKey: "root-item", label: "Root Item" }, "complete");
+        result = createBaseResult(request, rootItem);
 
         for (const collectorResult of successfulResults) {
-          mergeCollectorResult(
-            result,
-            collectorResult,
-          );
+          mergeCollectorResult(result, collectorResult);
         }
       }
     }
+  } catch (error) {
+    harvestError = error;
   } finally {
-    signal?.removeEventListener(
-      "abort",
-      abortListener,
-    );
+    signal?.removeEventListener("abort", abortListener);
+
+    try {
+      await restoreOriginalEditorState(request);
+    } catch (restoreError) {
+      extensionLog.error("Reference graph: failed to restore captured editor state", {
+        requestId: request.requestId,
+        originalEditorState: request.session?.originalEditorState,
+        restoreError,
+      });
+
+      harvestError ??= restoreError;
+    }
   }
 
-  return signal?.aborted
-    ? undefined
-    : result;
+  if (harvestError) throw harvestError;
+
+  return signal?.aborted ? undefined : result;
+}
+
+async function restoreOriginalEditorState(request: HarvestRequest): Promise<void> {
+  const original = request.session?.originalEditorState;
+  if (!original) return;
+
+  extensionLog.debug("Reference graph: restoring captured editor state", {
+    requestId: request.requestId,
+    rawValues: original.rawValues,
+    standardFields: original.standardFields,
+  });
+
+  await setEditorState(request, original.rawValues, original.standardFields);
+
+  extensionLog.debug("Reference graph: captured editor state verified", {
+    requestId: request.requestId,
+    rawValues: original.rawValues,
+    standardFields: original.standardFields,
+  });
 }

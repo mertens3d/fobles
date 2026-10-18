@@ -19,7 +19,7 @@ import {
 } from "../worker-pool/worker.messages";
 import type {
   WorkerTask,
-  WorkerTaskResult,
+  WorkerTaskExecutionResult,
 } from "../worker-pool/worker-task.types";
 import { extensionLog } from "../../logger";
 
@@ -165,14 +165,14 @@ export async function markWorkerIframeOwned(
 export async function sendTaskToWorkerIframe(
   target: WorkerIframeTarget,
   task: WorkerTask,
-): Promise<WorkerTaskResult | undefined> {
+): Promise<WorkerTaskExecutionResult | undefined> {
   const message: WorkerTaskExecuteMessage = {
     type: MESSAGE_TYPE.WORKER_TASK_EXECUTE,
     task,
   };
 
   let attempt = 0;
-  let result: WorkerTaskResult | undefined;
+  let result: WorkerTaskExecutionResult | undefined;
 
   while (attempt < MAX_SEND_ATTEMPTS) {
     attempt += 1;
@@ -180,7 +180,7 @@ export async function sendTaskToWorkerIframe(
     try {
       result = await chrome.tabs.sendMessage<
         WorkerTaskExecuteMessage,
-        WorkerTaskResult | undefined
+        WorkerTaskExecutionResult | undefined
       >(target.hostTabId, message, {
         frameId: target.frameId,
       });
@@ -259,6 +259,16 @@ export function clearHostWorkerIframeTargets(
     .map(([workerId]) => workerId);
 
   workerIds.forEach(clearWorkerIframeTarget);
+}
+
+// Re-waits for readiness without asking the host to re-navigate the iframe - used when the
+// iframe's OWN page triggered its own reload (e.g. a Sitecore ribbon postback), not us.
+export function waitForWorkerIframeReload(
+  workerId: string,
+): Promise<WorkerIframeTarget> {
+  clearWorkerIframeTarget(workerId);
+
+  return waitForWorkerIframeReady(workerId);
 }
 
 function waitForWorkerIframeReady(

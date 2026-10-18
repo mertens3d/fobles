@@ -9,6 +9,7 @@ import {
   markWorkerTargetOwned,
   navigateWorkerTarget,
   sendTaskToWorkerTarget,
+  waitForWorkerTargetReload,
 } from "../background-tab/worker-target-service";
 import {
   resetWorkerReadiness,
@@ -17,6 +18,7 @@ import {
 import {
   createCancelledResult,
   createErrorResult,
+  isReloadResult,
   type WorkerTask,
   type WorkerTaskResult,
 } from "./worker-task.types";
@@ -26,6 +28,11 @@ import {
 } from "./worker-target";
 
 const READY_TIMEOUT_MS = 20000;
+// Raw Values and Standard Fields can each need their own self-triggered reload on a worker's
+// first task - this caps how many times we'll wait-and-resend the same task to the same worker
+// before giving up and falling back to the existing new-worker retry.
+const MAX_EDITOR_STATE_RELOADS = 2;
+const MAX_EDITOR_STATE_CHANGES = 2;
 
 export type PoolWorker = {
   target: WorkerTarget | undefined;
@@ -37,6 +44,7 @@ export type QueuedTask = {
   task: WorkerTask;
   hostTabId: number | undefined;
   retried: boolean;
+  editorStateChangeCount: number;
   resolve: (result: WorkerTaskResult) => void;
 };
 
@@ -86,6 +94,31 @@ async function cancelStaleWorker(
   queued.resolve(createCancelledResult(queued.task));
 }
 
+// Resends the same task to the same target each time the worker reports it needs to reload
+// first (e.g. to enable Raw Values/Standard Fields on its own page) - as opposed to the
+// retry-on-a-new-worker path below, which is reserved for actual worker failures.
+async function sendTaskAwaitingEditorState(
+  target: WorkerTarget,
+  task: WorkerTask,
+): Promise<WorkerTaskResult | undefined> {
+  let result = await sendTaskToWorkerTarget(target, task);
+  let reloadCount = 0;
+
+  while (
+    result &&
+    isReloadResult(result) &&
+    reloadCount < MAX_EDITOR_STATE_RELOADS
+  ) {
+    reloadCount += 1;
+
+    await waitForWorkerTargetReload(target);
+
+    result = await sendTaskToWorkerTarget(target, task);
+  }
+
+  return result && isReloadResult(result) ? undefined : result;
+}
+
 async function retryOrResolveError(
   context: WorkerExecutorContext,
   worker: PoolWorker,
@@ -132,19 +165,17 @@ async function runTaskOnWorker(
     taskId: queued.task.taskId,
   });
 
-  let result: WorkerTaskResult | undefined;
+  let executionResult: Awaited<ReturnType<typeof sendTaskToWorkerTarget>>;
 
   try {
-
     extensionLog.debug(`Worker pool[${workerKey}]: executing task`, {
-      workerKey: getWorkerTargetKey(target),
+      workerKey,
       taskId: queued.task.taskId,
       taskType: queued.task.type,
       url: queued.task.url,
     });
 
-
-    result = await sendTaskToWorkerTarget(target, queued.task);
+    executionResult = await sendTaskToWorkerTarget(target, queued.task);
   } catch (error) {
     extensionLog.warn("Worker pool: task execution failed", {
       workerKey,
@@ -156,34 +187,73 @@ async function runTaskOnWorker(
   context.activeTaskByWorkerKey.delete(workerKey);
 
   extensionLog.debug(`Worker pool[${workerKey}]: task completed`, {
-  taskId: queued.task.taskId,
-  taskType: queued.task.type,
-  resultStatus: result?.status,
-});
-
+    taskId: queued.task.taskId,
+    taskType: queued.task.type,
+    resultStatus: executionResult?.status,
+  });
 
   if (!context.isCurrentGeneration()) {
     await cancelStaleWorker(context, worker, queued);
-  } else if (context.cancelledRequestIds.has(queued.task.requestId)) {
-    
-    
-    extensionLog.debug(`Worker pool[${workerKey}]: becoming idle`);
-    
+    return;
+  }
+
+  if (context.cancelledRequestIds.has(queued.task.requestId)) {
     worker.status = "idle";
     queued.resolve(createCancelledResult(queued.task));
     context.scheduleNext();
-  } else if (!result) {
+    return;
+  }
+
+  if (executionResult && isReloadResult(executionResult)) {
+    await closeWorker(context, worker);
+
+    if (queued.editorStateChangeCount >= MAX_EDITOR_STATE_CHANGES) {
+      queued.resolve(
+        createErrorResult(
+          queued.task,
+          `Worker editor state did not stabilize after ${MAX_EDITOR_STATE_CHANGES} changes`,
+        ),
+      );
+      context.scheduleNext();
+      return;
+    }
+
+    queued.editorStateChangeCount += 1;
+
+    extensionLog.debug(
+      "Worker pool: editor state changed; waiting before fresh-worker verification",
+      {
+        taskId: queued.task.taskId,
+        taskType: queued.task.type,
+        editorStateChangeCount: queued.editorStateChangeCount,
+        delayMs: 500,
+      },
+    );
+
+    await new Promise<void>((resolve) => {
+      setTimeout(resolve, 500);
+    });
+
+    runTaskOnNewWorker(context, context.createPendingWorker(), queued);
+    context.scheduleNext();
+    return;
+  }
+
+  const result: WorkerTaskResult | undefined = executionResult;
+
+  if (!result) {
     await retryOrResolveError(
       context,
       worker,
       queued,
       "Worker task failed with no result",
     );
-  } else {
-    worker.status = "idle";
-    queued.resolve(result);
-    context.scheduleNext();
+    return;
   }
+
+  worker.status = "idle";
+  queued.resolve(result);
+  context.scheduleNext();
 }
 
 async function prepareCreatedTarget(

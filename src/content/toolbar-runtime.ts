@@ -27,7 +27,6 @@ import {
 } from "./toolbar";
 import { applyPowerShellIseTabIdentity } from "./ise-tab-title";
 import { toggleLightningBolt } from "./feature-toggle";
-import { resumeReferenceGraph } from "./features/reference-graph/reference-graph";
 import { registerWorkerIframeHost } from "./sitecore-harvester/background-tab/worker-iframe-host";
 
 let foblesUiActive = false;
@@ -193,7 +192,6 @@ async function reconcileCurrentPage(): Promise<void> {
   }
 
   resumeKickAllUsers(document);
-  await resumeReferenceGraph(document);
 
   // setToolbarVisible(getToolbarContext(), foblesNavVisible);
   // extensionLog.debug("Fobles flyout injection result", {

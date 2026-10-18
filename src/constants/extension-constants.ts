@@ -13,7 +13,6 @@ export const STORAGE = {
     REFERENCE_GRAPH: {
       FILTERS: "fobles_reference_graph_filters",
       LAYOUT: "fobles_reference_graph_layout",
-      PENDING: "fobles_reference_graph_pending",
       EXPANDED_BY_COLLAPSE_KEY:
         "fobles-reference-graph-expanded-by-collapse-key",
       CONTROLS_EXPANDED:
