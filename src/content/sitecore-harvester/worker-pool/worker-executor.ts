@@ -230,10 +230,6 @@ async function runTaskOnWorker(
       },
     );
 
-    await new Promise<void>((resolve) => {
-      setTimeout(resolve, 500);
-    });
-
     runTaskOnNewWorker(context, context.createPendingWorker(), queued);
     context.scheduleNext();
     return;
