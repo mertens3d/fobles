@@ -1,4 +1,4 @@
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 
 export function logStepDividerStart(name: string) {
   // console.log(`${CONST.TESTING.LOG.STEP_DIVIDER}`);

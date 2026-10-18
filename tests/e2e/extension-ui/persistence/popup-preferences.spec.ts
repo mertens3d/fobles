@@ -6,7 +6,7 @@ import {
   setExtensionCheckbox,
 } from "../../../fixtures/extension";
 import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
-import { TEST_CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../TEST_CONST";
 
 async function readStableCheckboxState(checkbox: Locator): Promise<boolean> {
   let previousState: boolean | undefined;

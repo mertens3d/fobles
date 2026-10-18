@@ -8,8 +8,8 @@ import {
 import type {
   ActiveWorkerTask,
   PoolWorker,
-  QueuedTask,
-} from "./worker-executor";
+  QueuedTask
+} from "./worker-task.types";
 import { clearWorkerReadiness } from "./worker-readiness";
 import { createCancelledResult } from "./worker-task.types";
 

@@ -1,11 +1,11 @@
 // @source-path [fobles] src/content/toolbar-runtime.ts
 
 import {
-  type AllowedPage,
   DEFAULT_TOOLBAR_PLACEMENT,
   SELECTORS,
   TOOLBAR_CORNERS
 } from "../constants/fobles.constants";
+import { type AllowedPage } from "../constants/constants.types";
 import { MESSAGE, STORAGE } from "../constants/extension-constants";
 import type { ToolbarPlacement } from "./toolbar.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";

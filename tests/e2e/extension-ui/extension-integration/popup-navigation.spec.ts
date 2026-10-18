@@ -4,7 +4,7 @@ import {
   getExtensionId,
   openExtensionPage,
 } from "../../../fixtures/extension";
-import { TEST_CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../TEST_CONST";
 import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
 
 foblesTest.describe("Extension UI Integration", () => {

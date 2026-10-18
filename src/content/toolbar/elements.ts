@@ -1,5 +1,5 @@
 import {
-  ATTRIBUTE,
+  ATTRIBUTES,
   CLASS,
   ICONS,
   SYMBOLS,
@@ -35,11 +35,11 @@ export function createFoblesNavButton(
   button.textContent = options.text;
   button.title = options.title;
   button.setAttribute(
-    ATTRIBUTE.DATA.KEY.FOBLES_NAV_OWNER,
-    ATTRIBUTE.DATA.VALUE.PERSISTENT,
+    ATTRIBUTES.DATA.KEY.FOBLES_NAV_OWNER,
+    ATTRIBUTES.DATA.VALUE.PERSISTENT,
   );
   if (options.role) {
-    button.setAttribute(ATTRIBUTE.DATA.KEY.NAV_BUTTON_ROLE, options.role);
+    button.setAttribute(ATTRIBUTES.DATA.KEY.NAV_BUTTON_ROLE, options.role);
   }
   button.addEventListener("click", options.onClick);
   return button;
@@ -48,7 +48,7 @@ export function createFoblesNavButton(
 export function createJumpsFlyoutTrigger(context: ToolbarContext): HTMLDivElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.FOBLES_NAV_BUTTON,
-    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.JUMPS_FLYOUT_TRIGGER,
+    role: ATTRIBUTES.DATA.NAV_BUTTON_ROLE.JUMPS_FLYOUT_TRIGGER,
     text: TEXT.JUMP_FLYOUT,
     title: TEXT.QUICK_MENU_TITLE,
     onClick: () => toggleJumpFlyout(context),
@@ -63,7 +63,7 @@ export function createJumpsFlyoutTrigger(context: ToolbarContext): HTMLDivElemen
 export function createLboltButton(context: ToolbarContext): HTMLButtonElement {
   return createFoblesNavButton(context, {
     className: CLASS.TOOLBAR_LBOLT_BUTTON,
-    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.LBOLT,
+    role: ATTRIBUTES.DATA.NAV_BUTTON_ROLE.LBOLT,
     text: SYMBOLS.LIGHTNING,
     title: TEXT.TOGGLE_FEATURES,
     onClick: context.onToggleFeatures,
@@ -73,7 +73,7 @@ export function createLboltButton(context: ToolbarContext): HTMLButtonElement {
 export function createGraphButton(context: ToolbarContext): HTMLButtonElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.TOOLBAR_GRAPH_BUTTON,
-    role: ATTRIBUTE.DATA.NAV_BUTTON_ROLE.GRAPH,
+    role: ATTRIBUTES.DATA.NAV_BUTTON_ROLE.GRAPH,
     text: "",
     title: TEXT.GRAPH_TITLE,
     onClick: () => { void openReferenceGraph(context.doc); },

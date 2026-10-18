@@ -1,5 +1,5 @@
 import type { Page } from "@playwright/test";
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import { pauseForHuman } from "./wait-helpers";
 
 const foregroundPages = new WeakMap<object, Page>();

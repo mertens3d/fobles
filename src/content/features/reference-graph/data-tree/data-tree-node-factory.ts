@@ -13,7 +13,7 @@ import type {
   RelationshipToParent,
 } from "./data-tree.types";
 import { createDataTreeNodeId } from "./layout-data-tree-builder";
-import type { PlaceholderTreeNode } from "./placeholder-data-tree-builder";
+import type { PlaceholderTreeNode } from "./data-tree.types";
 import { createRenderingDataTreeNode } from "./rendering-data-tree-builder";
 
 type DataTreeNodeOptions = {

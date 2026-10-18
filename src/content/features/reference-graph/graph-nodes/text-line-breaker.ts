@@ -1,6 +1,5 @@
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/text-line-breaker.ts
 
-
 export const LINE_BREAKER = {
   MAX_LABEL_LINE_LENGTH: 16,
   LINE_BREAK_REGEX: {
@@ -9,7 +8,6 @@ export const LINE_BREAKER = {
     CAMEL_CASE: /(?=[A-Z])/g
   }
 }
-
 
 export type LabelBreakResult = {
   success: boolean;

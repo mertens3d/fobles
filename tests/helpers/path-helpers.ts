@@ -1,4 +1,4 @@
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import type { Page } from "../fixtures/playwright";
 
 export const getLastTwoPathItems = (path?: string): string =>

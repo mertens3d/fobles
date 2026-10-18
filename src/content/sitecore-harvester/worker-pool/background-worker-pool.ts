@@ -6,11 +6,13 @@ import { sendCancelToWorkerTarget } from "../background-tab/worker-target-servic
 import {
   runTaskOnNewWorker,
   runWorkerTask,
+} from "./worker-executor";
+import {
   type ActiveWorkerTask,
   type PoolWorker,
   type QueuedTask,
-  type WorkerExecutorContext,
-} from "./worker-executor";
+  type WorkerExecutorContext
+} from "./worker-task.types";
 import {
   disposeWorkerPoolLifecycle,
   getWorkerPoolGeneration,

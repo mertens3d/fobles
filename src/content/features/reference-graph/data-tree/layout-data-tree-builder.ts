@@ -28,8 +28,8 @@ import type {
 } from "./data-tree.types";
 import {
   createPlaceholderTreeNodes,
-  type PlaceholderTreeNode,
 } from "./placeholder-data-tree-builder";
+import { type PlaceholderTreeNode } from "./data-tree.types";
 import {
   createRenderingDataTreeNode,
 } from "./rendering-data-tree-builder";

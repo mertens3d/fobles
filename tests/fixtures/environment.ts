@@ -1,6 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import {
   getActiveTestEnvironment as getActiveConfigEnvironment,
   getTestEnvironments as getConfigEnvironments,

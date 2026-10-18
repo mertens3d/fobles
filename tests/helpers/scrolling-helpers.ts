@@ -3,7 +3,7 @@ import {
   type Frame,
   type Locator,
 } from "../fixtures/playwright";
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 
 export async function getJumpFlyoutButton(
   foblesFrame: Frame,

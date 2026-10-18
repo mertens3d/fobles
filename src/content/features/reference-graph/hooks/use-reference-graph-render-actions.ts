@@ -13,8 +13,6 @@ import { prepareReferenceGraph } from "../prepared-reference-graph";
 import type { PreparedReferenceGraph } from "../prepared-reference-graph.types";
 import type { GraphState } from "./use-reference-graph";
 
-
-
 type MutableRef<T> = { current: T };
 
 type UseReferenceGraphRenderActionsOptions = {

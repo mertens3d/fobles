@@ -1,4 +1,4 @@
-import { ATTRIBUTE, CLASS, SELECTORS } from "../../constants/fobles.constants";
+import { ATTRIBUTES, CLASS, SELECTORS } from "../../constants/fobles.constants";
 import { extensionLog } from "../logger";
 import { findRibbonCheckbox, postSitecoreEvent } from "../features/augmentor/proxy-buttons-ribbon";
 import { setJumpFlyoutVisible } from "./jump-flyout";
@@ -34,8 +34,8 @@ const createProxyButton = (
   checkbox.className = CLASS.PROXY_BUTTON_INPUT;
   checkbox.checked = Boolean(findRibbonCheckbox(doc, option.checkboxId)?.checked);
   checkbox.setAttribute(
-    ATTRIBUTE.DATA.KEY.FOBLES_NAV_OWNER,
-    ATTRIBUTE.DATA.VALUE.PERSISTENT,
+    ATTRIBUTES.DATA.KEY.FOBLES_NAV_OWNER,
+    ATTRIBUTES.DATA.VALUE.PERSISTENT,
   );
 
   checkbox.addEventListener("click", () => {
@@ -82,7 +82,7 @@ const createProxyButtonAction = (
 const createProxyButtonsPanel = (doc: Document): HTMLDivElement => {
   const panel = doc.createElement("div");
   panel.className = CLASS.PROXY_BUTTONS;
-  panel.setAttribute(ATTRIBUTE.DATA.KEY.PROXY_BUTTONS, "1");
+  panel.setAttribute(ATTRIBUTES.DATA.KEY.PROXY_BUTTONS, "1");
 
   const actions = doc.createElement("div");
   actions.className = CLASS.PROXY_BUTTONS_ACTIONS;
@@ -123,12 +123,12 @@ const getOrCreateProxyButtonsFlyout = (doc: Document): HTMLDivElement | null => 
 };
 
 export function isProxyButtonsVisible(doc: Document): boolean {
-  return doc.querySelector(SELECTORS.PROXY_BUTTONS)?.getAttribute(ATTRIBUTE.DATA.KEY.VISIBLE) === "true";
+  return doc.querySelector(SELECTORS.PROXY_BUTTONS)?.getAttribute(ATTRIBUTES.DATA.KEY.VISIBLE) === "true";
 }
 
 export function setProxyFlyoutVisible(doc: Document, visible: boolean): void {
   const panel = getOrCreateProxyButtonsFlyout(doc);
-  panel?.setAttribute(ATTRIBUTE.DATA.KEY.VISIBLE, visible ? "true" : "false");
+  panel?.setAttribute(ATTRIBUTES.DATA.KEY.VISIBLE, visible ? "true" : "false");
   if (!visible) proxyButtonsPinned = false;
 
   if (visible) {

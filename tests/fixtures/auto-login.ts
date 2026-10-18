@@ -2,7 +2,7 @@ import { expect, type Page } from "@playwright/test";
 import { getActiveTestUserCredentials, getTestEnvironment } from "./environment";
 import { logDiagnostic } from "./logging";
 import type { AutoLoginContext } from "./auto-login.types";
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import { normalizePath } from "../helpers/path-helpers";
 
 function toDisplayUrl(url: string): string {

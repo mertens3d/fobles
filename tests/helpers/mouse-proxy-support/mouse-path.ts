@@ -1,5 +1,5 @@
 import type { Page } from "../../fixtures/playwright";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 import type { MouseCoordinates } from "../mouse-proxy.types";
 
 export async function drawMousePath(

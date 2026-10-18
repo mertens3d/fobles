@@ -2,6 +2,7 @@
 
 import type { BooleanTripleState } from "../../macros/ribbon-toggle-macro";
 import type { ItemGraphNodeData, LayoutSectionField, RootItem, SitecoreHarvestSection } from "../sitecore-harvester.types";
+import type { WorkerTarget } from "./worker-target";
 
 export type WorkerTaskType =
   | "collect-root-item"
@@ -143,3 +144,31 @@ export function createCancelledResult(task: WorkerTask): WorkerTaskCancelledResu
     status: "cancelled",
   };
 }
+export type PoolWorker = {
+  target: WorkerTarget | undefined;
+  status: "idle" | "busy";
+  currentUrl: string | undefined;
+};
+
+export type QueuedTask = {
+  task: WorkerTask;
+  hostTabId: number | undefined;
+  retried: boolean;
+  editorStateChangeCount: number;
+  resolve: (result: WorkerTaskResult) => void;
+};
+
+export type ActiveWorkerTask = {
+  target: WorkerTarget;
+  requestId: string;
+  taskId: string;
+};
+
+export type WorkerExecutorContext = {
+  activeTaskByWorkerKey: Map<string, ActiveWorkerTask>;
+  cancelledRequestIds: Set<string>;
+  createPendingWorker: () => PoolWorker;
+  removeWorker: (worker: PoolWorker) => void;
+  scheduleNext: () => void;
+  isCurrentGeneration: () => boolean;
+};

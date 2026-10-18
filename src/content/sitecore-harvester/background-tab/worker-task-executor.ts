@@ -203,7 +203,6 @@ function getEditorRequirements(task: WorkerTask): WorkerEditorRequirements {
   return {};
 }
 
-
 async function ensureWorkerEditorState(doc: Document, task: WorkerTask): Promise<boolean> {
   const requirements = getEditorRequirements(task);
 

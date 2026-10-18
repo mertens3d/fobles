@@ -1,4 +1,4 @@
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import { normalizePath } from "./path-helpers";
 
 export function isFoblesPage(url: string): boolean {

@@ -14,7 +14,6 @@ import {
   createDataTreeNonItemNode,
 } from "./data-tree-node-factory";
 import {
-  createSitecoreItemProvenance,
   createSyntheticProvenance,
 } from "./data-tree-provenance.types";
 import { createDataTreeNodeId } from "./layout-data-tree-builder";

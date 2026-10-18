@@ -8,18 +8,7 @@ import {
   type GraphParameterVisibilitySettings,
 } from "../graph-parameter-visibility-settings";
 import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
-
-export type ExpandCollapseAction =
-  | "single"
-  | "same-kind"
-  | "subtree";
-
-export type ExpandCollapseButtonController = {
-  collapsedTreeNodeIds: Set<string>;
-  buttonsByTreeNodeId: Map<string, HTMLButtonElement>;
-  spinnersByTreeNodeId: Map<string, HTMLImageElement>;
-  overlay: HTMLDivElement;
-};
+import type { ExpandCollapseButtonController, ExpandCollapseAction } from "./graph-node.types";
 
 const PARAMETER_VISIBILITY_SCRATCH_KEY =
   "_foblesParameterVisibilitySettings";

@@ -1,7 +1,7 @@
 import { expect, foblesTest } from "../fixtures/playwright";
 import {  openContentEditor } from "../fixtures/sitecore";
 import { attachLocatorScreenshot } from "../helpers/fobles-helpers-support/screenshots";
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 
 foblesTest.describe("Session", () => {

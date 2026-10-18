@@ -1,5 +1,5 @@
 import { foblesTest, type Page } from "../../fixtures/playwright";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import {   clickTreeJump,  scrollTreeContainer } from "../../macros/sitecore-macros";
 import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";

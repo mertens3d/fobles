@@ -1,5 +1,5 @@
 import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
-import type { ItemGraphNodeData } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { ItemGraphNodeData, ScControl } from "../../../sitecore-harvester/sitecore-harvester.types";
 import type { GraphCollapseKey } from "../graph-nodes/graph-collapse.types";
 import type { DataTreeProvenance } from "./data-tree-provenance.types";
 
@@ -70,3 +70,8 @@ export type DataTreeNonItemNode =
 export type DataTreeNode =
   | DataTreeItemNode
   | DataTreeNonItemNode;
+export type PlaceholderTreeNode = {
+  path: string;
+  placeholders: PlaceholderTreeNode[];
+  controls: ScControl[];
+};

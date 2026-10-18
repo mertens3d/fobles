@@ -1,6 +1,6 @@
 import type { Page, Locator, TestInfo } from "../fixtures/playwright";
 import { isContentEditor } from "./path-helpers";
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import { clickWithMouseMarker, ensureMouseMarkerExists } from "./mouse-proxy";
 import { getLastTwoPathItems } from "./path-helpers";
 import { dismissFoblesConfirmDialogIfPresent } from "../macros/fobles-macros";

@@ -5,7 +5,7 @@ import {
   openExtensionPage,
   setExtensionCheckbox,
 } from "../../../fixtures/extension";
-import { TEST_CONST } from "../../../CONST";
+import { TEST_CONST } from "../../../TEST_CONST";
 import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
 import { openContentEditor } from "../../../fixtures/sitecore";
 import { findFoblesFrame } from "../../../helpers/frame-finder";

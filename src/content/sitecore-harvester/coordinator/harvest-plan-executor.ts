@@ -190,9 +190,7 @@ export async function executeHarvestPlan(
                 restoreError,
             });
 
-            throw new Error(
-                "Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.",
-            );
+            throw new Error("Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.",);
         }
     }
 }

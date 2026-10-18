@@ -14,43 +14,12 @@ import { resetWorkerReadiness, waitForWorkerReady } from "./worker-readiness";
 import {
   createCancelledResult,
   createErrorResult,
-  isReloadResult,
-  type WorkerTask,
-  type WorkerTaskResult,
+  isReloadResult,  type PoolWorker,  type QueuedTask,  type WorkerExecutorContext,  type WorkerTaskResult
 } from "./worker-task.types";
 import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
 
 const READY_TIMEOUT_MS = 20000;
 const MAX_EDITOR_STATE_CHANGES = 2;
-
-export type PoolWorker = {
-  target: WorkerTarget | undefined;
-  status: "idle" | "busy";
-  currentUrl: string | undefined;
-};
-
-export type QueuedTask = {
-  task: WorkerTask;
-  hostTabId: number | undefined;
-  retried: boolean;
-  editorStateChangeCount: number;
-  resolve: (result: WorkerTaskResult) => void;
-};
-
-export type ActiveWorkerTask = {
-  target: WorkerTarget;
-  requestId: string;
-  taskId: string;
-};
-
-export type WorkerExecutorContext = {
-  activeTaskByWorkerKey: Map<string, ActiveWorkerTask>;
-  cancelledRequestIds: Set<string>;
-  createPendingWorker: () => PoolWorker;
-  removeWorker: (worker: PoolWorker) => void;
-  scheduleNext: () => void;
-  isCurrentGeneration: () => boolean;
-};
 
 async function closeWorker(context: WorkerExecutorContext, worker: PoolWorker): Promise<void> {
   const target = worker.target;

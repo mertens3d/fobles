@@ -1,5 +1,5 @@
 import { expect, type Frame, type Page } from "../../fixtures/playwright";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 import { hasLastKnownMousePosition, isSprintMode, setLastKnownMousePosition } from "./mouse-proxy-state";
 
 type LocalMousePosition = {

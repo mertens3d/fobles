@@ -1,5 +1,5 @@
 import { expect, type Page } from "@playwright/test";
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import { getTestEnvironment } from "./environment";
 import { ensureAuthenticatedUrl } from "./auto-login";
 import { bringPageToFront } from "../helpers/page-switch";

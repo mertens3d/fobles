@@ -5,7 +5,7 @@ import {
   type TestInfo,
 } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import {
   attachUiPathNote,

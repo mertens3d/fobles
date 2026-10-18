@@ -1,5 +1,6 @@
 import type { ToolbarPlacement } from "../content/toolbar.types";
 import { CONST } from "./const";
+import type { AllowedPage } from "./constants.types";
 
 export const SYMBOLS = {
     LIGHTNING: "\u26A1\uFE0E",
@@ -7,7 +8,6 @@ export const SYMBOLS = {
 
 export const TEXT = {
     DRAG_NAV: "Drag to move Fobles navigation",
-    GRAPH: "Graph",
     GRAPH_TITLE: "Build a reference graph for this item",
     GROUP_NAME: {
         ADMIN_PAGES: "Admin Pages",
@@ -106,7 +106,7 @@ export const DEFAULT_TOOLBAR_PLACEMENT: ToolbarPlacement = {
     offsetY: 105,
 };
 
-export const ATTRIBUTE = {
+export const ATTRIBUTES = {
     DATA: {
         KEY: {
             FOBLES_NAV_OWNER: "data-fobles-nav-owner",
@@ -124,7 +124,7 @@ export const ATTRIBUTE = {
         // reuse, DOM position, or a locator's first()/nth() to happen to land on the right one.
         NAV_BUTTON_ROLE: {
             LBOLT: "lbolt",
-            GRAPH: "graph",
+            GRAPH: "graph-trigger",
             PROXY_FLYOUT_TRIGGER: "proxy-buttons-trigger",
             JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger",
         },
@@ -134,29 +134,6 @@ export const ATTRIBUTE = {
 export const CSS_PROPERTIES = {
     TOOLBAR_BACKGROUND: "--fobles-toolbar-background",
 } as const;
-// Every shell page/dialog Fobles is eligible on, in one place, replacing three previously
-// separate lists (path-only pages, xmlcontrol-only dialogs, and which of those get a compact
-// toolbar). matchStrings are checked as plain substrings against the page's own decoded, lowercased
-// "pathname + search" (see findAllowedPage, src/content/guard.ts) - a path like "/sitecore/shell/
-// Applications/Content Editor.aspx" and a query fragment like "xmlcontrol=fileexplorer" are both
-// just substrings of that same string, so no separate matching mode is needed for either kind.
-// id is also this page's placement storage key suffix (see toolbar-placement.ts) - one sync key
-// per page, created only once a user actually drags the toolbar on that particular page.
-// defaultPlacement is that page's own fallback until then; omit it to just use the shared
-// DEFAULT_TOOLBAR_PLACEMENT below instead.
-
-export type ToolbarPageKind = "full" | "compact";
-
-export type AllowedPage = {
-    id: string;
-    friendlyName: string;
-    matchStrings: readonly string[];
-    toolbarType: ToolbarPageKind;
-    defaultPlacement?: ToolbarPlacement;
-    // Kept in the list for reference/tracking even though Fobles shouldn't currently activate on
-    // it - findAllowedPage (src/content/guard.ts) skips these. Omit to mean true.
-    isFoblesEligible: boolean;
-};
 
 export const FOBLES_PAGES: readonly AllowedPage[] = [
     {

@@ -17,3 +17,13 @@ export type GraphNodeData = {
   renderingParameterIsItemReference: boolean | undefined;
   enrichmentStatus: EnrichmentStatus | undefined;
 };
+export type ExpandCollapseAction = "single" |
+  "same-kind" |
+  "subtree";
+
+export type ExpandCollapseButtonController = {
+  collapsedTreeNodeIds: Set<string>;
+  buttonsByTreeNodeId: Map<string, HTMLButtonElement>;
+  spinnersByTreeNodeId: Map<string, HTMLImageElement>;
+  overlay: HTMLDivElement;
+};

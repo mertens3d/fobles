@@ -6,7 +6,7 @@ import {
   setupReferenceGraphState,
   type EditorState,
 } from "./reference-graph-test-helpers";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 
 const STATES: readonly { label: string; initial: EditorState }[] = [
   { label: "Raw OFF / Standard OFF", initial: { rawValues: false, standardFields: false } },

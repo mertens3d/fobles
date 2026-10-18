@@ -1,4 +1,4 @@
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 import type { MouseCoordinates } from "../mouse-proxy.types";
 
 let lastKnownMousePosition: MouseCoordinates | null = null;

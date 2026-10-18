@@ -1,5 +1,5 @@
 import { foblesTest } from "../../fixtures/playwright";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import {

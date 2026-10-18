@@ -1,5 +1,5 @@
 import { type Frame, type Locator, type Page, type TestInfo } from "@playwright/test";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 import { CAPTURE_STEP_SCREENSHOTS } from "../../settings/settings";
 import { highlightScreenShot } from "../mouse-proxy-support/mouse-interactions";
 import { sanitizeFileName } from "../path-helpers";

@@ -1,6 +1,6 @@
 /// <reference types="chrome" />
 import type { BrowserContext, Frame, Locator, Page } from "@playwright/test";
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import {
     clickWithMouseMarker,
     moveMouseToPosition,

@@ -5,8 +5,6 @@ import { createFoblesWrapper } from "./create-fobles-wrapper";
 import { createFoblesItemButton } from "./create-fobles-item-button";
 import { hideWithStyledSpacer } from "./hide-with-styled-spacer";
 
-export type { SingleInputFieldOptions } from "../fobles.types";
-
 const hasActionPrefix = (
   input: HTMLInputElement,
   actionPrefix: string,

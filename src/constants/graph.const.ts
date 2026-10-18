@@ -7,9 +7,7 @@ import type {
   StepKey,
 } from "../content/sitecore-harvester/sitecore-harvester.types";
 import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE";
-
-export type LayoutScope =
-  (typeof REFERENCE_GRAPH.LAYOUT_SCOPE)[keyof typeof REFERENCE_GRAPH.LAYOUT_SCOPE];
+import type { LayoutPreset } from "./_base/const.types";
 
 export const REFERENCE_GRAPH = {
   DEBUG_BACKGROUND_HARVEST: false,
@@ -190,12 +188,4 @@ export const REFERENCE_GRAPH = {
   DEFAULT_LAYOUT_PRESET: {
     LayoutPresetName: "dagre",
   },
-};
-
-export type GraphEdgeStyle = "bezier" | "taxi";
-
-export type LayoutPreset = {
-  label: string;
-  edgeStyle: GraphEdgeStyle;
-  build: (rootTreeNodeId: string) => cytoscape.LayoutOptions;
 };

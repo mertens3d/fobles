@@ -5,7 +5,7 @@ import {
   type Page,
   type TestInfo,
 } from "../../fixtures/playwright";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
 import { bringPageToFront } from "../../helpers/page-switch";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";

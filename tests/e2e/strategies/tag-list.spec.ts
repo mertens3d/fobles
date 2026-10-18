@@ -1,5 +1,5 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 import {
   setupContentEditorForTesting,
 } from "../../helpers/fobles-helpers-support/test-setup";

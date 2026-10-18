@@ -10,7 +10,6 @@ import {
   type WorkerAdoptedMessage,
   type WorkerIframeReadyMessage,
   type WorkerReadyMessage,
-  type WorkerSetOwnedMessage,
   type WorkerTabIncomingMessage,
 } from "../worker-pool/worker.messages";
 

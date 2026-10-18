@@ -1,16 +1,11 @@
 // @source-path [fobles] src/content/features/reference-graph/cytoscape/graph-runtime.ts
 
-import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import {
   getReferenceGraphFilters,
   getReferenceGraphLayoutName,
 } from "../../../../shared/reference-graph-settings";
 import { extensionLog } from "../../../logger";
-import type {
-  SitecoreHarvestFiltersState,
-  SitecoreHarvestResult,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
 import {
   closeReferenceGraphProgressModal,
   handleHarvestProgress,
@@ -24,7 +19,6 @@ import { attachGraphEventHandlers } from "../event-handlers";
 import { getEnabledFilterKeys } from "../graph-filters";
 import {
   getGraphParameterVisibilitySettings,
-  type GraphParameterVisibilitySettings,
 } from "../graph-parameter-visibility-settings";
 import {
   attachGraphExpandCollapse,
@@ -39,69 +33,10 @@ import {
   restoreGraphViewportState,
   saveGraphViewportState,
 } from "../graph-viewport-settings";
-import type {
-  HarvestForLink,
-  LayoutGraphPresetName,
-} from "../graph.types";
-import type { PreparedReferenceGraph } from "../prepared-reference-graph.types";
+import type { AnimationFrameState, GraphRuntime, GraphRuntimeOptions, LayoutGraphPresetName, SavedGraphSettings } from "../graph.types";
 import { finishReferenceGraphTimer } from "../reference-graph-timing";
 import { cytoscapeFactory } from "./cytoscape-config";
 import { REFERENCE_GRAPH_STYLE } from "./cytoscape-style";
-
-export type MutableRef<T> = {
-  current: T;
-};
-
-export type GraphRuntimeOptions = {
-  doc: Document;
-  initialPreparedGraph: PreparedReferenceGraph;
-  harvestForLink: HarvestForLink;
-  containerRef: MutableRef<HTMLDivElement | null>;
-  cyRef: MutableRef<cytoscape.Core | undefined>;
-  currentPreparedGraphRef: MutableRef<PreparedReferenceGraph>;
-  currentFiltersRef: MutableRef<SitecoreHarvestFiltersState>;
-  parameterVisibilitySettingsRef: MutableRef<GraphParameterVisibilitySettings>;
-  layoutPresetNameRef: MutableRef<LayoutGraphPresetName>;
-  graphHistoryRef: MutableRef<PreparedReferenceGraph[]>;
-  loadedFiltersByItemIdRef: MutableRef<
-    Map<string, Set<keyof SitecoreHarvestFiltersState>>
-  >;
-  renderGraph: (graph: SitecoreHarvestResult) => Promise<void>;
-  setCurrentFilters: (filters: SitecoreHarvestFiltersState) => void;
-  setParameterVisibilitySettings: (
-    settings: GraphParameterVisibilitySettings,
-  ) => void;
-  setLayoutPresetName: (name: LayoutGraphPresetName) => void;
-  setHistoryCount: (count: number) => void;
-  setBuildElapsedSeconds: (elapsedSeconds: number | undefined) => void;
-  setSelectedTreeNodeId: (treeNodeId: string | undefined) => void;
-  setEnrichmentProgress: (
-    progress: EnrichmentProgress | undefined,
-  ) => void;
-  setGraphBusy: (busy: boolean) => void;
-};
-
-type SavedGraphSettings = {
-  filters: SitecoreHarvestFiltersState;
-  layoutPresetName: LayoutGraphPresetName;
-  parameterVisibilitySettings: GraphParameterVisibilitySettings;
-  viewport: Awaited<ReturnType<typeof getGraphViewportState>>;
-};
-
-type AnimationFrameState = {
-  first: number | undefined;
-  second: number | undefined;
-};
-
-export type GraphRuntime = {
-  options: GraphRuntimeOptions;
-  container: HTMLDivElement | null;
-  rootItemId: string;
-  cy: cytoscape.Core | undefined;
-  savedViewport: Awaited<ReturnType<typeof getGraphViewportState>>;
-  animationFrames: AnimationFrameState;
-  disposed: boolean;
-};
 
 export function createGraphRuntime(
   options: GraphRuntimeOptions,

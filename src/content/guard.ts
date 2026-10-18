@@ -1,4 +1,5 @@
-import { type AllowedPage, FOBLES_PAGES } from "../constants/fobles.constants";
+import { FOBLES_PAGES } from "../constants/fobles.constants";
+import { type AllowedPage } from "../constants/constants.types";
 import { CONST} from "../constants/const";
 
 function normalizePath(pathname: string): string {

@@ -3,7 +3,7 @@ import { type SitecoreHarvestFiltersState, isHarvestStep } from "../../../siteco
 import { buildFoblesUrl } from "../../augmentor/helper";
 import { openReferenceGraphProgressModal, closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal } from "../build-progress";
 import { createSingleFilterState } from "../graph-filters";
-import { refreshGraphExpandCollapse, refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
+import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
 import type { UseReferenceGraphFilterActionsOptions } from "./use-reference-graph-filter-actions";
 
 export async function changeReferenceGraphFilter(

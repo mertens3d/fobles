@@ -1,5 +1,5 @@
 import { expect, type Frame, type Locator, type Page } from "../fixtures/playwright";
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import { getTestEnvironment } from "../fixtures/environment";
 import {
   clickWithMouseMarker,
@@ -187,9 +187,6 @@ export async function scrollTreeContainer(
   
   await pauseForHuman(page, 600);
 }
-
-
-
 
 // Sets the scContentEditorFoldersWidth cookie Sitecore's tree/editor splitter reads its width
 // from on page load - call before navigating, since Sitecore only reads it at load time (setting

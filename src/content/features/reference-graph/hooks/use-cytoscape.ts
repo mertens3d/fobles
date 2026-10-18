@@ -10,8 +10,8 @@ import {
   createGraphRuntime,
   disposeGraphRuntime,
   initializeGraphRuntime,
-  type MutableRef,
 } from "../cytoscape/graph-runtime";
+import { type MutableRef } from "../graph.types";
 import type { EnrichmentProgress } from "../enrichment/enrichment.types";
 import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
 import type {

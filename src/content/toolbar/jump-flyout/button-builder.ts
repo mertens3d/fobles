@@ -1,4 +1,4 @@
-import { ATTRIBUTE, CLASS } from "../../../constants/fobles.constants";
+import { ATTRIBUTES, CLASS } from "../../../constants/fobles.constants";
 import { createFoblesButton } from "../../features/augmentor/helper";
 import { buildFlyoutOptionUrl } from "./flyout-option-url";
 import { registerButtonRow } from "./button-visibility";
@@ -72,7 +72,7 @@ function createFlyoutOptionButton(
     option.label,
     () => buildFlyoutOptionUrl(doc, option),
     {
-      attrName: ATTRIBUTE.DATA.KEY.FOBLES_NAV_OWNER,
+      attrName: ATTRIBUTES.DATA.KEY.FOBLES_NAV_OWNER,
       attrValue: "1",
       classNames: [CLASS.FOBLES_NAV_BUTTON, CLASS.FOBLES_NAV_BUTTON_COMPACT],
     },

@@ -3,7 +3,7 @@ import fs from "node:fs";
 import path from "node:path";
 import { installConsoleLogging, logDiagnostic } from "./logging";
 import { logoutCurrentSitecoreSession } from "./sitecore";
-import { TEST_CONST } from "../CONST";
+import { TEST_CONST } from "../TEST_CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";

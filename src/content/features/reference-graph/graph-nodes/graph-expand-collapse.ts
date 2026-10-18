@@ -23,9 +23,11 @@ import {
   positionExpandCollapseControls,
   removeMissingCollapsedTreeNodeIds,
   synchronizeExpandCollapseControls,
-  type ExpandCollapseAction,
-  type ExpandCollapseButtonController,
 } from "./graph-expand-collapse-view";
+import {
+  type ExpandCollapseAction,
+  type ExpandCollapseButtonController
+} from "./graph-node.types";
 import {
   runInitialVisibilityLayout,
   runVisibilityLayout,

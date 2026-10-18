@@ -1,5 +1,5 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 import { fieldScreenshotName } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";

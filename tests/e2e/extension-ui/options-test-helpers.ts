@@ -1,6 +1,6 @@
 import { expect, type Locator, type Page } from "../../fixtures/playwright";
 import { clickExtensionControl, fillExtensionInput } from "../../fixtures/extension";
-import { TEST_CONST } from "../../CONST";
+import { TEST_CONST } from "../../TEST_CONST";
 
 export const TESTING = TEST_CONST.TESTING;
 
