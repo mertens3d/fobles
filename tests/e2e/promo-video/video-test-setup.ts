@@ -1,5 +1,5 @@
 import { type Page } from "../../fixtures/playwright";
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
 import { openSitecorePage } from "../../fixtures/sitecore";
 
 export async function videoTestSetup(page: Page): Promise<void> {

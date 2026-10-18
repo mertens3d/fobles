@@ -1,4 +1,4 @@
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
 import { type Locator, type Page, type TestInfo } from "../../fixtures/playwright";
 
 import type { FoblesStep } from "../../helpers/fobles-test-step.types";

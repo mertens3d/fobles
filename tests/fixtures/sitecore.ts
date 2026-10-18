@@ -1,10 +1,10 @@
 import { expect, type Page } from "@playwright/test";
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 import { getTestEnvironment } from "./environment";
 import { ensureAuthenticatedUrl } from "./auto-login";
 import { bringPageToFront } from "../helpers/page-switch";
 import { ensureMouseMarkerExists } from "../helpers/mouse-proxy";
-import { setTreePanelWidth } from "../macros/sitecore-macros";
+import { setScRawValuesState, setScStandardFieldsState, setTreePanelWidth } from "../macros/sitecore-macros";
 
 // Sitecore's Content Editor "View > Raw Values" ribbon toggle is a persisted per-session setting,
 // not something tied to the current page - if a prior manual session left it on, every field
@@ -34,7 +34,7 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
 }
 
 export async function openContentEditor(page: Page, foValue:string = ""): Promise<void> {
-  const path = TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED + (foValue ? `?sc_bw=1&fo=${foValue}` : "");
+  const path = TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED + (foValue ? `&fo=${foValue}` : "");
   await openSitecorePage(page, path);
 }
 
@@ -65,10 +65,15 @@ export async function openSitecorePage(page: Page, path = ""): Promise<void> {
     });
   await page.waitForLoadState("domcontentloaded");
   await ensureAuthenticatedUrl(page);
-  await ensureRawValuesDisabled(page);
+  await ensureDefaultEditorState(page);
   await ensureMouseMarkerExists(page);
 
-  console.log(`[fobles] ${openSitecorePage.name} Navigation finished at ${page.url()}`);
+  console.log(`[fobles] [${openSitecorePage.name}] Navigation finished at ${page.url()}`);
+}
+
+async function ensureDefaultEditorState(page: Page): Promise<void> {
+  await setScRawValuesState(page, false);
+  await setScStandardFieldsState(page, false);
 }
 
 // Used both by the worker-teardown cleanup and the final "IsLoggedOut" test - returns whether a

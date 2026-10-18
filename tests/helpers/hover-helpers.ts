@@ -4,7 +4,7 @@ import {
   moveMouseOutsideHoverArea,
   moveMouseToLocatorCenter,
 } from "./mouse-proxy";
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 import type { MouseCoordinates } from "./mouse-proxy.types";
 import { pauseForHuman } from "./wait-helpers";
 

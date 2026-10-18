@@ -1,4 +1,4 @@
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 import { expect, type Frame, type Page } from "../fixtures/playwright";
 import { getScSearchParams, normalizeFoValueForCompare, normalizePath } from "../helpers/path-helpers";
 import { findFoblesFrame } from "../helpers/frame-finder";

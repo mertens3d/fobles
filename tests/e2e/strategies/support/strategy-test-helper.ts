@@ -1,4 +1,4 @@
-import { TEST_CONST } from "../../../TEST_CONST";
+import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { expectFoblesButtonNewTabNavigationStrategy, expectFoblesButtonSameTabNavigation } from "../../../helpers/fobles-helpers-support/navigation-assertions";
 import { clickLbolt } from "../../../macros/fobles-macros";
 import { clickWithMouseMarker, ensureMouseMarkerExists, highlightClickTarget } from "../../../helpers/mouse-proxy";

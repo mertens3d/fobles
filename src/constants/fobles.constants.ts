@@ -106,31 +106,6 @@ export const DEFAULT_TOOLBAR_PLACEMENT: ToolbarPlacement = {
     offsetY: 105,
 };
 
-export const ATTRIBUTES = {
-    DATA: {
-        KEY: {
-            FOBLES_NAV_OWNER: "data-fobles-nav-owner",
-            NAV_BUTTON_ROLE: "data-fobles-nav-button-role",
-            PROXY_BUTTONS: "data-proxy-buttons",
-            JUMP_FLYOUT: "data-jump-flyout",
-            TEMPLATE_BUTTON: "data-template-button",
-            VISIBLE: "data-visible",
-        },
-        VALUE: {
-            PERSISTENT: "persistent",
-        },
-        // Identifies which specific toolbar button an element is, independent of its (shared, purely
-        // visual) CSS classes - so a test can select exactly one button without relying on class
-        // reuse, DOM position, or a locator's first()/nth() to happen to land on the right one.
-        NAV_BUTTON_ROLE: {
-            LBOLT: "lbolt",
-            GRAPH: "graph-trigger",
-            PROXY_FLYOUT_TRIGGER: "proxy-buttons-trigger",
-            JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger",
-        },
-    },
-} as const;
-
 export const CSS_PROPERTIES = {
     TOOLBAR_BACKGROUND: "--fobles-toolbar-background",
 } as const;

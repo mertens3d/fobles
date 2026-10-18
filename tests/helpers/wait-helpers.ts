@@ -1,5 +1,5 @@
 import { expect, type Locator, type Page } from "../fixtures/playwright";
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 
 export async function pauseForBrowser(page: Page, timeout: number, noLog: boolean = false): Promise<void> {
     if (!noLog) console.log(`[fobles] s) pauseForBrowser ${timeout}ms`);

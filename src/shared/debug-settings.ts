@@ -1,6 +1,6 @@
 // @source-path [fobles] src/shared/debug-settings.ts
 
-import { STORAGE } from "../constants/extension-constants";
+import { STORAGE } from "../constants/extension-const";
 import { getStorageValue, onStorageChange, setStorageValue } from "./storage/storage";
 
 export type DebugSettings = {

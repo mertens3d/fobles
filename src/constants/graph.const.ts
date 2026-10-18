@@ -28,10 +28,6 @@ export const REFERENCE_GRAPH = {
     } as const,
   },
 
-  WORKER_POOL: {
-    MAX_WORKERS: 3,
-  },
-
   TEXT: {
     BUILDING_REFERENCE_GRAPH: "Building reference graph...",
   },
@@ -113,6 +109,7 @@ export const REFERENCE_GRAPH = {
     IDS: {
       DIALOG_ID: "fobles-reference-graph-dialog",
       PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
+      GRAPH_CLOSE_BUTTON_ID: "fobles-reference-graph-close",
     }
   },
 

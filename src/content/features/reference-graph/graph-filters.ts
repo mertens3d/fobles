@@ -3,12 +3,12 @@
 import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
 
 export const DEFAULT_RENDERING_GRAPH_FILTERS_STATE: SitecoreHarvestFiltersState = {
-  parent: true,
-  children: true,
+  parent: false,
+  children: false,
   layouts: true,
-  referrers: true,
-  sections: true,
-  template: true,
+  referrers: false,
+  sections: false,
+  template: false,
 };
 
 export function createAllFiltersState(

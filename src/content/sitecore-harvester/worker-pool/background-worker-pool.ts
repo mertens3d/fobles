@@ -32,8 +32,9 @@ import {
   type WorkerTaskResult,
 } from "./worker-task.types";
 import { isWorkerTabTarget } from "./worker-target";
+import { CONST } from "../../../constants/const";
 
-let maxWorkers = REFERENCE_GRAPH.WORKER_POOL.MAX_WORKERS;
+let maxWorkers = CONST.FOBLES.WORKER_POOL.MAX_WORKERS;
 let workers: PoolWorker[] = [];
 let queue: QueuedTask[] = [];
 

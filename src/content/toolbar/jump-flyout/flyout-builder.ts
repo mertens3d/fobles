@@ -1,4 +1,5 @@
-import { ATTRIBUTES, CLASS, SELECTORS, TEXT } from "../../../constants/fobles.constants";
+import { CLASS, SELECTORS, TEXT } from "../../../constants/fobles.constants";
+import { FOBLES } from "../../../constants/fobles";
 import {
   cancelJumpFlyoutClose,
   closeJumpFlyoutOnOutsidePointer,
@@ -18,7 +19,7 @@ import {
 function createJumpFlyout(doc: Document, closeMenu: () => void): HTMLDivElement {
   const jumpFlyout = doc.createElement("div");
   jumpFlyout.className = CLASS.JUMP_FLYOUT.FLYOUT;
-  jumpFlyout.setAttribute(ATTRIBUTES.DATA.KEY.JUMP_FLYOUT, "1");
+  jumpFlyout.setAttribute(FOBLES.ATTRIBUTES.DATA.KEY.JUMP_FLYOUT, "1");
 
   const columns = doc.createElement("div");
   columns.className = CLASS.JUMP_FLYOUT.COLUMNS;

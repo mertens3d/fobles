@@ -15,6 +15,7 @@ export const _FOBLES_BASE_CONST = {
     IDS: {
       DIALOG_ID: "fobles-reference-graph-dialog",
       PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
+      GRAPH_CLOSE_BUTTON_ID: "fobles-reference-graph-close",
       
     },
   },
@@ -48,6 +49,7 @@ export const _FOBLES_BASE_CONST = {
     CONFIRM_DIALOG_SETTING: ".fobles-confirm-dialog-setting",
     LBOLT_BUTTON: "[data-fobles-nav-button-role='lbolt']",
     JUMP_FLYOUT_TRIGGER: "[data-fobles-nav-button-role='jump-flyout-trigger']",
+    GRAPH_TRIGGER: "[data-fobles-nav-button-role='graph-trigger']",
     PROXY_BUTTONS_TRIGGER: "[data-fobles-nav-button-role='proxy-buttons-trigger']",
     JUMP_FLYOUT: ".fobles-jump-flyout-flyout",
     TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",

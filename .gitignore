@@ -13,7 +13,7 @@ dist/packed/*
 fobles.environments.json
 
 # Playwright state, profiles, reports, and test artifacts
-tests/test-artifacts/
+playwright/test-artifacts/
 tests/.auth/
 .auth/
 storage-state*.json

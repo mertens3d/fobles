@@ -33,6 +33,7 @@ export async function reloadAndReadEditorState(page: Page): Promise<EditorState>
 }
 
 export async function setupReferenceGraphState(page: Page, state: EditorState): Promise<void> {
+  
   await openContentEditor(page, `{${REFERENCE_GRAPH_ITEM.id.toUpperCase()}}`);
   await setEditorState(page, state);
   await page.reload({ waitUntil: "domcontentloaded" });

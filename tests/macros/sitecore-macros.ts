@@ -1,5 +1,5 @@
 import { expect, type Frame, type Locator, type Page } from "../fixtures/playwright";
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 import { getTestEnvironment } from "../fixtures/environment";
 import {
   clickWithMouseMarker,

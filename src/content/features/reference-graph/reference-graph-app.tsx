@@ -74,11 +74,7 @@ export function ReferenceGraphApp({
     const cy = cyRef.current;
 
     if (cy) {
-      const level = Math.min(
-        cy.maxZoom(),
-        Math.max(cy.minZoom(), cy.zoom() * factor),
-      );
-
+      const level = Math.min(cy.maxZoom(), Math.max(cy.minZoom(), cy.zoom() * factor));
       cy.zoom({
         level,
         renderedPosition: {
@@ -89,8 +85,13 @@ export function ReferenceGraphApp({
     }
   };
 
+  const enrichmentStatus = graphState.enrichmentProgress === undefined ? "pending" : graphState.enrichmentProgress.status;
+
   return (
-    <>
+    <div
+      className="fobles-reference-graph-app"
+      data-enrichment-status={enrichmentStatus}
+    >
       {graphState.treeDataVisible && (
         <TreeDataViewer
           data={graphState.currentPreparedGraph.dataTree}
@@ -123,10 +124,7 @@ export function ReferenceGraphApp({
         nodesById={graphState.currentPreparedGraph.nodesById}
       />
 
-      <div
-        ref={containerRef}
-        className="fobles-reference-graph-canvas"
-      />
+      <div ref={containerRef} className="fobles-reference-graph-canvas" />
 
       {graphState.graphBusy && (
         <div
@@ -139,6 +137,6 @@ export function ReferenceGraphApp({
         onZoomIn={() => handleZoom(ZOOM_FACTOR)}
         onZoomOut={() => handleZoom(1 / ZOOM_FACTOR)}
       />
-    </>
+    </div>
   );
 }

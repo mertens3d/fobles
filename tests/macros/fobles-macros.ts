@@ -1,6 +1,6 @@
 /// <reference types="chrome" />
-import type { BrowserContext, Frame, Locator, Page } from "@playwright/test";
-import { TEST_CONST } from "../TEST_CONST";
+import { expect, type BrowserContext, type Frame, type Locator, type Page } from "@playwright/test";
+import { TEST_CONST } from "../constants/TEST_CONST";
 import {
     clickWithMouseMarker,
     moveMouseToPosition,
@@ -14,6 +14,51 @@ import { walkFrameDocuments } from "../helpers/frame-helpers";
 import { expectJumpFlyoutFlyoutHidden, expectJumpFlyoutFlyoutVisible } from "../expect-snippets/expect-snippets";
 import { pauseForBrowser } from "../helpers/wait-helpers";
 import { isFoblesPage } from "../helpers/page-helpers";
+import { clickExtensionControl, getExtensionId, openExtensionPage, setExtensionCheckbox } from "../fixtures/extension";
+
+export async function CloseFoblesGraph(page: Page): Promise<void> {
+  console.log(`[fobles Macro] ${CloseFoblesGraph.name}`);
+
+  const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
+  const closeButton = graphDialog.locator(
+    `#${TEST_CONST.FOBLES.DOM.IDS.GRAPH_CLOSE_BUTTON_ID}`,
+  );
+
+  await expect(graphDialog).toBeVisible();
+  await expect(closeButton).toBeVisible();
+
+  await clickWithMouseMarker(page, closeButton, "Fobles Graph Close");
+
+  await expect(graphDialog).toHaveCount(0, {
+    timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS,
+  });
+}
+export async function WaitForFoblesGraphEnrichmentComplete(page: Page): Promise<void> {
+  console.log(`[fobles Macro] ${WaitForFoblesGraphEnrichmentComplete.name}`);
+
+  const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
+  const graphApp = graphDialog.locator(".fobles-reference-graph-app");
+
+  await expect(graphApp).toHaveAttribute(
+    "data-enrichment-status",
+    "complete",
+    { timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS },
+  );
+}
+
+export async function ClickFoblesGraphButton(page: Page) {
+    const foblesFrame = await findFoblesFrame(page);
+    console.log(`[fobles Macro] ${ClickFoblesGraphButton.name}`);
+    const button = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.GRAPH_TRIGGER).first();
+    await expect(button).toBeVisible({
+        timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS,
+    });
+     await clickWithMouseMarker(page, button, "Fobles Graph Button");
+    const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
+    await expect(graphDialog).toBeVisible({
+        timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS,
+    });
+}
 
 export async function ClickFoblesJumpButton(
     page: Page, expectFlyoutVisible = true) {
@@ -26,6 +71,62 @@ export async function ClickFoblesJumpButton(
     } else {
         await expectJumpFlyoutFlyoutHidden(foblesFrame);
     }
+}
+
+
+export async function enableFoblesDeveloperLogging(
+  context: BrowserContext,
+): Promise<void> {
+  console.log(`[Macro: ${enableFoblesDeveloperLogging.name}] - Start`);
+
+  const extensionId = await getExtensionId(context);
+  const optionsPage = await openExtensionPage(context, extensionId, "options");
+
+  try {
+    const developerSettings = optionsPage.locator("details").filter({
+      has: optionsPage.locator("summary", { hasText: "Developer Settings" }),
+    });
+
+    await expect(developerSettings).toHaveCount(1);
+
+    const isOpen = await developerSettings.evaluate(
+      (element) => (element as HTMLDetailsElement).open,
+    );
+
+    if (!isOpen) {
+      await clickExtensionControl(
+        optionsPage,
+        developerSettings.locator(":scope > summary"),
+        "Developer Settings",
+      );
+    }
+
+    await setExtensionCheckbox(
+      optionsPage,
+      developerSettings.locator("#debug-logging"),
+      true,
+      "Enable debug logging",
+    );
+
+    await setExtensionCheckbox(
+      optionsPage,
+      developerSettings.locator("#persist-debug-logs"),
+      true,
+      "Persist debug logs",
+    );
+
+    await clickExtensionControl(
+      optionsPage,
+      developerSettings.locator("#save-debug-settings"),
+      "Save developer settings",
+    );
+
+    await expect(
+      developerSettings.locator("#debug-status"),
+    ).toHaveText("Developer settings saved.");
+  } finally {
+    await optionsPage.close();
+  }
 }
 
 // Idempotent - only clicks the trigger if the flyout isn't already visible, since it's a toggle
@@ -105,7 +206,54 @@ export async function clickFoblesTreeButton(
         await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: options?.turnOffWarning ?? true });
     }
 }
+export async function EnableFoblesDeveloperLogging(context: BrowserContext): Promise<void> {
+  console.log(`[fobles Macro] ${EnableFoblesDeveloperLogging.name}`);
 
+  const extensionId = await getExtensionId(context);
+  const page = await openExtensionPage(context, extensionId, "options");
+
+  try {
+    const developerSettings = page.locator("details").filter({
+      has: page.locator("summary", { hasText: "Developer Settings" }),
+    });
+
+    await expect(developerSettings).toHaveCount(1);
+
+    if (!(await developerSettings.evaluate((element) => (element as HTMLDetailsElement).open))) {
+      await clickExtensionControl(
+        page,
+        developerSettings.locator(":scope > summary"),
+        "Developer Settings",
+      );
+    }
+
+    await setExtensionCheckbox(
+      page,
+      developerSettings.locator("#debug-logging"),
+      true,
+      "Debug logging",
+    );
+
+    await setExtensionCheckbox(
+      page,
+      developerSettings.locator("#persist-debug-logs"),
+      true,
+      "Persist debug logs",
+    );
+
+    await clickExtensionControl(
+      page,
+      developerSettings.locator("#save-debug-settings"),
+      "Save developer settings",
+    );
+
+    await expect(developerSettings.locator("#debug-status")).toHaveText(
+      "Developer settings saved.",
+    );
+  } finally {
+    await page.close();
+  }
+}
 // Clicks through Fobles' own same-tab navigation confirmation dialog if it's showing (searches
 // every frame, since the dialog renders wherever the clicked button lives) - a no-op otherwise.
 // turnOffWarning also unchecks the dialog's warning checkbox first (see tests/README.md).
@@ -115,7 +263,7 @@ export async function dismissFoblesConfirmDialogIfPresent(
 ): Promise<void> {
 
     if (isFoblesPage(page.url())) {
-       
+
         console.log("[Macro: dismissFoblesConfirmDialogIfPresent] - Start");
         console.log(
             `[fobles] Polling up to ${TEST_CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS}ms for a visible confirm dialog (selector: ${TEST_CONST.FOBLES.SELECTORS.CONFIRM_DIALOG})`,
@@ -152,7 +300,7 @@ export async function dismissFoblesConfirmDialogIfPresent(
                 `[fobles] No confirm dialog appeared within ${TEST_CONST.TESTING.TIMEOUTS.DISMISS_OPEN_SAME_PAGE_WAIT_MS}ms - treating as not shown`,
             );
         }
-    }else{
+    } else {
         console.log(
             `[fobles] No confirm dialog should appear in ${page.url()}`
         );

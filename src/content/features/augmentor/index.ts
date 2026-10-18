@@ -1,7 +1,7 @@
-import { ATTRIBUTES, SELECTORS } from "../../../constants/fobles.constants";
+import { SELECTORS } from "../../../constants/fobles.constants";
+import { FOBLES } from "../../../constants/fobles";
 import { CONST} from "../../../constants/const";
 import { extensionLog } from "../../logger";
-import { FOBLES } from "../../../constants/fobles";
 import { fieldConfigs } from "../../../constants/_config";
 import { walkFrameDocuments } from "./shared/frame-documents";
 import type { FoblesConfig, FoblesStrategy } from "./fobles.types";
@@ -209,7 +209,7 @@ export function clearFobles(doc: Document): void {
     });
 
     currentDoc.querySelectorAll(FOBLES.SELECTORS.BUTTON).forEach((button) => {
-      if (button.hasAttribute(ATTRIBUTES.DATA.KEY.FOBLES_NAV_OWNER)) return;
+      if (button.hasAttribute(FOBLES.ATTRIBUTES.DATA.KEY.FOBLES_NAV_OWNER)) return;
       button.remove();
     });
 

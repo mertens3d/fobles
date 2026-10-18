@@ -2,7 +2,7 @@ import { expect, foblesTest } from "../fixtures/playwright";
 import { getTestEnvironment } from "../fixtures/environment";
 import { attachPageScreenshot } from "../helpers/fobles-helpers-support/screenshots";
 import { logoutCurrentSitecoreSession } from "../fixtures/sitecore";
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 
 // Filename sorts after "strategies/" and "toolbar/" so this always runs last across the whole

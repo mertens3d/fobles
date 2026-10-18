@@ -1,6 +1,6 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { showBillboard } from "../../helpers/billboard";
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
 import {
   setupContentEditorForTesting,

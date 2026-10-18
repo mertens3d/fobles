@@ -1,7 +1,7 @@
 import type { BrowserContext, Locator, Page } from "@playwright/test";
 import { clickWithMouseMarker, ensureMouseMarkerExists } from "../helpers/mouse-proxy";
 import { bringPageToFront } from "../helpers/page-switch";
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 
 // MV3 service workers register asynchronously - if the worker hasn't spun up yet (e.g. right
 // after launchPersistentContext), wait for it instead of assuming serviceWorkers() is non-empty.

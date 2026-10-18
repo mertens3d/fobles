@@ -1,6 +1,6 @@
 import { expect, foblesTest, type Locator } from "../../../fixtures/playwright";
 import { getExtensionId, openExtensionPage, setFoblesNavWarningVisible } from "../../../fixtures/extension";
-import { TEST_CONST } from "../../../TEST_CONST";
+import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
 import { openContentEditor } from "../../../fixtures/sitecore";
 import { findFoblesFrame } from "../../../helpers/frame-finder";

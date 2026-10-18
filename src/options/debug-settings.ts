@@ -4,7 +4,7 @@ import { getDebugSettings, setDebugSettings } from "../shared/debug-settings";
 import { clearAllStorageValues, getAllStorageValues } from "../shared/storage/storage";
 import { getElement } from "./dom-helpers";
 import { clearPersistedLogEntries, getPersistedLogEntries } from "../shared/logging/persisted-log-storage";
-import { LOGGER, STORAGE } from "../constants/extension-constants";
+import { LOGGER, STORAGE } from "../constants/extension-const";
 
 const debugLoggingInput = getElement<HTMLInputElement>("debug-logging");
 const showReloadExtensionButtonInput = getElement<HTMLInputElement>("show-reload-extension-button");

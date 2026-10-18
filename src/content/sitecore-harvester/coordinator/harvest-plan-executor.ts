@@ -158,6 +158,8 @@ export async function executeHarvestPlan(
     request: HarvestRequest,
     onProgress: HarvestProgressCallback | undefined,
 ): Promise<WorkerTaskResult[]> {
+    extensionLog.debug(`[${request.requestId}]: starting harvest plan execution`);
+
     if (!request.session) return await dispatchTasks(planCollectorTasks(request), onProgress);
 
     const { normalTasks, layoutTasks } = planCollectorTaskGroups(request);

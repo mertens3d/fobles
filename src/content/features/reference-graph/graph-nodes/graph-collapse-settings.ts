@@ -1,4 +1,4 @@
-import { STORAGE } from "../../../../constants/extension-constants";
+import { STORAGE } from "../../../../constants/extension-const";
 import {
   getStorageValue,
   setStorageValue,

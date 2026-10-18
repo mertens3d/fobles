@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-pool-settings.ts
 
-import { STORAGE } from "../../../constants/extension-constants";
+import { STORAGE } from "../../../constants/extension-const";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { extensionLog } from "../../logger";
 import {
@@ -8,13 +8,11 @@ import {
   onStorageChange,
   setStorageValue,
 } from "../../../shared/storage/storage";
+import { CONST } from "../../../constants/const";
 
-const DEFAULT_MAX_WORKERS =
-  REFERENCE_GRAPH.WORKER_POOL.MAX_WORKERS;
+const DEFAULT_MAX_WORKERS = CONST.FOBLES.WORKER_POOL.MAX_WORKERS;
 
-const STORAGE_KEY =
-  STORAGE.KEY.REFERENCE_GRAPH
-    .WORKER_POOL_MAX_WORKERS;
+const STORAGE_KEY = STORAGE.KEY.REFERENCE_GRAPH.WORKER_POOL_MAX_WORKERS;
 
 export async function getWorkerPoolMaxWorkers():
   Promise<number> {
@@ -37,8 +35,7 @@ export async function getWorkerPoolMaxWorkers():
     },
   );
 
-  let maxWorkers =
-    DEFAULT_MAX_WORKERS;
+  let maxWorkers = DEFAULT_MAX_WORKERS;
 
   if (
     typeof storedValue === "number" &&

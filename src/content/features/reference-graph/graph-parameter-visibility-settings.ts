@@ -16,7 +16,7 @@ export type GraphParameterVisibilitySettings = {
 export const DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS:
   GraphParameterVisibilitySettings = {
     hideEmptyParameters: true,
-    hideNonGuidParameters: false,
+    hideNonGuidParameters: true,
   };
 
 export async function getGraphParameterVisibilitySettings():

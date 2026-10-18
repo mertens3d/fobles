@@ -6,7 +6,8 @@ import {
   setupReferenceGraphState,
   type EditorState,
 } from "./reference-graph-test-helpers";
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
+import { ClickFoblesGraphButton, CloseFoblesGraph, WaitForFoblesGraphEnrichmentComplete } from "../../macros/fobles-macros";
 
 const STATES: readonly { label: string; initial: EditorState }[] = [
   { label: "Raw OFF / Standard OFF", initial: { rawValues: false, standardFields: false } },
@@ -22,17 +23,10 @@ foblesTest.describe("Reference Graph harvest state", () => {
 
       await setupReferenceGraphState(page, initial);
 
-      const foblesFrame = await findFoblesFrame(page);
-      const referenceGraphButton = foblesFrame.getByRole("button", { name: /reference graph/i });
+      await ClickFoblesGraphButton(page);
 
-      await expect(referenceGraphButton).toBeVisible();
-      await clickWithMouseMarker(page, referenceGraphButton, "Reference Graph");
-
-      const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
-
-      await expect(graphDialog).toBeVisible({
-        timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS,
-      });
+      await WaitForFoblesGraphEnrichmentComplete(page);
+      await CloseFoblesGraph(page);
 
       const restored = await reloadAndReadEditorState(page);
       expect(restored).toEqual(initial);

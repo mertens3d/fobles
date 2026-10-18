@@ -1,5 +1,5 @@
 import type { Frame, Page } from "../fixtures/playwright";
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 import { pauseForBrowser } from "./wait-helpers";
 
 // Retries across page.frames() since a frame (e.g. a Sitecore gallery) can load asynchronously

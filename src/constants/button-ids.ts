@@ -1,6 +1,6 @@
 // Stable ids for Jump Menu buttons so per-button settings survive label/path renames.
 // Generated once with `[guid]::NewGuid()`; do not reuse or reassign an id to a different button.
-export const FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_ID = {
+export const FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS = {
   AI_PAGES: "3cf80fa6-f016-4327-9cb1-4d6bfdb4e0f5",
   CACHE: "1c38874e-ae81-4380-8318-840e8523959b",
   CONTENT_EDITOR: "73a0fa85-c130-498f-b194-90ce77d73c6c",

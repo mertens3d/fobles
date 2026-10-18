@@ -1,6 +1,6 @@
 import { expect, type BrowserContext } from "@playwright/test";
 import { clickExtensionControl, getExtensionId, openExtensionPage } from "./extension";
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 
 // A named, swappable starting state for every Fobles setting - applied once per test (see the
 // foblesTest.extend auto fixture in playwright.ts) so a test never inherits leftover state from

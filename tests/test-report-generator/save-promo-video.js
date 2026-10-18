@@ -2,10 +2,10 @@ import fs from "node:fs";
 import path from "node:path";
 
 const sourcePath = path.resolve(
-  "./tests/test-artifacts/playwright-results/promo-video/main.webm",
+  "./playwright/test-artifacts/playwright-results/promo-video/main.webm",
 );
 const destDir = path.resolve(
-  "./tests/test-artifacts/playwright-results/videoComposit",
+  "./playwright/test-artifacts/playwright-results/videoComposit",
 );
 const destPath = path.join(destDir, "FoblesPromoVideoMain.webm");
 

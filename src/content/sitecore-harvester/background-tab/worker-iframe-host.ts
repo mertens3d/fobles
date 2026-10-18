@@ -1,5 +1,6 @@
 // @source-path [fobles] src/content/sitecore-harvester/background-tab/worker-iframe-host.ts
 
+import { CONST } from "../../../constants/const";
 import {
   WORKER_IFRAME_CREATE_MESSAGE_TYPE,
   WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE,
@@ -8,10 +9,6 @@ import {
   type WorkerIframeCreateResult,
   type WorkerIframeHostMessage,
 } from "../worker-pool/worker.messages";
-
-const HIDE_WORKER_IFRAMES = true;
-const WORKER_IFRAME_CONTAINER_ID = "fobles-worker-iframe-container";
-const WORKER_ID_QUERY_PARAMETER = "foblesWorker";
 
 const workerIframeById = new Map<string, HTMLIFrameElement>();
 let workerIframeHostRegistered = false;
@@ -87,17 +84,17 @@ export function removeWorkerIframe(workerId: string): boolean {
 export function removeAllWorkerIframes(doc: Document): void {
   workerIframeById.forEach((iframe) => iframe.remove());
   workerIframeById.clear();
-  doc.getElementById(WORKER_IFRAME_CONTAINER_ID)?.remove();
+  doc.getElementById(CONST.FOBLES.WORKER_POOL.WORKER_IFRAME_CONTAINER_ID)?.remove();
 }
 
 function createWorkerUrl(url: string, workerId: string): string {
   const workerUrl = new URL(url);
-  workerUrl.searchParams.set(WORKER_ID_QUERY_PARAMETER, workerId);
+  workerUrl.searchParams.set(CONST.FOBLES.WORKER_POOL.WORKER_ID_QUERY_PARAMETER, workerId);
   return workerUrl.toString();
 }
 
 function getWorkerIframeContainer(doc: Document): HTMLDivElement {
-  const existingContainer = doc.getElementById(WORKER_IFRAME_CONTAINER_ID);
+  const existingContainer = doc.getElementById(CONST.FOBLES.WORKER_POOL.WORKER_IFRAME_CONTAINER_ID);
   let container: HTMLDivElement;
 
   if (existingContainer instanceof HTMLDivElement) {
@@ -112,8 +109,8 @@ function getWorkerIframeContainer(doc: Document): HTMLDivElement {
 function createWorkerIframeContainer(doc: Document): HTMLDivElement {
   const container = doc.createElement("div");
 
-  container.id = WORKER_IFRAME_CONTAINER_ID;
-  container.style.cssText = HIDE_WORKER_IFRAMES
+  container.id = CONST.FOBLES.WORKER_POOL.WORKER_IFRAME_CONTAINER_ID;
+  container.style.cssText = CONST.FOBLES.WORKER_POOL.HIDE_WORKER_IFRAMES
     ? [
         "position:fixed",
         "left:-10000px",
@@ -146,7 +143,7 @@ function createWorkerIframeContainer(doc: Document): HTMLDivElement {
 
 function removeEmptyContainer(): void {
   if (workerIframeById.size === 0) {
-    document.getElementById(WORKER_IFRAME_CONTAINER_ID)?.remove();
+    document.getElementById(CONST.FOBLES.WORKER_POOL.WORKER_IFRAME_CONTAINER_ID)?.remove();
   }
 }
 
@@ -155,7 +152,7 @@ function applyWorkerIframeStyle(
   index: number,
 ): void {
   iframe.title = `Fobles worker iframe ${index + 1}`;
-  iframe.style.cssText = HIDE_WORKER_IFRAMES
+  iframe.style.cssText = CONST.FOBLES.WORKER_POOL.HIDE_WORKER_IFRAMES
     ? ["display:block", "width:1px", "height:1px", "border:0"].join(";")
     : [
         "display:block",

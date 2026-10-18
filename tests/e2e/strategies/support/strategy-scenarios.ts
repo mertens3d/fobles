@@ -1,4 +1,4 @@
-import { TEST_CONST } from "../../../TEST_CONST";
+import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { MODULE_ROOT_YML_REF, STRATEGY_YML_REFS } from "./yml-strategy-refs.CONST";
 import type {
   StrategyScenarioData,

@@ -1,5 +1,5 @@
 import { CONST } from "../../constants/const";
-import { STORAGE } from "../../constants/extension-constants";
+import { STORAGE } from "../../constants/extension-const";
 import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
 import { joinJumpFlyoutPath, normalizeJumpFlyoutIconPath, sanitizeJumpFlyoutPathSuffix } from "./button-settings";
 import { USER_TREE_JUMP } from "../../constants/user-tree-jump-constants";

@@ -1,4 +1,4 @@
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
 import { type Page } from "../../fixtures/playwright";
 import { pauseForHuman } from "../../helpers/wait-helpers";
 import { highlightQuickInfoPath } from "../../macros/sitecore-macros";

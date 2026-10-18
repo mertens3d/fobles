@@ -1,16 +1,18 @@
 import { chromium, type BrowserContext, test as base, type Request } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
-import { installConsoleLogging, logDiagnostic } from "./logging";
+import { installConsoleLogging, logDiagnostic } from "./playwright-logging";
 import { logoutCurrentSitecoreSession } from "./sitecore";
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";
+import { EnableFoblesDeveloperLogging, enableFoblesDeveloperLogging } from "../macros/fobles-macros";
+import { setScRawValuesState, setScStandardFieldsState } from "../macros/sitecore-macros";
 
 const profileDir = path.resolve(
   process.env.PLAYWRIGHT_PROFILE_DIR ??
-  "./tests/test-artifacts/browser-profile",
+  "./playwright/test-artifacts/browser-profile",
 );
 const extensionPath = path.resolve("./dist/unpacked");
 
@@ -24,7 +26,7 @@ const extensionPath = path.resolve("./dist/unpacked");
 // persistent context/session for its whole run, so a video would cover the entire run, not one
 // clip per test - only turn this on for a deliberate promoVideo recording session.
 const promoVideoDir = path.resolve(
-  "./tests/test-artifacts/playwright-results/promo-video",
+  "./playwright/test-artifacts/playwright-results/promo-video",
 );
 // The wider 1100 reads better in a recorded promo video; regular suites stay narrower (see the
 // launchPersistentContext call below) so Sitecore's percentage-width panels don't stretch.
@@ -65,7 +67,7 @@ function isIgnorableConsoleWarning(text: string): boolean {
   return TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_CONSOLE_WARNING_PATTERN.test(text);
 }
 
-function isIgnorableConsoleError( text: string): boolean {
+function isIgnorableConsoleError(text: string): boolean {
   let isIgnoreable = false;
   if (TEST_CONST.TESTING.DIAGNOSTIC.IGNORABLE_CONSOLE_MESSAGES.some((msg) => text.includes(msg))) {
     isIgnoreable = true;
@@ -128,13 +130,14 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
   // Auto-use so every test starts from the same known settings state, regardless of what an
   // earlier test in this shared persistent profile left behind (see docs/TODO.md's corrupt-data
   // profile idea for a future, deliberately-different one).
-  resetTestSettings: [
-    async ({ sharedBrowserContext }, use) => {
-      await applyDefaultSettingsProfile(sharedBrowserContext);
-      await use();
-    },
-    { auto: true },
-  ],
+resetTestSettings: [
+  async ({ sharedBrowserContext, page }, use) => {
+    await applyDefaultSettingsProfile(sharedBrowserContext);
+    await EnableFoblesDeveloperLogging(sharedBrowserContext);
+    await use();
+  },
+  { auto: true },
+],
   sharedBrowserContext: [
     // eslint-disable-next-line no-empty-pattern
     async ({ }, use) => {
@@ -170,9 +173,9 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
         page.on("console", (message) => {
           const location = message.location().url;
           if (location && isIgnorableDiagnosticUrl(location)) return;
-          
+
           if (message.type() === "warning") {
-            if (!isIgnorableConsoleWarning( message.text()))
+            if (!isIgnorableConsoleWarning(message.text()))
               logDiagnostic(
                 `[browser console:${message.type()}] ${message.text()}${location ? ` (${location})` : ""}`,
               );
@@ -183,7 +186,7 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
                 `[browser console:${message.type()}] ${message.text()}${location ? ` (${location})` : ""}`,
               );
           }
-          
+
         });
         page.on("response", (response) => {
           if (
@@ -249,6 +252,27 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
     await use(sharedPage);
   },
 });
+
+
+export async function enableFoblesTestLogging(context: BrowserContext): Promise<void> {
+  const serviceWorker = context.serviceWorkers()[0];
+
+  if (!serviceWorker) {
+    throw new Error("Fobles service worker not available");
+  }
+
+  await serviceWorker.evaluate(async () => {
+    await chrome.storage.sync.set({
+      debugLogging: true,
+      persistDebugLogs: true,
+    });
+
+    await chrome.storage.local.remove("persistedLogEntries");
+  });
+
+  console.log("[fobles] Debug + persisted logging enabled for test run");
+}
+
 
 export { expect } from "@playwright/test";
 export type { Frame, Locator, Page, TestInfo } from "@playwright/test";

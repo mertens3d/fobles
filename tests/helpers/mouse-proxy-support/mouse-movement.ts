@@ -1,5 +1,5 @@
 import type { Page } from "../../fixtures/playwright";
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
 import { showBillboard } from "../billboard";
 import { pauseForHuman } from "../wait-helpers";
 import type { CornerPosition, MouseCoordinates } from "../mouse-proxy.types";

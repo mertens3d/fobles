@@ -114,7 +114,7 @@ If you're prompted to log in on every run even within the same test session, or 
 doesn't load after logging in, the Sitecore active-user limit may be full. Use Sitecore's Kick
 User tool to free an existing session, then try again.
 
-All tests share one persistent browser profile (`tests/test-artifacts/browser-profile`), which
+All tests share one persistent browser profile (`playwright/test-artifacts/browser-profile`), which
 only one process can open at a time - `playwright.config.ts` forces `workers: 1` and the
 `browserContext` fixture is worker-scoped (`fixtures/playwright.ts`) so the whole run shares a
 single browser instance instead of racing to open the same profile from multiple processes.

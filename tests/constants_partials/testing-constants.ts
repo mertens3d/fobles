@@ -8,6 +8,7 @@ import { _FOBLES_OPTIONS } from "./base/_fobles-options";
 import { DIAGNOSTIC } from "./testing/diagnostic";
 
 export const TESTING = {
+  SYNC_MOUSE_MARKERS_ACROSS_FRAMES : false,
   PAGE_JUMP_TARGETS: TEST_PAGE_JUMP_TARGETS,
   TREE_JUMP_TARGETS: TEST_TREE_JUMP_TARGETS,
   DIAGNOSTIC: DIAGNOSTIC,

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/shared/logging/persisted-log-storage.ts
 
-import { STORAGE } from "../../constants/extension-constants";
+import { STORAGE } from "../../constants/extension-const";
 import { REFERENCE_GRAPH } from "../../constants/graph.const";
 import type {
   PersistedLogEntry,

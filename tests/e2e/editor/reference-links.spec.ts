@@ -5,7 +5,7 @@ import { openScLinksGallery } from "../../macros/sitecore-macros";
 import { findFoblesFrame } from "../../helpers/frame-finder";
 import { EDITOR_SCENARIOS } from "./editor-scenarios";
 import { clickLbolt } from "../../macros/fobles-macros";
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { pauseForHuman } from "../../helpers/wait-helpers";

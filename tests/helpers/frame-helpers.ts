@@ -1,7 +1,7 @@
 // @source-path [fobles] tests/e2e/helpers/framesHelper.ts
 
 import type { Frame, Page } from "@playwright/test";
-import { TEST_CONST } from "../TEST_CONST";
+import { TEST_CONST } from "../constants/TEST_CONST";
 
 const getFrameDocument = (frame: Element): Document | null => {
   const frameElement = frame as HTMLIFrameElement | HTMLFrameElement;

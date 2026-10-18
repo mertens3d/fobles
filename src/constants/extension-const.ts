@@ -19,6 +19,7 @@ export const STORAGE = {
         "fobles-reference-graph-controls-expanded",
       WORKER_POOL_MAX_WORKERS:
         "fobles-reference-graph-worker-pool-max-workers",
+      PENDING: "fobles_reference_graph_pending"
     },
     PERSIST_DEBUG_LOGS: "persistDebugLogs",
     PERSISTED_LOG_ENTRIES: "persistedLogEntries",

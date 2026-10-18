@@ -1,5 +1,5 @@
 import type { BrowserContext } from "@playwright/test";
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
 import { type Page } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { findFrameWithSelector } from "../../helpers/frame-finder";

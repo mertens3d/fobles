@@ -2,7 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 export const diagnosticLogPath = path.resolve(
-  "./tests/test-artifacts/logs/test-run.log",
+  "./playwright/test-artifacts/logs/test-run.log",
 );
 
 const timestampFormatter = new Intl.DateTimeFormat("en-CA", {

@@ -18,10 +18,7 @@ const MESSAGE_TYPE =
 export async function runWorkerTask(
   task: WorkerTask,
 ): Promise<WorkerTaskResult | undefined> {
-  const message: PoolRunTaskMessage = {
-    type: MESSAGE_TYPE.POOL_RUN_TASK,
-    task,
-  };
+  const message: PoolRunTaskMessage = { type: MESSAGE_TYPE.POOL_RUN_TASK, task };
 
   return await chrome.runtime.sendMessage<
     PoolRunTaskMessage,

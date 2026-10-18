@@ -52,7 +52,7 @@ export default class StaticTestReporter implements Reporter {
       options.outputFile ??
       path.resolve(
         process.cwd(),
-        "tests",
+        "playwright",
         "test-artifacts",
         "reports",
         "test-report.html",

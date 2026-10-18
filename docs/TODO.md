@@ -55,7 +55,7 @@
 ## Known Limitations
 
 - Authenticated Sitecore end-to-end tests require a configured private environment and interactive login. They are not run by ordinary hosted CI.
-- `dist/unpacked/` and `tests/test-artifacts/` are generated local output and are intentionally ignored by Git.
+- `dist/unpacked/` and `playwright/test-artifacts/` are generated local output and are intentionally ignored by Git.
 
 
 

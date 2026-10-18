@@ -1,6 +1,6 @@
 import { expect, foblesTest } from "../../../fixtures/playwright";
 import { getExtensionId, openExtensionPage } from "../../../fixtures/extension";
-import { TEST_CONST } from "../../../TEST_CONST";
+import { TEST_CONST } from "../../../constants/TEST_CONST";
 import {
   openTreeJumpsColumn,
   addTestRow,

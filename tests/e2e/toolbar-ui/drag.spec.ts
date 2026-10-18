@@ -1,6 +1,6 @@
 import { foblesTest } from "../../fixtures/playwright";
 import { expectFoblesContainerDom, expectFoblesContainerVisible } from "../../expect-snippets/expect-snippets";
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import { setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers-support/test-setup";
 import { moveMouseToDefault as moveMouseToDefault } from "../../helpers/mouse-proxy";

@@ -1,4 +1,4 @@
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
 import { openContentEditor } from "../../fixtures/sitecore";
 import { getPageJumpFlyoutButton } from "../../helpers/element-finders";
 import { foblesTest, type Locator } from "../../fixtures/playwright";

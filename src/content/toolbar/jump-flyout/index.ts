@@ -1,4 +1,5 @@
-import { ATTRIBUTES, SELECTORS } from "../../../constants/fobles.constants";
+import { SELECTORS } from "../../../constants/fobles.constants";
+import { FOBLES } from "../../../constants/fobles";
 import { setProxyFlyoutVisible } from "../sc-proxy-buttons";
 import { setJumpFlyoutPinned } from "./handlers";
 import { getOrCreateJumpFlyout } from "./flyout-builder";
@@ -12,12 +13,12 @@ export {
 } from "./handlers";
 
 export function isJumpFlyoutVisible(doc: Document): boolean {
-  return doc.querySelector(SELECTORS.JUMP_FLYOUT)?.getAttribute(ATTRIBUTES.DATA.KEY.VISIBLE) === "true";
+  return doc.querySelector(SELECTORS.JUMP_FLYOUT)?.getAttribute(FOBLES.ATTRIBUTES.DATA.KEY.VISIBLE) === "true";
 }
 
 export function setJumpFlyoutVisible(doc: Document, visible: boolean): void {
   const jumpFlyout = getOrCreateJumpFlyout(doc, () => setJumpFlyoutVisible(doc, false));
-  jumpFlyout?.setAttribute(ATTRIBUTES.DATA.KEY.VISIBLE, visible ? "true" : "false");
+  jumpFlyout?.setAttribute(FOBLES.ATTRIBUTES.DATA.KEY.VISIBLE, visible ? "true" : "false");
   if (!visible) setJumpFlyoutPinned(doc, false);
 
   if (visible) setProxyFlyoutVisible(doc, false);

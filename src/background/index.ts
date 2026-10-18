@@ -2,7 +2,7 @@
 
 /// <reference types="chrome" />
 
-import { LOGGER, MESSAGE } from "../constants/extension-constants";
+import { LOGGER, MESSAGE } from "../constants/extension-const";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
 import { extensionLog } from "../content/logger";
 import {

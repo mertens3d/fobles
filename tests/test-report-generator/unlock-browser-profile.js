@@ -8,7 +8,7 @@ import path from "node:path";
 // blocks every later run with "Opening in existing browser session". This finds and kills any
 // msedge.exe process whose command line references that profile directory.
 const profileDir = path.resolve(
-  process.env.PLAYWRIGHT_PROFILE_DIR ?? "./tests/test-artifacts/browser-profile",
+  process.env.PLAYWRIGHT_PROFILE_DIR ?? "./playwright/test-artifacts/browser-profile",
 );
 
 if (process.platform !== "win32") {

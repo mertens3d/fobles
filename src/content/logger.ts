@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/logger.ts
 
-import { LOGGER, STORAGE } from "../constants/extension-constants";
+import { LOGGER, STORAGE } from "../constants/extension-const";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
 import {
   appendPersistedLogEntry,

@@ -20,7 +20,7 @@ dotenv.config({
 const extensionPath = path.join(projectRoot, "dist", "unpacked");
 const profileDir = path.resolve(
   process.env.PLAYWRIGHT_PROFILE_DIR ??
-    path.join(projectRoot, "tests/test-artifacts/browser-profile"),
+    path.join(projectRoot, "playwright/test-artifacts/browser-profile"),
 );
 
 function getEnvironment() {
@@ -32,7 +32,7 @@ const environment = getEnvironment();
 const targetUrl = environment.endpoint;
 const maxAttempts = 10;
 const retryDelayMs = 2_000;
-const testArtifactsDir = path.join(projectRoot, "tests/test-artifacts/logs");
+const testArtifactsDir = path.join(projectRoot, "playwright/test-artifacts/logs");
 const logFile = path.join(testArtifactsDir, "test-run.log");
 fs.mkdirSync(path.dirname(logFile), { recursive: true });
 const logStream = fs.createWriteStream(logFile, { flags: "w" });

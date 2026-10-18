@@ -6,7 +6,7 @@ import {
   TOOLBAR_CORNERS
 } from "../constants/fobles.constants";
 import { type AllowedPage } from "../constants/constants.types";
-import { MESSAGE, STORAGE } from "../constants/extension-constants";
+import { MESSAGE, STORAGE } from "../constants/extension-const";
 import type { ToolbarPlacement } from "./toolbar.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";
 import { getDebugSettings } from "../shared/debug-settings";

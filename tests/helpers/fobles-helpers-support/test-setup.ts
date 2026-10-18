@@ -1,5 +1,5 @@
 import { expect, type Frame, type Locator, type Page } from "@playwright/test";
-import { TEST_CONST } from "../../TEST_CONST";
+import { TEST_CONST } from "../../constants/TEST_CONST";
 import { openContentEditor, openSitecorePage } from "../../fixtures/sitecore";
 import { clickWithMouseMarker, ensureMouseMarkerExists, moveMouseToDefault } from "../mouse-proxy";
 import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
