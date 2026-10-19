@@ -115,7 +115,7 @@ export function resolveImageReferences(marker: HTMLElement): FieldReference[] | 
 function resolveSelectedListReferences(
   host: Element | null | undefined,
   strategy: FieldReference["strategy"],
-  selectSelector: string = SITECORE.SELECTORS.MULTILIST.BOX,
+  selectSelector: string,
 ): FieldReference[] | undefined {
   if (!host) return undefined;
 
@@ -130,12 +130,22 @@ function resolveSelectedListReferences(
 export function resolveMultilistOptionsReferences(marker: HTMLElement): FieldReference[] | undefined {
   const host = marker.querySelector("table.scContentControlMultilist");
   if (host?.closest(".scContentControlSearchListContainer")) return undefined;
-  return resolveSelectedListReferences(host, "multilist-options");
+
+  return resolveSelectedListReferences(
+    host,
+    "multilist-options",
+    `${SITECORE.SELECTORS.MULTILIST.BOX}[id$="_selected"]`,
+  );
 }
 
 export function resolveMultilistWithSearchReferences(marker: HTMLElement): FieldReference[] | undefined {
   const host = marker.querySelector(".scContentControlSearchListContainer > table.scContentControlMultilist");
-  return resolveSelectedListReferences(host, "multilist-with-search");
+
+  return resolveSelectedListReferences(
+    host,
+    "multilist-with-search",
+    `${SITECORE.SELECTORS.MULTILIST.BOX}[id$="_selected"]`,
+  );
 }
 
 export function resolveTreeListReferences(marker: HTMLElement): FieldReference[] | undefined {
@@ -143,7 +153,7 @@ export function resolveTreeListReferences(marker: HTMLElement): FieldReference[]
   if (!host) return undefined;
 
   const selectedPane = host.querySelector(SITECORE.SELECTORS.TREE.LIST_SELECTED_PANE);
-  return resolveSelectedListReferences(selectedPane, "tree-list");
+  return resolveSelectedListReferences(selectedPane, "tree-list", SITECORE.SELECTORS.MULTILIST.BOX);
 }
 
 export function resolveTagListReferences(marker: HTMLElement): FieldReference[] | undefined {

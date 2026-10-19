@@ -192,14 +192,6 @@ function getEditorRequirements(task: WorkerTask): WorkerEditorRequirements {
     };
   }
 
-  // Temporary compatibility until the coordinator explicitly schedules layout state.
-  if (task.type === "collect-layouts") {
-    return {
-      rawValues: true,
-      standardFields: true,
-    };
-  }
-
   return {};
 }
 
