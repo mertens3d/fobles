@@ -16,13 +16,9 @@ export type NoteInfo = {
   text: string;
 };
 
-export type ReportStep = {
-  title: string;
-  status: "passed" | "failed";
-  duration: number;
-  error: string;
-  screenshots?: ScreenshotInfo[];
-  notes?: NoteInfo[];
+export type FoblesLogInfo = {
+  name: string;
+  href: string;
 };
 
 export type ReportResult = {
@@ -34,6 +30,16 @@ export type ReportResult = {
   steps: ReportStep[];
   screenshots: ScreenshotInfo[];
   notes: NoteInfo[];
+  foblesLog?: FoblesLogInfo;
+};
+
+export type ReportStep = {
+  title: string;
+  status: "passed" | "failed";
+  duration: number;
+  error: string;
+  screenshots?: ScreenshotInfo[];
+  notes?: NoteInfo[];
 };
 
 export type CurrentFullResult = Pick<FullResult, "status"> | { status: "running" };

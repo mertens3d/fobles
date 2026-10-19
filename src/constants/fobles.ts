@@ -1,3 +1,4 @@
+import { getElement } from "../options/dom-helpers";
 import { FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS } from "./button-ids";
 import { REFERENCE_GRAPH } from "./graph.const";
 import { WORKER_POOL } from "./partials/fobles-workers.const";
@@ -13,24 +14,40 @@ export const FOBLES = {
     TEMPLATE_BUTTON: "data-template-button",
     WRAPPER: "data-fobles-wrapper",
     DATA: {
-        KEY: {
-            FOBLES_NAV_OWNER: "data-fobles-nav-owner",
-            NAV_BUTTON_ROLE: "data-fobles-nav-button-role",
-            PROXY_BUTTONS: "data-proxy-buttons",
-            JUMP_FLYOUT: "data-jump-flyout",
-            TEMPLATE_BUTTON: "data-template-button",
-            VISIBLE: "data-visible",
-        },
-        VALUE: {
-            PERSISTENT: "persistent",
-        },
-        NAV_BUTTON_ROLE: {
-            LBOLT: "lbolt",
-            GRAPH: "graph-trigger",
-            PROXY_FLYOUT_TRIGGER: "proxy-buttons-trigger",
-            JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger",
-        },
+      KEY: {
+        FOBLES_NAV_OWNER: "data-fobles-nav-owner",
+        NAV_BUTTON_ROLE: "data-fobles-nav-button-role",
+        PROXY_BUTTONS: "data-proxy-buttons",
+        JUMP_FLYOUT: "data-jump-flyout",
+        TEMPLATE_BUTTON: "data-template-button",
+        VISIBLE: "data-visible",
+      },
+      VALUE: {
+        PERSISTENT: "persistent",
+      },
+      NAV_BUTTON_ROLE: {
+        LBOLT: "lbolt",
+        GRAPH: "graph-trigger",
+        PROXY_FLYOUT_TRIGGER: "proxy-buttons-trigger",
+        JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger",
+      },
     },
+  },
+  OPTIONS_PAGE: {
+    DEBUG_LOGGING: "debug-logging",
+    SHOW_RELOAD_EXTENSION_BUTTON: "show-reload-extension-button",
+    DEBUG_STATUS: "debug-status",
+    VIEW_STORED_SETTINGS: "view-stored-settings",
+    STORED_SETTINGS_OUTPUT: "stored-settings-output",
+    CLEAR_STORED_SETTINGS: "clear-stored-settings",
+    CLEAR_STORED_SETTINGS_STATUS: "clear-stored-settings-status",
+    REFRESH_PERSISTED_LOGS: "refresh-persisted-logs",
+    PERSISTED_LOGS_OUTPUT: "persisted-logs-output",
+    PERSISTED_LOGS_SECTION: "persisted-logs",
+    CLEAR_PERSISTED_LOGS: "clear-persisted-logs",
+    PERSIST_DEBUG_LOGS: "persist-debug-logs",
+    SCROLL_PERSISTED_LOGS_BOTTOM: "scroll-persisted-logs-bottom",
+    COPY_PERSISTED_LOGS: "copy-persisted-logs"
   },
   WORKER_POOL: WORKER_POOL,
   REFERENCE_GRAPH: REFERENCE_GRAPH,

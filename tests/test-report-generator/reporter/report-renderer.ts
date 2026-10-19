@@ -15,11 +15,16 @@ export type RenderReportInput = {
 
 function renderDetails(error: string, screenshots: ScreenshotInfo[] = []): string {
   const parts: string[] = [];
+
   if (error) {
-    parts.push(`<details><summary>View failure</summary><pre>${escapeHtml(error)}</pre></details>`);
+    parts.push(
+      `<details><summary>View failure</summary><pre>${escapeHtml(error)}</pre></details>`,
+    );
   }
+
   const screenshotLinks = renderScreenshotLinks(screenshots);
   if (screenshotLinks) parts.push(screenshotLinks);
+
   return parts.length ? parts.join("") : "-";
 }
 
@@ -39,12 +44,14 @@ function renderStepTitle(step: ReportStep): string {
 
   const action = afterPrefix.slice(0, expectsSeparatorIndex);
   const expectation = afterPrefix.slice(expectsSeparatorIndex + 2);
+
   return `<strong>${escapeHtml(prefix)}:</strong> ${escapeHtml(action)}<span class="step-expects">expects: ${escapeHtml(expectation)}</span>${notesHtml}`;
 }
 
 function renderTestTitle(result: ReportResult): string {
   const [, project, file, ...rest] = result.titlePath;
   const notesHtml = renderNotes(result.notes);
+
   return `<strong>${escapeHtml(`${project ?? ""} ${file ?? ""}`.trim())}</strong><span class="step-expects">${escapeHtml(rest.join(" "))}</span>${notesHtml}`;
 }
 
@@ -53,25 +60,47 @@ function renderTestDetails(result: ReportResult): string {
 
   if (result.status === "timedOut") {
     const lastStep = result.steps[result.steps.length - 1]?.title;
+
     details.push(
-      `Test timed out before the next step completed.${lastStep ? ` Last completed step: ${lastStep}.` : " No test step completed."}`,
+      `Test timed out before the next step completed.` +
+      (lastStep
+        ? ` Last completed step: ${lastStep}.`
+        : " No test step completed."),
     );
   }
 
   if (result.error) details.push(result.error);
 
   const parts: string[] = [];
+
   if (details.length) {
     parts.push(
-      `<details><summary>What happened</summary><pre>${escapeHtml(details.join("\n\n"))}</pre></details>`,
+      `<details class="failure-details"><summary>What happened</summary><pre>${escapeHtml(
+        details.join("\n\n"),
+      )}</pre></details>`,
     );
   }
 
-  const screenshotLinks = renderScreenshotLinks(result.screenshots);
-  if (screenshotLinks) parts.push(screenshotLinks);
-  return parts.length ? parts.join("") : "-";
-}
+  if (result.foblesLog) {
+    parts.push(
+      `<a class="fobles-log-link" href="${escapeHtml(
+        result.foblesLog.href,
+      )}" target="_blank">View Fobles Log</a>`,
+    );
+  }
 
+  const screenshotLinks = renderScreenshotLinks(
+    result.screenshots,
+  );
+
+  if (screenshotLinks) {
+    parts.push(screenshotLinks);
+  }
+
+  return parts.length
+    ? parts.join("")
+    : "-";
+}
 export function renderReport(input: RenderReportInput): string {
   const finishedAt = new Date();
   const timestamp = finishedAt.toLocaleString();
@@ -81,6 +110,7 @@ export function renderReport(input: RenderReportInput): string {
     summary[result.status] = (summary[result.status] ?? 0) + 1;
     return summary;
   }, {});
+
   const passed = input.fullResult.status === "passed";
   const running = input.fullResult.status === "running";
   const failedCount = counts.failed ?? 0;
@@ -118,7 +148,7 @@ export function renderReport(input: RenderReportInput): string {
     : "";
   const runningText = running ? "Run in progress · " : "";
   const refreshText = running
-  ? ` ·
+    ? ` ·
       <label>
         <input
           type="checkbox"
@@ -128,7 +158,7 @@ export function renderReport(input: RenderReportInput): string {
         auto refresh
       </label>
       · <span id="refresh-countdown"></span>`
-  : "";
+    : "";
   const refreshScript = running ? `${refreshScriptRunning}` : "";
 
   const head = `<head>
@@ -148,7 +178,6 @@ export function renderReport(input: RenderReportInput): string {
     <header class="report-header">
       <h1>Browser Test Report</h1>
       <span class="meta-inline">${runningText}${escapeHtml(timestamp)} · ${escapeHtml(formatDuration(duration))}${statusText}${refreshText}</span>
-      
     </header>
     <section class="summary">
       <div class="summary-card${failedCount === 0 && (counts.passed ?? 0) > 0 ? " success" : ""}"><strong>${counts.passed ?? 0}</strong>Checks passed</div>
@@ -157,10 +186,10 @@ export function renderReport(input: RenderReportInput): string {
       <div class="summary-card"><strong>${checks.length}</strong>Checks total</div>
     </section>
     <div class="table-container">
-    <table>
-    <thead><tr><th class="test-step-col">Test step</th><th class="result-col">Result</th><th class="details-col">Details</th></tr></thead>
-    <tbody>${rows}</tbody>
-    </table>
+      <table>
+        <thead><tr><th class="test-step-col">Test step</th><th class="result-col">Result</th><th class="details-col">Details</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table>
     </div>
   </main>
   <div class="screenshot-modal-backdrop" id="screenshot-modal-backdrop">
@@ -168,6 +197,7 @@ export function renderReport(input: RenderReportInput): string {
     <img id="screenshot-modal-img" alt="">
   </div>
   <script src="assets/scripts.js"></script>
+  ${refreshScript}
 </body>
 </html>`;
 }

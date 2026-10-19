@@ -7,7 +7,7 @@ import { TEST_CONST } from "../constants/TEST_CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";
-import { EnableFoblesDeveloperLogging, enableFoblesDeveloperLogging } from "../macros/fobles-macros";
+import { EnableFoblesDeveloperLogging, enableFoblesDeveloperLogging, GetFoblesPersistedLogs } from "../macros/fobles-macros";
 import { setScRawValuesState, setScStandardFieldsState } from "../macros/sitecore-macros";
 
 const profileDir = path.resolve(
@@ -130,14 +130,40 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
   // Auto-use so every test starts from the same known settings state, regardless of what an
   // earlier test in this shared persistent profile left behind (see docs/TODO.md's corrupt-data
   // profile idea for a future, deliberately-different one).
-resetTestSettings: [
-  async ({ sharedBrowserContext, page }, use) => {
-    await applyDefaultSettingsProfile(sharedBrowserContext);
-    await EnableFoblesDeveloperLogging(sharedBrowserContext);
-    await use();
-  },
-  { auto: true },
-],
+  resetTestSettings: [
+    async ({ sharedBrowserContext }, use, testInfo) => {
+      await applyDefaultSettingsProfile(sharedBrowserContext);
+      await EnableFoblesDeveloperLogging(sharedBrowserContext);
+
+      try {
+        await use();
+      } finally {
+        try {
+          const logs = await GetFoblesPersistedLogs(sharedBrowserContext);
+          const logPath = testInfo.outputPath("fobles-persisted.log");
+
+          fs.writeFileSync(logPath, logs, "utf8");
+
+          console.log(
+            `[fobles] Persisted log saved: ${logPath} (${logs.length} chars)`,
+          );
+
+          await testInfo.attach("Fobles persisted log", {
+            path: logPath,
+            contentType: "text/x-fobles-log",
+          });
+
+          console.log("[fobles] Persisted log attached");
+        } catch (error) {
+          console.error(
+            `[fobles] Failed to capture persisted logs: ${error instanceof Error ? error.stack ?? error.message : String(error)
+            }`,
+          );
+        }
+      }
+    },
+    { auto: true },
+  ],
   sharedBrowserContext: [
     // eslint-disable-next-line no-empty-pattern
     async ({ }, use) => {

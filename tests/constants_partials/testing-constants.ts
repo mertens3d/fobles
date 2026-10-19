@@ -74,7 +74,7 @@ export const TESTING = {
     TEST_DIVIDER: "==================================================",
   },
 
-  HUMAN_PAUSE_MS: 1_000,
+  HUMAN_PAUSE_MS: 500,
   MOUSE: _TESTING_MOUSE,
   NAVIGATION: {
     HOLD_MULTIPLIER: 2,

@@ -5,24 +5,27 @@ import { clearAllStorageValues, getAllStorageValues } from "../shared/storage/st
 import { getElement } from "./dom-helpers";
 import { clearPersistedLogEntries, getPersistedLogEntries } from "../shared/logging/persisted-log-storage";
 import { LOGGER, STORAGE } from "../constants/extension-const";
+import { CONST } from "../constants/const";
 
-const debugLoggingInput = getElement<HTMLInputElement>("debug-logging");
-const showReloadExtensionButtonInput = getElement<HTMLInputElement>("show-reload-extension-button");
-const debugStatus = getElement<HTMLParagraphElement>("debug-status");
-const viewStoredSettingsButton = getElement<HTMLButtonElement>("view-stored-settings");
-const storedSettingsOutput = getElement<HTMLPreElement>("stored-settings-output");
-const clearStoredSettingsButton = getElement<HTMLButtonElement>("clear-stored-settings");
-const clearStoredSettingsStatus = getElement<HTMLParagraphElement>("clear-stored-settings-status");
-const refreshPersistedLogsButton = getElement<HTMLButtonElement>("refresh-persisted-logs");
-const persistedLogsOutput = getElement<HTMLDivElement>("persisted-logs-output");
-const persistedLogsSection = getElement<HTMLDetailsElement>("persisted-logs");
-const clearPersistedLogsButton = getElement<HTMLButtonElement>("clear-persisted-logs");
-const persistDebugLogsInput = getElement<HTMLInputElement>("persist-debug-logs");
-const scrollPersistedLogsBottomButton = getElement<HTMLButtonElement>("scroll-persisted-logs-bottom");
+const debugLoggingInput = getElement<HTMLInputElement>(CONST.FOBLES.OPTIONS_PAGE.DEBUG_LOGGING);
+const showReloadExtensionButtonInput = getElement<HTMLInputElement>(CONST.FOBLES.OPTIONS_PAGE.SHOW_RELOAD_EXTENSION_BUTTON);
+const debugStatus = getElement<HTMLParagraphElement>(CONST.FOBLES.OPTIONS_PAGE.DEBUG_STATUS);
+const viewStoredSettingsButton = getElement<HTMLButtonElement>(CONST.FOBLES.OPTIONS_PAGE.VIEW_STORED_SETTINGS);
+const storedSettingsOutput = getElement<HTMLPreElement>(CONST.FOBLES.OPTIONS_PAGE.STORED_SETTINGS_OUTPUT);
+const clearStoredSettingsButton = getElement<HTMLButtonElement>(CONST.FOBLES.OPTIONS_PAGE.CLEAR_STORED_SETTINGS);
+const clearStoredSettingsStatus = getElement<HTMLParagraphElement>(CONST.FOBLES.OPTIONS_PAGE.CLEAR_STORED_SETTINGS_STATUS);
+const refreshPersistedLogsButton = getElement<HTMLButtonElement>(CONST.FOBLES.OPTIONS_PAGE.REFRESH_PERSISTED_LOGS);
+const persistedLogsOutput = getElement<HTMLDivElement>(CONST.FOBLES.OPTIONS_PAGE.PERSISTED_LOGS_OUTPUT);
+const persistedLogsSection = getElement<HTMLDetailsElement>(CONST.FOBLES.OPTIONS_PAGE.PERSISTED_LOGS_SECTION);
+const clearPersistedLogsButton = getElement<HTMLButtonElement>(CONST.FOBLES.OPTIONS_PAGE.CLEAR_PERSISTED_LOGS);
+const persistDebugLogsInput = getElement<HTMLInputElement>(CONST.FOBLES.OPTIONS_PAGE.PERSIST_DEBUG_LOGS);
+const scrollPersistedLogsBottomButton = getElement<HTMLButtonElement>(CONST.FOBLES.OPTIONS_PAGE.SCROLL_PERSISTED_LOGS_BOTTOM);
+const copyPersistedLogsButton = getElement<HTMLButtonElement>(CONST.FOBLES.OPTIONS_PAGE.COPY_PERSISTED_LOGS);
+
 
 export function initDebugSettings(): void {
 
-  const renderPersistedLogs = async (): Promise<void> => {
+  const renderPersistedLogsHTML = async (): Promise<void> => {
     const entries = await getPersistedLogEntries();
 
     persistedLogsOutput.replaceChildren();
@@ -37,9 +40,7 @@ export function initDebugSettings(): void {
       row.className = `persisted-log-entry persisted-log-${entry.level}`;
 
       const timestamp = new Date(entry.timestamp);
-      const time =
-        `${String(timestamp.getMinutes()).padStart(2, "0")}:` +
-        `${String(timestamp.getSeconds()).padStart(2, "0")}`;
+      const time = logTimeStamp(timestamp);
 
       const primitives: string[] = [];
       const objects: unknown[] = [];
@@ -98,6 +99,101 @@ export function initDebugSettings(): void {
     });
   };
 
+  copyPersistedLogsButton.addEventListener("click", () => {
+    const logs = persistedLogsOutput.textContent;
+    if (logs) {
+
+      void navigator.clipboard.writeText(logs)
+        .then(() => {
+          setCopied(true);
+          window.setTimeout(() => {
+            setCopied(false);
+          }, 1500);
+        });
+    }
+  });
+
+  const logTimeStamp = (timestamp: Date): string =>
+    `${String(timestamp.getMinutes()).padStart(2, "0")}:` +
+    `${String(timestamp.getSeconds()).padStart(2, "0")}`;
+
+  type logJson = {
+    timestamp: string;
+    textContent: string;
+    details: object[];
+  }
+  type logsJson = logJson[];
+
+  const formatPersistedLogsForClipboard = async (): Promise<string> => {
+    const entries = await getPersistedLogEntries();
+
+    if (entries.length === 0) {
+      return "No persisted logs.";
+    }
+
+    return entries
+      .map((entry) => {
+        const timestamp = logTimeStamp(new Date(entry.timestamp));
+        const primitives: string[] = [];
+        const objects: unknown[] = [];
+
+        entry.args.forEach((arg) => {
+          if (arg !== null && typeof arg === "object") {
+            objects.push(arg);
+          } else {
+            primitives.push(String(arg));
+          }
+        });
+
+        const line =
+          `${timestamp} [${entry.level}] [${entry.context}] ${LOGGER.NAMESPACE}` +
+          (primitives.length > 0 ? ` ${primitives.join(" ")}` : "");
+
+        const details = objects.map((value) =>
+          JSON.stringify(value, null, 2)
+            .split("\n")
+            .map((line) => `  ${line}`)
+            .join("\n"),
+        );
+
+
+        return [line, ...details].join("\n");
+      })
+      .join("\n");
+  };
+
+
+  const setCopied = (copied: boolean) => {
+    copyPersistedLogsButton.textContent = copied ? "Copied!" : "Copy Persisted Logs";
+  };
+  copyPersistedLogsButton.addEventListener("click", () => {
+    void formatPersistedLogsForClipboard()
+      .then((logs) => navigator.clipboard.writeText(logs))
+      .then(() => {
+        setCopied(true);
+
+        window.setTimeout(() => {
+          setCopied(false);
+        }, 1500);
+      });
+  });
+
+  copyPersistedLogsButton.addEventListener("click", () => {
+    const logs = persistedLogsOutput.textContent;
+    if (logs) {
+
+      void navigator.clipboard.writeText(logs)
+        .then(() => {
+          setCopied(true);
+          window.setTimeout(() => {
+            setCopied(false);
+          }, 1500);
+        });
+    }
+  });
+
+
+
   scrollPersistedLogsBottomButton.addEventListener("click", () => {
     persistedLogsOutput.lastElementChild?.scrollIntoView({
       behavior: "smooth",
@@ -113,17 +209,17 @@ export function initDebugSettings(): void {
 
   persistedLogsSection.addEventListener("toggle", () => {
     if (persistedLogsSection.open) {
-      void renderPersistedLogs();
+      void renderPersistedLogsHTML();
     }
   });
 
   refreshPersistedLogsButton.addEventListener("click", () => {
-    void renderPersistedLogs();
+    void renderPersistedLogsHTML();
   });
 
   if (window.location.hash === "#persisted-logs") {
     persistedLogsSection.open = true;
-    void renderPersistedLogs();
+    void renderPersistedLogsHTML();
   }
 
   getElement<HTMLButtonElement>("save-debug-settings").addEventListener("click", () => {

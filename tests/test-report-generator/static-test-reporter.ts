@@ -98,7 +98,8 @@ export default class StaticTestReporter implements Reporter {
     const screenshots: ScreenshotInfo[] = (result.attachments ?? [])
       .filter(
         (attachment) =>
-          attachment.path && attachment.contentType?.startsWith("image/"),
+          attachment.path &&
+          attachment.contentType?.startsWith("image/"),
       )
       .map((attachment) => ({
         name: attachment.name,
@@ -108,27 +109,61 @@ export default class StaticTestReporter implements Reporter {
     const notes: NoteInfo[] = (result.attachments ?? [])
       .filter(
         (attachment) =>
-          attachment.contentType === "text/plain" && attachment.body,
+          attachment.contentType === "text/plain" &&
+          attachment.body,
       )
       .map((attachment) => ({
         name: attachment.name,
         text: attachment.body!.toString("utf8"),
       }));
 
+    const foblesLogAttachment = (result.attachments ?? []).find(
+      (attachment) =>
+        attachment.contentType === "text/x-fobles-log" &&
+        attachment.path,
+    );
+
+    const foblesLog = foblesLogAttachment?.path
+      ? {
+        name: foblesLogAttachment.name,
+        href: toReportRelativeHref(
+          foblesLogAttachment.path,
+          this.outputFile,
+        ),
+      }
+      : undefined;
+
     console.log("**** Test Ended: ");
+
     for (const step of result.steps ?? []) {
       console.log(`step: ${step.title}`);
+
       for (const attachment of step.attachments ?? []) {
-        console.log(`\t attachment: ${attachment.name} - ${attachment.path}`);
+        console.log(
+          `\t attachment: ${attachment.name} - ${attachment.path}`,
+        );
       }
     }
+
+    if (foblesLog) {
+      console.log(
+        `[reporter] Fobles log: ${foblesLog.href}`,
+      );
+    }
+
     const steps = flattenSteps(result.steps ?? []);
+
     const remainingScreenshots = matchAttachmentsToSteps(
       screenshots,
       steps,
       "screenshots",
     );
-    const remainingNotes = matchAttachmentsToSteps(notes, steps, "notes");
+
+    const remainingNotes = matchAttachmentsToSteps(
+      notes,
+      steps,
+      "notes",
+    );
 
     const folderName = getFolderName(test);
 
@@ -136,7 +171,8 @@ export default class StaticTestReporter implements Reporter {
       this.resultsByFolder.set(folderName, []);
     }
 
-    const folderResults = this.resultsByFolder.get(folderName)!;
+    const folderResults =
+      this.resultsByFolder.get(folderName)!;
 
     const reportResult: ReportResult = {
       index: folderResults.length + 1,
@@ -147,12 +183,16 @@ export default class StaticTestReporter implements Reporter {
       steps,
       screenshots: remainingScreenshots,
       notes: remainingNotes,
+      foblesLog,
     };
 
     folderResults.push(reportResult);
 
-    this.writeReport({ status: "running" });
+    this.writeReport({
+      status: "running",
+    });
   }
+
 
   onEnd(fullResult: FullResult): void {
     this.writeReport(fullResult);
