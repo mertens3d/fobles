@@ -25,7 +25,6 @@ export async function clickScRibbonTab(
   frame: Frame,
   accessKey: string,
 ): Promise<void> {
-  console.log("[Macro: clickScRibbonTab] - Start");
   const scRibbonTab = frame.locator(`a[accesskey="${accessKey}"]`).first();
   await clickWithMouseMarker(
     page,

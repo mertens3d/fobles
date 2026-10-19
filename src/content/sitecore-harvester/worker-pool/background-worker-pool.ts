@@ -162,14 +162,6 @@ export async function runPoolTask(
 ): Promise<WorkerTaskResult> {
   maxWorkers = await getWorkerPoolMaxWorkers();
 
-  extensionLog.debug("Worker pool: settings loaded for task", {
-    maxWorkers,
-    workerCount: workers.length,
-    queueLength: queue.length,
-    taskType: task.type,
-    taskId: task.taskId,
-  });
-
   return await new Promise<WorkerTaskResult>((resolve) => {
     if (cancelledRequestIds.has(task.requestId)) {
       resolve(createCancelledResult(task));

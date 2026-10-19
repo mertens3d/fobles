@@ -141,6 +141,7 @@ export const REFERENCE_GRAPH = {
           edgeStyle: "bezier",
           padding: 20,
           animate: false,
+          // idealEdgeLength: 140
           nodeRepulsion: 8000,
           nodeDimensionsIncludeLabels: true,
           randomize: false,

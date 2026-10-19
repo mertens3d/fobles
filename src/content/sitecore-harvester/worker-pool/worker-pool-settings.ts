@@ -22,18 +22,8 @@ export async function getWorkerPoolMaxWorkers():
       "local",
     );
 
-  const storedValue =
-    result[STORAGE_KEY];
+  const storedValue =    result[STORAGE_KEY];
 
-  extensionLog.debug(
-    "Worker pool: storage value",
-    {
-      key: STORAGE_KEY,
-      storedValue,
-      type: typeof storedValue,
-      result,
-    },
-  );
 
   let maxWorkers = DEFAULT_MAX_WORKERS;
 

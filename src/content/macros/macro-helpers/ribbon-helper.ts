@@ -42,7 +42,6 @@ function getRibbonPanel(container: ParentNode): ParentNode | null {
         console.error(`[${getRibbonPanel.name}] - Ribbon panel not found on ${containerInfo} with selector ${CONST.SITECORE.SELECTORS.RIBBON_PANEL} `);
     }
 
-    extensionLog.debug(`[${getRibbonPanel.name}] - Returning ribbon panel:`);
     return ribbonPanel;
 }
 

@@ -12,7 +12,6 @@ export async function clickRibbonHomeTab(container: ParentNode): Promise<boolean
 
 export async function clickRibbonViewTab(container: ParentNode): Promise<boolean> {
   const success = await clickScRibbonTab(container, CONST.SITECORE.SELECTORS.RIBBON.VIEW_TAB);
-  extensionLog.debug(`[clickRibbonViewTab] - Clicked View tab with success: ${success}`);
   return success;
 }
 

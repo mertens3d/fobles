@@ -125,11 +125,6 @@ chrome.runtime.onMessage.addListener(
           frameId,
         );
 
-        extensionLog.debug("Worker iframe: ready", {
-          workerId: target.workerId,
-          hostTabId: target.hostTabId,
-          frameId: target.frameId,
-        });
       }
     } else if (
       "type" in request &&
