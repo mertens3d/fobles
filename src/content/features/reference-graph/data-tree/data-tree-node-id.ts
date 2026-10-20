@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/features/reference-graph/data-tree/data-tree-node-id.ts
+
 import { CONST } from "../../../../constants/const";
 import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";

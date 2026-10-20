@@ -121,6 +121,7 @@ function createExecutorContext(): WorkerExecutorContext {
     cancelledRequestIds,
     createPendingWorker,
     retireWorker,
+    retireAllWorkers,
     scheduleNext,
     isCurrentGeneration: () =>
       isWorkerPoolGenerationCurrent(generation),

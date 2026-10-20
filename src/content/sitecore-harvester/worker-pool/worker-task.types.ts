@@ -182,6 +182,7 @@ export type WorkerExecutorContext = {
   cancelledRequestIds: Set<string>;
   createPendingWorker: () => PoolWorker;
   retireWorker: (worker: PoolWorker) => void;
+  retireAllWorkers: () => number;
   scheduleNext: () => void;
   isCurrentGeneration: () => boolean;
 };

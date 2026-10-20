@@ -86,7 +86,19 @@ async function retryAfterDocumentStale(
 ): Promise<void> {
   const retiredTarget = worker.target;
 
-  context.retireWorker(worker);
+  if (queued.task.type === "set-editor-state") {
+    const retiredWorkerCount = context.retireAllWorkers();
+
+    extensionLog.debug(
+      "Worker pool: editor state changed; all current workers retired",
+      {
+        taskId: queued.task.taskId,
+        retiredWorkerCount,
+      },
+    );
+  } else {
+    context.retireWorker(worker);
+  }
 
   if (queued.editorStateChangeCount >= MAX_EDITOR_STATE_CHANGES) {
     queued.resolve(
@@ -95,7 +107,6 @@ async function retryAfterDocumentStale(
         `Worker document did not stabilize after ${MAX_EDITOR_STATE_CHANGES} state changes`,
       ),
     );
-
     context.scheduleNext();
     return;
   }
@@ -122,7 +133,6 @@ async function retryAfterDocumentStale(
 
   context.scheduleNext();
 }
-
 async function runTaskOnWorker(
   context: WorkerExecutorContext,
   worker: PoolWorker,
