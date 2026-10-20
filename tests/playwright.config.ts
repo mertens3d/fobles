@@ -1,3 +1,5 @@
+// @source-path [fobles] tests/playwright.config.ts
+
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "node:path";
@@ -7,7 +9,6 @@ import path from "node:path";
 // fobles.environments.json instead (see tests/fixtures/environment.ts).
 dotenv.config({ path: [".env.local", ".env"] });
 
-const extensionPath = path.resolve(process.cwd(), "dist/unpacked");
 const testArtifactsDir = path.resolve(process.cwd(), "playwright/test-artifacts");
 // --list never runs a test (no onTestEnd calls) - it still triggers onBegin/onEnd, which would
 // otherwise overwrite test-report.html with an empty "0 tests" snapshot on top of a real run's
@@ -61,17 +62,17 @@ export default defineConfig({
   reporter: isListOnly
     ? [["list"]]
     : [
-        ["list"],
-        [
-          path.resolve(
-            process.cwd(),
-            "tests/test-report-generator/static-test-reporter.ts",
-          ),
-          {
-            outputFile: path.join(testArtifactsDir, "reports", reportFileName),
-          },
-        ],
+      ["list"],
+      [
+        path.resolve(
+          process.cwd(),
+          "tests/test-report-generator/static-test-reporter.ts",
+        ),
+        {
+          outputFile: path.join(testArtifactsDir, "reports", reportFileName),
+        },
       ],
+    ],
   use: {
     headless: false,
     trace: "retain-on-failure",
@@ -91,12 +92,6 @@ export default defineConfig({
         browserName: "chromium",
         channel: "msedge",
         ...devices["Desktop Chrome"],
-        launchOptions: {
-          args: [
-            `--disable-extensions-except=${extensionPath}`,
-            `--load-extension=${extensionPath}`,
-          ],
-        },
       },
     },
   ],

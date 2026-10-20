@@ -88,18 +88,44 @@ export async function GetFoblesPersistedLogs(
   return logs;
 }
 
-export async function ClickFoblesGraphButton(page: Page) {
+export async function ClickFoblesGraphButton(
+  page: Page,
+  options?: { expectError?: boolean },
+): Promise<void> {
   const foblesFrame = await findFoblesFrame(page);
   console.log(`[fobles Macro] ${ClickFoblesGraphButton.name}`);
+
   const button = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.GRAPH_TRIGGER).first();
   await expect(button).toBeVisible({
     timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS,
   });
+
   await clickWithMouseMarker(page, button, "Fobles Graph Button");
+
   const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
-  await expect(graphDialog).toBeVisible({
-    timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS,
-  });
+  const errorDialog = page.locator("#fobles-error-dialog");
+  const errorMessage = errorDialog.locator("#fobles-error-dialog-message");
+
+  const outcome = await Promise.race([
+    graphDialog.waitFor({
+      state: "visible",
+      timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS,
+    }).then(() => "graph" as const),
+    errorDialog.waitFor({
+      state: "visible",
+      timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS,
+    }).then(() => "error" as const),
+  ]);
+
+  if (outcome === "error") {
+    const message = (await errorMessage.textContent())?.trim() || "Unknown Fobles error";
+
+    if (!options?.expectError) {
+      throw new Error(`Fobles error dialog: ${message}`);
+    }
+  } else if (options?.expectError) {
+    throw new Error("Expected Fobles error dialog, but Reference Graph opened successfully");
+  }
 }
 
 export async function ClickFoblesJumpButton(

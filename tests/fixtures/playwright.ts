@@ -1,3 +1,5 @@
+// @source-path [fobles] tests/fixtures/playwright.ts
+
 import { chromium, type BrowserContext, test as base, type Request } from "@playwright/test";
 import fs from "node:fs";
 import path from "node:path";
@@ -7,13 +9,9 @@ import { TEST_CONST } from "../constants/TEST_CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";
-import { EnableFoblesDeveloperLogging, enableFoblesDeveloperLogging, GetFoblesPersistedLogs } from "../macros/fobles-macros";
-import { setScRawValuesState, setScStandardFieldsState } from "../macros/sitecore-macros";
+import { EnableFoblesDeveloperLogging, GetFoblesPersistedLogs } from "../macros/fobles-macros";
 
-const profileDir = path.resolve(
-  process.env.PLAYWRIGHT_PROFILE_DIR ??
-  "./playwright/test-artifacts/browser-profile",
-);
+
 const extensionPath = path.resolve("./dist/unpacked");
 
 // launchPersistentContext (below) bypasses Playwright's own context/page fixtures entirely, so
@@ -177,7 +175,8 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
         fs.rmSync(promoVideoDir, { recursive: true, force: true });
         fs.mkdirSync(promoVideoDir, { recursive: true });
       }
-      const context = await chromium.launchPersistentContext(profileDir, {
+      const context = await chromium.launchPersistentContext("", {
+        channel: "chromium",
         headless: false,
         // Without an explicit viewport, a persistent context defaults to the real OS window size
         // - on a wide monitor that stretches Sitecore's own percentage-width panels (editor
