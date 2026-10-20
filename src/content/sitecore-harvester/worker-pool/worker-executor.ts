@@ -14,7 +14,11 @@ import { resetWorkerReadiness, waitForWorkerReady } from "./worker-readiness";
 import {
   createCancelledResult,
   createErrorResult,
-  isReloadResult,  type PoolWorker,  type QueuedTask,  type WorkerExecutorContext,  type WorkerTaskResult
+  isReloadResult,
+  type PoolWorker,
+  type QueuedTask,
+  type WorkerExecutorContext,
+  type WorkerTaskResult,
 } from "./worker-task.types";
 import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
 
@@ -121,6 +125,7 @@ async function runTaskOnWorker(
       taskType: queued.task.type,
       url: queued.task.url,
     });
+
     executionResult = await sendTaskToWorkerTarget(target, queued.task);
   } catch (error) {
     extensionLog.warn("Worker pool: task execution failed", {
@@ -132,7 +137,7 @@ async function runTaskOnWorker(
 
   context.activeTaskByWorkerKey.delete(workerKey);
 
-  extensionLog.debug(`Worker pool[${workerKey}]: task completed`, {
+  extensionLog.debug(`Worker pool[${workerKey}]: task returned`, {
     taskId: queued.task.taskId,
     taskType: queued.task.type,
     resultStatus: executionResult?.status,

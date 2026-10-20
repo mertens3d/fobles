@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/sitecore-harvester/coordinator/harvest-plan-executor.ts
 
 import { extensionLog } from "../../logger";
+import { initializeRuntimeSettings, isRuntimeFaultEnabled, RUNTIME_FAULT } from "../../runtime-settings/runtime-settings";
 import { HARVEST_STEPS } from "../harvest-steps";
 import type { HarvestProgressCallback, HarvestRequest, ProgressStep } from "../sitecore-harvester.types";
 import { cancelWorkerTask, runWorkerTask } from "../worker-pool/worker-pool-client";
@@ -143,15 +144,21 @@ async function setAndVerifyEditorState(
 }
 
 async function restoreOriginalState(request: HarvestRequest): Promise<void> {
-    const original = request.session?.originalEditorState;
-    if (!original) return;
+  const original = request.session?.originalEditorState;
+  if (!original) return;
 
-    await setAndVerifyEditorState(
-        request,
-        original.rawValues,
-        original.standardFields,
-        "restore-original-state",
-    );
+  await initializeRuntimeSettings();
+
+  if (isRuntimeFaultEnabled(RUNTIME_FAULT.REFERENCE_GRAPH_RESTORE_EDITOR_STATE)) {
+    throw new Error("Injected Reference Graph editor-state restoration failure");
+  }
+
+  await setAndVerifyEditorState(
+    request,
+    original.rawValues,
+    original.standardFields,
+    "restore-original-state",
+  );
 }
 
 export async function executeHarvestPlan(

@@ -7,7 +7,6 @@ import {
   removeWorkerIframeTarget,
   sendCancelToWorkerIframe,
   sendTaskToWorkerIframe,
-  waitForWorkerIframeReload,
 } from "./worker-iframe-service";
 import {
   closeWorkerTab,
@@ -17,14 +16,7 @@ import {
   sendCancelToWorkerTab,
   sendTaskToWorkerTab,
 } from "./worker-tab-service";
-import type {
-  WorkerTask,
-  WorkerTaskExecutionResult,
-} from "../worker-pool/worker-task.types";
-import {
-  resetWorkerReadiness,
-  waitForWorkerReady,
-} from "../worker-pool/worker-readiness";
+import type { WorkerTask, WorkerTaskExecutionResult } from "../worker-pool/worker-task.types";
 import {
   isWorkerIframeTarget,
   isWorkerTabTarget,
@@ -32,7 +24,6 @@ import {
 } from "../worker-pool/worker-target";
 
 const USE_WORKER_IFRAMES = true;
-const READY_TIMEOUT_MS = 20000;
 
 export async function createWorkerTarget(
   hostTabId: number | undefined,
@@ -41,26 +32,11 @@ export async function createWorkerTarget(
 ): Promise<WorkerTarget | undefined> {
   let target: WorkerTarget | undefined;
 
-  if (
-    USE_WORKER_IFRAMES &&
-    hostTabId !== undefined
-  ) {
-    target = await createWorkerIframeTarget(
-      hostTabId,
-      url,
-    );
+  if (USE_WORKER_IFRAMES && hostTabId !== undefined) {
+    target = await createWorkerIframeTarget(hostTabId, url);
   } else {
-    const tabId = await createWorkerTab(
-      url,
-      active,
-    );
-
-    if (tabId !== undefined) {
-      target = {
-        kind: "tab",
-        tabId,
-      };
-    }
+    const tabId = await createWorkerTab(url, active);
+    if (tabId !== undefined) target = { kind: "tab", tabId };
   }
 
   return target;
@@ -73,46 +49,27 @@ export async function navigateWorkerTarget(
   let updatedTarget = target;
 
   if (isWorkerIframeTarget(target)) {
-    updatedTarget =
-      await navigateWorkerIframeTarget(
-        target,
-        url,
-      );
+    updatedTarget = await navigateWorkerIframeTarget(target, url);
   } else {
-    await navigateWorkerTab(
-      target.tabId,
-      url,
-    );
+    await navigateWorkerTab(target.tabId, url);
   }
 
   return updatedTarget;
 }
 
-export async function closeWorkerTarget(
-  target: WorkerTarget,
-): Promise<void> {
+export async function closeWorkerTarget(target: WorkerTarget): Promise<void> {
   if (isWorkerIframeTarget(target)) {
-    await removeWorkerIframeTarget(
-      target,
-    );
+    await removeWorkerIframeTarget(target);
   } else {
-    await closeWorkerTab(
-      target.tabId,
-    );
+    await closeWorkerTab(target.tabId);
   }
 }
 
-export async function markWorkerTargetOwned(
-  target: WorkerTarget,
-): Promise<void> {
+export async function markWorkerTargetOwned(target: WorkerTarget): Promise<void> {
   if (isWorkerIframeTarget(target)) {
-    await markWorkerIframeOwned(
-      target,
-    );
+    await markWorkerIframeOwned(target);
   } else {
-    await markWorkerTabOwned(
-      target.tabId,
-    );
+    await markWorkerTabOwned(target.tabId);
   }
 }
 
@@ -120,36 +77,15 @@ export async function sendTaskToWorkerTarget(
   target: WorkerTarget,
   task: WorkerTask,
 ): Promise<WorkerTaskExecutionResult | undefined> {
-  let result:
-    | WorkerTaskExecutionResult
-    | undefined;
+  let result: WorkerTaskExecutionResult | undefined;
 
   if (isWorkerIframeTarget(target)) {
-    result =
-      await sendTaskToWorkerIframe(
-        target,
-        task,
-      );
+    result = await sendTaskToWorkerIframe(target, task);
   } else {
-    result =
-      await sendTaskToWorkerTab(
-        target.tabId,
-        task,
-      );
+    result = await sendTaskToWorkerTab(target.tabId, task);
   }
 
   return result;
-}
-
-export async function waitForWorkerTargetReload(
-  target: WorkerTarget,
-): Promise<void> {
-  if (isWorkerIframeTarget(target)) {
-    await waitForWorkerIframeReload(target.workerId);
-  } else {
-    resetWorkerReadiness(target.tabId);
-    await waitForWorkerReady(target.tabId, READY_TIMEOUT_MS);
-  }
 }
 
 export function sendCancelToWorkerTarget(
@@ -158,46 +94,16 @@ export function sendCancelToWorkerTarget(
   taskId: string,
 ): void {
   if (isWorkerIframeTarget(target)) {
-    sendCancelToWorkerIframe(
-      target,
-      requestId,
-      taskId,
-    );
+    sendCancelToWorkerIframe(target, requestId, taskId);
   } else {
-    sendCancelToWorkerTab(
-      target.tabId,
-      requestId,
-      taskId,
-    );
+    sendCancelToWorkerTab(target.tabId, requestId, taskId);
   }
 }
 
-export function getWorkerTargetKey(
-  target: WorkerTarget,
-): string {
-  let key: string;
-
-  if (isWorkerTabTarget(target)) {
-    key =
-      `tab:${target.tabId}`;
-  } else {
-    key =
-      `iframe:${target.workerId}`;
-  }
-
-  return key;
+export function getWorkerTargetKey(target: WorkerTarget): string {
+  return isWorkerTabTarget(target) ? `tab:${target.tabId}` : `iframe:${target.workerId}`;
 }
 
-export function getWorkerTargetTabId(
-  target: WorkerTarget,
-): number {
-  let tabId: number;
-
-  if (isWorkerTabTarget(target)) {
-    tabId = target.tabId;
-  } else {
-    tabId = target.hostTabId;
-  }
-
-  return tabId;
+export function getWorkerTargetTabId(target: WorkerTarget): number {
+  return isWorkerTabTarget(target) ? target.tabId : target.hostTabId;
 }

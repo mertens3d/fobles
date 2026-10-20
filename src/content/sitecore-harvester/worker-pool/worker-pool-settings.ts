@@ -1,78 +1,23 @@
 // @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-pool-settings.ts
 
-import { STORAGE } from "../../../constants/extension-const";
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
-import { extensionLog } from "../../logger";
+import { onStorageChange } from "../../../shared/storage/storage";
 import {
-  getStorageValue,
-  onStorageChange,
-  setStorageValue,
-} from "../../../shared/storage/storage";
-import { CONST } from "../../../constants/const";
+  getRuntimeSettings,
+  initializeRuntimeSettings,
+  RUNTIME_SETTINGS_STORAGE_KEY,
+} from "../../runtime-settings/runtime-settings";
 
-const DEFAULT_MAX_WORKERS = CONST.FOBLES.WORKER_POOL.MAX_WORKERS;
-
-const STORAGE_KEY = STORAGE.KEY.REFERENCE_GRAPH.WORKER_POOL_MAX_WORKERS;
-
-export async function getWorkerPoolMaxWorkers():
-  Promise<number> {
-  const result =
-    await getStorageValue<unknown>(
-      [STORAGE_KEY],
-      "local",
-    );
-
-  const storedValue =    result[STORAGE_KEY];
-
-
-  let maxWorkers = DEFAULT_MAX_WORKERS;
-
-  if (
-    typeof storedValue === "number" &&
-    Number.isInteger(storedValue) &&
-    storedValue > 0
-  ) {
-    maxWorkers = storedValue;
-  }
-
-  return maxWorkers;
+export async function getWorkerPoolMaxWorkers(): Promise<number> {
+  await initializeRuntimeSettings();
+  return getRuntimeSettings().workerPool.maxWorkers;
 }
 
-export async function setWorkerPoolMaxWorkers(
-  maxWorkers: number,
-): Promise<void> {
-  if (
-    Number.isInteger(maxWorkers) &&
-    maxWorkers > 0
-  ) {
-    await setStorageValue(
-      {
-        [STORAGE_KEY]: maxWorkers,
-      },
-      "local",
-    );
-  }
-}
-
-export function onWorkerPoolMaxWorkersChange(
-  callback: (
-    maxWorkers: number,
-  ) => void,
-): void {
+export function onWorkerPoolMaxWorkersChange(callback: (maxWorkers: number) => void): void {
   onStorageChange(
-    STORAGE_KEY,
-    (value) => {
-      if (
-        typeof value === "number" &&
-        Number.isInteger(value) &&
-        value > 0
-      ) {
-        callback(value);
-      } else {
-        callback(
-          DEFAULT_MAX_WORKERS,
-        );
-      }
+    RUNTIME_SETTINGS_STORAGE_KEY,
+    async () => {
+      await initializeRuntimeSettings();
+      callback(getRuntimeSettings().workerPool.maxWorkers);
     },
     "local",
   );

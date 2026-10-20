@@ -33,8 +33,9 @@ import {
 } from "./worker-task.types";
 import { isWorkerTabTarget } from "./worker-target";
 import { CONST } from "../../../constants/const";
+import { DEFAULT_RUNTIME_SETTINGS } from "../../runtime-settings/runtime-settings";
 
-let maxWorkers = CONST.FOBLES.WORKER_POOL.MAX_WORKERS;
+let maxWorkers = DEFAULT_RUNTIME_SETTINGS.workerPool.maxWorkers;
 let workers: PoolWorker[] = [];
 let queue: QueuedTask[] = [];
 

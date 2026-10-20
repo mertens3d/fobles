@@ -18,6 +18,7 @@ import { openReferenceGraphModal } from "./reference-graph-modal";
 import { startReferenceGraphTimer } from "./reference-graph-timing";
 import { disposeBackgroundWorkerPool } from "../../sitecore-harvester/worker-pool/worker-pool-client";
 import { getScRawValuesState, getScStandardFieldsState, } from "../../macros/ribbon-toggle-macro";
+import { showFoblesErrorDialog } from "../../../shared/error-dialog";
 
 export let referenceGraphAbortController: AbortController | undefined = undefined;
 
@@ -55,11 +56,14 @@ export async function openReferenceGraph(doc: Document): Promise<void> {
 
   if (!itemId) {
     extensionLog.warn("Reference graph: could not resolve current item id");
+    showFoblesErrorDialog(doc, {
+      title: "Reference Graph",
+      message: "Something has gone wrong. The current Sitecore item could not be resolved.",
+    });
     return;
   }
 
   referenceGraphAbortController = controller;
-
   const filters = await getReferenceGraphFilters();
   const harvestSession = await captureHarvestSession(doc);
 
@@ -111,11 +115,17 @@ export async function openReferenceGraph(doc: Document): Promise<void> {
     } else {
       closeReferenceGraphProgressModal(doc);
 
-      extensionLog.warn("REFERENCE GRAPH: harvest did not produce a prepared graph", {
-        aborted: controller.signal.aborted,
-        hasGraph: Boolean(graph),
-        hasPreparedGraph: Boolean(preparedGraph),
-      });
+      if (!controller.signal.aborted) {
+        extensionLog.warn("REFERENCE GRAPH: harvest did not produce a prepared graph", {
+          hasGraph: Boolean(graph),
+          hasPreparedGraph: Boolean(preparedGraph),
+        });
+
+        showFoblesErrorDialog(doc, {
+          title: "Reference Graph",
+          message: "Something has gone wrong. The Reference Graph could not be prepared.",
+        });
+      }
     }
   } catch (error) {
     closeReferenceGraphProgressModal(doc);
@@ -125,5 +135,15 @@ export async function openReferenceGraph(doc: Document): Promise<void> {
       aborted: controller.signal.aborted,
       error,
     });
+
+    if (!controller.signal.aborted) {
+      showFoblesErrorDialog(doc, {
+        title: "Reference Graph",
+        message:
+          error instanceof Error
+            ? error.message
+            : "Something has gone wrong while building the Reference Graph.",
+      });
+    }
   }
 }

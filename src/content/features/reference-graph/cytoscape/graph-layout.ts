@@ -3,6 +3,10 @@
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
+import {
+  COMPOUND_GROUP_CLASS,
+  INVISIBLE_COMPOUND_GROUP_CLASS,
+} from "../graph-nodes/graph-node-builder";
 import type { LayoutGraphPresetName } from "../graph.types";
 
 export function runGraphLayout(
@@ -11,8 +15,15 @@ export function runGraphLayout(
   rootTreeNodeId: string,
   onComplete?: () => void,
 ): void {
-  const preset =
-    CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS[presetName];
+  const preset = CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_PRESETS[presetName];
+  const compoundGroups = cy.nodes(`.${COMPOUND_GROUP_CLASS}`);
+
+  if (presetName === "breadthfirst") {
+    compoundGroups.addClass(INVISIBLE_COMPOUND_GROUP_CLASS);
+  } else {
+    compoundGroups.removeClass(INVISIBLE_COMPOUND_GROUP_CLASS);
+  }
+
   const edges = cy.edges();
 
   if (preset.edgeStyle === "taxi") {
@@ -27,9 +38,7 @@ export function runGraphLayout(
     });
   }
 
-  const visibleElements = cy
-    .elements()
-    .filter((element) => element.visible());
+  const visibleElements = cy.elements().filter((element) => element.visible());
 
   extensionLog.debug("Reference graph layout: starting", {
     presetName,
@@ -38,23 +47,18 @@ export function runGraphLayout(
     visibleEdgeCount: visibleElements.edges().length,
   });
 
-  const layout = visibleElements.layout(
-    preset.build(rootTreeNodeId),
-  );
-
+  const layout = visibleElements.layout(preset.build(rootTreeNodeId));
   let completed = false;
 
   const complete = (): void => {
     if (!completed) {
       completed = true;
-
       extensionLog.debug("Reference graph layout: complete", {
         presetName,
         rootTreeNodeId,
         visibleNodeCount: visibleElements.nodes().length,
         visibleEdgeCount: visibleElements.edges().length,
       });
-
       onComplete?.();
     }
   };
@@ -67,28 +71,20 @@ export function runGraphLayout(
     if (!completed) {
       requestAnimationFrame(() => {
         if (!completed) {
-          extensionLog.warn(
-            "Reference graph layout: layoutstop not observed; completing after layout run",
-            {
-              presetName,
-              rootTreeNodeId,
-            },
-          );
-
+          extensionLog.warn("Reference graph layout: layoutstop not observed; completing after layout run", {
+            presetName,
+            rootTreeNodeId,
+          });
           complete();
         }
       });
     }
   } catch (error) {
-    extensionLog.error(
-      "Reference graph layout: failed",
-      {
-        presetName,
-        rootTreeNodeId,
-        error,
-      },
-    );
-
+    extensionLog.error("Reference graph layout: failed", {
+      presetName,
+      rootTreeNodeId,
+      error,
+    });
     complete();
   }
 }

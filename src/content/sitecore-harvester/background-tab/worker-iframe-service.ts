@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/sitecore-harvester/background-tab/worker-iframe-service.ts
 
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { extensionLog } from "../../logger";
 import type {
   WorkerIframeCreateMessage,
   WorkerIframeCreateResult,
@@ -17,15 +18,9 @@ import {
   WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE,
   WORKER_IFRAME_REMOVE_MESSAGE_TYPE,
 } from "../worker-pool/worker.messages";
-import type {
-  WorkerTask,
-  WorkerTaskExecutionResult,
-} from "../worker-pool/worker-task.types";
-import { extensionLog } from "../../logger";
+import type { WorkerTask, WorkerTaskExecutionResult } from "../worker-pool/worker-task.types";
 
-const MESSAGE_TYPE =
-  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
-
+const MESSAGE_TYPE = REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
 const READY_TIMEOUT_MS = 20000;
 const SEND_RETRY_DELAY_MS = 50;
 const MAX_SEND_ATTEMPTS = 50;
@@ -46,26 +41,14 @@ type PendingWorkerReady = {
 const targetByWorkerId = new Map<string, WorkerIframeTarget>();
 const pendingReadyByWorkerId = new Map<string, PendingWorkerReady>();
 
-export async function createWorkerIframeTarget(
-  hostTabId: number,
-  url: string,
-): Promise<WorkerIframeTarget> {
-  const message: WorkerIframeCreateMessage = {
-    type: WORKER_IFRAME_CREATE_MESSAGE_TYPE,
-    url,
-  };
-
+export async function createWorkerIframeTarget(hostTabId: number, url: string): Promise<WorkerIframeTarget> {
+  const message: WorkerIframeCreateMessage = { type: WORKER_IFRAME_CREATE_MESSAGE_TYPE, url };
   const created = await chrome.tabs.sendMessage<
     WorkerIframeCreateMessage,
     WorkerIframeCreateResult | undefined
-  >(hostTabId, message, {
-    frameId: 0,
-  });
+  >(hostTabId, message, { frameId: 0 });
 
-  if (!created?.workerId) {
-    throw new Error("Worker iframe host did not create an iframe");
-  }
-
+  if (!created?.workerId) throw new Error("Worker iframe host did not create an iframe");
   return await waitForWorkerIframeReady(created.workerId);
 }
 
@@ -74,103 +57,70 @@ export async function navigateWorkerIframeTarget(
   url: string,
 ): Promise<WorkerIframeTarget> {
   clearWorkerIframeTarget(target.workerId);
-
   const readyPromise = waitForWorkerIframeReady(target.workerId);
-
   const message: WorkerIframeNavigateMessage = {
     type: WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE,
     workerId: target.workerId,
     url,
   };
-
-  const navigated = await chrome.tabs.sendMessage<
-    WorkerIframeNavigateMessage,
-    boolean
-  >(target.hostTabId, message, {
-    frameId: 0,
-  });
+  const navigated = await chrome.tabs.sendMessage<WorkerIframeNavigateMessage, boolean>(
+    target.hostTabId,
+    message,
+    { frameId: 0 },
+  );
 
   if (!navigated) {
-    const error = new Error(
-      "Worker iframe host did not navigate the iframe",
-    );
-
+    const error = new Error("Worker iframe host did not navigate the iframe");
     rejectPendingReady(target.workerId, error);
-
     throw error;
   }
 
   return await readyPromise;
 }
 
-export async function removeWorkerIframeTarget(
-  target: WorkerIframeTarget,
-): Promise<void> {
+export async function removeWorkerIframeTarget(target: WorkerIframeTarget): Promise<void> {
   clearWorkerIframeTarget(target.workerId);
-
   const message: WorkerIframeRemoveMessage = {
     type: WORKER_IFRAME_REMOVE_MESSAGE_TYPE,
     workerId: target.workerId,
   };
 
   try {
-    await chrome.tabs.sendMessage<
-      WorkerIframeRemoveMessage,
-      boolean
-    >(target.hostTabId, message, {
-      frameId: 0,
-    });
+    await chrome.tabs.sendMessage<WorkerIframeRemoveMessage, boolean>(
+      target.hostTabId,
+      message,
+      { frameId: 0 },
+    );
   } catch {
     // The host tab or iframe may already have been removed.
   }
 }
 
-export async function removeAllWorkerIframeTargets(
-  hostTabId: number,
-): Promise<void> {
+export async function removeAllWorkerIframeTargets(hostTabId: number): Promise<void> {
   clearHostWorkerIframeTargets(hostTabId);
-
-  const message: WorkerIframeRemoveAllMessage = {
-    type: WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE,
-  };
+  const message: WorkerIframeRemoveAllMessage = { type: WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE };
 
   try {
-    await chrome.tabs.sendMessage<
-      WorkerIframeRemoveAllMessage,
-      boolean
-    >(hostTabId, message, {
-      frameId: 0,
-    });
+    await chrome.tabs.sendMessage<WorkerIframeRemoveAllMessage, boolean>(
+      hostTabId,
+      message,
+      { frameId: 0 },
+    );
   } catch {
     // The host tab may already have been removed.
   }
 }
 
-export async function markWorkerIframeOwned(
-  target: WorkerIframeTarget,
-): Promise<void> {
-  const message: WorkerSetOwnedMessage = {
-    type: MESSAGE_TYPE.WORKER_SET_OWNED,
-  };
-
-  await chrome.tabs.sendMessage(
-    target.hostTabId,
-    message,
-    {
-      frameId: target.frameId,
-    },
-  );
+export async function markWorkerIframeOwned(target: WorkerIframeTarget): Promise<void> {
+  const message: WorkerSetOwnedMessage = { type: MESSAGE_TYPE.WORKER_SET_OWNED };
+  await chrome.tabs.sendMessage(target.hostTabId, message, { frameId: target.frameId });
 }
 
 export async function sendTaskToWorkerIframe(
   target: WorkerIframeTarget,
   task: WorkerTask,
 ): Promise<WorkerTaskExecutionResult | undefined> {
-  const message: WorkerTaskExecuteMessage = {
-    type: MESSAGE_TYPE.WORKER_TASK_EXECUTE,
-    task,
-  };
-
+  const message: WorkerTaskExecuteMessage = { type: MESSAGE_TYPE.WORKER_TASK_EXECUTE, task };
   let attempt = 0;
   let result: WorkerTaskExecutionResult | undefined;
 
@@ -181,16 +131,10 @@ export async function sendTaskToWorkerIframe(
       result = await chrome.tabs.sendMessage<
         WorkerTaskExecuteMessage,
         WorkerTaskExecutionResult | undefined
-      >(target.hostTabId, message, {
-        frameId: target.frameId,
-      });
-
+      >(target.hostTabId, message, { frameId: target.frameId });
       return result;
     } catch (error) {
-      if (!isMissingReceiverError(error)) {
-        throw error;
-      }
-
+      if (!isMissingReceiverError(error)) throw error;
       await delay(SEND_RETRY_DELAY_MS);
     }
   }
@@ -209,17 +153,9 @@ export function sendCancelToWorkerIframe(
     taskId,
   };
 
-  void chrome.tabs
-    .sendMessage(
-      target.hostTabId,
-      message,
-      {
-        frameId: target.frameId,
-      },
-    )
-    .catch(() => {
-      // The iframe may already have navigated or been removed.
-    });
+  void chrome.tabs.sendMessage(target.hostTabId, message, { frameId: target.frameId }).catch(() => {
+    // The iframe may already have navigated or been removed.
+  });
 }
 
 export function markWorkerIframeReady(
@@ -227,20 +163,17 @@ export function markWorkerIframeReady(
   hostTabId: number,
   frameId: number,
 ): WorkerIframeTarget {
-  const target: WorkerIframeTarget = {
-    kind: "iframe",
-    workerId,
-    hostTabId,
-    frameId,
-  };
+  const target: WorkerIframeTarget = { kind: "iframe", workerId, hostTabId, frameId };
+  const pending = pendingReadyByWorkerId.get(workerId);
+
+  targetByWorkerId.set(workerId, target);
+
   extensionLog.debug("Worker iframe service: ready", {
     workerId,
     hostTabId,
     frameId,
+    hadPendingReady: Boolean(pending),
   });
-  targetByWorkerId.set(workerId, target);
-
-  const pending = pendingReadyByWorkerId.get(workerId);
 
   if (pending) {
     clearTimeout(pending.timeoutId);
@@ -251,9 +184,7 @@ export function markWorkerIframeReady(
   return target;
 }
 
-export function clearHostWorkerIframeTargets(
-  hostTabId: number,
-): void {
+export function clearHostWorkerIframeTargets(hostTabId: number): void {
   const workerIds = Array.from(targetByWorkerId.entries())
     .filter(([, target]) => target.hostTabId === hostTabId)
     .map(([workerId]) => workerId);
@@ -261,53 +192,23 @@ export function clearHostWorkerIframeTargets(
   workerIds.forEach(clearWorkerIframeTarget);
 }
 
-// Re-waits for readiness without asking the host to re-navigate the iframe - used when the
-// iframe's OWN page triggered its own reload (e.g. a Sitecore ribbon postback), not us.
-export function waitForWorkerIframeReload(
-  workerId: string,
-): Promise<WorkerIframeTarget> {
-  clearWorkerIframeTarget(workerId);
-
-  return waitForWorkerIframeReady(workerId);
-}
-
-function waitForWorkerIframeReady(
-  workerId: string,
-): Promise<WorkerIframeTarget> {
+function waitForWorkerIframeReady(workerId: string): Promise<WorkerIframeTarget> {
   const existingTarget = targetByWorkerId.get(workerId);
-
-  if (existingTarget) {
-    return Promise.resolve(existingTarget);
-  }
+  if (existingTarget) return Promise.resolve(existingTarget);
 
   return new Promise((resolve, reject) => {
-    rejectPendingReady(
-      workerId,
-      new Error("Worker iframe readiness was superseded"),
-    );
+    rejectPendingReady(workerId, new Error("Worker iframe readiness was superseded"));
 
     const timeoutId = setTimeout(() => {
       pendingReadyByWorkerId.delete(workerId);
-
-      reject(
-        new Error(
-          `Worker iframe did not become ready: ${workerId}`,
-        ),
-      );
+      reject(new Error(`Worker iframe did not become ready: ${workerId}`));
     }, READY_TIMEOUT_MS);
 
-    pendingReadyByWorkerId.set(workerId, {
-      resolve,
-      reject,
-      timeoutId,
-    });
+    pendingReadyByWorkerId.set(workerId, { resolve, reject, timeoutId });
   });
 }
 
-function rejectPendingReady(
-  workerId: string,
-  error: Error,
-): void {
+function rejectPendingReady(workerId: string, error: Error): void {
   const pending = pendingReadyByWorkerId.get(workerId);
 
   if (pending) {
@@ -317,30 +218,15 @@ function rejectPendingReady(
   }
 }
 
-function clearWorkerIframeTarget(
-  workerId: string,
-): void {
+function clearWorkerIframeTarget(workerId: string): void {
   targetByWorkerId.delete(workerId);
-
-  rejectPendingReady(
-    workerId,
-    new Error(`Worker iframe was removed: ${workerId}`),
-  );
+  rejectPendingReady(workerId, new Error(`Worker iframe was removed: ${workerId}`));
 }
 
-function isMissingReceiverError(
-  error: unknown,
-): boolean {
-  return (
-    error instanceof Error &&
-    error.message.includes("Receiving end does not exist")
-  );
+function isMissingReceiverError(error: unknown): boolean {
+  return error instanceof Error && error.message.includes("Receiving end does not exist");
 }
 
-async function delay(
-  delayMs: number,
-): Promise<void> {
-  await new Promise<void>((resolve) => {
-    setTimeout(resolve, delayMs);
-  });
+async function delay(delayMs: number): Promise<void> {
+  await new Promise<void>((resolve) => setTimeout(resolve, delayMs));
 }

@@ -65,6 +65,26 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
     },
   },
   {
+    selector: ".fobles-reference-graph-compound-group",
+    style: {
+      label: "",
+      shape: "round-rectangle",
+      "background-color": "#8a97a8",
+      "background-opacity": 0.05,
+      "border-color": "#8a97a8",
+      "border-style": "dashed",
+      "border-width": 1,
+      padding: "18px",
+    },
+  },
+  {
+    selector: ".fobles-reference-graph-compound-group--invisible",
+    style: {
+      "background-opacity": 0,
+      "border-width": 0,
+    },
+  },
+  {
     selector: `.${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ROOT)}`,
     style: {
       shape: "hexagon",
