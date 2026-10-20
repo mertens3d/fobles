@@ -231,6 +231,7 @@ function createCompoundGroupElement(
       .join(" "),
     selectable: false,
     grabbable: false,
+    pannable: true,
   };
 }
 
