@@ -1,7 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph-app.tsx
 
 import type cytoscape from "cytoscape";
-import { useRef } from "react";
 import { GraphToolbar } from "./components/graph-toolbar";
 import { GraphZoomControls } from "./components/graph-zoom-controls";
 import { NodeDetailsPanel } from "./components/node-details-panel";
@@ -11,7 +10,7 @@ import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";
 import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
-
+import { useRef, type MouseEvent } from "react";
 const ZOOM_FACTOR = 1.2;
 
 type ReferenceGraphAppProps = {
@@ -70,19 +69,31 @@ export function ReferenceGraphApp({
     setGraphBusy: graphState.setGraphBusy,
   });
 
-  const handleZoom = (factor: number): void => {
+  const handleZoom = (factor: number, renderedPosition?: cytoscape.Position): void => {
     const cy = cyRef.current;
 
     if (cy) {
       const level = Math.min(cy.maxZoom(), Math.max(cy.minZoom(), cy.zoom() * factor));
+
       cy.zoom({
         level,
-        renderedPosition: {
+        renderedPosition: renderedPosition ?? {
           x: cy.width() / 2,
           y: cy.height() / 2,
         },
       });
     }
+  };
+
+  const handleGraphContextMenu = (event: MouseEvent<HTMLDivElement>): void => {
+    event.preventDefault();
+
+    const bounds = event.currentTarget.getBoundingClientRect();
+
+    handleZoom(event.ctrlKey ? 1 / ZOOM_FACTOR : ZOOM_FACTOR, {
+      x: event.clientX - bounds.left,
+      y: event.clientY - bounds.top,
+    });
   };
 
   const enrichmentStatus = graphState.enrichmentProgress === undefined ? "pending" : graphState.enrichmentProgress.status;
@@ -124,7 +135,11 @@ export function ReferenceGraphApp({
         nodesById={graphState.currentPreparedGraph.nodesById}
       />
 
-      <div ref={containerRef} className="fobles-reference-graph-canvas" />
+      <div
+        ref={containerRef}
+        className="fobles-reference-graph-canvas"
+        onContextMenu={handleGraphContextMenu}
+      />
 
       {graphState.graphBusy && (
         <div
