@@ -19,8 +19,8 @@ import type {
 } from "../sitecore-harvester.types";
 import {
   createCancelledResult,
+  createDocumentStaleResult,
   createErrorResult,
-  createNeedsReloadResult,
   type WorkerTask,
   type WorkerTaskExecutionResult,
   type WorkerTaskPayloadByType,
@@ -99,27 +99,22 @@ export async function executeWorkerTask(
   let result: WorkerTaskExecutionResult | undefined = cancelledResultIfAborted(task, signal);
 
   if (!result && (await ensureWorkerEditorState(doc, task))) {
-    result = createNeedsReloadResult(task);
+    result = createDocumentStaleResult(task);
   }
 
   if (!result) {
     if (task.type === "set-editor-state") {
-      result = successResult(task, {
-        editorState: task.editorState,
-      });
+      result = successResult(task, { editorState: task.editorState });
     } else if (task.type === "collect-root-item") {
       const rootItem = harvestStepRootItem(doc);
-
       result = rootItem
         ? successResult(task, { rootItem })
         : createErrorResult(task, "Could not resolve current item id");
     } else if (task.type === "enrich-item") {
       const item = buildItemGraphNodeDataFromDoc(doc);
-
-      result =
-        item.scItemId || item.scItemPath
-          ? successResult(task, { item })
-          : createErrorResult(task, "Could not resolve item at navigated url");
+      result = item.scItemId || item.scItemPath
+        ? successResult(task, { item })
+        : createErrorResult(task, "Could not resolve item at navigated url");
     } else {
       const harvestContext = buildHarvestContext(doc, signal);
 
@@ -129,44 +124,27 @@ export async function executeWorkerTask(
         switch (task.type) {
           case "collect-parent":
             await collectParent(harvestContext);
-            result =
-              cancelledResultIfAborted(task, signal) ??
-              successResult(task, {
-                parent: harvestContext.result.parent,
-              });
+            result = cancelledResultIfAborted(task, signal) ??
+              successResult(task, { parent: harvestContext.result.parent });
             break;
-
           case "collect-children":
             await collectChildren(harvestContext);
-            result =
-              cancelledResultIfAborted(task, signal) ??
-              successResult(task, {
-                childItems: harvestContext.result.childItems ?? [],
-              });
+            result = cancelledResultIfAborted(task, signal) ??
+              successResult(task, { childItems: harvestContext.result.childItems ?? [] });
             break;
-
           case "collect-referrers":
             await collectReferrers(harvestContext);
-            result =
-              cancelledResultIfAborted(task, signal) ??
-              successResult(task, {
-                referrers: harvestContext.result.referrers ?? [],
-              });
+            result = cancelledResultIfAborted(task, signal) ??
+              successResult(task, { referrers: harvestContext.result.referrers ?? [] });
             break;
-
           case "collect-sections":
             await collectSections(harvestContext);
-            result =
-              cancelledResultIfAborted(task, signal) ??
-              successResult(task, {
-                sections: harvestContext.result.sections ?? [],
-              });
+            result = cancelledResultIfAborted(task, signal) ??
+              successResult(task, { sections: harvestContext.result.sections ?? [] });
             break;
-
           case "collect-layouts":
             await collectLayouts(harvestContext);
-            result =
-              cancelledResultIfAborted(task, signal) ??
+            result = cancelledResultIfAborted(task, signal) ??
               successResult(task, {
                 layoutSectionFields: harvestContext.result.layoutSectionFields ?? [],
               });
@@ -178,7 +156,6 @@ export async function executeWorkerTask(
 
   return result ?? createErrorResult(task, "Worker task produced no result");
 }
-
 type WorkerEditorRequirements = {
   rawValues?: boolean;
   standardFields?: boolean;

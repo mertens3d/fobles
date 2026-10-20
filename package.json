@@ -8,6 +8,8 @@
   },
   "scripts": {
     "build:extension": "node tools/scripts/build/build-extension.js",
+    "typecheck:extension": "tsc --noEmit -p tsconfig.json",
+    "typecheck:tests": "tsc --noEmit -p tests/tsconfig.json",
     "check:node": "node tools/scripts/dev/check-node-version.js",
     "sitecoreCLI:login": "node tools/scripts/dev/sitecore-cli-login.js",
     "sitecoreCLI:pull": "node tools/scripts/dev/sitecore-cli-pull.js",
@@ -32,8 +34,7 @@
     "test:e2e:unlock": "node tools/scripts/test/unlock-browser-profile.js",
     "check:extension-commands": "node tools/scripts/test/check-extension-commands.js",
     "code:sync-yml-const-paths": "node tools/scripts/test/sync-yml-consts.js",
-    "typecheck:extension": "tsc --noEmit -p tsconfig.json",
-    "typecheck:tests": "tsc --noEmit -p tests/tsconfig.json",
+
     "build:scss": "sass src/content/styles/fobles-extension.scss dist/unpacked/fobles.css --no-source-map"
   },
   "devDependencies": {

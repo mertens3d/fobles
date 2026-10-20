@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph.ts
+
 import type { HarvestSession } from "../../sitecore-harvester/harvest-session.types";
 import { buildFoblesUrl } from "../augmentor/helper";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
@@ -17,10 +18,15 @@ import { harvestGraphForLink } from "./harvester";
 import { openReferenceGraphModal } from "./reference-graph-modal";
 import { startReferenceGraphTimer } from "./reference-graph-timing";
 import { disposeBackgroundWorkerPool } from "../../sitecore-harvester/worker-pool/worker-pool-client";
-import { getScRawValuesState, getScStandardFieldsState, } from "../../macros/ribbon-toggle-macro";
+import {
+  getScRawValuesState,
+  getScStandardFieldsState,
+} from "../../macros/ribbon-toggle-macro";
 import { showFoblesErrorDialog } from "../../../shared/error-dialog";
 
 export let referenceGraphAbortController: AbortController | undefined = undefined;
+
+let activeReferenceGraphSession: Promise<void> | undefined;
 
 async function captureHarvestSession(doc: Document): Promise<HarvestSession> {
   const rawValues = await getScRawValuesState(doc);
@@ -42,13 +48,11 @@ async function captureHarvestSession(doc: Document): Promise<HarvestSession> {
 
 function cancelReferenceGraph(doc: Document): void {
   referenceGraphAbortController?.abort();
-
   closeReferenceGraphProgressModal(doc);
-
   void disposeBackgroundWorkerPool();
 }
 
-export async function openReferenceGraph(doc: Document): Promise<void> {
+async function executeReferenceGraphSession(doc: Document): Promise<void> {
   startReferenceGraphTimer();
 
   const controller = new AbortController();
@@ -88,7 +92,9 @@ export async function openReferenceGraph(doc: Document): Promise<void> {
       },
     );
 
-    let preparedGraph: Awaited<ReturnType<typeof prepareReferenceGraph>>;
+    let preparedGraph:
+      | Awaited<ReturnType<typeof prepareReferenceGraph>>
+      | undefined;
 
     if (!controller.signal.aborted && graph) {
       preparedGraph = await prepareReferenceGraph(graph, {
@@ -116,10 +122,13 @@ export async function openReferenceGraph(doc: Document): Promise<void> {
       closeReferenceGraphProgressModal(doc);
 
       if (!controller.signal.aborted) {
-        extensionLog.warn("REFERENCE GRAPH: harvest did not produce a prepared graph", {
-          hasGraph: Boolean(graph),
-          hasPreparedGraph: Boolean(preparedGraph),
-        });
+        extensionLog.warn(
+          "REFERENCE GRAPH: harvest did not produce a prepared graph",
+          {
+            hasGraph: Boolean(graph),
+            hasPreparedGraph: Boolean(preparedGraph),
+          },
+        );
 
         showFoblesErrorDialog(doc, {
           title: "Reference Graph",
@@ -130,13 +139,20 @@ export async function openReferenceGraph(doc: Document): Promise<void> {
   } catch (error) {
     closeReferenceGraphProgressModal(doc);
 
-    extensionLog.error("REFERENCE GRAPH: harvest or graph preparation failed", {
-      itemId,
-      aborted: controller.signal.aborted,
-      error,
-    });
+    if (controller.signal.aborted) {
+      extensionLog.debug("REFERENCE GRAPH: cancelled", {
+        itemId,
+        error,
+      });
+    } else {
+      extensionLog.error(
+        "REFERENCE GRAPH: harvest or graph preparation failed",
+        {
+          itemId,
+          error,
+        },
+      );
 
-    if (!controller.signal.aborted) {
       showFoblesErrorDialog(doc, {
         title: "Reference Graph",
         message:
@@ -144,6 +160,32 @@ export async function openReferenceGraph(doc: Document): Promise<void> {
             ? error.message
             : "Something has gone wrong while building the Reference Graph.",
       });
+    }
+  } finally {
+    if (referenceGraphAbortController === controller) {
+      referenceGraphAbortController = undefined;
+    }
+  }
+}
+
+export async function openReferenceGraph(doc: Document): Promise<void> {
+  if (activeReferenceGraphSession) {
+    extensionLog.warn(
+      "Reference graph: open ignored because another editor-state session is active",
+    );
+
+    await activeReferenceGraphSession;
+    return;
+  }
+
+  const session = executeReferenceGraphSession(doc);
+  activeReferenceGraphSession = session;
+
+  try {
+    await session;
+  } finally {
+    if (activeReferenceGraphSession === session) {
+      activeReferenceGraphSession = undefined;
     }
   }
 }

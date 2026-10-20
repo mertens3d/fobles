@@ -28,7 +28,7 @@ import {
   type WorkerIframeReadyMessage,
   type WorkerReadyMessage,
 } from "../content/sitecore-harvester/worker-pool/worker.messages";
-import { appendPersistedLogEntry } from "../shared/logging/persisted-log-storage";
+import { appendPersistedLogEntry, clearPersistedLogEntries } from "../shared/logging/persisted-log-storage";
 import type { PersistedLogMessage } from "../shared/persisted-log.types";
 
 const MESSAGE_TYPE = REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
@@ -102,11 +102,21 @@ chrome.runtime.onMessage.addListener(
       "action" in request &&
       request.action === MESSAGE.ACTION.RELOAD_EXTENSION
     ) {
-      if (sender.tab?.id !== undefined) {
-        void chrome.tabs?.reload?.(sender.tab.id);
-      }
+      void clearPersistedLogEntries()
+        .catch((error: unknown) => {
+          extensionLog.error(
+            LOGGER.NAMESPACE,
+            "Failed to clear persisted logs before extension reload",
+            error,
+          );
+        })
+        .finally(() => {
+          if (sender.tab?.id !== undefined) {
+            void chrome.tabs?.reload?.(sender.tab.id);
+          }
 
-      chrome.runtime?.reload?.();
+          chrome.runtime?.reload?.();
+        });
     } else if (
       "type" in request &&
       request.type === WORKER_IFRAME_READY_MESSAGE_TYPE
@@ -119,12 +129,11 @@ chrome.runtime.onMessage.addListener(
         frameId !== undefined &&
         frameId !== 0
       ) {
-        const target = markWorkerIframeReady(
+        markWorkerIframeReady(
           request.workerId,
           hostTabId,
           frameId,
         );
-
       }
     } else if (
       "type" in request &&

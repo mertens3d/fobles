@@ -3,8 +3,8 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { findFoblesFrame } from "../../helpers/frame-finder";
 import { ClickFoblesGraphButton } from "../../macros/fobles-macros";
-import { setupReferenceGraphState } from "./reference-graph-test-helpers";
 import { TEST_CONST } from "../../constants/TEST_CONST";
+import { setupReferenceGraphState } from "../reference-graph/reference-graph-test-helpers";
 
 const RUNTIME_TESTING_STORAGE_KEY = "fobles-runtime-testing";
 const ERROR_DIALOG_SELECTOR = "#fobles-error-dialog";

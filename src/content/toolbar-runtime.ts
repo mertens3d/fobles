@@ -204,12 +204,9 @@ async function reconcileCurrentPage(): Promise<void> {
 
 export function startToolbarRuntime(): void {
   if (window.top === window) {
-    registerWorkerIframeHost(
-      document,
-    );
+    registerWorkerIframeHost(document);
   }
 
   listenForStorageChanges();
-
   void reconcileCurrentPage();
 }

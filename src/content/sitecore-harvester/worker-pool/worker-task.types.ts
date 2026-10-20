@@ -1,7 +1,12 @@
 // @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-task.types.ts
 
 import type { BooleanTripleState } from "../../macros/ribbon-toggle-macro";
-import type { ItemGraphNodeData, LayoutSectionField, RootItem, SitecoreHarvestSection } from "../sitecore-harvester.types";
+import type {
+  ItemGraphNodeData,
+  LayoutSectionField,
+  RootItem,
+  SitecoreHarvestSection,
+} from "../sitecore-harvester.types";
 import type { WorkerTarget } from "./worker-target";
 
 export type WorkerTaskType =
@@ -28,7 +33,7 @@ type WorkerTaskBase<TType extends WorkerTaskType> = {
   requestId: string;
   taskId: string;
   type: TType;
-  // Page the worker tab must be navigated to before executing this task.
+  // Page the worker must navigate to before executing this task.
   url: string;
 };
 
@@ -100,29 +105,33 @@ export type WorkerTaskResult =
   | WorkerTaskErrorResult
   | WorkerTaskCancelledResult;
 
-// The worker changed Sitecore editor state, invalidating the current document. The pool replaces
-// that worker with a fresh document and retries the same task without consuming the failure retry.
-export type WorkerTaskReloadResult =
+// @keep A Sitecore editor-state callback replaced the DOM generation used by this worker.
+// @keep The pool must retire this worker and retry the task on a fresh document.
+export type WorkerTaskDocumentStaleResult =
   { [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & {
-      status: "needs-reload";
+      status: "document-stale";
     } }[WorkerTaskType];
 
-export type WorkerTaskExecutionResult = WorkerTaskResult | WorkerTaskReloadResult;
+export type WorkerTaskExecutionResult =
+  | WorkerTaskResult
+  | WorkerTaskDocumentStaleResult;
 
 export function isSuccessResult(result: WorkerTaskResult): result is WorkerTaskSuccessResult {
   return result.status === "success";
 }
 
-export function isReloadResult(result: WorkerTaskExecutionResult): result is WorkerTaskReloadResult {
-  return result.status === "needs-reload";
+export function isDocumentStaleResult(
+  result: WorkerTaskExecutionResult,
+): result is WorkerTaskDocumentStaleResult {
+  return result.status === "document-stale";
 }
 
-export function createNeedsReloadResult(task: WorkerTask): WorkerTaskReloadResult {
+export function createDocumentStaleResult(task: WorkerTask): WorkerTaskDocumentStaleResult {
   return {
     requestId: task.requestId,
     taskId: task.taskId,
     type: task.type,
-    status: "needs-reload",
+    status: "document-stale",
   };
 }
 
@@ -144,10 +153,14 @@ export function createCancelledResult(task: WorkerTask): WorkerTaskCancelledResu
     status: "cancelled",
   };
 }
+
+export type PoolWorkerState = "starting" | "idle" | "busy" | "retired";
+
 export type PoolWorker = {
   target: WorkerTarget | undefined;
-  status: "idle" | "busy";
+  state: PoolWorkerState;
   currentUrl: string | undefined;
+  generation: number;
 };
 
 export type QueuedTask = {
@@ -168,7 +181,7 @@ export type WorkerExecutorContext = {
   activeTaskByWorkerKey: Map<string, ActiveWorkerTask>;
   cancelledRequestIds: Set<string>;
   createPendingWorker: () => PoolWorker;
-  removeWorker: (worker: PoolWorker) => void;
+  retireWorker: (worker: PoolWorker) => void;
   scheduleNext: () => void;
   isCurrentGeneration: () => boolean;
 };

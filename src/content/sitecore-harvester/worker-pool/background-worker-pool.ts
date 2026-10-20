@@ -1,18 +1,11 @@
 // @source-path [fobles] src/content/sitecore-harvester/worker-pool/background-worker-pool.ts
 
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { DEFAULT_RUNTIME_SETTINGS } from "../../runtime-settings/runtime-settings";
 import { extensionLog } from "../../logger";
-import { sendCancelToWorkerTarget } from "../background-tab/worker-target-service";
 import {
   runTaskOnNewWorker,
   runWorkerTask,
 } from "./worker-executor";
-import {
-  type ActiveWorkerTask,
-  type PoolWorker,
-  type QueuedTask,
-  type WorkerExecutorContext
-} from "./worker-task.types";
 import {
   disposeWorkerPoolLifecycle,
   getWorkerPoolGeneration,
@@ -28,12 +21,17 @@ import {
 } from "./worker-readiness";
 import {
   createCancelledResult,
+  type ActiveWorkerTask,
+  type PoolWorker,
+  type QueuedTask,
+  type WorkerExecutorContext,
   type WorkerTask,
   type WorkerTaskResult,
 } from "./worker-task.types";
-import { isWorkerTabTarget } from "./worker-target";
-import { CONST } from "../../../constants/const";
-import { DEFAULT_RUNTIME_SETTINGS } from "../../runtime-settings/runtime-settings";
+import {
+  isWorkerTabTarget,
+  type WorkerTarget,
+} from "./worker-target";
 
 let maxWorkers = DEFAULT_RUNTIME_SETTINGS.workerPool.maxWorkers;
 let workers: PoolWorker[] = [];
@@ -66,20 +64,53 @@ async function initializeWorkerPoolSettings(): Promise<void> {
   scheduleNext();
 }
 
-function removeWorker(worker: PoolWorker): void {
-  workers = workers.filter((candidate) => candidate !== worker);
+function getWorkerTargetKey(target: WorkerTarget): string {
+  return target.kind === "tab"
+    ? `tab:${target.tabId}`
+    : `iframe:${target.workerId}`;
 }
 
 function createPendingWorker(): PoolWorker {
   const worker: PoolWorker = {
     target: undefined,
-    status: "busy",
+    state: "starting",
     currentUrl: undefined,
+    generation: getWorkerPoolGeneration(),
   };
 
   workers.push(worker);
-
   return worker;
+}
+
+function retireWorker(worker: PoolWorker): void {
+  const target = worker.target;
+
+  worker.state = "retired";
+
+  if (target) {
+    activeTaskByWorkerKey.delete(getWorkerTargetKey(target));
+  }
+
+  extensionLog.debug("Worker pool: worker retired", {
+    target,
+    retiredWorkerCount: workers.filter(
+      (candidate) => candidate.state === "retired",
+    ).length,
+  });
+}
+
+function retireAllWorkers(): number {
+  const generation = getWorkerPoolGeneration();
+
+  const workersToRetire = workers.filter(
+    (worker) =>
+      worker.generation === generation &&
+      worker.state !== "retired",
+  );
+
+  workersToRetire.forEach(retireWorker);
+
+  return workersToRetire.length;
 }
 
 function createExecutorContext(): WorkerExecutorContext {
@@ -89,22 +120,18 @@ function createExecutorContext(): WorkerExecutorContext {
     activeTaskByWorkerKey,
     cancelledRequestIds,
     createPendingWorker,
-    removeWorker,
+    retireWorker,
     scheduleNext,
     isCurrentGeneration: () =>
       isWorkerPoolGenerationCurrent(generation),
   };
 }
 
-export function handleWorkerReady(
-  tabId: number | undefined,
-): void {
+export function handleWorkerReady(tabId: number | undefined): void {
   markWorkerReady(tabId);
 }
 
-export function handleWorkerTabRemoved(
-  tabId: number,
-): void {
+export function handleWorkerTabRemoved(tabId: number): void {
   const worker = workers.find(
     (candidate) =>
       candidate.target !== undefined &&
@@ -113,7 +140,7 @@ export function handleWorkerTabRemoved(
   );
 
   if (worker?.target) {
-    removeWorker(worker);
+    workers = workers.filter((candidate) => candidate !== worker);
     activeTaskByWorkerKey.delete(`tab:${tabId}`);
   }
 
@@ -126,33 +153,45 @@ function scheduleNext(): void {
 
   while (scheduling && queue.length > 0) {
     const next = queue[0];
+    const generation = getWorkerPoolGeneration();
 
     if (cancelledRequestIds.has(next.task.requestId)) {
       queue.shift();
       next.resolve(createCancelledResult(next.task));
-    } else {
-      const idleWorker = workers.find(
-        (worker) => worker.status === "idle",
-      );
+      continue;
+    }
 
-      if (idleWorker) {
-        queue.shift();
-        idleWorker.status = "busy";
-        void runWorkerTask(
-          createExecutorContext(),
-          idleWorker,
-          next,
-        );
-      } else if (workers.length < maxWorkers) {
-        queue.shift();
-        runTaskOnNewWorker(
-          createExecutorContext(),
-          createPendingWorker(),
-          next,
-        );
-      } else {
-        scheduling = false;
-      }
+    const idleWorker = workers.find(
+      (worker) =>
+        worker.generation === generation &&
+        worker.state === "idle",
+    );
+
+    const schedulableWorkerCount = workers.filter(
+      (worker) =>
+        worker.generation === generation &&
+        worker.state !== "retired",
+    ).length;
+
+    if (idleWorker) {
+      queue.shift();
+      idleWorker.state = "busy";
+
+      void runWorkerTask(
+        createExecutorContext(),
+        idleWorker,
+        next,
+      );
+    } else if (schedulableWorkerCount < maxWorkers) {
+      queue.shift();
+
+      runTaskOnNewWorker(
+        createExecutorContext(),
+        createPendingWorker(),
+        next,
+      );
+    } else {
+      scheduling = false;
     }
   }
 }
@@ -186,6 +225,12 @@ export async function runPoolTask(
         hostTabId,
         maxWorkers,
         workerCount: workers.length,
+        schedulableWorkerCount: workers.filter(
+          (worker) => worker.state !== "retired",
+        ).length,
+        retiredWorkerCount: workers.filter(
+          (worker) => worker.state === "retired",
+        ).length,
         queueLength: queue.length,
         poolGeneration: getWorkerPoolGeneration(),
       },
@@ -195,31 +240,31 @@ export async function runPoolTask(
   });
 }
 
-export function cancelPoolRequest(
-  requestId: string,
-): void {
+export function cancelPoolRequest(requestId: string): void {
   cancelledRequestIds.add(requestId);
 
   queue = queue.filter((queued) => {
-    let keepTask = true;
+    const matches = queued.task.requestId === requestId;
 
-    if (queued.task.requestId === requestId) {
+    if (matches) {
       queued.resolve(createCancelledResult(queued.task));
-      keepTask = false;
     }
 
-    return keepTask;
+    return !matches;
   });
 
-  activeTaskByWorkerKey.forEach((active) => {
-    if (active.requestId === requestId) {
-      sendCancelToWorkerTarget(
-        active.target,
-        active.requestId,
-        active.taskId,
-      );
-    }
-  });
+  const retiredWorkerCount = retireAllWorkers();
+
+  extensionLog.debug(
+    "Worker pool: request cancelled; generation workers retired",
+    {
+      requestId,
+      retiredWorkerCount,
+      totalRetiredWorkerCount: workers.filter(
+        (worker) => worker.state === "retired",
+      ).length,
+    },
+  );
 
   scheduleNext();
 }
@@ -240,28 +285,41 @@ export function cancelPoolTask(
     return !matches;
   });
 
-  activeTaskByWorkerKey.forEach((active) => {
-    if (
+  const matchingActiveTasks = Array.from(
+    activeTaskByWorkerKey.values(),
+  ).filter(
+    (active) =>
       active.requestId === requestId &&
-      active.taskId === taskId
-    ) {
-      sendCancelToWorkerTarget(
-        active.target,
-        active.requestId,
-        active.taskId,
-      );
+      active.taskId === taskId,
+  );
+
+  matchingActiveTasks.forEach((active) => {
+    const worker = workers.find(
+      (candidate) =>
+        candidate.target !== undefined &&
+        getWorkerTargetKey(candidate.target) ===
+          getWorkerTargetKey(active.target),
+    );
+
+    if (worker) {
+      retireWorker(worker);
     }
+  });
+
+  extensionLog.debug("Worker pool: task cancelled; workers retired", {
+    requestId,
+    taskId,
+    retiredWorkerCount: matchingActiveTasks.length,
+    totalRetiredWorkerCount: workers.filter(
+      (worker) => worker.state === "retired",
+    ).length,
   });
 
   scheduleNext();
 }
 
-export function adoptWorkerTab(
-  tabId: number | undefined,
-): void {
-  if (tabId === undefined) {
-    return;
-  }
+export function adoptWorkerTab(tabId: number | undefined): void {
+  if (tabId === undefined) return;
 
   const worker = workers.find(
     (candidate) =>
@@ -271,7 +329,7 @@ export function adoptWorkerTab(
   );
 
   if (worker?.target) {
-    removeWorker(worker);
+    workers = workers.filter((candidate) => candidate !== worker);
     resetWorkerReadiness(tabId);
     activeTaskByWorkerKey.delete(`tab:${tabId}`);
 

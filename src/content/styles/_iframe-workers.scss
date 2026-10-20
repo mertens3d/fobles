@@ -1,0 +1,44 @@
+.fobles-worker-iframe-container {
+  &--hidden {
+    position: fixed;
+    left: -10000px;
+    top: -10000px;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    z-index: -1;
+  }
+
+  &--visible {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    z-index: 2147483646;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    max-height: calc(100vh - 40px);
+    overflow: auto;
+    padding: 8px;
+    border: 2px solid #2f6fed;
+    background: #fff;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
+  }
+}
+
+.fobles-worker-iframe {
+  display: block;
+
+  &--hidden {
+    width: 1px;
+    height: 1px;
+    border: 0;
+  }
+
+  &--visible {
+    width: 700px;
+    height: 500px;
+    border: 1px solid #7f9bc4;
+    background: #fff;
+  }
+}

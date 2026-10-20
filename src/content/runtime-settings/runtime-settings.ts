@@ -46,8 +46,8 @@ function normalizeRuntimeSettings(value: unknown): RuntimeSettings {
     workerPool: {
       maxWorkers:
         typeof workerPool?.maxWorkers === "number" &&
-        Number.isInteger(workerPool.maxWorkers) &&
-        workerPool.maxWorkers > 0
+          Number.isInteger(workerPool.maxWorkers) &&
+          workerPool.maxWorkers > 0
           ? workerPool.maxWorkers
           : DEFAULT_RUNTIME_SETTINGS.workerPool.maxWorkers,
       hideWorkerIframes:
@@ -67,13 +67,19 @@ function normalizeRuntimeSettings(value: unknown): RuntimeSettings {
 export async function initializeRuntimeSettings(): Promise<RuntimeSettings> {
   if (!initialized) {
     const stored = await getStorageValue<unknown>([RUNTIME_SETTINGS_STORAGE_KEY], "local");
-    runtimeSettings = normalizeRuntimeSettings(stored[RUNTIME_SETTINGS_STORAGE_KEY]);
+    const persisted = stored[RUNTIME_SETTINGS_STORAGE_KEY];
+
+    runtimeSettings = normalizeRuntimeSettings(persisted);
     initialized = true;
 
-    await setStorageValue(
-      { runtimeSettings },
-      "local",
-    );
+    if (persisted === undefined) {
+      await setStorageValue(
+        {
+          [RUNTIME_SETTINGS_STORAGE_KEY]: runtimeSettings,
+        },
+        "local",
+      );
+    }
 
     onStorageChange(
       RUNTIME_SETTINGS_STORAGE_KEY,

@@ -4,13 +4,10 @@ import { copyFile, readFile, writeFile } from "fs/promises";
 import { dirname, join, resolve } from "path";
 import { fileURLToPath } from "url";
 
-const projectRoot = resolve(
-  dirname(fileURLToPath(import.meta.url)),
-  "../../..",
-);
+const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
 const stampPath = join(projectRoot, "dist", "build-stamp.txt");
-const buildStamp = await readFile(stampPath, "utf8").catch(
-  () => new Date().toISOString().replace("T", " ").slice(0, 19),
+const buildStamp = await readFile(stampPath, "utf8").catch(() =>
+  new Date().toISOString().replace("T", " ").slice(0, 19),
 );
 
 const banner = [
@@ -28,17 +25,9 @@ const iconSourcePath = join(projectRoot, "src", "public", "fobles_icon.png");
 const iconOutputPath = join(projectRoot, "dist", "unpacked", "fobles_icon.png");
 const graphIconSourcePath = join(projectRoot, "src", "public", "graph.svg");
 const graphIconOutputPath = join(projectRoot, "dist", "unpacked", "graph.svg");
-const maintainedFiles = [
-  "manifest.json",
-  "popup.html",
-];
+const maintainedFiles = ["manifest.json", "popup.html"];
 
-const maintainedFileMappings = [
-  {
-    source: "src/options/options.html",
-    output: "dist/unpacked/options.html",
-  },
-];
+const maintainedFileMappings = [{ source: "src/options/options.html", output: "dist/unpacked/options.html" }];
 
 async function applyBannerToGeneratedFiles() {
   await copyFile(iconSourcePath, iconOutputPath);
@@ -57,7 +46,6 @@ async function applyBannerToGeneratedFiles() {
     const content = await readFile(sourcePath, "utf8");
     await writeFile(outputPath, content.replaceAll("__BUILD_STAMP__", buildStamp));
   }
-
 
   for (const fileName of generatedFiles) {
     const filePath = join(projectRoot, "dist", "unpacked", fileName);

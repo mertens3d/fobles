@@ -71,6 +71,17 @@ async function runWorkerTaskWithTimeout(task: WorkerTask): Promise<WorkerTaskRes
     }
 }
 
+function throwForCancelledResults(results: readonly WorkerTaskResult[]): void {
+  const cancellations = results.filter((result) => result.status === "cancelled");
+
+  if (cancellations.length > 0) {
+    throw new DOMException(
+      `Harvest cancelled while executing: ${cancellations.map((result) => result.type).join(", ")}`,
+      "AbortError",
+    );
+  }
+}
+
 function throwForFailedResults(results: readonly WorkerTaskResult[]): void {
     const failures = results.filter((result) => result.status === "error");
     if (failures.length > 0) {
@@ -79,68 +90,77 @@ function throwForFailedResults(results: readonly WorkerTaskResult[]): void {
 }
 
 async function dispatchTasks(
-    tasks: readonly WorkerTask[],
-    onProgress: HarvestProgressCallback | undefined,
+  tasks: readonly WorkerTask[],
+  onProgress: HarvestProgressCallback | undefined,
 ): Promise<WorkerTaskResult[]> {
-    const results = await Promise.all(
-        tasks.map(async (task): Promise<WorkerTaskResult> => {
-            const step = stepForTaskType(task.type);
-            if (step) onProgress?.(step, "active");
+  const results = await Promise.all(
+    tasks.map(async (task): Promise<WorkerTaskResult> => {
+      const step = stepForTaskType(task.type);
+      if (step) onProgress?.(step, "active");
 
-            const result = await runWorkerTaskWithTimeout(task);
+      const result = await runWorkerTaskWithTimeout(task);
 
-            if (result.status === "error") {
-                extensionLog.warn("Reference graph: collector task failed", { task, result });
-            }
+      if (result.status === "cancelled") {
+        throw new DOMException(
+          `Harvest cancelled while executing: ${result.type}`,
+          "AbortError",
+        );
+      }
 
-            if (step) onProgress?.(step, result.status === "success" ? "complete" : "skipped");
-            return result;
-        }),
-    );
+      if (result.status === "error") {
+        extensionLog.warn("Reference graph: collector task failed", { task, result });
+      }
 
-    throwForFailedResults(results);
-    return results;
+      if (step) onProgress?.(step, result.status === "success" ? "complete" : "skipped");
+      return result;
+    }),
+  );
+
+  throwForFailedResults(results);
+  return results;
 }
 
 async function setAndVerifyEditorState(
-    request: HarvestRequest,
-    rawValues: boolean | undefined,
-    standardFields: boolean | undefined,
-    phase: string,
+  request: HarvestRequest,
+  rawValues: boolean | undefined,
+  standardFields: boolean | undefined,
+  phase: string,
 ): Promise<void> {
-    const task = createEditorStateTask(request, { rawValues, standardFields });
+  const task = createEditorStateTask(request, { rawValues, standardFields });
 
-    extensionLog.debug("Reference graph: establishing editor state", {
-        requestId: request.requestId,
-        taskId: task.taskId,
-        phase,
-        rawValues,
-        standardFields,
-    });
+  extensionLog.debug("Reference graph: establishing editor state", {
+    requestId: request.requestId,
+    taskId: task.taskId,
+    phase,
+    rawValues,
+    standardFields,
+  });
 
-    const result = await runWorkerTaskWithTimeout(task);
-    throwForFailedResults([result]);
+  const result = await runWorkerTaskWithTimeout(task);
 
-    const verified =
-        result.status === "success" &&
-        result.type === "set-editor-state" &&
-        result.payload.editorState.rawValues === rawValues &&
-        result.payload.editorState.standardFields === standardFields;
+  throwForCancelledResults([result]);
+  throwForFailedResults([result]);
 
-    if (!verified) {
-        throw new Error(
-            `Editor-state verification failed during ${phase}: ` +
-            `requested Raw=${String(rawValues)}, Standard=${String(standardFields)}`,
-        );
-    }
+  const verified =
+    result.status === "success" &&
+    result.type === "set-editor-state" &&
+    result.payload.editorState.rawValues === rawValues &&
+    result.payload.editorState.standardFields === standardFields;
 
-    extensionLog.debug("Reference graph: editor state established", {
-        requestId: request.requestId,
-        taskId: task.taskId,
-        phase,
-        rawValues,
-        standardFields,
-    });
+  if (!verified) {
+    throw new Error(
+      `Editor-state verification failed during ${phase}: ` +
+      `requested Raw=${String(rawValues)}, Standard=${String(standardFields)}`,
+    );
+  }
+
+  extensionLog.debug("Reference graph: editor state established", {
+    requestId: request.requestId,
+    taskId: task.taskId,
+    phase,
+    rawValues,
+    standardFields,
+  });
 }
 
 async function restoreOriginalState(request: HarvestRequest): Promise<void> {
@@ -153,13 +173,26 @@ async function restoreOriginalState(request: HarvestRequest): Promise<void> {
     throw new Error("Injected Reference Graph editor-state restoration failure");
   }
 
+  const restorationRequest: HarvestRequest = {
+    ...request,
+    requestId: crypto.randomUUID(),
+  };
+
+  extensionLog.debug("Reference graph: restoring editor state with cleanup request", {
+    cancelledRequestId: request.requestId,
+    restorationRequestId: restorationRequest.requestId,
+    rawValues: original.rawValues,
+    standardFields: original.standardFields,
+  });
+
   await setAndVerifyEditorState(
-    request,
+    restorationRequest,
     original.rawValues,
     original.standardFields,
     "restore-original-state",
   );
 }
+
 
 export async function executeHarvestPlan(
     request: HarvestRequest,
