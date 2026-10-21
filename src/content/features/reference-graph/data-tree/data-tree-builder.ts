@@ -6,20 +6,12 @@ import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";
 import { createDataTreeNodeId } from "./layout-data-tree-builder";
 import { createLayoutDataTree } from "./data-tree-node-id";
 import { DATA_TREE_FAN_OUT_LIMITS } from "./data-tree-fan-out-limits";
-import {
-  createDataTreeItemNode,
-  createDataTreeNonItemNode,
-} from "./data-tree-node-factory";
-import {
-  createSitecoreItemProvenance,
-  createSyntheticProvenance,
-} from "./data-tree-provenance.types";
+import { createDataTreeItemNode, createDataTreeNonItemNode } from "./data-tree-node-factory";
+import { createSitecoreItemProvenance, createSyntheticProvenance } from "./data-tree-provenance.types";
 import type { DataTreeItemNode, DataTreeNonItemNode, DataTreeTruncation } from "./data-tree.types";
 import { createSectionsTreeNode } from "./sections-data-tree-builder";
 
-export function createDataTree(
-  graphReferenceResult: SitecoreHarvestResult,
-): DataTreeItemNode {
+export function createDataTree(graphReferenceResult: SitecoreHarvestResult): DataTreeItemNode {
   const rootTreeNodeId = graphReferenceResult.rootItem.scItemId;
 
   const children = [
@@ -29,10 +21,7 @@ export function createDataTree(
     createReferrersTreeNode(graphReferenceResult),
     createSectionsTreeNode(graphReferenceResult),
     createLayoutTreeNode(graphReferenceResult),
-  ].filter(
-    (treeNode): treeNode is DataTreeItemNode | DataTreeNonItemNode =>
-      treeNode !== undefined,
-  );
+  ].filter((treeNode): treeNode is DataTreeItemNode | DataTreeNonItemNode => treeNode !== undefined);
 
   return createDataTreeItemNode({
     treeNodeId: rootTreeNodeId,
@@ -45,19 +34,14 @@ export function createDataTree(
   });
 }
 
-function createParentTreeNode(
-  graphReferenceResult: SitecoreHarvestResult,
-): DataTreeItemNode | undefined {
+function createParentTreeNode(graphReferenceResult: SitecoreHarvestResult): DataTreeItemNode | undefined {
   const parent = graphReferenceResult.parent;
 
   let parentTreeNode: DataTreeItemNode | undefined = undefined;
 
   if (parent) {
     parentTreeNode = createDataTreeItemNode({
-      treeNodeId: createDataTreeNodeId(
-        graphReferenceResult.rootItem.scItemId,
-        "parent",
-      ),
+      treeNodeId: createDataTreeNodeId(graphReferenceResult.rootItem.scItemId, "parent"),
       scItem: parent,
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PARENT,
       provenance: createSitecoreItemProvenance(parent),
@@ -71,19 +55,14 @@ function createParentTreeNode(
   return parentTreeNode;
 }
 
-function createTemplateTreeNode(
-  graphReferenceResult: SitecoreHarvestResult,
-): DataTreeItemNode | undefined {
+function createTemplateTreeNode(graphReferenceResult: SitecoreHarvestResult): DataTreeItemNode | undefined {
   const template = graphReferenceResult.rootItem.scTemplate;
 
   let templateTreeNode: DataTreeItemNode | undefined = undefined;
 
   if (template) {
     templateTreeNode = createDataTreeItemNode({
-      treeNodeId: createDataTreeNodeId(
-        graphReferenceResult.rootItem.scItemId,
-        "template",
-      ),
+      treeNodeId: createDataTreeNodeId(graphReferenceResult.rootItem.scItemId, "template"),
       scItem: template,
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.TEMPLATE,
       provenance: createSitecoreItemProvenance(template),
@@ -96,28 +75,17 @@ function createTemplateTreeNode(
   return templateTreeNode;
 }
 
-function createChildrenTreeNode(
-  graphReferenceResult: SitecoreHarvestResult,
-): DataTreeNonItemNode | undefined {
+function createChildrenTreeNode(graphReferenceResult: SitecoreHarvestResult): DataTreeNonItemNode | undefined {
   const childItems = graphReferenceResult.childItems ?? [];
 
   let childrenTreeNode: DataTreeNonItemNode | undefined = undefined;
 
   if (childItems.length > 0) {
-    const treeNodeId = createDataTreeNodeId(
-      graphReferenceResult.rootItem.scItemId,
-      "children",
-    );
+    const treeNodeId = createDataTreeNodeId(graphReferenceResult.rootItem.scItemId, "children");
 
-    const truncation = createFanOutTruncation(
-      childItems.length,
-      DATA_TREE_FAN_OUT_LIMITS.MAX_CHILDREN_PER_ITEM,
-    );
+    const truncation = createFanOutTruncation(childItems.length, DATA_TREE_FAN_OUT_LIMITS.MAX_CHILDREN_PER_ITEM);
 
-    const includedChildItems = childItems.slice(
-      0,
-      DATA_TREE_FAN_OUT_LIMITS.MAX_CHILDREN_PER_ITEM,
-    );
+    const includedChildItems = childItems.slice(0, DATA_TREE_FAN_OUT_LIMITS.MAX_CHILDREN_PER_ITEM);
 
     childrenTreeNode = createDataTreeNonItemNode({
       treeNodeId,
@@ -130,11 +98,7 @@ function createChildrenTreeNode(
       truncation,
       children: includedChildItems.map((childItem, index) =>
         createDataTreeItemNode({
-          treeNodeId: createDataTreeNodeId(
-            treeNodeId,
-            childItem.scItemId,
-            String(index),
-          ),
+          treeNodeId: createDataTreeNodeId(treeNodeId, childItem.scItemId, String(index)),
           scItem: childItem,
           kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.CHILD,
           provenance: createSitecoreItemProvenance(childItem),
@@ -149,28 +113,14 @@ function createChildrenTreeNode(
   return childrenTreeNode;
 }
 
-function createReferrersTreeNode(
-  graphReferenceResult: SitecoreHarvestResult,
-): DataTreeNonItemNode | undefined {
+function createReferrersTreeNode(graphReferenceResult: SitecoreHarvestResult): DataTreeNonItemNode | undefined {
   const referrers = graphReferenceResult.referrers ?? [];
-
-  // let referrersTreeNode: DataTreeNonItemNode | undefined = undefined;
-
   if (referrers.length > 0) {
-    const treeNodeId = createDataTreeNodeId(
-      graphReferenceResult.rootItem.scItemId,
-      "referrers",
-    );
+    const treeNodeId = createDataTreeNodeId(graphReferenceResult.rootItem.scItemId, "referrers");
 
-    const truncation = createFanOutTruncation(
-      referrers.length,
-      DATA_TREE_FAN_OUT_LIMITS.MAX_REFERRERS_PER_ITEM,
-    );
+    const truncation = createFanOutTruncation(referrers.length, DATA_TREE_FAN_OUT_LIMITS.MAX_REFERRERS_PER_ITEM);
 
-    const includedReferrers = referrers.slice(
-      0,
-      DATA_TREE_FAN_OUT_LIMITS.MAX_REFERRERS_PER_ITEM,
-    );
+    const includedReferrers = referrers.slice(0, DATA_TREE_FAN_OUT_LIMITS.MAX_REFERRERS_PER_ITEM);
 
     const referrersTreeNode = createDataTreeNonItemNode({
       treeNodeId,
@@ -184,11 +134,7 @@ function createReferrersTreeNode(
       truncation,
       children: includedReferrers.map((referrer, index) =>
         createDataTreeItemNode({
-          treeNodeId: createDataTreeNodeId(
-            treeNodeId,
-            referrer.scItemId,
-            String(index),
-          ),
+          treeNodeId: createDataTreeNodeId(treeNodeId, referrer.scItemId, String(index)),
           scItem: referrer,
           kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.REFERRER,
           provenance: createSitecoreItemProvenance(referrer),
@@ -203,21 +149,11 @@ function createReferrersTreeNode(
   }
 }
 
-function createFanOutTruncation(
-  availableCount: number,
-  limit: number,
-): DataTreeTruncation {
-  return {
-    availableCount,
-    includedCount: Math.min(availableCount, limit),
-    truncated: availableCount > limit,
-  };
+function createFanOutTruncation(availableCount: number, limit: number): DataTreeTruncation {
+  return { availableCount, includedCount: Math.min(availableCount, limit), truncated: availableCount > limit };
 }
-function createLayoutTreeNode(
-  graphReferenceResult: SitecoreHarvestResult,
-): DataTreeNonItemNode | undefined {
-  const hasLayoutData =
-    (graphReferenceResult.layoutSectionFields?.length ?? 0) > 0;
+function createLayoutTreeNode(graphReferenceResult: SitecoreHarvestResult): DataTreeNonItemNode | undefined {
+  const hasLayoutData = (graphReferenceResult.layoutSectionFields?.length ?? 0) > 0;
 
   let layoutTreeNode: DataTreeNonItemNode | undefined = undefined;
 

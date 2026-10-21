@@ -2,18 +2,9 @@
 
 export function InteractionLegend() {
   return (
-    <div
-      style={{
-        fontSize: 10,
-        color: "#5a6b80",
-        lineHeight: 1.5,
-        borderTop: "1px solid #d7e0ea",
-        paddingTop: 6,
-        whiteSpace: "pre-line",
-      }}
-    >
+    <div className="fobles-reference-graph-interaction-legend">
       {
-        "Click: tooltip\nDouble-click: go to node\nCtrl/Cmd+click: open in new tab"
+        "Click: tooltip\nDouble-click: go to node\nCtrl/Cmd+click: open in new tab\nRight-click: Zoom In\nCtrl-Right-click: Zoom Out"
       }
     </div>
   );

@@ -53,6 +53,9 @@ export const SITECORE = {
     RAW_VALUES: "Check_BBDED3F008D144C82A983B54F0424BBC1",
     STANDARD_FIELDS: "Check_BC29C1D329FB74DA585083FEC2AF3A81D",
   },
+  ICONS:{
+    SPINNER_SRC: "/sitecore/shell/themes/standard/Images/ProgressIndicator/sc-spinner32.gif",
+  },
   IDS: {
     CONTENT_EDITOR: {
       NAVIGATION: {

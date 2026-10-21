@@ -1,37 +1,23 @@
-// @source-path [fobles] src/content/features/reference-graph/components/enrichment-progress.tsx
+// @source-path [Fobles] src/content/features/reference-graph/components/enrichment-progress.tsx
 
+
+import { CONST } from "../../../../constants/const";
 import type { EnrichmentProgress as EnrichmentProgressData } from "../enrichment/enrichment.types";
 
-type EnrichmentProgressProps = {
-  progress: EnrichmentProgressData | undefined;
-};
+type EnrichmentProgressProps = { progress: EnrichmentProgressData | undefined };
 
-const SPINNER_SRC =
-  "/sitecore/shell/themes/standard/Images/ProgressIndicator/sc-spinner32.gif";
 
-export function EnrichmentProgress({
-  progress,
-}: EnrichmentProgressProps) {
-  if (
-    !progress ||
-    progress.status !== "running" ||
-    progress.maxItemCount === 0
-  ) {
+
+export function EnrichmentProgress({ progress }: EnrichmentProgressProps) {
+  if (!progress || progress.status !== "running" || progress.maxItemCount === 0) {
     return null;
   }
 
-  const percentComplete = Math.round(
-    (progress.completedItemCount / progress.maxItemCount) * 100,
-  );
+  const percentComplete = Math.round((progress.completedItemCount / progress.maxItemCount) * 100);
 
   return (
     <div className="fobles-reference-graph-enrichment-progress">
-      <img
-        className="fobles-reference-graph-enrichment-progress-spinner"
-        src={SPINNER_SRC}
-        alt=""
-        aria-hidden="true"
-      />
+      <img className="fobles-reference-graph-enrichment-progress-spinner" src={CONST.SITECORE.ICONS.SPINNER_SRC} alt="" aria-hidden="true" />
 
       <div className="fobles-reference-graph-enrichment-progress-content">
         <div className="fobles-reference-graph-enrichment-progress-label">
@@ -39,10 +25,7 @@ export function EnrichmentProgress({
         </div>
 
         <div className="fobles-reference-graph-enrichment-progress-track">
-          <div
-            className="fobles-reference-graph-enrichment-progress-value"
-            style={{ width: `${percentComplete}%` }}
-          />
+          <div className="fobles-reference-graph-enrichment-progress-value" style={{ width: `${percentComplete}%` }} />
         </div>
       </div>
     </div>

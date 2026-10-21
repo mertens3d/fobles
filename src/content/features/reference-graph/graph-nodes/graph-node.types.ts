@@ -17,9 +17,7 @@ export type GraphNodeData = {
   renderingParameterIsItemReference: boolean | undefined;
   enrichmentStatus: EnrichmentStatus | undefined;
 };
-export type ExpandCollapseAction = "single" |
-  "same-kind" |
-  "subtree";
+export type ExpandCollapseAction = "single" | "same-kind" | "subtree";
 
 export type ExpandCollapseButtonController = {
   collapsedTreeNodeIds: Set<string>;
