@@ -17,6 +17,37 @@
     background: $fobles-backdrop;
   }
 
+  &-zoom-controls {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+    border: 1px solid #8a97a8;
+    border-radius: 6px;
+    background: $fobles-white;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.18);
+
+    button {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      border: 0;
+      background: $fobles-white;
+      color: $fobles-text;
+      font:
+        600 22px/36px Arial,
+        sans-serif;
+      cursor: pointer;
+
+      & + button {
+        border-top: 1px solid #d3d9e2;
+      }
+    }
+  }
+
   &-app {
     position: relative;
     width: 100%;

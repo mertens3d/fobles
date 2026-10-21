@@ -61,3 +61,7 @@
 
 
 add a message about "Site access" has to be set to "On Specific Sites" because of the background tab worker
+
+
+add page
+https://xmc-kestrafinan4e39-gettingstarfc3e-gettingstard1db.sitecorecloud.io/sitecore/shell/default.aspx?xmlcontrol=Application&hdl=1C089026FC0444D0A1BBF0BCFBB50A67&he=SXA+Site+Manager&ic=Apps%2f32x32%2fSteps.png

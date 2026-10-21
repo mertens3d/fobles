@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/features/reference-graph/components/graph-zoom-controls.tsx
+
 type GraphZoomControlsProps = {
   onZoomIn: () => void;
   onZoomOut: () => void;
