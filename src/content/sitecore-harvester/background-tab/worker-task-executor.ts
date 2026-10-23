@@ -13,9 +13,10 @@ import {
   setScRawValuesState,
   setScStandardFieldsState,
 } from "../../macros/ribbon-toggle-macro";
-import type {
-  HarvestContext,
-  SitecoreHarvestResult,
+import {
+  factoryItemGraphNodeData,
+  type HarvestContext,
+  type SitecoreHarvestResult,
 } from "../sitecore-harvester.types";
 import {
   createCancelledResult,
@@ -27,6 +28,13 @@ import {
   type WorkerTaskResult,
   type WorkerTaskType,
 } from "../worker-pool/worker-task.types";
+
+function normalizeSitecoreItemId(value: string | undefined): string | undefined {
+  return value
+    ?.replace(/[{}]/g, "")
+    .trim()
+    .toLowerCase();
+}
 
 function buildHarvestContext(
   doc: Document,
@@ -97,7 +105,8 @@ export async function executeWorkerTask(
   task: WorkerTask,
   signal: AbortSignal,
 ): Promise<WorkerTaskExecutionResult> {
-  let result: WorkerTaskExecutionResult | undefined = cancelledResultIfAborted(task, signal);
+  let result: WorkerTaskExecutionResult | undefined =
+    cancelledResultIfAborted(task, signal);
 
   if (!result && (await ensureWorkerEditorState(doc, task))) {
     result = createDocumentStaleResult(task);
@@ -105,52 +114,108 @@ export async function executeWorkerTask(
 
   if (!result) {
     if (task.type === "set-editor-state") {
-      result = successResult(task, { editorState: task.editorState });
+      result = successResult(task, {
+        editorState: task.editorState,
+      });
     } else if (task.type === "collect-root-item") {
       const rootItem = harvestStepRootItem(doc);
+
       result = rootItem
         ? successResult(task, { rootItem })
-        : createErrorResult(task, "Could not resolve current item id");
+        : createErrorResult(
+            task,
+            "Could not resolve current item id",
+          );
     } else if (task.type === "enrich-item") {
       const item = buildItemGraphNodeDataFromDoc(doc);
-      result = item.scItemId || item.scItemPath
-        ? successResult(task, { item })
-        : createErrorResult(task, "Could not resolve item at navigated url");
+
+      const requestedItemId =
+        normalizeSitecoreItemId(task.lookup.scItemId);
+
+      const resolvedItemId =
+        normalizeSitecoreItemId(item.scItemId);
+
+      if (
+        requestedItemId &&
+        requestedItemId !== resolvedItemId
+      ) {
+        result = successResult(task, {
+          item: factoryItemGraphNodeData(),
+        });
+      } else {
+        result =
+          item.scItemId || item.scItemPath
+            ? successResult(task, { item })
+            : createErrorResult(
+                task,
+                "Could not resolve item at navigated url",
+              );
+      }
     } else {
-      const harvestContext = buildHarvestContext(doc, signal);
+      const harvestContext =
+        buildHarvestContext(doc, signal);
 
       if (!harvestContext) {
-        result = createErrorResult(task, "Could not resolve current item id");
+        result = createErrorResult(
+          task,
+          "Could not resolve current item id",
+        );
       } else {
         switch (task.type) {
           case "collect-parent":
             await collectParent(harvestContext);
-            result = cancelledResultIfAborted(task, signal) ??
-              successResult(task, { parent: harvestContext.result.parent });
-            break;
-          case "collect-children":
-            await collectChildren(harvestContext);
-            result = cancelledResultIfAborted(task, signal) ??
-              successResult(task, { childItems: harvestContext.result.childItems ?? [] });
-            break;
-          case "collect-referrers":
-            await collectReferrers(harvestContext);
-            result = cancelledResultIfAborted(task, signal) ??
-              successResult(task, { referrers: harvestContext.result.referrers ?? [] });
-            break;
-          case "collect-sections":
-            await collectSections(harvestContext);
-            result = cancelledResultIfAborted(task, signal) ??
+            result =
+              cancelledResultIfAborted(task, signal) ??
               successResult(task, {
-                customFieldSections: harvestContext.result.customFieldSections ?? [],
-                standardFieldSections: harvestContext.result.standardFieldSections ?? [],
+                parent:
+                  harvestContext.result.parent,
               });
             break;
+
+          case "collect-children":
+            await collectChildren(harvestContext);
+            result =
+              cancelledResultIfAborted(task, signal) ??
+              successResult(task, {
+                childItems:
+                  harvestContext.result.childItems ??
+                  [],
+              });
+            break;
+
+          case "collect-referrers":
+            await collectReferrers(harvestContext);
+            result =
+              cancelledResultIfAborted(task, signal) ??
+              successResult(task, {
+                referrers:
+                  harvestContext.result.referrers ??
+                  [],
+              });
+            break;
+
+          case "collect-sections":
+            await collectSections(harvestContext);
+            result =
+              cancelledResultIfAborted(task, signal) ??
+              successResult(task, {
+                customFieldSections:
+                  harvestContext.result
+                    .customFieldSections ?? [],
+                standardFieldSections:
+                  harvestContext.result
+                    .standardFieldSections ?? [],
+              });
+            break;
+
           case "collect-layouts":
             await collectLayouts(harvestContext);
-            result = cancelledResultIfAborted(task, signal) ??
+            result =
+              cancelledResultIfAborted(task, signal) ??
               successResult(task, {
-                layoutSectionFields: harvestContext.result.layoutSectionFields ?? [],
+                layoutSectionFields:
+                  harvestContext.result
+                    .layoutSectionFields ?? [],
               });
             break;
         }
@@ -158,8 +223,15 @@ export async function executeWorkerTask(
     }
   }
 
-  return result ?? createErrorResult(task, "Worker task produced no result");
+  return (
+    result ??
+    createErrorResult(
+      task,
+      "Worker task produced no result",
+    )
+  );
 }
+
 type WorkerEditorRequirements = {
   rawValues?: boolean;
   standardFields?: boolean;

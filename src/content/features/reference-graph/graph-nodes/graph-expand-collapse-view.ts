@@ -206,7 +206,6 @@ export function applyGraphVisibility(
   filters: SitecoreHarvestFiltersState,
 ): void {
   const parameterVisibilitySettings = readGraphParameterVisibility(cy);
-
   const filteredTreeNodeIds = collectFilteredTreeNodeIds(cy, filters, parameterVisibilitySettings);
 
   collectEmptyRenderingParameterContainerIds(cy, filteredTreeNodeIds).forEach((treeNodeId: string) => {
@@ -229,7 +228,9 @@ export function applyGraphVisibility(
 
     edge.style(
       "display",
-      hiddenTreeNodeIds.has(sourceTreeNodeId) || hiddenTreeNodeIds.has(targetTreeNodeId) ? "none" : "element",
+      hiddenTreeNodeIds.has(sourceTreeNodeId) || hiddenTreeNodeIds.has(targetTreeNodeId)
+        ? "none"
+        : "element",
     );
   });
 }

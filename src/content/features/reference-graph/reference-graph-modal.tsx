@@ -31,6 +31,7 @@ export function openReferenceGraphModal(
     PreparedReferenceGraph,
   harvestForLink:
     HarvestForLink,
+  onClose?: () => void,
 ): void {
   doc
     .getElementById(
@@ -79,6 +80,7 @@ export function openReferenceGraphModal(
       );
 
       appRoot.unmount();
+      onClose?.();
 
       void disposeBackgroundWorkerPool()
         .finally(() => {

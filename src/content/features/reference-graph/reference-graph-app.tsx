@@ -11,7 +11,9 @@ import { useReferenceGraph } from "./hooks/use-reference-graph";
 import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 import { useRef } from "react";
+import { extensionLog } from "../../logger";
 const ZOOM_FACTOR = 1.2;
+const VIEWPORT_PADDING = 60;
 
 type ReferenceGraphAppProps = {
   doc: Document;
@@ -69,18 +71,39 @@ export function ReferenceGraphApp({
     setGraphBusy: graphState.setGraphBusy,
   });
 
-  const handleZoom = (factor: number, renderedPosition?: cytoscape.Position): void => {
+  const handleZoom = (
+    factor: number,
+    renderedPosition?: cytoscape.Position,
+  ): void => {
     const cy = cyRef.current;
 
     if (cy) {
-      const level = Math.min(cy.maxZoom(), Math.max(cy.minZoom(), cy.zoom() * factor));
+      cy.nodes(".fobles-reference-graph-compound-group").forEach((group) => {
+        const parent = group.parent();
+
+        extensionLog.debug("Reference graph: compound group diagnostic", {
+          groupId: group.id(),
+          parentId: parent.nonempty() ? parent.first().id() : undefined,
+          children: group.children().map((child) => ({
+            id: child.id(),
+            collapseKey: child.data("collapseKey"),
+            compoundGroup: child.data("compoundGroup"),
+          })),
+        });
+      });
+
+      const level = Math.min(
+        cy.maxZoom(),
+        Math.max(cy.minZoom(), cy.zoom() * factor),
+      );
 
       cy.zoom({
         level,
-        renderedPosition: renderedPosition ?? {
-          x: cy.width() / 2,
-          y: cy.height() / 2,
-        },
+        renderedPosition:
+          renderedPosition ?? {
+            x: cy.width() / 2,
+            y: cy.height() / 2,
+          },
       });
     }
   };
@@ -139,6 +162,12 @@ export function ReferenceGraphApp({
       <GraphZoomControls
         onZoomIn={() => handleZoom(ZOOM_FACTOR)}
         onZoomOut={() => handleZoom(1 / ZOOM_FACTOR)}
+        onFitGraph={() => cyRef.current?.fit(undefined, VIEWPORT_PADDING)}
+        onCenterRoot={() => {
+          const cy = cyRef.current;
+          const rootItem = cy?.getElementById(graphState.currentPreparedGraph.harvestedData.rootItem.scItemId);
+          if (rootItem?.nonempty()) cy?.fit(rootItem, VIEWPORT_PADDING);
+        }}
       />
     </div>
   );

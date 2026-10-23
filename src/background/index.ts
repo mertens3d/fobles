@@ -16,6 +16,7 @@ import {
   disposeWorkerPool,
   handleWorkerReady,
   handleWorkerTabRemoved,
+  clearWorkerPoolForHost,
   runPoolTask,
 } from "../content/sitecore-harvester/worker-pool/background-worker-pool";
 import {
@@ -32,14 +33,22 @@ import { appendPersistedLogEntry, clearPersistedLogEntries } from "../shared/log
 import type { PersistedLogMessage } from "../shared/persisted-log.types";
 
 const MESSAGE_TYPE = REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
+const REFERENCE_GRAPH_LOCK_ACQUIRE = "FOBLES_REFERENCE_GRAPH_LOCK_ACQUIRE";
+const REFERENCE_GRAPH_LOCK_RELEASE = "FOBLES_REFERENCE_GRAPH_LOCK_RELEASE";
+let activeReferenceGraphHostTabId: number | undefined;
 
 const RELAYED_COMMANDS: readonly string[] = [
   MESSAGE.ACTION.TOGGLE_FOBLES,
   MESSAGE.ACTION.TOGGLE_LBOLT,
 ];
 
+type ReferenceGraphLockMessage =
+  | { type: "FOBLES_REFERENCE_GRAPH_LOCK_ACQUIRE" }
+  | { type: "FOBLES_REFERENCE_GRAPH_LOCK_RELEASE" };
+
 type RuntimeMessage =
   | RuntimeReloadMessage
+  | ReferenceGraphLockMessage
   | PoolRunTaskMessage
   | PoolCancelRequestMessage
   | PoolCancelTaskMessage
@@ -72,7 +81,9 @@ chrome.commands?.onCommand?.addListener((command: string) => {
 
 chrome.tabs?.onRemoved?.addListener((tabId: number) => {
   clearHostWorkerIframeTargets(tabId);
+  clearWorkerPoolForHost(tabId);
   handleWorkerTabRemoved(tabId);
+  if (activeReferenceGraphHostTabId === tabId) activeReferenceGraphHostTabId = undefined;
 });
 
 chrome.runtime.onSuspend?.addListener(() => {
@@ -87,7 +98,15 @@ chrome.runtime.onMessage.addListener(
   ) => {
     let keepMessageChannelOpen = false;
 
-    if (
+    if ("type" in request && request.type === REFERENCE_GRAPH_LOCK_ACQUIRE) {
+      const hostTabId = sender.tab?.id;
+      const acquired = hostTabId !== undefined && (activeReferenceGraphHostTabId === undefined || activeReferenceGraphHostTabId === hostTabId);
+      if (acquired) activeReferenceGraphHostTabId = hostTabId;
+      sendResponse({ acquired });
+    } else if ("type" in request && request.type === REFERENCE_GRAPH_LOCK_RELEASE) {
+      if (activeReferenceGraphHostTabId === sender.tab?.id) activeReferenceGraphHostTabId = undefined;
+      sendResponse({ released: true });
+    } else if (
       "type" in request &&
       request.type === MESSAGE_TYPE.FOBLES_PERSIST_LOG
     ) {
@@ -149,12 +168,12 @@ chrome.runtime.onMessage.addListener(
       "type" in request &&
       request.type === MESSAGE_TYPE.POOL_CANCEL_REQUEST
     ) {
-      cancelPoolRequest(request.requestId);
+      cancelPoolRequest(request.requestId, sender.tab?.id);
     } else if (
       "type" in request &&
       request.type === MESSAGE_TYPE.POOL_CANCEL_TASK
     ) {
-      cancelPoolTask(request.requestId, request.taskId);
+      cancelPoolTask(request.requestId, request.taskId, sender.tab?.id);
     } else if (
       "type" in request &&
       request.type === MESSAGE_TYPE.POOL_DISPOSE

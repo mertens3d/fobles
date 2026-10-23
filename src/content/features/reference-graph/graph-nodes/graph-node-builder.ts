@@ -24,23 +24,59 @@ type AppendGraphNodeOptions = {
 };
 
 const COMPOUND_GROUP_DEFINITIONS: readonly CompoundGroupDefinition[] = [
-  { idSuffix: "group", rootCollapseKey: GRAPH_COLLAPSE_KEY.CHILDREN, memberCollapseKeys: [GRAPH_COLLAPSE_KEY.CHILD] },
+  {
+    idSuffix: "group",
+    rootCollapseKey: GRAPH_COLLAPSE_KEY.CHILDREN,
+    memberCollapseKeys: [
+      GRAPH_COLLAPSE_KEY.CHILD,
+    ],
+  },
   {
     idSuffix: "group",
     rootCollapseKey: GRAPH_COLLAPSE_KEY.RENDERING,
-    memberCollapseKeys: [GRAPH_COLLAPSE_KEY.DATASOURCE, GRAPH_COLLAPSE_KEY.RENDERING_PARAMETERS],
+    memberCollapseKeys: [
+      GRAPH_COLLAPSE_KEY.DATASOURCE,
+      GRAPH_COLLAPSE_KEY.RENDERING_PARAMETERS,
+    ],
     includeMemberDescendants: true,
   },
   {
     idSuffix: "group",
     rootCollapseKey: GRAPH_COLLAPSE_KEY.PLACEHOLDER,
-    memberCollapseKeys: [GRAPH_COLLAPSE_KEY.PLACEHOLDER, GRAPH_COLLAPSE_KEY.RENDERING],
+    memberCollapseKeys: [
+      GRAPH_COLLAPSE_KEY.PLACEHOLDER,
+      GRAPH_COLLAPSE_KEY.RENDERING,
+    ],
     includeMemberDescendants: true,
   },
   {
     idSuffix: "group",
     rootCollapseKey: GRAPH_COLLAPSE_KEY.LAYOUTS,
-    memberCollapseKeys: [GRAPH_COLLAPSE_KEY.LAYOUT_SECTION],
+    memberCollapseKeys: [
+      GRAPH_COLLAPSE_KEY.LAYOUT_SECTION,
+    ],
+    includeMemberDescendants: true,
+  },
+  {
+    idSuffix: "group",
+    rootCollapseKey: GRAPH_COLLAPSE_KEY.CUSTOM_FIELDS,
+    memberCollapseKeys: [
+      GRAPH_COLLAPSE_KEY.SECTION,
+    ],
+  },
+  {
+    idSuffix: "group",
+    rootCollapseKey: GRAPH_COLLAPSE_KEY.STANDARD_FIELDS,
+    memberCollapseKeys: [
+      GRAPH_COLLAPSE_KEY.SECTION,
+    ],
+  },
+  {
+    idSuffix: "group",
+    rootCollapseKey: GRAPH_COLLAPSE_KEY.SECTION,
+    memberCollapseKeys: [
+      GRAPH_COLLAPSE_KEY.FIELD,
+    ],
     includeMemberDescendants: true,
   },
 ];
@@ -126,15 +162,15 @@ function appendRelationshipEdge(
     cytoEdges.push({
       data: treeNode.reverse
         ? {
-            id: `edge-${treeNode.treeNodeId}-${semanticParentTreeNodeId}`,
-            source: treeNode.treeNodeId,
-            target: semanticParentTreeNodeId,
-          }
+          id: `edge-${treeNode.treeNodeId}-${semanticParentTreeNodeId}`,
+          source: treeNode.treeNodeId,
+          target: semanticParentTreeNodeId,
+        }
         : {
-            id: `edge-${semanticParentTreeNodeId}-${treeNode.treeNodeId}`,
-            source: semanticParentTreeNodeId,
-            target: treeNode.treeNodeId,
-          },
+          id: `edge-${semanticParentTreeNodeId}-${treeNode.treeNodeId}`,
+          source: semanticParentTreeNodeId,
+          target: treeNode.treeNodeId,
+        },
     });
   }
 }

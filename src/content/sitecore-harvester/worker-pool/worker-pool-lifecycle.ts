@@ -28,18 +28,6 @@ export type WorkerPoolDisposalResult = {
   generation: number;
 };
 
-let poolGeneration = 0;
-
-export function getWorkerPoolGeneration(): number {
-  return poolGeneration;
-}
-
-export function isWorkerPoolGenerationCurrent(
-  generation: number,
-): boolean {
-  return generation === poolGeneration;
-}
-
 export async function disposeWorkerPoolLifecycle({
   workers,
   queue,
@@ -47,12 +35,7 @@ export async function disposeWorkerPoolLifecycle({
   cancelledRequestIds,
   generation,
 }: DisposeWorkerPoolOptions): Promise<WorkerPoolDisposalResult> {
-  let nextGeneration = poolGeneration;
-
-  if (generation === poolGeneration) {
-    poolGeneration += 1;
-    nextGeneration = poolGeneration;
-  }
+  const nextGeneration = generation + 1;
 
   queue.forEach((queued) => {
     queued.resolve(createCancelledResult(queued.task));

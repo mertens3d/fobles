@@ -16,6 +16,7 @@ import {
 import { prepareReferenceGraph } from "./prepared-reference-graph";
 import { harvestGraphForLink } from "./harvester";
 import { openReferenceGraphModal } from "./reference-graph-modal";
+import { acquireReferenceGraphSessionLock, releaseReferenceGraphSessionLock } from "./reference-graph-session-lock";
 import { startReferenceGraphTimer } from "./reference-graph-timing";
 import { disposeBackgroundWorkerPool } from "../../sitecore-harvester/worker-pool/worker-pool-client";
 import {
@@ -117,6 +118,7 @@ async function executeReferenceGraphSession(doc: Document): Promise<void> {
             graphFilters,
             existingResult,
           ),
+        () => { void releaseReferenceGraphSessionLock(); },
       );
     } else {
       closeReferenceGraphProgressModal(doc);
@@ -169,23 +171,20 @@ async function executeReferenceGraphSession(doc: Document): Promise<void> {
 }
 
 export async function openReferenceGraph(doc: Document): Promise<void> {
-  if (activeReferenceGraphSession) {
-    extensionLog.warn(
-      "Reference graph: open ignored because another editor-state session is active",
-    );
-
-    await activeReferenceGraphSession;
+  if (activeReferenceGraphSession) return;
+  const acquired = await acquireReferenceGraphSessionLock();
+  if (!acquired) {
+    showFoblesErrorDialog(doc, {
+      title: "Reference Graph Already Active",
+      message:
+        "Only one Reference Graph can be active in this browser session. " +
+        "Close the existing graph, or use another browser profile or Incognito window.",
+    });
     return;
   }
-
   const session = executeReferenceGraphSession(doc);
   activeReferenceGraphSession = session;
-
-  try {
-    await session;
-  } finally {
-    if (activeReferenceGraphSession === session) {
-      activeReferenceGraphSession = undefined;
-    }
-  }
+  try { await session; }
+  catch (error) { await releaseReferenceGraphSessionLock(); throw error; }
+  finally { if (activeReferenceGraphSession === session) activeReferenceGraphSession = undefined; }
 }
