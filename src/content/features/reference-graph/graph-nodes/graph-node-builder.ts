@@ -33,6 +33,12 @@ const COMPOUND_GROUP_DEFINITIONS: readonly CompoundGroupDefinition[] = [
   },
   {
     idSuffix: "group",
+    rootCollapseKey: GRAPH_COLLAPSE_KEY.PLACEHOLDER,
+    memberCollapseKeys: [GRAPH_COLLAPSE_KEY.PLACEHOLDER, GRAPH_COLLAPSE_KEY.RENDERING],
+    includeMemberDescendants: true,
+  },
+  {
+    idSuffix: "group",
     rootCollapseKey: GRAPH_COLLAPSE_KEY.LAYOUTS,
     memberCollapseKeys: [GRAPH_COLLAPSE_KEY.LAYOUT_SECTION],
     includeMemberDescendants: true,

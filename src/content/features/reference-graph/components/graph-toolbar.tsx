@@ -15,10 +15,9 @@ import { GraphFilterList } from "./graph-filter-list";
 import { GraphToolBarHeaderButton } from "./graph-toolbar-header-button";
 import { GraphTypeSelect } from "./graph-type-select";
 import { GraphViewControls } from "./graph-view-controls";
-import { InteractionLegend } from "./interaction-legend";
 import { ParameterVisibilityControls } from "./parameter-visibility-controls";
-import { RootInfo } from "./root-info";
 import { ViewTreeDataButton } from "./view-tree-data-button";
+import { GraphHelpDialog, useGraphHelpDialog } from "./graph-help-dialog";
 
 export type GraphToolbarHandle = {
   showGraph: (
@@ -28,7 +27,7 @@ export type GraphToolbarHandle = {
 };
 
 type ToolbarProps = {
-  graph: SitecoreHarvestResult;
+  rootItemId: string;
   layoutPresetName: LayoutGraphPresetName;
   onLayoutChange: (value: LayoutGraphPresetName) => void;
   onRelayout: () => void;
@@ -53,7 +52,7 @@ type ToolbarProps = {
 };
 
 export function GraphToolbar({
-  graph,
+  rootItemId,
   layoutPresetName,
   onLayoutChange,
   onRelayout,
@@ -71,11 +70,13 @@ export function GraphToolbar({
   enrichmentProgress,
   onViewTreeData,
 }: ToolbarProps) {
+  const { dialogRef, showGraphHelp } = useGraphHelpDialog();
   return (
     <div className="fobles-reference-graph-toolbar">
       <GraphToolBarHeaderButton
         controlsExpanded={controlsExpanded}
         onControlsExpandedChange={onControlsExpandedChange}
+        onHelp={showGraphHelp}
       />
 
       {controlsExpanded && (
@@ -87,6 +88,7 @@ export function GraphToolbar({
 
           <GraphViewControls
             cy={cy}
+            rootItemId={rootItemId}
             onRelayout={onRelayout}
           />
 
@@ -106,8 +108,6 @@ export function GraphToolbar({
             onChange={onParameterVisibilityChange}
           />
 
-          <RootInfo graph={graph} />
-          <InteractionLegend />
 
           <ViewTreeDataButton
             onViewTreeData={onViewTreeData}
@@ -115,6 +115,7 @@ export function GraphToolbar({
         </div>
       )}
 
+      <GraphHelpDialog dialogRef={dialogRef} />
       <div className="fobles-reference-graph-toolbar-footer">
         <EnrichmentProgress
           progress={enrichmentProgress}

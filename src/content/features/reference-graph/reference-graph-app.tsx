@@ -10,7 +10,7 @@ import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";
 import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
-import { useRef, type MouseEvent } from "react";
+import { useRef } from "react";
 const ZOOM_FACTOR = 1.2;
 
 type ReferenceGraphAppProps = {
@@ -85,17 +85,6 @@ export function ReferenceGraphApp({
     }
   };
 
-  const handleGraphContextMenu = (event: MouseEvent<HTMLDivElement>): void => {
-    event.preventDefault();
-
-    const bounds = event.currentTarget.getBoundingClientRect();
-
-    handleZoom(event.ctrlKey ? 1 / ZOOM_FACTOR : ZOOM_FACTOR, {
-      x: event.clientX - bounds.left,
-      y: event.clientY - bounds.top,
-    });
-  };
-
   const enrichmentStatus = graphState.enrichmentProgress === undefined ? "pending" : graphState.enrichmentProgress.status;
 
   return (
@@ -111,7 +100,7 @@ export function ReferenceGraphApp({
       )}
 
       <GraphToolbar
-        graph={graphState.currentPreparedGraph.harvestedData}
+        rootItemId={graphState.currentPreparedGraph.harvestedData.rootItem.scItemId}
         layoutPresetName={graphState.layoutPresetName}
         onLayoutChange={handleLayoutChange}
         onRelayout={handleRelayout}
@@ -138,7 +127,6 @@ export function ReferenceGraphApp({
       <div
         ref={containerRef}
         className="fobles-reference-graph-canvas"
-        onContextMenu={handleGraphContextMenu}
       />
 
       {graphState.graphBusy && (

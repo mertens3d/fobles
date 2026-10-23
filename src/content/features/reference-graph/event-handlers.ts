@@ -35,6 +35,34 @@ export function attachGraphEventHandlers(cy: cytoscape.Core,
         container.style.cursor = "default";
     });
 
+    let pendingContextTap: ReturnType<typeof setTimeout> | undefined;
+    let lastContextTapNodeId: string | undefined;
+    let lastContextTapAt = 0;
+    cy.on("cxttap", (event) => {
+        const node = event.target === cy ? undefined : getEventNode(event);
+        const nodeId = node?.id();
+        const now = performance.now();
+        const isDoubleContextTap = Boolean(node && nodeId === lastContextTapNodeId && now - lastContextTapAt <= 350);
+        if (pendingContextTap !== undefined) clearTimeout(pendingContextTap);
+        if (isDoubleContextTap && node) {
+            const visibleTarget = node.isParent() ? node.union(node.descendants(":visible")) : node;
+            cy.fit(visibleTarget, 80);
+            lastContextTapNodeId = undefined;
+            lastContextTapAt = 0;
+        } else {
+            lastContextTapNodeId = nodeId;
+            lastContextTapAt = now;
+            const originalEvent = event.originalEvent instanceof MouseEvent ? event.originalEvent : undefined;
+            const renderedPosition = event.renderedPosition;
+            pendingContextTap = setTimeout(() => {
+                const factor = originalEvent?.ctrlKey || originalEvent?.metaKey ? 1 / 1.2 : 1.2;
+                const level = Math.min(cy.maxZoom(), Math.max(cy.minZoom(), cy.zoom() * factor));
+                cy.zoom({ level, renderedPosition });
+                pendingContextTap = undefined;
+            }, 350);
+        }
+    });
+
     // Selection has no visible artifact to suppress (unlike the old tooltip-toggle), so a
     // double-click's leading "tap" selecting the node right before "dbltap" re-roots it is
     // harmless - no debounce needed to tell single- from double-click apart anymore.

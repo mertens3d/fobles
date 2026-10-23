@@ -13,6 +13,9 @@ import type {
 import { clearWorkerReadiness } from "./worker-readiness";
 import { createCancelledResult } from "./worker-task.types";
 
+const DISPOSAL_DRAIN_TIMEOUT_MS = 10000;
+const DISPOSAL_DRAIN_POLL_MS = 50;
+
 type DisposeWorkerPoolOptions = {
   workers: PoolWorker[];
   queue: QueuedTask[];
@@ -55,29 +58,26 @@ export async function disposeWorkerPoolLifecycle({
     queued.resolve(createCancelledResult(queued.task));
   });
 
-  activeTaskByWorkerKey.forEach((active) => {
-    cancelledRequestIds.add(active.requestId);
-
-    sendCancelToWorkerTarget(
-      active.target,
-      active.requestId,
-      active.taskId,
-    );
+  const targets = collectWorkerTargets(workers);
+  extensionLog.debug("Worker pool: disposal drain started", {
+    previousGeneration: generation, nextGeneration, workerCount: workers.length,
+    queuedTaskCount: queue.length, activeTaskCount: activeTaskByWorkerKey.size,
+    timeoutMs: DISPOSAL_DRAIN_TIMEOUT_MS, targets,
   });
-
+  const drained = await waitForActiveTasksToDrain(activeTaskByWorkerKey);
+  if (!drained) {
+    extensionLog.warn("Worker pool: disposal drain timed out; forcing cleanup", {
+      activeTaskCount: activeTaskByWorkerKey.size, timeoutMs: DISPOSAL_DRAIN_TIMEOUT_MS,
+    });
+    activeTaskByWorkerKey.forEach((active) => {
+      cancelledRequestIds.add(active.requestId);
+      sendCancelToWorkerTarget(active.target, active.requestId, active.taskId);
+    });
+  } else {
+    extensionLog.debug("Worker pool: disposal drain complete", { activeTaskCount: 0 });
+  }
   activeTaskByWorkerKey.clear();
   clearWorkerReadiness();
-
-  const targets = collectWorkerTargets(workers);
-
-  extensionLog.debug("Worker pool: disposing", {
-    previousGeneration: generation,
-    nextGeneration,
-    workerCount: workers.length,
-    queuedTaskCount: queue.length,
-    targets,
-  });
-
   await Promise.all(
     targets.map((target) =>
       closeWorkerTarget(target),
@@ -94,6 +94,16 @@ export async function disposeWorkerPoolLifecycle({
   return {
     generation: nextGeneration,
   };
+}
+
+async function waitForActiveTasksToDrain(
+  activeTasks: Map<string, ActiveWorkerTask>,
+): Promise<boolean> {
+  const deadline = Date.now() + DISPOSAL_DRAIN_TIMEOUT_MS;
+  while (activeTasks.size > 0 && Date.now() < deadline) {
+    await new Promise<void>((resolve) => setTimeout(resolve, DISPOSAL_DRAIN_POLL_MS));
+  }
+  return activeTasks.size === 0;
 }
 
 function collectWorkerTargets(

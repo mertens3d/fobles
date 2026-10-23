@@ -184,3 +184,14 @@
     white-space: nowrap;
   }
 }
+.fobles-reference-graph {
+  &-controls-heading { display: grid; grid-template-columns: minmax(0, 1fr) 24px; align-items: center; gap: 8px; }
+  &-help-button {
+    appearance: none; display: inline-flex; align-items: center; justify-content: center; width: 24px; height: 24px;
+    margin: 0; padding: 0; border: 1px solid rgba($fobles-blue, 0.35); border-radius: 50%;
+    background: linear-gradient(180deg, $fobles-blue 0%, $fobles-blue-dark 100%); color: $fobles-white;
+    font: 700 13px/1 "Open Sans", Arial, sans-serif; cursor: pointer; box-shadow: 0 3px 8px $fobles-shadow-button;
+    &:hover { filter: brightness(1.06); box-shadow: 0 5px 12px $fobles-shadow-button-hover; }
+  }
+  &-controls-content > .fobles-reference-graph-view-tree-data { margin-top: 8px; }
+}

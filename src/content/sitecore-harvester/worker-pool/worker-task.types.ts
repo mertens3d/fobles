@@ -164,6 +164,7 @@ export type PoolWorker = {
   state: PoolWorkerState;
   currentUrl: string | undefined;
   generation: number;
+  retirementTimer: ReturnType<typeof setTimeout> | undefined;
 };
 
 export type QueuedTask = {
@@ -185,6 +186,7 @@ export type WorkerExecutorContext = {
   cancelledRequestIds: Set<string>;
   createPendingWorker: () => PoolWorker;
   retireWorker: (worker: PoolWorker) => void;
+  destroyRetiredWorker: (worker: PoolWorker, reason: string) => Promise<void>;
   retireAllWorkers: () => number;
   scheduleNext: () => void;
   isCurrentGeneration: () => boolean;

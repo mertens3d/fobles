@@ -72,7 +72,9 @@ export const SITECORE = {
     STANDARD_FIELDS: "Check_BC29C1D329FB74DA585083FEC2AF3A81D",
   },
   ICONS:{
-    SPINNER_SRC: "/sitecore/shell/themes/standard/Images/ProgressIndicator/sc-spinner32.gif",
+    // SPINNER_SRC: "/sitecore/shell/themes/standard/Images/ProgressIndicator/sc-spinner32.gif",
+    SPINNER_SRC: "/~/icon/people/32x32/hourglass.png",
+    
   },
   IDS: {
     CONTENT_EDITOR: {

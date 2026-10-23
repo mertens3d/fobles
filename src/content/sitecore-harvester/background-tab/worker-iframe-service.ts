@@ -33,6 +33,7 @@ export type WorkerIframeTarget = {
 };
 
 type PendingWorkerReady = {
+  hostTabId: number;
   resolve: (target: WorkerIframeTarget) => void;
   reject: (error: Error) => void;
   timeoutId: ReturnType<typeof setTimeout>;
@@ -49,7 +50,7 @@ export async function createWorkerIframeTarget(hostTabId: number, url: string): 
   >(hostTabId, message, { frameId: 0 });
 
   if (!created?.workerId) throw new Error("Worker iframe host did not create an iframe");
-  return await waitForWorkerIframeReady(created.workerId);
+  return await waitForWorkerIframeReady(created.workerId, hostTabId);
 }
 
 export async function navigateWorkerIframeTarget(
@@ -57,7 +58,7 @@ export async function navigateWorkerIframeTarget(
   url: string,
 ): Promise<WorkerIframeTarget> {
   clearWorkerIframeTarget(target.workerId);
-  const readyPromise = waitForWorkerIframeReady(target.workerId);
+  const readyPromise = waitForWorkerIframeReady(target.workerId, target.hostTabId);
   const message: WorkerIframeNavigateMessage = {
     type: WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE,
     workerId: target.workerId,
@@ -192,7 +193,7 @@ export function clearHostWorkerIframeTargets(hostTabId: number): void {
   workerIds.forEach(clearWorkerIframeTarget);
 }
 
-function waitForWorkerIframeReady(workerId: string): Promise<WorkerIframeTarget> {
+function waitForWorkerIframeReady(workerId: string, hostTabId: number): Promise<WorkerIframeTarget> {
   const existingTarget = targetByWorkerId.get(workerId);
   if (existingTarget) return Promise.resolve(existingTarget);
 
@@ -204,7 +205,7 @@ function waitForWorkerIframeReady(workerId: string): Promise<WorkerIframeTarget>
       reject(new Error(`Worker iframe did not become ready: ${workerId}`));
     }, READY_TIMEOUT_MS);
 
-    pendingReadyByWorkerId.set(workerId, { resolve, reject, timeoutId });
+    pendingReadyByWorkerId.set(workerId, { hostTabId, resolve, reject, timeoutId });
   });
 }
 

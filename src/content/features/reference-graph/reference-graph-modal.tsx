@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph-modal.tsx
 
 import { createRoot } from "react-dom/client";
+import { extensionLog } from "../../logger";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import {
   disposeBackgroundWorkerPool,

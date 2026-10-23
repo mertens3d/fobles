@@ -8,7 +8,7 @@ export function ViewTreeDataButton({
   return (
     <button
       type="button"
-      className="fobles-reference-graph-button"
+      className="fobles-reference-graph-button fobles-reference-graph-view-tree-data"
       style={{ width: "100%" }}
       onClick={onViewData}
     >

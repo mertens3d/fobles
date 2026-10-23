@@ -53,6 +53,15 @@ function cancelStaleWorker(
   queued.resolve(createCancelledResult(queued.task));
 }
 
+async function finishRetiredWorker(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+): Promise<void> {
+  queued.resolve(createCancelledResult(queued.task));
+  await context.destroyRetiredWorker(worker, "active-task-settled");
+}
+
 async function retryOrResolveError(
   context: WorkerExecutorContext,
   worker: PoolWorker,
@@ -187,13 +196,14 @@ async function runTaskOnWorker(
   );
 
   if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
-    cancelStaleWorker(context, worker, queued);
+    await finishRetiredWorker(context, worker, queued);
     return;
   }
 
   if (context.cancelledRequestIds.has(queued.task.requestId)) {
     context.retireWorker(worker);
     queued.resolve(createCancelledResult(queued.task));
+    await context.destroyRetiredWorker(worker, "cancelled-task-settled");
     context.scheduleNext();
     return;
   }
@@ -340,6 +350,7 @@ async function runOnNewWorker(
 
     if (isWorkerRetired(worker)) {
       queued.resolve(createCancelledResult(queued.task));
+      await context.destroyRetiredWorker(worker, "worker-ready-failed-after-retirement");
       return;
     }
 

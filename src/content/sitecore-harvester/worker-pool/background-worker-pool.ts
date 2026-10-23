@@ -2,6 +2,7 @@
 
 import { DEFAULT_RUNTIME_SETTINGS } from "../../runtime-settings/runtime-settings";
 import { extensionLog } from "../../logger";
+import { closeWorkerTarget } from "../background-tab/worker-target-service";
 import {
   runTaskOnNewWorker,
   runWorkerTask,
@@ -39,6 +40,8 @@ let queue: QueuedTask[] = [];
 
 const cancelledRequestIds = new Set<string>();
 const activeTaskByWorkerKey = new Map<string, ActiveWorkerTask>();
+const hostTabIds = new Set<number>();
+const RETIRED_WORKER_GRACE_MS = 10000;
 
 void initializeWorkerPoolSettings();
 
@@ -76,6 +79,7 @@ function createPendingWorker(): PoolWorker {
     state: "starting",
     currentUrl: undefined,
     generation: getWorkerPoolGeneration(),
+    retirementTimer: undefined,
   };
 
   workers.push(worker);
@@ -83,20 +87,38 @@ function createPendingWorker(): PoolWorker {
 }
 
 function retireWorker(worker: PoolWorker): void {
+  if (worker.state === "retired") return;
   const target = worker.target;
-
   worker.state = "retired";
-
-  if (target) {
-    activeTaskByWorkerKey.delete(getWorkerTargetKey(target));
-  }
-
+  worker.retirementTimer = setTimeout(() => {
+    void destroyRetiredWorker(worker, "retirement-grace-expired");
+  }, RETIRED_WORKER_GRACE_MS);
   extensionLog.debug("Worker pool: worker retired", {
     target,
-    retiredWorkerCount: workers.filter(
-      (candidate) => candidate.state === "retired",
-    ).length,
+    graceMs: RETIRED_WORKER_GRACE_MS,
+    retiredWorkerCount: workers.filter((candidate) => candidate.state === "retired").length,
   });
+}
+
+async function destroyRetiredWorker(worker: PoolWorker, reason: string): Promise<void> {
+  if (worker.state !== "retired") return;
+  if (worker.retirementTimer) {
+    clearTimeout(worker.retirementTimer);
+    worker.retirementTimer = undefined;
+  }
+  const target = worker.target;
+  workers = workers.filter((candidate) => candidate !== worker);
+  if (target) {
+    activeTaskByWorkerKey.delete(getWorkerTargetKey(target));
+    if (isWorkerTabTarget(target)) resetWorkerReadiness(target.tabId);
+    await closeWorkerTarget(target);
+    worker.target = undefined;
+  }
+  extensionLog.debug("Worker pool: retired worker destroyed", {
+    target, reason, workerCount: workers.length,
+    retiredWorkerCount: workers.filter((candidate) => candidate.state === "retired").length,
+  });
+  scheduleNext();
 }
 
 function retireAllWorkers(): number {
@@ -121,6 +143,7 @@ function createExecutorContext(): WorkerExecutorContext {
     cancelledRequestIds,
     createPendingWorker,
     retireWorker,
+    destroyRetiredWorker,
     retireAllWorkers,
     scheduleNext,
     isCurrentGeneration: () =>
@@ -348,6 +371,12 @@ export async function disposeWorkerPool(): Promise<void> {
 
   workers = [];
   queue = [];
+  workersToDispose.forEach((worker) => {
+    if (worker.retirementTimer) {
+      clearTimeout(worker.retirementTimer);
+      worker.retirementTimer = undefined;
+    }
+  });
 
   await disposeWorkerPoolLifecycle({
     workers: workersToDispose,
