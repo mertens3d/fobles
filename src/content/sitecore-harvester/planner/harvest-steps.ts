@@ -43,14 +43,14 @@ export const HARVEST_STEPS: readonly HarvestStep[] = [
 ];
 
 // One entry per collector task type, used to find the matching progress step directly -
-// collect-sections is gated by two filter keys (fields, standardFields), so it can't be
-// recovered from a single filter key alone.
+// get-custom-fields and get-standard-fields both map to the "Custom Fields" progress step.
 export const HARVEST_STEP_BY_TASK_TYPE: ReadonlyMap<WorkerTaskType, HarvestStep> = new Map([
-  ["collect-children", HARVEST_STEPS[0]],
-  ["collect-sections", HARVEST_STEPS[1]],
-  ["collect-layouts", HARVEST_STEPS[2]],
-  ["collect-referrers", HARVEST_STEPS[3]],
-  ["collect-parent", HARVEST_STEPS[4]],
+  ["get-children", HARVEST_STEPS[0]],
+  ["get-custom-fields", HARVEST_STEPS[1]],
+  ["get-standard-fields", HARVEST_STEPS[1]],
+  ["get-layout", HARVEST_STEPS[2]],
+  ["get-referrers", HARVEST_STEPS[3]],
+  ["get-parent", HARVEST_STEPS[4]],
 ]);
 
 export const PROGRESS_STEPS: readonly ProgressStep[] = [

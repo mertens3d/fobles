@@ -5,6 +5,7 @@ import { collectParent } from "./collectors/parent-collector";
 import { collectReferrers } from "./collectors/referrer-collector";
 import { collectLayouts } from "./collectors/section-collector/layout-collector/layout-collector";
 import { collectSections } from "./collectors/section-collector/section-collector";
+import { isGuidLike } from "../features/augmentor/shared/guid";
 import { buildItemGraphNodeDataFromDoc } from "./enrichment/item-enricher";
 import { harvestStepRootItem } from "./harvest-sitecore";
 import {
@@ -13,21 +14,20 @@ import {
   setScRawValuesState,
   setScStandardFieldsState,
 } from "../macros/ribbon-toggle-macro";
-import {
-  factoryItemGraphNodeData,
-  type HarvestContext,
-  type SitecoreHarvestResult,
-} from "./sitecore-harvester.types";
+import type { HarvestContext, SitecoreHarvestResult } from "./sitecore-harvester.types";
 import {
   createCancelledResult,
   createDocumentStaleResult,
   createErrorResult,
+  type SitecoreItemLocator,
+  type SitecoreResolvedResult,
   type WorkerTask,
   type WorkerTaskExecutionResult,
   type WorkerTaskPayloadByType,
   type WorkerTaskResult,
   type WorkerTaskType,
 } from "../sitecore-worker/tasks/worker-task.types";
+import type { ItemGraphNodeData } from "../data-tree/sitecore-item.types";
 
 function normalizeSitecoreItemId(value: string | undefined): string | undefined {
   return value
@@ -95,10 +95,64 @@ function cancelledResultIfAborted(
   return result;
 }
 
-type WorkerEditorState = {
-  rawValues: boolean;
-  standardFields: boolean;
-};
+// Quick Info is the one atomic Sitecore read where the DOM can genuinely show a DIFFERENT item
+// than the one requested (Sitecore silently falling back to e.g. /sitecore/content/Home for an
+// unresolved GUID) - so every result says what was requested, what actually resolved, and
+// whether those agree, instead of ever handing back the fallback item as though it matched.
+// Path-based requests are trusted as-is (no equality check - Sitecore's own path resolution is
+// the source of truth there); only "id" requests are compared against the resolved Item ID.
+function executeGetQuickInfo(
+  doc: Document,
+  requested: SitecoreItemLocator,
+): SitecoreResolvedResult<ItemGraphNodeData> {
+  const item = buildItemGraphNodeDataFromDoc(doc);
+  const resolved = item.scItemId
+    ? { itemId: item.scItemId, path: item.scItemPath }
+    : undefined;
+
+  if (!item.scItemId && !item.scItemPath) {
+    return { requested, resolved, status: "not-found" };
+  }
+
+  if (requested.kind === "id") {
+    const requestedId = normalizeSitecoreItemId(requested.value);
+    const resolvedId = normalizeSitecoreItemId(item.scItemId);
+
+    if (requestedId !== resolvedId) {
+      return { requested, resolved, status: "not-found" };
+    }
+  }
+
+  return { requested, resolved, value: item, status: "found" };
+}
+
+async function executeSetRawValues(
+  doc: Document,
+  task: WorkerTask & { type: "set-raw-values"; value: boolean },
+): Promise<WorkerTaskExecutionResult> {
+  const current = await getScRawValuesState(doc);
+
+  if (current === task.value) {
+    return successResult(task, { value: task.value });
+  }
+
+  await setScRawValuesState(doc, task.value);
+  return createDocumentStaleResult(task);
+}
+
+async function executeSetStandardFields(
+  doc: Document,
+  task: WorkerTask & { type: "set-standard-fields"; value: boolean },
+): Promise<WorkerTaskExecutionResult> {
+  const current = await getScStandardFieldsState(doc);
+
+  if (current === task.value) {
+    return successResult(task, { value: task.value });
+  }
+
+  await setScStandardFieldsState(doc, task.value);
+  return createDocumentStaleResult(task);
+}
 
 export async function executeWorkerTask(
   doc: Document,
@@ -108,49 +162,15 @@ export async function executeWorkerTask(
   let result: WorkerTaskExecutionResult | undefined =
     cancelledResultIfAborted(task, signal);
 
-  if (!result && (await ensureWorkerEditorState(doc, task))) {
-    result = createDocumentStaleResult(task);
-  }
-
   if (!result) {
-    if (task.type === "set-editor-state") {
+    if (task.type === "get-quick-info") {
       result = successResult(task, {
-        editorState: task.editorState,
+        result: executeGetQuickInfo(doc, task.requested),
       });
-    } else if (task.type === "collect-root-item") {
-      const rootItem = harvestStepRootItem(doc);
-
-      result = rootItem
-        ? successResult(task, { rootItem })
-        : createErrorResult(
-            task,
-            "Could not resolve current item id",
-          );
-    } else if (task.type === "enrich-item") {
-      const item = buildItemGraphNodeDataFromDoc(doc);
-
-      const requestedItemId =
-        normalizeSitecoreItemId(task.lookup.scItemId);
-
-      const resolvedItemId =
-        normalizeSitecoreItemId(item.scItemId);
-
-      if (
-        requestedItemId &&
-        requestedItemId !== resolvedItemId
-      ) {
-        result = successResult(task, {
-          item: factoryItemGraphNodeData(),
-        });
-      } else {
-        result =
-          item.scItemId || item.scItemPath
-            ? successResult(task, { item })
-            : createErrorResult(
-                task,
-                "Could not resolve item at navigated url",
-              );
-      }
+    } else if (task.type === "set-raw-values") {
+      result = await executeSetRawValues(doc, task);
+    } else if (task.type === "set-standard-fields") {
+      result = await executeSetStandardFields(doc, task);
     } else {
       const harvestContext =
         buildHarvestContext(doc, signal);
@@ -162,7 +182,7 @@ export async function executeWorkerTask(
         );
       } else {
         switch (task.type) {
-          case "collect-parent":
+          case "get-parent":
             await collectParent(harvestContext);
             result =
               cancelledResultIfAborted(task, signal) ??
@@ -172,7 +192,7 @@ export async function executeWorkerTask(
               });
             break;
 
-          case "collect-children":
+          case "get-children":
             await collectChildren(harvestContext);
             result =
               cancelledResultIfAborted(task, signal) ??
@@ -183,7 +203,7 @@ export async function executeWorkerTask(
               });
             break;
 
-          case "collect-referrers":
+          case "get-referrers":
             await collectReferrers(harvestContext);
             result =
               cancelledResultIfAborted(task, signal) ??
@@ -194,21 +214,29 @@ export async function executeWorkerTask(
               });
             break;
 
-          case "collect-sections":
+          case "get-custom-fields":
             await collectSections(harvestContext);
             result =
               cancelledResultIfAborted(task, signal) ??
               successResult(task, {
-                customFieldSections:
+                sections:
                   harvestContext.result
                     .customFieldSections ?? [],
-                standardFieldSections:
+              });
+            break;
+
+          case "get-standard-fields":
+            await collectSections(harvestContext);
+            result =
+              cancelledResultIfAborted(task, signal) ??
+              successResult(task, {
+                sections:
                   harvestContext.result
                     .standardFieldSections ?? [],
               });
             break;
 
-          case "collect-layouts":
+          case "get-layout":
             await collectLayouts(harvestContext);
             result =
               cancelledResultIfAborted(task, signal) ??
@@ -232,42 +260,10 @@ export async function executeWorkerTask(
   );
 }
 
-type WorkerEditorRequirements = {
-  rawValues?: boolean;
-  standardFields?: boolean;
-};
-
-function getEditorRequirements(task: WorkerTask): WorkerEditorRequirements {
-  if (task.type === "set-editor-state") {
-    return {
-      rawValues: task.editorState.rawValues,
-      standardFields: task.editorState.standardFields,
-    };
-  }
-
-  return {};
-}
-
-async function ensureWorkerEditorState(doc: Document, task: WorkerTask): Promise<boolean> {
-  const requirements = getEditorRequirements(task);
-
-  if (requirements.rawValues !== undefined) {
-    const current = await getScRawValuesState(doc);
-
-    if (current !== undefined && current !== requirements.rawValues) {
-      await setScRawValuesState(doc, requirements.rawValues);
-      return true;
-    }
-  }
-
-  if (requirements.standardFields !== undefined) {
-    const current = await getScStandardFieldsState(doc);
-
-    if (current !== undefined && current !== requirements.standardFields) {
-      await setScStandardFieldsState(doc, requirements.standardFields);
-      return true;
-    }
-  }
-
-  return false;
+// Reference locators are built from either a GUID or a path (never both) - kept here since both
+// the harvester's own task-planning and the enrichment caller need the same classification.
+export function createSitecoreItemLocator(reference: string): SitecoreItemLocator {
+  return isGuidLike(reference)
+    ? { kind: "id", value: reference }
+    : { kind: "path", value: reference };
 }

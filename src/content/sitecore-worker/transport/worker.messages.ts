@@ -1,13 +1,13 @@
 // @source-path [fobles] src/content/sitecore-worker/transport/worker.messages.ts
 
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import type {
   WorkerTask,
   WorkerTaskResult,
 } from "../tasks/worker-task.types";
 
 const MESSAGE_TYPE =
-  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
+  WORKER_MESSAGE_TYPE;
 
 export const WORKER_IFRAME_READY_MESSAGE_TYPE =
   "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_READY" as const;

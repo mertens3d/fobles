@@ -21,6 +21,6 @@ export type PersistedLogEntry = {
 };
 
 export type PersistedLogMessage = {
-  type: typeof REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE.FOBLES_PERSIST_LOG;
+  type: typeof REFERENCE_GRAPH.FOBLES_PERSIST_LOG;
   entry: PersistedLogEntry;
 };

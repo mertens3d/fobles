@@ -208,8 +208,6 @@ function persistLog(
         PersistedLogMessage = {
           type:
             REFERENCE_GRAPH
-              .BACKGROUND_HARVEST
-              .MESSAGE.TYPE
               .FOBLES_PERSIST_LOG,
           entry,
         };

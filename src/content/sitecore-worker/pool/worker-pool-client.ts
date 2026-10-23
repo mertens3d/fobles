@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/sitecore-worker/pool/worker-pool-client.ts
 
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import type {
   WorkerTask,
   WorkerTaskResult,
@@ -13,7 +13,7 @@ import type {
 } from "../transport/worker.messages";
 
 const MESSAGE_TYPE =
-  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
+  WORKER_MESSAGE_TYPE;
 
 export async function runWorkerTask(
   task: WorkerTask,

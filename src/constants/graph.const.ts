@@ -10,23 +10,10 @@ import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE";
 import type { LayoutPreset } from "./_base/const.types";
 
 export const REFERENCE_GRAPH = {
-  DEBUG_BACKGROUND_HARVEST: false,
-  BACKGROUND_HARVEST: {
-    MESSAGE: {
-      TYPE: {
-        FOBLES_PERSIST_LOG: "FOBLES_PERSIST_LOG",
-        POOL_RUN_TASK: "POOL_RUN_TASK",
-        POOL_CANCEL_REQUEST: "POOL_CANCEL_REQUEST",
-        POOL_CANCEL_TASK: "POOL_CANCEL_TASK",
-        WORKER_READY: "WORKER_READY",
-        WORKER_TASK_EXECUTE: "WORKER_TASK_EXECUTE",
-        WORKER_TASK_CANCEL: "WORKER_TASK_CANCEL",
-        WORKER_SET_OWNED: "FOBLES_REFERENCE_GRAPH_WORKER_SET_OWNED",
-        POOL_DISPOSE: "FOBLES_REFERENCE_GRAPH_POOL_DISPOSE",
-        WORKER_ADOPTED: "FOBLES_REFERENCE_GRAPH_WORKER_ADOPTED",
-      },
-    } as const,
-  },
+  // The persisted-log message type is a background/options feature unrelated to the worker
+  // pool's own protocol - kept here rather than moving with WORKER_MESSAGE_TYPE
+  // (sitecore-worker/worker-protocol.const.ts).
+  FOBLES_PERSIST_LOG: "FOBLES_PERSIST_LOG" as const,
 
   TEXT: {
     BUILDING_REFERENCE_GRAPH: "Building reference graph...",

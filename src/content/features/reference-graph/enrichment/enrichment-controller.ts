@@ -2,9 +2,10 @@
 
 import type cytoscape from "cytoscape";
 import { extensionLog } from "../../../logger";
+import { createSitecoreItemLocator } from "../../../sitecore-harvester/worker-task-executor";
 import { mergeEnrichedItem } from "../../../sitecore-harvester/planner/enrichment-task-planner";
 import { cancelWorkerRequest, runWorkerTask } from "../../../sitecore-worker/pool/worker-pool-client";
-import type { EnrichItemTask, WorkerTaskResult } from "../../../sitecore-worker/tasks/worker-task.types";
+import type { WorkerTask, WorkerTaskResult } from "../../../sitecore-worker/tasks/worker-task.types";
 import { buildFoblesUrl } from "../../augmentor/helper";
 import { collectEnrichmentGuidLookup } from "../data-tree/data-tree-enrichment-lookup";
 import type { DataTreeNode, EnrichmentStatus } from "../data-tree/data-tree.types";
@@ -100,11 +101,7 @@ export function startEnrichmentController({
     let status: EnrichmentStatus = "failed";
 
     if (representative && reference) {
-      const result = await requestEnrichment(
-        representative.scItem.scItemId,
-        representative.scItem.scItemPath,
-        reference,
-      );
+      const result = await requestEnrichment(reference);
 
       if (!disposed) {
         status = applyEnrichmentResult(guid, treeNodeIds, result);
@@ -119,16 +116,14 @@ export function startEnrichmentController({
   }
 
   async function requestEnrichment(
-    scItemId: string | undefined,
-    scItemPath: string | undefined,
     reference: string,
   ): Promise<WorkerTaskResult | undefined> {
-    const task: EnrichItemTask = {
+    const task: WorkerTask = {
       requestId,
       taskId: crypto.randomUUID(),
-      type: "enrich-item",
+      type: "get-quick-info",
       url: buildFoblesUrl(reference),
-      lookup: { scItemId, scItemPath },
+      requested: createSitecoreItemLocator(reference),
     };
 
     let result: WorkerTaskResult | undefined;
@@ -151,13 +146,13 @@ export function startEnrichmentController({
   ): EnrichmentStatus {
     let status: EnrichmentStatus = "failed";
 
-    if (result?.status === "success" && result.type === "enrich-item") {
-      const enriched = result.payload.item;
+    if (result?.status === "success" && result.type === "get-quick-info") {
+      const resolved = result.payload.result;
 
-      if (enriched.scItemId || enriched.scItemPath) {
+      if (resolved.status === "found" && resolved.value) {
         const items = itemsFor(treeNodeIds, nodesById);
 
-        mergeEnrichedItem(new Map([[guid, items]]), guid, enriched);
+        mergeEnrichedItem(new Map([[guid, items]]), guid, resolved.value);
 
         status = "enriched";
       } else {

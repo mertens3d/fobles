@@ -1,29 +1,40 @@
 // @source-path [fobles] src/content/sitecore-harvester/planner/harvest-task-planner.ts
 
+import { isGuidLike } from "../../features/augmentor/shared/guid";
 import type { HarvestRequest, SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../sitecore-harvester.types";
-import type { WorkerEditorState, WorkerTask, WorkerTaskType } from "../../sitecore-worker/tasks/worker-task.types";
+import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../sitecore-worker/tasks/worker-task.types";
 
 export type CollectorFilterKey = Exclude<keyof SitecoreHarvestFiltersState, "template">;
-export type CollectorTaskType = Exclude<WorkerTaskType, "enrich-item" | "collect-root-item" | "set-editor-state">;
+export type CollectorTaskType = Exclude<WorkerTaskType, "get-quick-info" | "set-raw-values" | "set-standard-fields">;
 
 export type CollectorTaskPlan = {
   normalTasks: WorkerTask[];
   layoutTasks: WorkerTask[];
 };
 
-// fields and standardFields are two independent harvest crops produced by the SAME single DOM
-// pass (collect-sections) - either filter being on is enough to need that task.
+// "template" is a HarvestRequest filter, but it's not a collector task of its own - it only
+// narrows the sections a get-custom-fields/get-standard-fields task returns, so it has no entry
+// in COLLECTOR_TASK_TYPE_BY_FILTER_KEY.
+export function isCollectorFilterKey(
+  filterKey: keyof SitecoreHarvestFiltersState,
+): filterKey is CollectorFilterKey {
+  return filterKey !== "template";
+}
+
+// customFields and standardFields are two independent harvest crops, each read via its own
+// atomic operation (both still happen to re-scan the same section DOM - see worker-task-executor).
 export const COLLECTOR_TASK_TYPE_BY_FILTER_KEY: Readonly<Record<CollectorFilterKey, CollectorTaskType>> = {
-  parent: "collect-parent",
-  children: "collect-children",
-  referrers: "collect-referrers",
-  customFields: "collect-sections",
-  standardFields: "collect-sections",
-  layouts: "collect-layouts",
+  parent: "get-parent",
+  children: "get-children",
+  referrers: "get-referrers",
+  customFields: "get-custom-fields",
+  standardFields: "get-standard-fields",
+  layouts: "get-layout",
 };
 
-// Reverse of COLLECTOR_TASK_TYPE_BY_FILTER_KEY, grouped since collect-sections is gated by two
-// filter keys (fields, standardFields) - used for progress-step skip detection.
+// Reverse of COLLECTOR_TASK_TYPE_BY_FILTER_KEY - a Record already guarantees a 1:1 mapping now
+// that customFields/standardFields are separate task types, so this is a plain one-entry-per-key
+// map (kept as a Map, not grouped, since no task type is shared by two filter keys anymore).
 export const FILTER_KEYS_BY_COLLECTOR_TASK_TYPE: ReadonlyMap<WorkerTaskType, CollectorFilterKey[]> = Array.from(
   Object.entries(COLLECTOR_TASK_TYPE_BY_FILTER_KEY) as Array<[CollectorFilterKey, WorkerTaskType]>,
 ).reduce((map, [filterKey, taskType]) => {
@@ -31,7 +42,7 @@ export const FILTER_KEYS_BY_COLLECTOR_TASK_TYPE: ReadonlyMap<WorkerTaskType, Col
   return map;
 }, new Map<WorkerTaskType, CollectorFilterKey[]>());
 
-function createTask(request: HarvestRequest, type: Exclude<WorkerTaskType, "enrich-item" | "set-editor-state">): WorkerTask {
+function createTask(request: HarvestRequest, type: CollectorTaskType): WorkerTask {
   return {
     requestId: request.requestId,
     taskId: crypto.randomUUID(),
@@ -40,9 +51,34 @@ function createTask(request: HarvestRequest, type: Exclude<WorkerTaskType, "enri
   };
 }
 
-export function createEditorStateTask(
+// The item reference the harvest's own url was built from (see buildFoblesUrl) - used as the
+// "requested" locator for the harvest's get-quick-info task, so a root item whose url Sitecore
+// can't resolve is reported as not-found instead of silently harvesting a fallback item's data.
+function requestedLocatorFromUrl(url: string): SitecoreItemLocator | undefined {
+  const reference = new URL(url).searchParams.get("fo") ?? undefined;
+
+  return reference
+    ? (isGuidLike(reference) ? { kind: "id", value: reference } : { kind: "path", value: reference })
+    : undefined;
+}
+
+export function createGetQuickInfoTask(
   request: HarvestRequest,
-  editorState: WorkerEditorState,
+  requested: SitecoreItemLocator,
+): WorkerTask {
+  return {
+    requestId: request.requestId,
+    taskId: crypto.randomUUID(),
+    type: "get-quick-info",
+    url: request.url,
+    requested,
+  };
+}
+
+function createEditorStateTask(
+  request: HarvestRequest,
+  type: "set-raw-values" | "set-standard-fields",
+  value: boolean,
 ): WorkerTask {
   const url = new URL(request.url);
   url.searchParams.set("foblesEditorState", crypto.randomUUID());
@@ -50,16 +86,28 @@ export function createEditorStateTask(
   return {
     requestId: request.requestId,
     taskId: crypto.randomUUID(),
-    type: "set-editor-state",
+    type,
     url: url.toString(),
-    editorState,
+    value,
   };
+}
+
+export function createSetRawValuesTask(request: HarvestRequest, value: boolean): WorkerTask {
+  return createEditorStateTask(request, "set-raw-values", value);
+}
+
+export function createSetStandardFieldsTask(request: HarvestRequest, value: boolean): WorkerTask {
+  return createEditorStateTask(request, "set-standard-fields", value);
 }
 
 export function planCollectorTasks(request: HarvestRequest): WorkerTask[] {
   const tasks: WorkerTask[] = [];
 
-  if (!request.existingResult) tasks.push(createTask(request, "collect-root-item"));
+  if (!request.existingResult) {
+    const requested = requestedLocatorFromUrl(request.url);
+
+    if (requested) tasks.push(createGetQuickInfoTask(request, requested));
+  }
 
   for (const [taskType, filterKeys] of FILTER_KEYS_BY_COLLECTOR_TASK_TYPE) {
     const filterEnabled = filterKeys.some((filterKey) => request.filters[filterKey]);
@@ -72,14 +120,16 @@ export function planCollectorTasks(request: HarvestRequest): WorkerTask[] {
   return tasks;
 }
 
-// collect-sections always sets customFieldSections and standardFieldSections together in one DOM
-// pass, so once either crop has been harvested there's nothing left for a re-run to add - e.g.
-// enabling Standard Fields after Custom Fields was already harvested needs no new worker task.
+// Each section crop is read independently now, so "already present" is checked per crop instead
+// of one combined check.
 export function isCollectorResultAlreadyPresent(
   taskType: WorkerTaskType,
   existingResult: SitecoreHarvestResult | undefined,
 ): boolean {
-  return taskType === "collect-sections" && existingResult?.customFieldSections !== undefined;
+  if (taskType === "get-custom-fields") return existingResult?.customFieldSections !== undefined;
+  if (taskType === "get-standard-fields") return existingResult?.standardFieldSections !== undefined;
+
+  return false;
 }
 
 export function planCollectorTaskGroups(request: HarvestRequest): CollectorTaskPlan {
@@ -87,7 +137,7 @@ export function planCollectorTaskGroups(request: HarvestRequest): CollectorTaskP
   const layoutTasks: WorkerTask[] = [];
 
   for (const task of planCollectorTasks(request)) {
-    if (task.type === "collect-layouts") layoutTasks.push(task);
+    if (task.type === "get-layout") layoutTasks.push(task);
     else normalTasks.push(task);
   }
 

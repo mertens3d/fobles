@@ -6,7 +6,7 @@ import { HARVEST_STEP_BY_TASK_TYPE } from "../planner/harvest-steps";
 import type { HarvestProgressCallback, HarvestRequest, ProgressStep } from "../sitecore-harvester.types";
 import { cancelWorkerTask, runWorkerTask } from "../../sitecore-worker/pool/worker-pool-client";
 import { createErrorResult, type WorkerTask, type WorkerTaskResult, type WorkerTaskType } from "../../sitecore-worker/tasks/worker-task.types";
-import { createEditorStateTask, planCollectorTaskGroups, planCollectorTasks } from "../planner/harvest-task-planner";
+import { createSetRawValuesTask, createSetStandardFieldsTask, planCollectorTaskGroups, planCollectorTasks } from "../planner/harvest-task-planner";
 
 const TASK_TIMEOUT_MS = 30000;
 
@@ -47,14 +47,9 @@ async function runWorkerTaskWithTimeout(task: WorkerTask): Promise<WorkerTaskRes
         ` taskType=${task.type}` +
         ` status=${result.status}` +
         ` resultType=${result.type}` +
-        ` returnedRaw=${
-          result.status === "success" && result.type === "set-editor-state"
-            ? String(result.payload.editorState.rawValues)
-            : "undefined"
-        }` +
-        ` returnedStandard=${
-          result.status === "success" && result.type === "set-editor-state"
-            ? String(result.payload.editorState.standardFields)
+        ` returnedValue=${
+          result.status === "success" && (result.type === "set-raw-values" || result.type === "set-standard-fields")
+            ? String(result.payload.value)
             : "undefined"
         }` +
         ` errorMessage=${result.status === "error" ? result.errorMessage : "undefined"}`,
@@ -220,21 +215,35 @@ async function setAndVerifyEditorState(
   standardFields: boolean | undefined,
   phase: string,
 ): Promise<void> {
-  const task = createEditorStateTask(request, { rawValues, standardFields });
+  if (rawValues !== undefined) {
+    await setAndVerifyOneEditorValue(request, createSetRawValuesTask(request, rawValues), rawValues, "rawValues", phase);
+  }
 
+  if (standardFields !== undefined) {
+    await setAndVerifyOneEditorValue(request, createSetStandardFieldsTask(request, standardFields), standardFields, "standardFields", phase);
+  }
+}
+
+async function setAndVerifyOneEditorValue(
+  request: HarvestRequest,
+  task: WorkerTask,
+  requestedValue: boolean,
+  label: "rawValues" | "standardFields",
+  phase: string,
+): Promise<void> {
   extensionLog.debug("Reference graph: establishing editor state", {
     requestId: request.requestId,
     taskId: task.taskId,
     phase,
-    rawValues,
-    standardFields,
+    label,
+    requestedValue,
   });
 
   const result = await runWorkerTaskWithTimeout(task);
 
-  const returnedEditorState =
-    result.status === "success" && result.type === "set-editor-state"
-      ? result.payload.editorState
+  const returnedValue =
+    result.status === "success" && (result.type === "set-raw-values" || result.type === "set-standard-fields")
+      ? result.payload.value
       : undefined;
 
   extensionLog.debug(
@@ -242,21 +251,18 @@ async function setAndVerifyEditorState(
     ` requestId=${request.requestId}` +
     ` taskId=${task.taskId}` +
     ` phase=${phase}` +
-    ` requestedRaw=${String(rawValues)}` +
-    ` requestedStandard=${String(standardFields)}` +
+    ` label=${label}` +
+    ` requestedValue=${String(requestedValue)}` +
     ` resultStatus=${result.status}` +
     ` resultType=${result.type}` +
-    ` returnedRaw=${String(returnedEditorState?.rawValues)}` +
-    ` returnedStandard=${String(returnedEditorState?.standardFields)}` +
+    ` returnedValue=${String(returnedValue)}` +
     ` errorMessage=${result.status === "error" ? result.errorMessage : "undefined"}`,
   );
 
   throwForCancelledResults([result]);
   throwForFailedResults([result]);
 
-  const verified =
-    returnedEditorState?.rawValues === rawValues &&
-    returnedEditorState?.standardFields === standardFields;
+  const verified = returnedValue === requestedValue;
 
   if (!verified) {
     extensionLog.error(
@@ -264,19 +270,16 @@ async function setAndVerifyEditorState(
       ` requestId=${request.requestId}` +
       ` taskId=${task.taskId}` +
       ` phase=${phase}` +
-      ` requestedRaw=${String(rawValues)}` +
-      ` requestedStandard=${String(standardFields)}` +
+      ` label=${label}` +
+      ` requestedValue=${String(requestedValue)}` +
       ` resultStatus=${result.status}` +
       ` resultType=${result.type}` +
-      ` returnedRaw=${String(returnedEditorState?.rawValues)}` +
-      ` returnedStandard=${String(returnedEditorState?.standardFields)}`,
+      ` returnedValue=${String(returnedValue)}`,
     );
 
     throw new Error(
-      `Editor-state verification failed during ${phase}: ` +
-      `requested Raw=${String(rawValues)}, Standard=${String(standardFields)}; ` +
-      `returned Raw=${String(returnedEditorState?.rawValues)}, ` +
-      `Standard=${String(returnedEditorState?.standardFields)}; ` +
+      `Editor-state verification failed during ${phase} (${label}): ` +
+      `requested=${String(requestedValue)}, returned=${String(returnedValue)}; ` +
       `status=${result.status}, type=${result.type}`,
     );
   }
@@ -285,7 +288,7 @@ async function setAndVerifyEditorState(
     requestId: request.requestId,
     taskId: task.taskId,
     phase,
-    rawValues,
-    standardFields,
+    label,
+    requestedValue,
   });
 }

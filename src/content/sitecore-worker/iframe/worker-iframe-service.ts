@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/sitecore-worker/iframe/worker-iframe-service.ts
 
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import { extensionLog } from "../../logger";
 import type {
   WorkerIframeCreateMessage,
@@ -20,7 +20,7 @@ import {
 } from "../transport/worker.messages";
 import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 
-const MESSAGE_TYPE = REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
+const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;
 const READY_TIMEOUT_MS = 20000;
 const SEND_RETRY_DELAY_MS = 50;
 const MAX_SEND_ATTEMPTS = 50;

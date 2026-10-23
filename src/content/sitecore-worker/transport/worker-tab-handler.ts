@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/sitecore-worker/transport/worker-tab-handler.ts
 
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import { extensionLog } from "../../logger";
 import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 import {
@@ -12,7 +12,7 @@ import {
 } from "./worker.messages";
 
 const MESSAGE_TYPE =
-  REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
+  WORKER_MESSAGE_TYPE;
 
 const WORKER_BANNER_ID =
   "fobles-background-worker-banner";

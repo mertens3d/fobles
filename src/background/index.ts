@@ -29,10 +29,11 @@ import {
   type WorkerIframeReadyMessage,
   type WorkerReadyMessage,
 } from "../content/sitecore-worker/transport/worker.messages";
+import { WORKER_MESSAGE_TYPE } from "../content/sitecore-worker/worker-protocol.const";
 import { appendPersistedLogEntry, clearPersistedLogEntries } from "../shared/logging/persisted-log-storage";
 import type { PersistedLogMessage } from "../shared/persisted-log.types";
 
-const MESSAGE_TYPE = REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
+const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;
 const REFERENCE_GRAPH_LOCK_ACQUIRE = "FOBLES_REFERENCE_GRAPH_LOCK_ACQUIRE";
 const REFERENCE_GRAPH_LOCK_RELEASE = "FOBLES_REFERENCE_GRAPH_LOCK_RELEASE";
 let activeReferenceGraphHostTabId: number | undefined;
@@ -108,7 +109,7 @@ chrome.runtime.onMessage.addListener(
       sendResponse({ released: true });
     } else if (
       "type" in request &&
-      request.type === MESSAGE_TYPE.FOBLES_PERSIST_LOG
+      request.type === REFERENCE_GRAPH.FOBLES_PERSIST_LOG
     ) {
       void appendPersistedLogEntry(request.entry).catch((error) => {
         extensionLog.error(

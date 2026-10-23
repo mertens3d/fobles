@@ -1,11 +1,11 @@
 // @source-path [fobles] src/content/sitecore-worker/transport/worker-tab-service.ts
 
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import { extensionLog } from "../../logger";
 import type { WorkerSetOwnedMessage, WorkerTaskExecuteMessage } from "./worker.messages";
 import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 
-const MESSAGE_TYPE = REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
+const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;
 
 export async function createWorkerTab(url: string, active: boolean): Promise<number | undefined> {
   const tab = await chrome.tabs.create({ url, active });

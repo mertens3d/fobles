@@ -30,27 +30,29 @@ export function mergeCollectorResult(
   result: WorkerTaskSuccessResult,
 ): void {
   switch (result.type) {
-    case "collect-root-item":
+    case "get-quick-info":
       break;
-    case "collect-parent":
+    case "get-parent":
       target.parent = result.payload.parent;
       break;
-    case "collect-children":
+    case "get-children":
       target.childItems = result.payload.childItems;
       break;
-    case "collect-referrers":
+    case "get-referrers":
       target.referrers = result.payload.referrers;
       break;
-    case "collect-sections":
-      target.customFieldSections = result.payload.customFieldSections;
-      target.standardFieldSections = result.payload.standardFieldSections;
+    case "get-custom-fields":
+      target.customFieldSections = result.payload.sections;
       break;
-    case "collect-layouts":
+    case "get-standard-fields":
+      target.standardFieldSections = result.payload.sections;
+      break;
+    case "get-layout":
       target.layoutSectionFields = result.payload.layoutSectionFields;
       break;
-    case "set-editor-state":
+    case "set-raw-values":
       break;
-    case "enrich-item":
+    case "set-standard-fields":
       break;
   }
 }
@@ -63,10 +65,14 @@ export function extractRootItem(
     return request.existingResult.rootItem;
   }
 
-  const rootItemResult = results.find(
-    (result): result is Extract<WorkerTaskSuccessResult, { type: "collect-root-item" }> =>
-      result.type === "collect-root-item",
+  const quickInfoResult = results.find(
+    (result): result is Extract<WorkerTaskSuccessResult, { type: "get-quick-info" }> =>
+      result.type === "get-quick-info",
   );
 
-  return rootItemResult?.payload.rootItem;
+  const value = quickInfoResult?.payload.result.status === "found"
+    ? quickInfoResult.payload.result.value
+    : undefined;
+
+  return value?.scItemId ? { ...value, scItemId: value.scItemId } : undefined;
 }

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/sitecore-worker/pool/worker-executor.ts
 
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { DEBUG_WORKER_POOL } from "../worker-protocol.const";
 import { extensionLog } from "../../logger";
 import {
   closeWorkerTarget,
@@ -95,7 +95,7 @@ async function retryAfterDocumentStale(
 ): Promise<void> {
   const retiredTarget = worker.target;
 
-  if (queued.task.type === "set-editor-state") {
+  if (queued.task.type === "set-raw-values" || queued.task.type === "set-standard-fields") {
     const retiredWorkerCount = context.retireAllWorkers();
 
     extensionLog.debug(
@@ -286,7 +286,7 @@ async function runOnNewWorker(
     target = await createWorkerTarget(
       queued.hostTabId,
       queued.task.url,
-      REFERENCE_GRAPH.DEBUG_BACKGROUND_HARVEST,
+      DEBUG_WORKER_POOL,
     );
   } catch (error) {
     extensionLog.warn(

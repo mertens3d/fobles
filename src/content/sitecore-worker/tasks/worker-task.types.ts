@@ -1,33 +1,40 @@
 // @source-path [fobles] src/content/sitecore-worker/tasks/worker-task.types.ts
 
-import type { BooleanTripleState } from "../../macros/ribbon-toggle-macro";
 import type {
   ItemGraphNodeData,
   LayoutSectionField,
-  RootItem,
   SitecoreHarvestSection,
 } from "../../data-tree/sitecore-item.types";
 import type { WorkerTarget } from "../pool/worker-target";
 
+// An item reference as actually requested of Sitecore - as opposed to an ambiguous
+// itemIdOrPath string, every item-oriented operation says explicitly which kind it means.
+export type SitecoreItemLocator =
+  | { kind: "id"; value: string }
+  | { kind: "path"; value: string };
+
+// Carries both what was asked for and what Sitecore actually resolved, so a caller can tell
+// "found the right item" apart from "Sitecore silently fell back to a different item" (e.g. an
+// unresolved GUID falling back to /sitecore/content/Home) - the latter is reported as
+// "not-found" data, never as though the fallback item were the one requested. Navigation/
+// timeout/parser failures remain WorkerTaskResult-level errors, not part of this type.
+export type SitecoreResolvedResult<TValue> = {
+  requested: SitecoreItemLocator;
+  resolved?: { itemId: string; path?: string };
+  value?: TValue;
+  status: "found" | "not-found" | "error";
+};
+
 export type WorkerTaskType =
-  | "collect-root-item"
-  | "collect-parent"
-  | "collect-children"
-  | "collect-referrers"
-  | "collect-sections"
-  | "collect-layouts"
-  | "set-editor-state"
-  | "enrich-item";
-
-export type ItemLookup = {
-  scItemId: string | undefined;
-  scItemPath: string | undefined;
-};
-
-export type WorkerEditorState = {
-  rawValues: BooleanTripleState;
-  standardFields: BooleanTripleState;
-};
+  | "get-quick-info"
+  | "get-parent"
+  | "get-children"
+  | "get-referrers"
+  | "get-custom-fields"
+  | "get-standard-fields"
+  | "get-layout"
+  | "set-raw-values"
+  | "set-standard-fields";
 
 type WorkerTaskBase<TType extends WorkerTaskType> = {
   requestId: string;
@@ -37,43 +44,39 @@ type WorkerTaskBase<TType extends WorkerTaskType> = {
   url: string;
 };
 
-export type CollectRootItemTask = WorkerTaskBase<"collect-root-item">;
-export type CollectParentTask = WorkerTaskBase<"collect-parent">;
-export type CollectChildrenTask = WorkerTaskBase<"collect-children">;
-export type CollectReferrersTask = WorkerTaskBase<"collect-referrers">;
-export type CollectSectionsTask = WorkerTaskBase<"collect-sections">;
-export type CollectLayoutsTask = WorkerTaskBase<"collect-layouts">;
-
-export type SetEditorStateTask = WorkerTaskBase<"set-editor-state"> & {
-  editorState: WorkerEditorState;
+export type GetQuickInfoTask = WorkerTaskBase<"get-quick-info"> & {
+  requested: SitecoreItemLocator;
 };
-
-export type EnrichItemTask = WorkerTaskBase<"enrich-item"> & {
-  lookup: ItemLookup;
-};
+export type GetParentTask = WorkerTaskBase<"get-parent">;
+export type GetChildrenTask = WorkerTaskBase<"get-children">;
+export type GetReferrersTask = WorkerTaskBase<"get-referrers">;
+export type GetCustomFieldsTask = WorkerTaskBase<"get-custom-fields">;
+export type GetStandardFieldsTask = WorkerTaskBase<"get-standard-fields">;
+export type GetLayoutTask = WorkerTaskBase<"get-layout">;
+export type SetRawValuesTask = WorkerTaskBase<"set-raw-values"> & { value: boolean };
+export type SetStandardFieldsTask = WorkerTaskBase<"set-standard-fields"> & { value: boolean };
 
 export type WorkerTask =
-  | CollectRootItemTask
-  | CollectParentTask
-  | CollectChildrenTask
-  | CollectReferrersTask
-  | CollectSectionsTask
-  | CollectLayoutsTask
-  | SetEditorStateTask
-  | EnrichItemTask;
+  | GetQuickInfoTask
+  | GetParentTask
+  | GetChildrenTask
+  | GetReferrersTask
+  | GetCustomFieldsTask
+  | GetStandardFieldsTask
+  | GetLayoutTask
+  | SetRawValuesTask
+  | SetStandardFieldsTask;
 
 export type WorkerTaskPayloadByType = {
-  "collect-root-item": { rootItem: RootItem };
-  "collect-parent": { parent: ItemGraphNodeData | undefined };
-  "collect-children": { childItems: readonly ItemGraphNodeData[] };
-  "collect-referrers": { referrers: readonly ItemGraphNodeData[] };
-  "collect-sections": {
-    customFieldSections: readonly SitecoreHarvestSection[];
-    standardFieldSections: readonly SitecoreHarvestSection[];
-  };
-  "collect-layouts": { layoutSectionFields: LayoutSectionField[] };
-  "set-editor-state": { editorState: WorkerEditorState };
-  "enrich-item": { item: ItemGraphNodeData };
+  "get-quick-info": { result: SitecoreResolvedResult<ItemGraphNodeData> };
+  "get-parent": { parent: ItemGraphNodeData | undefined };
+  "get-children": { childItems: readonly ItemGraphNodeData[] };
+  "get-referrers": { referrers: readonly ItemGraphNodeData[] };
+  "get-custom-fields": { sections: readonly SitecoreHarvestSection[] };
+  "get-standard-fields": { sections: readonly SitecoreHarvestSection[] };
+  "get-layout": { layoutSectionFields: LayoutSectionField[] };
+  "set-raw-values": { value: boolean };
+  "set-standard-fields": { value: boolean };
 };
 
 type WorkerTaskResultBase<TType extends WorkerTaskType> = {
