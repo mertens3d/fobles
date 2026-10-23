@@ -183,6 +183,7 @@ export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: stri
     path: treeNode.nodeType === "item" ? treeNode.scItem.scItemPath : undefined,
     link: treeNode.nodeType === "item" ? treeNode.scItem.link : undefined,
     drillDown: treeNode.nodeType === "item" ? Boolean(treeNode.scItem.link) : false,
+    icon: treeNode.nodeType === "item" ? treeNode.scItem.scItemIcon : undefined,
     renderingParameterValue: renderingParameter?.parameterValue,
     renderingParameterIsItemReference: renderingParameter?.isItemReference,
     enrichmentStatus: treeNode.nodeType === "item" ? treeNode.enrichmentStatus : undefined,

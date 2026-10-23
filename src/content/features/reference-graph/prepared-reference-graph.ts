@@ -3,6 +3,7 @@
 import { extensionLog } from "../../logger";
 import type {
   HarvestProgressCallback,
+  SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../sitecore-harvester/sitecore-harvester.types";
 import { createDataTree } from "./data-tree/data-tree-builder";
@@ -23,9 +24,10 @@ type PrepareReferenceGraphOptions = {
 // build/render from the structural DataTree first; enrichment patches it in afterward.
 export function prepareReferenceGraph(
   harvestedData: SitecoreHarvestResult,
+  filters: SitecoreHarvestFiltersState,
   { signal }: PrepareReferenceGraphOptions = {},
 ): Promise<PreparedReferenceGraph | undefined> {
-  const dataTree = createDataTree(harvestedData);
+  const dataTree = createDataTree(harvestedData, filters);
 
   let prepared: PreparedReferenceGraph | undefined;
 

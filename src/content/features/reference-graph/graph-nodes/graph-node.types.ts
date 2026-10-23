@@ -13,6 +13,7 @@ export type GraphNodeData = {
   path: string | undefined;
   link: string | undefined;
   drillDown: boolean;
+  icon: string | undefined;
   renderingParameterValue: string | undefined;
   renderingParameterIsItemReference: boolean | undefined;
   enrichmentStatus: EnrichmentStatus | undefined;

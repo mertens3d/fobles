@@ -21,14 +21,32 @@ export const SITECORE = {
   },
 
   HARVEST: {
-    // Sections/fields already represented elsewhere in the graph, or not useful for this POC's
-    // purposes (Statistics/Security/Appearance are noisy system bookkeeping, not content-shape data).
-    // Quick Info is also a differently-shaped table (see getQuickInfoValue), not a field-marker
-    // section; Renderings/Final renderings get their own rich subtree (parseDevice) instead of a
-    // flat raw-value leaf.
-    EXCLUDED_SECTION_NAMES_LC: new Set(["appearance", "quick info", "security", "statistics"]),
+    // Quick Info is a differently-shaped table (see getQuickInfoValue), not a field-marker
+    // section at all; Renderings/Final renderings get their own rich subtree (parseDevice)
+    // instead of a flat raw-value leaf. Standard Template sections (Appearance/Security/
+    // Statistics/...) are NOT excluded - they're classified into the Standard Fields crop below.
+    EXCLUDED_SECTION_NAMES_LC: new Set(["quick info"]),
     EXCLUDED_FIELD_LABEL_PREFIXES: ["final renderings", "renderings"],
-    //i guessed on this
+    // Sitecore's Standard Template section captions - fields under these go to the Standard
+    // Fields crop instead of the ordinary Fields crop. Compare lowercased/trimmed.
+    STANDARD_SECTION_NAMES_LC: new Set([
+      "advanced",
+      "appearance",
+      "help",
+      "indexing",
+      "insert options",
+      "item buckets",
+      "layout",
+      "lifetime",
+      "publishing",
+      "security",
+      "statistics",
+      "tagging",
+      "tasks",
+      "validation rules",
+      "version",
+      "workflow",
+    ]),
   },
   // Named so every path used to build FOBLES_PAGES has an identifier, not just a bare literal.
   RELATIVE_PATHS_ENCODED: {
@@ -105,6 +123,9 @@ export const SITECORE = {
     FIELD_LABEL_ADMINISTRATOR: ".scEditorFieldLabelAdministrator",
     GLOBAL_HEADER: ".sc-globalHeader",
     GLOBAL_HEADER_CONTENT: ".sc-globalHeader-content",
+    // The item header's own icon - distinct from field icons, tree-node glyphs, layout-device
+    // icons, and the Standard Template "Icon" field.
+    ITEM_HEADER_ICON: ".scEditorHeader > .scEditorHeaderIcon img.scEditorHeaderIcon",
     MULTILIST: {
       ROOT: ".scContentControlMultilist",
       BOX: ".scContentControlMultilistBox",

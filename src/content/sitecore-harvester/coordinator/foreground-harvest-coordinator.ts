@@ -5,6 +5,7 @@ import type { HarvestProgressCallback, HarvestRequest, SitecoreHarvestResult } f
 import { cancelWorkerRequest } from "../worker-pool/worker-pool-client";
 import { isSuccessResult, type WorkerTaskResult } from "../worker-pool/worker-task.types";
 import { executeHarvestPlan } from "./harvest-plan-executor";
+import { isCollectorResultAlreadyPresent } from "./harvest-task-planner";
 import { createBaseResult, extractRootItem, mergeCollectorResult } from "./harvest-result-merger";
 
 type HarvestOptions = {
@@ -14,7 +15,13 @@ type HarvestOptions = {
 
 function reportSkippedSteps(request: HarvestRequest, onProgress: HarvestProgressCallback | undefined): void {
   for (const step of HARVEST_STEPS) {
-    if (!request.filters[step.filterKey]) onProgress?.(step, "skipped");
+    const filterEnabled = step.filterKeys.some((filterKey) => request.filters[filterKey]);
+
+    if (!filterEnabled) {
+      onProgress?.(step, "skipped");
+    } else if (step.stepKey === "sections" && isCollectorResultAlreadyPresent("collect-sections", request.existingResult)) {
+      onProgress?.(step, "complete");
+    }
   }
 }
 

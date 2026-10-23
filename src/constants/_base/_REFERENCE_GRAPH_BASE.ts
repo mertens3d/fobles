@@ -37,7 +37,8 @@ export const _REFERENCE_GRAPH_BASE = {
         children: "fobles-reference-graph-filter-children",
         layouts: "fobles-reference-graph-filter-layout",
         referrers: "fobles-reference-graph-filter-referrers",
-        sections: "fobles-reference-graph-filter-sections",
+        customFields: "fobles-reference-graph-filter-custom-fields",
+        standardFields: "fobles-reference-graph-filter-standard-fields",
         template: "fobles-reference-graph-filter-template",
     } as const satisfies Record<keyof SitecoreHarvestFiltersState, string>,
 };

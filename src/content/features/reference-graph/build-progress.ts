@@ -50,7 +50,7 @@ export function initializeReferenceGraphProgressModal(
     progressSteps = steps.map((step): ProgressItem => ({
         ...step,
         status:
-            isHarvestStep(step) && !filters[step.filterKey]
+            isHarvestStep(step) && !step.filterKeys.some((filterKey) => filters[filterKey])
                 ? "skipped"
                 : "pending",
     }));

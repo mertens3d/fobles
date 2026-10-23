@@ -3,9 +3,10 @@
 import { extractGuid } from "../../features/augmentor/shared/guid";
 import { extensionLog } from "../../logger";
 import { buildGalleryLinksUrl } from "./helpers/harvest-helpers";
-import type {
-  HarvestContext,
-  ItemGraphNodeData,
+import {
+  factoryItemGraphNodeData,
+  type HarvestContext,
+  type ItemGraphNodeData,
 } from "../sitecore-harvester.types";
 
 // Items that reference this one - Sitecore's own "Links" gallery (ribbon: Links -> "Items that
@@ -58,15 +59,12 @@ export async function collectReferrers(
             const path =
               fullLabel.match(/ - \[(.*?)\]/)?.[1]?.trim() || undefined;
             if (!referrerId) return undefined;
-            return {
-              type: "scItem",
+            return factoryItemGraphNodeData({
               scItemName: name,
               scItemId: referrerId,
-              link: undefined,
               scItemPath: path,
-              scTemplate: undefined,
               rawMarkup: anchor.outerHTML,
-            };
+            });
           })
           .filter(
             (referrer): referrer is ItemGraphNodeData => referrer !== undefined,

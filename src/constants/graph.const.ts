@@ -87,10 +87,16 @@ export const REFERENCE_GRAPH = {
       className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.referrers,
     },
     {
-      key: "sections",
+      key: "customFields",
       stepKey: "sections",
-      label: "Sections",
-      className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.sections,
+      label: "Custom Fields",
+      className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.customFields,
+    },
+    {
+      key: "standardFields",
+      stepKey: "sections",
+      label: "Standard Fields",
+      className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.standardFields,
     },
     {
       key: "template",

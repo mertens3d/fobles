@@ -7,7 +7,8 @@ export const DEFAULT_RENDERING_GRAPH_FILTERS_STATE: SitecoreHarvestFiltersState 
   children: false,
   layouts: true,
   referrers: false,
-  sections: false,
+  customFields: false,
+  standardFields: false,
   template: false,
 };
 
@@ -27,7 +28,8 @@ export function createSingleFilterState(enabledKey: keyof SitecoreHarvestFilters
     children: enabledKey === "children",
     layouts: enabledKey === "layouts",
     referrers: enabledKey === "referrers",
-    sections: enabledKey === "sections",
+    customFields: enabledKey === "customFields",
+    standardFields: enabledKey === "standardFields",
     template: enabledKey === "template",
   };
 }

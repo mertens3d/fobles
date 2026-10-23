@@ -16,7 +16,8 @@ export function createBaseResult(request: HarvestRequest, rootItem: RootItem): S
     rootItem,
     parent: undefined,
     layoutSectionFields: undefined,
-    sections: undefined,
+    customFieldSections: undefined,
+    standardFieldSections: undefined,
     childItems: undefined,
     referrers: undefined,
   };
@@ -41,7 +42,8 @@ export function mergeCollectorResult(
       target.referrers = result.payload.referrers;
       break;
     case "collect-sections":
-      target.sections = result.payload.sections;
+      target.customFieldSections = result.payload.customFieldSections;
+      target.standardFieldSections = result.payload.standardFieldSections;
       break;
     case "collect-layouts":
       target.layoutSectionFields = result.payload.layoutSectionFields;

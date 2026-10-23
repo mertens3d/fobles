@@ -46,6 +46,37 @@ export async function WaitForFoblesGraphEnrichmentComplete(page: Page): Promise<
   );
 }
 
+export async function ExpandFoblesGraphControls(page: Page): Promise<void> {
+  console.log(`[fobles Macro] ${ExpandFoblesGraphControls.name}`);
+
+  const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
+  const headerButton = graphDialog.locator(".fobles-reference-graph-controls-header");
+
+  if ((await headerButton.getAttribute("aria-expanded")) !== "true") {
+    await clickWithMouseMarker(page, headerButton, "Fobles Graph Controls");
+  }
+
+  await expect(headerButton).toHaveAttribute("aria-expanded", "true");
+}
+
+// label is the filter's visible text (e.g. "Custom Fields", "Standard Fields") - the graph
+// controls panel must already be expanded (see ExpandFoblesGraphControls).
+export async function SetFoblesGraphFilter(page: Page, label: string, desiredState: boolean): Promise<void> {
+  console.log(`[fobles Macro] ${SetFoblesGraphFilter.name} - ${label}=${desiredState}`);
+
+  const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
+  const filterRow = graphDialog.locator(".fobles-reference-graph-filter", { hasText: label });
+  const checkbox = filterRow.locator("input[type='checkbox']");
+
+  await expect(checkbox).toBeVisible();
+
+  if ((await checkbox.isChecked()) !== desiredState) {
+    await clickWithMouseMarker(page, checkbox, `Fobles Graph Filter: ${label}`);
+  }
+
+  await expect(checkbox).toBeChecked({ checked: desiredState });
+}
+
 export async function GetFoblesPersistedLogs(
   context: BrowserContext,
 ): Promise<string> {
@@ -140,7 +171,6 @@ export async function ClickFoblesJumpButton(
     await expectJumpFlyoutFlyoutHidden(foblesFrame);
   }
 }
-
 
 export async function enableFoblesDeveloperLogging(
   context: BrowserContext,

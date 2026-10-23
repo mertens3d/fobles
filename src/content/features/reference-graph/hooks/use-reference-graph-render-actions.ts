@@ -122,7 +122,7 @@ export function useReferenceGraphRenderActions({
         rootItemId,
       });
 
-      const prepared = await prepareReferenceGraph(graph, {
+      const prepared = await prepareReferenceGraph(graph, graphState.currentFiltersRef.current, {
         onProgress: (step, status) => {
           handleHarvestProgress(doc, step, status);
         },

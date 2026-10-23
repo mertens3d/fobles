@@ -67,7 +67,10 @@ export type WorkerTaskPayloadByType = {
   "collect-parent": { parent: ItemGraphNodeData | undefined };
   "collect-children": { childItems: readonly ItemGraphNodeData[] };
   "collect-referrers": { referrers: readonly ItemGraphNodeData[] };
-  "collect-sections": { sections: readonly SitecoreHarvestSection[] };
+  "collect-sections": {
+    customFieldSections: readonly SitecoreHarvestSection[];
+    standardFieldSections: readonly SitecoreHarvestSection[];
+  };
   "collect-layouts": { layoutSectionFields: LayoutSectionField[] };
   "set-editor-state": { editorState: WorkerEditorState };
   "enrich-item": { item: ItemGraphNodeData };

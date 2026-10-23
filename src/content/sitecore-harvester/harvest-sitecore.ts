@@ -49,15 +49,12 @@ export async function collectTreeChildren(
     }
 
     result = children.map(
-      (child: TreeChildNode): ItemGraphNodeData => ({
-        type: "scItem",
-        scItemName: child.name,
-        scItemId: child.itemId,
-        link: undefined,
-        scItemPath: undefined,
-        scTemplate: undefined,
-        rawMarkup: child.rawMarkup,
-      }),
+      (child: TreeChildNode): ItemGraphNodeData =>
+        factoryItemGraphNodeData({
+          scItemName: child.name,
+          scItemId: child.itemId,
+          rawMarkup: child.rawMarkup,
+        }),
     );
   }
   return result;

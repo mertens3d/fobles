@@ -6,7 +6,8 @@ export const GRAPH_COLLAPSE_KEY = {
   TEMPLATE: "template",
   REFERRERS: "referrers",
   REFERRER: "referrer",
-  SECTIONS: "sections",
+  CUSTOM_FIELDS: "customFields",
+  STANDARD_FIELDS: "standardFields",
   SECTION: "section",
   FIELD: "field",
   LAYOUTS: "layouts",
@@ -37,7 +38,8 @@ export const DEFAULT_EXPANDED_BY_COLLAPSE_KEY:
     [GRAPH_COLLAPSE_KEY.REFERRERS]: false,
     [GRAPH_COLLAPSE_KEY.REFERRER]: true,
 
-    [GRAPH_COLLAPSE_KEY.SECTIONS]: false,
+    [GRAPH_COLLAPSE_KEY.CUSTOM_FIELDS]: false,
+    [GRAPH_COLLAPSE_KEY.STANDARD_FIELDS]: false,
     [GRAPH_COLLAPSE_KEY.SECTION]: true,
     [GRAPH_COLLAPSE_KEY.FIELD]: true,
 

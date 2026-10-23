@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/features/reference-graph/data-tree/sections-data-tree-builder.ts
+
 import { CONST } from "../../../../constants/const";
 import type {
   HarvestFieldLink,
@@ -6,36 +8,72 @@ import type {
   SitecoreHarvestSection,
 } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { createDataTreeItemNode, createDataTreeNonItemNode } from "./data-tree-node-factory";
-import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "../graph-nodes/graph-collapse.types";
 import { createFieldReferenceProvenance, createSyntheticProvenance } from "./data-tree-provenance.types";
-import type { DataTreeNode, DataTreeNonItemNode } from "./data-tree.types";
+import type { DataTreeBranch, DataTreeNode, DataTreeNonItemNode } from "./data-tree.types";
 import { createDataTreeNodeId } from "./layout-data-tree-builder";
 
-export function createSectionsTreeNode(graphReferenceResult: SitecoreHarvestResult): DataTreeNonItemNode | undefined {
-  const sections =
-    graphReferenceResult.sections?.filter((section) => section.fields.some((field) => Boolean(field.value))) ?? [];
+export function createCustomFieldsTreeNode(
+  graphReferenceResult: SitecoreHarvestResult,
+): DataTreeNonItemNode | undefined {
+  return createFieldsCropTreeNode(
+    graphReferenceResult,
+    graphReferenceResult.customFieldSections,
+    "Custom Fields",
+    GRAPH_COLLAPSE_KEY.CUSTOM_FIELDS,
+    "customFields",
+  );
+}
 
-  let sectionsTreeNode: DataTreeNonItemNode | undefined = undefined;
+export function createStandardFieldsTreeNode(
+  graphReferenceResult: SitecoreHarvestResult,
+): DataTreeNonItemNode | undefined {
+  return createFieldsCropTreeNode(
+    graphReferenceResult,
+    graphReferenceResult.standardFieldSections,
+    "Standard Fields",
+    GRAPH_COLLAPSE_KEY.STANDARD_FIELDS,
+    "standardFields",
+  );
+}
 
-  if (sections.length > 0) {
-    const treeNodeId = createDataTreeNodeId(graphReferenceResult.rootItem.scItemId, "sections");
+// Fields and Standard Fields are two independent crops of the same section/field shape - each
+// gets its own top-level group (own collapseKey/branch, so its filter/expand state is
+// independent), sharing the section/field mapping below.
+function createFieldsCropTreeNode(
+  graphReferenceResult: SitecoreHarvestResult,
+  sections: readonly SitecoreHarvestSection[] | undefined,
+  name: string,
+  collapseKey: GraphCollapseKey,
+  branch: DataTreeBranch,
+): DataTreeNonItemNode | undefined {
+  const populatedSections = sections?.filter((section) => section.fields.some((field) => Boolean(field.value))) ?? [];
 
-    sectionsTreeNode = createDataTreeNonItemNode({
+  let cropTreeNode: DataTreeNonItemNode | undefined = undefined;
+
+  if (populatedSections.length > 0) {
+    const treeNodeId = createDataTreeNodeId(graphReferenceResult.rootItem.scItemId, branch);
+
+    cropTreeNode = createDataTreeNonItemNode({
       treeNodeId,
-      name: "Sections",
+      name,
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
-      provenance: createSyntheticProvenance("Sections"),
-      collapseKey: GRAPH_COLLAPSE_KEY.SECTIONS,
-      branch: "sections",
+      provenance: createSyntheticProvenance(name),
+      collapseKey,
+      branch,
       relationshipToParent: "related",
-      children: mapSections(sections, treeNodeId),
+      children: mapSections(populatedSections, treeNodeId, branch),
     });
   }
 
-  return sectionsTreeNode;
+  return cropTreeNode;
 }
 
-function mapSections(sections: SitecoreHarvestSection[], treeNodeId: string): DataTreeNonItemNode[] {
+function mapSections(
+  sections: SitecoreHarvestSection[],
+  treeNodeId: string,
+  branch: DataTreeBranch,
+): DataTreeNonItemNode[] {
   return sections.map((section, sectionIndex) => {
     const sectionTreeNodeId = createDataTreeNodeId(treeNodeId, "section", section.name, String(sectionIndex));
 
@@ -45,9 +83,9 @@ function mapSections(sections: SitecoreHarvestSection[], treeNodeId: string): Da
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.SECTION,
       provenance: { type: "section", section },
       collapseKey: GRAPH_COLLAPSE_KEY.SECTION,
-      branch: "sections",
+      branch,
       relationshipToParent: "related",
-      children: mapSectionFields(sectionTreeNodeId, section.fields, section.name),
+      children: mapSectionFields(sectionTreeNodeId, section.fields, section.name, branch),
     });
   });
 }
@@ -56,6 +94,7 @@ function mapSectionFields(
   sectionTreeNodeId: string,
   fields: readonly SitecoreHarvestField[],
   sectionName: string,
+  branch: DataTreeBranch,
 ): DataTreeNonItemNode[] {
   return fields
     .filter((field) => Boolean(field.value))
@@ -68,9 +107,9 @@ function mapSectionFields(
         kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.FIELD,
         provenance: { type: "section-field", fieldName: field.label, fieldValue: field.value ?? "", field },
         collapseKey: GRAPH_COLLAPSE_KEY.FIELD,
-        branch: "sections",
+        branch,
         relationshipToParent: "related",
-        children: mapFieldLinks(fieldTreeNodeId, field.links, sectionName, field.label),
+        children: mapFieldLinks(fieldTreeNodeId, field.links, sectionName, field.label, branch),
       });
     });
 }
@@ -80,6 +119,7 @@ function mapFieldLinks(
   fieldLinks: readonly HarvestFieldLink[],
   sectionName: string,
   fieldName: string,
+  branch: DataTreeBranch,
 ): DataTreeNode[] {
   return dedupeFieldLinks(fieldLinks).map((fieldLink, linkIndex) =>
     createDataTreeItemNode({
@@ -95,7 +135,7 @@ function mapFieldLinks(
         fieldLink.strategy,
       ),
       collapseKey: GRAPH_COLLAPSE_KEY.FIELD,
-      branch: "sections",
+      branch,
       relationshipToParent: "related",
     }),
   );

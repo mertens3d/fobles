@@ -12,6 +12,7 @@ export const getQuickInfo = (
         itemPath: undefined,
         template: undefined,
         itemName: undefined,
+        icon: getItemHeaderIcon(doc),
         rawMarkup: Array.from(quickInfoTables)
             .map((table) => table.outerHTML)
             .join("\n") || undefined,
@@ -38,6 +39,16 @@ export const getQuickInfo = (
 
     return quickInfo;
 };
+
+// The item header's own icon - distinct from field icons, tree-node glyphs, layout-device icons,
+// and the Standard Template "Icon" field. img.src (not getAttribute) resolves to an absolute URL.
+function getItemHeaderIcon(doc: Document): string | undefined {
+    const icon = doc.querySelector<HTMLImageElement>(
+        CONST.SITECORE.SELECTORS.ITEM_HEADER_ICON,
+    );
+
+    return icon?.src || undefined;
+}
 
 function getQuickInfoItemNameFromRow(
     row: HTMLTableRowElement,

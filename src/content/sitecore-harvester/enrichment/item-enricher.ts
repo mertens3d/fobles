@@ -17,6 +17,7 @@ export function buildItemGraphNodeDataFromDoc(doc: Document): ItemGraphNodeData 
         scItemId: quickInfo.itemId,
         scItemName: quickInfo.itemName,
         scItemPath: quickInfo.itemPath,
+        scItemIcon: quickInfo.icon,
         rawMarkup: quickInfo.rawMarkup,
         scTemplate: quickInfo.template?.id
             ? factoryItemGraphNodeData({

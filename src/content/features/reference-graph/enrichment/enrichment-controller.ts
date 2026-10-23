@@ -8,6 +8,7 @@ import type { EnrichItemTask, WorkerTaskResult } from "../../../sitecore-harvest
 import { buildFoblesUrl } from "../../augmentor/helper";
 import { collectEnrichmentGuidLookup } from "../data-tree/data-tree-enrichment-lookup";
 import type { DataTreeNode, EnrichmentStatus } from "../data-tree/data-tree.types";
+import { sortGuidsByEnrichmentPriority } from "./enrichment-priority";
 import { patchCytoscapeNodes } from "./enrichment-graph-patcher";
 import { firstItemNode, itemsFor, markTreeNodes } from "./enrichment-tree-state";
 import type { EnrichmentController, EnrichmentProgressCallback } from "./enrichment.types";
@@ -37,7 +38,7 @@ export function startEnrichmentController({
   let disposed = false;
   const requestId = crypto.randomUUID();
   const guidLookup = collectEnrichmentGuidLookup(dataTree);
-  const guids = Array.from(guidLookup.keys());
+  const guids = sortGuidsByEnrichmentPriority(Array.from(guidLookup.keys()), guidLookup, nodesById);
   const maxItemCount = guids.length;
 
   const controller: EnrichmentController = {

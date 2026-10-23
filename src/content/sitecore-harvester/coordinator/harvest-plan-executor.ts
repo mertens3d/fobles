@@ -2,18 +2,16 @@
 
 import { extensionLog } from "../../logger";
 import { initializeRuntimeSettings, isRuntimeFaultEnabled, RUNTIME_FAULT } from "../../runtime-settings/runtime-settings";
-import { HARVEST_STEPS } from "../harvest-steps";
+import { HARVEST_STEP_BY_TASK_TYPE } from "../harvest-steps";
 import type { HarvestProgressCallback, HarvestRequest, ProgressStep } from "../sitecore-harvester.types";
 import { cancelWorkerTask, runWorkerTask } from "../worker-pool/worker-pool-client";
 import { createErrorResult, type WorkerTask, type WorkerTaskResult, type WorkerTaskType } from "../worker-pool/worker-task.types";
-import { createEditorStateTask, FILTER_KEY_BY_COLLECTOR_TASK_TYPE, planCollectorTaskGroups, planCollectorTasks } from "./harvest-task-planner";
+import { createEditorStateTask, planCollectorTaskGroups, planCollectorTasks } from "./harvest-task-planner";
 
 const TASK_TIMEOUT_MS = 30000;
-const HARVEST_STEP_BY_FILTER_KEY = new Map(HARVEST_STEPS.map((step) => [step.filterKey, step] as const));
 
 function stepForTaskType(type: WorkerTaskType): ProgressStep | undefined {
-  const filterKey = FILTER_KEY_BY_COLLECTOR_TASK_TYPE.get(type);
-  return filterKey ? HARVEST_STEP_BY_FILTER_KEY.get(filterKey) : undefined;
+  return HARVEST_STEP_BY_TASK_TYPE.get(type);
 }
 
 async function runWorkerTaskWithTimeout(task: WorkerTask): Promise<WorkerTaskResult> {
@@ -189,9 +187,12 @@ export async function executeHarvestPlan(
   });
 
   try {
-    await setAndVerifyEditorState(request, false, true, "normal-harvest");
+    await setAndVerifyEditorState(request, false, request.filters.standardFields, "normal-harvest");
     const normalResults = await dispatchTasks(normalTasks, onProgress);
 
+    // Layout's own Renderings/Final Renderings fields only render in the DOM at all when
+    // Standard Fields is on, regardless of whether the user wants the Standard Fields crop -
+    // always required here, unlike the generic section/field harvest above.
     await setAndVerifyEditorState(request, true, true, "layout-harvest");
     const layoutResults = await dispatchTasks(layoutTasks, onProgress);
 

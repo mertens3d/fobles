@@ -21,13 +21,13 @@ export type ProgressStep = {
 
 export type HarvestStep = ProgressStep & {
   stepKey: StepKey;
-  filterKey: keyof SitecoreHarvestFiltersState;
+  filterKeys: readonly (keyof SitecoreHarvestFiltersState)[];
   label: string;
   build: (harvestContext: HarvestContext) => Promise<void>;
 };
 
 export function isHarvestStep(step: ProgressStep): step is HarvestStep {
-  return "filterKey" in step;
+  return "filterKeys" in step;
 }
 
 export function factoryItemGraphNodeData(
@@ -40,6 +40,7 @@ export function factoryItemGraphNodeData(
     link: undefined,
     scItemPath: undefined,
     scTemplate: undefined,
+    scItemIcon: undefined,
     rawMarkup: undefined,
     ...overrides,
   };
@@ -52,6 +53,9 @@ export type ItemGraphNodeData = {
   link: string | undefined;
   scItemPath: string | undefined;
   scTemplate: ItemGraphNodeData | undefined;
+  // Item header icon image src, captured during quick-info enrichment. Never confused with field
+  // icons, tree-node glyphs, layout-device icons, or the Standard Template "Icon" field.
+  scItemIcon: string | undefined;
   // Diagnostics only: the raw quick-info/anchor markup that was scraped+parsed to produce this
   // item's fields above. Never read by business logic - inspect-only.
   rawMarkup: string | undefined;
@@ -65,7 +69,8 @@ export type SitecoreHarvestResult = {
   rootItem: RootItem;
   parent: ItemGraphNodeData | undefined;
   layoutSectionFields: LayoutSectionField[] | undefined;
-  sections: readonly SitecoreHarvestSection[] | undefined;
+  customFieldSections: readonly SitecoreHarvestSection[] | undefined;
+  standardFieldSections: readonly SitecoreHarvestSection[] | undefined;
   childItems: readonly ItemGraphNodeData[] | undefined;
   referrers: readonly ItemGraphNodeData[] | undefined;
 };
@@ -75,7 +80,8 @@ export type SitecoreHarvestFiltersState = {
   children: boolean;
   layouts: boolean;
   referrers: boolean;
-  sections: boolean;
+  customFields: boolean;
+  standardFields: boolean;
   template: boolean;
 };
 

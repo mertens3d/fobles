@@ -97,7 +97,7 @@ async function executeReferenceGraphSession(doc: Document): Promise<void> {
       | undefined;
 
     if (!controller.signal.aborted && graph) {
-      preparedGraph = await prepareReferenceGraph(graph, {
+      preparedGraph = await prepareReferenceGraph(graph, filters, {
         signal: controller.signal,
         onProgress: (step, status) => {
           handleHarvestProgress(doc, step, status);

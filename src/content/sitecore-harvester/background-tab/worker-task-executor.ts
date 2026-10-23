@@ -40,7 +40,8 @@ function buildHarvestContext(
       rootItem,
       parent: undefined,
       layoutSectionFields: undefined,
-      sections: undefined,
+      customFieldSections: undefined,
+      standardFieldSections: undefined,
       childItems: undefined,
       referrers: undefined,
     };
@@ -140,7 +141,10 @@ export async function executeWorkerTask(
           case "collect-sections":
             await collectSections(harvestContext);
             result = cancelledResultIfAborted(task, signal) ??
-              successResult(task, { sections: harvestContext.result.sections ?? [] });
+              successResult(task, {
+                customFieldSections: harvestContext.result.customFieldSections ?? [],
+                standardFieldSections: harvestContext.result.standardFieldSections ?? [],
+              });
             break;
           case "collect-layouts":
             await collectLayouts(harvestContext);

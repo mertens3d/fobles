@@ -5,6 +5,7 @@ import { SITECORE } from "../../../../constants/sitecore";
 import { isGuidLike } from "../../../features/augmentor/shared/guid";
 import { resolveFieldReferences } from "../../../field-reference-resolution/field-reference-resolution";
 import { extractFieldLabel, isHandledElsewhere, readRawFieldValue } from "../helpers/field-harvester";
+import { isStandardSectionName } from "./section-classification";
 import { factoryItemGraphNodeData, type HarvestContext, type HarvestFieldLink, type ItemGraphNodeData, type SitecoreHarvestField, type SitecoreHarvestSection } from "../../sitecore-harvester.types";
 
 export function collectSections(harvestContext: HarvestContext): Promise<void> {
@@ -21,7 +22,8 @@ export function collectSections(harvestContext: HarvestContext): Promise<void> {
     }
   });
 
-  harvestContext.result.sections = sections;
+  harvestContext.result.customFieldSections = sections.filter((section) => !isStandardSectionName(section.name));
+  harvestContext.result.standardFieldSections = sections.filter((section) => isStandardSectionName(section.name));
   return Promise.resolve();
 }
 

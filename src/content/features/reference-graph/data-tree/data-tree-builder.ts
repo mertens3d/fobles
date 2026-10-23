@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/data-tree/data-tree-builder.ts
 
-import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { CONST } from "../../../../constants/const";
 import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";
 import { createDataTreeNodeId } from "./layout-data-tree-builder";
@@ -9,9 +9,12 @@ import { DATA_TREE_FAN_OUT_LIMITS } from "./data-tree-fan-out-limits";
 import { createDataTreeItemNode, createDataTreeNonItemNode } from "./data-tree-node-factory";
 import { createSitecoreItemProvenance, createSyntheticProvenance } from "./data-tree-provenance.types";
 import type { DataTreeItemNode, DataTreeNonItemNode, DataTreeTruncation } from "./data-tree.types";
-import { createSectionsTreeNode } from "./sections-data-tree-builder";
+import { createCustomFieldsTreeNode, createStandardFieldsTreeNode } from "./sections-data-tree-builder";
 
-export function createDataTree(graphReferenceResult: SitecoreHarvestResult): DataTreeItemNode {
+export function createDataTree(
+  graphReferenceResult: SitecoreHarvestResult,
+  filters: SitecoreHarvestFiltersState,
+): DataTreeItemNode {
   const rootTreeNodeId = graphReferenceResult.rootItem.scItemId;
 
   const children = [
@@ -19,7 +22,8 @@ export function createDataTree(graphReferenceResult: SitecoreHarvestResult): Dat
     createTemplateTreeNode(graphReferenceResult),
     createChildrenTreeNode(graphReferenceResult),
     createReferrersTreeNode(graphReferenceResult),
-    createSectionsTreeNode(graphReferenceResult),
+    filters.customFields ? createCustomFieldsTreeNode(graphReferenceResult) : undefined,
+    filters.standardFields ? createStandardFieldsTreeNode(graphReferenceResult) : undefined,
     createLayoutTreeNode(graphReferenceResult),
   ].filter((treeNode): treeNode is DataTreeItemNode | DataTreeNonItemNode => treeNode !== undefined);
 

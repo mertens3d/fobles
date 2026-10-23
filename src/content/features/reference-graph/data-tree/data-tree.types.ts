@@ -5,7 +5,7 @@ import type { DataTreeProvenance } from "./data-tree-provenance.types";
 
 export type RelationshipToParent = "contained" | "related";
 
-export type DataTreeBranch = "parent" | "children" | "layouts" | "referrers" | "sections" | "template";
+export type DataTreeBranch = "parent" | "children" | "layouts" | "referrers" | "customFields" | "standardFields" | "template";
 
 export type TreeChildNode = {
   name: string | undefined;

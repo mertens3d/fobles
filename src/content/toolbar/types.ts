@@ -20,6 +20,7 @@ export type QuickInfo = {
   itemName: string | undefined;
   itemPath: string | undefined;
   template: QuickInfoTemplate | undefined;
+  icon: string | undefined;
   // Diagnostics only: the raw quick-info panel markup this was parsed from.
   rawMarkup: string | undefined;
 };

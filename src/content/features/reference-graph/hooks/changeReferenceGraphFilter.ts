@@ -61,7 +61,7 @@ export async function changeReferenceGraphFilter(
       PROGRESS_STEPS.filter(
         (step) =>
           isHarvestStep(step) &&
-          step.filterKey === key,
+          step.filterKeys.includes(key),
       ),
       requestedFilters,
     );
