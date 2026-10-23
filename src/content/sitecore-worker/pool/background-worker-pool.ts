@@ -1,8 +1,8 @@
-// @source-path [fobles] src/content/sitecore-harvester/worker-pool/background-worker-pool.ts
+// @source-path [fobles] src/content/sitecore-worker/pool/background-worker-pool.ts
 
 import { DEFAULT_RUNTIME_SETTINGS } from "../../runtime-settings/runtime-settings";
 import { extensionLog } from "../../logger";
-import { closeWorkerTarget } from "../background-tab/worker-target-service";
+import { closeWorkerTarget } from "../transport/worker-target-service";
 import {
   runTaskOnNewWorker,
   runWorkerTask,
@@ -24,7 +24,7 @@ import {
   type WorkerExecutorContext,
   type WorkerTask,
   type WorkerTaskResult,
-} from "./worker-task.types";
+} from "../tasks/worker-task.types";
 import {
   isWorkerTabTarget,
   type WorkerTarget,

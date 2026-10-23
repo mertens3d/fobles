@@ -8,7 +8,7 @@ import {
   readChildNodes,
 } from "../macros/tree-expand-macro";
 import { getQuickInfo } from "../toolbar/jump-flyout/quick-info";
-import type { TreeChildNode } from "../features/reference-graph/data-tree/data-tree.types";
+import type { TreeChildNode } from "../data-tree/tree-child-node.types";
 import {
   factoryItemGraphNodeData,
   type ItemGraphNodeData,

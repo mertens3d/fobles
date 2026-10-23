@@ -1,7 +1,7 @@
-// @source-path [fobles] src/content/sitecore-harvester/coordinator/harvest-task-planner.ts
+// @source-path [fobles] src/content/sitecore-harvester/planner/harvest-task-planner.ts
 
 import type { HarvestRequest, SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../sitecore-harvester.types";
-import type { WorkerEditorState, WorkerTask, WorkerTaskType } from "../worker-pool/worker-task.types";
+import type { WorkerEditorState, WorkerTask, WorkerTaskType } from "../../sitecore-worker/tasks/worker-task.types";
 
 export type CollectorFilterKey = Exclude<keyof SitecoreHarvestFiltersState, "template">;
 export type CollectorTaskType = Exclude<WorkerTaskType, "enrich-item" | "collect-root-item" | "set-editor-state">;

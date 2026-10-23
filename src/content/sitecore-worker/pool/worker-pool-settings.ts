@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-pool-settings.ts
+// @source-path [fobles] src/content/sitecore-worker/pool/worker-pool-settings.ts
 
 import { onStorageChange } from "../../../shared/storage/storage";
 import {

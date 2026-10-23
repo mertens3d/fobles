@@ -5,7 +5,7 @@ import { extensionLog } from "../../logger";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import {
   disposeBackgroundWorkerPool,
-} from "../../sitecore-harvester/worker-pool/worker-pool-client";
+} from "../../sitecore-worker/pool/worker-pool-client";
 import {
   closeReferenceGraphProgressModal,
 } from "./build-progress";

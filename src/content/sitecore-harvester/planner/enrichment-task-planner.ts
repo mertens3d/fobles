@@ -1,9 +1,9 @@
-// @source-path [fobles] src/content/sitecore-harvester/coordinator/enrichment-task-planner.ts
+// @source-path [fobles] src/content/sitecore-harvester/planner/enrichment-task-planner.ts
 
 import { buildFoblesUrl } from "../../features/augmentor/helper";
 import { isItemGraphNodeDataResolved } from "../enrichment/item-enricher";
 import type { ItemGraphNodeData } from "../sitecore-harvester.types";
-import type { EnrichItemTask } from "../worker-pool/worker-task.types";
+import type { EnrichItemTask } from "../../sitecore-worker/tasks/worker-task.types";
 
 function lookupKeyFor(item: ItemGraphNodeData): string | undefined {
   const reference = item.scItemId || item.scItemPath;

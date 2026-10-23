@@ -1,11 +1,22 @@
 // @source-path [fobles] src/content/sitecore-harvester/sitecore-harvester.types.ts
 
-import type { FieldReference } from "../field-reference-resolution/field-reference.types";
-import type {
-  SitecoreDeviceXml,
-  SitecoreRenderingXml,
-} from "./collectors/section-collector/layout-collector/sitecore-layout-xml-schema.types";
 import type { HarvestSession } from "./harvest-session.types";
+
+// Re-exported so existing harvester/reference-graph call sites can keep importing these pure
+// item-data shapes from here unchanged - the canonical definitions now live in data-tree/, the
+// one place both sitecore-worker and sitecore-harvester are allowed to depend on.
+export {
+  factoryItemGraphNodeData,
+  type HarvestFieldLink,
+  type ItemGraphNodeData,
+  type LayoutDevice,
+  type LayoutSectionField,
+  type RootItem,
+  type ScControl,
+  type SitecoreHarvestField,
+  type SitecoreHarvestSection,
+} from "../data-tree/sitecore-item.types";
+import type { ItemGraphNodeData, LayoutSectionField, RootItem, SitecoreHarvestSection } from "../data-tree/sitecore-item.types";
 
 export type HarvestContext = {
   doc: Document;
@@ -30,41 +41,6 @@ export function isHarvestStep(step: ProgressStep): step is HarvestStep {
   return "filterKeys" in step;
 }
 
-export function factoryItemGraphNodeData(
-  overrides: Partial<Omit<ItemGraphNodeData, "type">> = {},
-): ItemGraphNodeData {
-  return {
-    type: "scItem",
-    scItemName: undefined,
-    scItemId: undefined,
-    link: undefined,
-    scItemPath: undefined,
-    scTemplate: undefined,
-    scItemIcon: undefined,
-    rawMarkup: undefined,
-    ...overrides,
-  };
-}
-
-export type ItemGraphNodeData = {
-  type: "scItem";
-  scItemName: string | undefined;
-  scItemId: string | undefined;
-  link: string | undefined;
-  scItemPath: string | undefined;
-  scTemplate: ItemGraphNodeData | undefined;
-  // Item header icon image src, captured during quick-info enrichment. Never confused with field
-  // icons, tree-node glyphs, layout-device icons, or the Standard Template "Icon" field.
-  scItemIcon: string | undefined;
-  // Diagnostics only: the raw quick-info/anchor markup that was scraped+parsed to produce this
-  // item's fields above. Never read by business logic - inspect-only.
-  rawMarkup: string | undefined;
-};
-
-export type RootItem = ItemGraphNodeData & {
-  scItemId: string;
-};
-
 export type SitecoreHarvestResult = {
   rootItem: RootItem;
   parent: ItemGraphNodeData | undefined;
@@ -83,50 +59,6 @@ export type SitecoreHarvestFiltersState = {
   customFields: boolean;
   standardFields: boolean;
   template: boolean;
-};
-
-export type SitecoreHarvestSection = {
-  name: string;
-  fields: readonly SitecoreHarvestField[];
-};
-
-export type LayoutSectionField = {
-  name: string | undefined;
-  devices: LayoutDevice[];
-  // Diagnostics only: the raw Renderings/Final renderings field XML this was parsed from.
-  rawMarkup: string | undefined;
-};
-
-export type ScControl = {
-  uid: string | undefined;
-  rendering: ItemGraphNodeData;
-  datasource: ItemGraphNodeData | undefined;
-  placeholder: string | undefined;
-  parameters: Record<string, string>;
-  p_before: string | undefined;
-  p_after: string | undefined;
-  rawData: SitecoreRenderingXml;
-};
-
-export type SitecoreHarvestField = {
-  label: string;
-  value: string | undefined;
-  // One per resolved Sitecore item reference found in this field's raw value - see
-  // field-reference-resolution/field-reference-resolution.ts for how these are produced.
-  links: readonly HarvestFieldLink[];
-  // Diagnostics only: the raw field-marker outerHTML this label/value/links were parsed from.
-  rawMarkup: string | undefined;
-};
-
-export type LayoutDevice = {
-  scDeviceItem: ItemGraphNodeData;
-  scPageLayoutItem: ItemGraphNodeData | undefined;
-  scControls: ScControl[];
-  rawData: SitecoreDeviceXml;
-};
-
-export type HarvestFieldLink = FieldReference & {
-  valueItem: ItemGraphNodeData;
 };
 
 export type StepKey =

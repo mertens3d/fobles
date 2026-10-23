@@ -1,17 +1,17 @@
-// @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-pool-lifecycle.ts
+// @source-path [fobles] src/content/sitecore-worker/pool/worker-pool-lifecycle.ts
 
 import { extensionLog } from "../../logger";
 import {
   closeWorkerTarget,
   sendCancelToWorkerTarget,
-} from "../background-tab/worker-target-service";
+} from "../transport/worker-target-service";
 import type {
   ActiveWorkerTask,
   PoolWorker,
   QueuedTask
-} from "./worker-task.types";
+} from "../tasks/worker-task.types";
 import { clearWorkerReadiness } from "./worker-readiness";
-import { createCancelledResult } from "./worker-task.types";
+import { createCancelledResult } from "../tasks/worker-task.types";
 
 const DISPOSAL_DRAIN_TIMEOUT_MS = 10000;
 const DISPOSAL_DRAIN_POLL_MS = 50;

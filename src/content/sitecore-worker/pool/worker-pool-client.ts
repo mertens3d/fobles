@@ -1,16 +1,16 @@
-// @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-pool-client.ts
+// @source-path [fobles] src/content/sitecore-worker/pool/worker-pool-client.ts
 
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import type {
   WorkerTask,
   WorkerTaskResult,
-} from "./worker-task.types";
+} from "../tasks/worker-task.types";
 import type {
   PoolCancelRequestMessage,
   PoolCancelTaskMessage,
   PoolDisposeMessage,
   PoolRunTaskMessage,
-} from "./worker.messages";
+} from "../transport/worker.messages";
 
 const MESSAGE_TYPE =
   REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;

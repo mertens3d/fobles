@@ -2,9 +2,9 @@
 
 import type cytoscape from "cytoscape";
 import { extensionLog } from "../../../logger";
-import { mergeEnrichedItem } from "../../../sitecore-harvester/coordinator/enrichment-task-planner";
-import { cancelWorkerRequest, runWorkerTask } from "../../../sitecore-harvester/worker-pool/worker-pool-client";
-import type { EnrichItemTask, WorkerTaskResult } from "../../../sitecore-harvester/worker-pool/worker-task.types";
+import { mergeEnrichedItem } from "../../../sitecore-harvester/planner/enrichment-task-planner";
+import { cancelWorkerRequest, runWorkerTask } from "../../../sitecore-worker/pool/worker-pool-client";
+import type { EnrichItemTask, WorkerTaskResult } from "../../../sitecore-worker/tasks/worker-task.types";
 import { buildFoblesUrl } from "../../augmentor/helper";
 import { collectEnrichmentGuidLookup } from "../data-tree/data-tree-enrichment-lookup";
 import type { DataTreeNode, EnrichmentStatus } from "../data-tree/data-tree.types";

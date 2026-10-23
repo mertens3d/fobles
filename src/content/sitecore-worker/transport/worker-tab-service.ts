@@ -1,9 +1,9 @@
-// @source-path [fobles] src/content/sitecore-harvester/background-tab/worker-tab-service.ts
+// @source-path [fobles] src/content/sitecore-worker/transport/worker-tab-service.ts
 
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { extensionLog } from "../../logger";
-import type { WorkerSetOwnedMessage, WorkerTaskExecuteMessage } from "../worker-pool/worker.messages";
-import type { WorkerTask, WorkerTaskExecutionResult } from "../worker-pool/worker-task.types";
+import type { WorkerSetOwnedMessage, WorkerTaskExecuteMessage } from "./worker.messages";
+import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 
 const MESSAGE_TYPE = REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
 

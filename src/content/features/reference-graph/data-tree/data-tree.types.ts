@@ -7,13 +7,6 @@ export type RelationshipToParent = "contained" | "related";
 
 export type DataTreeBranch = "parent" | "children" | "layouts" | "referrers" | "customFields" | "standardFields" | "template";
 
-export type TreeChildNode = {
-  name: string | undefined;
-  itemId: string;
-  // Diagnostics only: the raw tree-row outerHTML this was parsed from.
-  rawMarkup: string | undefined;
-};
-
 // Fan-out truncation metadata for a wrapper node (e.g. Children/Referrers) whose underlying
 // relationship may be larger than what the DataTree actually includes as children.
 export type DataTreeTruncation = { availableCount: number; includedCount: number; truncated: boolean };

@@ -4,7 +4,7 @@ import type { HarvestSession } from "../../sitecore-harvester/harvest-session.ty
 import { buildFoblesUrl } from "../augmentor/helper";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { extensionLog } from "../../logger";
-import { PROGRESS_STEPS } from "../../sitecore-harvester/harvest-steps";
+import { PROGRESS_STEPS } from "../../sitecore-harvester/planner/harvest-steps";
 import { harvestSitecoreWithWorkers } from "../../sitecore-harvester/coordinator/foreground-harvest-coordinator";
 import { getCurrentItemId } from "../../toolbar/jump-flyout/ai-pages";
 import {
@@ -18,7 +18,7 @@ import { harvestGraphForLink } from "./harvester";
 import { openReferenceGraphModal } from "./reference-graph-modal";
 import { acquireReferenceGraphSessionLock, releaseReferenceGraphSessionLock } from "./reference-graph-session-lock";
 import { startReferenceGraphTimer } from "./reference-graph-timing";
-import { disposeBackgroundWorkerPool } from "../../sitecore-harvester/worker-pool/worker-pool-client";
+import { disposeBackgroundWorkerPool } from "../../sitecore-worker/pool/worker-pool-client";
 import {
   getScRawValuesState,
   getScStandardFieldsState,

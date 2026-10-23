@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-task.types.ts
+// @source-path [fobles] src/content/sitecore-worker/tasks/worker-task.types.ts
 
 import type { BooleanTripleState } from "../../macros/ribbon-toggle-macro";
 import type {
@@ -6,8 +6,8 @@ import type {
   LayoutSectionField,
   RootItem,
   SitecoreHarvestSection,
-} from "../sitecore-harvester.types";
-import type { WorkerTarget } from "./worker-target";
+} from "../../data-tree/sitecore-item.types";
+import type { WorkerTarget } from "../pool/worker-target";
 
 export type WorkerTaskType =
   | "collect-root-item"

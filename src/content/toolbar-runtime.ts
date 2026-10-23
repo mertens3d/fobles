@@ -27,7 +27,7 @@ import {
 } from "./toolbar";
 import { applyPowerShellIseTabIdentity } from "./ise-tab-title";
 import { toggleLightningBolt } from "./feature-toggle";
-import { registerWorkerIframeHost } from "./sitecore-harvester/background-tab/worker-iframe-host";
+import { registerWorkerIframeHost } from "./sitecore-worker/iframe/worker-iframe-host";
 
 let foblesUiActive = false;
 let foblesNavPlacement: ToolbarPlacement = DEFAULT_TOOLBAR_PLACEMENT;

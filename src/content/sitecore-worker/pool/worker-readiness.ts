@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-readiness.ts
+// @source-path [fobles] src/content/sitecore-worker/pool/worker-readiness.ts
 
 const readyResolversByTabId =
   new Map<number, Array<() => void>>();

@@ -1,10 +1,10 @@
-// @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker.messages.ts
+// @source-path [fobles] src/content/sitecore-worker/transport/worker.messages.ts
 
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import type {
   WorkerTask,
   WorkerTaskResult,
-} from "./worker-task.types";
+} from "../tasks/worker-task.types";
 
 const MESSAGE_TYPE =
   REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;

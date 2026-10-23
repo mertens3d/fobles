@@ -1,11 +1,11 @@
 // @source-path [fobles] src/content/sitecore-harvester/coordinator/foreground-harvest-coordinator.ts
 
-import { HARVEST_STEPS } from "../harvest-steps";
+import { HARVEST_STEPS } from "../planner/harvest-steps";
 import type { HarvestProgressCallback, HarvestRequest, SitecoreHarvestResult } from "../sitecore-harvester.types";
-import { cancelWorkerRequest } from "../worker-pool/worker-pool-client";
-import { isSuccessResult, type WorkerTaskResult } from "../worker-pool/worker-task.types";
+import { cancelWorkerRequest } from "../../sitecore-worker/pool/worker-pool-client";
+import { isSuccessResult, type WorkerTaskResult } from "../../sitecore-worker/tasks/worker-task.types";
 import { executeHarvestPlan } from "./harvest-plan-executor";
-import { isCollectorResultAlreadyPresent } from "./harvest-task-planner";
+import { isCollectorResultAlreadyPresent } from "../planner/harvest-task-planner";
 import { createBaseResult, extractRootItem, mergeCollectorResult } from "./harvest-result-merger";
 
 type HarvestOptions = {

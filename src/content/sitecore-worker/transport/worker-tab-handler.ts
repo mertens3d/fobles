@@ -1,17 +1,15 @@
-// @source-path [fobles] src/content/sitecore-harvester/background-tab/worker-tab-handler.ts
+// @source-path [fobles] src/content/sitecore-worker/transport/worker-tab-handler.ts
 
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { extensionLog } from "../../logger";
-import {
-  executeWorkerTask,
-} from "./worker-task-executor";
+import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 import {
   WORKER_IFRAME_READY_MESSAGE_TYPE,
   type WorkerAdoptedMessage,
   type WorkerIframeReadyMessage,
   type WorkerReadyMessage,
   type WorkerTabIncomingMessage,
-} from "../worker-pool/worker.messages";
+} from "./worker.messages";
 
 const MESSAGE_TYPE =
   REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
@@ -56,7 +54,18 @@ function readIframeWorkerId():
   return iframeWorkerId;
 }
 
-export function registerWorkerTabHandler():
+// Generic transport - the actual task execution logic (which knows about collectors/enrichment)
+// is injected by the caller instead of imported directly, so this file never depends on
+// sitecore-harvester/enrichment.
+export type ExecuteWorkerTask = (
+  doc: Document,
+  task: WorkerTask,
+  signal: AbortSignal,
+) => Promise<WorkerTaskExecutionResult>;
+
+export function registerWorkerTabHandler(
+  executeWorkerTask: ExecuteWorkerTask,
+):
   void {
   const iframeWorkerId =
     readIframeWorkerId();

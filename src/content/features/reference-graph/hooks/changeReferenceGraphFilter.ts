@@ -1,4 +1,4 @@
-import { PROGRESS_STEPS } from "../../../sitecore-harvester/harvest-steps";
+import { PROGRESS_STEPS } from "../../../sitecore-harvester/planner/harvest-steps";
 import { type SitecoreHarvestFiltersState, isHarvestStep } from "../../../sitecore-harvester/sitecore-harvester.types";
 import { buildFoblesUrl } from "../../augmentor/helper";
 import { openReferenceGraphProgressModal, closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal } from "../build-progress";

@@ -2,11 +2,11 @@
 
 import { extensionLog } from "../../logger";
 import { initializeRuntimeSettings, isRuntimeFaultEnabled, RUNTIME_FAULT } from "../../runtime-settings/runtime-settings";
-import { HARVEST_STEP_BY_TASK_TYPE } from "../harvest-steps";
+import { HARVEST_STEP_BY_TASK_TYPE } from "../planner/harvest-steps";
 import type { HarvestProgressCallback, HarvestRequest, ProgressStep } from "../sitecore-harvester.types";
-import { cancelWorkerTask, runWorkerTask } from "../worker-pool/worker-pool-client";
-import { createErrorResult, type WorkerTask, type WorkerTaskResult, type WorkerTaskType } from "../worker-pool/worker-task.types";
-import { createEditorStateTask, planCollectorTaskGroups, planCollectorTasks } from "./harvest-task-planner";
+import { cancelWorkerTask, runWorkerTask } from "../../sitecore-worker/pool/worker-pool-client";
+import { createErrorResult, type WorkerTask, type WorkerTaskResult, type WorkerTaskType } from "../../sitecore-worker/tasks/worker-task.types";
+import { createEditorStateTask, planCollectorTaskGroups, planCollectorTasks } from "../planner/harvest-task-planner";
 
 const TASK_TIMEOUT_MS = 30000;
 

@@ -8,7 +8,7 @@ import { extensionLog } from "../content/logger";
 import {
   clearHostWorkerIframeTargets,
   markWorkerIframeReady,
-} from "../content/sitecore-harvester/background-tab/worker-iframe-service";
+} from "../content/sitecore-worker/iframe/worker-iframe-service";
 import {
   adoptWorkerTab,
   cancelPoolRequest,
@@ -18,7 +18,7 @@ import {
   handleWorkerTabRemoved,
   clearWorkerPoolForHost,
   runPoolTask,
-} from "../content/sitecore-harvester/worker-pool/background-worker-pool";
+} from "../content/sitecore-worker/pool/background-worker-pool";
 import {
   WORKER_IFRAME_READY_MESSAGE_TYPE,
   type PoolCancelRequestMessage,
@@ -28,7 +28,7 @@ import {
   type WorkerAdoptedMessage,
   type WorkerIframeReadyMessage,
   type WorkerReadyMessage,
-} from "../content/sitecore-harvester/worker-pool/worker.messages";
+} from "../content/sitecore-worker/transport/worker.messages";
 import { appendPersistedLogEntry, clearPersistedLogEntries } from "../shared/logging/persisted-log-storage";
 import type { PersistedLogMessage } from "../shared/persisted-log.types";
 

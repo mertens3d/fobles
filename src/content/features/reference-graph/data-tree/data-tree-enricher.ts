@@ -5,9 +5,9 @@ import {
   buildEnrichItemTasks,
   collectItemGraphNodeDataGroups,
   mergeEnrichedItem,
-} from "../../../sitecore-harvester/coordinator/enrichment-task-planner";
+} from "../../../sitecore-harvester/planner/enrichment-task-planner";
 import type { HarvestProgressCallback } from "../../../sitecore-harvester/sitecore-harvester.types";
-import { cancelWorkerRequest, runWorkerTask } from "../../../sitecore-harvester/worker-pool/worker-pool-client";
+import { cancelWorkerRequest, runWorkerTask } from "../../../sitecore-worker/pool/worker-pool-client";
 import type { DataTreeNode } from "./data-tree.types";
 
 type EnrichDataTreeOptions = { signal?: AbortSignal; onProgress?: HarvestProgressCallback };

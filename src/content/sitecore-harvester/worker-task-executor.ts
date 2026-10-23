@@ -1,23 +1,23 @@
-// @source-path [fobles] src/content/sitecore-harvester/background-tab/worker-task-executor.ts
+// @source-path [fobles] src/content/sitecore-harvester/worker-task-executor.ts
 
-import { collectChildren } from "../collectors/child-collector";
-import { collectParent } from "../collectors/parent-collector";
-import { collectReferrers } from "../collectors/referrer-collector";
-import { collectLayouts } from "../collectors/section-collector/layout-collector/layout-collector";
-import { collectSections } from "../collectors/section-collector/section-collector";
-import { buildItemGraphNodeDataFromDoc } from "../enrichment/item-enricher";
-import { harvestStepRootItem } from "../harvest-sitecore";
+import { collectChildren } from "./collectors/child-collector";
+import { collectParent } from "./collectors/parent-collector";
+import { collectReferrers } from "./collectors/referrer-collector";
+import { collectLayouts } from "./collectors/section-collector/layout-collector/layout-collector";
+import { collectSections } from "./collectors/section-collector/section-collector";
+import { buildItemGraphNodeDataFromDoc } from "./enrichment/item-enricher";
+import { harvestStepRootItem } from "./harvest-sitecore";
 import {
   getScRawValuesState,
   getScStandardFieldsState,
   setScRawValuesState,
   setScStandardFieldsState,
-} from "../../macros/ribbon-toggle-macro";
+} from "../macros/ribbon-toggle-macro";
 import {
   factoryItemGraphNodeData,
   type HarvestContext,
   type SitecoreHarvestResult,
-} from "../sitecore-harvester.types";
+} from "./sitecore-harvester.types";
 import {
   createCancelledResult,
   createDocumentStaleResult,
@@ -27,7 +27,7 @@ import {
   type WorkerTaskPayloadByType,
   type WorkerTaskResult,
   type WorkerTaskType,
-} from "../worker-pool/worker-task.types";
+} from "../sitecore-worker/tasks/worker-task.types";
 
 function normalizeSitecoreItemId(value: string | undefined): string | undefined {
   return value

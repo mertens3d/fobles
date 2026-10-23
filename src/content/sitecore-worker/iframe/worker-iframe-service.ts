@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-harvester/background-tab/worker-iframe-service.ts
+// @source-path [fobles] src/content/sitecore-worker/iframe/worker-iframe-service.ts
 
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { extensionLog } from "../../logger";
@@ -11,14 +11,14 @@ import type {
   WorkerSetOwnedMessage,
   WorkerTaskCancelMessage,
   WorkerTaskExecuteMessage,
-} from "../worker-pool/worker.messages";
+} from "../transport/worker.messages";
 import {
   WORKER_IFRAME_CREATE_MESSAGE_TYPE,
   WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE,
   WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE,
   WORKER_IFRAME_REMOVE_MESSAGE_TYPE,
-} from "../worker-pool/worker.messages";
-import type { WorkerTask, WorkerTaskExecutionResult } from "../worker-pool/worker-task.types";
+} from "../transport/worker.messages";
+import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 
 const MESSAGE_TYPE = REFERENCE_GRAPH.BACKGROUND_HARVEST.MESSAGE.TYPE;
 const READY_TIMEOUT_MS = 20000;

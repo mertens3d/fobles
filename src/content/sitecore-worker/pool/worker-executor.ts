@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-harvester/worker-pool/worker-executor.ts
+// @source-path [fobles] src/content/sitecore-worker/pool/worker-executor.ts
 
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { extensionLog } from "../../logger";
@@ -9,7 +9,7 @@ import {
   markWorkerTargetOwned,
   navigateWorkerTarget,
   sendTaskToWorkerTarget,
-} from "../background-tab/worker-target-service";
+} from "../transport/worker-target-service";
 import { resetWorkerReadiness, waitForWorkerReady } from "./worker-readiness";
 import {
   createCancelledResult,
@@ -18,7 +18,7 @@ import {
   type QueuedTask,
   type WorkerExecutorContext,
   type WorkerTaskResult,
-} from "./worker-task.types";
+} from "../tasks/worker-task.types";
 import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
 
 const READY_TIMEOUT_MS = 20000;

@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-harvester/background-tab/worker-target-service.ts
+// @source-path [fobles] src/content/sitecore-worker/transport/worker-target-service.ts
 
 import {
   createWorkerIframeTarget,
@@ -7,7 +7,7 @@ import {
   removeWorkerIframeTarget,
   sendCancelToWorkerIframe,
   sendTaskToWorkerIframe,
-} from "./worker-iframe-service";
+} from "../iframe/worker-iframe-service";
 import {
   closeWorkerTab,
   createWorkerTab,
@@ -16,12 +16,12 @@ import {
   sendCancelToWorkerTab,
   sendTaskToWorkerTab,
 } from "./worker-tab-service";
-import type { WorkerTask, WorkerTaskExecutionResult } from "../worker-pool/worker-task.types";
+import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 import {
   isWorkerIframeTarget,
   isWorkerTabTarget,
   type WorkerTarget,
-} from "../worker-pool/worker-target";
+} from "../pool/worker-target";
 
 const USE_WORKER_IFRAMES = true;
 

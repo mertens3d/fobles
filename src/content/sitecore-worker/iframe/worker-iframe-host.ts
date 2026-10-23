@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-harvester/background-tab/worker-iframe-host.ts
+// @source-path [fobles] src/content/sitecore-worker/iframe/worker-iframe-host.ts
 
 import { CONST } from "../../../constants/const";
 import { getRuntimeSettings, initializeRuntimeSettings } from "../../runtime-settings/runtime-settings";
@@ -9,7 +9,7 @@ import {
   WORKER_IFRAME_REMOVE_MESSAGE_TYPE,
   type WorkerIframeCreateResult,
   type WorkerIframeHostMessage,
-} from "../worker-pool/worker.messages";
+} from "../transport/worker.messages";
 
 const workerIframeById = new Map<string, HTMLIFrameElement>();
 let workerIframeHostRegistered = false;
