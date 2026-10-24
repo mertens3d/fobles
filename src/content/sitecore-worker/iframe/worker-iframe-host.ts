@@ -1,6 +1,9 @@
 // @source-path [fobles] src/content/sitecore-worker/iframe/worker-iframe-host.ts
 
+import { requireReferenceGraphSessionContainer } from "../../features/reference-graph/reference-graph-session-container";
 import { CONST } from "../../../constants/const";
+import { extensionLog } from "../../logger";
+import { logWorkerMemory, logWorkerMemoryAfterDelays } from "../diagnostics/memory-diagnostics";
 import { getRuntimeSettings, initializeRuntimeSettings } from "../../runtime-settings/runtime-settings";
 import {
   WORKER_IFRAME_CREATE_MESSAGE_TYPE,
@@ -57,6 +60,7 @@ export async function createWorkerIframe(
   applyWorkerIframeClass(iframe, workerIframeById.size);
   getWorkerIframeContainer(doc).appendChild(iframe);
   workerIframeById.set(workerId, iframe);
+  logWorkerMemory("iframe created", { workerId, trackedIframes: workerIframeById.size, domIframes: doc.querySelectorAll("iframe[data-worker-id]").length });
 
   return { workerId };
 }
@@ -66,7 +70,7 @@ function createWorkerIframeContainer(doc: Document): HTMLDivElement {
   container.id = CONST.FOBLES.WORKER_POOL.WORKER_IFRAME_CONTAINER_ID;
   container.classList.add("fobles-worker-iframe-container");
   applyWorkerIframeContainerClass(container);
-  doc.body.appendChild(container);
+  requireReferenceGraphSessionContainer(doc).appendChild(container);
   return container;
 }
 
@@ -122,9 +126,78 @@ export function removeWorkerIframe(workerId: string): boolean {
     workerIframeById.delete(workerId);
     removed = true;
     removeEmptyContainer();
+    extensionLog.debug("Worker iframe host: iframe removed", {
+      workerId,
+      trackedIframes: workerIframeById.size,
+      domIframes: document.querySelectorAll("iframe[data-worker-id]").length,
+    });
+  } else {
+    extensionLog.error("Worker iframe host: iframe not found for removal", {
+      workerId,
+      trackedIframes: workerIframeById.size,
+      domIframes: document.querySelectorAll("iframe[data-worker-id]").length,
+      trackedWorkerIds: Array.from(workerIframeById.keys()),
+    });
   }
 
   return removed;
+}
+
+
+export type WorkerIframeEmergencyCleanupResult = {
+  containerFound: boolean;
+  trackedCountBefore: number;
+  orphanCountBefore: number;
+  workerIds: string[];
+  iframeSrcs: string[];
+  orphanCountAfter: number;
+  trackedCountAfter: number;
+  containerExistsAfter: boolean;
+};
+
+export function emergencyCleanupWorkerIframes(doc: Document): WorkerIframeEmergencyCleanupResult {
+  const containerId = CONST.FOBLES.WORKER_POOL.WORKER_IFRAME_CONTAINER_ID;
+  const container = doc.getElementById(containerId);
+  const orphanIframes = Array.from(doc.querySelectorAll<HTMLIFrameElement>("iframe[data-worker-id]"));
+  const result: WorkerIframeEmergencyCleanupResult = {
+    containerFound: Boolean(container),
+    trackedCountBefore: workerIframeById.size,
+    orphanCountBefore: orphanIframes.length,
+    workerIds: orphanIframes.map((iframe) => iframe.dataset.workerId).filter((workerId): workerId is string => Boolean(workerId)),
+    iframeSrcs: orphanIframes.map((iframe) => iframe.src),
+    orphanCountAfter: orphanIframes.length,
+    trackedCountAfter: workerIframeById.size,
+    containerExistsAfter: Boolean(container),
+  };
+
+  if (result.orphanCountBefore === 0 && result.trackedCountBefore === 0) return result;
+
+  extensionLog.error("Worker iframe emergency cleanup: orphaned worker iframes detected", {
+    containerFound: result.containerFound, trackedCount: result.trackedCountBefore, orphanCount: result.orphanCountBefore,
+    workerIds: result.workerIds, iframeSrcs: result.iframeSrcs,
+  });
+  logWorkerMemory("emergency cleanup before removal", {
+    containerFound: result.containerFound, trackedIframes: result.trackedCountBefore, domIframes: result.orphanCountBefore, workerIds: result.workerIds,
+  });
+
+  container?.remove();
+  orphanIframes.forEach((iframe) => { if (iframe.isConnected) iframe.remove(); });
+  workerIframeById.clear();
+
+  result.orphanCountAfter = doc.querySelectorAll("iframe[data-worker-id]").length;
+  result.trackedCountAfter = workerIframeById.size;
+  result.containerExistsAfter = doc.getElementById(containerId) !== null;
+
+  extensionLog.error("Worker iframe emergency cleanup: forced cleanup complete", {
+    orphanCountBefore: result.orphanCountBefore, orphanCountAfter: result.orphanCountAfter,
+    trackedCountBefore: result.trackedCountBefore, trackedCountAfter: result.trackedCountAfter, containerExistsAfter: result.containerExistsAfter,
+  });
+  logWorkerMemoryAfterDelays("emergency cleanup after removal", {
+    orphanCountBefore: result.orphanCountBefore, orphanCountAfter: result.orphanCountAfter,
+    trackedIframes: result.trackedCountAfter, containerExistsAfter: result.containerExistsAfter,
+  });
+
+  return result;
 }
 
 export function removeAllWorkerIframes(doc: Document): void {

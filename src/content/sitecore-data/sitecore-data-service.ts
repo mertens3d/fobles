@@ -1,7 +1,8 @@
 // @source-path [fobles] src/content/sitecore-data/sitecore-data-service.ts
 
 import * as cache from "../sitecore-data-cache/sitecore-data-cache.ts";
-import { emitActivity } from "../shared/activity/activity-events.ts";
+import { emitActivity, type ActivityState } from "../shared/activity/activity-events.ts";
+import { labelForFact } from "../shared/activity/activity-labels";
 import type {
   SitecoreDataCacheKey,
   SitecoreDataFactMap,
@@ -52,10 +53,19 @@ function extractFactValue<TName extends SitecoreDataFactName>(
 function emitCacheActivity(
   activityId: string,
   factName: SitecoreDataFactName,
-  state: "started" | "completed" | "error" | "cancelled",
+  state: ActivityState,
   detail: string,
+  requestId?: string,
 ): void {
-  emitActivity({ source: "cache", activityId, kind: factName, label: factName, state, detail });
+  emitActivity({
+    source: "cache",
+    requestId,
+    activityId,
+    kind: factName,
+    label: labelForFact(factName),
+    state,
+    detail,
+  });
 }
 
 // Read-through: a cache hit never executes `fetchLive` at all; a miss executes it, caches a
@@ -71,7 +81,7 @@ export async function getFact<TName extends SitecoreDataFactName>(
   const cached = await cache.getFact(key, factName);
 
   if (cached) {
-    emitCacheActivity(activityId, factName, "completed", "cache hit");
+    emitCacheActivity(activityId, factName, "completed", "cache hit", options?.requestId);
 
     return {
       outcome: "resolved",
@@ -84,7 +94,7 @@ export async function getFact<TName extends SitecoreDataFactName>(
     };
   }
 
-  emitCacheActivity(activityId, factName, "started", "cache miss; fetching live");
+  emitCacheActivity(activityId, factName, "started", "cache miss; fetching live", options?.requestId);
   const result = await fetchLive();
 
   if (!isCacheableResult(result) || FACT_NAME_BY_TASK_TYPE.get(result.type) !== factName) {
@@ -100,7 +110,7 @@ export async function getFact<TName extends SitecoreDataFactName>(
 
   const value = extractFactValue(factName, result);
   await cache.putFact(key, factName, value);
-  emitCacheActivity(activityId, factName, "completed", "live; cached");
+  emitCacheActivity(activityId, factName, "completed", "live; cached", options?.requestId);
 
   return { outcome: "resolved", fact: { value, source: "live" } };
 }

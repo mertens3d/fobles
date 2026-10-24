@@ -18,3 +18,6 @@ export const WORKER_MESSAGE_TYPE = {
 } as const;
 
 export const DEBUG_WORKER_POOL = false;
+
+// Development-only worker memory diagnostics. Keep false in packaged builds.
+export const DEBUG_MEMORY = true;

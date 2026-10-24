@@ -45,7 +45,12 @@ async function runTaskThroughCache(
   const factName = cacheKey ? factNameForTaskType(task.type) : undefined;
   if (!cacheKey || !factName) return runWorkerTaskWithTimeout(task);
 
-  const outcome = await getFact(cacheKey, factName, () => runWorkerTaskWithTimeout(task));
+  const outcome = await getFact(
+    cacheKey,
+    factName,
+    () => runWorkerTaskWithTimeout(task),
+    { activityId: task.taskId, requestId: task.requestId },
+  );
 
   return outcome.outcome === "unresolved"
     ? (outcome.result as WorkerTaskResult)
@@ -85,10 +90,9 @@ async function runWorkerTaskWithTimeout(task: WorkerTask): Promise<WorkerTaskRes
         ` taskType=${task.type}` +
         ` status=${result.status}` +
         ` resultType=${result.type}` +
-        ` returnedValue=${
-          result.status === "success" && (result.type === "set-raw-values" || result.type === "set-standard-fields")
-            ? String(result.payload.value)
-            : "undefined"
+        ` returnedValue=${result.status === "success" && (result.type === "set-raw-values" || result.type === "set-standard-fields")
+          ? String(result.payload.value)
+          : "undefined"
         }` +
         ` errorMessage=${result.status === "error" ? result.errorMessage : "undefined"}`,
       );
@@ -169,8 +173,6 @@ async function dispatchTasks(
   return results;
 }
 
-
-
 async function restoreOriginalState(request: HarvestRequest): Promise<void> {
   const original = request.session?.originalEditorState;
   if (!original) return;
@@ -181,25 +183,72 @@ async function restoreOriginalState(request: HarvestRequest): Promise<void> {
     throw new Error("Injected Reference Graph editor-state restoration failure");
   }
 
-  const restorationRequest: HarvestRequest = {
-    ...request,
-    requestId: crypto.randomUUID(),
-  };
+  const maximumAttempts = 3;
+  let restorationError: unknown;
 
-  extensionLog.debug("Reference graph: restoring editor state with cleanup request", {
-    cancelledRequestId: request.requestId,
-    restorationRequestId: restorationRequest.requestId,
-    rawValues: original.rawValues,
-    standardFields: original.standardFields,
-  });
+  for (let attempt = 1; attempt <= maximumAttempts; attempt += 1) {
+    const restorationRequest: HarvestRequest = {
+      ...request,
+      requestId: crypto.randomUUID(),
+    };
 
-  await setAndVerifyEditorState(
-    restorationRequest,
-    original.rawValues,
-    original.standardFields,
-    "restore-original-state",
-  );
+    extensionLog.debug("Reference graph: restoring editor state with cleanup request", {
+      cancelledRequestId: request.requestId,
+      restorationRequestId: restorationRequest.requestId,
+      attempt,
+      maximumAttempts,
+      rawValues: original.rawValues,
+      standardFields: original.standardFields,
+    });
+
+    try {
+      await setAndVerifyEditorState(
+        restorationRequest,
+        original.rawValues,
+        original.standardFields,
+        "restore-original-state",
+      );
+
+      extensionLog.debug("Reference graph: original editor state restored", {
+        cancelledRequestId: request.requestId,
+        restorationRequestId: restorationRequest.requestId,
+        attempt,
+        rawValues: original.rawValues,
+        standardFields: original.standardFields,
+      });
+
+      restorationError = undefined;
+      break;
+    } catch (error) {
+      restorationError = error;
+
+      const cancelled =
+        error instanceof DOMException &&
+        error.name === "AbortError";
+
+      if (!cancelled || attempt === maximumAttempts) break;
+
+      extensionLog.warn(
+        "Reference graph: restoration task was cancelled; retrying with a fresh request",
+        {
+          cancelledRequestId: request.requestId,
+          restorationRequestId: restorationRequest.requestId,
+          attempt,
+          maximumAttempts,
+          error,
+        },
+      );
+
+      await new Promise<void>((resolve) => {
+        setTimeout(resolve, 0);
+      });
+    }
+  }
+
+  if (restorationError !== undefined) throw restorationError;
 }
+
+
 
 
 export async function executeHarvestPlan(
@@ -213,7 +262,6 @@ export async function executeHarvestPlan(
   if (!request.session) return await dispatchTasks(planCollectorTasks(request), onProgress, cacheKey);
 
   const { normalTasks, layoutTasks } = planCollectorTaskGroups(request);
-  let harvestError: unknown;
 
   extensionLog.debug("Reference graph: executing harvest plan", {
     requestId: request.requestId,
@@ -233,9 +281,6 @@ export async function executeHarvestPlan(
     const layoutResults = await dispatchTasks(layoutTasks, onProgress, cacheKey);
 
     return [...normalResults, ...layoutResults];
-  } catch (error) {
-    harvestError = error;
-    throw error;
   } finally {
     try {
       await restoreOriginalState(request);
@@ -245,7 +290,7 @@ export async function executeHarvestPlan(
         restoreError,
       });
 
-      throw new Error("Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.",);
+      throw new Error("Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.");
     }
   }
 }

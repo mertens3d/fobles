@@ -41,11 +41,10 @@ export async function disposeWorkerPoolLifecycle({
     queued.resolve(createCancelledResult(queued.task));
   });
 
-  const targets = collectWorkerTargets(workers);
   extensionLog.debug("Worker pool: disposal drain started", {
     previousGeneration: generation, nextGeneration, workerCount: workers.length,
     queuedTaskCount: queue.length, activeTaskCount: activeTaskByWorkerKey.size,
-    timeoutMs: DISPOSAL_DRAIN_TIMEOUT_MS, targets,
+    timeoutMs: DISPOSAL_DRAIN_TIMEOUT_MS,
   });
   const drained = await waitForActiveTasksToDrain(activeTaskByWorkerKey);
   if (!drained) {
@@ -61,6 +60,7 @@ export async function disposeWorkerPoolLifecycle({
   }
   activeTaskByWorkerKey.clear();
   clearWorkerReadiness();
+  const targets = collectWorkerTargets(workers);
   await Promise.all(
     targets.map((target) =>
       closeWorkerTarget(target),

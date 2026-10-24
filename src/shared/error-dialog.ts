@@ -1,19 +1,21 @@
+// @source-path [fobles] src/shared/error-dialog.ts
+
 export const FOBLES_ERROR_DIALOG_ID = "fobles-error-dialog";
 
 type FoblesErrorDialogOptions = {
   title: string;
-  message: string;
+  messagePublicFacing: string;
 };
 
 export function showFoblesErrorDialog(
   doc: Document,
-  { title, message }: FoblesErrorDialogOptions,
+  { title, messagePublicFacing }: FoblesErrorDialogOptions,
 ): HTMLDialogElement {
   doc.getElementById(FOBLES_ERROR_DIALOG_ID)?.remove();
 
   const dialog = doc.createElement("dialog");
   const heading = doc.createElement("h2");
-  const body = doc.createElement("p");
+  const body = doc.createElement("div");
   const closeButton = doc.createElement("button");
 
   dialog.id = FOBLES_ERROR_DIALOG_ID;
@@ -27,7 +29,7 @@ export function showFoblesErrorDialog(
 
   body.id = `${FOBLES_ERROR_DIALOG_ID}-message`;
   body.className = "fobles-error-dialog__message";
-  body.textContent = message;
+  body.innerHTML = messagePublicFacing;
 
   closeButton.type = "button";
   closeButton.className = "fobles-error-dialog__close";

@@ -7,184 +7,230 @@ import { extensionLog } from "../../logger";
 import { PROGRESS_STEPS } from "../../sitecore-harvester/planner/harvest-steps";
 import { harvestSitecoreWithWorkers } from "../../sitecore-harvester/coordinator/foreground-harvest-coordinator";
 import { getCurrentItemId } from "../../toolbar/jump-flyout/ai-pages";
-import {
-  closeReferenceGraphProgressModal,
-  handleHarvestProgress,
-  initializeReferenceGraphProgressModal,
-  openReferenceGraphProgressModal,
-} from "./build-progress";
+import { closeReferenceGraphProgressModal, handleHarvestProgress, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
 import { prepareReferenceGraph } from "./prepared-reference-graph";
 import { harvestGraphForLink } from "./harvester";
 import { openReferenceGraphModal } from "./reference-graph-modal";
 import { acquireReferenceGraphSessionLock, releaseReferenceGraphSessionLock } from "./reference-graph-session-lock";
 import { startReferenceGraphTimer } from "./reference-graph-timing";
 import { disposeBackgroundWorkerPool } from "../../sitecore-worker/pool/worker-pool-client";
-import {
-  getScRawValuesState,
-  getScStandardFieldsState,
-} from "../../macros/ribbon-toggle-macro";
+import { getScRawValuesState, getScStandardFieldsState } from "../../macros/ribbon-toggle-macro";
 import { showFoblesErrorDialog } from "../../../shared/error-dialog";
+import { emergencyCleanupWorkerIframes } from "../../sitecore-worker/iframe/worker-iframe-host";
+import { createReferenceGraphSessionContainer, removeReferenceGraphSessionContainer } from "./reference-graph-session-container";
 
-export let referenceGraphAbortController: AbortController | undefined = undefined;
+export let referenceGraphAbortController: AbortController | undefined;
+let activeReferenceGraphSession: ReferenceGraphSession | undefined;
 
-let activeReferenceGraphSession: Promise<void> | undefined;
+type ReferenceGraphSessionState = "created" | "running" | "restoring" | "displaying" | "disposing" | "closed";
 
-async function captureHarvestSession(doc: Document): Promise<HarvestSession> {
-  const rawValues = await getScRawValuesState(doc);
-  const standardFields = await getScStandardFieldsState(doc);
+class ReferenceGraphSession {
+  private readonly controller = new AbortController();
+  private readonly sessionId = crypto.randomUUID();
+  private state: ReferenceGraphSessionState = "created";
 
-  const session: HarvestSession = {
-    requestId: crypto.randomUUID(),
-    originalEditorState: { rawValues, standardFields },
-  };
+  constructor(private readonly doc: Document) { }
 
-  extensionLog.debug("Reference graph: captured caller editor state", {
-    requestId: session.requestId,
-    rawValues,
-    standardFields,
-  });
-
-  return session;
-}
-
-function cancelReferenceGraph(doc: Document): void {
-  referenceGraphAbortController?.abort();
-  closeReferenceGraphProgressModal(doc);
-  void disposeBackgroundWorkerPool();
-}
-
-async function executeReferenceGraphSession(doc: Document): Promise<void> {
-  startReferenceGraphTimer();
-
-  const controller = new AbortController();
-  const itemId = getCurrentItemId(doc);
-
-  if (!itemId) {
-    extensionLog.warn("Reference graph: could not resolve current item id");
-    showFoblesErrorDialog(doc, {
-      title: "Reference Graph",
-      message: "Something has gone wrong. The current Sitecore item could not be resolved.",
-    });
-    return;
+  cancel(): void {
+    if (this.state === "closed" || this.state === "disposing") return;
+    extensionLog.debug("Reference graph session: cancellation requested", { sessionId: this.sessionId, state: this.state });
+    this.controller.abort();
+    closeReferenceGraphProgressModal(this.doc);
   }
 
-  referenceGraphAbortController = controller;
-  const filters = await getReferenceGraphFilters();
-  const harvestSession = await captureHarvestSession(doc);
+  async run(): Promise<void> {
+    this.transition("running");
+    createReferenceGraphSessionContainer(this.doc, this.sessionId);
+    referenceGraphAbortController = this.controller;
+    startReferenceGraphTimer();
 
-  initializeReferenceGraphProgressModal(doc, PROGRESS_STEPS, filters);
-  openReferenceGraphProgressModal(doc, () => cancelReferenceGraph(doc));
-
-  try {
-    extensionLog.debug("REFERENCE GRAPH: awaiting worker-pool harvest");
-
-    const graph = await harvestSitecoreWithWorkers(
-      {
-        requestId: harvestSession.requestId,
-        url: buildFoblesUrl(itemId),
-        filters,
-        session: harvestSession,
-      },
-      {
-        signal: controller.signal,
-        onProgress: (step, status) => {
-          handleHarvestProgress(doc, step, status);
-        },
-      },
-    );
-
-    let preparedGraph:
-      | Awaited<ReturnType<typeof prepareReferenceGraph>>
-      | undefined;
-
-    if (!controller.signal.aborted && graph) {
-      preparedGraph = await prepareReferenceGraph(graph, filters, {
-        signal: controller.signal,
-        onProgress: (step, status) => {
-          handleHarvestProgress(doc, step, status);
-        },
-      });
-    }
-
-    if (!controller.signal.aborted && preparedGraph) {
-      openReferenceGraphModal(
-        doc,
-        preparedGraph,
-        async (link, graphFilters, existingResult) =>
-          await harvestGraphForLink(
-            link,
-            doc,
-            referenceGraphAbortController,
-            graphFilters,
-            existingResult,
-          ),
-        () => { void releaseReferenceGraphSessionLock(); },
-      );
-    } else {
-      closeReferenceGraphProgressModal(doc);
-
-      if (!controller.signal.aborted) {
-        extensionLog.warn(
-          "REFERENCE GRAPH: harvest did not produce a prepared graph",
-          {
-            hasGraph: Boolean(graph),
-            hasPreparedGraph: Boolean(preparedGraph),
-          },
-        );
-
-        showFoblesErrorDialog(doc, {
+    try {
+      await this.buildAndDisplayGraph();
+    } catch (error) {
+      closeReferenceGraphProgressModal(this.doc);
+      if (this.controller.signal.aborted) {
+        extensionLog.debug("REFERENCE GRAPH: cancelled", { sessionId: this.sessionId, error });
+      } else {
+        extensionLog.error("REFERENCE GRAPH: harvest or graph preparation failed", { sessionId: this.sessionId, error });
+        showFoblesErrorDialog(this.doc, {
           title: "Reference Graph",
-          message: "Something has gone wrong. The Reference Graph could not be prepared.",
+          messagePublicFacing: error instanceof Error ? error.message : "Something has gone wrong while building the Reference Graph.",
         });
       }
+    } finally {
+      await this.close();
     }
-  } catch (error) {
-    closeReferenceGraphProgressModal(doc);
+  }
 
-    if (controller.signal.aborted) {
-      extensionLog.debug("REFERENCE GRAPH: cancelled", {
-        itemId,
+  private async buildAndDisplayGraph(): Promise<void> {
+    const itemId = getCurrentItemId(this.doc);
+    if (!itemId) throw new Error("Something has gone wrong. The current Sitecore item could not be resolved.");
+
+    const filters = await getReferenceGraphFilters();
+    const harvestSession = await this.captureHarvestSession();
+    initializeReferenceGraphProgressModal(this.doc, PROGRESS_STEPS, filters);
+    openReferenceGraphProgressModal(this.doc, () => this.cancel());
+
+    extensionLog.debug("REFERENCE GRAPH: awaiting worker-pool harvest", { sessionId: this.sessionId });
+    const graph = await harvestSitecoreWithWorkers(
+      { requestId: harvestSession.requestId, url: buildFoblesUrl(itemId), filters, session: harvestSession },
+      { signal: this.controller.signal, onProgress: (step, status) => handleHarvestProgress(this.doc, step, status) },
+    );
+
+    this.transition("restoring");
+    this.throwIfCancelled();
+    if (!graph) throw new Error("Something has gone wrong. The Reference Graph harvest returned no graph.");
+
+    const preparedGraph = await prepareReferenceGraph(graph, filters, {
+      signal: this.controller.signal,
+      onProgress: (step, status) => handleHarvestProgress(this.doc, step, status),
+    });
+
+    this.throwIfCancelled();
+    if (!preparedGraph) throw new Error("Something has gone wrong. The Reference Graph could not be prepared.");
+
+    this.transition("displaying");
+    closeReferenceGraphProgressModal(this.doc);
+    await openReferenceGraphModal(
+      this.doc,
+      preparedGraph,
+      async (link, graphFilters, existingResult) => await harvestGraphForLink(link, this.doc, this.controller, graphFilters, existingResult),
+    );
+  }
+
+  private async captureHarvestSession(): Promise<HarvestSession> {
+    const rawValues = await getScRawValuesState(this.doc);
+    const standardFields = await getScStandardFieldsState(this.doc);
+    const session: HarvestSession = { requestId: crypto.randomUUID(), originalEditorState: { rawValues, standardFields } };
+    extensionLog.debug("Reference graph: captured caller editor state", { sessionId: this.sessionId, requestId: session.requestId, rawValues, standardFields });
+    return session;
+  }
+
+  private throwIfCancelled(): void {
+    if (this.controller.signal.aborted) throw new DOMException("Reference Graph cancelled", "AbortError");
+  }
+
+  private async close(): Promise<void> {
+    if (this.state === "closed" || this.state === "disposing") return;
+
+    this.transition("disposing");
+    closeReferenceGraphProgressModal(this.doc);
+
+    try {
+      await disposeBackgroundWorkerPool();
+    } catch (error) {
+      extensionLog.error("Reference graph session: worker-pool disposal failed", {
+        sessionId: this.sessionId,
         error,
       });
-    } else {
-      extensionLog.error(
-        "REFERENCE GRAPH: harvest or graph preparation failed",
-        {
-          itemId,
-          error,
-        },
-      );
+    }
 
-      showFoblesErrorDialog(doc, {
-        title: "Reference Graph",
-        message:
-          error instanceof Error
-            ? error.message
-            : "Something has gone wrong while building the Reference Graph.",
+    // disposeBackgroundWorkerPool() waits for the pool itself, but iframe removal
+    // notifications and host-side tracking can finish immediately afterward.
+    // Give that bookkeeping a bounded opportunity to settle before declaring
+    // anything orphaned and invoking the emergency cleanup path.
+    const cleanupSettled = await this.waitForWorkerCleanupToSettle(1000);
+
+    let cleanup:
+      | ReturnType<typeof emergencyCleanupWorkerIframes>
+      | undefined;
+
+    if (!cleanupSettled) {
+      extensionLog.warn("Reference graph session: normal worker cleanup did not settle", {
+        sessionId: this.sessionId,
+        domIframes: this.doc.querySelectorAll("iframe[data-worker-id]").length,
+      });
+
+      cleanup = emergencyCleanupWorkerIframes(this.doc);
+    }
+
+    removeReferenceGraphSessionContainer(this.doc, this.sessionId);
+
+    if (cleanup) {
+      const cleanupSucceeded =
+        cleanup.orphanCountAfter === 0 &&
+        cleanup.trackedCountAfter === 0 &&
+        !cleanup.containerExistsAfter;
+
+      showFoblesErrorDialog(this.doc, {
+        title: cleanupSucceeded
+          ? "Reference Graph Worker Cleanup"
+          : "Reference Graph Worker Cleanup Failed",
+        messagePublicFacing:
+          `<p>Fobles detected ${cleanup.orphanCountBefore} background worker(s) that were not removed normally during Reference Graph cleanup.</p>` +
+          `<p>${cleanupSucceeded
+            ? "The remaining worker(s) were forcibly removed."
+            : "The emergency cleanup could not remove every remaining worker."
+          } If logging is enabled, diagnostic details were written to the Fobles log.</p>` +
+          `<p>If you are able to reproduce this error, enable Fobles logging and run the Reference Graph again.</p>` +
+          `<p>Submit a bug report at <a href="https://github.com/mertens3d/fobles/issues" target="_blank" rel="noopener noreferrer">Fobles GitHub Issues</a>. Include the logs and any other information that may be relevant.</p>` +
+          `<p><strong>Before posting logs publicly:</strong> review them for Sitecore URLs, paths, IDs, or other environment-specific information.</p>`,
       });
     }
-  } finally {
-    if (referenceGraphAbortController === controller) {
+
+    if (referenceGraphAbortController === this.controller) {
       referenceGraphAbortController = undefined;
     }
+
+    this.transition("closed");
+
+    extensionLog.debug("Reference graph session: closed", {
+      sessionId: this.sessionId,
+      domIframes: this.doc.querySelectorAll("iframe[data-worker-id]").length,
+      emergencyCleanupRequired: Boolean(cleanup),
+    });
+  }
+
+  private async waitForWorkerCleanupToSettle(timeoutMs: number): Promise<boolean> {
+    const intervalMs = 50;
+    const deadline = performance.now() + timeoutMs;
+    let settled =
+      this.doc.querySelectorAll("iframe[data-worker-id]").length === 0;
+
+    while (!settled && performance.now() < deadline) {
+      await new Promise<void>((resolve) => {
+        setTimeout(resolve, intervalMs);
+      });
+
+      settled =
+        this.doc.querySelectorAll("iframe[data-worker-id]").length === 0;
+    }
+
+    extensionLog.debug("Reference graph session: normal worker cleanup verification", {
+      sessionId: this.sessionId,
+      timeoutMs,
+      settled,
+      domIframes: this.doc.querySelectorAll("iframe[data-worker-id]").length,
+    });
+
+    return settled;
+  }
+
+  private transition(nextState: ReferenceGraphSessionState): void {
+    const previousState = this.state;
+    this.state = nextState;
+    extensionLog.debug("Reference graph session: state changed", { sessionId: this.sessionId, previousState, nextState });
   }
 }
 
 export async function openReferenceGraph(doc: Document): Promise<void> {
   if (activeReferenceGraphSession) return;
+
   const acquired = await acquireReferenceGraphSessionLock();
   if (!acquired) {
     showFoblesErrorDialog(doc, {
       title: "Reference Graph Already Active",
-      message:
-        "Only one Reference Graph can be active in this browser session. " +
-        "Close the existing graph, or use another browser profile or Incognito window.",
+      messagePublicFacing: "Only one Reference Graph can be active in this browser session. Close the existing graph, or use another browser profile or Incognito window.",
     });
     return;
   }
-  const session = executeReferenceGraphSession(doc);
+
+  const session = new ReferenceGraphSession(doc);
   activeReferenceGraphSession = session;
-  try { await session; }
-  catch (error) { await releaseReferenceGraphSessionLock(); throw error; }
-  finally { if (activeReferenceGraphSession === session) activeReferenceGraphSession = undefined; }
+  try {
+    await session.run();
+  } finally {
+    if (activeReferenceGraphSession === session) activeReferenceGraphSession = undefined;
+    await releaseReferenceGraphSessionLock();
+  }
 }

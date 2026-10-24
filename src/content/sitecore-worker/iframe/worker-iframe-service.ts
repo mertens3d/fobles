@@ -87,13 +87,19 @@ export async function removeWorkerIframeTarget(target: WorkerIframeTarget): Prom
   };
 
   try {
-    await chrome.tabs.sendMessage<WorkerIframeRemoveMessage, boolean>(
+    const removed = await chrome.tabs.sendMessage<WorkerIframeRemoveMessage, boolean>(
       target.hostTabId,
       message,
       { frameId: 0 },
     );
-  } catch {
-    // The host tab or iframe may already have been removed.
+    if (!removed) {
+      extensionLog.error("Worker iframe service: host did not remove iframe", { target });
+      throw new Error(`Worker iframe host did not remove worker: ${target.workerId}`);
+    }
+    extensionLog.debug("Worker iframe service: iframe removed", { target });
+  } catch (error) {
+    extensionLog.error("Worker iframe service: iframe removal failed", { target, error });
+    throw error;
   }
 }
 
@@ -186,6 +192,10 @@ export function markWorkerIframeReady(
 }
 
 export function clearHostWorkerIframeTargets(hostTabId: number): void {
+  const pendingWorkerIds = Array.from(pendingReadyByWorkerId.entries())
+    .filter(([, pending]) => pending.hostTabId === hostTabId)
+    .map(([workerId]) => workerId);
+  pendingWorkerIds.forEach((workerId) => rejectPendingReady(workerId, new Error(`Worker iframe host disposed: ${workerId}`)));
   const workerIds = Array.from(targetByWorkerId.entries())
     .filter(([, target]) => target.hostTabId === hostTabId)
     .map(([workerId]) => workerId);
