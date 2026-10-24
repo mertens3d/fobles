@@ -4,6 +4,7 @@ import type cytoscape from "cytoscape";
 import type { DataTreeNode } from "../data-tree/data-tree.types";
 import { getGraphOwnedClasses, projectGraphNode } from "../graph-nodes/graph-node-builder";
 import type { ProcessingStateByTreeNodeId } from "../lifecycle/processing-state";
+import { getGraphPresentationState } from "../graph-nodes/graph-presentation-state";
 
 type ProjectedGraphNodeData = ReturnType<typeof projectGraphNode>["data"];
 
@@ -145,7 +146,7 @@ function replaceGraphOwnedClasses(
 function readParentTreeNodeId(element: cytoscape.NodeSingular, treeNode: DataTreeNode): string | undefined {
   let parentTreeNodeId: string | undefined = undefined;
 
-  if (treeNode.relationshipToParent === "contained") {
+  if ((getGraphPresentationState(treeNode).relationshipToParent ?? "contained") === "contained") {
     const parentValue: unknown = element.data("parent");
 
     if (typeof parentValue === "string") {

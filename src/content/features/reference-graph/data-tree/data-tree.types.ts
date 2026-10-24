@@ -14,8 +14,6 @@ type DataTreeNodeBase = {
   treeNodeId: string;
   kind: NodeKind;
   provenance: DataTreeProvenance;
-  relationshipToParent?: RelationshipToParent;
-  reverse?: boolean;
   truncation?: DataTreeTruncation;
   children: DataTreeNode[];
 };

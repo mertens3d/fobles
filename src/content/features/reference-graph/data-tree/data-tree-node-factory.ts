@@ -51,8 +51,8 @@ export function createDataTreeItemNode({
   children = [],
   scItem,
 }: DataTreeItemNodeOptions): DataTreeItemNode {
-  const node: DataTreeItemNode = { treeNodeId, nodeType: "item", scItem, kind, provenance, relationshipToParent, reverse, truncation, children };
-  setGraphPresentationState(node, { collapseKey, branch });
+  const node: DataTreeItemNode = { treeNodeId, nodeType: "item", scItem, kind, provenance, truncation, children };
+  setGraphPresentationState(node, { collapseKey, branch, relationshipToParent, reverse });
   return node;
 }
 
@@ -120,7 +120,7 @@ export function createDataTreeNonItemNode({
   children = [],
   name,
 }: DataTreeNonItemNodeOptions): DataTreeNonItemNode {
-  const node: DataTreeNonItemNode = { treeNodeId, nodeType: "nonItem", name, kind, provenance, relationshipToParent, reverse, truncation, children };
-  setGraphPresentationState(node, { collapseKey, branch });
+  const node: DataTreeNonItemNode = { treeNodeId, nodeType: "nonItem", name, kind, provenance, truncation, children };
+  setGraphPresentationState(node, { collapseKey, branch, relationshipToParent, reverse });
   return node;
 }

@@ -160,11 +160,11 @@ function appendRelationshipEdge(
   semanticParentTreeNodeId: string | undefined,
   cytoEdges: cytoscape.ElementDefinition[],
 ): void {
-  const relationshipToParent = treeNode.relationshipToParent ?? "contained";
+  const { relationshipToParent = "contained", reverse = false } = getGraphPresentationState(treeNode);
 
   if (semanticParentTreeNodeId && relationshipToParent === "related") {
     cytoEdges.push({
-      data: treeNode.reverse
+      data: reverse
         ? {
           id: `edge-${treeNode.treeNodeId}-${semanticParentTreeNodeId}`,
           source: treeNode.treeNodeId,
@@ -212,7 +212,7 @@ function createCompoundGroupElement(
   };
 }
 export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: string, processingStatus?: ProcessingStatus): ProjectedGraphNode {
-  const relationshipToParent = treeNode.relationshipToParent ?? "contained";
+  const { relationshipToParent = "contained", reverse = false } = getGraphPresentationState(treeNode);
   const renderingParameter = treeNode.provenance.type === "rendering-parameter" ? treeNode.provenance : undefined;
   const itemIcon = treeNode.nodeType === "item" ? treeNode.scItem.scItemIcon : undefined;
 
