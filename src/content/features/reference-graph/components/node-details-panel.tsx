@@ -5,6 +5,7 @@ import prettier from "prettier/standalone";
 import * as prettierPluginHtml from "prettier/plugins/html";
 import type { DataTreeNode } from "../data-tree/data-tree.types";
 import type { ProcessingStateByTreeNodeId } from "../lifecycle/processing-state";
+import { getGraphPresentationState } from "../graph-nodes/graph-presentation-state";
 
 type NodeDetailsPanelProps = {
   selectedTreeNodeId: string | undefined;
@@ -27,7 +28,7 @@ type DiagnosticDataTreeNode = Omit<
 function itemDetailRows(
   treeNode: Extract<DataTreeNode, { nodeType: "item" }>,
 ): DetailRow[] {
-  const rows: DetailRow[] = [["Kind", treeNode.kind]];
+  const rows: DetailRow[] = [["Kind", getGraphPresentationState(treeNode).kind]];
 
   if (treeNode.scItem.scItemName) {
     rows.push(["Name", treeNode.scItem.scItemName]);
@@ -326,7 +327,7 @@ export function NodeDetailsPanel({
           ...provenanceDetailRows(treeNode),
         ]
       : [
-          ["Kind", treeNode.kind],
+          ["Kind", getGraphPresentationState(treeNode).kind],
           ["Name", treeNode.name],
           ...provenanceDetailRows(treeNode),
         ];

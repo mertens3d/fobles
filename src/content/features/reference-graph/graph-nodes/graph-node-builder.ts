@@ -160,7 +160,7 @@ function appendRelationshipEdge(
   semanticParentTreeNodeId: string | undefined,
   cytoEdges: cytoscape.ElementDefinition[],
 ): void {
-  const { relationshipToParent = "contained", reverse = false } = getGraphPresentationState(treeNode);
+  const { kind, relationshipToParent = "contained", reverse = false } = getGraphPresentationState(treeNode);
 
   if (semanticParentTreeNodeId && relationshipToParent === "related") {
     cytoEdges.push({
@@ -212,7 +212,7 @@ function createCompoundGroupElement(
   };
 }
 export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: string, processingStatus?: ProcessingStatus): ProjectedGraphNode {
-  const { relationshipToParent = "contained", reverse = false } = getGraphPresentationState(treeNode);
+  const { kind, relationshipToParent = "contained", reverse = false } = getGraphPresentationState(treeNode);
   const renderingParameter = treeNode.provenance.type === "rendering-parameter" ? treeNode.provenance : undefined;
   const itemIcon = treeNode.nodeType === "item" ? treeNode.scItem.scItemIcon : undefined;
 
@@ -220,7 +220,7 @@ export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: stri
     id: treeNode.treeNodeId,
     parentTreeNodeId,
     parent: relationshipToParent === "contained" ? parentTreeNodeId : undefined,
-    label: resolveNodeLabel(treeNode, NODE_PRESENTATION_BY_KIND[treeNode.kind]),
+    label: resolveNodeLabel(treeNode, NODE_PRESENTATION_BY_KIND[kind], kind),
     childTreeNodeIds: treeNode.children.map((childTreeNode) => childTreeNode.treeNodeId),
     expandable: treeNode.children.length > 0,
     collapseKey: getGraphPresentationState(treeNode).collapseKey,
@@ -234,7 +234,7 @@ export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: stri
     enrichmentStatus: treeNode.nodeType === "item" ? processingStatus : undefined,
   };
 
-  const classes = [kindClass(treeNode.kind), getFilterClass(treeNode)].filter(
+  const classes = [kindClass(kind), getFilterClass(treeNode)].filter(
     (className): className is string => Boolean(className),
   );
 

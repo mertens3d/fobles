@@ -1,7 +1,8 @@
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/node-label-resolver.ts
 
 import type { DataTreeNode } from "../data-tree/data-tree.types";
-import type { NodePresentation } from "./node-presentation.types";
+import type { NodePresentation, NodePresentationByKind } from "./node-presentation.types";
+type NodeKind = keyof NodePresentationByKind;
 import {
   LINE_BREAKER,
   clampMiddle,
@@ -29,12 +30,13 @@ function baseName(
 function resolvePrimaryLabel(
   treeNode: DataTreeNode,
   presentation: NodePresentation,
+  kind: NodeKind,
 ): string {
   let label: string;
 
   switch (presentation.labelMode) {
     case "kindOnly":
-      label = `[${treeNode.kind.toLowerCase()}]`;
+      label = `[${kind.toLowerCase()}]`;
       break;
 
     case "datasourceName":
@@ -109,10 +111,12 @@ function wrapLabelText(text: string): string {
 export function resolveNodeLabel(
   treeNode: DataTreeNode,
   presentation: NodePresentation,
+  kind: NodeKind,
 ): string {
   const primaryLabel = resolvePrimaryLabel(
     treeNode,
     presentation,
+    kind,
   );
 
   let label = wrapLabelText(primaryLabel);

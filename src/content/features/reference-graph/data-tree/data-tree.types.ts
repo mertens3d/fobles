@@ -12,7 +12,6 @@ export type DataTreeTruncation = { availableCount: number; includedCount: number
 
 type DataTreeNodeBase = {
   treeNodeId: string;
-  kind: NodeKind;
   provenance: DataTreeProvenance;
   truncation?: DataTreeTruncation;
   children: DataTreeNode[];
