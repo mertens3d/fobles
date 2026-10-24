@@ -1,5 +1,5 @@
 import type { GraphCollapseKey } from "./graph-collapse.types";
-import type { EnrichmentStatus } from "../data-tree/data-tree.types";
+import type { ProcessingStatus } from "../lifecycle/processing-state";
 
 export type GraphNodeData = {
   id: string;
@@ -16,7 +16,7 @@ export type GraphNodeData = {
   icon: string | undefined;
   renderingParameterValue: string | undefined;
   renderingParameterIsItemReference: boolean | undefined;
-  enrichmentStatus: EnrichmentStatus | undefined;
+  enrichmentStatus: ProcessingStatus | undefined;
 };
 export type ExpandCollapseAction = "single" | "same-kind" | "subtree";
 

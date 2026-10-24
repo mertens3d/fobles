@@ -4,10 +4,12 @@ import { useEffect, useState } from "react";
 import prettier from "prettier/standalone";
 import * as prettierPluginHtml from "prettier/plugins/html";
 import type { DataTreeNode } from "../data-tree/data-tree.types";
+import type { ProcessingStateByTreeNodeId } from "../lifecycle/processing-state";
 
 type NodeDetailsPanelProps = {
   selectedTreeNodeId: string | undefined;
   nodesById: Map<string, DataTreeNode>;
+  processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
 };
 
 type DetailRow = [string, string];
@@ -43,9 +45,7 @@ function itemDetailRows(
     rows.push(["Template", treeNode.scItem.scTemplate.scItemName]);
   }
 
-  if (treeNode.enrichmentStatus) {
-    rows.push(["Enrichment Status", treeNode.enrichmentStatus]);
-  }
+
 
   return rows;
 }
@@ -252,6 +252,7 @@ function buildClipboardText(
 export function NodeDetailsPanel({
   selectedTreeNodeId,
   nodesById,
+  processingStateByTreeNodeId,
 }: NodeDetailsPanelProps) {
   const treeNode = selectedTreeNodeId
     ? nodesById.get(selectedTreeNodeId)
@@ -321,6 +322,7 @@ export function NodeDetailsPanel({
     treeNode.nodeType === "item"
       ? [
           ...itemDetailRows(treeNode),
+      ...(processingStateByTreeNodeId.get(treeNode.treeNodeId) ? [["Processing Status", processingStateByTreeNodeId.get(treeNode.treeNodeId)!] as DetailRow] : []),
           ...provenanceDetailRows(treeNode),
         ]
       : [

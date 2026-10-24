@@ -1,7 +1,7 @@
-// @source-path [fobles] src/content/features/reference-graph/data-tree/data-tree-enrichment-lookup.ts
+// @source-path [fobles] src/content/features/reference-graph/enrichment/resolve-candidate-collector.ts
 
 import { isItemGraphNodeDataResolved } from "../../../sitecore-harvester/enrichment/item-enricher";
-import type { DataTreeNode } from "./data-tree.types";
+import type { DataTreeNode } from "../data-tree/data-tree.types";
 
 // Item reference -> every treeNodeId representing that same unresolved item.
 // Prefer GUID when available; otherwise use the Sitecore path.

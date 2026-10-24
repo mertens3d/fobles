@@ -3,6 +3,7 @@
 import type cytoscape from "cytoscape";
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { DataTreeNode } from "./data-tree/data-tree.types";
+import type { ProcessingStateByTreeNodeId } from "./lifecycle/processing-state";
 
 // The fully prepared graph: the authoritative aggregate React state owns, replacing the old
 // "harvest result + throwaway Cytoscape elements" pair. The enriched data tree is retained
@@ -12,4 +13,5 @@ export type PreparedReferenceGraph = {
   dataTree: DataTreeNode;
   nodesById: Map<string, DataTreeNode>;
   graphElements: cytoscape.ElementDefinition[];
+  processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
 };

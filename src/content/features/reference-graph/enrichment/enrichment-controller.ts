@@ -10,11 +10,12 @@ import { buildFoblesUrl } from "../../augmentor/helper";
 import { resolveSitecoreDataIdentity } from "../../../sitecore-data/sitecore-data-identity";
 import { enqueueHarvest } from "../lifecycle/active-harvest-queue";
 import { resolveItemFact, type ResolveOutcome } from "../lifecycle/resolve-fact";
-import { collectEnrichmentGuidLookup } from "../data-tree/data-tree-enrichment-lookup";
-import type { DataTreeNode, EnrichmentStatus } from "../data-tree/data-tree.types";
+import { collectEnrichmentGuidLookup } from "./resolve-candidate-collector";
+import type { DataTreeNode } from "../data-tree/data-tree.types";
+import { setProcessingState, type ProcessingStateByTreeNodeId, type ProcessingStatus } from "../lifecycle/processing-state";
 import { sortGuidsByEnrichmentPriority } from "./enrichment-priority";
 import { patchCytoscapeNodes } from "./enrichment-graph-patcher";
-import { firstItemNode, itemsFor, markTreeNodes } from "./enrichment-tree-state";
+import { firstItemNode, itemsFor } from "./enrichment-tree-state";
 import type { EnrichmentController, EnrichmentProgressCallback } from "./enrichment.types";
 
 type StartEnrichmentControllerOptions = {
@@ -22,6 +23,7 @@ type StartEnrichmentControllerOptions = {
   dataTree: DataTreeNode;
   nodesById: Map<string, DataTreeNode>;
   getCy: () => cytoscape.Core | undefined;
+  processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
   onProgress?: EnrichmentProgressCallback;
 };
 
@@ -37,6 +39,7 @@ export function startEnrichmentController({
   dataTree,
   nodesById,
   getCy,
+  processingStateByTreeNodeId,
   onProgress,
 }: StartEnrichmentControllerOptions): EnrichmentController {
   disposeActiveEnrichmentController();
@@ -59,12 +62,13 @@ export function startEnrichmentController({
 
   activeController = controller;
 
-  markTreeNodes(guids, guidLookup, nodesById, "pending");
+  setProcessingState(guids.flatMap((guid) => guidLookup.get(guid) ?? []), processingStateByTreeNodeId, "pending");
 
   patchCytoscapeNodes(
     getCy(),
     guids.flatMap((guid) => guidLookup.get(guid) ?? []),
     nodesById,
+    processingStateByTreeNodeId,
   );
 
   reportProgress(0, maxItemCount, maxItemCount > 0 ? "running" : "complete");
@@ -96,15 +100,15 @@ export function startEnrichmentController({
   async function enrichOneGuid(guid: string): Promise<void> {
     const treeNodeIds = guidLookup.get(guid) ?? [];
 
-    markTreeNodes([guid], guidLookup, nodesById, "enriching");
+    setProcessingState(treeNodeIds, processingStateByTreeNodeId, "enriching");
 
-    patchCytoscapeNodes(getCy(), treeNodeIds, nodesById);
+    patchCytoscapeNodes(getCy(), treeNodeIds, nodesById, processingStateByTreeNodeId);
 
     const representative = firstItemNode(treeNodeIds, nodesById);
 
     const reference = representative?.scItem.scItemId || representative?.scItem.scItemPath;
 
-    let status: EnrichmentStatus = "failed";
+    let status: ProcessingStatus = "failed";
 
     if (representative && reference) {
       const outcome = await resolveItemFact(
@@ -124,8 +128,8 @@ export function startEnrichmentController({
 
           enqueueHarvest(reference, (succeeded) => {
             if (!disposed) {
-              markTreeNodes([guid], guidLookup, nodesById, succeeded ? "enriched" : "failed");
-              patchCytoscapeNodes(getCy(), treeNodeIds, nodesById);
+              setProcessingState(treeNodeIds, processingStateByTreeNodeId, succeeded ? "enriched" : "failed");
+              patchCytoscapeNodes(getCy(), treeNodeIds, nodesById, processingStateByTreeNodeId);
             }
           });
         }
@@ -133,9 +137,9 @@ export function startEnrichmentController({
     }
 
     if (!disposed) {
-      markTreeNodes([guid], guidLookup, nodesById, status);
+      setProcessingState(treeNodeIds, processingStateByTreeNodeId, status);
 
-      patchCytoscapeNodes(getCy(), treeNodeIds, nodesById);
+      patchCytoscapeNodes(getCy(), treeNodeIds, nodesById, processingStateByTreeNodeId);
     }
   }
 
@@ -164,7 +168,7 @@ export function startEnrichmentController({
     guid: string,
     treeNodeIds: string[],
     outcome: ResolveOutcome,
-  ): EnrichmentStatus {
+  ): ProcessingStatus {
     if (outcome.kind === "not-found" || outcome.kind === "failed") {
       return outcome.kind;
     }

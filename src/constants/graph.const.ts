@@ -150,6 +150,7 @@ export const REFERENCE_GRAPH = {
           name: "fcose",
           fit: false,
           padding: 20,
+          animate: false,
           randomize: false,
           initialEnergyOnIncremental: 0.2,
         }) as unknown as cytoscape.LayoutOptions,

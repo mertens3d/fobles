@@ -3,6 +3,7 @@
 import type cytoscape from "cytoscape";
 import type { DataTreeNode } from "../data-tree/data-tree.types";
 import { getGraphOwnedClasses, projectGraphNode } from "../graph-nodes/graph-node-builder";
+import type { ProcessingStateByTreeNodeId } from "../lifecycle/processing-state";
 
 type ProjectedGraphNodeData = ReturnType<typeof projectGraphNode>["data"];
 
@@ -12,6 +13,7 @@ export function patchCytoscapeNodes(
   cy: cytoscape.Core | undefined,
   treeNodeIds: readonly string[],
   nodesById: Map<string, DataTreeNode>,
+  processingStateByTreeNodeId: ProcessingStateByTreeNodeId,
 ): void {
   if (!cy || cy.destroyed()) {
     return;
@@ -23,7 +25,7 @@ export function patchCytoscapeNodes(
 
   cy.batch(() => {
     for (const treeNodeId of treeNodeIds) {
-      const patchedNode = patchCytoscapeNode(cy, treeNodeId, nodesById, graphOwnedClasses);
+      const patchedNode = patchCytoscapeNode(cy, treeNodeId, nodesById, processingStateByTreeNodeId, graphOwnedClasses);
 
       if (patchedNode) {
         patchedNodes.merge(patchedNode);
@@ -40,6 +42,7 @@ function patchCytoscapeNode(
   cy: cytoscape.Core,
   treeNodeId: string,
   nodesById: Map<string, DataTreeNode>,
+  processingStateByTreeNodeId: ProcessingStateByTreeNodeId,
   graphOwnedClasses: readonly string[],
 ): cytoscape.NodeSingular | undefined {
   const treeNode = nodesById.get(treeNodeId);
@@ -51,7 +54,7 @@ function patchCytoscapeNode(
   if (treeNode && element.nonempty() && element.isNode()) {
     const node = element.nodes().first();
 
-    const projectedNode = projectGraphNode(treeNode, readParentTreeNodeId(node, treeNode));
+    const projectedNode = projectGraphNode(treeNode, readParentTreeNodeId(node, treeNode), processingStateByTreeNodeId.get(treeNodeId));
 
     replaceGraphOwnedClasses(node, graphOwnedClasses, projectedNode.classes);
 

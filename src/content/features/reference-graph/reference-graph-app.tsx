@@ -160,6 +160,7 @@ export function ReferenceGraphApp({
       <NodeDetailsPanel
         selectedTreeNodeId={graphState.selectedTreeNodeId}
         nodesById={graphState.currentPreparedGraph.nodesById}
+          processingStateByTreeNodeId={graphState.currentPreparedGraph.processingStateByTreeNodeId}
       />
 
       <div

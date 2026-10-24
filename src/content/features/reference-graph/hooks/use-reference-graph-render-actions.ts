@@ -93,6 +93,7 @@ export function useReferenceGraphRenderActions({
             doc,
             dataTree: prepared.dataTree,
             nodesById: prepared.nodesById,
+              processingStateByTreeNodeId: prepared.processingStateByTreeNodeId,
             getCy: () => cyRef.current,
             onProgress: graphState.setEnrichmentProgress,
           });

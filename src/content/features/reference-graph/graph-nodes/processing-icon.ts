@@ -1,8 +1,8 @@
 import { CONST } from "../../../../constants/const";
-import type { EnrichmentStatus } from "../data-tree/data-tree.types";
+import type { ProcessingStatus } from "../lifecycle/processing-state";
 
 export function iconForProcessingState(
-  status: EnrichmentStatus | undefined,
+  status: ProcessingStatus | undefined,
   itemIcon: string | undefined,
 ): string | undefined {
   let icon = itemIcon;

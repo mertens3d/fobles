@@ -8,7 +8,7 @@ import type {
 } from "../../sitecore-harvester/sitecore-harvester.types";
 import { createDataTree } from "./data-tree/data-tree-builder";
 import { buildDataTreeNodeLookup } from "./data-tree/data-tree-node-lookup";
-import type { EnrichmentStatus } from "./data-tree/data-tree.types";
+import type { ProcessingStatus } from "./lifecycle/processing-state";
 import { projectDataTreeToGraphElements } from "./graph-nodes/graph-elements";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 
@@ -20,7 +20,7 @@ type PrepareReferenceGraphOptions = {
   // Seeds the root node's own trust badge from the root-cache-flow decision that produced this
   // harvest result - defaults to "enriched" (settled/check) for callers that predate this concept
   // (reroot, lazy-filter-enable), since a result they hand in is always a just-completed harvest.
-  rootProcessingState?: EnrichmentStatus;
+  rootProcessingState?: ProcessingStatus;
 };
 
 // Single orchestration point for createDataTree -> node lookup -> graph projection. Both the
@@ -32,14 +32,16 @@ export function prepareReferenceGraph(
   filters: SitecoreHarvestFiltersState,
   { signal, rootProcessingState = "enriched" }: PrepareReferenceGraphOptions = {},
 ): Promise<PreparedReferenceGraph | undefined> {
-  const dataTree = createDataTree(harvestedData, filters, rootProcessingState);
+  const dataTree = createDataTree(harvestedData, filters);
+  const processingStateByTreeNodeId = new Map<string, ProcessingStatus>();
+  processingStateByTreeNodeId.set(dataTree.treeNodeId, rootProcessingState);
 
   let prepared: PreparedReferenceGraph | undefined;
 
   if (!signal?.aborted) {
     const nodesById = buildDataTreeNodeLookup(dataTree);
 
-    const graphElements = projectDataTreeToGraphElements(dataTree);
+    const graphElements = projectDataTreeToGraphElements(dataTree, processingStateByTreeNodeId);
 
     extensionLog.debug("Reference graph: prepared", {
       nodeCount: nodesById.size,
@@ -50,6 +52,7 @@ export function prepareReferenceGraph(
       dataTree,
       nodesById,
       graphElements,
+      processingStateByTreeNodeId,
     };
   }
 

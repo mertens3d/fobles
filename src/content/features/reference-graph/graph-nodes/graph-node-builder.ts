@@ -1,6 +1,7 @@
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import type { DataTreeNode } from "../data-tree/data-tree.types";
+import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../lifecycle/processing-state";
 import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "./graph-collapse.types";
 import { kindClass } from "./graph-helpers";
 import { resolveNodeLabel } from "./node-label-resolver";
@@ -95,8 +96,9 @@ export function appendGraphNode(
   cytoNodes: cytoscape.ElementDefinition[],
   cytoEdges: cytoscape.ElementDefinition[],
   semanticParentTreeNodeId?: string,
+  processingStateByTreeNodeId: ProcessingStateByTreeNodeId = new Map(),
 ): void {
-  appendGraphNodeInternal(treeNode, cytoNodes, cytoEdges, { semanticParentTreeNodeId });
+  appendGraphNodeInternal(treeNode, cytoNodes, cytoEdges, { semanticParentTreeNodeId }, processingStateByTreeNodeId);
 }
 
 function appendGraphNodeInternal(
@@ -104,6 +106,7 @@ function appendGraphNodeInternal(
   cytoNodes: cytoscape.ElementDefinition[],
   cytoEdges: cytoscape.ElementDefinition[],
   options: AppendGraphNodeOptions,
+  processingStateByTreeNodeId: ProcessingStateByTreeNodeId,
 ): void {
   const { semanticParentTreeNodeId, compoundParentNodeId, propagateCompoundParent = false } = options;
 
@@ -114,7 +117,7 @@ function appendGraphNodeInternal(
     cytoNodes.push(createCompoundGroupElement(treeNode, groupId, compoundParentNodeId));
   }
 
-  const projectedNode = projectGraphNode(treeNode, semanticParentTreeNodeId);
+  const projectedNode = projectGraphNode(treeNode, semanticParentTreeNodeId, processingStateByTreeNodeId.get(treeNode.treeNodeId));
 
   if (groupId) {
     projectedNode.data.parent = groupId;
@@ -147,7 +150,7 @@ function appendGraphNodeInternal(
       semanticParentTreeNodeId: treeNode.treeNodeId,
       compoundParentNodeId: childCompoundParentNodeId,
       propagateCompoundParent: childPropagateCompoundParent,
-    });
+    }, processingStateByTreeNodeId);
   });
 }
 
@@ -207,7 +210,7 @@ function createCompoundGroupElement(
     pannable: true,
   };
 }
-export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: string): ProjectedGraphNode {
+export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: string, processingStatus?: ProcessingStatus): ProjectedGraphNode {
   const relationshipToParent = treeNode.relationshipToParent ?? "contained";
   const renderingParameter = treeNode.provenance.type === "rendering-parameter" ? treeNode.provenance : undefined;
   const itemIcon = treeNode.nodeType === "item" ? treeNode.scItem.scItemIcon : undefined;
@@ -224,10 +227,10 @@ export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: stri
     path: treeNode.nodeType === "item" ? treeNode.scItem.scItemPath : undefined,
     link: treeNode.nodeType === "item" ? treeNode.scItem.link : undefined,
     drillDown: treeNode.nodeType === "item" ? Boolean(treeNode.scItem.link) : false,
-    icon: treeNode.nodeType === "item" ? iconForProcessingState(treeNode.enrichmentStatus, itemIcon) : undefined,
+    icon: treeNode.nodeType === "item" ? iconForProcessingState(processingStatus, itemIcon) : undefined,
     renderingParameterValue: renderingParameter?.parameterValue,
     renderingParameterIsItemReference: renderingParameter?.isItemReference,
-    enrichmentStatus: treeNode.nodeType === "item" ? treeNode.enrichmentStatus : undefined,
+    enrichmentStatus: treeNode.nodeType === "item" ? processingStatus : undefined,
   };
 
   const classes = [kindClass(treeNode.kind), getFilterClass(treeNode)].filter(

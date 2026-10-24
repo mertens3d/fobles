@@ -2,7 +2,7 @@
 
 import type { RootItem, SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
 import type { SitecoreDataCacheRecord } from "../../../sitecore-data-cache/sitecore-data-cache.types";
-import type { EnrichmentStatus } from "../data-tree/data-tree.types";
+import type { ProcessingStatus } from "./processing-state";
 
 export type RootCacheDecision =
   // Cached revision matches the live revision - cached data is trusted as-is, no re-harvest.
@@ -79,7 +79,7 @@ export function decideRootCacheUsage(
 
 // Seeds the root node's own trust badge from whichever branch produced its data - a fresh
 // harvest (or a harvest-required fallback) is always trustworthy the moment it completes.
-export function rootProcessingStateForDecision(decisionKind: RootCacheDecision["kind"]): EnrichmentStatus {
+export function rootProcessingStateForDecision(decisionKind: RootCacheDecision["kind"]): ProcessingStatus {
   switch (decisionKind) {
     case "cache-only": return "verified";
     case "cache-then-reharvest": return "stale";

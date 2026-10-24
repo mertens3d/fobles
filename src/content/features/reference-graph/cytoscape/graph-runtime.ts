@@ -268,6 +268,7 @@ function startGraphEnrichment(runtime: GraphRuntime): void {
     doc: options.doc,
     dataTree: options.initialPreparedGraph.dataTree,
     nodesById: options.initialPreparedGraph.nodesById,
+      processingStateByTreeNodeId: options.initialPreparedGraph.processingStateByTreeNodeId,
     getCy: () => options.cyRef.current,
     onProgress: (progress) => handleEnrichmentProgress(runtime, progress),
   });
