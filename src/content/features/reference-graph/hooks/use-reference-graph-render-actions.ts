@@ -91,7 +91,7 @@ export function useReferenceGraphRenderActions({
 
           startEnrichmentController({
             doc,
-            dataTree: prepared.dataTree,
+            referenceModel: prepared.referenceModel,
             nodesById: prepared.nodesById,
               processingStateByTreeNodeId: prepared.processingStateByTreeNodeId,
             getCy: () => cyRef.current,

@@ -2,16 +2,10 @@
 
 import { XMLParser } from "fast-xml-parser";
 import { extensionLog } from "../../../../logger";
-import {
-  factoryItemGraphNodeData,
-  type HarvestContext,
-  type ItemGraphNodeData,
-  type LayoutDevice,
-  type LayoutSectionField,
-  type ScControl,
-} from "../../../sitecore-harvester.types";
 import { findFieldInput } from "../../helpers/harvest-helpers";
 import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
+import { type LayoutSectionField, factoryItemGraphNodeData, type LayoutDevice, type ScControl, type ItemGraphNodeData } from "../../../../features/reference-model/sitecore-item.types";
+import type { HarvestContext } from "../../../sitecore-harvester.types";
 
 export const collectLayouts = async (
   harvestContext: HarvestContext,

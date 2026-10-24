@@ -1,21 +1,17 @@
-// @source-path [fobles] src/content/features/reference-graph/data-tree/sections-data-tree-builder.ts
+// @source-path [fobles] src/content/features/reference-graph/reference-model/sections-reference-model-builder.ts
 
-import { CONST } from "../../../../constants/const";
-import type {
-  HarvestFieldLink,
-  SitecoreHarvestField,
-  SitecoreHarvestResult,
-  SitecoreHarvestSection,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
-import { createDataTreeItemNode, createDataTreeNonItemNode } from "./data-tree-node-factory";
-import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "../graph-nodes/graph-collapse.types";
-import { createFieldReferenceProvenance, createSyntheticProvenance } from "./data-tree-provenance.types";
-import type { DataTreeBranch, DataTreeNode, DataTreeNonItemNode } from "./data-tree.types";
-import { createDataTreeNodeId } from "./layout-data-tree-builder";
+import { CONST } from "../../../constants/const";
+import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
+import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "../reference-graph/graph-nodes/graph-collapse.types";
+import { createFieldReferenceProvenance, createSyntheticProvenance } from "./reference-model-provenance.types";
+import type { ReferenceModelBranch, ReferenceModelNode, ReferenceModelNonItemNode } from "./reference-model.types";
+import { createReferenceModelNodeId } from "./layout-reference-model-builder";
+import type { SitecoreHarvestSection, SitecoreHarvestField, HarvestFieldLink } from "./sitecore-item.types";
+import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 
 export function createCustomFieldsTreeNode(
   graphReferenceResult: SitecoreHarvestResult,
-): DataTreeNonItemNode | undefined {
+): ReferenceModelNonItemNode | undefined {
   return createFieldsCropTreeNode(
     graphReferenceResult,
     graphReferenceResult.customFieldSections,
@@ -27,7 +23,7 @@ export function createCustomFieldsTreeNode(
 
 export function createStandardFieldsTreeNode(
   graphReferenceResult: SitecoreHarvestResult,
-): DataTreeNonItemNode | undefined {
+): ReferenceModelNonItemNode | undefined {
   return createFieldsCropTreeNode(
     graphReferenceResult,
     graphReferenceResult.standardFieldSections,
@@ -45,16 +41,16 @@ function createFieldsCropTreeNode(
   sections: readonly SitecoreHarvestSection[] | undefined,
   name: string,
   collapseKey: GraphCollapseKey,
-  branch: DataTreeBranch,
-): DataTreeNonItemNode | undefined {
+  branch: ReferenceModelBranch,
+): ReferenceModelNonItemNode | undefined {
   const populatedSections = sections?.filter((section) => section.fields.some((field) => Boolean(field.value))) ?? [];
 
-  let cropTreeNode: DataTreeNonItemNode | undefined = undefined;
+  let cropTreeNode: ReferenceModelNonItemNode | undefined = undefined;
 
   if (populatedSections.length > 0) {
-    const treeNodeId = createDataTreeNodeId(graphReferenceResult.rootItem.scItemId, branch);
+    const treeNodeId = createReferenceModelNodeId(graphReferenceResult.rootItem.scItemId, branch);
 
-    cropTreeNode = createDataTreeNonItemNode({
+    cropTreeNode = createReferenceModelNonItemNode({
       treeNodeId,
       name,
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL,
@@ -72,12 +68,12 @@ function createFieldsCropTreeNode(
 function mapSections(
   sections: SitecoreHarvestSection[],
   treeNodeId: string,
-  branch: DataTreeBranch,
-): DataTreeNonItemNode[] {
+  branch: ReferenceModelBranch,
+): ReferenceModelNonItemNode[] {
   return sections.map((section, sectionIndex) => {
-    const sectionTreeNodeId = createDataTreeNodeId(treeNodeId, "section", section.name, String(sectionIndex));
+    const sectionTreeNodeId = createReferenceModelNodeId(treeNodeId, "section", section.name, String(sectionIndex));
 
-    return createDataTreeNonItemNode({
+    return createReferenceModelNonItemNode({
       treeNodeId: sectionTreeNodeId,
       name: section.name,
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.SECTION,
@@ -94,14 +90,14 @@ function mapSectionFields(
   sectionTreeNodeId: string,
   fields: readonly SitecoreHarvestField[],
   sectionName: string,
-  branch: DataTreeBranch,
-): DataTreeNonItemNode[] {
+  branch: ReferenceModelBranch,
+): ReferenceModelNonItemNode[] {
   return fields
     .filter((field) => Boolean(field.value))
     .map((field, fieldIndex) => {
-      const fieldTreeNodeId = createDataTreeNodeId(sectionTreeNodeId, "field", String(fieldIndex));
+      const fieldTreeNodeId = createReferenceModelNodeId(sectionTreeNodeId, "field", String(fieldIndex));
 
-      return createDataTreeNonItemNode({
+      return createReferenceModelNonItemNode({
         treeNodeId: fieldTreeNodeId,
         name: field.value ?? "",
         kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.FIELD,
@@ -119,11 +115,11 @@ function mapFieldLinks(
   fieldLinks: readonly HarvestFieldLink[],
   sectionName: string,
   fieldName: string,
-  branch: DataTreeBranch,
-): DataTreeNode[] {
+  branch: ReferenceModelBranch,
+): ReferenceModelNode[] {
   return dedupeFieldLinks(fieldLinks).map((fieldLink, linkIndex) =>
-    createDataTreeItemNode({
-      treeNodeId: createDataTreeNodeId(fieldTreeNodeId, fieldLink.valueItem.scItemId, String(linkIndex)),
+    createReferenceModelItemNode({
+      treeNodeId: createReferenceModelNodeId(fieldTreeNodeId, fieldLink.valueItem.scItemId, String(linkIndex)),
       scItem: fieldLink.valueItem,
       kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ITEM,
       provenance: createFieldReferenceProvenance(

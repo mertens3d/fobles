@@ -11,7 +11,7 @@ import { resolveSitecoreDataIdentity } from "../../../sitecore-data/sitecore-dat
 import { enqueueHarvest } from "../lifecycle/active-harvest-queue";
 import { resolveItemFact, type ResolveOutcome } from "../lifecycle/resolve-fact";
 import { collectEnrichmentGuidLookup } from "./resolve-candidate-collector";
-import type { DataTreeNode } from "../data-tree/data-tree.types";
+import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
 import { setProcessingState, type ProcessingStateByTreeNodeId, type ProcessingStatus } from "../lifecycle/processing-state";
 import { sortGuidsByEnrichmentPriority } from "./enrichment-priority";
 import { patchCytoscapeNodes } from "./enrichment-graph-patcher";
@@ -20,8 +20,8 @@ import type { EnrichmentController, EnrichmentProgressCallback } from "./enrichm
 
 type StartEnrichmentControllerOptions = {
   doc: Document;
-  dataTree: DataTreeNode;
-  nodesById: Map<string, DataTreeNode>;
+  referenceModel: ReferenceModelNode;
+  nodesById: Map<string, ReferenceModelNode>;
   getCy: () => cytoscape.Core | undefined;
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
   onProgress?: EnrichmentProgressCallback;
@@ -36,7 +36,7 @@ export function disposeActiveEnrichmentController(): void {
 
 export function startEnrichmentController({
   doc,
-  dataTree,
+  referenceModel,
   nodesById,
   getCy,
   processingStateByTreeNodeId,
@@ -47,7 +47,7 @@ export function startEnrichmentController({
   let disposed = false;
   const requestId = crypto.randomUUID();
   const identity = resolveSitecoreDataIdentity(doc);
-  const guidLookup = collectEnrichmentGuidLookup(dataTree);
+  const guidLookup = collectEnrichmentGuidLookup(referenceModel);
   const guids = sortGuidsByEnrichmentPriority(Array.from(guidLookup.keys()), guidLookup, nodesById);
   const maxItemCount = guids.length;
 

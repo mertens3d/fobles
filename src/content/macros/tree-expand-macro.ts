@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/macros/tree-expand-macro.ts
 
 import { CONST } from "../../constants/const";
+import type { TreeChildNode } from "../features/reference-model/tree-child-node.types";
 import { formatFoId, stripGuidBraces } from "../features/augmentor/shared/guid";
-import type { TreeChildNode } from "../data-tree/tree-child-node.types";
 import type { GlyphState } from "../features/reference-graph/graph.types";
 
 export function getGlyphId(itemId: string): string {

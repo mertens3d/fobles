@@ -1,7 +1,7 @@
-// @source-path [fobles] src/content/features/reference-graph/data-tree/placeholder-data-tree-builder.ts
+// @source-path [fobles] src/content/features/reference-graph/reference-model/placeholder-reference-model-builder.ts
 
-import type { ScControl } from "../../../sitecore-harvester/sitecore-harvester.types";
-import type { PlaceholderTreeNode } from "./data-tree.types";
+import type { ScControl } from "./sitecore-item.types";
+import type { PlaceholderTreeNode } from "./reference-model.types";
 
 export function createPlaceholderTreeNodes(
   scControls: ScControl[],

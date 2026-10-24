@@ -1,22 +1,7 @@
 // @source-path [fobles] src/content/sitecore-harvester/sitecore-harvester.types.ts
 
+import type { ItemGraphNodeData, LayoutSectionField, RootItem, SitecoreHarvestSection } from "../features/reference-model/sitecore-item.types";
 import type { HarvestSession } from "./harvest-session.types";
-
-// Re-exported so existing harvester/reference-graph call sites can keep importing these pure
-// item-data shapes from here unchanged - the canonical definitions now live in data-tree/, the
-// one place both sitecore-worker and sitecore-harvester are allowed to depend on.
-export {
-  factoryItemGraphNodeData,
-  type HarvestFieldLink,
-  type ItemGraphNodeData,
-  type LayoutDevice,
-  type LayoutSectionField,
-  type RootItem,
-  type ScControl,
-  type SitecoreHarvestField,
-  type SitecoreHarvestSection,
-} from "../data-tree/sitecore-item.types";
-import type { ItemGraphNodeData, LayoutSectionField, RootItem, SitecoreHarvestSection } from "../data-tree/sitecore-item.types";
 
 export type HarvestContext = {
   doc: Document;
@@ -44,7 +29,7 @@ export function isHarvestStep(step: ProgressStep): step is HarvestStep {
 export type SitecoreHarvestResult = {
   rootItem: RootItem;
   parent: ItemGraphNodeData | undefined;
-  layoutSectionFields: LayoutSectionField[] | undefined;
+  layoutSectionFields: readonly LayoutSectionField[] | undefined;
   customFieldSections: readonly SitecoreHarvestSection[] | undefined;
   standardFieldSections: readonly SitecoreHarvestSection[] | undefined;
   childItems: readonly ItemGraphNodeData[] | undefined;

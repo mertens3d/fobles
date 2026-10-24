@@ -6,10 +6,10 @@ import type {
   SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../sitecore-harvester/sitecore-harvester.types";
-import { createDataTree } from "./data-tree/data-tree-builder";
-import { buildDataTreeNodeLookup } from "./data-tree/data-tree-node-lookup";
+import { createReferenceModel } from "../reference-model/reference-model-builder";
+import { buildReferenceModelNodeLookup } from "../reference-model/reference-model-node-lookup";
 import type { ProcessingStatus } from "./lifecycle/processing-state";
-import { projectDataTreeToGraphElements } from "./graph-nodes/graph-elements";
+import { projectReferenceModelToGraphElements } from "./graph-nodes/graph-elements";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 
 type PrepareReferenceGraphOptions = {
@@ -23,25 +23,25 @@ type PrepareReferenceGraphOptions = {
   rootProcessingState?: ProcessingStatus;
 };
 
-// Single orchestration point for createDataTree -> node lookup -> graph projection. Both the
+// Single orchestration point for createReferenceModel -> node lookup -> graph projection. Both the
 // initial harvest and every lazy-filter/reroot/back re-render call this same function instead
 // of duplicating the pipeline. Enrichment is intentionally NOT run here - the graph must
-// build/render from the structural DataTree first; enrichment patches it in afterward.
+// build/render from the structural ReferenceModel first; enrichment patches it in afterward.
 export function prepareReferenceGraph(
   harvestedData: SitecoreHarvestResult,
   filters: SitecoreHarvestFiltersState,
   { signal, rootProcessingState = "enriched" }: PrepareReferenceGraphOptions = {},
 ): Promise<PreparedReferenceGraph | undefined> {
-  const dataTree = createDataTree(harvestedData, filters);
+  const referenceModel = createReferenceModel(harvestedData, filters);
   const processingStateByTreeNodeId = new Map<string, ProcessingStatus>();
-  processingStateByTreeNodeId.set(dataTree.treeNodeId, rootProcessingState);
+  processingStateByTreeNodeId.set(referenceModel.treeNodeId, rootProcessingState);
 
   let prepared: PreparedReferenceGraph | undefined;
 
   if (!signal?.aborted) {
-    const nodesById = buildDataTreeNodeLookup(dataTree);
+    const nodesById = buildReferenceModelNodeLookup(referenceModel);
 
-    const graphElements = projectDataTreeToGraphElements(dataTree, processingStateByTreeNodeId);
+    const graphElements = projectReferenceModelToGraphElements(referenceModel, processingStateByTreeNodeId);
 
     extensionLog.debug("Reference graph: prepared", {
       nodeCount: nodesById.size,
@@ -49,7 +49,7 @@ export function prepareReferenceGraph(
 
     prepared = {
       harvestedData,
-      dataTree,
+      referenceModel,
       nodesById,
       graphElements,
       processingStateByTreeNodeId,

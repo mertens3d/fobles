@@ -1,5 +1,7 @@
 // @source-path [fobles] src/content/sitecore-harvester/harvest-sitecore.ts
 
+import { type ItemGraphNodeData, factoryItemGraphNodeData, type RootItem } from "../features/reference-model/sitecore-item.types";
+import type { TreeChildNode } from "../features/reference-model/tree-child-node.types";
 import { extensionLog } from "../logger";
 import {
   getGlyphId,
@@ -8,12 +10,7 @@ import {
   readChildNodes,
 } from "../macros/tree-expand-macro";
 import { getQuickInfo } from "../toolbar/jump-flyout/quick-info";
-import type { TreeChildNode } from "../data-tree/tree-child-node.types";
-import {
-  factoryItemGraphNodeData,
-  type ItemGraphNodeData,
-  type RootItem,
-} from "./sitecore-harvester.types";
+
 
 // Finds itemId's own tree node, expanding it first (and restoring it back to collapsed
 // afterward) if needed, then returns its direct children. Only the live document can actually

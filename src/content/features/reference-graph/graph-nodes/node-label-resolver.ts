@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/node-label-resolver.ts
 
-import type { DataTreeNode } from "../data-tree/data-tree.types";
+import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
 import type { NodePresentation, NodePresentationByKind } from "./node-presentation.types";
 type NodeKind = keyof NodePresentationByKind;
 import {
@@ -11,7 +11,7 @@ import {
 } from "./text-line-breaker";
 
 function baseName(
-  treeNode: DataTreeNode,
+  treeNode: ReferenceModelNode,
 ): string {
   let name: string;
 
@@ -28,7 +28,7 @@ function baseName(
 }
 
 function resolvePrimaryLabel(
-  treeNode: DataTreeNode,
+  treeNode: ReferenceModelNode,
   presentation: NodePresentation,
   kind: NodeKind,
 ): string {
@@ -109,7 +109,7 @@ function wrapLabelText(text: string): string {
 }
 
 export function resolveNodeLabel(
-  treeNode: DataTreeNode,
+  treeNode: ReferenceModelNode,
   presentation: NodePresentation,
   kind: NodeKind,
 ): string {

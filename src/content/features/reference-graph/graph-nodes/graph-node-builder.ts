@@ -1,6 +1,6 @@
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
-import type { DataTreeNode } from "../data-tree/data-tree.types";
+import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
 import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../lifecycle/processing-state";
 import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "./graph-collapse.types";
 import { kindClass } from "./graph-helpers";
@@ -93,7 +93,7 @@ export function getGraphOwnedClasses(): string[] {
 }
 
 export function appendGraphNode(
-  treeNode: DataTreeNode,
+  treeNode: ReferenceModelNode,
   cytoNodes: cytoscape.ElementDefinition[],
   cytoEdges: cytoscape.ElementDefinition[],
   semanticParentTreeNodeId?: string,
@@ -103,7 +103,7 @@ export function appendGraphNode(
 }
 
 function appendGraphNodeInternal(
-  treeNode: DataTreeNode,
+  treeNode: ReferenceModelNode,
   cytoNodes: cytoscape.ElementDefinition[],
   cytoEdges: cytoscape.ElementDefinition[],
   options: AppendGraphNodeOptions,
@@ -156,7 +156,7 @@ function appendGraphNodeInternal(
 }
 
 function appendRelationshipEdge(
-  treeNode: DataTreeNode,
+  treeNode: ReferenceModelNode,
   semanticParentTreeNodeId: string | undefined,
   cytoEdges: cytoscape.ElementDefinition[],
 ): void {
@@ -179,7 +179,7 @@ function appendRelationshipEdge(
   }
 }
 
-function findCompoundGroupDefinition(treeNode: DataTreeNode): CompoundGroupDefinition | undefined {
+function findCompoundGroupDefinition(treeNode: ReferenceModelNode): CompoundGroupDefinition | undefined {
   return COMPOUND_GROUP_DEFINITIONS.find(
     (definition) =>
       definition.rootCollapseKey === getGraphPresentationState(treeNode).collapseKey &&
@@ -188,7 +188,7 @@ function findCompoundGroupDefinition(treeNode: DataTreeNode): CompoundGroupDefin
 }
 
 function createCompoundGroupElement(
-  treeNode: DataTreeNode,
+  treeNode: ReferenceModelNode,
   groupId: string,
   parentGroupId?: string,
 ): cytoscape.ElementDefinition {
@@ -211,7 +211,7 @@ function createCompoundGroupElement(
     pannable: true,
   };
 }
-export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: string, processingStatus?: ProcessingStatus): ProjectedGraphNode {
+export function projectGraphNode(treeNode: ReferenceModelNode, parentTreeNodeId?: string, processingStatus?: ProcessingStatus): ProjectedGraphNode {
   const { kind, relationshipToParent = "contained", reverse = false } = getGraphPresentationState(treeNode);
   const renderingParameter = treeNode.provenance.type === "rendering-parameter" ? treeNode.provenance : undefined;
   const itemIcon = treeNode.nodeType === "item" ? treeNode.scItem.scItemIcon : undefined;
@@ -242,7 +242,7 @@ export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: stri
 }
 
 
-function getFilterClass(treeNode: DataTreeNode): string | undefined {
+function getFilterClass(treeNode: ReferenceModelNode): string | undefined {
   let filterClass: string | undefined;
 
   const { branch } = getGraphPresentationState(treeNode);

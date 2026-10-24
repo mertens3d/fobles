@@ -1,44 +1,40 @@
-// @source-path [fobles] src/content/features/reference-graph/data-tree/rendering-data-tree-builder.ts
+// @source-path [fobles] src/content/features/reference-graph/reference-model/rendering-reference-model-builder.ts
 
-import { CONST } from "../../../../constants/const";
-import { extensionLog } from "../../../logger";
+import { CONST } from "../../../constants/const";
+import { extensionLog } from "../../logger";
+import { isGuidLike } from "../augmentor/shared/guid";
+import { GRAPH_COLLAPSE_KEY } from "../reference-graph/graph-nodes/graph-collapse.types";
 import {
-  factoryItemGraphNodeData,
-  type ItemGraphNodeData,
-  type ScControl,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
-import { isGuidLike } from "../../augmentor/shared/guid";
-import { GRAPH_COLLAPSE_KEY } from "../graph-nodes/graph-collapse.types";
-import {
-  createDataTreeItemNode,
-  createDataTreeNonItemNode,
-} from "./data-tree-node-factory";
+  createReferenceModelItemNode,
+  createReferenceModelNonItemNode,
+} from "./reference-model-node-factory";
 import {
   createSyntheticProvenance,
-} from "./data-tree-provenance.types";
-import { createDataTreeNodeId } from "./layout-data-tree-builder";
+} from "./reference-model-provenance.types";
+import { createReferenceModelNodeId } from "./layout-reference-model-builder";
 import type {
-  DataTreeItemNode,
-  DataTreeNode,
-  DataTreeNonItemNode,
-} from "./data-tree.types";
+  ReferenceModelItemNode,
+  ReferenceModelNode,
+  ReferenceModelNonItemNode,
+} from "./reference-model.types";
+import { factoryItemGraphNodeData, type ItemGraphNodeData, type ScControl } from "./sitecore-item.types";
 
-export function createRenderingDataTreeNode(
+export function createRenderingReferenceModelNode(
   pageLayoutTreeNodeId: string,
   control: ScControl,
   controlIndex: number,
-): DataTreeItemNode {
+): ReferenceModelItemNode {
   const rendering = control.rendering;
-  const renderingTreeNodeId = createDataTreeNodeId(
+  const renderingTreeNodeId = createReferenceModelNodeId(
     pageLayoutTreeNodeId,
     "rendering",
     control.uid ?? rendering.scItemId ?? String(controlIndex),
   );
-  const children: DataTreeNode[] = [];
+  const children: ReferenceModelNode[] = [];
 
   if (control.datasource) {
     children.push(
-      createDatasourceDataTreeNode(
+      createDatasourceReferenceModelNode(
         renderingTreeNodeId,
         control.datasource,
         control,
@@ -50,7 +46,7 @@ export function createRenderingDataTreeNode(
 
   if (parameters.length > 0) {
     children.push(
-      createRenderingParametersDataTreeNode(
+      createRenderingParametersReferenceModelNode(
         renderingTreeNodeId,
         parameters,
         control,
@@ -58,7 +54,7 @@ export function createRenderingDataTreeNode(
     );
   }
 
-  return createDataTreeItemNode({
+  return createReferenceModelItemNode({
     treeNodeId: renderingTreeNodeId,
     scItem: rendering,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.RENDERING,
@@ -73,13 +69,13 @@ export function createRenderingDataTreeNode(
   });
 }
 
-function createDatasourceDataTreeNode(
+function createDatasourceReferenceModelNode(
   renderingTreeNodeId: string,
   datasource: ItemGraphNodeData,
   control: ScControl,
-): DataTreeItemNode {
-  return createDataTreeItemNode({
-    treeNodeId: createDataTreeNodeId(
+): ReferenceModelItemNode {
+  return createReferenceModelItemNode({
+    treeNodeId: createReferenceModelNodeId(
       renderingTreeNodeId,
       CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.DATASOURCE,
     ),
@@ -98,13 +94,13 @@ function createDatasourceDataTreeNode(
   });
 }
 
-function createRenderingParametersDataTreeNode(
+function createRenderingParametersReferenceModelNode(
   renderingTreeNodeId: string,
   parameters: Array<[string, string]>,
   control: ScControl,
-): DataTreeNonItemNode {
-  return createDataTreeNonItemNode({
-    treeNodeId: createDataTreeNodeId(
+): ReferenceModelNonItemNode {
+  return createReferenceModelNonItemNode({
+    treeNodeId: createReferenceModelNodeId(
       renderingTreeNodeId,
       CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETERS,
     ),
@@ -115,7 +111,7 @@ function createRenderingParametersDataTreeNode(
     branch: "layouts",
     relationshipToParent: "related",
     children: parameters.map(([name, value]) =>
-      createSingleParameterDataTreeNode(
+      createSingleParameterReferenceModelNode(
         name,
         value,
         renderingTreeNodeId,
@@ -125,13 +121,13 @@ function createRenderingParametersDataTreeNode(
   });
 }
 
-function createSingleParameterDataTreeNode(
+function createSingleParameterReferenceModelNode(
   name: string,
   value: string,
   renderingTreeNodeId: string,
   control: ScControl,
-): DataTreeNode {
-  const treeNodeId = createDataTreeNodeId(
+): ReferenceModelNode {
+  const treeNodeId = createReferenceModelNodeId(
     renderingTreeNodeId,
     CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETER,
     name,
@@ -146,7 +142,7 @@ function createSingleParameterDataTreeNode(
   );
 
   if (isGuidLike(candidateValue)) {
-    return createDataTreeItemNode({
+    return createReferenceModelItemNode({
       treeNodeId,
       scItem: factoryItemGraphNodeData({
         scItemId: candidateValue,
@@ -168,7 +164,7 @@ function createSingleParameterDataTreeNode(
     });
   }
 
-  return createDataTreeNonItemNode({
+  return createReferenceModelNonItemNode({
     treeNodeId,
     name: value ? `${name}: ${value}` : name,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.RENDERING_PARAMETER,

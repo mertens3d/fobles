@@ -1,8 +1,8 @@
 import { ICONS } from "../../../../constants/fobles.constants";
-import type { DataTreeNode } from "../data-tree/data-tree.types";
+import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
 
 type TreeDataViewerProps = {
-  data: DataTreeNode;
+  data: ReferenceModelNode;
   onClose: () => void;
 };
 

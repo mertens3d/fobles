@@ -12,7 +12,7 @@ export function ViewTreeDataButton({
       style={{ width: "100%" }}
       onClick={onViewData}
     >
-      {"View Tree Data"}
+      {"View Reference Model"}
     </button>
   );
 }

@@ -266,7 +266,7 @@ function startGraphEnrichment(runtime: GraphRuntime): void {
 
   startEnrichmentController({
     doc: options.doc,
-    dataTree: options.initialPreparedGraph.dataTree,
+    referenceModel: options.initialPreparedGraph.referenceModel,
     nodesById: options.initialPreparedGraph.nodesById,
       processingStateByTreeNodeId: options.initialPreparedGraph.processingStateByTreeNodeId,
     getCy: () => options.cyRef.current,

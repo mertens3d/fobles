@@ -1,10 +1,7 @@
 // @source-path [fobles] src/content/sitecore-worker/tasks/worker-task.types.ts
 
-import type {
-  ItemGraphNodeData,
-  LayoutSectionField,
-  SitecoreHarvestSection,
-} from "../../data-tree/sitecore-item.types";
+
+import type { ItemGraphNodeData, SitecoreHarvestSection, LayoutSectionField } from "../../features/reference-model/sitecore-item.types";
 import type { WorkerTarget } from "../pool/worker-target";
 
 // An item reference as actually requested of Sitecore - as opposed to an ambiguous
@@ -74,7 +71,7 @@ export type WorkerTaskPayloadByType = {
   "get-referrers": { referrers: readonly ItemGraphNodeData[] };
   "get-custom-fields": { sections: readonly SitecoreHarvestSection[] };
   "get-standard-fields": { sections: readonly SitecoreHarvestSection[] };
-  "get-layout": { layoutSectionFields: LayoutSectionField[] };
+  "get-layout": { layoutSectionFields: readonly LayoutSectionField[] };
   "set-raw-values": { value: boolean };
   "set-standard-fields": { value: boolean };
 };

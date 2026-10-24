@@ -3,20 +3,20 @@
 import { useEffect, useState } from "react";
 import prettier from "prettier/standalone";
 import * as prettierPluginHtml from "prettier/plugins/html";
-import type { DataTreeNode } from "../data-tree/data-tree.types";
+import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
 import type { ProcessingStateByTreeNodeId } from "../lifecycle/processing-state";
 import { getGraphPresentationState } from "../graph-nodes/graph-presentation-state";
 
 type NodeDetailsPanelProps = {
   selectedTreeNodeId: string | undefined;
-  nodesById: Map<string, DataTreeNode>;
+  nodesById: Map<string, ReferenceModelNode>;
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
 };
 
 type DetailRow = [string, string];
 
-type DiagnosticDataTreeNode = Omit<
-  DataTreeNode,
+type DiagnosticReferenceModelNode = Omit<
+  ReferenceModelNode,
   "children" | "provenance" | "scItem"
 > & {
   scItem?: object;
@@ -26,7 +26,7 @@ type DiagnosticDataTreeNode = Omit<
 };
 
 function itemDetailRows(
-  treeNode: Extract<DataTreeNode, { nodeType: "item" }>,
+  treeNode: Extract<ReferenceModelNode, { nodeType: "item" }>,
 ): DetailRow[] {
   const rows: DetailRow[] = [["Kind", getGraphPresentationState(treeNode).kind]];
 
@@ -52,7 +52,7 @@ function itemDetailRows(
 }
 
 function provenanceDetailRows(
-  treeNode: DataTreeNode,
+  treeNode: ReferenceModelNode,
 ): DetailRow[] {
   const provenance = treeNode.provenance;
   let rows: DetailRow[] = [];
@@ -105,7 +105,7 @@ function provenanceDetailRows(
 }
 
 function resolveRawSource(
-  treeNode: DataTreeNode,
+  treeNode: ReferenceModelNode,
 ): string | undefined {
   const provenance = treeNode.provenance;
   let rawSource: string | undefined;
@@ -153,7 +153,7 @@ function resolveRawSource(
 }
 
 function resolveItemRawMarkup(
-  treeNode: DataTreeNode,
+  treeNode: ReferenceModelNode,
 ): string | undefined {
   let rawMarkup: string | undefined;
 
@@ -189,15 +189,15 @@ async function prettifyRawSource(
 }
 
 function buildDiagnosticTreeNode(
-  treeNode: DataTreeNode,
-): DiagnosticDataTreeNode {
+  treeNode: ReferenceModelNode,
+): DiagnosticReferenceModelNode {
   const {
     children,
     provenance: _provenance,
     ...node
   } = treeNode;
 
-  let diagnosticNode: DiagnosticDataTreeNode;
+  let diagnosticNode: DiagnosticReferenceModelNode;
 
   if (treeNode.nodeType === "item") {
     const {
@@ -234,12 +234,12 @@ function buildDiagnosticTreeNode(
 }
 
 function buildClipboardText(
-  treeNode: DiagnosticDataTreeNode,
+  treeNode: DiagnosticReferenceModelNode,
   rawSource: string | undefined,
   itemRawMarkup: string | undefined,
 ): string {
   return [
-    "Data Tree Node",
+    "Reference Model Node",
     JSON.stringify(treeNode, null, 2),
     "",
     "Raw Source",
@@ -381,7 +381,7 @@ export function NodeDetailsPanel({
       ))}
 
       <details open>
-        <summary>Data Tree Node</summary>
+        <summary>Reference Model Node</summary>
         <pre>
           {JSON.stringify(
             diagnosticTreeNode,

@@ -2,7 +2,7 @@
 
 export type PhaseStatus = "idle" | "running" | "complete";
 
-// Counts unique Sitecore items/GUIDs, never Cytoscape nodes or DataTree nodes - one item can
+// Counts unique Sitecore items/GUIDs, never Cytoscape nodes or ReferenceModel nodes - one item can
 // back several tree/graph nodes at once.
 export type PhaseProgress = {
   completed: number;

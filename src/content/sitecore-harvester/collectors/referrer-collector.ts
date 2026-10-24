@@ -3,11 +3,8 @@
 import { extractGuid } from "../../features/augmentor/shared/guid";
 import { extensionLog } from "../../logger";
 import { buildGalleryLinksUrl } from "./helpers/harvest-helpers";
-import {
-  factoryItemGraphNodeData,
-  type HarvestContext,
-  type ItemGraphNodeData,
-} from "../sitecore-harvester.types";
+import { type HarvestContext, } from "../sitecore-harvester.types";
+import { factoryItemGraphNodeData, type ItemGraphNodeData } from "../../features/reference-model/sitecore-item.types";
 
 // Items that reference this one - Sitecore's own "Links" gallery (ribbon: Links -> "Items that
 // refer to the selected item"), fetched directly instead of clicking through the ribbon. Same

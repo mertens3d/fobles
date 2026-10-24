@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/features/reference-graph/lifecycle/resolve-fact.ts
 
+import type { ItemGraphNodeData } from "../../reference-model/sitecore-item.types.ts";
 import * as cache from "../../../sitecore-data-cache/sitecore-data-cache.ts";
 import type { SitecoreDataCacheKey } from "../../../sitecore-data-cache/sitecore-data-cache.types";
-import type { ItemGraphNodeData } from "../../../sitecore-harvester/sitecore-harvester.types";
 import type { WorkerTaskExecutionResult } from "../../../sitecore-worker/tasks/worker-task.types";
 
 export type ResolveOutcome =

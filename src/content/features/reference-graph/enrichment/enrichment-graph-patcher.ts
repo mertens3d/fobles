@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment-graph-patcher.ts
 
 import type cytoscape from "cytoscape";
-import type { DataTreeNode } from "../data-tree/data-tree.types";
+import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
 import { getGraphOwnedClasses, projectGraphNode } from "../graph-nodes/graph-node-builder";
 import type { ProcessingStateByTreeNodeId } from "../lifecycle/processing-state";
 import { getGraphPresentationState } from "../graph-nodes/graph-presentation-state";
@@ -13,7 +13,7 @@ type NodeRuntimeState = { position: cytoscape.Position; selected: boolean; locke
 export function patchCytoscapeNodes(
   cy: cytoscape.Core | undefined,
   treeNodeIds: readonly string[],
-  nodesById: Map<string, DataTreeNode>,
+  nodesById: Map<string, ReferenceModelNode>,
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId,
 ): void {
   if (!cy || cy.destroyed()) {
@@ -42,7 +42,7 @@ export function patchCytoscapeNodes(
 function patchCytoscapeNode(
   cy: cytoscape.Core,
   treeNodeId: string,
-  nodesById: Map<string, DataTreeNode>,
+  nodesById: Map<string, ReferenceModelNode>,
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId,
   graphOwnedClasses: readonly string[],
 ): cytoscape.NodeSingular | undefined {
@@ -143,7 +143,7 @@ function replaceGraphOwnedClasses(
   });
 }
 
-function readParentTreeNodeId(element: cytoscape.NodeSingular, treeNode: DataTreeNode): string | undefined {
+function readParentTreeNodeId(element: cytoscape.NodeSingular, treeNode: ReferenceModelNode): string | undefined {
   let parentTreeNodeId: string | undefined = undefined;
 
   if ((getGraphPresentationState(treeNode).relationshipToParent ?? "contained") === "contained") {

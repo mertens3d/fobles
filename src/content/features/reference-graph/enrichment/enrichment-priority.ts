@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment-priority.ts
 
-import type { ItemGraphNodeData } from "../../../sitecore-harvester/sitecore-harvester.types";
-import type { DataTreeNode } from "../data-tree/data-tree.types";
+import type { ItemGraphNodeData } from "../../reference-model/sitecore-item.types";
+import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
 import { firstItemNode } from "./enrichment-tree-state";
 import type { EnrichmentPriorityRank } from "./enrichment.types";
 
@@ -22,7 +22,7 @@ export function rankItemForEnrichment(item: ItemGraphNodeData): EnrichmentPriori
 export function sortGuidsByEnrichmentPriority(
   guids: readonly string[],
   guidLookup: Map<string, string[]>,
-  nodesById: Map<string, DataTreeNode>,
+  nodesById: Map<string, ReferenceModelNode>,
 ): string[] {
   const rankByGuid = new Map(
     guids.map((guid) => [guid, rankOfGuid(guid, guidLookup, nodesById)] as const),
@@ -34,7 +34,7 @@ export function sortGuidsByEnrichmentPriority(
 function rankOfGuid(
   guid: string,
   guidLookup: Map<string, string[]>,
-  nodesById: Map<string, DataTreeNode>,
+  nodesById: Map<string, ReferenceModelNode>,
 ): EnrichmentPriorityRank {
   const representative = firstItemNode(guidLookup.get(guid) ?? [], nodesById);
 

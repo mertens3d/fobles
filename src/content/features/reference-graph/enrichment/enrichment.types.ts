@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment.types.ts
 
-// Counts unique GUIDs requiring enrichment - never Cytoscape nodes or DataTree nodes, since one
+// Counts unique GUIDs requiring enrichment - never Cytoscape nodes or ReferenceModel nodes, since one
 // GUID can back several tree nodes/graph nodes at once.
 export type EnrichmentProgress = {
   completedItemCount: number;

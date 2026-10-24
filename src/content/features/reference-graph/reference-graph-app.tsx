@@ -131,7 +131,7 @@ export function ReferenceGraphApp({
     >
       {graphState.treeDataVisible && (
         <TreeDataViewer
-          data={graphState.currentPreparedGraph.dataTree}
+          data={graphState.currentPreparedGraph.referenceModel}
           onClose={handleCloseTreeData}
         />
       )}

@@ -1,16 +1,10 @@
-// @source-path [fobles] src/content/features/reference-graph/data-tree/data-tree-provenance.types.ts
+// @source-path [fobles] src/content/features/reference-graph/reference-model/reference-model-provenance.types.ts
 
-import type { FoblesStrategy } from "../../augmentor/fobles.types";
-import type { FieldReferenceConfidence } from "../../../field-reference-resolution/field-reference.types";
-import type {
-  ItemGraphNodeData,
-  LayoutDevice,
-  ScControl,
-  SitecoreHarvestField,
-  SitecoreHarvestSection,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { FoblesStrategy } from "../augmentor/fobles.types";
+import type { FieldReferenceConfidence } from "../../field-reference-resolution/field-reference.types";
+import type { ItemGraphNodeData, ScControl, SitecoreHarvestSection, SitecoreHarvestField, LayoutDevice } from "./sitecore-item.types";
 
-export type DataTreeProvenance =
+export type ReferenceModelProvenance =
   | {
     type: "sitecore-item";
     item: ItemGraphNodeData;
@@ -69,7 +63,7 @@ export type DataTreeProvenance =
 
 export function createSitecoreItemProvenance(
   item: ItemGraphNodeData,
-): DataTreeProvenance {
+): ReferenceModelProvenance {
   return {
     type: "sitecore-item",
     item: { ...item },
@@ -78,7 +72,7 @@ export function createSitecoreItemProvenance(
 
 export function createSyntheticProvenance(
   label: string,
-): DataTreeProvenance {
+): ReferenceModelProvenance {
   return {
     type: "synthetic",
     label,
@@ -92,7 +86,7 @@ export function createFieldReferenceProvenance(
   sourceValue: string,
   confidence: FieldReferenceConfidence,
   strategy: FoblesStrategy | undefined,
-): DataTreeProvenance {
+): ReferenceModelProvenance {
   return {
     type: "field-reference",
     item: { ...item },
