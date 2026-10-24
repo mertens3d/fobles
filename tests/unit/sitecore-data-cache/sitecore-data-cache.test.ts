@@ -1,12 +1,29 @@
-// @source-path [fobles] src/content/sitecore-data-cache/sitecore-data-cache.test.ts
+// @source-path [fobles] tests/unit/sitecore-data-cache/sitecore-data-cache.test.ts
 
 import "fake-indexeddb/auto";
 import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
-import { DATABASE_NAME, getRequestResult, resetDatabaseConnectionForTests, runItemStoreTransaction } from "./indexed-db.ts";
-import { serializeCacheKey } from "./sitecore-data-cache-key.ts";
-import { clear, count, deleteItem, evictIfNeeded, getFact, getItem, putFact } from "./sitecore-data-cache.ts";
-import type { QuickInfoPayload, SitecoreDataCacheKey, SitecoreDataCacheRecord } from "./sitecore-data-cache.types";
+import {
+  DATABASE_NAME,
+  getRequestResult,
+  resetDatabaseConnectionForTests,
+  runItemStoreTransaction,
+} from "../../../src/content/sitecore-data-cache/indexed-db.ts";
+import { serializeCacheKey } from "../../../src/content/sitecore-data-cache/sitecore-data-cache-key.ts";
+import {
+  clear,
+  count,
+  deleteItem,
+  evictIfNeeded,
+  getFact,
+  getItem,
+  putFact,
+} from "../../../src/content/sitecore-data-cache/sitecore-data-cache.ts";
+import type {
+  QuickInfoPayload,
+  SitecoreDataCacheKey,
+  SitecoreDataCacheRecord,
+} from "../../../src/content/sitecore-data-cache/sitecore-data-cache.types";
 
 function sampleKey(overrides: Partial<SitecoreDataCacheKey> = {}): SitecoreDataCacheKey {
   return {

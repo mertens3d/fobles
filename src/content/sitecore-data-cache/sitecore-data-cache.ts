@@ -1,10 +1,11 @@
 // @source-path [fobles] src/content/sitecore-data-cache/sitecore-data-cache.ts
 
 import { getRequestResult, LAST_ACCESSED_INDEX_NAME, runItemStoreTransaction } from "./indexed-db.ts";
-import { normalizeItemLocator, serializeCacheKey } from "./sitecore-data-cache-key.ts";
+import { normalizeIdentityPart, normalizeItemLocator, serializeCacheKey } from "./sitecore-data-cache-key.ts";
 import type {
   CachedValue,
   EvictOptions,
+  ListItemsOptions,
   PutFactOptions,
   SitecoreDataCacheKey,
   SitecoreDataCacheRecord,
@@ -25,9 +26,9 @@ function createEmptyRecord(
 
   return {
     key: serializedKey,
-    environment: key.environment,
-    database: key.database,
-    language: key.language,
+    environment: normalizeIdentityPart(key.environment),
+    database: normalizeIdentityPart(key.database),
+    language: normalizeIdentityPart(key.language),
     itemKind: item.kind,
     itemValue: item.value,
     lastAccessedAt: now,
@@ -135,4 +136,46 @@ export async function evictIfNeeded(options?: EvictOptions): Promise<number> {
 
     return deletedCount;
   });
+}
+
+// Cache-Inspector-facing enumeration: walks the lastAccessedAt index (ascending by default, so
+// the least-recently-used records come first - matching eviction order) and filters in memory,
+// per Phase 3B's "don't add new indexes until proven necessary" guidance.
+export async function listItems(options?: ListItemsOptions): Promise<SitecoreDataCacheRecord[]> {
+  const direction = options?.sortDirection === "desc" ? "prev" : "next";
+
+  const records = await runItemStoreTransaction("readonly", async (store) => {
+    const index = store.index(LAST_ACCESSED_INDEX_NAME);
+    const results: SitecoreDataCacheRecord[] = [];
+
+    await new Promise<void>((resolve, reject) => {
+      const cursorRequest = index.openCursor(undefined, direction);
+
+      cursorRequest.onsuccess = () => {
+        const cursor = cursorRequest.result;
+
+        if (!cursor) {
+          resolve();
+          return;
+        }
+
+        results.push(cursor.value as SitecoreDataCacheRecord);
+        cursor.continue();
+      };
+
+      cursorRequest.onerror = () => reject(cursorRequest.error ?? new Error("listItems cursor failed"));
+    });
+
+    return results;
+  });
+
+  const environment = options?.environment !== undefined ? normalizeIdentityPart(options.environment) : undefined;
+  const database = options?.database !== undefined ? normalizeIdentityPart(options.database) : undefined;
+  const language = options?.language !== undefined ? normalizeIdentityPart(options.language) : undefined;
+
+  return records.filter((record) =>
+    (environment === undefined || record.environment === environment) &&
+    (database === undefined || record.database === database) &&
+    (language === undefined || record.language === language),
+  );
 }

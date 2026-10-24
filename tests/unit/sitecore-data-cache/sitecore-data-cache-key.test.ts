@@ -1,9 +1,9 @@
-// @source-path [fobles] src/content/sitecore-data-cache/sitecore-data-cache-key.test.ts
+// @source-path [fobles] tests/unit/sitecore-data-cache/sitecore-data-cache-key.test.ts
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { serializeCacheKey } from "./sitecore-data-cache-key.ts";
-import type { SitecoreDataCacheKey } from "./sitecore-data-cache.types";
+import { serializeCacheKey } from "../../../src/content/sitecore-data-cache/sitecore-data-cache-key.ts";
+import type { SitecoreDataCacheKey } from "../../../src/content/sitecore-data-cache/sitecore-data-cache.types";
 
 function baseKey(overrides: Partial<SitecoreDataCacheKey> = {}): SitecoreDataCacheKey {
   return {

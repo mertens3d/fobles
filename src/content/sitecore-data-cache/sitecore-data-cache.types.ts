@@ -68,3 +68,12 @@ export type PutFactOptions = {
 export type EvictOptions = {
   maxItemRecords?: number;
 };
+
+// Minimum surface a future Cache Inspector needs: enumerate + filter by identity + order by
+// recency. Payload text search and per-fact verification-time sorting are deliberately deferred.
+export type ListItemsOptions = {
+  environment?: string;
+  database?: string;
+  language?: string;
+  sortDirection?: "asc" | "desc";
+};

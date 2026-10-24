@@ -7,7 +7,9 @@ import type { SitecoreDataCacheKey } from "./sitecore-data-cache.types";
 // safe to join normalized parts with, and to use as a stable serialized-key boundary.
 const KEY_SEPARATOR = "::";
 
-function normalizeIdentityPart(value: string): string {
+// Exported so callers filtering/comparing identity values (e.g. listItems) can normalize the
+// same way the serialized key already does, instead of relying on whatever casing was stored.
+export function normalizeIdentityPart(value: string): string {
   return value.trim().toLowerCase();
 }
 

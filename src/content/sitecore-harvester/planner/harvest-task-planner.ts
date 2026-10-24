@@ -52,9 +52,11 @@ function createTask(request: HarvestRequest, type: CollectorTaskType): WorkerTas
 }
 
 // The item reference the harvest's own url was built from (see buildFoblesUrl) - used as the
-// "requested" locator for the harvest's get-quick-info task, so a root item whose url Sitecore
-// can't resolve is reported as not-found instead of silently harvesting a fallback item's data.
-function requestedLocatorFromUrl(url: string): SitecoreItemLocator | undefined {
+// "requested" locator for the harvest's get-quick-info task (and, since one harvest only ever
+// targets one root item, reused as the cache identity for every other atomic read it dispatches)
+// so a root item whose url Sitecore can't resolve is reported as not-found instead of silently
+// harvesting a fallback item's data.
+export function requestedLocatorFromUrl(url: string): SitecoreItemLocator | undefined {
   const reference = new URL(url).searchParams.get("fo") ?? undefined;
 
   return reference

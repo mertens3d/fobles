@@ -1,6 +1,6 @@
 export const ACTIVITY_MESSAGE_TYPE = "FOBLES_ACTIVITY_EVENT" as const;
 export type ActivityState = "queued" | "started" | "completed" | "error" | "cancelled";
-export type ActivityEvent = { source: "worker" | "harvest" | "graph" | "enrichment"; requestId?: string; activityId: string; kind: string; label: string; state: ActivityState; current?: number; total?: number; detail?: string; timestamp: number };
+export type ActivityEvent = { source: "worker" | "harvest" | "graph" | "enrichment" | "cache"; requestId?: string; activityId: string; kind: string; label: string; state: ActivityState; current?: number; total?: number; detail?: string; timestamp: number };
 export type ActivityMessage = { type: typeof ACTIVITY_MESSAGE_TYPE; activity: ActivityEvent };
 type ActivityListener = (event: ActivityEvent) => void;
 const listeners = new Set<ActivityListener>();

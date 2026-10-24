@@ -6,8 +6,8 @@ import { factoryItemGraphNodeData, type ItemGraphNodeData } from "../sitecore-ha
 export function isItemGraphNodeDataResolved(item: ItemGraphNodeData): boolean {
     return Boolean(item.scItemId && item.scItemName && item.scItemPath && item.scTemplate);
 }
-
-// Pure read of an already-loaded quick-info document - the worker-pool task executor's enrich-item
+// Pure read of an already-loaded Quick Info document.
+// Used by the worker task executor for get-quick-info.
 // task calls this directly, since its worker tab is already navigated to item.link by the time
 // its task runs (no fetch needed here).
 export function buildItemGraphNodeDataFromDoc(doc: Document): ItemGraphNodeData {

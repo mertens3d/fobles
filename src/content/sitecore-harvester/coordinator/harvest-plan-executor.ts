@@ -6,12 +6,50 @@ import { HARVEST_STEP_BY_TASK_TYPE } from "../planner/harvest-steps";
 import type { HarvestProgressCallback, HarvestRequest, ProgressStep } from "../sitecore-harvester.types";
 import { cancelWorkerTask, runWorkerTask } from "../../sitecore-worker/pool/worker-pool-client";
 import { createErrorResult, type WorkerTask, type WorkerTaskResult, type WorkerTaskType } from "../../sitecore-worker/tasks/worker-task.types";
-import { createSetRawValuesTask, createSetStandardFieldsTask, planCollectorTaskGroups, planCollectorTasks } from "../planner/harvest-task-planner";
+import { createSetRawValuesTask, createSetStandardFieldsTask, planCollectorTaskGroups, planCollectorTasks, requestedLocatorFromUrl } from "../planner/harvest-task-planner";
+import { factNameForTaskType, getFact } from "../../sitecore-data/sitecore-data-service";
+import { resolveSitecoreDataIdentity } from "../../sitecore-data/sitecore-data-identity";
+import type { SitecoreDataCacheKey } from "../../sitecore-data-cache/sitecore-data-cache.types";
 
 const TASK_TIMEOUT_MS = 30000;
 
 function stepForTaskType(type: WorkerTaskType): ProgressStep | undefined {
   return HARVEST_STEP_BY_TASK_TYPE.get(type);
+}
+
+// One harvest always targets exactly one root item, so every cacheable task it dispatches shares
+// this same identity - undefined only when the request's url carries no resolvable item at all
+// (collector tasks never run without a resolved root item anyway).
+function resolveHarvestCacheKey(request: HarvestRequest): SitecoreDataCacheKey | undefined {
+  const item = requestedLocatorFromUrl(request.url);
+  return item ? { ...resolveSitecoreDataIdentity(), item } : undefined;
+}
+
+// Re-wraps a resolved fact's value as a WorkerTaskResult so every existing downstream consumer
+// (mergeCollectorResult, extractRootItem, throwForFailedResults/...) keeps working unchanged,
+// regardless of whether the value came from cache or a live worker task.
+function buildSuccessResultFromFact(task: WorkerTask, value: unknown): WorkerTaskResult {
+  return {
+    requestId: task.requestId,
+    taskId: task.taskId,
+    type: task.type,
+    status: "success",
+    payload: value,
+  } as WorkerTaskResult;
+}
+
+async function runTaskThroughCache(
+  task: WorkerTask,
+  cacheKey: SitecoreDataCacheKey | undefined,
+): Promise<WorkerTaskResult> {
+  const factName = cacheKey ? factNameForTaskType(task.type) : undefined;
+  if (!cacheKey || !factName) return runWorkerTaskWithTimeout(task);
+
+  const outcome = await getFact(cacheKey, factName, () => runWorkerTaskWithTimeout(task));
+
+  return outcome.outcome === "unresolved"
+    ? (outcome.result as WorkerTaskResult)
+    : buildSuccessResultFromFact(task, outcome.fact.value);
 }
 
 async function runWorkerTaskWithTimeout(task: WorkerTask): Promise<WorkerTaskResult> {
@@ -102,13 +140,14 @@ function throwForFailedResults(results: readonly WorkerTaskResult[]): void {
 async function dispatchTasks(
   tasks: readonly WorkerTask[],
   onProgress: HarvestProgressCallback | undefined,
+  cacheKey: SitecoreDataCacheKey | undefined,
 ): Promise<WorkerTaskResult[]> {
   const results = await Promise.all(
     tasks.map(async (task): Promise<WorkerTaskResult> => {
       const step = stepForTaskType(task.type);
       if (step) onProgress?.(step, "active");
 
-      const result = await runWorkerTaskWithTimeout(task);
+      const result = await runTaskThroughCache(task, cacheKey);
 
       if (result.status === "cancelled") {
         throw new DOMException(
@@ -169,7 +208,9 @@ export async function executeHarvestPlan(
 ): Promise<WorkerTaskResult[]> {
   extensionLog.debug(`[${request.requestId}]: starting harvest plan execution`);
 
-  if (!request.session) return await dispatchTasks(planCollectorTasks(request), onProgress);
+  const cacheKey = resolveHarvestCacheKey(request);
+
+  if (!request.session) return await dispatchTasks(planCollectorTasks(request), onProgress, cacheKey);
 
   const { normalTasks, layoutTasks } = planCollectorTaskGroups(request);
   let harvestError: unknown;
@@ -183,13 +224,13 @@ export async function executeHarvestPlan(
 
   try {
     await setAndVerifyEditorState(request, false, request.filters.standardFields, "normal-harvest");
-    const normalResults = await dispatchTasks(normalTasks, onProgress);
+    const normalResults = await dispatchTasks(normalTasks, onProgress, cacheKey);
 
     // Layout's own Renderings/Final Renderings fields only render in the DOM at all when
     // Standard Fields is on, regardless of whether the user wants the Standard Fields crop -
     // always required here, unlike the generic section/field harvest above.
     await setAndVerifyEditorState(request, true, true, "layout-harvest");
-    const layoutResults = await dispatchTasks(layoutTasks, onProgress);
+    const layoutResults = await dispatchTasks(layoutTasks, onProgress, cacheKey);
 
     return [...normalResults, ...layoutResults];
   } catch (error) {
