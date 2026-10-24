@@ -1,45 +1,19 @@
 /* @source-path [fobles] src/content/styles/reference-graph/_progress.scss */
-
 @use "../tokens" as *;
 @use "../mixins" as *;
-
-.fobles-reference-graph {
-  &-progress {
-    width: min(420px, calc(100vw - 32px));
-    padding: 20px;
-    border: 1px solid $fobles-border;
-    border-radius: 6px;
-    background: $fobles-white;
-    color: $fobles-text;
-    font:
-      400 13px/1.5 "Open Sans",
-      Arial,
-      sans-serif;
-    box-shadow: 0 18px 48px $fobles-shadow-dialog;
-
-    &::backdrop {
-      background: $fobles-backdrop;
-    }
-
-    &-steps {
-      display: flex;
-      flex-direction: column;
-      gap: 5px;
-      margin: 0 0 16px;
-    }
-
-    &-action {
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    &-cancel {
-      @include fobles-button-base;
-
-      &:hover {
-        filter: brightness(1.04);
-        box-shadow: 0 5px 12px $fobles-shadow-button-hover;
-      }
-    }
-  }
+.fobles-reference-graph-progress { width:min(520px,calc(100vw - 40px)); padding:0; border:1px solid $fobles-border; border-radius:10px; background:$fobles-white; color:$fobles-text; font:400 13px/1.45 "Open Sans",Arial,sans-serif; box-shadow:0 18px 48px $fobles-shadow-dialog; overflow:hidden;
+  &::backdrop { background:$fobles-backdrop; }
+  &-header { display:flex;align-items:center;justify-content:space-between;padding:18px 20px;border-bottom:1px solid $fobles-border;font-size:16px; }
+  &-summary { margin-top:3px;color:$fobles-muted;font-size:11px; }
+  &-pulse,&-spinner { border-radius:50%;background:$fobles-blue;animation:fobles-progress-pulse 1.15s ease-in-out infinite; }
+  &-pulse { width:10px;height:10px; } &-spinner { width:16px;height:16px;flex:0 0 16px; }
+  &-active { margin:16px 20px;padding:12px 14px;border:1px solid rgba($fobles-blue,.32);border-radius:8px;background:$fobles-surface; }
+  &-caption { margin:0 20px 7px;color:$fobles-muted;font-size:9px;font-weight:700;letter-spacing:.1em; }
+  &-active &-caption { margin:0 0 8px; }
+  &-active-row { display:flex;align-items:center;gap:11px; div div{color:$fobles-muted;font-size:11px;} }
+  &-list { margin:0 20px;max-height:190px;overflow:auto;border:1px solid $fobles-border;border-radius:8px; }
+  &-item { display:grid;grid-template-columns:22px 1fr auto;gap:6px;align-items:center;padding:8px 10px;border-bottom:1px solid rgba($fobles-border,.7); &:last-child{border-bottom:0;} &.is-started{background:$fobles-surface;} &.is-completed .fobles-reference-graph-progress-icon{color:#16803a;} &.is-error .fobles-reference-graph-progress-icon{color:#c53030;} }
+  &-icon { font-weight:700;color:$fobles-muted; } &-state { color:$fobles-muted;font-size:10px;text-transform:capitalize; } &-empty { padding:12px;color:$fobles-muted; }
+  &-actions { display:flex;justify-content:flex-end;padding:16px 20px; button { @include fobles-button-base; &:hover{filter:brightness(1.04);box-shadow:0 5px 12px $fobles-shadow-button-hover;} } }
 }
+@keyframes fobles-progress-pulse { 0%,100%{opacity:.35;transform:scale(.8)} 50%{opacity:1;transform:scale(1)} }

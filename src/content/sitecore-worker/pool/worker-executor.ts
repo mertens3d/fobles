@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/sitecore-worker/pool/worker-executor.ts
 
-import { DEBUG_WORKER_POOL } from "../worker-protocol.const";
+import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { extensionLog } from "../../logger";
 import {
   closeWorkerTarget,
@@ -20,6 +20,8 @@ import {
   type WorkerTaskResult,
 } from "../tasks/worker-task.types";
 import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
+import { DEBUG_WORKER_POOL } from "../worker-protocol.const";
+import { publishActivityToHost } from "../../shared/activity/activity-events";
 
 const READY_TIMEOUT_MS = 20000;
 const MAX_EDITOR_STATE_CHANGES = 2;
@@ -95,7 +97,10 @@ async function retryAfterDocumentStale(
 ): Promise<void> {
   const retiredTarget = worker.target;
 
-  if (queued.task.type === "set-raw-values" || queued.task.type === "set-standard-fields") {
+  if (
+    queued.task.type === "set-raw-values" ||
+    queued.task.type === "set-standard-fields"
+  ) {
     const retiredWorkerCount = context.retireAllWorkers();
 
     extensionLog.debug(
@@ -109,7 +114,10 @@ async function retryAfterDocumentStale(
     context.retireWorker(worker);
   }
 
-  if (queued.editorStateChangeCount >= MAX_EDITOR_STATE_CHANGES) {
+  if (
+    queued.editorStateChangeCount >=
+    MAX_EDITOR_STATE_CHANGES
+  ) {
     queued.resolve(
       createErrorResult(
         queued.task,
@@ -127,7 +135,8 @@ async function retryAfterDocumentStale(
     {
       taskId: queued.task.taskId,
       taskType: queued.task.type,
-      editorStateChangeCount: queued.editorStateChangeCount,
+      editorStateChangeCount:
+        queued.editorStateChangeCount,
       retiredWorkerKey: retiredTarget
         ? getWorkerTargetKey(retiredTarget)
         : undefined,
@@ -142,6 +151,7 @@ async function retryAfterDocumentStale(
 
   context.scheduleNext();
 }
+
 async function runTaskOnWorker(
   context: WorkerExecutorContext,
   worker: PoolWorker,
@@ -149,78 +159,164 @@ async function runTaskOnWorker(
 ): Promise<void> {
   const target = worker.target;
 
-  if (!target || isWorkerRetired(worker) || !context.isCurrentGeneration()) {
-    cancelStaleWorker(context, worker, queued);
+  if (
+    !target ||
+    isWorkerRetired(worker) ||
+    !context.isCurrentGeneration()
+  ) {
+    cancelStaleWorker(
+      context,
+      worker,
+      queued,
+    );
     return;
   }
 
   worker.state = "busy";
 
-  const workerKey = getWorkerTargetKey(target);
-  context.activeTaskByWorkerKey.set(workerKey, {
-    target,
-    requestId: queued.task.requestId,
-    taskId: queued.task.taskId,
-  });
+  const workerKey =
+    getWorkerTargetKey(target);
+
+  context.activeTaskByWorkerKey.set(
+    workerKey,
+    {
+      target,
+      requestId:
+        queued.task.requestId,
+      taskId:
+        queued.task.taskId,
+    },
+  );
 
   let executionResult:
-    | Awaited<ReturnType<typeof sendTaskToWorkerTarget>>
+    | Awaited<
+        ReturnType<
+          typeof sendTaskToWorkerTarget
+        >
+      >
     | undefined;
 
   try {
-    extensionLog.debug(`Worker pool[${workerKey}]: executing task`, {
-      workerKey,
-      taskId: queued.task.taskId,
-      taskType: queued.task.type,
-      url: queued.task.url,
-    });
+    publishActivityToHost(
+      queued.hostTabId,
+      {
+        source: "worker",
+        requestId:
+          queued.task.requestId,
+        activityId:
+          queued.task.taskId,
+        kind:
+          queued.task.type,
+        label:
+          queued.task.type,
+        state: "started",
+        detail: workerKey,
+      },
+    );
 
-    executionResult = await sendTaskToWorkerTarget(target, queued.task);
+    extensionLog.debug(
+      `Worker pool[${workerKey}]: executing task`,
+      {
+        workerKey,
+        taskId:
+          queued.task.taskId,
+        taskType:
+          queued.task.type,
+        url:
+          queued.task.url,
+      },
+    );
+
+    executionResult =
+      await sendTaskToWorkerTarget(
+        target,
+        queued.task,
+      );
   } catch (error) {
-    extensionLog.warn("Worker pool: task execution failed", {
-      workerKey,
-      task: queued.task,
-      error,
-    });
+    extensionLog.warn(
+      "Worker pool: task execution failed",
+      {
+        workerKey,
+        task: queued.task,
+        error,
+      },
+    );
   }
 
-  context.activeTaskByWorkerKey.delete(workerKey);
+  context.activeTaskByWorkerKey.delete(
+    workerKey,
+  );
 
   extensionLog.debug(
     `Worker pool[${workerKey}]: task returned` +
-    ` taskId=${queued.task.taskId}` +
-    ` taskType=${queued.task.type}` +
-    ` resultStatus=${String(executionResult?.status)}` +
-    ` resultType=${String(executionResult?.type)}` +
-    ` editorStateChangeCount=${queued.editorStateChangeCount}`,
+      ` taskId=${queued.task.taskId}` +
+      ` taskType=${queued.task.type}` +
+      ` resultStatus=${String(
+        executionResult?.status,
+      )}` +
+      ` resultType=${String(
+        executionResult?.type,
+      )}` +
+      ` editorStateChangeCount=${queued.editorStateChangeCount}`,
   );
 
-  if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
-    await finishRetiredWorker(context, worker, queued);
+  if (
+    isWorkerRetired(worker) ||
+    !context.isCurrentGeneration()
+  ) {
+    await finishRetiredWorker(
+      context,
+      worker,
+      queued,
+    );
     return;
   }
 
-  if (context.cancelledRequestIds.has(queued.task.requestId)) {
+  if (
+    context.cancelledRequestIds.has(
+      queued.task.requestId,
+    )
+  ) {
     context.retireWorker(worker);
-    queued.resolve(createCancelledResult(queued.task));
-    await context.destroyRetiredWorker(worker, "cancelled-task-settled");
+
+    queued.resolve(
+      createCancelledResult(
+        queued.task,
+      ),
+    );
+
+    await context.destroyRetiredWorker(
+      worker,
+      "cancelled-task-settled",
+    );
+
     context.scheduleNext();
     return;
   }
 
-  if (executionResult?.status === "document-stale") {
+  if (
+    executionResult?.status ===
+    "document-stale"
+  ) {
     extensionLog.debug(
       `Worker pool: document-stale result intercepted` +
-      ` taskId=${queued.task.taskId}` +
-      ` taskType=${queued.task.type}` +
-      ` editorStateChangeCount=${queued.editorStateChangeCount}`,
+        ` taskId=${queued.task.taskId}` +
+        ` taskType=${queued.task.type}` +
+        ` editorStateChangeCount=${queued.editorStateChangeCount}`,
     );
 
-    await retryAfterDocumentStale(context, worker, queued);
+    await retryAfterDocumentStale(
+      context,
+      worker,
+      queued,
+    );
     return;
   }
 
-  const result: WorkerTaskResult | undefined = executionResult;
+  const result:
+    | WorkerTaskResult
+    | undefined =
+    executionResult;
 
   if (!result) {
     await retryOrResolveError(
@@ -233,6 +329,29 @@ async function runTaskOnWorker(
   }
 
   worker.state = "idle";
+
+  publishActivityToHost(
+    queued.hostTabId,
+    {
+      source: "worker",
+      requestId:
+        queued.task.requestId,
+      activityId:
+        queued.task.taskId,
+      kind:
+        queued.task.type,
+      label:
+        queued.task.type,
+      state:
+        result.status === "cancelled"
+          ? "cancelled"
+          : result.status === "error"
+            ? "error"
+            : "completed",
+      detail: result.status,
+    },
+  );
+
   queued.resolve(result);
   context.scheduleNext();
 }
@@ -280,20 +399,25 @@ async function runOnNewWorker(
   worker: PoolWorker,
   queued: QueuedTask,
 ): Promise<void> {
-  let target: WorkerTarget | undefined;
+  let target:
+    | WorkerTarget
+    | undefined;
 
   try {
-    target = await createWorkerTarget(
-      queued.hostTabId,
-      queued.task.url,
-      DEBUG_WORKER_POOL,
-    );
+    target =
+      await createWorkerTarget(
+        queued.hostTabId,
+        queued.task.url,
+        DEBUG_WORKER_POOL,
+      );
   } catch (error) {
     extensionLog.warn(
       "Worker pool: failed to create worker",
       {
-        hostTabId: queued.hostTabId,
-        task: queued.task,
+        hostTabId:
+          queued.hostTabId,
+        task:
+          queued.task,
         error,
       },
     );
@@ -307,7 +431,11 @@ async function runOnNewWorker(
       worker.target = target;
     }
 
-    cancelStaleWorker(context, worker, queued);
+    cancelStaleWorker(
+      context,
+      worker,
+      queued,
+    );
     return;
   }
 
@@ -318,17 +446,17 @@ async function runOnNewWorker(
       queued,
       "Failed to create worker",
     );
-
     return;
   }
 
   try {
-    const ready = await prepareCreatedTarget(
-      context,
-      worker,
-      queued,
-      target,
-    );
+    const ready =
+      await prepareCreatedTarget(
+        context,
+        worker,
+        queued,
+        target,
+      );
 
     if (ready) {
       await runTaskOnWorker(
@@ -342,15 +470,27 @@ async function runOnNewWorker(
       "Worker pool: worker failed to become ready",
       {
         target,
-        task: queued.task,
-        retried: queued.retried,
+        task:
+          queued.task,
+        retried:
+          queued.retried,
         error,
       },
     );
 
-    if (isWorkerRetired(worker)) {
-      queued.resolve(createCancelledResult(queued.task));
-      await context.destroyRetiredWorker(worker, "worker-ready-failed-after-retirement");
+    if (
+      isWorkerRetired(worker)
+    ) {
+      queued.resolve(
+        createCancelledResult(
+          queued.task,
+        ),
+      );
+
+      await context.destroyRetiredWorker(
+        worker,
+        "worker-ready-failed-after-retirement",
+      );
       return;
     }
 

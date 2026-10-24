@@ -1,0 +1,139 @@
+/* @source-path [fobles] src/content/features/reference-graph/reference-graph-progress.css */
+
+.fobles-reference-graph-progress {
+  border: 0;
+  border-radius: 10px;
+  padding: 0;
+  width: min(520px, calc(100vw - 40px));
+  box-shadow: 0 16px 48px rgba(20, 34, 52, 0.28);
+  color: #203047;
+  background: #fff;
+}
+.fobles-reference-graph-progress::backdrop {
+  background: rgba(32, 48, 71, 0.36);
+}
+.fobles-reference-graph-progress-panel {
+  font:
+    13px/1.4 Arial,
+    sans-serif;
+}
+.fobles-reference-graph-progress-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 18px 20px;
+  border-bottom: 1px solid #e4eaf2;
+  font-size: 16px;
+}
+.fobles-reference-graph-progress-summary {
+  margin-top: 3px;
+  color: #718096;
+  font-size: 12px;
+  font-weight: 400;
+}
+.fobles-reference-graph-progress-pulse,
+.fobles-reference-graph-progress-spinner {
+  border-radius: 50%;
+  background: #2f6fed;
+  animation: fobles-progress-pulse 1.2s ease-in-out infinite;
+}
+.fobles-reference-graph-progress-pulse {
+  width: 10px;
+  height: 10px;
+}
+.fobles-reference-graph-progress-spinner {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+.fobles-reference-graph-progress-active {
+  margin: 16px 20px;
+  padding: 12px 14px;
+  border: 1px solid #cddcf7;
+  border-radius: 8px;
+  background: #f4f8ff;
+}
+.fobles-reference-graph-progress-caption {
+  margin: 0 20px 7px;
+  color: #718096;
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+}
+.fobles-reference-graph-progress-active .fobles-reference-graph-progress-caption {
+  margin: 0 0 8px;
+}
+.fobles-reference-graph-progress-active-row {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+}
+.fobles-reference-graph-progress-active-row div div {
+  color: #718096;
+  font-size: 12px;
+}
+.fobles-reference-graph-progress-list {
+  margin: 0 20px;
+  max-height: 190px;
+  overflow: auto;
+  border: 1px solid #e4eaf2;
+  border-radius: 8px;
+}
+.fobles-reference-graph-progress-item {
+  display: grid;
+  grid-template-columns: 22px 1fr auto;
+  gap: 6px;
+  align-items: center;
+  padding: 8px 10px;
+  border-bottom: 1px solid #edf1f6;
+}
+.fobles-reference-graph-progress-item:last-child {
+  border-bottom: 0;
+}
+.fobles-reference-graph-progress-icon {
+  font-weight: 700;
+  color: #718096;
+}
+.fobles-reference-graph-progress-item.is-completed .fobles-reference-graph-progress-icon {
+  color: #16803a;
+}
+.fobles-reference-graph-progress-item.is-error .fobles-reference-graph-progress-icon {
+  color: #c53030;
+}
+.fobles-reference-graph-progress-item.is-started {
+  background: #f8fbff;
+}
+.fobles-reference-graph-progress-state {
+  color: #718096;
+  font-size: 11px;
+  text-transform: capitalize;
+}
+.fobles-reference-graph-progress-empty {
+  padding: 12px;
+  color: #718096;
+}
+.fobles-reference-graph-progress-actions {
+  display: flex;
+  justify-content: flex-end;
+  padding: 16px 20px;
+}
+.fobles-reference-graph-progress-actions button {
+  padding: 7px 16px;
+  border: 0;
+  border-radius: 6px;
+  background: #2f6fed;
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(47, 111, 237, 0.25);
+  cursor: pointer;
+}
+@keyframes fobles-progress-pulse {
+  0%,
+  100% {
+    opacity: 0.35;
+    transform: scale(0.8);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
