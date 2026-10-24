@@ -71,20 +71,22 @@ export function synchronizeExpandCollapseControls(
       button.dataset.collapsed = String(collapsed);
     }
 
-    if (isNodeAwaitingEnrichment(node)) {
-      enrichingTreeNodeIds.add(treeNodeId);
+    // if (isNodeAwaitingEnrichment(node)) {
+    //   enrichingTreeNodeIds.add(treeNodeId);
 
-      let spinner = controller.spinnersByTreeNodeId.get(treeNodeId);
+    //   let spinner = controller.spinnersByTreeNodeId.get(treeNodeId);
 
-      if (!spinner) {
-        spinner = createEnrichmentSpinner();
+    //   if (!spinner) {
+    //     spinner = createEnrichmentSpinner();
 
-        controller.spinnersByTreeNodeId.set(treeNodeId, spinner);
+    //     controller.spinnersByTreeNodeId.set(treeNodeId, spinner);
 
-        controller.overlay.appendChild(spinner);
-      }
-    }
-  });
+    //     controller.overlay.appendChild(spinner);
+    //   }
+    // }
+  }
+
+);
 
   for (const [treeNodeId, button] of controller.buttonsByTreeNodeId) {
     if (!expandableTreeNodeIds.has(treeNodeId)) {

@@ -10,8 +10,10 @@ import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";
 import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
-import { useRef } from "react";
+import { useEffect, useRef } from "react";
 import { extensionLog } from "../../logger";
+import { subscribeHarvestQueueProgress } from "./lifecycle/active-harvest-queue";
+import { subscribeRootRefresh } from "./lifecycle/root-refresh-events";
 const ZOOM_FACTOR = 1.2;
 const VIEWPORT_PADDING = 60;
 
@@ -70,6 +72,18 @@ export function ReferenceGraphApp({
     setEnrichmentProgress: graphState.setEnrichmentProgress,
     setGraphBusy: graphState.setGraphBusy,
   });
+
+  useEffect(() => subscribeHarvestQueueProgress(graphState.setHarvestProgress), [graphState.setHarvestProgress]);
+
+  // A background root re-harvest (stale cache revision) completes after the graph is already
+  // open - this patches the live graph in place via the same renderGraph path a reroot uses.
+  useEffect(() => {
+    const rootItemId = graphState.currentPreparedGraph.harvestedData.rootItem.scItemId;
+
+    return subscribeRootRefresh(rootItemId, (result) => {
+      void renderGraph(result);
+    });
+  }, [graphState.currentPreparedGraph.harvestedData.rootItem.scItemId, renderGraph]);
 
   const handleZoom = (
     factor: number,
@@ -138,6 +152,7 @@ export function ReferenceGraphApp({
         controlsExpanded={graphState.controlsExpanded}
         onControlsExpandedChange={handleControlsExpandedChange}
         buildElapsedSeconds={graphState.buildElapsedSeconds}
+        harvestProgress={graphState.harvestProgress}
         enrichmentProgress={graphState.enrichmentProgress}
         onViewTreeData={handleViewTreeData}
       />

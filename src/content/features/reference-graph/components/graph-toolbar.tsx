@@ -8,9 +8,11 @@ import type {
 import type { EnrichmentProgress as EnrichmentProgressData } from "../enrichment/enrichment.types";
 import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
 import type { LayoutGraphPresetName } from "../graph.types";
+import type { PhaseProgress } from "../lifecycle/lifecycle.types";
+import { isLifecycleProgressActive } from "../lifecycle/phase-progress-display";
 import { BackButton } from "./back-button";
 import { BuildTime } from "./BuildTime";
-import { EnrichmentProgress } from "./enrichment-progress";
+import { PhaseProgressBar } from "./phase-progress-bar";
 import { GraphFilterList } from "./graph-filter-list";
 import { GraphToolBarHeaderButton } from "./graph-toolbar-header-button";
 import { GraphTypeSelect } from "./graph-type-select";
@@ -47,6 +49,7 @@ type ToolbarProps = {
   controlsExpanded: boolean;
   onControlsExpandedChange: (expanded: boolean) => void;
   buildElapsedSeconds: number | undefined;
+  harvestProgress: PhaseProgress | undefined;
   enrichmentProgress: EnrichmentProgressData | undefined;
   onViewTreeData: () => void;
 };
@@ -67,10 +70,18 @@ export function GraphToolbar({
   controlsExpanded,
   onControlsExpandedChange,
   buildElapsedSeconds,
+  harvestProgress,
   enrichmentProgress,
   onViewTreeData,
 }: ToolbarProps) {
   const { dialogRef, showGraphHelp } = useGraphHelpDialog();
+  const resolveProgress: PhaseProgress | undefined = enrichmentProgress && {
+    completed: enrichmentProgress.completedItemCount,
+    max: enrichmentProgress.maxItemCount,
+    status: enrichmentProgress.status,
+  };
+  const progressVisible = isLifecycleProgressActive(harvestProgress, resolveProgress);
+
   return (
     <div className="fobles-reference-graph-toolbar">
       <GraphToolBarHeaderButton
@@ -108,7 +119,6 @@ export function GraphToolbar({
             onChange={onParameterVisibilityChange}
           />
 
-
           <ViewTreeDataButton
             onViewTreeData={onViewTreeData}
           />
@@ -117,9 +127,12 @@ export function GraphToolbar({
 
       <GraphHelpDialog dialogRef={dialogRef} />
       <div className="fobles-reference-graph-toolbar-footer">
-        <EnrichmentProgress
-          progress={enrichmentProgress}
-        />
+        {progressVisible && (
+          <div className="fobles-reference-graph-toolbar-footer-phases">
+            <PhaseProgressBar label="Harvesting" progress={harvestProgress} />
+            <PhaseProgressBar label="Resolving" progress={resolveProgress} />
+          </div>
+        )}
 
         <BuildTime
           buildElapsedSeconds={buildElapsedSeconds}

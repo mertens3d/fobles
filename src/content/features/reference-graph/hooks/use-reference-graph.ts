@@ -10,6 +10,7 @@ import {
   type GraphParameterVisibilitySettings,
 } from "../graph-parameter-visibility-settings";
 import type { LayoutGraphPresetName } from "../graph.types";
+import type { PhaseProgress } from "../lifecycle/lifecycle.types";
 import type { PreparedReferenceGraph } from "../prepared-reference-graph.types";
 
 type UseReferenceGraphOptions = {
@@ -61,6 +62,11 @@ export type GraphState = {
     React.SetStateAction<EnrichmentProgress | undefined>
   >;
 
+  harvestProgress: PhaseProgress | undefined;
+  setHarvestProgress: React.Dispatch<
+    React.SetStateAction<PhaseProgress | undefined>
+  >;
+
   graphBusy: boolean;
   setGraphBusy: React.Dispatch<React.SetStateAction<boolean>>;
 };
@@ -104,6 +110,8 @@ export function useReferenceGraph({
     useState<string | undefined>(undefined);
   const [enrichmentProgress, setEnrichmentProgress] =
     useState<EnrichmentProgress | undefined>(undefined);
+  const [harvestProgress, setHarvestProgress] =
+    useState<PhaseProgress | undefined>(undefined);
 
   const [graphBusy, setGraphBusy] = useState(true);
 
@@ -134,6 +142,8 @@ export function useReferenceGraph({
     setSelectedTreeNodeId,
     enrichmentProgress,
     setEnrichmentProgress,
+    harvestProgress,
+    setHarvestProgress,
     graphBusy,
     setGraphBusy,
   };

@@ -8,12 +8,13 @@ import { createLayoutDataTree } from "./data-tree-node-id";
 import { DATA_TREE_FAN_OUT_LIMITS } from "./data-tree-fan-out-limits";
 import { createDataTreeItemNode, createDataTreeNonItemNode } from "./data-tree-node-factory";
 import { createSitecoreItemProvenance, createSyntheticProvenance } from "./data-tree-provenance.types";
-import type { DataTreeItemNode, DataTreeNonItemNode, DataTreeTruncation } from "./data-tree.types";
+import type { DataTreeItemNode, DataTreeNonItemNode, DataTreeTruncation, EnrichmentStatus } from "./data-tree.types";
 import { createCustomFieldsTreeNode, createStandardFieldsTreeNode } from "./sections-data-tree-builder";
 
 export function createDataTree(
   graphReferenceResult: SitecoreHarvestResult,
   filters: SitecoreHarvestFiltersState,
+  rootProcessingState?: EnrichmentStatus,
 ): DataTreeItemNode {
   const rootTreeNodeId = graphReferenceResult.rootItem.scItemId;
 
@@ -27,7 +28,7 @@ export function createDataTree(
     createLayoutTreeNode(graphReferenceResult),
   ].filter((treeNode): treeNode is DataTreeItemNode | DataTreeNonItemNode => treeNode !== undefined);
 
-  return createDataTreeItemNode({
+  const rootTreeNode = createDataTreeItemNode({
     treeNodeId: rootTreeNodeId,
     scItem: graphReferenceResult.rootItem,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ROOT,
@@ -36,6 +37,10 @@ export function createDataTree(
     collapseKey: GRAPH_COLLAPSE_KEY.ROOT,
     children,
   });
+
+  rootTreeNode.enrichmentStatus = rootProcessingState;
+
+  return rootTreeNode;
 }
 
 function createParentTreeNode(graphReferenceResult: SitecoreHarvestResult): DataTreeItemNode | undefined {

@@ -6,6 +6,19 @@ import { factoryItemGraphNodeData, type ItemGraphNodeData } from "../sitecore-ha
 export function isItemGraphNodeDataResolved(item: ItemGraphNodeData): boolean {
     return Boolean(item.scItemId && item.scItemName && item.scItemPath && item.scTemplate);
 }
+
+// The item header icon's own `rev=` query param is Sitecore's per-item revision GUID - the
+// cheapest signal available for "has this item changed since it was cached".
+export function extractRevisionFromIconUrl(iconUrl: string | undefined): string | undefined {
+    if (!iconUrl) return undefined;
+
+    try {
+        return new URL(iconUrl).searchParams.get("rev") ?? undefined;
+    } catch {
+        return undefined;
+    }
+}
+
 // Pure read of an already-loaded Quick Info document.
 // Used by the worker task executor for get-quick-info.
 // task calls this directly, since its worker tab is already navigated to item.link by the time

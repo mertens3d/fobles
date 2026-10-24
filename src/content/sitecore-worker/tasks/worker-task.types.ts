@@ -68,7 +68,7 @@ export type WorkerTask =
   | SetStandardFieldsTask;
 
 export type WorkerTaskPayloadByType = {
-  "get-quick-info": { result: SitecoreResolvedResult<ItemGraphNodeData> };
+  "get-quick-info": { result: SitecoreResolvedResult<ItemGraphNodeData>; revision?: string };
   "get-parent": { parent: ItemGraphNodeData | undefined };
   "get-children": { childItems: readonly ItemGraphNodeData[] };
   "get-referrers": { referrers: readonly ItemGraphNodeData[] };

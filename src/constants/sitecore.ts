@@ -74,7 +74,16 @@ export const SITECORE = {
   ICONS:{
     // SPINNER_SRC: "/sitecore/shell/themes/standard/Images/ProgressIndicator/sc-spinner32.gif",
     SPINNER_SRC: "/~/icon/people/32x32/hourglass.png",
-    
+    // Per-node processing-state badge icons (see graph-nodes/processing-icon.ts) - standard
+    // Sitecore icon-library paths, same convention as SPINNER_SRC above; verify against a live
+    // Sitecore instance if a badge ever renders as a broken image.
+    PROCESSING_STATE: {
+      HOURGLASS: "/~/icon/people/16x16/hourglass.png",
+      CHECK: "/~/icon/office/16x16/check.png",
+      REFRESH: "/~/icon/office/16x16/refresh.png",
+      WARNING: "/~/icon/applications/32x32/warning.png",
+      
+    },
   },
   IDS: {
     CONTENT_EDITOR: {

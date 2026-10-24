@@ -6,7 +6,7 @@ import { collectReferrers } from "./collectors/referrer-collector";
 import { collectLayouts } from "./collectors/section-collector/layout-collector/layout-collector";
 import { collectSections } from "./collectors/section-collector/section-collector";
 import { isGuidLike } from "../features/augmentor/shared/guid";
-import { buildItemGraphNodeDataFromDoc } from "./enrichment/item-enricher";
+import { buildItemGraphNodeDataFromDoc, extractRevisionFromIconUrl } from "./enrichment/item-enricher";
 import { harvestStepRootItem } from "./harvest-sitecore";
 import {
   getScRawValuesState,
@@ -164,8 +164,11 @@ export async function executeWorkerTask(
 
   if (!result) {
     if (task.type === "get-quick-info") {
+      const resolvedResult = executeGetQuickInfo(doc, task.requested);
+
       result = successResult(task, {
-        result: executeGetQuickInfo(doc, task.requested),
+        result: resolvedResult,
+        revision: extractRevisionFromIconUrl(resolvedResult.value?.scItemIcon),
       });
     } else if (task.type === "set-raw-values") {
       result = await executeSetRawValues(doc, task);

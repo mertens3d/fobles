@@ -2,7 +2,7 @@
 
 import * as cache from "../sitecore-data-cache/sitecore-data-cache.ts";
 import { emitActivity, type ActivityState } from "../shared/activity/activity-events.ts";
-import { labelForFact } from "../shared/activity/activity-labels";
+import { labelForFact } from "../shared/activity/activity-labels.ts";
 import type {
   SitecoreDataCacheKey,
   SitecoreDataFactMap,

@@ -148,6 +148,26 @@ function createGraphCore(runtime: GraphRuntime, settings: SavedGraphSettings): v
 
   runtime.cy = cy;
   options.cyRef.current = cy;
+
+  const iconNode = cy.nodes().filter((node) => Boolean(node.data("icon"))).first();
+
+  if (iconNode.nonempty()) {
+    extensionLog.debug("Reference graph icon diagnostic", {
+      id: iconNode.id(),
+      label: iconNode.data("label"),
+      icon: iconNode.data("icon"),
+      processingIcon: iconNode.data("processingIcon"),
+      backgroundImage: iconNode.style("background-image"),
+      backgroundWidth: iconNode.style("background-width"),
+      backgroundHeight: iconNode.style("background-height"),
+      backgroundPositionX: iconNode.style("background-position-x"),
+      backgroundPositionY: iconNode.style("background-position-y"),
+      backgroundFit: iconNode.style("background-fit"),
+      backgroundClip: iconNode.style("background-clip"),
+      backgroundRepeat: iconNode.style("background-repeat"),
+    });
+  }
+
   options.currentPreparedGraphRef.current = options.initialPreparedGraph;
 
   setGraphParameterVisibility(cy, settings.parameterVisibilitySettings);
@@ -245,6 +265,7 @@ function startGraphEnrichment(runtime: GraphRuntime): void {
   const { options } = runtime;
 
   startEnrichmentController({
+    doc: options.doc,
     dataTree: options.initialPreparedGraph.dataTree,
     nodesById: options.initialPreparedGraph.nodesById,
     getCy: () => options.cyRef.current,

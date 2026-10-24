@@ -12,9 +12,12 @@ export type DataTreeBranch = "parent" | "children" | "layouts" | "referrers" | "
 export type DataTreeTruncation = { availableCount: number; includedCount: number; truncated: boolean };
 
 // pending = GUID discovered, no attempt yet. enriching = request in progress. enriched = item
-// found. not-found = attempt completed but the item doesn't exist. failed = technical failure.
-// Never inferred from missing fields - only ever set explicitly by the enrichment controller.
-export type EnrichmentStatus = "pending" | "enriching" | "enriched" | "not-found" | "failed";
+// found, no prior cache. verified = cached revision matched the live read. stale = cached
+// revision no longer matches (a re-harvest may be queued). unverified = the live read could not
+// supply a revision at all (never conflated with "stale" - there's nothing to compare against).
+// not-found = attempt completed but the item doesn't exist. failed = technical failure. Never
+// inferred from missing fields - only ever set explicitly by the enrichment/resolve controller.
+export type EnrichmentStatus = "pending" | "enriching" | "enriched" | "verified" | "stale" | "unverified" | "not-found" | "failed";
 
 type DataTreeNodeBase = {
   treeNodeId: string;

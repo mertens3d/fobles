@@ -114,15 +114,13 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
     },
   },
   {
-    // Item header icon, captured during quick-info enrichment - gated on [icon] so nodes
-    // without one (or whose icon never loaded) just keep the plain color-tinted style above.
     selector: "node[icon]",
     style: {
       "background-image": "data(icon)",
       "background-fit": "none",
       "background-clip": "none",
-      "background-width": "16",
-      "background-height": "16",
+      "background-width": "16px",
+      "background-height": "16px",
       "background-position-x": "4px",
       "background-position-y": "4px",
       "background-repeat": "no-repeat",

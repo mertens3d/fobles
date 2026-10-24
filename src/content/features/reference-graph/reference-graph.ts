@@ -1,11 +1,13 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph.ts
 
 import type { HarvestSession } from "../../sitecore-harvester/harvest-session.types";
+import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import { buildFoblesUrl } from "../augmentor/helper";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { extensionLog } from "../../logger";
 import { PROGRESS_STEPS } from "../../sitecore-harvester/planner/harvest-steps";
 import { harvestSitecoreWithWorkers } from "../../sitecore-harvester/coordinator/foreground-harvest-coordinator";
+import { createSitecoreItemLocator } from "../../sitecore-harvester/worker-task-executor";
 import { getCurrentItemId } from "../../toolbar/jump-flyout/ai-pages";
 import { closeReferenceGraphProgressModal, handleHarvestProgress, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
 import { prepareReferenceGraph } from "./prepared-reference-graph";
@@ -18,6 +20,14 @@ import { getScRawValuesState, getScStandardFieldsState } from "../../macros/ribb
 import { showFoblesErrorDialog } from "../../../shared/error-dialog";
 import { emergencyCleanupWorkerIframes } from "../../sitecore-worker/iframe/worker-iframe-host";
 import { createReferenceGraphSessionContainer, removeReferenceGraphSessionContainer } from "./reference-graph-session-container";
+import { getItem, putFact } from "../../sitecore-data-cache/sitecore-data-cache";
+import type { SitecoreDataCacheKey } from "../../sitecore-data-cache/sitecore-data-cache.types";
+import { resolveSitecoreDataIdentity } from "../../sitecore-data/sitecore-data-identity";
+import { setActiveHarvestQueue, publishHarvestQueueProgress } from "./lifecycle/active-harvest-queue";
+import { createHarvestQueue, type HarvestQueue } from "./lifecycle/harvest-queue";
+import { decideRootCacheUsage, rootProcessingStateForDecision } from "./lifecycle/root-cache-flow";
+import { readLiveRootRevision } from "./lifecycle/root-revision";
+import { publishRootRefresh } from "./lifecycle/root-refresh-events";
 
 export let referenceGraphAbortController: AbortController | undefined;
 let activeReferenceGraphSession: ReferenceGraphSession | undefined;
@@ -28,6 +38,7 @@ class ReferenceGraphSession {
   private readonly controller = new AbortController();
   private readonly sessionId = crypto.randomUUID();
   private state: ReferenceGraphSessionState = "created";
+  private harvestQueue: HarvestQueue | undefined;
 
   constructor(private readonly doc: Document) { }
 
@@ -68,14 +79,37 @@ class ReferenceGraphSession {
 
     const filters = await getReferenceGraphFilters();
     const harvestSession = await this.captureHarvestSession();
-    initializeReferenceGraphProgressModal(this.doc, PROGRESS_STEPS, filters);
-    openReferenceGraphProgressModal(this.doc, () => this.cancel());
 
-    extensionLog.debug("REFERENCE GRAPH: awaiting worker-pool harvest", { sessionId: this.sessionId });
-    const graph = await harvestSitecoreWithWorkers(
-      { requestId: harvestSession.requestId, url: buildFoblesUrl(itemId), filters, session: harvestSession },
-      { signal: this.controller.signal, onProgress: (step, status) => handleHarvestProgress(this.doc, step, status) },
-    );
+    const cacheKey: SitecoreDataCacheKey = { ...resolveSitecoreDataIdentity(this.doc), item: createSitecoreItemLocator(itemId) };
+    const cachedRecord = await getItem(cacheKey);
+    const liveRevision = readLiveRootRevision(this.doc);
+    const decision = decideRootCacheUsage(cachedRecord, filters, liveRevision);
+
+    extensionLog.debug("Reference graph: root cache decision", {
+      sessionId: this.sessionId,
+      decision: decision.kind,
+      cachedRevision: cachedRecord?.quickInfo?.value.revision,
+      liveRevision,
+    });
+
+    let graph: SitecoreHarvestResult | undefined;
+
+    if (decision.kind === "harvest-required") {
+      initializeReferenceGraphProgressModal(this.doc, PROGRESS_STEPS, filters);
+      openReferenceGraphProgressModal(this.doc, () => this.cancel());
+
+      extensionLog.debug("REFERENCE GRAPH: awaiting worker-pool harvest", { sessionId: this.sessionId });
+      graph = await harvestSitecoreWithWorkers(
+        { requestId: harvestSession.requestId, url: buildFoblesUrl(itemId), filters, session: harvestSession },
+        { signal: this.controller.signal, onProgress: (step, status) => handleHarvestProgress(this.doc, step, status) },
+      );
+    } else {
+      graph = decision.result;
+
+      if (decision.kind === "cache-only" && cachedRecord?.quickInfo) {
+        await putFact(cacheKey, "quickInfo", cachedRecord.quickInfo.value, { verifiedAt: Date.now() });
+      }
+    }
 
     this.transition("restoring");
     this.throwIfCancelled();
@@ -84,6 +118,7 @@ class ReferenceGraphSession {
     const preparedGraph = await prepareReferenceGraph(graph, filters, {
       signal: this.controller.signal,
       onProgress: (step, status) => handleHarvestProgress(this.doc, step, status),
+      rootProcessingState: rootProcessingStateForDecision(decision.kind),
     });
 
     this.throwIfCancelled();
@@ -91,11 +126,49 @@ class ReferenceGraphSession {
 
     this.transition("displaying");
     closeReferenceGraphProgressModal(this.doc);
+
+    this.harvestQueue = createHarvestQueue({
+      runHarvest: (reference, signal) => this.runBackgroundHarvest(reference, filters, signal),
+      onProgress: publishHarvestQueueProgress,
+      onError: (reference, error) => extensionLog.warn("Reference graph harvest queue: item failed", { sessionId: this.sessionId, reference, error }),
+    });
+    setActiveHarvestQueue(this.harvestQueue);
+
+    // Cached data is already on screen - the stale re-harvest converges the graph in the
+    // background rather than blocking the user from seeing/using it.
+    if (decision.kind === "cache-then-reharvest") {
+      this.harvestQueue.enqueue(itemId);
+    }
+
     await openReferenceGraphModal(
       this.doc,
       preparedGraph,
       async (link, graphFilters, existingResult) => await harvestGraphForLink(link, this.doc, this.controller, graphFilters, existingResult),
     );
+  }
+
+  // Shared by both the root's own stale-revision re-harvest and any referenced item Resolve
+  // discovers with stale structural cache - always a full, fresh harvest (no existingResult
+  // reuse), since a stale cache can't be trusted to tell us what's still current.
+  private async runBackgroundHarvest(
+    reference: string,
+    filters: SitecoreHarvestFiltersState,
+    signal: AbortSignal,
+  ): Promise<void> {
+    const result = await harvestSitecoreWithWorkers(
+      { requestId: crypto.randomUUID(), url: buildFoblesUrl(reference), filters },
+      { signal },
+    );
+
+    if (result) {
+      extensionLog.debug("Reference graph: background re-harvest complete", {
+        sessionId: this.sessionId,
+        reference,
+        rootItemId: result.rootItem.scItemId,
+      });
+
+      publishRootRefresh(result.rootItem.scItemId, result);
+    }
   }
 
   private async captureHarvestSession(): Promise<HarvestSession> {
@@ -115,6 +188,9 @@ class ReferenceGraphSession {
 
     this.transition("disposing");
     closeReferenceGraphProgressModal(this.doc);
+
+    this.harvestQueue?.dispose();
+    setActiveHarvestQueue(undefined);
 
     try {
       await disposeBackgroundWorkerPool();

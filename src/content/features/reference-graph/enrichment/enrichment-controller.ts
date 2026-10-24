@@ -5,8 +5,11 @@ import { extensionLog } from "../../../logger";
 import { createSitecoreItemLocator } from "../../../sitecore-harvester/worker-task-executor";
 import { mergeEnrichedItem } from "../../../sitecore-harvester/planner/enrichment-task-planner";
 import { cancelWorkerRequest, runWorkerTask } from "../../../sitecore-worker/pool/worker-pool-client";
-import type { WorkerTask, WorkerTaskResult } from "../../../sitecore-worker/tasks/worker-task.types";
+import { createErrorResult, type WorkerTask, type WorkerTaskExecutionResult } from "../../../sitecore-worker/tasks/worker-task.types";
 import { buildFoblesUrl } from "../../augmentor/helper";
+import { resolveSitecoreDataIdentity } from "../../../sitecore-data/sitecore-data-identity";
+import { enqueueHarvest } from "../lifecycle/active-harvest-queue";
+import { resolveItemFact, type ResolveOutcome } from "../lifecycle/resolve-fact";
 import { collectEnrichmentGuidLookup } from "../data-tree/data-tree-enrichment-lookup";
 import type { DataTreeNode, EnrichmentStatus } from "../data-tree/data-tree.types";
 import { sortGuidsByEnrichmentPriority } from "./enrichment-priority";
@@ -15,6 +18,7 @@ import { firstItemNode, itemsFor, markTreeNodes } from "./enrichment-tree-state"
 import type { EnrichmentController, EnrichmentProgressCallback } from "./enrichment.types";
 
 type StartEnrichmentControllerOptions = {
+  doc: Document;
   dataTree: DataTreeNode;
   nodesById: Map<string, DataTreeNode>;
   getCy: () => cytoscape.Core | undefined;
@@ -29,6 +33,7 @@ export function disposeActiveEnrichmentController(): void {
 }
 
 export function startEnrichmentController({
+  doc,
   dataTree,
   nodesById,
   getCy,
@@ -38,6 +43,7 @@ export function startEnrichmentController({
 
   let disposed = false;
   const requestId = crypto.randomUUID();
+  const identity = resolveSitecoreDataIdentity(doc);
   const guidLookup = collectEnrichmentGuidLookup(dataTree);
   const guids = sortGuidsByEnrichmentPriority(Array.from(guidLookup.keys()), guidLookup, nodesById);
   const maxItemCount = guids.length;
@@ -101,10 +107,28 @@ export function startEnrichmentController({
     let status: EnrichmentStatus = "failed";
 
     if (representative && reference) {
-      const result = await requestEnrichment(reference);
+      const outcome = await resolveItemFact(
+        { ...identity, item: createSitecoreItemLocator(reference) },
+        () => requestResolve(reference),
+      );
 
       if (!disposed) {
-        status = applyEnrichmentResult(guid, treeNodeIds, result);
+        status = applyResolveOutcome(guid, treeNodeIds, outcome);
+
+        extensionLog.debug("Reference graph resolve: outcome", { guid, reference, outcome: outcome.kind });
+
+        // Only a past-root referenced item carries structural cache to go stale - current graph
+        // semantics never full-harvest a referenced item merely because it was discovered here.
+        if (outcome.kind === "stale" && outcome.hadStructuralCache) {
+          extensionLog.debug("Reference graph resolve: queueing re-harvest", { reference });
+
+          enqueueHarvest(reference, (succeeded) => {
+            if (!disposed) {
+              markTreeNodes([guid], guidLookup, nodesById, succeeded ? "enriched" : "failed");
+              patchCytoscapeNodes(getCy(), treeNodeIds, nodesById);
+            }
+          });
+        }
       }
     }
 
@@ -115,9 +139,7 @@ export function startEnrichmentController({
     }
   }
 
-  async function requestEnrichment(
-    reference: string,
-  ): Promise<WorkerTaskResult | undefined> {
+  async function requestResolve(reference: string): Promise<WorkerTaskExecutionResult> {
     const task: WorkerTask = {
       requestId,
       taskId: crypto.randomUUID(),
@@ -126,41 +148,31 @@ export function startEnrichmentController({
       requested: createSitecoreItemLocator(reference),
     };
 
-    let result: WorkerTaskResult | undefined;
-
     try {
-      result = await runWorkerTask(task);
+      const result = await runWorkerTask(task);
+      return result ?? createErrorResult(task, "No response from worker pool");
     } catch (error) {
       if (!disposed) {
-        extensionLog.warn("Reference graph: incremental enrichment task failed", { task, error });
+        extensionLog.warn("Reference graph: incremental resolve task failed", { task, error });
       }
-    }
 
-    return result;
+      return createErrorResult(task, error instanceof Error ? error.message : "Resolve task failed");
+    }
   }
 
-  function applyEnrichmentResult(
+  function applyResolveOutcome(
     guid: string,
     treeNodeIds: string[],
-    result: WorkerTaskResult | undefined,
+    outcome: ResolveOutcome,
   ): EnrichmentStatus {
-    let status: EnrichmentStatus = "failed";
-
-    if (result?.status === "success" && result.type === "get-quick-info") {
-      const resolved = result.payload.result;
-
-      if (resolved.status === "found" && resolved.value) {
-        const items = itemsFor(treeNodeIds, nodesById);
-
-        mergeEnrichedItem(new Map([[guid, items]]), guid, resolved.value);
-
-        status = "enriched";
-      } else {
-        status = "not-found";
-      }
+    if (outcome.kind === "not-found" || outcome.kind === "failed") {
+      return outcome.kind;
     }
 
-    return status;
+    const items = itemsFor(treeNodeIds, nodesById);
+    mergeEnrichedItem(new Map([[guid, items]]), guid, outcome.value);
+
+    return outcome.kind;
   }
 
   function reportProgress(completedItemCount: number, totalItemCount: number, status: "running" | "complete"): void {

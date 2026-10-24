@@ -211,3 +211,24 @@ void test("IndexedDB failure rejects instead of silently succeeding", async () =
     }),
   );
 });
+
+void test("a missing cache fact differs from a resolved empty fact", async () => {
+  const neverHarvested = sampleKey({ item: { kind: "id", value: guidFor(1) } });
+  const harvestedEmpty = sampleKey({ item: { kind: "id", value: guidFor(2) } });
+  const harvestedWithValues = sampleKey({ item: { kind: "id", value: guidFor(3) } });
+
+  await putFact(harvestedEmpty, "children", { childItems: [] });
+  await putFact(harvestedWithValues, "children", { childItems: [{ type: "scItem", scItemId: guidFor(4), scItemName: "Child", scItemPath: undefined, scTemplate: undefined, scItemIcon: undefined, rawMarkup: undefined, link: undefined }] });
+
+  const neverHarvestedFact = await getFact(neverHarvested, "children");
+  const harvestedEmptyFact = await getFact(harvestedEmpty, "children");
+  const harvestedWithValuesFact = await getFact(harvestedWithValues, "children");
+
+  // Missing: never harvested / unknown.
+  assert.equal(neverHarvestedFact, undefined);
+  // Resolved empty: harvested and confirmed none.
+  assert.ok(harvestedEmptyFact);
+  assert.deepEqual(harvestedEmptyFact?.value.childItems, []);
+  // Resolved value: harvested and values found.
+  assert.equal(harvestedWithValuesFact?.value.childItems.length, 1);
+});

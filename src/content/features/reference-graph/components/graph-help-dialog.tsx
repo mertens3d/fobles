@@ -33,35 +33,133 @@ export function GraphHelpDialog({ dialogRef }: GraphHelpDialogProps) {
   const closeFromBackdrop = (event: React.MouseEvent<HTMLDialogElement>): void => {
     const dialog = event.currentTarget;
     const bounds = dialog.getBoundingClientRect();
-    const outside = event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom;
+    const outside =
+      event.clientX < bounds.left ||
+      event.clientX > bounds.right ||
+      event.clientY < bounds.top ||
+      event.clientY > bounds.bottom;
+
     if (outside) dialog.close();
   };
+
   return (
-    <dialog ref={dialogRef} className="fobles-reference-graph-help" aria-labelledby="fobles-reference-graph-help-title" onClick={closeFromBackdrop}>
+    <dialog
+      ref={dialogRef}
+      className="fobles-reference-graph-help"
+      aria-labelledby="fobles-reference-graph-help-title"
+      onClick={closeFromBackdrop}
+    >
       <header className="fobles-reference-graph-help-header">
-        <div><span className="fobles-reference-graph-help-eyebrow">Fobles</span><h2 id="fobles-reference-graph-help-title">{GRAPH_HELP.TITLE}</h2></div>
-        <button type="button" className="fobles-reference-graph-help-close" aria-label="Close graph help" title="Close" onClick={() => dialogRef.current?.close()}>×</button>
+        <h2 id="fobles-reference-graph-help-title">{GRAPH_HELP.TITLE}</h2>
+
+        <button
+          type="button"
+          className="fobles-reference-graph-help-close"
+          aria-label="Close graph help"
+          title="Close"
+          onClick={() => dialogRef.current?.close()}
+        >
+          ×
+        </button>
       </header>
+
       <div className="fobles-reference-graph-help-content">
         <section className="fobles-reference-graph-help-section">
           <h3>Navigation</h3>
           <div className="fobles-reference-graph-help-rows">
-            {GRAPH_HELP.NAVIGATION.map((row) => <HelpRow key={row.gesture} control={<kbd>{row.gesture}</kbd>} action={row.action} />)}
+            {GRAPH_HELP.NAVIGATION.map((row) => (
+              <HelpRow key={row.gesture} control={<kbd>{row.gesture}</kbd>} action={row.action} />
+            ))}
           </div>
         </section>
+
         <section className="fobles-reference-graph-help-section">
           <h3>View</h3>
           <div className="fobles-reference-graph-help-rows">
-            <HelpRow control={<ZoomControlExample />} action="Bottom-right graph controls: zoom in / zoom out" />
-            {GRAPH_HELP.POINTER_VIEW.map((row) => <HelpRow key={row.gesture} control={<kbd>{row.gesture}</kbd>} action={row.action} />)}
+            <HelpRow
+              control={<ZoomControlExample />}
+              action="Bottom-right graph controls: zoom in / zoom out"
+            />
+
+            {GRAPH_HELP.POINTER_VIEW.map((row) => (
+              <HelpRow key={row.gesture} control={<kbd>{row.gesture}</kbd>} action={row.action} />
+            ))}
           </div>
         </section>
+
         <section className="fobles-reference-graph-help-section">
           <h3>Node Expansion</h3>
           <div className="fobles-reference-graph-help-rows">
-            <HelpRow control={<NodeControlExample />} action="Expand / collapse node" />
-            <HelpRow control={<><kbd>Ctrl/Cmd</kbd><NodeControlExample /></>} action="Expand / collapse all nodes of this type" />
-            <HelpRow control={<><kbd>Shift</kbd><NodeControlExample /></>} action="Expand / collapse subtree" />
+            <HelpRow
+              control={<NodeControlExample />}
+              action="Expand / collapse node"
+            />
+
+            <HelpRow
+              control={
+                <>
+                  <kbd>Ctrl/Cmd</kbd>
+                  <NodeControlExample />
+                </>
+              }
+              action="Expand / collapse all nodes of this type"
+            />
+
+            <HelpRow
+              control={
+                <>
+                  <kbd>Shift</kbd>
+                  <NodeControlExample />
+                </>
+              }
+              action="Expand / collapse subtree"
+            />
+          </div>
+        </section>
+
+        <section className="fobles-reference-graph-help-section">
+          <h3>Processing State</h3>
+          <div className="fobles-reference-graph-help-rows">
+            <HelpRow
+              control={
+                <img
+                  className="fobles-reference-graph-help-processing-icon"
+                  src="/~/icon/people/16x16/hourglass.png"
+                  alt=""
+                  aria-hidden="true"
+                />
+              }
+              action="Waiting for item data"
+            />
+
+            <HelpRow
+              control={
+                <img
+                  className="fobles-reference-graph-help-processing-icon"
+                  src="/~/icon/office/16x16/refresh.png"
+                  alt=""
+                  aria-hidden="true"
+                />
+              }
+              action="Item changed; refreshing data"
+            />
+
+            <HelpRow
+              control={
+                <img
+                  className="fobles-reference-graph-help-processing-icon"
+                  src="/~/icon/office/16x16/warning.png"
+                  alt=""
+                  aria-hidden="true"
+                />
+              }
+              action="Item data could not be verified"
+            />
+
+            <HelpRow
+              control={<span className="fobles-reference-graph-help-item-icon">Sitecore icon</span>}
+              action="Item processing complete"
+            />
           </div>
         </section>
       </div>

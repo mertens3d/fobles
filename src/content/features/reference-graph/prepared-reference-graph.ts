@@ -8,6 +8,7 @@ import type {
 } from "../../sitecore-harvester/sitecore-harvester.types";
 import { createDataTree } from "./data-tree/data-tree-builder";
 import { buildDataTreeNodeLookup } from "./data-tree/data-tree-node-lookup";
+import type { EnrichmentStatus } from "./data-tree/data-tree.types";
 import { projectDataTreeToGraphElements } from "./graph-nodes/graph-elements";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 
@@ -16,6 +17,10 @@ type PrepareReferenceGraphOptions = {
   // Not used while preparation is structural-only (enrichment now runs separately, after the
   // graph is already built/rendered) - kept so existing callers don't need to change yet.
   onProgress?: HarvestProgressCallback;
+  // Seeds the root node's own trust badge from the root-cache-flow decision that produced this
+  // harvest result - defaults to "enriched" (settled/check) for callers that predate this concept
+  // (reroot, lazy-filter-enable), since a result they hand in is always a just-completed harvest.
+  rootProcessingState?: EnrichmentStatus;
 };
 
 // Single orchestration point for createDataTree -> node lookup -> graph projection. Both the
@@ -25,9 +30,9 @@ type PrepareReferenceGraphOptions = {
 export function prepareReferenceGraph(
   harvestedData: SitecoreHarvestResult,
   filters: SitecoreHarvestFiltersState,
-  { signal }: PrepareReferenceGraphOptions = {},
+  { signal, rootProcessingState = "enriched" }: PrepareReferenceGraphOptions = {},
 ): Promise<PreparedReferenceGraph | undefined> {
-  const dataTree = createDataTree(harvestedData, filters);
+  const dataTree = createDataTree(harvestedData, filters, rootProcessingState);
 
   let prepared: PreparedReferenceGraph | undefined;
 

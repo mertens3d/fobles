@@ -6,7 +6,7 @@ import { kindClass } from "./graph-helpers";
 import { resolveNodeLabel } from "./node-label-resolver";
 import { NODE_PRESENTATION_BY_KIND } from "./node-presentation";
 import type { GraphNodeData } from "./graph-node.types";
-
+import { iconForProcessingState } from "./processing-icon";
 export const COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group";
 export const INVISIBLE_COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group--invisible";
 
@@ -207,11 +207,10 @@ function createCompoundGroupElement(
     pannable: true,
   };
 }
-
 export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: string): ProjectedGraphNode {
   const relationshipToParent = treeNode.relationshipToParent ?? "contained";
-
   const renderingParameter = treeNode.provenance.type === "rendering-parameter" ? treeNode.provenance : undefined;
+  const itemIcon = treeNode.nodeType === "item" ? treeNode.scItem.scItemIcon : undefined;
 
   const graphNodeData: GraphNodeData = {
     id: treeNode.treeNodeId,
@@ -225,18 +224,19 @@ export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: stri
     path: treeNode.nodeType === "item" ? treeNode.scItem.scItemPath : undefined,
     link: treeNode.nodeType === "item" ? treeNode.scItem.link : undefined,
     drillDown: treeNode.nodeType === "item" ? Boolean(treeNode.scItem.link) : false,
-    icon: treeNode.nodeType === "item" ? treeNode.scItem.scItemIcon : undefined,
+    icon: treeNode.nodeType === "item" ? iconForProcessingState(treeNode.enrichmentStatus, itemIcon) : undefined,
     renderingParameterValue: renderingParameter?.parameterValue,
     renderingParameterIsItemReference: renderingParameter?.isItemReference,
     enrichmentStatus: treeNode.nodeType === "item" ? treeNode.enrichmentStatus : undefined,
   };
 
-  const classes = [kindClass(treeNode.kind), getFilterClass(treeNode)].filter((className): className is string =>
-    Boolean(className),
+  const classes = [kindClass(treeNode.kind), getFilterClass(treeNode)].filter(
+    (className): className is string => Boolean(className),
   );
 
   return { data: graphNodeData, classes };
 }
+
 
 function getFilterClass(treeNode: DataTreeNode): string | undefined {
   let filterClass: string | undefined;
