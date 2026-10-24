@@ -14,6 +14,7 @@ import type {
 } from "./data-tree.types";
 import { createDataTreeNodeId } from "./layout-data-tree-builder";
 import type { PlaceholderTreeNode } from "./data-tree.types";
+import { setGraphPresentationState } from "../graph-nodes/graph-presentation-state";
 import { createRenderingDataTreeNode } from "./rendering-data-tree-builder";
 
 type DataTreeNodeOptions = {
@@ -50,19 +51,9 @@ export function createDataTreeItemNode({
   children = [],
   scItem,
 }: DataTreeItemNodeOptions): DataTreeItemNode {
-  return {
-    treeNodeId,
-    nodeType: "item",
-    scItem,
-    kind,
-    collapseKey,
-    provenance,
-    branch,
-    relationshipToParent,
-    reverse,
-    truncation,
-    children,
-  };
+  const node: DataTreeItemNode = { treeNodeId, nodeType: "item", scItem, kind, provenance, relationshipToParent, reverse, truncation, children };
+  setGraphPresentationState(node, { collapseKey, branch });
+  return node;
 }
 
 function createPlaceholderDataTreeNode(
@@ -129,17 +120,7 @@ export function createDataTreeNonItemNode({
   children = [],
   name,
 }: DataTreeNonItemNodeOptions): DataTreeNonItemNode {
-  return {
-    treeNodeId,
-    nodeType: "nonItem",
-    name,
-    kind,
-    collapseKey,
-    provenance,
-    branch,
-    relationshipToParent,
-    reverse,
-    truncation,
-    children,
-  };
+  const node: DataTreeNonItemNode = { treeNodeId, nodeType: "nonItem", name, kind, provenance, relationshipToParent, reverse, truncation, children };
+  setGraphPresentationState(node, { collapseKey, branch });
+  return node;
 }

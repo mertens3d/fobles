@@ -1,6 +1,5 @@
 import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { ItemGraphNodeData, ScControl } from "../../../sitecore-harvester/sitecore-harvester.types";
-import type { GraphCollapseKey } from "../graph-nodes/graph-collapse.types";
 import type { DataTreeProvenance } from "./data-tree-provenance.types";
 
 export type RelationshipToParent = "contained" | "related";
@@ -14,9 +13,7 @@ export type DataTreeTruncation = { availableCount: number; includedCount: number
 type DataTreeNodeBase = {
   treeNodeId: string;
   kind: NodeKind;
-  collapseKey: GraphCollapseKey;
   provenance: DataTreeProvenance;
-  branch?: DataTreeBranch;
   relationshipToParent?: RelationshipToParent;
   reverse?: boolean;
   truncation?: DataTreeTruncation;

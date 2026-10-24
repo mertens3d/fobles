@@ -7,6 +7,7 @@ import { kindClass } from "./graph-helpers";
 import { resolveNodeLabel } from "./node-label-resolver";
 import { NODE_PRESENTATION_BY_KIND } from "./node-presentation";
 import type { GraphNodeData } from "./graph-node.types";
+import { getGraphPresentationState } from "./graph-presentation-state";
 import { iconForProcessingState } from "./processing-icon";
 export const COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group";
 export const INVISIBLE_COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group--invisible";
@@ -133,7 +134,7 @@ function appendGraphNodeInternal(
     const isDirectGroupMember =
       groupDefinition !== undefined &&
       groupId !== undefined &&
-      groupDefinition.memberCollapseKeys.includes(childTreeNode.collapseKey);
+      groupDefinition.memberCollapseKeys.includes(getGraphPresentationState(childTreeNode).collapseKey);
 
     let childCompoundParentNodeId: string | undefined;
     let childPropagateCompoundParent = false;
@@ -181,8 +182,8 @@ function appendRelationshipEdge(
 function findCompoundGroupDefinition(treeNode: DataTreeNode): CompoundGroupDefinition | undefined {
   return COMPOUND_GROUP_DEFINITIONS.find(
     (definition) =>
-      definition.rootCollapseKey === treeNode.collapseKey &&
-      treeNode.children.some((childTreeNode) => definition.memberCollapseKeys.includes(childTreeNode.collapseKey)),
+      definition.rootCollapseKey === getGraphPresentationState(treeNode).collapseKey &&
+      treeNode.children.some((childTreeNode) => definition.memberCollapseKeys.includes(getGraphPresentationState(childTreeNode).collapseKey)),
   );
 }
 
@@ -199,7 +200,7 @@ function createCompoundGroupElement(
       label: "",
       childTreeNodeIds: [treeNode.treeNodeId, ...treeNode.children.map((childTreeNode) => childTreeNode.treeNodeId)],
       expandable: false,
-      collapseKey: treeNode.collapseKey,
+      collapseKey: getGraphPresentationState(treeNode).collapseKey,
       compoundGroup: true,
     },
     classes: [COMPOUND_GROUP_CLASS, getFilterClass(treeNode)]
@@ -222,7 +223,7 @@ export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: stri
     label: resolveNodeLabel(treeNode, NODE_PRESENTATION_BY_KIND[treeNode.kind]),
     childTreeNodeIds: treeNode.children.map((childTreeNode) => childTreeNode.treeNodeId),
     expandable: treeNode.children.length > 0,
-    collapseKey: treeNode.collapseKey,
+    collapseKey: getGraphPresentationState(treeNode).collapseKey,
     itemId: treeNode.nodeType === "item" ? treeNode.scItem.scItemId : undefined,
     path: treeNode.nodeType === "item" ? treeNode.scItem.scItemPath : undefined,
     link: treeNode.nodeType === "item" ? treeNode.scItem.link : undefined,
@@ -244,9 +245,8 @@ export function projectGraphNode(treeNode: DataTreeNode, parentTreeNodeId?: stri
 function getFilterClass(treeNode: DataTreeNode): string | undefined {
   let filterClass: string | undefined;
 
-  if (treeNode.branch) {
-    filterClass = CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS[treeNode.branch];
-  }
+  const { branch } = getGraphPresentationState(treeNode);
+  if (branch) filterClass = CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS[branch];
 
   return filterClass;
 }
