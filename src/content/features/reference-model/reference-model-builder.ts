@@ -5,7 +5,7 @@ import { CONST } from "../../../constants/const";
 import { GRAPH_COLLAPSE_KEY } from "../reference-graph/graph-nodes/graph-collapse.types";
 import { createReferenceModelNodeId } from "./layout-reference-model-builder";
 import { createLayoutReferenceModel } from "./reference-model-node-id";
-import { DATA_TREE_FAN_OUT_LIMITS } from "./reference-model-fan-out-limits";
+import { REFERENCE_MODEL_FAN_OUT_LIMITS } from "./reference-model-fan-out-limits";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
 import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance.types";
 import type { ReferenceModelItemNode, ReferenceModelNonItemNode, ReferenceModelTruncation } from "./reference-model.types";
@@ -91,9 +91,9 @@ function createChildrenTreeNode(graphReferenceResult: SitecoreHarvestResult): Re
   if (childItems.length > 0) {
     const treeNodeId = createReferenceModelNodeId(graphReferenceResult.rootItem.scItemId, "children");
 
-    const truncation = createFanOutTruncation(childItems.length, DATA_TREE_FAN_OUT_LIMITS.MAX_CHILDREN_PER_ITEM);
+    const truncation = createFanOutTruncation(childItems.length, REFERENCE_MODEL_FAN_OUT_LIMITS.MAX_CHILDREN_PER_ITEM);
 
-    const includedChildItems = childItems.slice(0, DATA_TREE_FAN_OUT_LIMITS.MAX_CHILDREN_PER_ITEM);
+    const includedChildItems = childItems.slice(0, REFERENCE_MODEL_FAN_OUT_LIMITS.MAX_CHILDREN_PER_ITEM);
 
     childrenTreeNode = createReferenceModelNonItemNode({
       treeNodeId,
@@ -126,9 +126,9 @@ function createReferrersTreeNode(graphReferenceResult: SitecoreHarvestResult): R
   if (referrers.length > 0) {
     const treeNodeId = createReferenceModelNodeId(graphReferenceResult.rootItem.scItemId, "referrers");
 
-    const truncation = createFanOutTruncation(referrers.length, DATA_TREE_FAN_OUT_LIMITS.MAX_REFERRERS_PER_ITEM);
+    const truncation = createFanOutTruncation(referrers.length, REFERENCE_MODEL_FAN_OUT_LIMITS.MAX_REFERRERS_PER_ITEM);
 
-    const includedReferrers = referrers.slice(0, DATA_TREE_FAN_OUT_LIMITS.MAX_REFERRERS_PER_ITEM);
+    const includedReferrers = referrers.slice(0, REFERENCE_MODEL_FAN_OUT_LIMITS.MAX_REFERRERS_PER_ITEM);
 
     const referrersTreeNode = createReferenceModelNonItemNode({
       treeNodeId,

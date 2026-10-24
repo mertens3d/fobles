@@ -57,58 +57,6 @@ export function createReferenceModelItemNode({
   return node;
 }
 
-function createPlaceholderReferenceModelNode(
-  pageLayoutTreeNodeId: string,
-  placeholder: PlaceholderTreeNode,
-): ReferenceModelNonItemNode {
-  const placeholderSegments = placeholder.path.split("/");
-  const placeholderName =
-    placeholderSegments[placeholderSegments.length - 1] ??
-    placeholder.path;
-  const children: ReferenceModelNode[] = [];
-
-  placeholder.placeholders.forEach((childPlaceholder) => {
-    children.push(
-      createPlaceholderReferenceModelNode(
-        pageLayoutTreeNodeId,
-        childPlaceholder,
-      ),
-    );
-  });
-
-  placeholder.controls.forEach((control, controlIndex) => {
-    children.push(
-      createRenderingReferenceModelNode(
-        pageLayoutTreeNodeId,
-        control,
-        controlIndex,
-      ),
-    );
-  });
-
-  return createReferenceModelNonItemNode({
-    treeNodeId: createReferenceModelNodeId(
-      pageLayoutTreeNodeId,
-      CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
-      placeholder.path,
-    ),
-    name: placeholderName,
-    kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PLACEHOLDER,
-    provenance: {
-      type: "placeholder",
-      placeholderPath: placeholder.path,
-      displayName: placeholderName,
-      rawData: placeholder.controls.map(
-        (control) => control.rawData,
-      ),
-    },
-    collapseKey: GRAPH_COLLAPSE_KEY.PLACEHOLDER,
-    branch: "layouts",
-    relationshipToParent: "related",
-    children,
-  });
-}
-
 export function createReferenceModelNonItemNode({
   treeNodeId,
   kind,
