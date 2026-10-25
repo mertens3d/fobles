@@ -8,17 +8,17 @@ import type {
 import type { EnrichmentProgress as EnrichmentProgressData } from "../enrichment/enrichment.types";
 import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
 import type { LayoutGraphPresetName } from "../graph.types";
-import type { PhaseProgress } from "../lifecycle/lifecycle.types";
-import { isLifecycleProgressActive } from "../lifecycle/phase-progress-display";
+import type { PhaseProgress } from "../../../shared/ui/reference-controls/lifecycle.types";
+import { isLifecycleProgressActive } from "../../../shared/ui/reference-controls/phase-progress-display";
 import { BackButton } from "./back-button";
 import { BuildTime } from "./BuildTime";
-import { PhaseProgressBar } from "./phase-progress-bar";
-import { GraphFilterList } from "./graph-filter-list";
+import { PhaseProgressBar } from "../../../shared/ui/reference-controls/phase-progress-bar";
+import { GraphFilterList } from "../../../shared/ui/reference-controls/graph-filter-list";
 import { GraphToolBarHeaderButton } from "./graph-toolbar-header-button";
 import { GraphTypeSelect } from "./graph-type-select";
 import { GraphViewControls } from "./graph-view-controls";
 import { ParameterVisibilityControls } from "./parameter-visibility-controls";
-import { ViewReferenceModelButton } from "../../reference-model/components/view-reference-model-button";
+import { ViewReferenceModelButton } from "../../../shared/ui/reference-controls/view-reference-model-button";
 import { GraphHelpDialog, useGraphHelpDialog } from "./graph-help-dialog";
 
 export type GraphToolbarHandle = {

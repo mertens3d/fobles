@@ -23,7 +23,7 @@ export class AuditSession {
     createAuditorSessionContainer(this.doc, this.sessionId);
     extensionLog.debug("Auditor session: started", { sessionId: this.sessionId, workSessionId: this.workSession.id });
     this.runnerPromise = this.runner.run();
-    try { await openAuditorDialog(this.doc, this.findingStore, () => this.cancel()); }
+    try { await openAuditorDialog(this.doc, this.findingStore, this.workSession.id, () => this.cancel()); }
     finally { await this.cancel(); }
   }
   private handleRunError(error: unknown): void {

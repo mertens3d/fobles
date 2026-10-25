@@ -176,6 +176,7 @@ export type QueuedTask = {
   retried: boolean;
   editorStateChangeCount: number;
   submittedAt: number;
+  deadlineAt: number;
   recoveryCount: number;
   resolve: (result: WorkerTaskResult) => void;
 };

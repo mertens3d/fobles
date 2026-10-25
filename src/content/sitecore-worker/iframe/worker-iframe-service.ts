@@ -50,7 +50,15 @@ export async function createWorkerIframeTarget(hostTabId: number, url: string): 
   >(hostTabId, message, { frameId: 0 });
 
   if (!created?.workerId) throw new Error("Worker iframe host did not create an iframe");
-  return await waitForWorkerIframeReady(created.workerId, hostTabId);
+  try {
+    return await waitForWorkerIframeReady(created.workerId, hostTabId);
+  } catch (error) {
+    clearWorkerIframeTarget(created.workerId);
+    const removeMessage: WorkerIframeRemoveMessage = { type: WORKER_IFRAME_REMOVE_MESSAGE_TYPE, workerId: created.workerId };
+    await chrome.tabs.sendMessage<WorkerIframeRemoveMessage, boolean>(hostTabId, removeMessage, { frameId: 0 }).catch(() => false);
+    extensionLog.warn("Worker iframe service: removed iframe that failed readiness", { workerId: created.workerId, hostTabId, error });
+    throw error;
+  }
 }
 
 export async function navigateWorkerIframeTarget(

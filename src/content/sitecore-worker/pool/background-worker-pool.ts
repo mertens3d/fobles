@@ -41,14 +41,14 @@ function startPoolHealthSupervisor(pool: WorkerPoolState): void {
   const settings = getRuntimeSettings().workerPool;
   pool.healthTimer = setInterval(() => {
     const checkedAt = performance.now();
-    const workers = pool.workers.map((worker, index) => ({ index, state: worker.state, activeTaskId: worker.activeTaskId, noProgressMs: Math.round(checkedAt - worker.lastProgressAt), recoveryCount: worker.recoveryCount, healthy: worker.state === "idle" || worker.state === "retired" || checkedAt - worker.lastProgressAt < settings.workerNoProgressMs }));
+    const workers = pool.workers.map((worker, index) => ({ index, state: worker.state, activeTaskId: worker.activeTaskId, noProgressMs: Math.round(checkedAt - worker.lastProgressAt), recoveryCount: worker.recoveryCount, healthy: worker.state === "idle" || worker.state === "retired" || (worker.state === "busy" && worker.activeTaskId !== undefined && checkedAt - worker.lastProgressAt < settings.workerNoProgressMs) || (worker.state === "starting" && worker.activeTaskId !== undefined && checkedAt - worker.lastProgressAt < settings.workerNoProgressMs) }));
     const unhealthyWorkers = workers.filter((worker) => !worker.healthy);
     const poolNoProgressMs = Math.round(checkedAt - pool.lastProgressAt);
     const poolUnhealthy = (pool.queue.length > 0 || pool.activeTaskByWorkerKey.size > 0) && poolNoProgressMs >= settings.poolNoProgressMs;
     extensionLog.debug("Worker pool health: poll", { hostTabId: pool.hostTabId, healthy: !poolUnhealthy && unhealthyWorkers.length === 0, poolNoProgressMs, queueLength: pool.queue.length, activeTaskCount: pool.activeTaskByWorkerKey.size, recoveryCount: pool.recoveryCount, maxRecoveries: settings.poolMaxWorkerRecoveries, workers, unhealthyWorkers });
     if (unhealthyWorkers.length === 0 && !poolUnhealthy) return;
     if (pool.recoveryCount >= settings.poolMaxWorkerRecoveries) { extensionLog.error("Worker pool health: recovery limit exhausted", { hostTabId: pool.hostTabId, poolNoProgressMs, recoveryCount: pool.recoveryCount, unhealthyWorkers }); cancelPoolRequest(Array.from(pool.activeTaskByWorkerKey.values())[0]?.requestId ?? "", pool.hostTabId); return; }
-    const unhealthy = pool.workers.find((worker) => worker.state !== "retired" && checkedAt - worker.lastProgressAt >= settings.workerNoProgressMs);
+    const unhealthy = pool.workers.find((worker) => worker.state !== "retired" && worker.state !== "idle" && (worker.activeTaskId === undefined || checkedAt - worker.lastProgressAt >= settings.workerNoProgressMs));
     if (unhealthy) { pool.recoveryCount += 1; unhealthy.recoveryCount += 1; extensionLog.warn("Worker pool health: retiring unhealthy worker", { hostTabId: pool.hostTabId, activeTaskId: unhealthy.activeTaskId, recoveryCount: pool.recoveryCount }); retireWorker(pool, unhealthy); void destroyRetiredWorker(pool, unhealthy, "health-check-no-progress"); markPoolProgress(pool, "unhealthy-worker-retired"); scheduleNext(pool); }
   }, settings.healthPollIntervalMs);
 }
@@ -180,11 +180,16 @@ function scheduleNext(pool: WorkerPoolState): void {
       pool.queue.shift();
       markPoolProgress(pool, "task-assigned");
       idle.state = "busy";
+      idle.activeTaskId = next.task.taskId;
+      idle.lastProgressAt = performance.now();
       void runWorkerTask(createExecutorContext(pool), idle, next);
     } else if (count < maxWorkers) {
       pool.queue.shift();
       markPoolProgress(pool, "task-assigned");
-      void runTaskOnNewWorker(createExecutorContext(pool), createPendingWorker(pool), next);
+      const worker = createPendingWorker(pool);
+      worker.activeTaskId = next.task.taskId;
+      worker.lastProgressAt = performance.now();
+      void runTaskOnNewWorker(createExecutorContext(pool), worker, next);
     } else {
       scheduling = false;
     }
@@ -202,7 +207,8 @@ export async function runPoolTask(task: WorkerTask, hostTabId: number | undefine
       return;
     }
     publishActivityToHost(hostTabId, { source: "worker", requestId: task.requestId, activityId: task.taskId, kind: task.type, label: labelForWorkerTask(task), state: "queued" });
-    pool.queue.push({ task, hostTabId, retried: false, editorStateChangeCount: 0, submittedAt: performance.now(), recoveryCount: 0, resolve });
+    const submittedAt = performance.now();
+    pool.queue.push({ task, hostTabId, retried: false, editorStateChangeCount: 0, submittedAt, deadlineAt: submittedAt + getRuntimeSettings().workerPool.taskTimeoutMs, recoveryCount: 0, resolve });
     markPoolProgress(pool, "task-queued");
     extensionLog.debug(`Worker pool: task queued - maxWorkers=${maxWorkers}, workers=${pool.workers.length}, queue=${pool.queue.length}`, { hostTabId, requestId: task.requestId, taskId: task.taskId, taskType: task.type, maxWorkers, workerCount: pool.workers.length, schedulableWorkerCount: pool.workers.filter((worker) => worker.state !== "retired").length, retiredWorkerCount: pool.workers.filter((worker) => worker.state === "retired").length, queueLength: pool.queue.length, poolGeneration: pool.generation });
     scheduleNext(pool);

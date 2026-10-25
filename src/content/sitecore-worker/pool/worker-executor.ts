@@ -12,6 +12,15 @@ import { getRuntimeSettings } from "../../runtime-settings/runtime-settings";
 
 const READY_TIMEOUT_MS = 20000;
 const MAX_EDITOR_STATE_CHANGES = 2;
+function remainingJobMs(queued: QueuedTask): number { return Math.max(0, queued.deadlineAt - performance.now()); }
+async function withinJobDeadline<T>(queued: QueuedTask, operation: Promise<T>, label: string): Promise<T> {
+  const remainingMs = remainingJobMs(queued);
+  if (remainingMs <= 0) throw new Error(`Worker job deadline exhausted before ${label}`);
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
+  try {
+    return await Promise.race([operation, new Promise<T>((_resolve, reject) => { timeoutId = setTimeout(() => reject(new Error(`Worker job deadline exhausted during ${label}`)), remainingMs); })]);
+  } finally { if (timeoutId !== undefined) clearTimeout(timeoutId); }
+}
 
 async function closeWorker(context: WorkerExecutorContext, worker: PoolWorker): Promise<void> {
   const target = worker.target;
@@ -58,6 +67,10 @@ async function retryOrResolveError(context: WorkerExecutorContext, worker: PoolW
 
   if (!context.isCurrentGeneration()) {
     queued.resolve(createCancelledResult(queued.task));
+  } else if (remainingJobMs(queued) <= 0) {
+    extensionLog.warn("Worker health: job deadline exhausted; recovery skipped", { taskId: queued.task.taskId, taskType: queued.task.type, recoveryCount: queued.recoveryCount, maxRecoveries, errorMessage });
+    queued.resolve(createErrorResult(queued.task, `Worker job exceeded total execution budget: ${errorMessage}`));
+    context.scheduleNext();
   } else if (queued.recoveryCount < maxRecoveries) {
     queued.retried = true;
     queued.recoveryCount += 1;
@@ -119,7 +132,7 @@ async function runTaskOnWorker(context: WorkerExecutorContext, worker: PoolWorke
   worker.lastProgressAt = performance.now();
   worker.activeTaskId = queued.task.taskId;
   const workerKey = getWorkerTargetKey(target);
-  const taskTimeoutMs = getRuntimeSettings().workerPool.taskTimeoutMs;
+  const taskTimeoutMs = Math.min(getRuntimeSettings().workerPool.taskTimeoutMs, remainingJobMs(queued));
   context.activeTaskByWorkerKey.set(workerKey, { target, requestId: queued.task.requestId, taskId: queued.task.taskId });
   let executionResult: Awaited<ReturnType<typeof sendTaskToWorkerTarget>> | undefined;
   let timedOut = false;
@@ -186,7 +199,7 @@ async function runOnNewWorker(context: WorkerExecutorContext, worker: PoolWorker
   let target: WorkerTarget | undefined;
 
   try {
-    target = await createWorkerTarget(queued.hostTabId, queued.task.url, DEBUG_WORKER_POOL);
+    target = await withinJobDeadline(queued, createWorkerTarget(queued.hostTabId, queued.task.url, DEBUG_WORKER_POOL), "worker creation/readiness");
   } catch (error) {
     extensionLog.warn("Worker pool: failed to create worker", { hostTabId: queued.hostTabId, task: queued.task, error });
   }
@@ -239,7 +252,7 @@ async function navigateExistingWorker(context: WorkerExecutorContext, worker: Po
 
   if (isWorkerTabTarget(target)) resetWorkerReadiness(target.tabId);
 
-  const updatedTarget = await navigateWorkerTarget(target, queued.task.url);
+  const updatedTarget = await withinJobDeadline(queued, navigateWorkerTarget(target, queued.task.url), "worker navigation/readiness");
 
   if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
     cancelStaleWorker(context, worker, queued);

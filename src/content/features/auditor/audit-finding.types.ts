@@ -16,6 +16,7 @@ export type AuditFinding = {
   readonly itemName: string | undefined;
   readonly itemPath: string | undefined;
   readonly itemIcon: string | undefined;
+  readonly dataType: string;
   readonly sitecoreUrl: string | undefined;
   readonly context: string | undefined;
   readonly summary: string;

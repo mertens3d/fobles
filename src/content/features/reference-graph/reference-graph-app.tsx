@@ -12,7 +12,7 @@ import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";
 import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
-import { subscribeHarvestQueueProgress } from "./lifecycle/active-harvest-queue";
+import { getFoblesDataSession } from "../../shared/data/fobles-data-service";
 import { subscribeRootRefresh } from "./lifecycle/root-refresh-events";
 const ZOOM_FACTOR = 1.2;
 const VIEWPORT_PADDING = 60;
@@ -23,7 +23,10 @@ export function ReferenceGraphApp({ doc, workSession, initialPreparedGraph, harv
   const graphState = useReferenceGraph({ initialPreparedGraph });
   const { handleBack, handleClearFilters, handleControlsExpandedChange, handleFilterChange, handleParameterVisibilityChange, handleLayoutChange, handleRelayout, renderGraph, handleViewReferenceModel, handleCloseReferenceModel } = useReferenceGraphActions({ doc, workSession, harvestForLink, cyRef, graphState });
   useCytoscape({ doc, workSession, initialPreparedGraph, harvestForLink, containerRef, cyRef, currentPreparedGraphRef: graphState.currentPreparedGraphRef, currentFiltersRef: graphState.currentFiltersRef, parameterVisibilitySettingsRef: graphState.parameterVisibilitySettingsRef, layoutPresetNameRef: graphState.layoutPresetNameRef, graphHistoryRef: graphState.graphHistoryRef, loadedFiltersByItemIdRef: graphState.loadedFiltersByItemIdRef, renderGraph, setCurrentFilters: graphState.setCurrentFilters, setParameterVisibilitySettings: graphState.setParameterVisibilitySettings, setLayoutPresetName: graphState.setLayoutPresetName, setHistoryCount: graphState.setHistoryCount, setBuildElapsedSeconds: graphState.setBuildElapsedSeconds, setSelectedTreeNodeId: graphState.setSelectedTreeNodeId, setEnrichmentProgress: graphState.setEnrichmentProgress, setGraphBusy: graphState.setGraphBusy });
-  useEffect(() => subscribeHarvestQueueProgress(graphState.setHarvestProgress), [graphState.setHarvestProgress]);
+  useEffect(() => {
+    const session = getFoblesDataSession(workSession.id);
+    return session?.subscribeHarvestProgress(graphState.setHarvestProgress);
+  }, [workSession.id, graphState.setHarvestProgress]);
   useEffect(() => { const rootItemId = graphState.currentPreparedGraph.harvestedData.rootItem.scItemId; return subscribeRootRefresh(rootItemId, (result) => { void renderGraph(result); }); }, [graphState.currentPreparedGraph.harvestedData.rootItem.scItemId, renderGraph]);
   const handleZoom = (factor: number, renderedPosition?: cytoscape.Position): void => {
     const cy = cyRef.current;

@@ -36,3 +36,90 @@
   display: inline-flex; align-items: center; gap: 6px;
   &-icon { width: 16px; height: 16px; }
 }
+
+.fobles-dialog-close { background:#2f6fed; border-color:#1f57c3; color:#fff; }
+.fobles-dialog-close:hover { background:#1f57c3; }
+.fobles-dialog-close-icon { filter:brightness(0) invert(1); }
+.fobles-auditor-summary { align-items:center; flex-wrap:wrap; }
+.fobles-auditor-summary-filter { display:inline-flex; align-items:center; gap:5px; padding:4px 8px; border:1px solid transparent; border-radius:4px; cursor:pointer; }
+.fobles-auditor-summary-filter:hover { background:#eef4ff; border-color:#7f9bc4; }
+.fobles-auditor-grid { overflow-x:auto; }
+.fobles-auditor-help-backdrop { position:absolute; inset:0; z-index:150; display:grid; place-items:center; background:rgba(0,0,0,.3); }
+.fobles-auditor-help { position:relative; width:min(640px,80vw); max-height:75vh; overflow:auto; padding:24px; border-radius:8px; background:#fff; box-shadow:0 12px 36px rgba(0,0,0,.35); }
+.fobles-auditor-help-close { position:absolute; top:10px; right:10px; width:30px; height:30px; border:1px solid #1f57c3; border-radius:4px; background:#2f6fed; color:#fff; cursor:pointer; }
+
+.fobles-auditor-status {
+  display: inline-flex;
+  width: 100%;
+  align-items: center;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.fobles-auditor-tree-row {
+  display: flex;
+  min-width: 0;
+  height: 100%;
+  align-items: center;
+  gap: 7px;
+}
+
+.fobles-auditor-tree-row--item {
+  font-weight: 600;
+}
+
+.fobles-auditor-tree-row--area {
+  color: #35506f;
+  font-weight: 600;
+}
+
+.fobles-auditor-tree-toggle {
+  width: 20px;
+  height: 24px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: #2f6fed;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+.fobles-auditor-tree-spacer {
+  width: 20px;
+  flex: 0 0 20px;
+}
+
+.fobles-auditor-tree-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+}
+
+.fobles-auditor-tree-label {
+  flex: 0 0 auto;
+}
+
+.fobles-auditor-tree-secondary {
+  min-width: 0;
+  overflow: hidden;
+  color: #66758a;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fobles-auditor-tree-data {
+  flex: 0 0 auto;
+  margin-left: auto;
+}
+
+.fobles-auditor-grid-row--item {
+  background: #f5f8fc;
+}
+
+.fobles-auditor-grid-row--area {
+  background: #fafbfd;
+}
+
+.fobles-auditor-grid {
+  overflow: hidden;
+}

@@ -7,7 +7,7 @@ import type { AuditCheck, AuditCheckContext } from "../audit-check.types";
 import type { AuditFinding, AuditFindingStatus } from "../audit-finding.types";
 export const REFERENCE_RESOLVED_CHECK_KEY = "reference-resolved";
 export const REFERENCE_RESOLVED_CHECK_LABEL = "Referenced target resolved";
-function interpretResolveState(status: ProcessingStatus | undefined): { status: AuditFindingStatus; summary: string } {
+export function interpretResolveState(status: ProcessingStatus | undefined): { status: AuditFindingStatus; summary: string } {
   switch (status) {
     case "not-found": return { status: "error", summary: "The referenced item could not be found." };
     case "failed": return { status: "warning", summary: "Unable to process this referenced item after worker recovery was exhausted." };

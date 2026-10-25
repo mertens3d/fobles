@@ -18,6 +18,7 @@ export type BuildAuditFindingOptions = {
   referenceModelNodeId: string | undefined;
   item: ItemGraphNodeData | undefined;
   summary: string;
+  dataType?: string;
   // Injected rather than imported directly - buildFoblesUrl depends on browser globals
   // (window.location) that do not exist under Node's native-TS test runner. Production
   // (audit-runner.ts) passes the real buildFoblesUrl; tests pass a stub or omit it.
@@ -46,6 +47,7 @@ export function buildAuditFinding(options: BuildAuditFindingOptions): AuditFindi
     itemName: options.item?.scItemName,
     itemPath: options.item?.scItemPath,
     itemIcon: options.item?.scItemIcon,
+    dataType: options.dataType ?? "Item",
     sitecoreUrl,
     context: options.context,
     summary: options.summary,
