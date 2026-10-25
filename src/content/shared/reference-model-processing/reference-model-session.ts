@@ -1,9 +1,9 @@
 // @source-path [fobles] src/content/shared/reference-model-processing/reference-model-session.ts
 import { extensionLog } from "../../logger";
 import { buildFoblesUrl } from "../../features/augmentor/helper";
-import { harvestSitecoreWithWorkers } from "../../sitecore-harvester/coordinator/foreground-harvest-coordinator";
-import type { HarvestProgressCallback, SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
-import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import { harvestSitecoreWithWorkers } from "../../foundation/harvesting/coordinator/foreground-harvest-coordinator";
+import type { HarvestProgressCallback, SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
 import type { WorkSession } from "../../shell/work-session/work-session.types";
 import { acquireReferenceModelForCurrentItem } from "../../features/reference-graph/lifecycle/acquire-reference-model";
 import type { PreparedReferenceGraph } from "../../features/reference-graph/prepared-reference-graph.types";

@@ -2,8 +2,8 @@
 
 import { extensionLog } from "../../logger";
 import { closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
-import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
-import { PROGRESS_STEPS } from "../../sitecore-harvester/planner/harvest-steps";
+import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
+import { PROGRESS_STEPS } from "../../foundation/harvesting/planner/harvest-steps";
 import type { HarvestForLink } from "./graph.types";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 

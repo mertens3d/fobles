@@ -1,21 +1,13 @@
-# Foundation refactor - Phase 1: workers
+# Foundation refactor - Phase 2: harvesting
 
-Moves `src/content/sitecore-worker` to `src/content/foundation/workers`.
+Moves `src/content/sitecore-harvester` to `src/content/foundation/harvesting`.
 
-The Node migration tool resolves every relative import against its original importer, applies the move map to both importer and target, and recalculates the final relative specifier. It also updates `@source-path` comments.
+The migration tool resolves every relative import against its original importer, applies the move map to both importer and target, recalculates every final relative specifier, updates `@source-path` comments, and writes `foundation-migration-report.json` before exiting for validation failures.
 
 Run from the repository root:
 
 ```powershell
-pwsh -NoProfile -File .\tools\migrations\foundation-refactor\invoke-workers-migration.ps1
+pwsh -NoProfile -File .\tools\migrations\foundation-refactor\invoke-harvesting-migration.ps1
 ```
 
-The wrapper performs a dry run, applies the migration, then runs `npm run build:extension`.
-
-The migration fails before modifying files when it finds missing sources, existing destinations, ambiguous imports, or unresolved relative imports.
-
-## Pre-existing stale imports
-
-`move-map.json` includes explicit redirects for three stale unit-test imports created by the prior Reference Model processing move. Redirects are resolved before the workers move and rewritten to the current shared processing paths.
-
-The migration report is always written before the tool exits for unresolved-import blocking diagnostics.
+The wrapper performs a dry run, applies the migration only after validation succeeds, then runs `npm run build:extension`.

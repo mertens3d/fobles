@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/prepared-reference-graph.types.ts
 
 import type cytoscape from "cytoscape";
-import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
 import type { ReferenceModelNode } from "../reference-model/reference-model.types";
 import type { ProcessingStateByTreeNodeId } from "../../shared/reference-model-processing/processing-state";
 

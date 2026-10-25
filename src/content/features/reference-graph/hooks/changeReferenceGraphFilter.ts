@@ -1,5 +1,5 @@
-import { PROGRESS_STEPS } from "../../../sitecore-harvester/planner/harvest-steps";
-import { type SitecoreHarvestFiltersState, isHarvestStep } from "../../../sitecore-harvester/sitecore-harvester.types";
+import { PROGRESS_STEPS } from "../../../foundation/harvesting/planner/harvest-steps";
+import { type SitecoreHarvestFiltersState, isHarvestStep } from "../../../foundation/harvesting/sitecore-harvester.types";
 import { buildFoblesUrl } from "../../augmentor/helper";
 import { openReferenceGraphProgressModal, closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal } from "../build-progress";
 import { createSingleFilterState } from "../graph-filters";

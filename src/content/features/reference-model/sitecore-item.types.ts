@@ -4,7 +4,7 @@ import type { FieldReference } from "../../field-reference-resolution/field-refe
 import type {
   SitecoreDeviceXml,
   SitecoreRenderingXml,
-} from "../../sitecore-harvester/collectors/section-collector/layout-collector/sitecore-layout-xml-schema.types";
+} from "../../foundation/harvesting/collectors/section-collector/layout-collector/sitecore-layout-xml-schema.types";
 
 // Basic Sitecore item-shaped data - the harvester's conceptual output, with no enrichment
 // requirement. Shared downward by both sitecore-worker (task payloads) and sitecore-harvester

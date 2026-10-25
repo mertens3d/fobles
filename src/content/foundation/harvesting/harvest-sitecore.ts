@@ -1,15 +1,15 @@
-// @source-path [fobles] src/content/sitecore-harvester/harvest-sitecore.ts
+// @source-path [fobles] src/content/foundation/harvesting/harvest-sitecore.ts
 
-import { type ItemGraphNodeData, factoryItemGraphNodeData, type RootItem } from "../features/reference-model/sitecore-item.types";
-import type { TreeChildNode } from "../features/reference-model/tree-child-node.types";
-import { extensionLog } from "../logger";
+import { type ItemGraphNodeData, factoryItemGraphNodeData, type RootItem } from "../../features/reference-model/sitecore-item.types";
+import type { TreeChildNode } from "../../features/reference-model/tree-child-node.types";
+import { extensionLog } from "../../logger";
 import {
   getGlyphId,
   getGlyphState,
   waitForExpansion,
   readChildNodes,
-} from "../macros/tree-expand-macro";
-import { getQuickInfo } from "../toolbar/jump-flyout/quick-info";
+} from "../../macros/tree-expand-macro";
+import { getQuickInfo } from "../../toolbar/jump-flyout/quick-info";
 
 
 // Finds itemId's own tree node, expanding it first (and restoring it back to collapsed

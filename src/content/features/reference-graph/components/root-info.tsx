@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/components/root-info.tsx
 
-import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
 
 type RootInfoProps = { graph: SitecoreHarvestResult };
 export function RootInfo({ graph }: RootInfoProps) {

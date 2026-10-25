@@ -3,7 +3,7 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { CONST } from "../../../constants/const";
 import { subscribeActivity, type ActivityEvent } from "../../shared/activity/activity-events";
-import type { HarvestProgressStatus, ProgressStep, SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { HarvestProgressStatus, ProgressStep, SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
 import { ReferenceGraphProgressDialog } from "./components/reference-graph-progress-dialog";
 
 let progressRoot: Root | undefined;

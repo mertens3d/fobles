@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/shared/data/fobles-data-service.ts
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import type { WorkSession } from "../../shell/work-session/work-session.types";
-import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
 import type { PreparedReferenceGraph } from "../../features/reference-graph/prepared-reference-graph.types";
 import { startSharedReferenceModelSession, type ReferenceModelSessionStateChange, type SharedReferenceModelSession } from "../reference-model-processing/reference-model-session";
 import type { ReferenceModelHarvestProgress } from "../reference-model-processing/reference-model-harvest-queue";

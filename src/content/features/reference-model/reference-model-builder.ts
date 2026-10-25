@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-model/reference-model-builder.ts
 
-import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
 import { CONST } from "../../../constants/const";
 import { GRAPH_COLLAPSE_KEY } from "../reference-graph/graph-nodes/graph-collapse.types";
 import { createReferenceModelNodeId } from "./layout-reference-model-builder";

@@ -1,15 +1,15 @@
-// @source-path [fobles] src/content/sitecore-harvester/coordinator/harvest-plan-executor.ts
+// @source-path [fobles] src/content/foundation/harvesting/coordinator/harvest-plan-executor.ts
 
-import { extensionLog } from "../../logger";
-import { initializeRuntimeSettings, isRuntimeFaultEnabled, RUNTIME_FAULT } from "../../runtime-settings/runtime-settings";
+import { extensionLog } from "../../../logger";
+import { initializeRuntimeSettings, isRuntimeFaultEnabled, RUNTIME_FAULT } from "../../../runtime-settings/runtime-settings";
 import { HARVEST_STEP_BY_TASK_TYPE } from "../planner/harvest-steps";
 import type { HarvestProgressCallback, HarvestRequest, ProgressStep } from "../sitecore-harvester.types";
-import { cancelWorkerTask, runWorkerTask } from "../../foundation/workers/pool/worker-pool-client";
-import { createErrorResult, type WorkerTask, type WorkerTaskResult, type WorkerTaskType } from "../../foundation/workers/tasks/worker-task.types";
+import { cancelWorkerTask, runWorkerTask } from "../../workers/pool/worker-pool-client";
+import { createErrorResult, type WorkerTask, type WorkerTaskResult, type WorkerTaskType } from "../../workers/tasks/worker-task.types";
 import { createSetRawValuesTask, createSetStandardFieldsTask, planCollectorTaskGroups, planCollectorTasks, requestedLocatorFromUrl } from "../planner/harvest-task-planner";
-import { factNameForTaskType, getFact } from "../../sitecore-data/sitecore-data-service";
-import { resolveSitecoreDataIdentity } from "../../sitecore-data/sitecore-data-identity";
-import type { SitecoreDataCacheKey } from "../../sitecore-data-cache/sitecore-data-cache.types";
+import { factNameForTaskType, getFact } from "../../../sitecore-data/sitecore-data-service";
+import { resolveSitecoreDataIdentity } from "../../../sitecore-data/sitecore-data-identity";
+import type { SitecoreDataCacheKey } from "../../../sitecore-data-cache/sitecore-data-cache.types";
 
 const TASK_TIMEOUT_MS = 30000;
 

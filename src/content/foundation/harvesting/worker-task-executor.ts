@@ -1,11 +1,11 @@
-// @source-path [fobles] src/content/sitecore-harvester/worker-task-executor.ts
+// @source-path [fobles] src/content/foundation/harvesting/worker-task-executor.ts
 
 import { collectChildren } from "./collectors/child-collector";
 import { collectParent } from "./collectors/parent-collector";
 import { collectReferrers } from "./collectors/referrer-collector";
 import { collectLayouts } from "./collectors/section-collector/layout-collector/layout-collector";
 import { collectSections } from "./collectors/section-collector/section-collector";
-import { isGuidLike } from "../features/augmentor/shared/guid";
+import { isGuidLike } from "../../features/augmentor/shared/guid";
 import { buildItemGraphNodeDataFromDoc, extractRevisionFromIconUrl } from "./enrichment/item-enricher";
 import { harvestStepRootItem } from "./harvest-sitecore";
 import {
@@ -13,7 +13,7 @@ import {
   getScStandardFieldsState,
   setScRawValuesState,
   setScStandardFieldsState,
-} from "../macros/ribbon-toggle-macro";
+} from "../../macros/ribbon-toggle-macro";
 import type { HarvestContext, SitecoreHarvestResult } from "./sitecore-harvester.types";
 import {
   createCancelledResult,
@@ -26,8 +26,8 @@ import {
   type WorkerTaskPayloadByType,
   type WorkerTaskResult,
   type WorkerTaskType,
-} from "../foundation/workers/tasks/worker-task.types";
-import type { ItemGraphNodeData } from "../features/reference-model/sitecore-item.types";
+} from "../workers/tasks/worker-task.types";
+import type { ItemGraphNodeData } from "../../features/reference-model/sitecore-item.types";
 
 function normalizeSitecoreItemId(value: string | undefined): string | undefined {
   return value

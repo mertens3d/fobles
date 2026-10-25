@@ -1,6 +1,6 @@
-// @source-path [fobles] src/content/sitecore-harvester/sitecore-harvester.types.ts
+// @source-path [fobles] src/content/foundation/harvesting/sitecore-harvester.types.ts
 
-import type { ItemGraphNodeData, LayoutSectionField, RootItem, SitecoreHarvestSection } from "../features/reference-model/sitecore-item.types";
+import type { ItemGraphNodeData, LayoutSectionField, RootItem, SitecoreHarvestSection } from "../../features/reference-model/sitecore-item.types";
 import type { HarvestSession } from "./harvest-session.types";
 
 export type HarvestContext = {

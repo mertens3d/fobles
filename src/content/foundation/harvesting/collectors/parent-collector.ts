@@ -1,5 +1,5 @@
-import { getParentPath } from "../../../shared/path-helpers";
-import { factoryItemGraphNodeData } from "../../features/reference-model/sitecore-item.types";
+import { getParentPath } from "../../../../shared/path-helpers";
+import { factoryItemGraphNodeData } from "../../../features/reference-model/sitecore-item.types";
 import {
   type HarvestContext,
 } from "../sitecore-harvester.types";

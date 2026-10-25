@@ -1,4 +1,4 @@
-import type { SitecoreHarvestFiltersState } from "../../content/sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../content/foundation/harvesting/sitecore-harvester.types";
 
 export type NodeKind =
     typeof _REFERENCE_GRAPH_BASE.NODE_KIND[

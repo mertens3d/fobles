@@ -5,7 +5,7 @@ import type {
   HarvestProgressCallback,
   SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
-} from "../../sitecore-harvester/sitecore-harvester.types";
+} from "../../foundation/harvesting/sitecore-harvester.types";
 import { createReferenceModel } from "../reference-model/reference-model-builder";
 import { buildReferenceModelNodeLookup } from "../reference-model/reference-model-node-lookup";
 import type { ProcessingStatus } from "../../shared/reference-model-processing/processing-state";

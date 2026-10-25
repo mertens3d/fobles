@@ -5,13 +5,13 @@ import { getItem, putFact } from "../../../sitecore-data-cache/sitecore-data-cac
 import type { SitecoreDataCacheKey } from "../../../sitecore-data-cache/sitecore-data-cache.types";
 import { resolveSitecoreDataIdentity } from "../../../sitecore-data/sitecore-data-identity";
 import { extensionLog } from "../../../logger";
-import { harvestSitecoreWithWorkers } from "../../../sitecore-harvester/coordinator/foreground-harvest-coordinator";
-import type { HarvestSession } from "../../../sitecore-harvester/harvest-session.types";
+import { harvestSitecoreWithWorkers } from "../../../foundation/harvesting/coordinator/foreground-harvest-coordinator";
+import type { HarvestSession } from "../../../foundation/harvesting/harvest-session.types";
 import type {
   HarvestProgressCallback,
   SitecoreHarvestFiltersState,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
-import { createSitecoreItemLocator } from "../../../sitecore-harvester/worker-task-executor";
+} from "../../../foundation/harvesting/sitecore-harvester.types";
+import { createSitecoreItemLocator } from "../../../foundation/harvesting/worker-task-executor";
 import { getCurrentItemId } from "../../../toolbar/jump-flyout/ai-pages";
 import { getScRawValuesState, getScStandardFieldsState } from "../../../macros/ribbon-toggle-macro";
 import { prepareReferenceGraph } from "../prepared-reference-graph";

@@ -2,8 +2,8 @@
 import { extensionLog } from "../../logger";
 import type { HealthReport } from "../../shell/health/health.types";
 import { resolveSitecoreDataIdentity } from "../../sitecore-data/sitecore-data-identity";
-import { mergeEnrichedItem } from "../../sitecore-harvester/planner/enrichment-task-planner";
-import { createSitecoreItemLocator } from "../../sitecore-harvester/worker-task-executor";
+import { mergeEnrichedItem } from "../../foundation/harvesting/planner/enrichment-task-planner";
+import { createSitecoreItemLocator } from "../../foundation/harvesting/worker-task-executor";
 import { createErrorResult, type WorkerTask, type WorkerTaskExecutionResult } from "../../foundation/workers/tasks/worker-task.types";
 import type { WorkSession } from "../../shell/work-session/work-session.types";
 import { buildFoblesUrl } from "../../features/augmentor/helper";

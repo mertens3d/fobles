@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/hooks/use-reference-graph-actions.ts
 import type cytoscape from "cytoscape";
 import type { WorkSession } from "../../../shell/work-session/work-session.types";
-import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
 import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
 import type { HarvestForLink, LayoutGraphPresetName } from "../graph.types";
 import type { GraphState } from "./use-reference-graph";

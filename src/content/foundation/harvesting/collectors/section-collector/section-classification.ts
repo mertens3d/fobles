@@ -1,6 +1,6 @@
-// @source-path [fobles] src/content/sitecore-harvester/collectors/section-collector/section-classification.ts
+// @source-path [fobles] src/content/foundation/harvesting/collectors/section-collector/section-classification.ts
 
-import { CONST } from "../../../../constants/const";
+import { CONST } from "../../../../../constants/const";
 
 // Standard Template sections (Appearance, Security, ...) go to the Standard Fields crop; every
 // other rendered section goes to the ordinary Fields crop. Never driven by

@@ -3,7 +3,7 @@ import type cytoscape from "cytoscape";
 import { useCallback } from "react";
 import type { WorkSession } from "../../../shell/work-session/work-session.types";
 import { extensionLog } from "../../../logger";
-import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
 import { handleHarvestProgress } from "../build-progress";
 import { startEnrichmentController } from "../enrichment/enrichment-controller";
 import { getEnabledFilterKeys } from "../graph-filters";

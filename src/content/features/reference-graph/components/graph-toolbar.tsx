@@ -4,7 +4,7 @@ import type cytoscape from "cytoscape";
 import type {
   SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
+} from "../../../foundation/harvesting/sitecore-harvester.types";
 import type { EnrichmentProgress as EnrichmentProgressData } from "../enrichment/enrichment.types";
 import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
 import type { LayoutGraphPresetName } from "../graph.types";

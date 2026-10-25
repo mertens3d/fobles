@@ -4,7 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { showFoblesCleanupDialog } from "../../../../shared/error-dialog";
 import { getReferenceGraphFilters } from "../../../../shared/reference-graph-settings";
-import type { SitecoreHarvestFiltersState } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
 import { getFoblesDataSession } from "../../../shared/data/fobles-data-service";
 import { createDialogCloseButton } from "../../../shared/dialog/dialog-close-button";
 import type { PhaseProgress } from "../../../shared/ui/reference-controls/lifecycle.types";

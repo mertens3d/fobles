@@ -1,9 +1,9 @@
 // @source-path [fobles] src/content/features/reference-graph/harvester.ts
 
 import { extensionLog } from "../../logger";
-import { harvestSitecoreWithWorkers } from "../../sitecore-harvester/coordinator/foreground-harvest-coordinator";
-import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
+import { harvestSitecoreWithWorkers } from "../../foundation/harvesting/coordinator/foreground-harvest-coordinator";
+import type { SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
 import { handleHarvestProgress } from "./build-progress";
 
 // Left-clicking a graph node re-roots the SAME open modal at that item, with no page navigation

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/lifecycle/root-refresh-events.ts
 
-import type { SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
 
 // A background root re-harvest (triggered by a stale root cache revision) completes after the
 // graph is already open and rendered - this is the one channel it uses to hand the fresh result

@@ -7,7 +7,7 @@ import { createFieldReferenceProvenance, createSyntheticProvenance } from "./ref
 import type { ReferenceModelBranch, ReferenceModelNode, ReferenceModelNonItemNode } from "./reference-model.types";
 import { createReferenceModelNodeId } from "./layout-reference-model-builder";
 import type { SitecoreHarvestSection, SitecoreHarvestField, HarvestFieldLink } from "./sitecore-item.types";
-import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
 
 export function createCustomFieldsTreeNode(
   graphReferenceResult: SitecoreHarvestResult,

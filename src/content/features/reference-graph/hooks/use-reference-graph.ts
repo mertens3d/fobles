@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import { CONST } from "../../../../constants/const";
-import type { SitecoreHarvestFiltersState } from "../../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
 import type { EnrichmentProgress } from "../enrichment/enrichment.types";
 import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../graph-filters";
 import {

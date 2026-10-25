@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/shared/reference-model-processing/resolve-candidate-collector.ts
 
 import { stripGuidBraces } from "../../features/augmentor/shared/guid.ts";
-import { isItemGraphNodeDataResolved } from "../../sitecore-harvester/enrichment/item-enricher.ts";
+import { isItemGraphNodeDataResolved } from "../../foundation/harvesting/enrichment/item-enricher.ts";
 import type { ReferenceModelNode } from "../../features/reference-model/reference-model.types";
 
 // Item reference -> every treeNodeId representing that same unresolved item.

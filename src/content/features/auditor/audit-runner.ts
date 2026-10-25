@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/auditor/audit-runner.ts
 import { buildFoblesUrl } from "../augmentor/helper";
 import type { WorkSession } from "../../shell/work-session/work-session.types";
-import type { SitecoreHarvestFiltersState } from "../../sitecore-harvester/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
 import { openFoblesDataSession, type FoblesDataSession } from "../../shared/data/fobles-data-service";
 import type { AuditCheckContext } from "./audit-check.types";
 import type { AuditFindingStore } from "./audit-finding-store";

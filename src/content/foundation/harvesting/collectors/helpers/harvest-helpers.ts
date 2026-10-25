@@ -2,12 +2,12 @@
 // (scEditorHeaderQuickInfoInputID) than every other row (scEditorHeaderQuickInfoInput) -
 // getQuickInfoValue only reads the latter, so the template's guid needs its own lookup.
 
-import { SITECORE } from "../../../../constants/sitecore";
-import { buildFoblesUrl } from "../../../features/augmentor/helper";
-import { formatFoId } from "../../../features/augmentor/shared/guid";
-import { extensionLog } from "../../../logger";
-import { getQuickInfo } from "../../../toolbar/jump-flyout/quick-info";
-import type { QuickInfo } from "../../../toolbar/types";
+import { SITECORE } from "../../../../../constants/sitecore";
+import { buildFoblesUrl } from "../../../../features/augmentor/helper";
+import { formatFoId } from "../../../../features/augmentor/shared/guid";
+import { extensionLog } from "../../../../logger";
+import { getQuickInfo } from "../../../../toolbar/jump-flyout/quick-info";
+import type { QuickInfo } from "../../../../toolbar/types";
 
 export function getTemplateGuid(doc: Document): string | undefined {
   return (

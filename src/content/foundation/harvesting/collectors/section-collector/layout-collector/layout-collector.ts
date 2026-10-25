@@ -1,10 +1,10 @@
-// @source-path [fobles] src/content/sitecore-harvester/collectors/section-collector/layout-collector/layout-collector.ts
+// @source-path [fobles] src/content/foundation/harvesting/collectors/section-collector/layout-collector/layout-collector.ts
 
 import { XMLParser } from "fast-xml-parser";
-import { extensionLog } from "../../../../logger";
+import { extensionLog } from "../../../../../logger";
 import { findFieldInput } from "../../helpers/harvest-helpers";
 import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
-import { type LayoutSectionField, factoryItemGraphNodeData, type LayoutDevice, type ScControl, type ItemGraphNodeData } from "../../../../features/reference-model/sitecore-item.types";
+import { type LayoutSectionField, factoryItemGraphNodeData, type LayoutDevice, type ScControl, type ItemGraphNodeData } from "../../../../../features/reference-model/sitecore-item.types";
 import type { HarvestContext } from "../../../sitecore-harvester.types";
 
 export const collectLayouts = async (

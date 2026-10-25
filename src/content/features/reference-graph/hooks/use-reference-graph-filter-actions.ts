@@ -6,7 +6,7 @@ import { setReferenceGraphFilters } from "../../../../shared/reference-graph-set
 import type {
   SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
-} from "../../../sitecore-harvester/sitecore-harvester.types";
+} from "../../../foundation/harvesting/sitecore-harvester.types";
 import { createAllFiltersState } from "../graph-filters";
 import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
 import type { HarvestForLink } from "../graph.types";

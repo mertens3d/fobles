@@ -1,8 +1,8 @@
-// @source-path [fobles] src/content/sitecore-harvester/planner/harvest-task-planner.ts
+// @source-path [fobles] src/content/foundation/harvesting/planner/harvest-task-planner.ts
 
-import { isGuidLike } from "../../features/augmentor/shared/guid";
+import { isGuidLike } from "../../../features/augmentor/shared/guid";
 import type { HarvestRequest, SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../sitecore-harvester.types";
-import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../foundation/workers/tasks/worker-task.types";
+import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../workers/tasks/worker-task.types";
 
 export type CollectorFilterKey = Exclude<keyof SitecoreHarvestFiltersState, "template">;
 export type CollectorTaskType = Exclude<WorkerTaskType, "get-quick-info" | "set-raw-values" | "set-standard-fields">;

@@ -1,10 +1,10 @@
-// @source-path [fobles] src/content/sitecore-harvester/collectors/section-collector/section-collector.ts
+// @source-path [fobles] src/content/foundation/harvesting/collectors/section-collector/section-collector.ts
 
-import { CONST } from "../../../../constants/const";
-import { SITECORE } from "../../../../constants/sitecore";
-import { type SitecoreHarvestSection, type SitecoreHarvestField, type ItemGraphNodeData, factoryItemGraphNodeData, type HarvestFieldLink } from "../../../features/reference-model/sitecore-item.types";
-import { isGuidLike } from "../../../features/augmentor/shared/guid";
-import { resolveFieldReferences } from "../../../field-reference-resolution/field-reference-resolution";
+import { CONST } from "../../../../../constants/const";
+import { SITECORE } from "../../../../../constants/sitecore";
+import { type SitecoreHarvestSection, type SitecoreHarvestField, type ItemGraphNodeData, factoryItemGraphNodeData, type HarvestFieldLink } from "../../../../features/reference-model/sitecore-item.types";
+import { isGuidLike } from "../../../../features/augmentor/shared/guid";
+import { resolveFieldReferences } from "../../../../field-reference-resolution/field-reference-resolution";
 import type { HarvestContext } from "../../sitecore-harvester.types";
 import { extractFieldLabel, isHandledElsewhere, readRawFieldValue } from "../helpers/field-harvester";
 import { isStandardSectionName } from "./section-classification";
