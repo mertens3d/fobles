@@ -1,11 +1,11 @@
-// @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment-priority.ts
+// @source-path [fobles] src/content/shared/reference-model-processing/reference-model-processing-priority.ts
 
-import type { ItemGraphNodeData } from "../../reference-model/sitecore-item.types";
-import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
-import { firstItemNode } from "./enrichment-tree-state";
-import type { EnrichmentPriorityRank } from "./enrichment.types";
+import type { ItemGraphNodeData } from "../../features/reference-model/sitecore-item.types";
+import type { ReferenceModelNode } from "../../features/reference-model/reference-model.types";
+import { firstItemNode } from "./reference-model-processing-tree-state";
+import type { ReferenceModelProcessingPriorityRank } from "./reference-model-processing.types";
 
-export function rankItemForEnrichment(item: ItemGraphNodeData): EnrichmentPriorityRank {
+export function rankItemForEnrichment(item: ItemGraphNodeData): ReferenceModelProcessingPriorityRank {
   if (!item.scItemName) {
     return 0;
   }
@@ -35,7 +35,7 @@ function rankOfGuid(
   guid: string,
   guidLookup: Map<string, string[]>,
   nodesById: Map<string, ReferenceModelNode>,
-): EnrichmentPriorityRank {
+): ReferenceModelProcessingPriorityRank {
   const representative = firstItemNode(guidLookup.get(guid) ?? [], nodesById);
 
   return representative ? rankItemForEnrichment(representative.scItem) : 0;

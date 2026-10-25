@@ -5,7 +5,7 @@ import {
   TEXT
 } from "../../constants/fobles.constants";
 import { FOBLES } from "../../constants/fobles";
-import { openReferenceGraph } from "../features/reference-graph/reference-graph";
+import { publishFoblesShellCommand } from "../shell/shell-events";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import {
   openJumpFlyoutOnHover,
@@ -34,13 +34,8 @@ export function createFoblesNavButton(
   button.className = options.className;
   button.textContent = options.text;
   button.title = options.title;
-  button.setAttribute(
-    FOBLES.ATTRIBUTES.DATA.KEY.FOBLES_NAV_OWNER,
-    FOBLES.ATTRIBUTES.DATA.VALUE.PERSISTENT,
-  );
-  if (options.role) {
-    button.setAttribute(FOBLES.ATTRIBUTES.DATA.KEY.NAV_BUTTON_ROLE, options.role);
-  }
+  button.setAttribute(FOBLES.ATTRIBUTES.DATA.KEY.FOBLES_NAV_OWNER, FOBLES.ATTRIBUTES.DATA.VALUE.PERSISTENT);
+  if (options.role) button.setAttribute(FOBLES.ATTRIBUTES.DATA.KEY.NAV_BUTTON_ROLE, options.role);
   button.addEventListener("click", options.onClick);
   return button;
 }
@@ -53,7 +48,6 @@ export function createJumpsFlyoutTrigger(context: ToolbarContext): HTMLDivElemen
     title: TEXT.QUICK_MENU_TITLE,
     onClick: () => toggleJumpFlyout(context),
   });
-
   return createFlyoutTrigger(context, button, CLASS.JUMP_FLYOUT.TRIGGER, {
     open: () => openJumpFlyoutOnHover(context.doc),
     scheduleClose: () => scheduleCloseJumpFlyoutOnHover(context.doc),
@@ -76,34 +70,38 @@ export function createGraphButton(context: ToolbarContext): HTMLButtonElement {
     role: FOBLES.ATTRIBUTES.DATA.NAV_BUTTON_ROLE.GRAPH,
     text: "",
     title: TEXT.GRAPH_TITLE,
-    onClick: () => { void openReferenceGraph(context.doc); },
+    onClick: () => publishFoblesShellCommand("reference-graph:open", context.doc),
   });
   button.setAttribute("aria-label", TEXT.GRAPH_TITLE);
-
   const icon = context.doc.createElement("img");
   icon.className = CLASS.TOOLBAR_GRAPH_ICON;
   icon.src = chrome.runtime.getURL(ICONS.GRAPH);
   icon.alt = "";
   button.appendChild(icon);
-
   return button;
 }
 
-export function createToolbarCloseButton(
-  context: ToolbarContext,
-): HTMLButtonElement {
+export function createAuditorButton(context: ToolbarContext): HTMLButtonElement {
+  return createFoblesNavButton(context, {
+    className: CLASS.TOOLBAR_AUDITOR_BUTTON,
+    role: FOBLES.ATTRIBUTES.DATA.NAV_BUTTON_ROLE.AUDITOR,
+    text: SYMBOLS.MAGNIFIER,
+    title: TEXT.AUDITOR_TITLE,
+    onClick: () => publishFoblesShellCommand("auditor:open", context.doc),
+  });
+}
+
+export function createToolbarCloseButton(context: ToolbarContext): HTMLButtonElement {
   const button = context.doc.createElement("button");
   button.type = "button";
   button.className = CLASS.TOOLBAR_CLOSE_BUTTON;
   button.title = TEXT.HIDE_NAV;
   button.setAttribute("aria-label", TEXT.HIDE_NAV);
-
   const icon = context.doc.createElement("img");
   icon.className = CLASS.TOOLBAR_CLOSE_ICON;
   icon.src = ICONS.CLOSE;
   icon.alt = "";
   button.appendChild(icon);
-
   button.addEventListener("click", () => context.setVisible(false));
   return button;
 }
@@ -115,7 +113,6 @@ export function createToolbarGrip(context: ToolbarContext): SVGSVGElement {
   svg.setAttribute("viewBox", "0 0 12 24");
   svg.setAttribute("aria-hidden", "true");
   svg.setAttribute("focusable", "false");
-
   const rowSpacing = 24 / (GRIP_ROWS + 1);
   for (let row = 1; row <= GRIP_ROWS; row += 1) {
     for (const x of GRIP_COLUMNS) {
@@ -127,13 +124,10 @@ export function createToolbarGrip(context: ToolbarContext): SVGSVGElement {
       svg.appendChild(dot);
     }
   }
-
   return svg;
 }
 
-export function createSetIseTabTitleButton(
-  context: ToolbarContext,
-): HTMLButtonElement {
+export function createSetIseTabTitleButton(context: ToolbarContext): HTMLButtonElement {
   return createFoblesNavButton(context, {
     className: `${CLASS.FOBLES_NAV_BUTTON} ${CLASS.TOOLBAR_SET_ISE_TITLE_BUTTON}`,
     text: TEXT.SET_ISE_TAB_TITLE,
@@ -144,7 +138,6 @@ export function createSetIseTabTitleButton(
         context.win.alert(TEXT.SET_ISE_TAB_TITLE_ERROR);
         return;
       }
-
       context.doc.title = title;
     },
   });

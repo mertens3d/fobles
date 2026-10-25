@@ -55,7 +55,7 @@ const getSectionField = (marker: HTMLElement): SitecoreHarvestField => {
 
   if (sectionField.label && !isHandledElsewhere(sectionField.label)) {
     const rawValue = readRawFieldValue(marker);
-    const resolution = resolveFieldReferences(marker, rawValue);
+    const resolution = resolveFieldReferences(marker, rawValue, sectionField.label);
 
     sectionField.value = resolution.displayValue;
     sectionField.links = resolution.references.map((reference): HarvestFieldLink => ({

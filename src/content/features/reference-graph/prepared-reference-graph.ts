@@ -8,7 +8,7 @@ import type {
 } from "../../sitecore-harvester/sitecore-harvester.types";
 import { createReferenceModel } from "../reference-model/reference-model-builder";
 import { buildReferenceModelNodeLookup } from "../reference-model/reference-model-node-lookup";
-import type { ProcessingStatus } from "./lifecycle/processing-state";
+import type { ProcessingStatus } from "../../shared/reference-model-processing/processing-state";
 import { projectReferenceModelToGraphElements } from "./graph-nodes/graph-elements";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 

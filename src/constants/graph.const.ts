@@ -1,183 +1,43 @@
 // @source-path [fobles] src/constants/graph.const.ts
-
 import type cytoscape from "cytoscape";
 import type { LayoutGraphPresetName } from "../content/features/reference-graph/graph.types";
-import type {
-  SitecoreHarvestFiltersState,
-  StepKey,
-} from "../content/sitecore-harvester/sitecore-harvester.types";
-import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState, StepKey } from "../content/sitecore-harvester/sitecore-harvester.types";
+import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE.ts";
 import type { LayoutPreset } from "./_base/const.types";
-
 export const REFERENCE_GRAPH = {
   // The persisted-log message type is a background/options feature unrelated to the worker
   // pool's own protocol - kept here rather than moving with WORKER_MESSAGE_TYPE
   // (sitecore-worker/worker-protocol.const.ts).
   FOBLES_PERSIST_LOG: "FOBLES_PERSIST_LOG" as const,
-
-  TEXT: {
-    BUILDING_REFERENCE_GRAPH: "Building reference graph...",
-  },
-
-  EDGE_IDS: {
-    EDGE_LAYOUT: "edge-layout",
-    CHILDREN: "edge-children",
-    REFERRERS: "edge-referrers",
-  },
-
+  TEXT: { BUILDING_REFERENCE_GRAPH: "Building reference graph..." },
+  EDGE_IDS: { EDGE_LAYOUT: "edge-layout", CHILDREN: "edge-children", REFERRERS: "edge-referrers" },
   FILTER_CLASS: _REFERENCE_GRAPH_BASE.FILTER_CLASS,
-
   NODE_ID: {
     SHARED_LAYOUT_NODE_ID: "fobles-reference-graph-shared-layout",
     BASE_LAYOUT_NODE_ID: "fobles-reference-graph-layout-",
-    SHARED_LAYOUT_DEVICE_NODE_ID:
-      "fobles-reference-graph-shared-layout-device-default",
+    SHARED_LAYOUT_DEVICE_NODE_ID: "fobles-reference-graph-shared-layout-device-default",
     FINAL_LAYOUT_NODE_ID: "fobles-reference-graph-final-layout",
-    FINAL_LAYOUT_DEVICE_NODE_ID:
-      "fobles-reference-graph-final-layout-device-default",
+    FINAL_LAYOUT_DEVICE_NODE_ID: "fobles-reference-graph-final-layout-device-default",
     MAIN_LAYOUT_BOX_NODE_ID: "fobles-reference-graph-layout-box",
   },
-
-  LAYOUT_SCOPE: {
-    DATASOURCE: "Datasource",
-    PARAMETER: "Parameter",
-    PARAMETERS: "Parameters",
-    PLACEHOLDER: "Placeholder",
-  } as const,
-
+  LAYOUT_SCOPE: { DATASOURCE: "Datasource", PARAMETER: "Parameter", PARAMETERS: "Parameters", PLACEHOLDER: "Placeholder" } as const,
   NODE_KIND: _REFERENCE_GRAPH_BASE.NODE_KIND,
   DEFAULT_LAYOUT_PRESET_NAME: "dagre" as LayoutGraphPresetName,
-
   FILTER_DEFS: [
-    {
-      key: "parent",
-      stepKey: "parent",
-      label: "Parent",
-      className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.parent,
-    },
-    {
-      key: "children",
-      stepKey: "children",
-      label: "Children",
-      className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.children,
-    },
-    {
-      key: "layouts",
-      stepKey: "layouts",
-      label: "Layouts",
-      className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.layouts,
-    },
-    {
-      key: "referrers",
-      stepKey: "referrers",
-      label: "Referrers",
-      className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.referrers,
-    },
-    {
-      key: "customFields",
-      stepKey: "sections",
-      label: "Custom Fields",
-      className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.customFields,
-    },
-    {
-      key: "standardFields",
-      stepKey: "sections",
-      label: "Standard Fields",
-      className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.standardFields,
-    },
-    {
-      key: "template",
-      stepKey: "template",
-      label: "Template",
-      className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.template,
-    },
-  ] as ReadonlyArray<{
-    key: keyof SitecoreHarvestFiltersState;
-    stepKey: StepKey;
-    label: string;
-    className: string;
-  }>,
-
-  DOM: {
-    IDS: {
-      DIALOG_ID: "fobles-reference-graph-dialog",
-      PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
-      GRAPH_CLOSE_BUTTON_ID: "fobles-reference-graph-close",
-    }
-  },
-
+    { key: "parent", stepKey: "parent", label: "Parent", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.parent },
+    { key: "children", stepKey: "children", label: "Children", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.children },
+    { key: "layouts", stepKey: "layouts", label: "Layouts", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.layouts },
+    { key: "referrers", stepKey: "referrers", label: "Referrers", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.referrers },
+    { key: "customFields", stepKey: "sections", label: "Custom Fields", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.customFields },
+    { key: "standardFields", stepKey: "sections", label: "Standard Fields", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.standardFields },
+    { key: "template", stepKey: "template", label: "Template", className: _REFERENCE_GRAPH_BASE.FILTER_CLASS.template },
+  ] as ReadonlyArray<{ key: keyof SitecoreHarvestFiltersState; stepKey: StepKey; label: string; className: string }>,
+  DOM: { IDS: { DIALOG_ID: "fobles-reference-graph-dialog", PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog" } },
   LAYOUT_PRESETS: {
-    dagre: {
-      label: "Dagre (tree)",
-      edgeStyle: "taxi",
-      build: (_rootTreeNodeId: string) =>
-        ({
-          name: "dagre",
-          rankDir: "TB",
-          align: "UL",
-          ranker: "tight-tree",
-          nodeSep: 25,
-          rankSep: 50,
-          edgeSep: 10,
-          nodeDimensionsIncludeLabels: true,
-          fit: true,
-          padding: 20,
-        }) as unknown as cytoscape.LayoutOptions,
-    },
-
-    "cose-bilkent": {
-      label: "CoSE Bilkent (organic)",
-      build: (_rootTreeNodeId: string) =>
-        ({
-          name: "cose-bilkent",
-          fit: false,
-          edgeStyle: "bezier",
-          padding: 20,
-          animate: false,
-          // idealEdgeLength: 140
-          nodeRepulsion: 8000,
-          nodeDimensionsIncludeLabels: true,
-          randomize: false,
-          initialEnergyOnIncremental: 0.2,
-        }) as unknown as cytoscape.LayoutOptions,
-    },
-
-    fcose: {
-      label: "fCoSE (organic, fast)",
-      edgeStyle: "bezier",
-      build: (_rootTreeNodeId: string) =>
-        ({
-          name: "fcose",
-          fit: false,
-          padding: 20,
-          animate: false,
-          randomize: false,
-          initialEnergyOnIncremental: 0.2,
-        }) as unknown as cytoscape.LayoutOptions,
-    },
-
-    breadthfirst: {
-      label: "Breadthfirst (tree, directed)",
-      edgeStyle: "taxi",
-      build: (rootTreeNodeId: string) =>
-        ({
-          name: "breadthfirst",
-          directed: true,
-          direction: "downward",
-          roots: `[id = "${rootTreeNodeId}"]`,
-          maximal: false,
-          circle: false,
-          grid: true,
-          spacingFactor: 1.1,
-          avoidOverlap: true,
-          nodeDimensionsIncludeLabels: true,
-          fit: false,
-          padding: 20,
-        }) as unknown as cytoscape.LayoutOptions,
-    },
+    dagre: { label: "Dagre (tree)", edgeStyle: "taxi", build: (_rootTreeNodeId: string) => ({ name: "dagre", rankDir: "TB", align: "UL", ranker: "tight-tree", nodeSep: 25, rankSep: 50, edgeSep: 10, nodeDimensionsIncludeLabels: true, fit: true, padding: 20 }) as unknown as cytoscape.LayoutOptions },
+    "cose-bilkent": { label: "CoSE Bilkent (organic)", build: (_rootTreeNodeId: string) => ({ name: "cose-bilkent", fit: false, edgeStyle: "bezier", padding: 20, animate: false, nodeRepulsion: 8000, nodeDimensionsIncludeLabels: true, randomize: false, initialEnergyOnIncremental: 0.2 }) as unknown as cytoscape.LayoutOptions },
+    fcose: { label: "fCoSE (organic, fast)", edgeStyle: "bezier", build: (_rootTreeNodeId: string) => ({ name: "fcose", fit: false, padding: 20, animate: false, randomize: false, initialEnergyOnIncremental: 0.2 }) as unknown as cytoscape.LayoutOptions },
+    breadthfirst: { label: "Breadthfirst (tree, directed)", edgeStyle: "taxi", build: (rootTreeNodeId: string) => ({ name: "breadthfirst", directed: true, direction: "downward", roots: `[id = "${rootTreeNodeId}"]`, maximal: false, circle: false, grid: true, spacingFactor: 1.1, avoidOverlap: true, nodeDimensionsIncludeLabels: true, fit: false, padding: 20 }) as unknown as cytoscape.LayoutOptions },
   } as Record<LayoutGraphPresetName, LayoutPreset>,
-
-  DEFAULT_LAYOUT_PRESET: {
-    LayoutPresetName: "dagre",
-  },
+  DEFAULT_LAYOUT_PRESET: { LayoutPresetName: "dagre" },
 };

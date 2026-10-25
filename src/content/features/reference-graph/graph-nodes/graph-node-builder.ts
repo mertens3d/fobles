@@ -1,7 +1,7 @@
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
-import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../lifecycle/processing-state";
+import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../../../shared/reference-model-processing/processing-state";
 import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "./graph-collapse.types";
 import { kindClass } from "./graph-helpers";
 import { resolveNodeLabel } from "./node-label-resolver";

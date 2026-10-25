@@ -47,6 +47,10 @@ export const SITECORE = {
       "version",
       "workflow",
     ]),
+    // These Standard Template fields hold Sitecore revision stamps, not item references - their
+    // values are GUID-shaped by coincidence of format, never a droplink/droptree/etc relationship.
+    // Generic GUID inference must never treat them as field-reference item nodes.
+    NON_REFERENCE_GUID_FIELD_LABELS_LC: new Set(["revision", "shared revision", "unversioned revision"]),
   },
   // Named so every path used to build FOBLES_PAGES has an identifier, not just a bare literal.
   RELATIVE_PATHS_ENCODED: {

@@ -1,0 +1,19 @@
+.fobles-dialog-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  z-index: 10;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border: 1px solid #7f9bc4;
+  border-radius: 3px;
+  background: #fff;
+  cursor: pointer;
+  &:hover { background: #eef4ff; }
+  &:focus-visible { outline: 2px solid #2f6fed; outline-offset: 2px; }
+  &-icon { display: block; width: 16px; height: 16px; pointer-events: none; }
+}

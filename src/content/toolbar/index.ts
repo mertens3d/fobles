@@ -9,6 +9,7 @@ import { setProxyFlyoutVisible } from "./sc-proxy-buttons";
 import {
   createLboltButton,
   createGraphButton,
+  createAuditorButton,
   createJumpsFlyoutTrigger,
   createSetIseTabTitleButton,
   createToolbarCloseButton,
@@ -55,6 +56,7 @@ export function injectToolbar(context: ToolbarContext): void {
 
   if (isCompactToolbar) {
     body.querySelector(SELECTORS.TOOLBAR_GRAPH_BUTTON)?.remove();
+    body.querySelector(SELECTORS.TOOLBAR_AUDITOR_BUTTON)?.remove();
     body.querySelector(SELECTORS.JUMP_FLYOUT_TRIGGER)?.remove();
     body.querySelector(SELECTORS.PROXY_BUTTONS_TRIGGER)?.remove();
     body.querySelector(SELECTORS.TOOLBAR_SET_ISE_TITLE_BUTTON)?.remove();
@@ -76,6 +78,10 @@ export function injectToolbar(context: ToolbarContext): void {
 
   if (!body.querySelector(SELECTORS.TOOLBAR_GRAPH_BUTTON)) {
     body.appendChild(createGraphButton(context));
+  }
+
+  if (!body.querySelector(SELECTORS.TOOLBAR_AUDITOR_BUTTON)) {
+    body.appendChild(createAuditorButton(context));
   }
 
   const setIseTitleButton = body.querySelector(

@@ -1,6 +1,9 @@
 @use "content-editor-fields";
 @use "content-editor-tree";
 @use "fobles-flyout";
+@use "reference-model";
 @use "reference-graph";
+@use "dialog";
+@use "auditor";
 @use "iframe-workers";
 @use "fobles-error";

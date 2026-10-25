@@ -52,7 +52,7 @@ export type GraphState = {
   setControlsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
 
   treeDataVisible: boolean;
-  setTreeDataVisible: React.Dispatch<React.SetStateAction<boolean>>;
+  setReferenceModelVisible: React.Dispatch<React.SetStateAction<boolean>>;
 
   selectedTreeNodeId: string | undefined;
   setSelectedTreeNodeId: React.Dispatch<React.SetStateAction<string | undefined>>;
@@ -105,7 +105,7 @@ export function useReferenceGraph({
   const [buildElapsedSeconds, setBuildElapsedSeconds] =
     useState<number | undefined>(undefined);
   const [controlsExpanded, setControlsExpanded] = useState(true);
-  const [treeDataVisible, setTreeDataVisible] = useState(false);
+  const [treeDataVisible, setReferenceModelVisible] = useState(false);
   const [selectedTreeNodeId, setSelectedTreeNodeId] =
     useState<string | undefined>(undefined);
   const [enrichmentProgress, setEnrichmentProgress] =
@@ -137,7 +137,7 @@ export function useReferenceGraph({
     controlsExpanded,
     setControlsExpanded,
     treeDataVisible,
-    setTreeDataVisible,
+    setReferenceModelVisible,
     selectedTreeNodeId,
     setSelectedTreeNodeId,
     enrichmentProgress,

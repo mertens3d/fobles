@@ -3,7 +3,7 @@
 import type cytoscape from "cytoscape";
 import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
 import { getGraphOwnedClasses, projectGraphNode } from "../graph-nodes/graph-node-builder";
-import type { ProcessingStateByTreeNodeId } from "../lifecycle/processing-state";
+import type { ProcessingStateByTreeNodeId } from "../../../shared/reference-model-processing/processing-state";
 import { getGraphPresentationState } from "../graph-nodes/graph-presentation-state";
 
 type ProjectedGraphNodeData = ReturnType<typeof projectGraphNode>["data"];

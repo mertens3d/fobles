@@ -1,7 +1,7 @@
-import type { ItemGraphNodeData } from "../../reference-model/sitecore-item.types";
-import type { ReferenceModelNode, ReferenceModelItemNode } from "../../reference-model/reference-model.types";
+import type { ItemGraphNodeData } from "../../features/reference-model/sitecore-item.types";
+import type { ReferenceModelNode, ReferenceModelItemNode } from "../../features/reference-model/reference-model.types";
 
-// @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment-tree-state.ts
+// @source-path [fobles] src/content/shared/reference-model-processing/reference-model-processing-tree-state.ts
 export function itemsFor(treeNodeIds: readonly string[], nodesById: Map<string, ReferenceModelNode>): ItemGraphNodeData[] {
   return treeNodeIds.map((treeNodeId) => asItemNode(nodesById.get(treeNodeId))).filter((treeNode): treeNode is ReferenceModelItemNode => Boolean(treeNode)).map((treeNode) => treeNode.scItem);
 }

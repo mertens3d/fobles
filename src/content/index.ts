@@ -1,12 +1,36 @@
 /// <reference types="chrome" />
 
+import { CONST } from "../constants/const";
 import { extensionLog } from "./logger";
 import { receiveActivityMessage } from "./shared/activity/activity-events";
-import { registerWorkerTabHandler } from "./sitecore-worker/transport/worker-tab-handler";
+import { startFoblesShellRuntime } from "./shell/shell-runtime";
+import { buildItemGraphNodeDataFromDoc } from "./sitecore-harvester/enrichment/item-enricher";
 import { executeWorkerTask } from "./sitecore-harvester/worker-task-executor";
+import { registerWorkerTabHandler } from "./sitecore-worker/transport/worker-tab-handler";
 import { startToolbarRuntime } from "./toolbar-runtime";
 
-extensionLog.info("Content script loaded. Press Ctrl+Shift+E to toggle.");
-chrome.runtime.onMessage.addListener((message: unknown) => { receiveActivityMessage(message); });
-registerWorkerTabHandler(executeWorkerTask);
-startToolbarRuntime();
+function getWorkerId(): string | null {
+  return new URLSearchParams(window.location.search).get(CONST.FOBLES.WORKER_POOL.WORKER_ID_QUERY_PARAMETER);
+}
+
+function isSitecoreItemDocumentReady(doc: Document): boolean {
+  const item = buildItemGraphNodeDataFromDoc(doc);
+  return Boolean(item.scItemId || item.scItemPath);
+}
+
+function startWorkerRuntime(workerId: string): void {
+  extensionLog.debug("Content runtime: starting worker mode", { workerId });
+  registerWorkerTabHandler(executeWorkerTask, isSitecoreItemDocumentReady);
+}
+
+function startNormalRuntime(): void {
+  extensionLog.info("Content script loaded. Press Ctrl+Shift+E to toggle.");
+  chrome.runtime.onMessage.addListener((message: unknown) => { receiveActivityMessage(message); });
+  registerWorkerTabHandler(executeWorkerTask, isSitecoreItemDocumentReady);
+  startFoblesShellRuntime(document, window);
+  startToolbarRuntime();
+}
+
+const workerId = getWorkerId();
+if (workerId) startWorkerRuntime(workerId);
+else startNormalRuntime();

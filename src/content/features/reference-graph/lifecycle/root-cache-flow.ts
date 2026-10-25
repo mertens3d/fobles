@@ -2,8 +2,8 @@
 
 import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../../sitecore-harvester/sitecore-harvester.types";
 import type { SitecoreDataCacheRecord } from "../../../sitecore-data-cache/sitecore-data-cache.types";
-import type { ProcessingStatus } from "./processing-state";
 import type { RootItem } from "../../reference-model/sitecore-item.types";
+import type { ProcessingStatus } from "../../../shared/reference-model-processing/processing-state";
 
 export type RootCacheDecision =
   // Cached revision matches the live revision - cached data is trusted as-is, no re-harvest.

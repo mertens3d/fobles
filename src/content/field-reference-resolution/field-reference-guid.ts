@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/field-reference-resolution/field-reference-guid.ts
 
-import { GUID_PATTERN } from "../features/augmentor/shared/guid";
+import { GUID_PATTERN } from "../features/augmentor/shared/guid.ts";
 
 // Generic GUID fallback for fields no known strategy claims: every distinct GUID found anywhere
 // in the raw value, first-occurrence order, deduplicated case-insensitively. Reuses the one

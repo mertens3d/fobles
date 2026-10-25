@@ -18,7 +18,7 @@ import { GraphToolBarHeaderButton } from "./graph-toolbar-header-button";
 import { GraphTypeSelect } from "./graph-type-select";
 import { GraphViewControls } from "./graph-view-controls";
 import { ParameterVisibilityControls } from "./parameter-visibility-controls";
-import { ViewTreeDataButton } from "./view-tree-data-button";
+import { ViewReferenceModelButton } from "../../reference-model/components/view-reference-model-button";
 import { GraphHelpDialog, useGraphHelpDialog } from "./graph-help-dialog";
 
 export type GraphToolbarHandle = {
@@ -51,7 +51,7 @@ type ToolbarProps = {
   buildElapsedSeconds: number | undefined;
   harvestProgress: PhaseProgress | undefined;
   enrichmentProgress: EnrichmentProgressData | undefined;
-  onViewTreeData: () => void;
+  onViewReferenceModel: () => void;
 };
 
 export function GraphToolbar({
@@ -72,7 +72,7 @@ export function GraphToolbar({
   buildElapsedSeconds,
   harvestProgress,
   enrichmentProgress,
-  onViewTreeData,
+  onViewReferenceModel,
 }: ToolbarProps) {
   const { dialogRef, showGraphHelp } = useGraphHelpDialog();
   const resolveProgress: PhaseProgress | undefined = enrichmentProgress && {
@@ -119,8 +119,9 @@ export function GraphToolbar({
             onChange={onParameterVisibilityChange}
           />
 
-          <ViewTreeDataButton
-            onViewTreeData={onViewTreeData}
+          <ViewReferenceModelButton
+            onViewReferenceModel={onViewReferenceModel}
+            className="fobles-reference-graph-button fobles-reference-graph-view-reference-model"
           />
         </div>
       )}

@@ -1,0 +1,38 @@
+.fobles-auditor-dialog {
+  width: min(1100px, 92vw);
+  height: min(720px, 88vh);
+  padding: 16px;
+  border: none;
+  border-radius: 8px;
+  background: #fff;
+  color: #203047;
+  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+  &::backdrop { background: rgba(0, 0, 0, 0.45); }
+}
+.fobles-auditor-app { display: flex; flex-direction: column; gap: 10px; height: 100%; font: 13px/1.4 Arial, sans-serif; }
+.fobles-auditor-summary {
+  display: flex; gap: 16px; padding-right: 40px; font-weight: 600;
+  &-item--pending { color: #7a6a00; }
+  &-item--passed { color: #1b7a3a; }
+  &-item--warning { color: #9b7a00; }
+  &-item--error { color: #9b1c1c; }
+}
+.fobles-auditor-toolbar {
+  display: flex; flex-wrap: wrap; align-items: center; gap: 12px;
+  &-search { flex: 1; min-width: 180px; padding: 6px 8px; border: 1px solid #7f9bc4; border-radius: 3px; }
+  &-filters { display: flex; flex-wrap: wrap; gap: 8px; }
+  &-filter { display: inline-flex; align-items: center; gap: 4px; white-space: nowrap; }
+  &-export { padding: 6px 14px; border: 1px solid #7f9bc4; border-radius: 3px; background: #fff; cursor: pointer; }
+}
+.fobles-auditor-grid { flex: 1; min-height: 0; }
+.fobles-auditor-status {
+  display: inline-flex; align-items: center; gap: 6px;
+  &--pending { color: #7a6a00; }
+  &--passed { color: #1b7a3a; }
+  &--warning { color: #9b7a00; }
+  &--error { color: #9b1c1c; }
+}
+.fobles-auditor-item-cell {
+  display: inline-flex; align-items: center; gap: 6px;
+  &-icon { width: 16px; height: 16px; }
+}

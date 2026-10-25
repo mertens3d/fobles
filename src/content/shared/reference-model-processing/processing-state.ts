@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-graph/lifecycle/processing-state.ts
+// @source-path [fobles] src/content/shared/reference-model-processing/processing-state.ts
 export type ProcessingStatus = "pending" | "enriching" | "enriched" | "verified" | "stale" | "unverified" | "not-found" | "failed";
 export type ProcessingStateByTreeNodeId = Map<string, ProcessingStatus>;
 export function setProcessingState(treeNodeIds: readonly string[], stateByTreeNodeId: ProcessingStateByTreeNodeId, status: ProcessingStatus): void {

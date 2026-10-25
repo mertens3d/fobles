@@ -4,9 +4,11 @@ import type { AllowedPage } from "./constants.types";
 
 export const SYMBOLS = {
     LIGHTNING: "\u26A1\uFE0E",
+    MAGNIFIER: "\u{1F50D}\uFE0E",
 } as const;
 
 export const TEXT = {
+    AUDITOR_TITLE: "Audit the Reference Model for this item",
     DRAG_NAV: "Drag to move Fobles navigation",
     GRAPH_TITLE: "Build a reference graph for this item",
     GROUP_NAME: {
@@ -63,6 +65,7 @@ export const CLASS = {
         TRIGGER: "fobles-jump-flyout-trigger",
     },
     TOOLBAR_BODY: "fobles-toolbar-body",
+    TOOLBAR_AUDITOR_BUTTON: "fobles-nav-button fobles-nav-auditor-button",
     TOOLBAR_CLOSE_BUTTON: "fobles-toolbar-close-button",
     TOOLBAR_CLOSE_ICON: "fobles-toolbar-close-icon",
     TOOLBAR_CONTAINER: "fobles-toolbar-container",
@@ -84,6 +87,7 @@ export const SELECTORS = {
     JUMP_FLYOUT: ".fobles-jump-flyout-flyout",
     JUMP_FLYOUT_TRIGGER: ".fobles-jump-flyout-trigger",
     TEMPLATE_BUTTON: "[data-template-button='1']",
+    TOOLBAR_AUDITOR_BUTTON: ".fobles-nav-auditor-button",
     TOOLBAR_BODY: ".fobles-toolbar-body",
     TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",
     TOOLBAR_CONTAINER: ".fobles-toolbar-container",

@@ -2,35 +2,39 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { processingIconKeyForStatus } from "../../../src/content/features/reference-graph/graph-nodes/processing-icon.ts";
+import { iconForProcessingState } from "../../../src/content/features/reference-graph/graph-nodes/processing-icon.ts";
+import { CONST } from "../../../src/constants/const.ts";
+
+const ITEM_ICON = "/~/icon/some/16x16/item.png";
+const ICONS = CONST.SITECORE.ICONS.PROCESSING_STATE;
 
 void test("pending/enriching status shows Hourglass", () => {
-  assert.equal(processingIconKeyForStatus("pending"), "hourglass");
-  assert.equal(processingIconKeyForStatus("enriching"), "hourglass");
+  assert.equal(iconForProcessingState("pending", ITEM_ICON), ICONS.HOURGLASS);
+  assert.equal(iconForProcessingState("enriching", ITEM_ICON), ICONS.HOURGLASS);
 });
 
-void test("enriched/verified status shows Check", () => {
-  assert.equal(processingIconKeyForStatus("enriched"), "check");
-  assert.equal(processingIconKeyForStatus("verified"), "check");
+void test("enriched/verified status shows the item's own icon unchanged (no badge)", () => {
+  assert.equal(iconForProcessingState("enriched", ITEM_ICON), ITEM_ICON);
+  assert.equal(iconForProcessingState("verified", ITEM_ICON), ITEM_ICON);
 });
 
 void test("stale status shows Refresh", () => {
-  assert.equal(processingIconKeyForStatus("stale"), "refresh");
+  assert.equal(iconForProcessingState("stale", ITEM_ICON), ICONS.REFRESH);
 });
 
 void test("failed/unverified/not-found status shows Warning", () => {
-  assert.equal(processingIconKeyForStatus("failed"), "warning");
-  assert.equal(processingIconKeyForStatus("unverified"), "warning");
-  assert.equal(processingIconKeyForStatus("not-found"), "warning");
+  assert.equal(iconForProcessingState("failed", ITEM_ICON), ICONS.WARNING);
+  assert.equal(iconForProcessingState("unverified", ITEM_ICON), ICONS.WARNING);
+  assert.equal(iconForProcessingState("not-found", ITEM_ICON), ICONS.WARNING);
 });
 
-void test("a successful re-harvest transitions a stale node's badge from Refresh to Check", () => {
+void test("a successful re-harvest transitions a stale node's badge from Refresh back to the item's own icon", () => {
   // Mirrors enrichment-controller.ts's harvest-queue onSettled handler: a stale node is marked
   // "enriched" once its re-harvest completes successfully.
-  assert.equal(processingIconKeyForStatus("stale"), "refresh");
-  assert.equal(processingIconKeyForStatus("enriched"), "check");
+  assert.equal(iconForProcessingState("stale", ITEM_ICON), ICONS.REFRESH);
+  assert.equal(iconForProcessingState("enriched", ITEM_ICON), ITEM_ICON);
 });
 
-void test("undefined status shows no badge", () => {
-  assert.equal(processingIconKeyForStatus(undefined), undefined);
+void test("undefined status shows the item's own icon unchanged", () => {
+  assert.equal(iconForProcessingState(undefined, ITEM_ICON), ITEM_ICON);
 });

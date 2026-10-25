@@ -8,6 +8,7 @@ import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
 import { DEBUG_WORKER_POOL } from "../worker-protocol.const";
 import { publishActivityToHost } from "../../shared/activity/activity-events";
 import { labelForWorkerTask } from "../../shared/activity/activity-labels";
+import { getRuntimeSettings } from "../../runtime-settings/runtime-settings";
 
 const READY_TIMEOUT_MS = 20000;
 const MAX_EDITOR_STATE_CHANGES = 2;
@@ -53,13 +54,31 @@ async function finishRetiredWorker(context: WorkerExecutorContext, worker: PoolW
 async function retryOrResolveError(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask, errorMessage: string): Promise<void> {
   await closeWorker(context, worker);
 
+  const maxRecoveries = getRuntimeSettings().workerPool.workerMaxRecoveriesPerJob;
+
   if (!context.isCurrentGeneration()) {
     queued.resolve(createCancelledResult(queued.task));
-  } else if (!queued.retried) {
+  } else if (queued.recoveryCount < maxRecoveries) {
     queued.retried = true;
+    queued.recoveryCount += 1;
+    worker.recoveryCount += 1;
+    extensionLog.warn("Worker health: retrying job", {
+      taskId: queued.task.taskId,
+      taskType: queued.task.type,
+      recoveryCount: queued.recoveryCount,
+      maxRecoveries,
+      errorMessage,
+    });
     await runTaskOnNewWorker(context, context.createPendingWorker(), queued);
     context.scheduleNext();
   } else {
+    extensionLog.warn("Worker health: job recovery exhausted", {
+      taskId: queued.task.taskId,
+      taskType: queued.task.type,
+      recoveryCount: queued.recoveryCount,
+      maxRecoveries,
+      errorMessage,
+    });
     queued.resolve(createErrorResult(queued.task, errorMessage));
     context.scheduleNext();
   }
@@ -95,101 +114,48 @@ async function retryAfterDocumentStale(context: WorkerExecutorContext, worker: P
 
 async function runTaskOnWorker(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask): Promise<void> {
   const target = worker.target;
-
-  if (!target || isWorkerRetired(worker) || !context.isCurrentGeneration()) {
-    cancelStaleWorker(context, worker, queued);
-    return;
-  }
-
+  if (!target || isWorkerRetired(worker) || !context.isCurrentGeneration()) { cancelStaleWorker(context, worker, queued); return; }
   worker.state = "busy";
+  worker.lastProgressAt = performance.now();
+  worker.activeTaskId = queued.task.taskId;
   const workerKey = getWorkerTargetKey(target);
-
-  context.activeTaskByWorkerKey.set(workerKey, {
-    target,
-    requestId: queued.task.requestId,
-    taskId: queued.task.taskId,
-  });
-
+  const taskTimeoutMs = getRuntimeSettings().workerPool.taskTimeoutMs;
+  context.activeTaskByWorkerKey.set(workerKey, { target, requestId: queued.task.requestId, taskId: queued.task.taskId });
   let executionResult: Awaited<ReturnType<typeof sendTaskToWorkerTarget>> | undefined;
-
+  let timedOut = false;
+  let timeoutId: ReturnType<typeof setTimeout> | undefined;
   try {
-    publishActivityToHost(queued.hostTabId, {
-      source: "worker",
-      requestId: queued.task.requestId,
-      activityId: queued.task.taskId,
-      kind: queued.task.type,
-      label: labelForWorkerTask(queued.task),
-      state: "started",
-      detail: workerKey,
-    });
-
-    extensionLog.debug(`Worker pool[${workerKey}]: executing task`, {
-      workerKey,
-      taskId: queued.task.taskId,
-      taskType: queued.task.type,
-      url: queued.task.url,
-    });
-
-    executionResult = await sendTaskToWorkerTarget(target, queued.task);
+    publishActivityToHost(queued.hostTabId, { source: "worker", requestId: queued.task.requestId, activityId: queued.task.taskId, kind: queued.task.type, label: labelForWorkerTask(queued.task), state: "started", detail: workerKey });
+    extensionLog.debug(`Worker pool[${workerKey}]: executing task`, { workerKey, taskId: queued.task.taskId, taskType: queued.task.type, url: queued.task.url, taskTimeoutMs });
+    const timeout = new Promise<undefined>((resolve) => { timeoutId = setTimeout(() => { timedOut = true; resolve(undefined); }, taskTimeoutMs); });
+    executionResult = await Promise.race([sendTaskToWorkerTarget(target, queued.task), timeout]);
   } catch (error) {
     extensionLog.warn("Worker pool: task execution failed", { workerKey, task: queued.task, error });
+  } finally {
+    if (timeoutId !== undefined) clearTimeout(timeoutId);
+    context.activeTaskByWorkerKey.delete(workerKey);
   }
-
-  context.activeTaskByWorkerKey.delete(workerKey);
-
-  extensionLog.debug(
-    `Worker pool[${workerKey}]: task returned` +
-      ` taskId=${queued.task.taskId}` +
-      ` taskType=${queued.task.type}` +
-      ` resultStatus=${String(executionResult?.status)}` +
-      ` resultType=${String(executionResult?.type)}` +
-      ` editorStateChangeCount=${queued.editorStateChangeCount}`,
-  );
-
-  if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
-    await finishRetiredWorker(context, worker, queued);
+  if (timedOut) {
+    const message = `Worker task exceeded ${taskTimeoutMs} ms execution limit`;
+    extensionLog.warn("Worker pool: task execution timed out", { workerKey, taskId: queued.task.taskId, taskType: queued.task.type, url: queued.task.url, taskTimeoutMs });
+    publishActivityToHost(queued.hostTabId, { source: "worker", requestId: queued.task.requestId, activityId: queued.task.taskId, kind: queued.task.type, label: labelForWorkerTask(queued.task), state: "error", detail: message });
+    await retryOrResolveError(context, worker, queued, message);
     return;
   }
-
-  if (context.cancelledRequestIds.has(queued.task.requestId)) {
-    context.retireWorker(worker);
-    queued.resolve(createCancelledResult(queued.task));
-    await context.destroyRetiredWorker(worker, "cancelled-task-settled");
-    context.scheduleNext();
-    return;
-  }
-
+  extensionLog.debug(`Worker pool[${workerKey}]: task returned` + ` taskId=${queued.task.taskId}` + ` taskType=${queued.task.type}` + ` resultStatus=${String(executionResult?.status)}` + ` resultType=${String(executionResult?.type)}` + ` editorStateChangeCount=${queued.editorStateChangeCount}`);
+  if (isWorkerRetired(worker) || !context.isCurrentGeneration()) { await finishRetiredWorker(context, worker, queued); return; }
+  if (context.cancelledRequestIds.has(queued.task.requestId)) { context.retireWorker(worker); queued.resolve(createCancelledResult(queued.task)); await context.destroyRetiredWorker(worker, "cancelled-task-settled"); context.scheduleNext(); return; }
   if (executionResult?.status === "document-stale") {
-    extensionLog.debug(
-      `Worker pool: document-stale result intercepted` +
-        ` taskId=${queued.task.taskId}` +
-        ` taskType=${queued.task.type}` +
-        ` editorStateChangeCount=${queued.editorStateChangeCount}`,
-    );
-
+    extensionLog.debug(`Worker pool: document-stale result intercepted` + ` taskId=${queued.task.taskId}` + ` taskType=${queued.task.type}` + ` editorStateChangeCount=${queued.editorStateChangeCount}`);
     await retryAfterDocumentStale(context, worker, queued);
     return;
   }
-
   const result: WorkerTaskResult | undefined = executionResult;
-
-  if (!result) {
-    await retryOrResolveError(context, worker, queued, "Worker task failed with no result");
-    return;
-  }
-
+  if (!result) { await retryOrResolveError(context, worker, queued, "Worker task failed with no result"); return; }
   worker.state = "idle";
-
-  publishActivityToHost(queued.hostTabId, {
-    source: "worker",
-    requestId: queued.task.requestId,
-    activityId: queued.task.taskId,
-    kind: queued.task.type,
-    label: labelForWorkerTask(queued.task),
-    state: result.status === "cancelled" ? "cancelled" : result.status === "error" ? "error" : "completed",
-    detail: result.status,
-  });
-
+  worker.lastProgressAt = performance.now();
+  worker.activeTaskId = undefined;
+  publishActivityToHost(queued.hostTabId, { source: "worker", requestId: queued.task.requestId, activityId: queued.task.taskId, kind: queued.task.type, label: labelForWorkerTask(queued.task), state: result.status === "cancelled" ? "cancelled" : result.status === "error" ? "error" : "completed", detail: result.status });
   queued.resolve(result);
   context.scheduleNext();
 }

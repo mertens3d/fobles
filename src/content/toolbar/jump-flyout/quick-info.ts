@@ -1,4 +1,4 @@
-import { CONST } from "../../../constants/const";
+import { CONST } from "../../../constants/const.ts";
 import type { QuickInfo, QuickInfoTemplate } from "../types";
 
 export const getQuickInfo = (

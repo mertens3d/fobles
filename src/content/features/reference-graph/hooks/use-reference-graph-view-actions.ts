@@ -28,8 +28,8 @@ export type ReferenceGraphViewActions = {
   handleParameterVisibilityChange: (settings: GraphParameterVisibilitySettings) => void;
   handleLayoutChange: (value: LayoutGraphPresetName) => void;
   handleRelayout: () => void;
-  handleViewTreeData: () => void;
-  handleCloseTreeData: () => void;
+  handleViewReferenceModel: () => void;
+  handleCloseReferenceModel: () => void;
 };
 
 export function useReferenceGraphViewActions({
@@ -50,13 +50,13 @@ export function useReferenceGraphViewActions({
     };
   }, [graphState.setControlsExpanded]);
 
-  const handleViewTreeData = useCallback((): void => {
-    graphState.setTreeDataVisible(true);
-  }, [graphState.setTreeDataVisible]);
+  const handleViewReferenceModel = useCallback((): void => {
+    graphState.setReferenceModelVisible(true);
+  }, [graphState.setReferenceModelVisible]);
 
-  const handleCloseTreeData = useCallback((): void => {
-    graphState.setTreeDataVisible(false);
-  }, [graphState.setTreeDataVisible]);
+  const handleCloseReferenceModel = useCallback((): void => {
+    graphState.setReferenceModelVisible(false);
+  }, [graphState.setReferenceModelVisible]);
 
   const handleRelayout = useCallback((): void => {
     const cy = cyRef.current;
@@ -119,7 +119,7 @@ export function useReferenceGraphViewActions({
     handleParameterVisibilityChange,
     handleLayoutChange,
     handleRelayout,
-    handleViewTreeData,
-    handleCloseTreeData,
+    handleViewReferenceModel,
+    handleCloseReferenceModel,
   };
 }

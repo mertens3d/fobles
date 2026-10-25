@@ -1,5 +1,5 @@
-import { CONST } from "../../../../constants/const";
-import type { ProcessingStatus } from "../lifecycle/processing-state";
+import { CONST} from "../../../../constants/const.ts";
+import type { ProcessingStatus } from "../../../shared/reference-model-processing/processing-state.ts";
 
 export function iconForProcessingState(
   status: ProcessingStatus | undefined,

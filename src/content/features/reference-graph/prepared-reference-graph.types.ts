@@ -3,7 +3,7 @@
 import type cytoscape from "cytoscape";
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";
 import type { ReferenceModelNode } from "../reference-model/reference-model.types";
-import type { ProcessingStateByTreeNodeId } from "./lifecycle/processing-state";
+import type { ProcessingStateByTreeNodeId } from "../../shared/reference-model-processing/processing-state";
 
 // The fully prepared graph: the authoritative aggregate React state owns, replacing the old
 // "harvest result + throwaway Cytoscape elements" pair. The enriched reference model is retained

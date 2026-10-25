@@ -165,6 +165,9 @@ export type PoolWorker = {
   currentUrl: string | undefined;
   generation: number;
   retirementTimer: ReturnType<typeof setTimeout> | undefined;
+  lastProgressAt: number;
+  recoveryCount: number;
+  activeTaskId: string | undefined;
 };
 
 export type QueuedTask = {
@@ -172,6 +175,8 @@ export type QueuedTask = {
   hostTabId: number | undefined;
   retried: boolean;
   editorStateChangeCount: number;
+  submittedAt: number;
+  recoveryCount: number;
   resolve: (result: WorkerTaskResult) => void;
 };
 

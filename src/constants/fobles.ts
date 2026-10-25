@@ -1,7 +1,6 @@
-import { getElement } from "../options/dom-helpers";
-import { FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS } from "./button-ids";
-import { REFERENCE_GRAPH } from "./graph.const";
-import { WORKER_POOL } from "./partials/fobles-workers.const";
+import { FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS } from "./button-ids.ts";
+import { REFERENCE_GRAPH } from "./graph.const.ts";
+import { WORKER_POOL } from "./partials/fobles-workers.const.ts";
 
 // Shared constants used by fobles generation and cleanup
 export const FOBLES = {
@@ -28,6 +27,7 @@ export const FOBLES = {
       NAV_BUTTON_ROLE: {
         LBOLT: "lbolt",
         GRAPH: "graph-trigger",
+        AUDITOR: "auditor-trigger",
         PROXY_FLYOUT_TRIGGER: "proxy-buttons-trigger",
         JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger",
       },
