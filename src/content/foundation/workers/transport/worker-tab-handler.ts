@@ -1,7 +1,7 @@
-// @source-path [fobles] src/content/sitecore-worker/transport/worker-tab-handler.ts
+// @source-path [fobles] src/content/foundation/workers/transport/worker-tab-handler.ts
 
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
-import { extensionLog } from "../../logger";
+import { extensionLog } from "../../../logger";
 import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 import { WORKER_IFRAME_READY_MESSAGE_TYPE, type WorkerAdoptedMessage, type WorkerIframeReadyMessage, type WorkerReadyMessage, type WorkerTabIncomingMessage } from "./worker.messages";
 

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/sitecore-data-cache/sitecore-data-cache.types.ts
 
-import type { SitecoreItemLocator, WorkerTaskPayloadByType } from "../sitecore-worker/tasks/worker-task.types";
+import type { SitecoreItemLocator, WorkerTaskPayloadByType } from "../foundation/workers/tasks/worker-task.types";
 
 // One Sitecore item's identity: which Sitecore origin/environment, database, and language it was
 // read from, plus how it was located. Two keys differing in any one of these refer to genuinely

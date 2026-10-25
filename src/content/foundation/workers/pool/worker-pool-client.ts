@@ -1,6 +1,6 @@
-// @source-path [fobles] src/content/sitecore-worker/pool/worker-pool-client.ts
+// @source-path [fobles] src/content/foundation/workers/pool/worker-pool-client.ts
 
-import { extensionLog } from "../../logger";
+import { extensionLog } from "../../../logger";
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import type {
   WorkerTask,

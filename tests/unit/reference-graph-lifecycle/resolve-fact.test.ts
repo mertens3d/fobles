@@ -8,9 +8,9 @@ import {
   resetDatabaseConnectionForTests,
 } from "../../../src/content/sitecore-data-cache/indexed-db.ts";
 import * as cache from "../../../src/content/sitecore-data-cache/sitecore-data-cache.ts";
-import { resolveItemFact } from "../../../src/content/features/reference-graph/lifecycle/resolve-fact.ts";
+import { resolveItemFact } from "../../../src/content/shared/reference-model-processing/resolve-fact.ts";
 import type { SitecoreDataCacheKey } from "../../../src/content/sitecore-data-cache/sitecore-data-cache.types";
-import type { WorkerTaskExecutionResult, WorkerTaskPayloadByType, WorkerTaskSuccessResult } from "../../../src/content/sitecore-worker/tasks/worker-task.types";
+import type { WorkerTaskExecutionResult, WorkerTaskPayloadByType, WorkerTaskSuccessResult } from "../../../src/content/foundation/workers/tasks/worker-task.types";
 
 function sampleKey(): SitecoreDataCacheKey {
   return {

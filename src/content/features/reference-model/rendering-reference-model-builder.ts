@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-graph/reference-model/rendering-reference-model-builder.ts
+// @source-path [fobles] src/content/features/reference-model/rendering-reference-model-builder.ts
 
 import { CONST } from "../../../constants/const";
 import { extensionLog } from "../../logger";

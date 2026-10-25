@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import {
   collectEnrichmentGuidLookup,
   isEligibleForResolve,
-} from "../../../src/content/features/reference-graph/enrichment/resolve-candidate-collector.ts";
+} from "../../../src/content/shared/reference-model-processing/resolve-candidate-collector.ts";
 import type { ItemGraphNodeData } from "../../../src/content/features/reference-model/sitecore-item.types";
 import type { ReferenceModelItemNode, ReferenceModelNode } from "../../../src/content/features/reference-model/reference-model.types";
 

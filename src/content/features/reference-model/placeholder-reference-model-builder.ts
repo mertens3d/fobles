@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-graph/reference-model/placeholder-reference-model-builder.ts
+// @source-path [fobles] src/content/features/reference-model/placeholder-reference-model-builder.ts
 
 import type { ScControl } from "./sitecore-item.types";
 import type { PlaceholderTreeNode } from "./reference-model.types";

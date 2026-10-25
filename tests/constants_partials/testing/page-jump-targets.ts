@@ -1,4 +1,4 @@
-// @source-path [fobles] tests/constants/testing/page-jump-targets.ts
+// @source-path [fobles] tests/constants_partials/testing/page-jump-targets.ts
 
 import type { PageJumpDefinition, TreeJumpDefinition } from "../CONST.Types";
 

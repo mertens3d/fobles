@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-worker/transport/worker-target-service.ts
+// @source-path [fobles] src/content/foundation/workers/transport/worker-target-service.ts
 
 import {
   createWorkerIframeTarget,

@@ -1,14 +1,14 @@
-// @source-path [fobles] src/content/sitecore-worker/pool/worker-executor.ts
+// @source-path [fobles] src/content/foundation/workers/pool/worker-executor.ts
 
-import { extensionLog } from "../../logger";
+import { extensionLog } from "../../../logger";
 import { closeWorkerTarget, createWorkerTarget, getWorkerTargetKey, markWorkerTargetOwned, navigateWorkerTarget, sendTaskToWorkerTarget } from "../transport/worker-target-service";
 import { resetWorkerReadiness, waitForWorkerReady } from "./worker-readiness";
 import { createCancelledResult, createErrorResult, type PoolWorker, type QueuedTask, type WorkerExecutorContext, type WorkerTaskResult } from "../tasks/worker-task.types";
 import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
 import { DEBUG_WORKER_POOL } from "../worker-protocol.const";
-import { publishActivityToHost } from "../../shared/activity/activity-events";
-import { labelForWorkerTask } from "../../shared/activity/activity-labels";
-import { getRuntimeSettings } from "../../runtime-settings/runtime-settings";
+import { publishActivityToHost } from "../../../shared/activity/activity-events";
+import { labelForWorkerTask } from "../../../shared/activity/activity-labels";
+import { getRuntimeSettings } from "../../../runtime-settings/runtime-settings";
 
 const READY_TIMEOUT_MS = 20000;
 const MAX_EDITOR_STATE_CHANGES = 2;

@@ -19,7 +19,7 @@ import type {
   WorkerTaskErrorResult,
   WorkerTaskExecutionResult,
   WorkerTaskSuccessResult,
-} from "../sitecore-worker/tasks/worker-task.types";
+} from "../foundation/workers/tasks/worker-task.types";
 
 function sampleKey(overrides: Partial<SitecoreDataCacheKey> = {}): SitecoreDataCacheKey {
   return {

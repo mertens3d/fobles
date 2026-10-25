@@ -26,7 +26,7 @@ import {
   type WorkerTaskPayloadByType,
   type WorkerTaskResult,
   type WorkerTaskType,
-} from "../sitecore-worker/tasks/worker-task.types";
+} from "../foundation/workers/tasks/worker-task.types";
 import type { ItemGraphNodeData } from "../features/reference-model/sitecore-item.types";
 
 function normalizeSitecoreItemId(value: string | undefined): string | undefined {

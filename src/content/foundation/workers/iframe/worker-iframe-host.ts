@@ -1,6 +1,6 @@
-import { CONST } from "../../../constants/const";
-import { extensionLog } from "../../logger";
-import { getRuntimeSettings, initializeRuntimeSettings } from "../../runtime-settings/runtime-settings";
+import { CONST } from "../../../../constants/const";
+import { extensionLog } from "../../../logger";
+import { getRuntimeSettings, initializeRuntimeSettings } from "../../../runtime-settings/runtime-settings";
 import { logWorkerMemory, logWorkerMemoryAfterDelays } from "../diagnostics/memory-diagnostics";
 import {
   WORKER_IFRAME_CREATE_MESSAGE_TYPE,

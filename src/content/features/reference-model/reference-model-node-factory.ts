@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-graph/reference-model/reference-model-node-factory.ts
+// @source-path [fobles] src/content/features/reference-model/reference-model-node-factory.ts
 
 import { CONST } from "../../../constants/const";
 import type { ItemGraphNodeData } from "./sitecore-item.types";

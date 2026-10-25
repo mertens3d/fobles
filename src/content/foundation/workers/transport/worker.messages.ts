@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-worker/transport/worker.messages.ts
+// @source-path [fobles] src/content/foundation/workers/transport/worker.messages.ts
 
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import type {

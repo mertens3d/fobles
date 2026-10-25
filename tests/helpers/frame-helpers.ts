@@ -1,4 +1,4 @@
-// @source-path [fobles] tests/e2e/helpers/framesHelper.ts
+// @source-path [fobles] tests/helpers/frame-helpers.ts
 
 import type { Frame, Page } from "@playwright/test";
 import { TEST_CONST } from "../constants/TEST_CONST";

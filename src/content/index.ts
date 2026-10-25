@@ -6,7 +6,7 @@ import { receiveActivityMessage } from "./shared/activity/activity-events";
 import { startFoblesShellRuntime } from "./shell/shell-runtime";
 import { buildItemGraphNodeDataFromDoc } from "./sitecore-harvester/enrichment/item-enricher";
 import { executeWorkerTask } from "./sitecore-harvester/worker-task-executor";
-import { registerWorkerTabHandler } from "./sitecore-worker/transport/worker-tab-handler";
+import { registerWorkerTabHandler } from "./foundation/workers/transport/worker-tab-handler";
 import { startToolbarRuntime } from "./toolbar-runtime";
 
 function getWorkerId(): string | null {

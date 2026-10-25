@@ -6,7 +6,7 @@ import { collectSections } from "../collectors/section-collector/section-collect
 import { collectParent } from "../collectors/parent-collector";
 import { collectChildren } from "../collectors/child-collector";
 import { collectLayouts } from "../collectors/section-collector/layout-collector/layout-collector";
-import type { WorkerTaskType } from "../../sitecore-worker/tasks/worker-task.types";
+import type { WorkerTaskType } from "../../foundation/workers/tasks/worker-task.types";
 
 export const HARVEST_STEPS: readonly HarvestStep[] = [
   {

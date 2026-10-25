@@ -1,7 +1,7 @@
-// @source-path [fobles] src/content/sitecore-worker/transport/worker-tab-service.ts
+// @source-path [fobles] src/content/foundation/workers/transport/worker-tab-service.ts
 
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
-import { extensionLog } from "../../logger";
+import { extensionLog } from "../../../logger";
 import type { WorkerSetOwnedMessage, WorkerTaskExecuteMessage } from "./worker.messages";
 import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 

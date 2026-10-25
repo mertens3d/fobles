@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-graph/reference-model/reference-model-fan-out-limits.ts
+// @source-path [fobles] src/content/features/reference-model/reference-model-fan-out-limits.ts
 
 // Caps on potentially-unbounded relationships included in the ReferenceModel. Only GUIDs actually
 // represented in the resulting tree become enrichment candidates, so these limits also bound

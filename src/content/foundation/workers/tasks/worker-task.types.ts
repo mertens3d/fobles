@@ -1,7 +1,7 @@
-// @source-path [fobles] src/content/sitecore-worker/tasks/worker-task.types.ts
+// @source-path [fobles] src/content/foundation/workers/tasks/worker-task.types.ts
 
 
-import type { ItemGraphNodeData, SitecoreHarvestSection, LayoutSectionField } from "../../features/reference-model/sitecore-item.types";
+import type { ItemGraphNodeData, SitecoreHarvestSection, LayoutSectionField } from "../../../features/reference-model/sitecore-item.types";
 import type { WorkerTarget } from "../pool/worker-target";
 
 // An item reference as actually requested of Sitecore - as opposed to an ambiguous

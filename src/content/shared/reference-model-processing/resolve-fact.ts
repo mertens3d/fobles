@@ -3,7 +3,7 @@
 import type { ItemGraphNodeData } from "../../features/reference-model/sitecore-item.types.ts";
 import * as cache from "../../sitecore-data-cache/sitecore-data-cache.ts";
 import type { SitecoreDataCacheKey } from "../../sitecore-data-cache/sitecore-data-cache.types";
-import type { WorkerTaskExecutionResult } from "../../sitecore-worker/tasks/worker-task.types";
+import type { WorkerTaskExecutionResult } from "../../foundation/workers/tasks/worker-task.types";
 
 export type ResolveOutcome =
   // No prior cache for this item - the live read both supplies display data and seeds the cache.

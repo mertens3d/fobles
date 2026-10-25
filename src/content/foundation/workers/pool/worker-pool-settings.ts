@@ -1,11 +1,11 @@
-// @source-path [fobles] src/content/sitecore-worker/pool/worker-pool-settings.ts
+// @source-path [fobles] src/content/foundation/workers/pool/worker-pool-settings.ts
 
-import { onStorageChange } from "../../../shared/storage/storage";
+import { onStorageChange } from "../../../../shared/storage/storage";
 import {
   getRuntimeSettings,
   initializeRuntimeSettings,
   RUNTIME_SETTINGS_STORAGE_KEY,
-} from "../../runtime-settings/runtime-settings";
+} from "../../../runtime-settings/runtime-settings";
 
 export async function getWorkerPoolMaxWorkers(): Promise<number> {
   await initializeRuntimeSettings();

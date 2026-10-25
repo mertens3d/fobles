@@ -1,4 +1,4 @@
-// @source-path [fobles] src/constants/constants-b.ts
+// @source-path [fobles] src/constants/extension-const.ts
 
 export const STORAGE = {
   KEY: {

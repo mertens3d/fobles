@@ -1,0 +1,29 @@
+{
+  "phase": "workers",
+  "mode": "apply",
+  "status": "applied",
+  "moves": [
+    {
+      "from": "src/content/sitecore-worker",
+      "to": "src/content/foundation/workers"
+    }
+  ],
+  "redirects": [
+    {
+      "from": "src/content/features/reference-graph/lifecycle/processing-state.ts",
+      "to": "src/content/shared/reference-model-processing/processing-state.ts"
+    },
+    {
+      "from": "src/content/features/reference-graph/enrichment/resolve-candidate-collector.ts",
+      "to": "src/content/shared/reference-model-processing/resolve-candidate-collector.ts"
+    },
+    {
+      "from": "src/content/features/reference-graph/lifecycle/resolve-fact.ts",
+      "to": "src/content/shared/reference-model-processing/resolve-fact.ts"
+    }
+  ],
+  "scannedSourceFiles": 461,
+  "rewrittenImports": 50,
+  "transformedFiles": 461,
+  "unresolvedRelativeImports": []
+}

@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-graph/reference-model/reference-model-node-id.ts
+// @source-path [fobles] src/content/features/reference-model/reference-model-node-id.ts
 
 import { CONST } from "../../../constants/const";
 import type { SitecoreHarvestResult } from "../../sitecore-harvester/sitecore-harvester.types";

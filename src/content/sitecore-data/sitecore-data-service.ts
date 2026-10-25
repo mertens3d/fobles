@@ -12,7 +12,7 @@ import type {
   WorkerTaskExecutionResult,
   WorkerTaskSuccessResult,
   WorkerTaskType,
-} from "../sitecore-worker/tasks/worker-task.types";
+} from "../foundation/workers/tasks/worker-task.types";
 import type { FetchLiveFact, GetFactOptions, SitecoreDataFactResult } from "./sitecore-data.types";
 
 // Only these 7 atomic reads have a cacheable fact - set-raw-values/set-standard-fields are

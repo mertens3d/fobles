@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-graph/reference-model/layout-reference-model-builder.ts
+// @source-path [fobles] src/content/features/reference-model/layout-reference-model-builder.ts
 
 import { CONST } from "../../../constants/const";
 import { slugify } from "../reference-graph/reference-graph-helper";

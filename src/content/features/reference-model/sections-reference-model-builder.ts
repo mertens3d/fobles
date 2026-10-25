@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-graph/reference-model/sections-reference-model-builder.ts
+// @source-path [fobles] src/content/features/reference-model/sections-reference-model-builder.ts
 
 import { CONST } from "../../../constants/const";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";

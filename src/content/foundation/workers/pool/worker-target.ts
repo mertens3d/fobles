@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-worker/pool/worker-target.ts
+// @source-path [fobles] src/content/foundation/workers/pool/worker-target.ts
 
 import type { WorkerIframeTarget } from "../iframe/worker-iframe-service";
 

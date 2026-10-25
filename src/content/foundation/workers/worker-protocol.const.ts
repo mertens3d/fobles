@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-worker/worker-protocol.const.ts
+// @source-path [fobles] src/content/foundation/workers/worker-protocol.const.ts
 
 // Wire-protocol strings for the worker pool's own cross-document/cross-tab messaging - owned by
 // sitecore-worker since every consumer of these is pool/transport/iframe machinery, not anything

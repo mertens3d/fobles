@@ -2,7 +2,7 @@
 
 import { registerAuditorShellCommands } from "../features/auditor/auditor-shell-commands";
 import { registerReferenceGraphShellCommands } from "../features/reference-graph/reference-graph-shell-commands";
-import { registerWorkerIframeHost } from "../sitecore-worker/iframe/worker-iframe-host";
+import { registerWorkerIframeHost } from "../foundation/workers/iframe/worker-iframe-host";
 
 let shellStarted = false;
 const shellDisposers: Array<() => void> = [];

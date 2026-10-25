@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/sitecore-harvester/coordinator/harvest-result-merger.ts
 
 import type { RootItem } from "../../features/reference-model/sitecore-item.types";
-import type { WorkerTaskSuccessResult } from "../../sitecore-worker/tasks/worker-task.types";
+import type { WorkerTaskSuccessResult } from "../../foundation/workers/tasks/worker-task.types";
 import type { HarvestRequest, SitecoreHarvestResult } from "../sitecore-harvester.types";
 
 // Starting point for the accumulating result: when existingResult is supplied, previously

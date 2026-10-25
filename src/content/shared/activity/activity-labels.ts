@@ -1,5 +1,5 @@
 import type { SitecoreDataFactName } from "../../sitecore-data-cache/sitecore-data-cache.types";
-import type { WorkerTask } from "../../sitecore-worker/tasks/worker-task.types";
+import type { WorkerTask } from "../../foundation/workers/tasks/worker-task.types";
 
 const READ_LABEL_BY_KIND: Readonly<Record<SitecoreDataFactName, string>> = {
   quickInfo: "Reading Quick Info",

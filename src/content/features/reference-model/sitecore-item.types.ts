@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/reference-model/sitecore-item.types.ts
+// @source-path [fobles] src/content/features/reference-model/sitecore-item.types.ts
 
 import type { FieldReference } from "../../field-reference-resolution/field-reference.types";
 import type {

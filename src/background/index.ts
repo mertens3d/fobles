@@ -3,10 +3,10 @@
 import { LOGGER, MESSAGE } from "../constants/extension-const";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
 import { extensionLog } from "../content/logger";
-import { clearHostWorkerIframeTargets, markWorkerIframeReady } from "../content/sitecore-worker/iframe/worker-iframe-service";
-import { adoptWorkerTab, cancelPoolRequest, cancelPoolTask, disposeWorkerPool, handleWorkerReady, handleWorkerTabRemoved, clearWorkerPoolForHost, runPoolTask } from "../content/sitecore-worker/pool/background-worker-pool";
-import { WORKER_IFRAME_READY_MESSAGE_TYPE, type PoolCancelRequestMessage, type PoolCancelTaskMessage, type PoolDisposeMessage, type PoolRunTaskMessage, type WorkerAdoptedMessage, type WorkerIframeReadyMessage, type WorkerReadyMessage } from "../content/sitecore-worker/transport/worker.messages";
-import { WORKER_MESSAGE_TYPE } from "../content/sitecore-worker/worker-protocol.const";
+import { clearHostWorkerIframeTargets, markWorkerIframeReady } from "../content/foundation/workers/iframe/worker-iframe-service";
+import { adoptWorkerTab, cancelPoolRequest, cancelPoolTask, disposeWorkerPool, handleWorkerReady, handleWorkerTabRemoved, clearWorkerPoolForHost, runPoolTask } from "../content/foundation/workers/pool/background-worker-pool";
+import { WORKER_IFRAME_READY_MESSAGE_TYPE, type PoolCancelRequestMessage, type PoolCancelTaskMessage, type PoolDisposeMessage, type PoolRunTaskMessage, type WorkerAdoptedMessage, type WorkerIframeReadyMessage, type WorkerReadyMessage } from "../content/foundation/workers/transport/worker.messages";
+import { WORKER_MESSAGE_TYPE } from "../content/foundation/workers/worker-protocol.const";
 import { appendPersistedLogEntry, clearPersistedLogEntries } from "../shared/logging/persisted-log-storage";
 import type { PersistedLogMessage } from "../shared/persisted-log.types";
 

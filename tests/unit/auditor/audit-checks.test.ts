@@ -10,7 +10,7 @@ import { createAuditFindingStore } from "../../../src/content/features/auditor/a
 import type { AuditCheckContext } from "../../../src/content/features/auditor/audit-check.types";
 import type { ItemGraphNodeData } from "../../../src/content/features/reference-model/sitecore-item.types";
 import type { ReferenceModelItemNode, ReferenceModelNode } from "../../../src/content/features/reference-model/reference-model.types";
-import type { ProcessingStatus } from "../../../src/content/features/reference-graph/lifecycle/processing-state.ts";
+import type { ProcessingStatus } from "../../../src/content/shared/reference-model-processing/processing-state.ts";
 
 function makeItem(overrides: Partial<ItemGraphNodeData> = {}): ItemGraphNodeData {
   return {

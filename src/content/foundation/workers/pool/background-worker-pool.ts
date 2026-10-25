@@ -1,9 +1,9 @@
-// @source-path [fobles] src/content/sitecore-worker/pool/background-worker-pool.ts
+// @source-path [fobles] src/content/foundation/workers/pool/background-worker-pool.ts
 
-import { DEFAULT_RUNTIME_SETTINGS, getRuntimeSettings } from "../../runtime-settings/runtime-settings";
-import { publishActivityToHost } from "../../shared/activity/activity-events";
-import { labelForWorkerTask } from "../../shared/activity/activity-labels";
-import { extensionLog } from "../../logger";
+import { DEFAULT_RUNTIME_SETTINGS, getRuntimeSettings } from "../../../runtime-settings/runtime-settings";
+import { publishActivityToHost } from "../../../shared/activity/activity-events";
+import { labelForWorkerTask } from "../../../shared/activity/activity-labels";
+import { extensionLog } from "../../../logger";
 import { closeWorkerTarget, sendCancelToWorkerTarget } from "../transport/worker-target-service";
 import { runTaskOnNewWorker, runWorkerTask } from "./worker-executor";
 import { disposeWorkerPoolLifecycle } from "./worker-pool-lifecycle";

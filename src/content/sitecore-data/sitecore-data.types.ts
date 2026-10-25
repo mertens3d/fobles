@@ -4,7 +4,7 @@ import type {
   SitecoreDataFactMap,
   SitecoreDataFactName,
 } from "../sitecore-data-cache/sitecore-data-cache.types";
-import type { SitecoreItemLocator, WorkerTaskExecutionResult } from "../sitecore-worker/tasks/worker-task.types";
+import type { SitecoreItemLocator, WorkerTaskExecutionResult } from "../foundation/workers/tasks/worker-task.types";
 
 export type SitecoreFactSource = "cache" | "live";
 

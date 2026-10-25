@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-graph/reference-model/reference-model-provenance.types.ts
+// @source-path [fobles] src/content/features/reference-model/reference-model-provenance.types.ts
 
 import type { FoblesStrategy } from "../augmentor/fobles.types";
 import type { FieldReferenceConfidence } from "../../field-reference-resolution/field-reference.types";

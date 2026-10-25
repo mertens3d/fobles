@@ -1,6 +1,6 @@
-// @source-path [fobles] src/content/sitecore-worker/diagnostics/memory-diagnostics.ts
+// @source-path [fobles] src/content/foundation/workers/diagnostics/memory-diagnostics.ts
 
-import { extensionLog } from "../../logger";
+import { extensionLog } from "../../../logger";
 import { DEBUG_MEMORY } from "../worker-protocol.const";
 
 type MemoryContext = Readonly<Record<string, unknown>>;

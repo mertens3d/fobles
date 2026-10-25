@@ -1,5 +1,5 @@
-// @source-path [fobles] src/content/sitecore-worker/pool/worker-pool-lifecycle.ts
-import { extensionLog } from "../../logger";
+// @source-path [fobles] src/content/foundation/workers/pool/worker-pool-lifecycle.ts
+import { extensionLog } from "../../../logger";
 import { closeWorkerTarget, sendCancelToWorkerTarget } from "../transport/worker-target-service";
 import type { ActiveWorkerTask, PoolWorker, QueuedTask } from "../tasks/worker-task.types";
 import { clearWorkerReadiness } from "./worker-readiness";
