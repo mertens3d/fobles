@@ -124,3 +124,20 @@
   }
 }
 
+
+.fobles-reference-graph-node-details-close {
+  appearance:none;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  width:24px;
+  height:24px;
+  margin-left:auto;
+  padding:0 0 2px;
+  border:1px solid rgba(255,255,255,.35);
+  border-radius:4px;
+  background:transparent;
+  color:#fff;
+  font:600 18px/1 Arial,sans-serif;
+  cursor:pointer;
+}

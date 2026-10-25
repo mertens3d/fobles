@@ -59,6 +59,7 @@ function AuditorApp({
   const [query, setQuery] = useState("");
   const [modelRevision, setModelRevision] = useState(0);
   const [harvestProgress, setHarvestProgress] = useState<PhaseProgress>();
+  const [resolveProgress, setResolveProgress] = useState<PhaseProgress>();
   const [selectedStatuses, setSelectedStatuses] = useState<
     ReadonlySet<AuditFindingStatus>
   >(() => new Set(ALL_STATUSES));
@@ -90,47 +91,27 @@ function AuditorApp({
       setModelRevision((current) => current + 1);
     });
 
-    const unsubscribeHarvest =
-      dataSession.subscribeHarvestProgress((progress) => {
-        setHarvestProgress(progress);
+    const unsubscribeHarvest = dataSession.subscribeHarvestProgress((progress) => {
+      setHarvestProgress(progress);
+    });
+    const unsubscribeProcessing = dataSession.subscribeProcessingProgress((progress) => {
+      setResolveProgress({
+        completed: progress.completedItemCount,
+        max: progress.maxItemCount,
+        status: progress.status,
       });
+    });
 
     return () => {
       unsubscribeChange();
       unsubscribeHarvest();
+      unsubscribeProcessing();
     };
   }, [workSessionId]);
 
   const dataSession = getFoblesDataSession(workSessionId);
   const data = dataSession?.data;
   const model = data?.model;
-
-  const resolveProgress = useMemo<PhaseProgress | undefined>(() => {
-    if (!model || !data) return undefined;
-
-    const candidateIds = Array.from(
-      data.resolveCandidateTreeNodeIds,
-    );
-    const completed = candidateIds.filter((treeNodeId) => {
-      const status =
-        model.processingStateByTreeNodeId.get(treeNodeId);
-
-      return (
-        status !== undefined &&
-        status !== "pending" &&
-        status !== "enriching"
-      );
-    }).length;
-
-    return {
-      completed,
-      max: candidateIds.length,
-      status:
-        completed >= candidateIds.length
-          ? "complete"
-          : "running",
-    };
-  }, [data, model, modelRevision]);
 
   const projectedFindings = useMemo(() => {
     const nodesById = model?.nodesById;
@@ -338,6 +319,7 @@ function AuditorApp({
         <AuditorGrid
           referenceModelRoot={model.referenceModel}
           findings={visibleFindings}
+          processingStateByTreeNodeId={model.processingStateByTreeNodeId}
           onViewData={setSelectedTreeNodeId}
         />
       ) : null}
@@ -350,23 +332,12 @@ function AuditorApp({
       ) : null}
 
       {selectedTreeNodeId && model ? (
-        <div
-          className="fobles-auditor-data-backdrop"
-          role="presentation"
-          onMouseDown={(event) => {
-            if (event.currentTarget === event.target) {
-              setSelectedTreeNodeId(undefined);
-            }
-          }}
-        >
-          <NodeDetailsPanel
-            selectedTreeNodeId={selectedTreeNodeId}
-            nodesById={model.nodesById}
-            processingStateByTreeNodeId={
-              model.processingStateByTreeNodeId
-            }
-          />
-        </div>
+        <NodeDetailsPanel
+          selectedTreeNodeId={selectedTreeNodeId}
+          nodesById={model.nodesById}
+          processingStateByTreeNodeId={model.processingStateByTreeNodeId}
+          onClose={() => setSelectedTreeNodeId(undefined)}
+        />
       ) : null}
 
       {showHelp ? (

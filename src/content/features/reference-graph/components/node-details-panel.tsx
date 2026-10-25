@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/components/node-details-panel.tsx
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import prettier from "prettier/standalone";
 import * as prettierPluginHtml from "prettier/plugins/html";
 import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
@@ -11,6 +11,7 @@ type NodeDetailsPanelProps = {
   selectedTreeNodeId: string | undefined;
   nodesById: Map<string, ReferenceModelNode>;
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
+  onClose?: () => void;
 };
 
 type DetailRow = [string, string];
@@ -254,7 +255,9 @@ export function NodeDetailsPanel({
   selectedTreeNodeId,
   nodesById,
   processingStateByTreeNodeId,
+  onClose,
 }: NodeDetailsPanelProps) {
+  const panelRef = useRef<HTMLDivElement>(null);
   const treeNode = selectedTreeNodeId
     ? nodesById.get(selectedTreeNodeId)
     : undefined;
@@ -315,6 +318,27 @@ export function NodeDetailsPanel({
     itemRawMarkup,
   ]);
 
+  useEffect(() => {
+    if (!treeNode || !onClose) return;
+
+    const ownerDocument = panelRef.current?.ownerDocument;
+    if (!ownerDocument) return;
+    const handlePointerDown = (event: PointerEvent): void => {
+      const target = event.target;
+      if (target instanceof ownerDocument.defaultView!.Node && !panelRef.current?.contains(target)) onClose();
+    };
+    const handleKeyDown = (event: KeyboardEvent): void => {
+      if (event.key === "Escape") onClose();
+    };
+
+    ownerDocument.addEventListener("pointerdown", handlePointerDown, true);
+    ownerDocument.addEventListener("keydown", handleKeyDown, true);
+    return () => {
+      ownerDocument.removeEventListener("pointerdown", handlePointerDown, true);
+      ownerDocument.removeEventListener("keydown", handleKeyDown, true);
+    };
+  }, [treeNode, onClose]);
+
   if (!treeNode) {
     return null;
   }
@@ -354,9 +378,10 @@ export function NodeDetailsPanel({
   };
 
   return (
-    <div className="fobles-reference-graph-node-details">
+    <div ref={panelRef} className="fobles-reference-graph-node-details">
       <div className="fobles-reference-graph-node-details-header">
         <strong>Node Details</strong>
+        {onClose ? <button type="button" className="fobles-reference-graph-node-details-close" onClick={onClose} aria-label="Close node details">×</button> : null}
 
         <button
           type="button"
