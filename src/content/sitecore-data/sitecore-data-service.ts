@@ -1,13 +1,13 @@
 // @source-path [fobles] src/content/sitecore-data/sitecore-data-service.ts
 
-import * as cache from "../sitecore-data-cache/sitecore-data-cache.ts";
+import * as cache from "../foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { emitActivity, type ActivityState } from "../shared/activity/activity-events.ts";
 import { labelForFact } from "../shared/activity/activity-labels.ts";
 import type {
   SitecoreDataCacheKey,
   SitecoreDataFactMap,
   SitecoreDataFactName,
-} from "../sitecore-data-cache/sitecore-data-cache.types";
+} from "../foundation/cache/sitecore-data/sitecore-data-cache.types";
 import type {
   WorkerTaskExecutionResult,
   WorkerTaskSuccessResult,

@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { decideRootCacheUsage, rootProcessingStateForDecision } from "../../../src/content/features/reference-graph/lifecycle/root-cache-flow.ts";
-import type { SitecoreDataCacheRecord } from "../../../src/content/sitecore-data-cache/sitecore-data-cache.types";
+import type { SitecoreDataCacheRecord } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types";
 import type { SitecoreHarvestFiltersState } from "../../../src/content/foundation/harvesting/sitecore-harvester.types";
 
 const FILTERS: SitecoreHarvestFiltersState = {

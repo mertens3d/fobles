@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/features/reference-graph/lifecycle/acquire-reference-model.ts
 
 import { buildFoblesUrl } from "../../augmentor/helper";
-import { getItem, putFact } from "../../../sitecore-data-cache/sitecore-data-cache";
-import type { SitecoreDataCacheKey } from "../../../sitecore-data-cache/sitecore-data-cache.types";
+import { getItem, putFact } from "../../../foundation/cache/sitecore-data/sitecore-data-cache";
+import type { SitecoreDataCacheKey } from "../../../foundation/cache/sitecore-data/sitecore-data-cache.types";
 import { resolveSitecoreDataIdentity } from "../../../sitecore-data/sitecore-data-identity";
 import { extensionLog } from "../../../logger";
 import { harvestSitecoreWithWorkers } from "../../../foundation/harvesting/coordinator/foreground-harvest-coordinator";

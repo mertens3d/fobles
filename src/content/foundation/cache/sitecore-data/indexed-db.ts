@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-data-cache/indexed-db.ts
+// @source-path [fobles] src/content/foundation/cache/sitecore-data/indexed-db.ts
 
 export const DATABASE_NAME = "fobles-sitecore-data-cache";
 export const DATABASE_VERSION = 1;

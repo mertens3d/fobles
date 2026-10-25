@@ -8,8 +8,8 @@ import {
   getRequestResult,
   resetDatabaseConnectionForTests,
   runItemStoreTransaction,
-} from "../../../src/content/sitecore-data-cache/indexed-db.ts";
-import { serializeCacheKey } from "../../../src/content/sitecore-data-cache/sitecore-data-cache-key.ts";
+} from "../../../src/content/foundation/cache/sitecore-data/indexed-db.ts";
+import { serializeCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts";
 import {
   clear,
   count,
@@ -18,12 +18,12 @@ import {
   getFact,
   getItem,
   putFact,
-} from "../../../src/content/sitecore-data-cache/sitecore-data-cache.ts";
+} from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import type {
   QuickInfoPayload,
   SitecoreDataCacheKey,
   SitecoreDataCacheRecord,
-} from "../../../src/content/sitecore-data-cache/sitecore-data-cache.types";
+} from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types";
 
 function sampleKey(overrides: Partial<SitecoreDataCacheKey> = {}): SitecoreDataCacheKey {
   return {

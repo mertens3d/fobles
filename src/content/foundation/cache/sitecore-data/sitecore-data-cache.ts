@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/sitecore-data-cache/sitecore-data-cache.ts
+// @source-path [fobles] src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts
 
 import { getRequestResult, LAST_ACCESSED_INDEX_NAME, runItemStoreTransaction } from "./indexed-db.ts";
 import { normalizeIdentityPart, normalizeItemLocator, serializeCacheKey } from "./sitecore-data-cache-key.ts";

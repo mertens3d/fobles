@@ -1,9 +1,9 @@
 {
-  "phase": "harvesting",
+  "phase": "sitecore-data-cache",
   "moves": [
     {
-      "from": "src/content/sitecore-harvester",
-      "to": "src/content/foundation/harvesting"
+      "from": "src/content/sitecore-data-cache",
+      "to": "src/content/foundation/cache/sitecore-data"
     }
   ],
   "redirects": []

@@ -1,6 +1,6 @@
-// @source-path [fobles] src/content/sitecore-data-cache/sitecore-data-cache-key.ts
+// @source-path [fobles] src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts
 
-import type { SitecoreItemLocator } from "../foundation/workers/tasks/worker-task.types";
+import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
 import type { SitecoreDataCacheKey } from "./sitecore-data-cache.types";
 
 // Not a Sitecore-legal character in an environment name, database name, language code, or GUID -

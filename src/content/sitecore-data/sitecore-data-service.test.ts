@@ -8,10 +8,10 @@ import {
   getRequestResult,
   resetDatabaseConnectionForTests,
   runItemStoreTransaction,
-} from "../sitecore-data-cache/indexed-db.ts";
-import * as cache from "../sitecore-data-cache/sitecore-data-cache.ts";
-import { serializeCacheKey } from "../sitecore-data-cache/sitecore-data-cache-key.ts";
-import type { SitecoreDataCacheKey, SitecoreDataCacheRecord } from "../sitecore-data-cache/sitecore-data-cache.types";
+} from "../foundation/cache/sitecore-data/indexed-db.ts";
+import * as cache from "../foundation/cache/sitecore-data/sitecore-data-cache.ts";
+import { serializeCacheKey } from "../foundation/cache/sitecore-data/sitecore-data-cache-key.ts";
+import type { SitecoreDataCacheKey, SitecoreDataCacheRecord } from "../foundation/cache/sitecore-data/sitecore-data-cache.types";
 import { factNameForTaskType, getFact } from "./sitecore-data-service.ts";
 import type {
   WorkerTaskCancelledResult,

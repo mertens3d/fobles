@@ -3,7 +3,7 @@
 import type {
   SitecoreDataFactMap,
   SitecoreDataFactName,
-} from "../sitecore-data-cache/sitecore-data-cache.types";
+} from "../foundation/cache/sitecore-data/sitecore-data-cache.types";
 import type { SitecoreItemLocator, WorkerTaskExecutionResult } from "../foundation/workers/tasks/worker-task.types";
 
 export type SitecoreFactSource = "cache" | "live";

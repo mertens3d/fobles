@@ -1,16 +1,16 @@
 {
-  "phase": "harvesting",
+  "phase": "sitecore-data-cache",
   "mode": "apply",
   "status": "applied",
   "moves": [
     {
-      "from": "src/content/sitecore-harvester",
-      "to": "src/content/foundation/harvesting"
+      "from": "src/content/sitecore-data-cache",
+      "to": "src/content/foundation/cache/sitecore-data"
     }
   ],
   "redirects": [],
   "scannedSourceFiles": 462,
-  "rewrittenImports": 98,
+  "rewrittenImports": 26,
   "transformedFiles": 462,
   "unresolvedRelativeImports": []
 }

@@ -9,7 +9,7 @@ import { createErrorResult, type WorkerTask, type WorkerTaskResult, type WorkerT
 import { createSetRawValuesTask, createSetStandardFieldsTask, planCollectorTaskGroups, planCollectorTasks, requestedLocatorFromUrl } from "../planner/harvest-task-planner";
 import { factNameForTaskType, getFact } from "../../../sitecore-data/sitecore-data-service";
 import { resolveSitecoreDataIdentity } from "../../../sitecore-data/sitecore-data-identity";
-import type { SitecoreDataCacheKey } from "../../../sitecore-data-cache/sitecore-data-cache.types";
+import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data-cache.types";
 
 const TASK_TIMEOUT_MS = 30000;
 

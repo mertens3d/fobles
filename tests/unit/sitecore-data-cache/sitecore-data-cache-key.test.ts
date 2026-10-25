@@ -2,8 +2,8 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { serializeCacheKey } from "../../../src/content/sitecore-data-cache/sitecore-data-cache-key.ts";
-import type { SitecoreDataCacheKey } from "../../../src/content/sitecore-data-cache/sitecore-data-cache.types";
+import { serializeCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts";
+import type { SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types";
 
 function baseKey(overrides: Partial<SitecoreDataCacheKey> = {}): SitecoreDataCacheKey {
   return {

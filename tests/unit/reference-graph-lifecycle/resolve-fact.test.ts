@@ -6,10 +6,10 @@ import assert from "node:assert/strict";
 import {
   DATABASE_NAME,
   resetDatabaseConnectionForTests,
-} from "../../../src/content/sitecore-data-cache/indexed-db.ts";
-import * as cache from "../../../src/content/sitecore-data-cache/sitecore-data-cache.ts";
+} from "../../../src/content/foundation/cache/sitecore-data/indexed-db.ts";
+import * as cache from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { resolveItemFact } from "../../../src/content/shared/reference-model-processing/resolve-fact.ts";
-import type { SitecoreDataCacheKey } from "../../../src/content/sitecore-data-cache/sitecore-data-cache.types";
+import type { SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types";
 import type { WorkerTaskExecutionResult, WorkerTaskPayloadByType, WorkerTaskSuccessResult } from "../../../src/content/foundation/workers/tasks/worker-task.types";
 
 function sampleKey(): SitecoreDataCacheKey {

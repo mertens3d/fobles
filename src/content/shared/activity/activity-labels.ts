@@ -1,4 +1,4 @@
-import type { SitecoreDataFactName } from "../../sitecore-data-cache/sitecore-data-cache.types";
+import type { SitecoreDataFactName } from "../../foundation/cache/sitecore-data/sitecore-data-cache.types";
 import type { WorkerTask } from "../../foundation/workers/tasks/worker-task.types";
 
 const READ_LABEL_BY_KIND: Readonly<Record<SitecoreDataFactName, string>> = {
