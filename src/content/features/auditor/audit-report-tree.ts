@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/audit-report-tree.ts
-import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../../shared/reference-model-processing/processing-state";
+import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../../foundation/reference-data/processing/processing-state";
 import { getGraphPresentationState } from "../reference-graph/graph-nodes/graph-presentation-state";
 import { resolveNodeLabel } from "../reference-graph/graph-nodes/node-label-resolver";
 import { NODE_PRESENTATION_BY_KIND } from "../reference-graph/graph-nodes/node-presentation";

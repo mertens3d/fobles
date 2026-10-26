@@ -1,12 +1,12 @@
-// @source-path [fobles] src/content/shared/reference-model-processing/reference-model-session.ts
-import { extensionLog } from "../../logger";
-import { buildFoblesUrl } from "../../features/augmentor/helper";
-import { harvestSitecoreWithWorkers } from "../../foundation/harvesting/coordinator/foreground-harvest-coordinator";
-import type { HarvestProgressCallback, SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
-import type { WorkSession } from "../../shell/work-session/work-session.types";
-import { acquireReferenceModelForCurrentItem } from "../../features/reference-graph/lifecycle/acquire-reference-model";
-import type { PreparedReferenceGraph } from "../../features/reference-graph/prepared-reference-graph.types";
+// @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-session.ts
+import { extensionLog } from "../../../logger";
+import { buildFoblesUrl } from "../../../features/augmentor/helper";
+import { harvestSitecoreWithWorkers } from "../../harvesting/coordinator/foreground-harvest-coordinator";
+import type { HarvestProgressCallback, SitecoreHarvestFiltersState } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { WorkSession } from "../../../shell/work-session/work-session.types";
+import { acquireReferenceModelForCurrentItem } from "../../../features/reference-graph/lifecycle/acquire-reference-model";
+import type { PreparedReferenceGraph } from "../../../features/reference-graph/prepared-reference-graph.types";
 import { collectEnrichmentGuidLookup } from "./resolve-candidate-collector";
 import { createReferenceModelHarvestQueue, type ReferenceModelHarvestQueue, type ReferenceModelHarvestProgress } from "./reference-model-harvest-queue";
 import { startReferenceModelProcessor } from "./reference-model-processor";

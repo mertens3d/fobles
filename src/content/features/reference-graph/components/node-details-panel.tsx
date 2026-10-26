@@ -4,7 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import prettier from "prettier/standalone";
 import * as prettierPluginHtml from "prettier/plugins/html";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
-import type { ProcessingStateByTreeNodeId } from "../../../shared/reference-model-processing/processing-state";
+import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
 import { getGraphPresentationState } from "../graph-nodes/graph-presentation-state";
 
 type NodeDetailsPanelProps = {

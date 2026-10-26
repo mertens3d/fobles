@@ -1,13 +1,9 @@
 {
-  "phase": "reference-model",
+  "phase": "reference-model-processing",
   "moves": [
     {
-      "from": "src/content/features/reference-model/components",
-      "to": "src/content/shared/ui/reference-model"
-    },
-    {
-      "from": "src/content/features/reference-model",
-      "to": "src/content/foundation/reference-data/model"
+      "from": "src/content/shared/reference-model-processing",
+      "to": "src/content/foundation/reference-data/processing"
     }
   ],
   "redirects": []

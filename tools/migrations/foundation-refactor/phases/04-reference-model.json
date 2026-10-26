@@ -1,0 +1,1 @@
+{"phase":"reference-model","moves":[{"from":"src/content/features/reference-model/components","to":"src/content/shared/ui/reference-model"},{"from":"src/content/features/reference-model","to":"src/content/foundation/reference-data/model"}],"redirects":[]}

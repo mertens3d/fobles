@@ -1,0 +1,10 @@
+{
+  "phase": "reference-model-processing",
+  "moves": [
+    {
+      "from": "src/content/shared/reference-model-processing",
+      "to": "src/content/foundation/reference-data/processing"
+    }
+  ],
+  "redirects": []
+}

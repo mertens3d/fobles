@@ -1,18 +1,18 @@
-# Foundation refactor - Phase 4: Reference Model
+# Foundation refactor - explicit phase runner
 
-UI refinements:
-- expands Auditor help with tree shortcuts, statuses, and data-origin meanings;
-- changes cleanup recovery presentation from red/error language to Fobles blue success/information styling;
-- replaces the quick-action magnifier with a rows/list glyph and normalizes its width.
+Phase 5 moves:
 
-Architecture moves:
-- `src/content/features/reference-model/components` to `src/content/shared/ui/reference-model`;
-- remaining `src/content/features/reference-model` headless model code to `src/content/foundation/reference-data/model`.
-
-Run:
-
-```powershell
-pwsh -NoProfile -File .\tools\migrations\foundation-refactor\invoke-phase4-migration.ps1
+```text
+src/content/shared/reference-model-processing
+→ src/content/foundation/reference-data/processing
 ```
 
-The UI patch fails closed if current source shapes cannot be recognized. `phase4-ui-report.json` records changed files or the blocking mismatch. The migration then dry-runs, applies, writes `foundation-migration-report.json`, and runs `npm run build:extension`.
+Run from the repository root:
+
+```powershell
+pwsh -NoProfile -File .\tools\migrations\foundation-refactor\invoke-foundation-migration.ps1 -Phase 5
+```
+
+The runner explicitly selects `phases/05-reference-model-processing.json`, copies it to the migration engine's active move map, performs a dry-run validation, applies the move, rewrites relative imports and `@source-path` comments, writes `foundation-migration-report.json`, then runs `npm run build:extension`.
+
+Old phase-specific wrappers are intentionally not used. The explicit `-Phase` argument prevents an old wrapper name from silently executing a newer move map.

@@ -3,7 +3,7 @@ import type cytoscape from "cytoscape";
 import type { WorkSession } from "../../../shell/work-session/work-session.types";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import { getFoblesDataSession } from "../../../shared/data/fobles-data-service";
-import type { ProcessingStateByTreeNodeId } from "../../../shared/reference-model-processing/processing-state";
+import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
 import { patchCytoscapeNodes } from "./enrichment-graph-patcher";
 import type { EnrichmentController, EnrichmentProgressCallback } from "./enrichment.types";
 type StartEnrichmentControllerOptions = { doc: Document; workSession: WorkSession; referenceModel: ReferenceModelNode; nodesById: Map<string, ReferenceModelNode>; getCy: () => cytoscape.Core | undefined; processingStateByTreeNodeId: ProcessingStateByTreeNodeId; onProgress?: EnrichmentProgressCallback; };

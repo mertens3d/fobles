@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/shared/reference-model-processing/reference-model-harvest-queue.ts
+// @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-harvest-queue.ts
 
 export type ReferenceModelHarvestProgress = { completed: number; max: number; status: "running" | "complete"; };
 

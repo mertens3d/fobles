@@ -1,20 +1,16 @@
 {
-  "phase": "reference-model",
+  "phase": "reference-model-processing",
   "mode": "apply",
   "status": "applied",
   "moves": [
     {
-      "from": "src/content/features/reference-model/components",
-      "to": "src/content/shared/ui/reference-model"
-    },
-    {
-      "from": "src/content/features/reference-model",
-      "to": "src/content/foundation/reference-data/model"
+      "from": "src/content/shared/reference-model-processing",
+      "to": "src/content/foundation/reference-data/processing"
     }
   ],
   "redirects": [],
-  "scannedSourceFiles": 463,
-  "rewrittenImports": 69,
-  "transformedFiles": 463,
+  "scannedSourceFiles": 464,
+  "rewrittenImports": 50,
+  "transformedFiles": 464,
   "unresolvedRelativeImports": []
 }

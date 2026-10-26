@@ -3,9 +3,9 @@ import { getReferenceGraphFilters } from "../../../shared/reference-graph-settin
 import type { WorkSession } from "../../shell/work-session/work-session.types";
 import type { SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
 import type { PreparedReferenceGraph } from "../../features/reference-graph/prepared-reference-graph.types";
-import { startSharedReferenceModelSession, type ReferenceModelSessionStateChange, type SharedReferenceModelSession } from "../reference-model-processing/reference-model-session";
-import type { ReferenceModelHarvestProgress } from "../reference-model-processing/reference-model-harvest-queue";
-import type { ReferenceModelProcessingProgress } from "../reference-model-processing/reference-model-processing.types";
+import { startSharedReferenceModelSession, type ReferenceModelSessionStateChange, type SharedReferenceModelSession } from "../../foundation/reference-data/processing/reference-model-session";
+import type { ReferenceModelHarvestProgress } from "../../foundation/reference-data/processing/reference-model-harvest-queue";
+import type { ReferenceModelProcessingProgress } from "../../foundation/reference-data/processing/reference-model-processing.types";
 export type FoblesDataFlavor = "reference-model";
 export type FoblesDataRequest = { flavor: FoblesDataFlavor; target: "current-object"; doc: Document; workSession: WorkSession; signal: AbortSignal; filters?: SitecoreHarvestFiltersState; };
 export type FoblesReferenceModelData = {

@@ -1,9 +1,9 @@
-// @source-path [fobles] src/content/shared/reference-model-processing/resolve-fact.ts
+// @source-path [fobles] src/content/foundation/reference-data/processing/resolve-fact.ts
 
-import type { ItemGraphNodeData } from "../../foundation/reference-data/model/sitecore-item.types.ts";
-import * as cache from "../../foundation/cache/sitecore-data/sitecore-data-cache.ts";
-import type { SitecoreDataCacheKey } from "../../foundation/cache/sitecore-data/sitecore-data-cache.types";
-import type { WorkerTaskExecutionResult } from "../../foundation/workers/tasks/worker-task.types";
+import type { ItemGraphNodeData } from "../model/sitecore-item.types.ts";
+import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
+import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data-cache.types";
+import type { WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
 
 export type ResolveOutcome =
   // No prior cache for this item - the live read both supplies display data and seeds the cache.

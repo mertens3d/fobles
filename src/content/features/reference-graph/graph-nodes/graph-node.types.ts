@@ -1,4 +1,4 @@
-import type { ProcessingStatus } from "../../../shared/reference-model-processing/processing-state";
+import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing-state";
 import type { GraphCollapseKey } from "./graph-collapse.types";
 
 export type GraphNodeData = {

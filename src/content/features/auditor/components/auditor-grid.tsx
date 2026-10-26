@@ -2,14 +2,14 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AgGridReact } from "ag-grid-react";
 import { AllCommunityModule, ModuleRegistry, themeQuartz, type ColDef, type ICellRendererParams, type RowDoubleClickedEvent } from "ag-grid-community";
-import type { ProcessingStateByTreeNodeId } from "../../../shared/reference-model-processing/processing-state";
-import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
+import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
 import { getExpandedByCollapseKey, setExpandedStateForCollapseKey } from "../../reference-graph/graph-nodes/graph-collapse-settings";
 import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "../../reference-graph/graph-nodes/graph-collapse.types";
 import { getGraphPresentationState } from "../../reference-graph/graph-nodes/graph-presentation-state";
 import { buildAuditReportTree, type AuditReportTreeNode } from "../audit-report-tree";
 import type { AuditFinding } from "../audit-finding.types";
 import { AuditorStatusCell } from "./auditor-status-cell";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 const COLLAPSED_GLYPH = "/sitecore/shell/themes/standard/images/treemenu_collapsed.png";
