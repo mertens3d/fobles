@@ -2,31 +2,33 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createHarvestQueue } from "../../../src/content/features/reference-graph/lifecycle/harvest-queue.ts";
 import {
-  enqueueHarvest,
-  setActiveHarvestQueue,
-} from "../../../src/content/features/reference-graph/lifecycle/active-harvest-queue.ts";
-import type { PhaseProgress } from "../../../src/content/foundation/reference-data/progress/lifecycle.types";
+  createReferenceModelHarvestQueue,
+  type ReferenceModelHarvestProgress,
+} from "../../../src/content/foundation/reference-data/processing/reference-model-harvest-queue.ts";
 
-void test("validation can introduce work into the harvest queue", () => {
-  const enqueued: string[] = [];
+void test("work enqueued after the queue has gone idle still runs", async () => {
+  const runs: string[] = [];
 
-  setActiveHarvestQueue({
-    enqueue: (reference) => enqueued.push(reference),
-    dispose: () => undefined,
+  const queue = createReferenceModelHarvestQueue({
+    runHarvest: (reference) => {
+      runs.push(reference);
+      return Promise.resolve();
+    },
   });
 
-  enqueueHarvest("46004574-866d-4702-828e-1c95ad1e03aa");
-  setActiveHarvestQueue(undefined);
+  queue.enqueue("item-1");
+  await new Promise((resolve) => setTimeout(resolve, 10));
+  queue.enqueue("item-2");
+  await new Promise((resolve) => setTimeout(resolve, 10));
 
-  assert.deepEqual(enqueued, ["46004574-866d-4702-828e-1c95ad1e03aa"]);
+  assert.deepEqual(runs, ["item-1", "item-2"]);
 });
 
 void test("enqueue deduplicates an already-queued item", async () => {
   let runCount = 0;
 
-  const queue = createHarvestQueue({
+  const queue = createReferenceModelHarvestQueue({
     runHarvest: () => {
       runCount += 1;
       return Promise.resolve();
@@ -43,10 +45,10 @@ void test("enqueue deduplicates an already-queued item", async () => {
 });
 
 void test("progress reports completed/max as items settle", async () => {
-  const progressEvents: PhaseProgress[] = [];
+  const progressEvents: ReferenceModelHarvestProgress[] = [];
   let resolveSecond: (() => void) | undefined;
 
-  const queue = createHarvestQueue({
+  const queue = createReferenceModelHarvestQueue({
     runHarvest: async (reference) => {
       if (reference === "item-2") {
         await new Promise<void>((resolve) => {
@@ -74,7 +76,7 @@ void test("cancellation during harvesting aborts the signal passed to in-flight 
   let observedAborted: boolean | undefined;
   let release: (() => void) | undefined;
 
-  const queue = createHarvestQueue({
+  const queue = createReferenceModelHarvestQueue({
     runHarvest: async (_reference, signal) => {
       await new Promise<void>((resolve) => {
         release = resolve;
@@ -95,7 +97,7 @@ void test("cancellation during harvesting aborts the signal passed to in-flight 
 void test("enqueue after dispose is a no-op", async () => {
   let runCount = 0;
 
-  const queue = createHarvestQueue({
+  const queue = createReferenceModelHarvestQueue({
     runHarvest: () => {
       runCount += 1;
       return Promise.resolve();
@@ -111,7 +113,7 @@ void test("enqueue after dispose is a no-op", async () => {
 });
 
 void test("a successful re-harvest reports onSettled(true), driving Refresh -> Check", async () => {
-  const queue = createHarvestQueue({
+  const queue = createReferenceModelHarvestQueue({
     runHarvest: () => Promise.resolve(),
   });
 
@@ -124,7 +126,7 @@ void test("a successful re-harvest reports onSettled(true), driving Refresh -> C
 });
 
 void test("a failed re-harvest reports onSettled(false)", async () => {
-  const queue = createHarvestQueue({
+  const queue = createReferenceModelHarvestQueue({
     runHarvest: () => Promise.reject(new Error("boom")),
     onError: () => undefined,
   });

@@ -61,33 +61,6 @@ function isVisible(
   return true;
 }
 
-function graphCollapseKey(node: ReferenceModelNode, rootId: string): GraphCollapseKey | undefined {
-  if (node.treeNodeId === rootId) return GRAPH_COLLAPSE_KEY.ROOT;
-
-  const state = getGraphPresentationState(node);
-
-  if (state.branch === "layouts") return GRAPH_COLLAPSE_KEY.LAYOUTS;
-  if (state.branch === "customFields") return GRAPH_COLLAPSE_KEY.CUSTOM_FIELDS;
-  if (state.branch === "standardFields") return GRAPH_COLLAPSE_KEY.STANDARD_FIELDS;
-  if (state.branch === "template") return GRAPH_COLLAPSE_KEY.TEMPLATE;
-  if (state.branch === "referrers") return GRAPH_COLLAPSE_KEY.REFERRERS;
-  if (state.branch === "children") return GRAPH_COLLAPSE_KEY.CHILDREN;
-  if (state.branch === "parent") return GRAPH_COLLAPSE_KEY.PARENT;
-
-  const kind = state.kind.toLowerCase().replace(/\s+/g, "");
-
-  return ({
-    placeholder: GRAPH_COLLAPSE_KEY.PLACEHOLDER,
-    rendering: GRAPH_COLLAPSE_KEY.RENDERING,
-    datasource: GRAPH_COLLAPSE_KEY.DATASOURCE,
-    device: GRAPH_COLLAPSE_KEY.DEVICE,
-    field: GRAPH_COLLAPSE_KEY.FIELD,
-    section: GRAPH_COLLAPSE_KEY.SECTION,
-    renderingparameter: GRAPH_COLLAPSE_KEY.RENDERING_PARAMETER,
-    renderingparameters: GRAPH_COLLAPSE_KEY.RENDERING_PARAMETERS,
-  } as Record<string, GraphCollapseKey>)[kind];
-}
-
 // The second mousedown of a double-click is what selects a word, and a selection is what raises the browser's own
 // selection toolbar (copy / search / Copilot). The tree uses double-click to expand a row, so suppress the selection.
 // AG Grid detects double-clicks from the dblclick event, so this does not interfere with row expansion.
@@ -190,7 +163,7 @@ export function AuditorGrid({
 
         results.push({
           ...row,
-          collapseKey: node ? graphCollapseKey(node, referenceModelRoot.treeNodeId) : undefined,
+          collapseKey: node ? getGraphPresentationState(node).collapseKey : undefined,
           journeyStage: ownStage,
           sitecoreUrl,
           isSitecoreItem: node?.nodeType === "item",
@@ -259,7 +232,7 @@ export function AuditorGrid({
     results.filter((row) => !row.parentId).forEach(rollup);
 
     return results;
-  }, [baseRows, findingsByNode, nodesById, processingStateByTreeNodeId, referenceModelRoot.treeNodeId]);
+  }, [baseRows, findingsByNode, nodesById, processingStateByTreeNodeId]);
 
   const rowsById = useMemo(() => new Map(allRows.map((row) => [row.id, row])), [allRows]);
   const expandableIds = useMemo(() => allRows.filter((row) => row.hasChildren).map((row) => row.id), [allRows]);

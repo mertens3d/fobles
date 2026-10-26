@@ -1,0 +1,32 @@
+{
+  "phase": "auditor-collapse-keys",
+  "requireNoViolations": true,
+  "textEdits": [
+    {
+      "file": "src/content/features/auditor/components/auditor-grid.tsx",
+      "edits": [
+        {
+          "pattern": "function graphCollapseKey\\(node: ReferenceModelNode, rootId: string\\): GraphCollapseKey \\| undefined \\{[\\s\\S]*?\\n\\}\\n\\n?",
+          "flags": "",
+          "replace": ""
+        },
+        {
+          "find": "collapseKey: node ? graphCollapseKey(node, referenceModelRoot.treeNodeId) : undefined,",
+          "replace": "collapseKey: node ? getGraphPresentationState(node).collapseKey : undefined,"
+        },
+        {
+          "find": "processingStateByTreeNodeId, referenceModelRoot.treeNodeId]);",
+          "replace": "processingStateByTreeNodeId]);"
+        }
+      ],
+      "assertAbsent": [
+        "graphCollapseKey",
+        "rootId"
+      ],
+      "assertPresent": [
+        "getGraphPresentationState(node).collapseKey",
+        "GRAPH_COLLAPSE_KEY.TESTS"
+      ]
+    }
+  ]
+}

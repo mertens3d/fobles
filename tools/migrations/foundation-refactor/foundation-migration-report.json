@@ -1,54 +1,15 @@
 {
-  "phase": "foundation-boundaries",
+  "phase": "auditor-collapse-keys",
   "mode": "apply",
   "status": "applied",
-  "moves": [
-    {
-      "from": "src/content/features/reference-graph/reference-graph-helper.ts",
-      "to": "src/content/foundation/reference-data/model/slugify.ts"
-    },
-    {
-      "from": "src/content/features/reference-graph/graph-nodes/graph-collapse.types.ts",
-      "to": "src/content/foundation/reference-data/model/graph-collapse.types.ts"
-    },
-    {
-      "from": "src/content/features/reference-graph/graph-nodes/graph-presentation-state.ts",
-      "to": "src/content/foundation/reference-data/model/graph-presentation-state.ts"
-    }
-  ],
-  "symbolMoves": [
-    {
-      "from": "src/content/toolbar/types.ts",
-      "to": "src/content/foundation/sitecore/quick-info.types.ts",
-      "symbols": [
-        "QuickInfo",
-        "QuickInfoTemplate"
-      ]
-    },
-    {
-      "from": "src/content/features/augmentor/fobles.types.ts",
-      "to": "src/content/foundation/sitecore/fobles-strategy.types.ts",
-      "symbols": [
-        "FoblesStrategy"
-      ]
-    },
-    {
-      "from": "src/content/features/reference-graph/graph.types.ts",
-      "to": "src/content/foundation/sitecore/macros/tree-expand-macro.ts",
-      "symbols": [
-        "GlyphState"
-      ]
-    }
-  ],
-  "payloadFiles": [
-    "src/content/foundation/sitecore/fobles-strategy.types.ts",
-    "src/content/foundation/sitecore/quick-info.types.ts"
-  ],
+  "moves": [],
+  "symbolMoves": [],
+  "payloadFiles": [],
   "scannedSourceFiles": 469,
-  "movedSourceFiles": 3,
-  "changedSourceFiles": 35,
-  "rewrittenSpecifiers": 24,
-  "splitSymbolImports": 7,
+  "movedSourceFiles": 0,
+  "changedSourceFiles": 1,
+  "rewrittenSpecifiers": 0,
+  "splitSymbolImports": 0,
   "boundaryViolations": {
     "total": 0,
     "byRule": {},
@@ -56,14 +17,5 @@
   },
   "blocking": [],
   "warnings": [],
-  "preExistingStaleImports": [
-    {
-      "importer": "tests/unit/reference-graph-lifecycle/harvest-queue.test.ts",
-      "specifier": "../../../src/content/features/reference-graph/lifecycle/harvest-queue.ts"
-    },
-    {
-      "importer": "tests/unit/reference-graph-lifecycle/harvest-queue.test.ts",
-      "specifier": "../../../src/content/features/reference-graph/lifecycle/active-harvest-queue.ts"
-    }
-  ]
+  "preExistingStaleImports": []
 }

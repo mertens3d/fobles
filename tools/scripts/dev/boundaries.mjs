@@ -46,15 +46,23 @@ export function layerOf(repoRelativePath) {
   return layer;
 }
 
-// edges: [{ importer, target, specifier }] with repo-relative, forward-slash paths.
-export function findViolations(edges) {
+// Rules that are reported but do not fail the build yet. They graduate into LAYER_RULES once the repository is clean.
+export const REPORT_ONLY_RULES = [
+  {
+    importer: "shared-ui",
+    forbidden: ["features", "shell"],
+    reason: "Shared UI must not depend on features or Shell.",
+  },
+];
+
+function applyRules(edges, rules) {
   const violations = [];
 
   edges.forEach((edge) => {
     const importerLayer = layerOf(edge.importer);
     const targetLayer = layerOf(edge.target);
 
-    LAYER_RULES.forEach((rule) => {
+    rules.forEach((rule) => {
       if (rule.importer === importerLayer && rule.forbidden.includes(targetLayer)) {
         violations.push({ ...edge, importerLayer, targetLayer, reason: rule.reason });
       }
@@ -62,6 +70,29 @@ export function findViolations(edges) {
   });
 
   return violations;
+}
+
+// edges: [{ importer, target, specifier }] with repo-relative, forward-slash paths.
+export function findViolations(edges) {
+  return applyRules(edges, LAYER_RULES);
+}
+
+export function findReportOnlyViolations(edges) {
+  return applyRules(edges, REPORT_ONLY_RULES);
+}
+
+// Features (Graph, Auditor, ...) are independent tools. One feature importing another's files is how they drift into each other;
+// whatever both need belongs in shared/ or foundation/.
+export function featureOf(repoRelativePath) {
+  const match = /^src\/content\/features\/([^/]+)\//.exec(repoRelativePath);
+
+  return match ? match[1] : undefined;
+}
+
+export function findFeatureCrossings(edges) {
+  return edges
+    .map((edge) => ({ ...edge, importerFeature: featureOf(edge.importer), targetFeature: featureOf(edge.target) }))
+    .filter((edge) => edge.importerFeature !== undefined && edge.targetFeature !== undefined && edge.importerFeature !== edge.targetFeature);
 }
 
 export function summarizeViolations(violations) {

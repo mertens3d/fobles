@@ -78,6 +78,43 @@ To stop enforcing, delete that one `run(...)` line from `tools/scripts/build/bui
 Names are unchanged. `GRAPH_COLLAPSE_KEY` and `getGraphPresentationState` still say "graph" even though they now live in Foundation.
 Renaming them is a separate step.
 
+## Phase 8 - Auditor reads collapse keys from the model instead of recomputing them
+
+```powershell
+pwsh -NoProfile -File .\tools\migrations\foundation-refactor\invoke-foundation-migration.ps1 -Phase 8 -DryRun
+pwsh -NoProfile -File .\tools\migrations\foundation-refactor\invoke-foundation-migration.ps1 -Phase 8
+```
+
+Only edits `features/auditor/components/auditor-grid.tsx`, and only through fail-closed text edits. It removes the local `graphCollapseKey()` and uses
+`getGraphPresentationState(node).collapseKey`, the key every model builder already stamps on each node and the one Graph uses.
+
+This is a behaviour change, not only a cleanup. The old function checked a node's branch first, and every node under Layouts carries branch
+`layouts`, so devices, placeholders, renderings, datasources and rendering parameters all shared one `layouts` key. After the change each node uses
+its own key (`device`, `placeholder`, `rendering`, `datasource`, `renderingParameters`, ...), so:
+
+- first open, Rendering Parameters start collapsed (Graph's default); before, they started expanded
+- Ctrl/Cmd+double-click affects nodes of that kind, not everything under Layouts
+- collapse state you saved in Graph for those kinds now applies in Auditor, and the reverse
+
+To undo, revert that one file with Git.
+
+A text edit can also declare `assertAbsent` / `assertPresent`; the phase is blocked unless the edited file ends up in the stated state.
+
+## Tests
+
+`tests/unit/reference-graph-lifecycle/harvest-queue.test.ts` now targets `createReferenceModelHarvestQueue` in
+`foundation/reference-data/processing/reference-model-harvest-queue.ts`. The old first test covered `active-harvest-queue.ts`, which no longer
+exists (stale re-harvests are wired through the session's `onStaleStructural`); it is replaced by a test that late work still runs.
+
+## Checks
+
+`node tools/scripts/dev/check-boundaries.mjs --features` adds two reports that never fail the build: rules not enforced yet (shared UI importing
+features or Shell) and imports between features, grouped by the file being imported so the files worth moving into `shared/` or `foundation/` are
+listed first. Add `--fail-on-feature-crossings` to make crossings fail.
+
+`move-map.json` and `foundation-migration-report.json` are generated on every run and are ignored by a `.gitignore` in this folder. If they are
+already committed: `git rm --cached tools/migrations/foundation-refactor/move-map.json tools/migrations/foundation-refactor/foundation-migration-report.json`
+
 `node tools/scripts/dev/check-boundaries.mjs` reports any import that crosses the layers the wrong way; it exits 1 if it finds one.
 
 Earlier phase files (01-05) are history; their source paths no longer exist.

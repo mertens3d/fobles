@@ -168,7 +168,7 @@ async function main() {
   });
 
   const preMap = buildFileMap(preFiles);
-  const textEditsByKey = new Map((configuration.textEdits ?? []).map((item) => [pathKey(absolute(item.file)), { file: item.file, edits: item.edits }]));
+  const textEditsByKey = new Map((configuration.textEdits ?? []).map((item) => [pathKey(absolute(item.file)), { file: item.file, edits: item.edits, assertAbsent: item.assertAbsent ?? [], assertPresent: item.assertPresent ?? [] }]));
   const effective = new Map();
 
   for (const file of preFiles.filter(isSource)) {
@@ -178,7 +178,17 @@ async function main() {
     let content = overlay.has(key) ? overlay.get(key).content : diskContent;
     const textEdit = textEditsByKey.get(key);
 
-    if (textEdit) content = applyTextEdits(content, textEdit.edits, textEdit.file, blocking);
+    if (textEdit) {
+      content = applyTextEdits(content, textEdit.edits, textEdit.file, blocking);
+
+      // A file can be edited "successfully" and still be wrong. These make the intended end state part of the phase.
+      textEdit.assertAbsent.forEach((needle) => {
+        if (lf(content).includes(needle)) blocking.push({ kind: "text-edit-left-behind", file: textEdit.file, text: needle });
+      });
+      textEdit.assertPresent.forEach((needle) => {
+        if (!lf(content).includes(needle)) blocking.push({ kind: "text-edit-result-missing", file: textEdit.file, text: needle });
+      });
+    }
     effective.set(key, { path: file, onDisk, diskContent, content });
   }
 
