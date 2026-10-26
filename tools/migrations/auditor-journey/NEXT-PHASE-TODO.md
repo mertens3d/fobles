@@ -2,19 +2,18 @@
 
 ## Open
 - Separate "Processing Timeout" and "Recovery Exhausted" outcomes in Auditor. Both currently show as one Sitecore Error.
-- Memory growth across repeated runs. No timer or iframe leak is visible at close. Heap and DOM snapshots are now logged
-  per Auditor run ("Heap snapshot": auditor-opened, auditor-resolve-complete, auditor-closing, auditor-closed,
+- Memory growth across repeated runs. No timer or iframe leak is visible at close. Heap and DOM snapshots are logged per
+  Auditor run ("Heap snapshot": auditor-opened, auditor-resolve-complete, auditor-closing, auditor-closed,
   auditor-closed+10s). Review them across several runs before changing code, otherwise revisit after the Foundation migration.
 - Graph does not log heap snapshots yet.
 - Sitecore "Synchronous XHR in page dismissal" alert on cold items. Watching. Capture a log while the alert is showing.
-- Persisted-log buttons: the two added by the options script have no `settings-button` class, so their font and padding can
-  differ from the other four. Needs the options script to fix at the source.
 
 ## Needs a run to confirm
 - Node Details uses the shared close button.
-- Task time limit now starts when a job is handed to a worker. Look for "Worker pool: job clock started" with `queueWaitMs`.
+- Task time limit starts when a job is handed to a worker. Look for "Worker pool: job clock started" with `queueWaitMs`.
 - Graph and Auditor share the Controls header and round `?` button.
-- Equal-width persisted-log buttons.
+- Auditor Clear button no longer spans the whole row.
+- Persisted-log buttons are six equal-width buttons in `src/options/options.html`. Delete the stray `src/public/options.html`.
 
 ## Done
 - Progress bars: replayed progress, cold-item acquisition progress.

@@ -5,10 +5,27 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Additional Settings | Fobles</title>
     <link rel="stylesheet" href="options.css" />
+    <style>
+      /* Persisted log actions: six buttons (four in the markup, two added by options.js) in equal-width columns.
+         The global `button` rule already makes them look identical; only `.settings-button { min-width: 200px }` differed. */
+      #persisted-logs .settings-actions {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+      #persisted-logs .settings-actions > button {
+        width: 100%;
+        min-width: 0;
+      }
+      @media (max-width: 720px) {
+        #persisted-logs .settings-actions {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+        }
+      }
+    </style>
   </head>
   <body>
     <h1>Fobles Settings</h1>
-
     <details class="settings-section">
       <summary>Storage</summary>
       <p>View or clear everything Fobles has stored for you - not just developer settings.</p>
@@ -19,21 +36,16 @@
       <pre id="stored-settings-output" hidden></pre>
       <p id="clear-stored-settings-status" role="status"></p>
     </details>
-
     <details id="persisted-logs" class="settings-section">
       <summary>Persisted Logs</summary>
-
       <div class="settings-actions">
         <button id="refresh-persisted-logs" type="button" class="settings-button">Refresh</button>
         <button id="clear-persisted-logs" type="button" class="settings-button">Clear Logs</button>
         <button id="copy-persisted-logs" type="button" class="settings-button">Copy Logs</button>
         <button id="scroll-persisted-logs-bottom" type="button" class="settings-button">Scroll to Bottom</button>
       </div>
-
       <div id="persisted-logs-output">No persisted logs.</div>
-      >
     </details>
-
     <details class="settings-section">
       <summary>Jump Menu Buttons</summary>
       <p>Toggle buttons on or off, and optionally add a sub-path suffix to a Tree Jump button's base path. Under Tree Jumps, add your own User Tree Jumps too - each is rooted at /sitecore/, up to 30.</p>
@@ -41,7 +53,6 @@
       <button id="save-jump-flyout-buttons" type="button">Save jump flyout buttons</button>
       <p id="jump-flyout-buttons-status" role="status"></p>
     </details>
-
     <details class="settings-section">
       <summary>Additional Settings</summary>
       <p>Add one group per Sitecore account, then map that group's content roots to AI Pages sites. The most specific matching root is used.</p>
@@ -56,7 +67,6 @@
       <button id="save-mappings" type="button">Save mappings</button>
       <p id="status" role="status"></p>
     </details>
-
     <details class="settings-section">
       <summary>Developer Settings</summary>
       <p>These options are for local debugging and development only. Both default to off.</p>
@@ -75,7 +85,6 @@
       <button id="save-debug-settings" type="button" class="settings-button">Save developer settings</button>
       <p id="debug-status" role="status"></p>
     </details>
-
     <aside class="build-info">
       <div>Fobles for Sitecore</div>
       <div>Build: <strong>__BUILD_STAMP__</strong></div>

@@ -1,0 +1,15 @@
+// Reference Graph's filter list is built for a two-column grid: `.fobles-reference-graph-filters` is `display: contents` and its
+// Clear button is `width: 100% !important`. Inside Auditor's flex-wrap controls that stretched Clear across the whole row.
+// Give the filter list its own row, stack it, and let Clear size to its label.
+.fobles-auditor-toolbar-controls .fobles-reference-graph-filters {
+  display: flex;
+  flex: 1 0 100%;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+}
+
+.fobles-auditor-toolbar-controls .fobles-reference-graph-filters > .fobles-reference-graph-button {
+  width: auto !important;
+  min-width: 80px;
+}
