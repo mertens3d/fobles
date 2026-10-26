@@ -13,6 +13,27 @@ import { getRuntimeSettings } from "../../../runtime-settings/runtime-settings";
 const READY_TIMEOUT_MS = 20000;
 const MAX_EDITOR_STATE_CHANGES = 2;
 function remainingJobMs(queued: QueuedTask): number { return Math.max(0, queued.deadlineAt - performance.now()); }
+
+// A job's time limit covers the time it runs, not the time it waits in the queue behind other jobs. The clock starts the
+// first time the job is handed to a worker. Recovery and document-stale retries come back through the same entry points
+// and share that clock, so a job is still bounded overall.
+const startedJobs = new WeakSet<QueuedTask>();
+
+function startJobClock(queued: QueuedTask): void {
+  if (!startedJobs.has(queued)) {
+    const taskTimeoutMs = getRuntimeSettings().workerPool.taskTimeoutMs;
+
+    startedJobs.add(queued);
+    queued.deadlineAt = performance.now() + taskTimeoutMs;
+
+    extensionLog.debug("Worker pool: job clock started", {
+      taskId: queued.task.taskId,
+      taskType: queued.task.type,
+      queueWaitMs: Math.round(performance.now() - queued.submittedAt),
+      taskTimeoutMs,
+    });
+  }
+}
 async function withinJobDeadline<T>(queued: QueuedTask, operation: Promise<T>, label: string): Promise<T> {
   const remainingMs = remainingJobMs(queued);
   if (remainingMs <= 0) throw new Error(`Worker job deadline exhausted before ${label}`);
@@ -28,7 +49,15 @@ async function closeWorker(context: WorkerExecutorContext, worker: PoolWorker): 
 
   if (target) {
     if (isWorkerTabTarget(target)) resetWorkerReadiness(target.tabId);
-    await closeWorkerTarget(target);
+
+    try {
+      await closeWorkerTarget(target);
+    } catch (error) {
+      // Closing means "this worker no longer exists". A failed close must not abort the caller's retry or resolve
+      // decision, or the task is left unresolved. The Shell's final iframe sweep remains the safety net.
+      extensionLog.warn("Worker pool: worker close failed; continuing", { workerKey: getWorkerTargetKey(target), error });
+    }
+
     worker.target = undefined;
   }
 }
@@ -176,6 +205,7 @@ async function runTaskOnWorker(context: WorkerExecutorContext, worker: PoolWorke
 async function prepareCreatedTarget(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask, target: WorkerTarget): Promise<boolean> {
   worker.target = target;
   worker.currentUrl = queued.task.url;
+  worker.lastProgressAt = performance.now();
 
   if (isWorkerTabTarget(target)) await waitForWorkerReady(target.tabId, READY_TIMEOUT_MS);
 
@@ -196,6 +226,12 @@ async function prepareCreatedTarget(context: WorkerExecutorContext, worker: Pool
 }
 
 async function runOnNewWorker(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask): Promise<void> {
+  // Every path that creates a pending worker (first assignment, document-stale retry, bounded recovery) comes through here.
+  // Claim the task before the first await. Otherwise the pool health supervisor sees a "starting" worker with no active
+  // task, calls it unhealthy, retires it, and the task is resolved as cancelled when its iframe finally becomes ready.
+  worker.activeTaskId = queued.task.taskId;
+  worker.lastProgressAt = performance.now();
+
   let target: WorkerTarget | undefined;
 
   try {
@@ -281,6 +317,8 @@ async function navigateExistingWorker(context: WorkerExecutorContext, worker: Po
 }
 
 export async function runWorkerTask(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask): Promise<void> {
+  startJobClock(queued);
+
   let canRunTask = context.isCurrentGeneration() && !isWorkerRetired(worker) && worker.target !== undefined;
 
   if (canRunTask && worker.currentUrl !== queued.task.url) {
@@ -310,5 +348,6 @@ export async function runWorkerTask(context: WorkerExecutorContext, worker: Pool
 }
 
 export async function runTaskOnNewWorker(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask): Promise<void> {
+  startJobClock(queued);
   await runOnNewWorker(context, worker, queued);
 }

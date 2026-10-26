@@ -1,0 +1,13 @@
+import { readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+const root = process.cwd();
+const scssPath = resolve(root, "src/content/styles/fobles-extension.scss");
+const todoPath = resolve(root, "tools/migrations/auditor-journey/NEXT-PHASE-TODO.md");
+let scss = await readFile(scssPath, "utf8");
+if (!scss.includes('@use "auditor-todo-pass";')) scss = `${scss.trimEnd()}\n@use "auditor-todo-pass";\n`;
+await writeFile(scssPath, scss, "utf8");
+let todo = await readFile(todoPath, "utf8");
+for (const completed of ["Make persisted-log action buttons equal width.", "Move Search immediately above the audit grid.", "Remove tree-row border lines, button chrome from tree glyphs/globe, and use pointer cursor across expandable rows.", "Apply subtle item-row tint while preserving warning/error colors for relationship/test rows.", "Correct aggregate status/journey rollup so a parent cannot disagree with terminal child outcomes."]) todo = todo.replace(new RegExp(`^- ${completed.replace(/[.*+?^${}()|[\\]\\]/g, "\\$&")}\\r?\\n`, "m"), "");
+if (!todo.includes("Progress publication/replay remains pending")) todo += "- Progress publication/replay remains pending in Foundation reference-data processing; Auditor still receives 0 / 0.\n- Root-cause repeated-run memory growth and verify all worker/health timers are disposed.\n- Convert Node Details bespoke close control to shared light DialogIconButton.\n- Replace the Auditor trigger pseudo-glyph with a packaged SVG.\n";
+await writeFile(todoPath, todo, "utf8");
+console.log("Auditor TODO pass applied.");

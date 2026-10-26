@@ -1,0 +1,20 @@
+.fobles-auditor-app { display: flex; flex-direction: column; }
+.fobles-auditor-summary { order: 1; }
+.fobles-auditor-toolbar-shell { display: contents; }
+.fobles-auditor-controls-shell { order: 2; }
+.fobles-auditor-progress { order: 3; }
+.fobles-auditor-toolbar-search-row { order: 4; width: 100%; }
+.fobles-auditor-workspace { order: 5; }
+.fobles-auditor-tree-actions { border: 0; }
+.fobles-auditor-grid .ag-row { border-bottom: 0 !important; cursor: default; }
+.fobles-auditor-grid .ag-row.fobles-auditor-grid-row--item { background: rgba(47, 111, 237, 0.055); }
+.fobles-auditor-grid .ag-row.fobles-auditor-grid-row--finding { background: transparent; }
+.fobles-auditor-expandable-cell, .fobles-auditor-expandable-cell * { cursor: pointer; }
+.fobles-auditor-tree-toggle { appearance: none; display: inline-flex; align-items: center; justify-content: center; width: 16px; height: 16px; padding: 0 !important; border: 0 !important; border-radius: 0 !important; background: transparent !important; box-shadow: none !important; cursor: pointer; }
+.fobles-auditor-tree-toggle img { display: block; width: 16px; height: 16px; pointer-events: none; }
+.fobles-auditor-navigate { appearance: none; width: 22px; height: 22px; padding: 0 !important; border: 0 !important; border-radius: 50%; background: transparent !important; color: #2f6fed; font-size: 18px; line-height: 1; box-shadow: none !important; cursor: pointer; }
+.fobles-auditor-navigate:hover, .fobles-auditor-navigate:focus-visible { color: #174ea6; background: rgba(47, 111, 237, 0.11) !important; }
+.fobles-auditor-workspace-details { top: 0; right: 0; bottom: 0; height: auto; max-height: none; }
+.fobles-persisted-log-actions { display: grid !important; grid-template-columns: repeat(4, minmax(180px, 1fr)); gap: 8px; }
+.fobles-persisted-log-actions > button { width: 100% !important; }
+@media (max-width: 1000px) { .fobles-persisted-log-actions { grid-template-columns: repeat(2, minmax(160px, 1fr)); } }

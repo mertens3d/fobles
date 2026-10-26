@@ -1,24 +1,27 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-dialog.tsx
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { showFoblesCleanupDialog } from "../../../../shared/error-dialog";
 import { getReferenceGraphFilters } from "../../../../shared/reference-graph-settings";
+import { extensionLog } from "../../../logger";
+import { logHeapSnapshot } from "../../../foundation/diagnostics/heap-snapshot";
 import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
-import { getFoblesDataSession } from "../../../shared/data/fobles-data-service";
+import {
+  getFoblesDataSession,
+  subscribeFoblesAcquisitionProgress,
+  type FoblesAcquisitionProgress,
+} from "../../../shared/data/fobles-data-service";
 import { createDialogCloseButton } from "../../../shared/dialog/dialog-close-button";
 import { DialogIconButton } from "../../../shared/ui/dialog/dialog-icon-button";
 import type { PhaseProgress } from "../../../shared/ui/reference-controls/lifecycle.types";
-import { PhaseProgressBar } from "../../../shared/ui/reference-controls/phase-progress-bar";
+import { LifecycleProgressFooter } from "../../../shared/ui/reference-controls/lifecycle-progress-footer";
+import { ReferenceModelViewer } from "../../../shared/ui/reference-model/reference-model-viewer";
 import { NodeDetailsPanel } from "../../reference-graph/components/node-details-panel";
 import { getGraphPresentationState } from "../../reference-graph/graph-nodes/graph-presentation-state";
-import { ReferenceModelViewer } from "../../../shared/ui/reference-model/reference-model-viewer";
 import type { AuditFinding, AuditFindingStatus } from "../audit-finding.types";
 import type { AuditFindingStore } from "../audit-finding-store";
-import {
-  interpretResolveState,
-  REFERENCE_RESOLVED_CHECK_KEY,
-} from "../checks/reference-resolved-check";
+import { interpretResolveState, REFERENCE_RESOLVED_CHECK_KEY } from "../checks/reference-resolved-check";
 import { downloadAuditFindingsCsv } from "../export/audit-csv-exporter";
 import { AuditorGrid } from "./auditor-grid";
 import { AuditorSummary } from "./auditor-summary";
@@ -26,12 +29,8 @@ import { AuditorToolbar } from "./auditor-toolbar";
 
 export const AUDITOR_DIALOG_ID = "fobles-auditor-dialog";
 
-const ALL_STATUSES: readonly AuditFindingStatus[] = [
-  "pending",
-  "passed",
-  "warning",
-  "error",
-];
+const ALL_STATUSES: readonly AuditFindingStatus[] = ["pending", "passed", "warning", "error"];
+const DATA_SESSION_POLL_INTERVAL_MS = 100;
 
 const DEFAULT_GRAPH_FILTERS: SitecoreHarvestFiltersState = {
   parent: false,
@@ -49,34 +48,81 @@ type AuditorAppProps = {
   workSessionId: string;
 };
 
-function AuditorApp({
-  doc,
-  findingStore,
-  workSessionId,
-}: AuditorAppProps) {
-  const [snapshot, setSnapshot] = useState<readonly AuditFinding[]>(
-    () => findingStore.getSnapshot(),
-  );
+type FoblesDataSessionHandle = ReturnType<typeof getFoblesDataSession>;
+
+// The Auditor dialog opens while the audit run is still acquiring the Reference Model, so the Data
+// Service session does not exist yet at mount. Wait for it instead of subscribing once and giving up.
+function useFoblesDataSessionWhenReady(workSessionId: string): FoblesDataSessionHandle {
+  const [session, setSession] = useState<FoblesDataSessionHandle>(() => getFoblesDataSession(workSessionId));
+
+  useEffect(() => {
+    let active = true;
+    const startedAt = performance.now();
+
+    function attach(): boolean {
+      const found = getFoblesDataSession(workSessionId);
+
+      if (!found || !active) return false;
+
+      extensionLog.debug("Auditor dialog: data session attached", {
+        workSessionId,
+        waitedMs: Math.round(performance.now() - startedAt),
+      });
+      setSession(found);
+
+      return true;
+    }
+
+    if (attach()) {
+      return () => {
+        active = false;
+      };
+    }
+
+    const timer = window.setInterval(() => {
+      if (attach()) window.clearInterval(timer);
+    }, DATA_SESSION_POLL_INTERVAL_MS);
+
+    return () => {
+      active = false;
+      window.clearInterval(timer);
+    };
+  }, [workSessionId]);
+
+  return session;
+}
+
+function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
+  const [snapshot, setSnapshot] = useState<readonly AuditFinding[]>(() => findingStore.getSnapshot());
   const [query, setQuery] = useState("");
   const [modelRevision, setModelRevision] = useState(0);
   const [harvestProgress, setHarvestProgress] = useState<PhaseProgress>();
-  const [resolveProgress, setResolveProgress] = useState<PhaseProgress>();
-  const [selectedStatuses, setSelectedStatuses] = useState<
-    ReadonlySet<AuditFindingStatus>
-  >(() => new Set(ALL_STATUSES));
-  const [selectedChecks, setSelectedChecks] = useState<
-    ReadonlySet<string>
-  >(() => new Set());
-  const [graphFilters, setGraphFilters] =
-    useState<SitecoreHarvestFiltersState>(DEFAULT_GRAPH_FILTERS);
+  const [acquisitionProgress, setAcquisitionProgress] = useState<FoblesAcquisitionProgress>();
+  const [liveResolveProgress, setLiveResolveProgress] = useState<PhaseProgress>();
+  const [selectedStatuses, setSelectedStatuses] = useState<ReadonlySet<AuditFindingStatus>>(() => new Set(ALL_STATUSES));
+  const [selectedChecks, setSelectedChecks] = useState<ReadonlySet<string>>(() => new Set());
+  const [graphFilters, setGraphFilters] = useState<SitecoreHarvestFiltersState>(DEFAULT_GRAPH_FILTERS);
   const [viewReferenceModel, setViewReferenceModel] = useState(false);
-  const [selectedTreeNodeId, setSelectedTreeNodeId] =
-    useState<string>();
+  const [selectedTreeNodeId, setSelectedTreeNodeId] = useState<string>();
+  const [selectedTestFinding, setSelectedTestFinding] = useState<AuditFinding>();
   const [showHelp, setShowHelp] = useState(false);
+  const startedAt = useRef(performance.now());
+  const completedElapsedSeconds = useRef<number | undefined>(undefined);
 
+  const dataSession = useFoblesDataSessionWhenReady(workSessionId);
+  const data = dataSession?.data;
+  const model = data?.model;
+
+  useEffect(() => findingStore.subscribe(setSnapshot), [findingStore]);
+
+  // A cold item runs a live harvest before any data session exists. Subscribe by work-session id up front so
+  // that harvest's progress is visible instead of an empty dialog.
   useEffect(
-    () => findingStore.subscribe(setSnapshot),
-    [findingStore],
+    () => subscribeFoblesAcquisitionProgress(workSessionId, (progress) => {
+      extensionLog.debug("Auditor dialog: acquisition progress received", { workSessionId, progress });
+      setAcquisitionProgress(progress);
+    }),
+    [workSessionId],
   );
 
   useEffect(() => {
@@ -84,8 +130,6 @@ function AuditorApp({
   }, []);
 
   useEffect(() => {
-    const dataSession = getFoblesDataSession(workSessionId);
-
     if (!dataSession) return;
 
     const unsubscribeChange = dataSession.subscribeChange(() => {
@@ -93,10 +137,18 @@ function AuditorApp({
     });
 
     const unsubscribeHarvest = dataSession.subscribeHarvestProgress((progress) => {
+      extensionLog.debug("Auditor dialog: harvest progress received", { workSessionId, progress });
       setHarvestProgress(progress);
     });
+
     const unsubscribeProcessing = dataSession.subscribeProcessingProgress((progress) => {
-      setResolveProgress({
+      extensionLog.debug("Auditor dialog: processing progress received", {
+        workSessionId,
+        completedItemCount: progress.completedItemCount,
+        maxItemCount: progress.maxItemCount,
+        status: progress.status,
+      });
+      setLiveResolveProgress({
         completed: progress.completedItemCount,
         max: progress.maxItemCount,
         status: progress.status,
@@ -108,29 +160,70 @@ function AuditorApp({
       unsubscribeHarvest();
       unsubscribeProcessing();
     };
+  }, [dataSession, workSessionId]);
+
+  // Fallback that needs no event replay: count unique item GUIDs whose every Resolve candidate node
+  // has reached a terminal processing state, the same unit Graph's Resolving bar counts.
+  const derivedResolveProgress = useMemo<PhaseProgress | undefined>(() => {
+    if (!data || !model) return undefined;
+
+    const treeNodeIdsByGuid = new Map<string, string[]>();
+
+    data.resolveCandidateTreeNodeIds.forEach((treeNodeId) => {
+      const node = model.nodesById.get(treeNodeId);
+      const guid = (node?.nodeType === "item" ? node.scItem.scItemId || treeNodeId : treeNodeId).toLowerCase();
+      const treeNodeIds = treeNodeIdsByGuid.get(guid) ?? [];
+
+      treeNodeIds.push(treeNodeId);
+      treeNodeIdsByGuid.set(guid, treeNodeIds);
+    });
+
+    let completed = 0;
+
+    treeNodeIdsByGuid.forEach((treeNodeIds) => {
+      const terminal = treeNodeIds.every((treeNodeId) => {
+        const status = model.processingStateByTreeNodeId.get(treeNodeId);
+
+        return status !== undefined && status !== "pending" && status !== "enriching";
+      });
+
+      if (terminal) completed += 1;
+    });
+
+    const max = treeNodeIdsByGuid.size;
+
+    return { completed, max, status: completed >= max ? "complete" : "running" };
+  }, [data, model, modelRevision]);
+
+  const resolveProgress = liveResolveProgress ?? derivedResolveProgress;
+
+  if (resolveProgress?.status === "complete" && completedElapsedSeconds.current === undefined) {
+    completedElapsedSeconds.current = (performance.now() - startedAt.current) / 1000;
+  }
+
+  const resolveComplete = resolveProgress?.status === "complete";
+
+  useEffect(() => {
+    logHeapSnapshot("auditor-opened", { workSessionId });
   }, [workSessionId]);
 
-  const dataSession = getFoblesDataSession(workSessionId);
-  const data = dataSession?.data;
-  const model = data?.model;
+  useEffect(() => {
+    if (resolveComplete) logHeapSnapshot("auditor-resolve-complete", { workSessionId });
+  }, [resolveComplete, workSessionId]);
 
   const projectedFindings = useMemo(() => {
     const nodesById = model?.nodesById;
 
     return snapshot.map((finding) => {
-      const node = finding.referenceModelNodeId
-        ? nodesById?.get(finding.referenceModelNodeId)
-        : undefined;
+      const node = finding.referenceModelNodeId ? nodesById?.get(finding.referenceModelNodeId) : undefined;
 
       if (!node) return finding;
 
       const presentation = getGraphPresentationState(node);
-      const processingStatus =
-        model?.processingStateByTreeNodeId.get(node.treeNodeId);
-      const liveResolve =
-        finding.checkKey === REFERENCE_RESOLVED_CHECK_KEY
-          ? interpretResolveState(processingStatus)
-          : undefined;
+      const processingStatus = model?.processingStateByTreeNodeId.get(node.treeNodeId);
+      const liveResolve = finding.checkKey === REFERENCE_RESOLVED_CHECK_KEY
+        ? interpretResolveState(processingStatus)
+        : undefined;
 
       return {
         ...finding,
@@ -144,32 +237,15 @@ function AuditorApp({
   const filterableFindings = useMemo(() => {
     const nodesById = model?.nodesById;
     const normalizedQuery = query.trim().toLowerCase();
-    const anyGraphFilterEnabled =
-      Object.values(graphFilters).some(Boolean);
+    const anyGraphFilterEnabled = Object.values(graphFilters).some(Boolean);
 
     return projectedFindings.filter((finding) => {
-      if (
-        selectedChecks.size > 0 &&
-        !selectedChecks.has(finding.checkKey)
-      ) {
-        return false;
-      }
+      if (selectedChecks.size > 0 && !selectedChecks.has(finding.checkKey)) return false;
 
-      const node = finding.referenceModelNodeId
-        ? nodesById?.get(finding.referenceModelNodeId)
-        : undefined;
-      const branch = node
-        ? getGraphPresentationState(node).branch
-        : undefined;
+      const node = finding.referenceModelNodeId ? nodesById?.get(finding.referenceModelNodeId) : undefined;
+      const branch = node ? getGraphPresentationState(node).branch : undefined;
 
-      if (
-        anyGraphFilterEnabled &&
-        branch &&
-        !graphFilters[branch]
-      ) {
-        return false;
-      }
-
+      if (anyGraphFilterEnabled && branch && !graphFilters[branch]) return false;
       if (!normalizedQuery) return true;
 
       const searchable = [
@@ -182,38 +258,21 @@ function AuditorApp({
         finding.summary,
         finding.details,
       ]
-        .filter(
-          (value): value is string => Boolean(value),
-        )
+        .filter((value): value is string => Boolean(value))
         .join("\n")
         .toLowerCase();
 
       return searchable.includes(normalizedQuery);
     });
-  }, [
-    projectedFindings,
-    selectedChecks,
-    query,
-    graphFilters,
-    model,
-  ]);
+  }, [projectedFindings, selectedChecks, query, graphFilters, model]);
 
   const visibleFindings = useMemo(
-    () =>
-      filterableFindings.filter((finding) =>
-        selectedStatuses.has(finding.status),
-      ),
+    () => filterableFindings.filter((finding) => selectedStatuses.has(finding.status)),
     [filterableFindings, selectedStatuses],
   );
 
   const summary = useMemo(() => {
-    const counts = {
-      pending: 0,
-      passed: 0,
-      warning: 0,
-      error: 0,
-      total: filterableFindings.length,
-    };
+    const counts = { pending: 0, passed: 0, warning: 0, error: 0, total: filterableFindings.length };
 
     filterableFindings.forEach((finding) => {
       counts[finding.status] += 1;
@@ -222,17 +281,12 @@ function AuditorApp({
     return counts;
   }, [filterableFindings]);
 
-  function toggleStatus(
-    status: AuditFindingStatus,
-  ): void {
+  function toggleStatus(status: AuditFindingStatus): void {
     setSelectedStatuses((current) => {
       const next = new Set(current);
 
-      if (next.has(status)) {
-        next.delete(status);
-      } else {
-        next.add(status);
-      }
+      if (next.has(status)) next.delete(status);
+      else next.add(status);
 
       return next;
     });
@@ -242,11 +296,8 @@ function AuditorApp({
     setSelectedChecks((current) => {
       const next = new Set(current);
 
-      if (next.has(checkKey)) {
-        next.delete(checkKey);
-      } else {
-        next.add(checkKey);
-      }
+      if (next.has(checkKey)) next.delete(checkKey);
+      else next.add(checkKey);
 
       return next;
     });
@@ -259,11 +310,7 @@ function AuditorApp({
   }
 
   function exportCsv(): void {
-    downloadAuditFindingsCsv(
-      doc,
-      visibleFindings,
-      `fobles-auditor-findings-${Date.now()}.csv`,
-    );
+    downloadAuditFindingsCsv(doc, visibleFindings, `fobles-auditor-findings-${Date.now()}.csv`);
   }
 
   return (
@@ -274,52 +321,34 @@ function AuditorApp({
         onToggleStatus={toggleStatus}
       />
 
-      <DialogIconButton
-        kind="help"
-        label="Auditor help"
-        onClick={() => setShowHelp(true)}
-        className="fobles-auditor-help-trigger"
-      />
       <AuditorToolbar
-        query={query}
-        onQueryChange={setQuery}
         selectedChecks={selectedChecks}
         onToggleCheck={toggleCheck}
         onReset={resetFilters}
         onExport={exportCsv}
         graphFilters={graphFilters}
         onGraphFilterChange={(key, checked) => {
-          setGraphFilters((current) => ({
-            ...current,
-            [key]: checked,
-          }));
+          setGraphFilters((current) => ({ ...current, [key]: checked }));
         }}
         onClearGraphFilters={() => {
           setGraphFilters(
             (current) =>
               Object.fromEntries(
-                Object.keys(current).map((key) => [
-                  key,
-                  false,
-                ]),
+                Object.keys(current).map((key) => [key, false]),
               ) as unknown as SitecoreHarvestFiltersState,
           );
         }}
-        onViewReferenceModel={() =>
-          setViewReferenceModel(true)
+        onViewReferenceModel={() => setViewReferenceModel(true)}
+        onHelp={() => setShowHelp(true)}
+        footer={
+          <LifecycleProgressFooter
+            harvestProgress={harvestProgress ?? (acquisitionProgress?.harvestRequired ? acquisitionProgress.progress : undefined)}
+            resolveProgress={resolveProgress}
+            elapsedSeconds={completedElapsedSeconds.current}
+            buildingLabel="Building audit"
+          />
         }
       />
-
-      <div className="fobles-auditor-progress">
-        <PhaseProgressBar
-          label="Harvesting"
-          progress={harvestProgress}
-        />
-        <PhaseProgressBar
-          label="Resolving"
-          progress={resolveProgress}
-        />
-      </div>
 
       {viewReferenceModel && model ? (
         <ReferenceModelViewer
@@ -328,17 +357,30 @@ function AuditorApp({
         />
       ) : null}
 
+      <div className="fobles-auditor-search-row">
+        <input
+          type="search"
+          className="fobles-filter-search"
+          placeholder="Search..."
+          aria-label="Search audit results"
+          value={query}
+          onChange={(event) => setQuery(event.target.value)}
+        />
+      </div>
+
       <div className="fobles-auditor-workspace">
         <div className="fobles-auditor-workspace-main">
           {model ? (
-        <AuditorGrid
-          referenceModelRoot={model.referenceModel}
-          findings={visibleFindings}
-          processingStateByTreeNodeId={model.processingStateByTreeNodeId}
-          onViewData={setSelectedTreeNodeId}
-        />
-      ) : null}
+            <AuditorGrid
+              referenceModelRoot={model.referenceModel}
+              findings={visibleFindings}
+              processingStateByTreeNodeId={model.processingStateByTreeNodeId}
+              onViewData={setSelectedTreeNodeId}
+              onViewTestDetails={setSelectedTestFinding}
+            />
+          ) : null}
         </div>
+
         {selectedTreeNodeId && model ? (
           <aside className="fobles-auditor-workspace-details">
             <NodeDetailsPanel
@@ -351,44 +393,81 @@ function AuditorApp({
         ) : null}
       </div>
 
+      {selectedTestFinding ? (
+        <div
+          className="fobles-auditor-test-details-backdrop"
+          onMouseDown={(event) => {
+            if (event.currentTarget === event.target) setSelectedTestFinding(undefined);
+          }}
+        >
+          <section
+            className="fobles-auditor-test-details"
+            role="dialog"
+            aria-modal="true"
+            aria-label="Audit test details"
+          >
+            <DialogIconButton
+              kind="close"
+              label="Close test details"
+              onClick={() => setSelectedTestFinding(undefined)}
+            />
+            <h2>{selectedTestFinding.checkLabel}</h2>
+            <dl>
+              <div><dt>Status</dt><dd>{selectedTestFinding.status}</dd></div>
+              <div><dt>Summary</dt><dd>{selectedTestFinding.summary}</dd></div>
+              {selectedTestFinding.details ? <div><dt>Details</dt><dd>{selectedTestFinding.details}</dd></div> : null}
+              {selectedTestFinding.context ? <div><dt>Context</dt><dd>{selectedTestFinding.context}</dd></div> : null}
+              {selectedTestFinding.itemPath ? <div><dt>Path</dt><dd>{selectedTestFinding.itemPath}</dd></div> : null}
+            </dl>
+          </section>
+        </div>
+      ) : null}
+
       {showHelp ? (
         <div
           className="fobles-auditor-help-backdrop"
           onMouseDown={(event) => {
-            if (event.currentTarget === event.target) {
-              setShowHelp(false);
-            }
+            if (event.currentTarget === event.target) setShowHelp(false);
           }}
         >
-          <section
-            className="fobles-auditor-help"
-            role="dialog"
-            aria-modal="true"
-            aria-label="Auditor help"
-          >
+          <section className="fobles-auditor-help" role="dialog" aria-modal="true" aria-label="Auditor help">
             <DialogIconButton
               kind="close"
               label="Close Auditor help"
               onClick={() => setShowHelp(false)}
               className="fobles-auditor-help-close"
             />
-
             <h2>Fobles Auditor</h2>
             <p>Inspect the Reference Model as a Sitecore-style tree with tests attached to the exact item or relationship they evaluate.</p>
+
             <h3>Tree shortcuts</h3>
             <dl className="fobles-auditor-help-list">
               <div><dt>Click glyph</dt><dd>Expand or collapse one node.</dd></div>
+              <div><dt>Double-click row</dt><dd>Expand or collapse that row.</dd></div>
               <div><dt>Ctrl/Cmd + double-click row</dt><dd>Apply the same state to every node in that semantic category.</dd></div>
               <div><dt>Shift + click</dt><dd>Expand or collapse the selected subtree.</dd></div>
-              <div><dt>Double-click row</dt><dd>Expand or collapse that row.</dd></div>
-              <div><dt>View Data</dt><dd>Open a right-side details popover without resizing the audit table.</dd></div>
+              <div><dt>View Data</dt><dd>Open a right-side details panel without resizing the audit table.</dd></div>
+              <div><dt>Test Details</dt><dd>Open the full result for one audit test.</dd></div>
             </dl>
+
             <h3>Data journey</h3>
             <ul className="fobles-auditor-help-key">
-              <li><span className="fobles-auditor-journey fobles-auditor-journey--referenced"><span className="is-complete"/><span/><span/><span/></span><span><strong>Referenced</strong> Discovered from the target or another relationship.</span></li>
-              <li><span className="fobles-auditor-journey fobles-auditor-journey--cached"><span className="is-complete"/><span className="is-complete"/><span/><span/></span><span><strong>Cached</strong> Facts were supplied by the Sitecore data cache.</span></li>
-              <li><span className="fobles-auditor-journey fobles-auditor-journey--live"><span className="is-complete"/><span className="is-complete"/><span className="is-complete"/><span/></span><span><strong>Live</strong> Sitecore was queried during this operation.</span></li>
-              <li><span className="fobles-auditor-journey fobles-auditor-journey--tested"><span className="is-complete"/><span className="is-complete"/><span className="is-complete"/><span className="is-complete"/></span><span><strong>Tested</strong> Audit checks completed for the node.</span></li>
+              <li>
+                <span className="fobles-auditor-journey fobles-auditor-journey--referenced"><span className="is-complete" /><span /><span /><span /></span>
+                <span><strong>Referenced</strong> Discovered from the target or another relationship.</span>
+              </li>
+              <li>
+                <span className="fobles-auditor-journey fobles-auditor-journey--cached"><span className="is-complete" /><span className="is-complete" /><span /><span /></span>
+                <span><strong>Cached</strong> Facts were supplied by the Sitecore data cache.</span>
+              </li>
+              <li>
+                <span className="fobles-auditor-journey fobles-auditor-journey--live"><span className="is-complete" /><span className="is-complete" /><span className="is-complete" /><span /></span>
+                <span><strong>Live</strong> Sitecore was queried during this operation.</span>
+              </li>
+              <li>
+                <span className="fobles-auditor-journey fobles-auditor-journey--tested"><span className="is-complete" /><span className="is-complete" /><span className="is-complete" /><span className="is-complete" /></span>
+                <span><strong>Tested</strong> Audit checks completed for the node.</span>
+              </li>
             </ul>
           </section>
         </div>
@@ -410,13 +489,9 @@ export function openAuditorDialog(
     dialog.id = AUDITOR_DIALOG_ID;
     dialog.className = "fobles-auditor-dialog";
 
-    const closeButton = createDialogCloseButton(
-      doc,
-      dialog,
-    );
+    const closeButton = createDialogCloseButton(doc, dialog);
     const appHost = doc.createElement("div");
-    appHost.style.cssText =
-      "position:relative;width:100%;height:100%;";
+    appHost.style.cssText = "position:relative;width:100%;height:100%;";
     const appRoot = createRoot(appHost);
 
     dialog.append(closeButton, appHost);
@@ -426,18 +501,19 @@ export function openAuditorDialog(
       "close",
       () => {
         void (async () => {
-          const cleanupDialog =
-            showFoblesCleanupDialog(doc);
+          logHeapSnapshot("auditor-closing", { workSessionId });
+
+          const cleanupDialog = showFoblesCleanupDialog(doc);
 
           try {
             await onCancelRequested();
           } finally {
-            if (cleanupDialog.isConnected) {
-              cleanupDialog.close();
-            }
+            if (cleanupDialog.isConnected) cleanupDialog.close();
 
             appRoot.unmount();
             dialog.remove();
+            logHeapSnapshot("auditor-closed", { workSessionId });
+            window.setTimeout(() => logHeapSnapshot("auditor-closed+10s", { workSessionId }), 10000);
             resolve();
           }
         })();

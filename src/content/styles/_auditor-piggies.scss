@@ -1,0 +1,13 @@
+.fobles-auditor-controls-shell, .fobles-auditor-search-row { width: min(520px, 40%); min-width: 360px; }
+.fobles-auditor-search-row { margin-top: 8px; }
+.fobles-auditor-controls-shell .fobles-reference-graph-toolbar-footer { margin-top: 8px; }
+.fobles-auditor-grid .ag-row, .fobles-auditor-grid .ag-cell { cursor: pointer !important; user-select: none !important; }
+.fobles-auditor-workspace-details { top: 0 !important; bottom: 0 !important; height: 100% !important; max-height: none !important; }
+.fobles-auditor-test-details-backdrop { position: absolute; inset: 0; z-index: 40; display: grid; place-items: center; background: rgba(22, 36, 54, .28); }
+.fobles-auditor-test-details { position: relative; width: min(680px, 80vw); max-height: 80vh; overflow: auto; padding: 22px; border: 1px solid #7f9bc4; border-radius: 4px; background: #fff; box-shadow: 0 18px 48px rgba(0,0,0,.26); }
+.fobles-auditor-test-details > .fobles-dialog-icon-button { position: absolute; top: 10px; right: 10px; }
+.fobles-auditor-test-details dl > div { display: grid; grid-template-columns: 110px 1fr; gap: 12px; padding: 6px 0; }
+.fobles-auditor-test-details dt { font-weight: 700; }
+.fobles-auditor-test-details dd { margin: 0; white-space: pre-wrap; user-select: text; }
+@media (max-width: 1100px) { .fobles-auditor-controls-shell, .fobles-auditor-search-row { width: 60%; } }
+@media (max-width: 800px) { .fobles-auditor-controls-shell, .fobles-auditor-search-row { width: 100%; min-width: 0; } }

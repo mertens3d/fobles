@@ -101,8 +101,10 @@ export async function removeWorkerIframeTarget(target: WorkerIframeTarget): Prom
       { frameId: 0 },
     );
     if (!removed) {
-      extensionLog.error("Worker iframe service: host did not remove iframe", { target });
-      throw new Error(`Worker iframe host did not remove worker: ${target.workerId}`);
+      // Pool disposal and a task's own recovery can race to remove the same worker. The host answering "not removed"
+      // means the iframe is already gone, which is the outcome every caller wants, so this is not a failure.
+      extensionLog.warn("Worker iframe service: iframe already absent at removal", { target });
+      return;
     }
     extensionLog.debug("Worker iframe service: iframe removed", { target });
   } catch (error) {

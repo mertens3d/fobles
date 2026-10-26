@@ -1,21 +1,18 @@
 // @source-path [fobles] src/content/features/reference-graph/components/node-details-panel.tsx
-
 import { useEffect, useRef, useState } from "react";
 import prettier from "prettier/standalone";
 import * as prettierPluginHtml from "prettier/plugins/html";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
+import { DialogIconButton } from "../../../shared/ui/dialog/dialog-icon-button";
 import { getGraphPresentationState } from "../graph-nodes/graph-presentation-state";
-
 type NodeDetailsPanelProps = {
   selectedTreeNodeId: string | undefined;
   nodesById: Map<string, ReferenceModelNode>;
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
   onClose?: () => void;
 };
-
 type DetailRow = [string, string];
-
 type DiagnosticReferenceModelNode = Omit<
   ReferenceModelNode,
   "children" | "provenance" | "scItem"
@@ -25,39 +22,29 @@ type DiagnosticReferenceModelNode = Omit<
   provenance: string;
   childCount: number;
 };
-
 function itemDetailRows(
   treeNode: Extract<ReferenceModelNode, { nodeType: "item" }>,
 ): DetailRow[] {
   const rows: DetailRow[] = [["Kind", getGraphPresentationState(treeNode).kind]];
-
   if (treeNode.scItem.scItemName) {
     rows.push(["Name", treeNode.scItem.scItemName]);
   }
-
   if (treeNode.scItem.scItemId) {
     rows.push(["Item ID", treeNode.scItem.scItemId]);
   }
-
   if (treeNode.scItem.scItemPath) {
     rows.push(["Path", treeNode.scItem.scItemPath]);
   }
-
   if (treeNode.scItem.scTemplate?.scItemName) {
     rows.push(["Template", treeNode.scItem.scTemplate.scItemName]);
   }
-
-
-
   return rows;
 }
-
 function provenanceDetailRows(
   treeNode: ReferenceModelNode,
 ): DetailRow[] {
   const provenance = treeNode.provenance;
   let rows: DetailRow[] = [];
-
   if (provenance.type === "section") {
     rows = [["Section", provenance.section.name]];
   } else if (provenance.type === "section-field") {
@@ -101,16 +88,13 @@ function provenanceDetailRows(
   } else if (provenance.type === "synthetic") {
     rows = [["Synthetic", provenance.label]];
   }
-
   return rows.filter(([, value]) => Boolean(value));
 }
-
 function resolveRawSource(
   treeNode: ReferenceModelNode,
 ): string | undefined {
   const provenance = treeNode.provenance;
   let rawSource: string | undefined;
-
   if (provenance.type === "sitecore-item") {
     rawSource = provenance.rawData
       ? JSON.stringify(provenance.rawData, null, 2)
@@ -149,22 +133,17 @@ function resolveRawSource(
   } else if (provenance.type === "layout-xml") {
     rawSource = provenance.rawMarkup;
   }
-
   return rawSource;
 }
-
 function resolveItemRawMarkup(
   treeNode: ReferenceModelNode,
 ): string | undefined {
   let rawMarkup: string | undefined;
-
   if (treeNode.nodeType === "item") {
     rawMarkup = treeNode.scItem.rawMarkup;
   }
-
   return rawMarkup;
 }
-
 async function prettifyHtml(
   source: string,
 ): Promise<string> {
@@ -173,22 +152,17 @@ async function prettifyHtml(
     plugins: [prettierPluginHtml],
     printWidth: 120,
   });
-
   return formatted.trim();
 }
-
 async function prettifyRawSource(
   source: string,
 ): Promise<string> {
   let formatted = source;
-
   if (source.trimStart().startsWith("<")) {
     formatted = await prettifyHtml(source);
   }
-
   return formatted;
 }
-
 function buildDiagnosticTreeNode(
   treeNode: ReferenceModelNode,
 ): DiagnosticReferenceModelNode {
@@ -197,15 +171,12 @@ function buildDiagnosticTreeNode(
     provenance: _provenance,
     ...node
   } = treeNode;
-
   let diagnosticNode: DiagnosticReferenceModelNode;
-
   if (treeNode.nodeType === "item") {
     const {
       rawMarkup,
       ...scItem
     } = treeNode.scItem;
-
     diagnosticNode = {
       ...node,
       scItem: {
@@ -230,10 +201,8 @@ function buildDiagnosticTreeNode(
       childCount: children.length,
     };
   }
-
   return diagnosticNode;
 }
-
 function buildClipboardText(
   treeNode: DiagnosticReferenceModelNode,
   rawSource: string | undefined,
@@ -250,7 +219,6 @@ function buildClipboardText(
     itemRawMarkup ?? "",
   ].join("\n");
 }
-
 export function NodeDetailsPanel({
   selectedTreeNodeId,
   nodesById,
@@ -261,27 +229,21 @@ export function NodeDetailsPanel({
   const treeNode = selectedTreeNodeId
     ? nodesById.get(selectedTreeNodeId)
     : undefined;
-
   const [copied, setCopied] = useState(false);
   const [formattedRawSource, setFormattedRawSource] =
     useState<string | undefined>(undefined);
   const [formattedItemRawMarkup, setFormattedItemRawMarkup] =
     useState<string | undefined>(undefined);
-
   const rawSource = treeNode
     ? resolveRawSource(treeNode)
     : undefined;
-
   const itemRawMarkup = treeNode
     ? resolveItemRawMarkup(treeNode)
     : undefined;
-
   useEffect((): (() => void) => {
     let disposed = false;
-
     setFormattedRawSource(rawSource);
     setFormattedItemRawMarkup(itemRawMarkup);
-
     if (rawSource) {
       void prettifyRawSource(rawSource)
         .then((formatted): void => {
@@ -295,7 +257,6 @@ export function NodeDetailsPanel({
           }
         });
     }
-
     if (itemRawMarkup) {
       void prettifyHtml(itemRawMarkup)
         .then((formatted): void => {
@@ -309,7 +270,6 @@ export function NodeDetailsPanel({
           }
         });
     }
-
     return (): void => {
       disposed = true;
     };
@@ -317,10 +277,8 @@ export function NodeDetailsPanel({
     rawSource,
     itemRawMarkup,
   ]);
-
   useEffect(() => {
     if (!treeNode || !onClose) return;
-
     const ownerDocument = panelRef.current?.ownerDocument;
     if (!ownerDocument) return;
     const handlePointerDown = (event: PointerEvent): void => {
@@ -330,7 +288,6 @@ export function NodeDetailsPanel({
     const handleKeyDown = (event: KeyboardEvent): void => {
       if (event.key === "Escape") onClose();
     };
-
     ownerDocument.addEventListener("pointerdown", handlePointerDown, true);
     ownerDocument.addEventListener("keydown", handleKeyDown, true);
     return () => {
@@ -338,11 +295,9 @@ export function NodeDetailsPanel({
       ownerDocument.removeEventListener("keydown", handleKeyDown, true);
     };
   }, [treeNode, onClose]);
-
   if (!treeNode) {
     return null;
   }
-
   const rows: DetailRow[] =
     treeNode.nodeType === "item"
       ? [
@@ -355,10 +310,8 @@ export function NodeDetailsPanel({
           ["Name", treeNode.name],
           ...provenanceDetailRows(treeNode),
         ];
-
   const diagnosticTreeNode =
     buildDiagnosticTreeNode(treeNode);
-
   const handleCopy = (): void => {
     void navigator.clipboard
       .writeText(
@@ -370,31 +323,29 @@ export function NodeDetailsPanel({
       )
       .then(() => {
         setCopied(true);
-
         window.setTimeout(() => {
           setCopied(false);
         }, 1500);
       });
   };
-
   return (
     <div ref={panelRef} className="fobles-reference-graph-node-details">
       <div className="fobles-reference-graph-node-details-header">
         <strong>Node Details</strong>
-        {onClose ? <button type="button" className="fobles-reference-graph-node-details-close" onClick={onClose} aria-label="Close node details">×</button> : null}
-
-        <button
-          type="button"
-          className={
-            "fobles-reference-graph-button " +
-            "fobles-reference-graph-node-details-copy"
-          }
-          onClick={handleCopy}
-        >
-          {copied ? "Copied!" : "Copy"}
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
+          <button
+            type="button"
+            className={
+              "fobles-reference-graph-button " +
+              "fobles-reference-graph-node-details-copy"
+            }
+            onClick={handleCopy}
+          >
+            {copied ? "Copied!" : "Copy"}
+          </button>
+          {onClose ? <DialogIconButton kind="close" label="Close node details" onClick={onClose} /> : null}
+        </div>
       </div>
-
       {rows.map(([label, value]) => (
         <div
           key={label}
@@ -404,7 +355,6 @@ export function NodeDetailsPanel({
           <span>{value}</span>
         </div>
       ))}
-
       <details open>
         <summary>Reference Model Node</summary>
         <pre>
@@ -415,14 +365,12 @@ export function NodeDetailsPanel({
           )}
         </pre>
       </details>
-
       {formattedRawSource && (
         <details open>
           <summary>Raw Source</summary>
           <pre>{formattedRawSource}</pre>
         </details>
       )}
-
       {formattedItemRawMarkup && (
         <details open>
           <summary>Item Raw Markup</summary>

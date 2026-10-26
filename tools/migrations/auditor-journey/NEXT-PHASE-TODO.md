@@ -1,16 +1,22 @@
 # Next Phase TODO
 
-- Replace the Auditor toolbar trigger magnifier with a three-row/table SVG icon.
-- Preserve `data-fobles-nav-button-role="auditor-trigger"` and existing click behavior.
-- Match the Auditor trigger width and height to the Graph trigger and other primary toolbar buttons.
-- Keep tooltip and accessible label: `Audit the Reference Model for this item`.
-- Prefer an inline/local packaged SVG over a Unicode glyph.
-- Replace the Auditor toolbar trigger magnifier with a packaged three-row/table SVG icon and match Graph button dimensions.
-- Fix retained worker/iframe resources and health timers after specialist completion/close; repeated runs must not increase memory.
-- Publish and replay real Harvesting/Resolving progress from Foundation reference-data processing instead of 0 / 0.
-- Make persisted-log action buttons equal width.
-- Move Search immediately above the audit grid.
-- Remove tree-row border lines, button chrome from tree glyphs/globe, and use pointer cursor across expandable rows.
-- Apply subtle item-row tint while preserving warning/error colors for relationship/test rows.
-- Make Node Details use the shared close control light variant and fill the remaining workspace height.
-- Correct aggregate status/journey rollup so a parent cannot disagree with terminal child outcomes.
+## Open
+- Separate "Processing Timeout" and "Recovery Exhausted" outcomes in Auditor. Both currently show as one Sitecore Error.
+- Memory growth across repeated runs. No timer or iframe leak is visible at close. Heap and DOM snapshots are now logged
+  per Auditor run ("Heap snapshot": auditor-opened, auditor-resolve-complete, auditor-closing, auditor-closed,
+  auditor-closed+10s). Review them across several runs before changing code, otherwise revisit after the Foundation migration.
+- Graph does not log heap snapshots yet.
+- Sitecore "Synchronous XHR in page dismissal" alert on cold items. Watching. Capture a log while the alert is showing.
+- Persisted-log buttons: the two added by the options script have no `settings-button` class, so their font and padding can
+  differ from the other four. Needs the options script to fix at the source.
+
+## Needs a run to confirm
+- Node Details uses the shared close button.
+- Task time limit now starts when a job is handed to a worker. Look for "Worker pool: job clock started" with `queueWaitMs`.
+- Graph and Auditor share the Controls header and round `?` button.
+- Equal-width persisted-log buttons.
+
+## Done
+- Progress bars: replayed progress, cold-item acquisition progress.
+- Item / Relationship header returns to tree order.
+- Auditor toolbar trigger icon: acceptable for now.
