@@ -1,12 +1,12 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-dialog.tsx
-
+import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
+import { AUDIT_CHECK } from "../../../../constants/audit-checks.const";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { showFoblesCleanupDialog } from "../../../../shared/error-dialog";
 import { getReferenceGraphFilters } from "../../../../shared/reference-graph-settings";
 import { extensionLog } from "../../../logger";
 import { logHeapSnapshot } from "../../../foundation/diagnostics/heap-snapshot";
-import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
 import {
   getFoblesDataSession,
   subscribeFoblesAcquisitionProgress,
@@ -21,7 +21,7 @@ import { NodeDetailsPanel } from "../../reference-graph/components/node-details-
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import type { AuditFinding, AuditFindingStatus } from "../audit-finding.types";
 import type { AuditFindingStore } from "../audit-finding-store";
-import { interpretResolveState, REFERENCE_RESOLVED_CHECK_KEY } from "../checks/reference-resolved-check";
+import { interpretResolveState } from "../checks/reference-resolved-check";
 import { downloadAuditFindingsCsv } from "../export/audit-csv-exporter";
 import { AuditorGrid } from "./auditor-grid";
 import { AuditorSummary } from "./auditor-summary";
@@ -221,8 +221,8 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
 
       const presentation = getGraphPresentationState(node);
       const processingStatus = model?.processingStateByTreeNodeId.get(node.treeNodeId);
-      const liveResolve = finding.checkKey === REFERENCE_RESOLVED_CHECK_KEY
-        ? interpretResolveState(processingStatus)
+      const liveResolve = finding.checkKey === AUDIT_CHECK.REFERENCE_RESOLVED.KEY
+        ? interpretResolveState(processingStatus) 
         : undefined;
 
       return {

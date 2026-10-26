@@ -9,11 +9,11 @@ import { getAuditorControlsExpanded, setAuditorControlsExpanded } from "../audit
 import { CACHE_VALIDATION_CHECK_KEY, CACHE_VALIDATION_CHECK_LABEL } from "../checks/cache-validation-check";
 import { ITEM_NAVIGATION_CHECK_KEY, ITEM_NAVIGATION_CHECK_LABEL } from "../checks/item-navigation-check";
 import { ITEM_RESOLVED_CHECK_KEY, ITEM_RESOLVED_CHECK_LABEL } from "../checks/item-resolved-check";
-import { REFERENCE_RESOLVED_CHECK_KEY, REFERENCE_RESOLVED_CHECK_LABEL } from "../checks/reference-resolved-check";
+import { AUDIT_CHECK } from "../../../../constants/audit-checks.const";
 
 const CHECK_OPTIONS = [
   { key: ITEM_RESOLVED_CHECK_KEY, label: ITEM_RESOLVED_CHECK_LABEL },
-  { key: REFERENCE_RESOLVED_CHECK_KEY, label: REFERENCE_RESOLVED_CHECK_LABEL },
+  { key: AUDIT_CHECK.REFERENCE_RESOLVED.KEY, label: AUDIT_CHECK.REFERENCE_RESOLVED.LABEL },
   { key: CACHE_VALIDATION_CHECK_KEY, label: CACHE_VALIDATION_CHECK_LABEL },
   { key: ITEM_NAVIGATION_CHECK_KEY, label: ITEM_NAVIGATION_CHECK_LABEL },
 ] as const;

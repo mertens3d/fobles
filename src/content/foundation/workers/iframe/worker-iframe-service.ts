@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/foundation/workers/iframe/worker-iframe-service.ts
-
+import { CONST } from "../../../../constants/const";
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import { extensionLog } from "../../../logger";
 import type {
@@ -21,9 +21,7 @@ import {
 import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 
 const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;
-const READY_TIMEOUT_MS = 20000;
-const SEND_RETRY_DELAY_MS = 50;
-const MAX_SEND_ATTEMPTS = 50;
+const WORKER_POOL = CONST.FOBLES.WORKER_POOL;
 
 export type WorkerIframeTarget = {
   kind: "iframe";
@@ -42,7 +40,10 @@ type PendingWorkerReady = {
 const targetByWorkerId = new Map<string, WorkerIframeTarget>();
 const pendingReadyByWorkerId = new Map<string, PendingWorkerReady>();
 
-export async function createWorkerIframeTarget(hostTabId: number, url: string): Promise<WorkerIframeTarget> {
+export async function createWorkerIframeTarget(
+  hostTabId: number,
+  url: string,
+): Promise<WorkerIframeTarget> {
   const message: WorkerIframeCreateMessage = { type: WORKER_IFRAME_CREATE_MESSAGE_TYPE, url };
   const created = await chrome.tabs.sendMessage<
     WorkerIframeCreateMessage,
@@ -54,9 +55,18 @@ export async function createWorkerIframeTarget(hostTabId: number, url: string): 
     return await waitForWorkerIframeReady(created.workerId, hostTabId);
   } catch (error) {
     clearWorkerIframeTarget(created.workerId);
-    const removeMessage: WorkerIframeRemoveMessage = { type: WORKER_IFRAME_REMOVE_MESSAGE_TYPE, workerId: created.workerId };
-    await chrome.tabs.sendMessage<WorkerIframeRemoveMessage, boolean>(hostTabId, removeMessage, { frameId: 0 }).catch(() => false);
-    extensionLog.warn("Worker iframe service: removed iframe that failed readiness", { workerId: created.workerId, hostTabId, error });
+    const removeMessage: WorkerIframeRemoveMessage = {
+      type: WORKER_IFRAME_REMOVE_MESSAGE_TYPE,
+      workerId: created.workerId,
+    };
+    await chrome.tabs
+      .sendMessage<WorkerIframeRemoveMessage, boolean>(hostTabId, removeMessage, { frameId: 0 })
+      .catch(() => false);
+    extensionLog.warn("Worker iframe service: removed iframe that failed readiness", {
+      workerId: created.workerId,
+      hostTabId,
+      error,
+    });
     throw error;
   }
 }
@@ -83,7 +93,6 @@ export async function navigateWorkerIframeTarget(
     rejectPendingReady(target.workerId, error);
     throw error;
   }
-
   return await readyPromise;
 }
 
@@ -93,7 +102,6 @@ export async function removeWorkerIframeTarget(target: WorkerIframeTarget): Prom
     type: WORKER_IFRAME_REMOVE_MESSAGE_TYPE,
     workerId: target.workerId,
   };
-
   try {
     const removed = await chrome.tabs.sendMessage<WorkerIframeRemoveMessage, boolean>(
       target.hostTabId,
@@ -101,8 +109,8 @@ export async function removeWorkerIframeTarget(target: WorkerIframeTarget): Prom
       { frameId: 0 },
     );
     if (!removed) {
-      // Pool disposal and a task's own recovery can race to remove the same worker. The host answering "not removed"
-      // means the iframe is already gone, which is the outcome every caller wants, so this is not a failure.
+      // AI NOTE: Pool disposal and a task's own recovery can race to remove the same worker.
+      // AI NOTE: The host answering "not removed" means the iframe is already gone - not a failure.
       extensionLog.warn("Worker iframe service: iframe already absent at removal", { target });
       return;
     }
@@ -116,15 +124,12 @@ export async function removeWorkerIframeTarget(target: WorkerIframeTarget): Prom
 export async function removeAllWorkerIframeTargets(hostTabId: number): Promise<void> {
   clearHostWorkerIframeTargets(hostTabId);
   const message: WorkerIframeRemoveAllMessage = { type: WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE };
-
   try {
-    await chrome.tabs.sendMessage<WorkerIframeRemoveAllMessage, boolean>(
-      hostTabId,
-      message,
-      { frameId: 0 },
-    );
+    await chrome.tabs.sendMessage<WorkerIframeRemoveAllMessage, boolean>(hostTabId, message, {
+      frameId: 0,
+    });
   } catch {
-    // The host tab may already have been removed.
+    // AI NOTE: The host tab may already have been removed.
   }
 }
 
@@ -140,10 +145,8 @@ export async function sendTaskToWorkerIframe(
   const message: WorkerTaskExecuteMessage = { type: MESSAGE_TYPE.WORKER_TASK_EXECUTE, task };
   let attempt = 0;
   let result: WorkerTaskExecutionResult | undefined;
-
-  while (attempt < MAX_SEND_ATTEMPTS) {
+  while (attempt < WORKER_POOL.WORKER_IFRAME_MAX_SEND_ATTEMPTS) {
     attempt += 1;
-
     try {
       result = await chrome.tabs.sendMessage<
         WorkerTaskExecuteMessage,
@@ -152,10 +155,9 @@ export async function sendTaskToWorkerIframe(
       return result;
     } catch (error) {
       if (!isMissingReceiverError(error)) throw error;
-      await delay(SEND_RETRY_DELAY_MS);
+      await delay(WORKER_POOL.WORKER_IFRAME_SEND_RETRY_DELAY_MS);
     }
   }
-
   return result;
 }
 
@@ -169,9 +171,8 @@ export function sendCancelToWorkerIframe(
     requestId,
     taskId,
   };
-
   void chrome.tabs.sendMessage(target.hostTabId, message, { frameId: target.frameId }).catch(() => {
-    // The iframe may already have navigated or been removed.
+    // AI NOTE: The iframe may already have navigated or been removed.
   });
 }
 
@@ -182,22 +183,18 @@ export function markWorkerIframeReady(
 ): WorkerIframeTarget {
   const target: WorkerIframeTarget = { kind: "iframe", workerId, hostTabId, frameId };
   const pending = pendingReadyByWorkerId.get(workerId);
-
   targetByWorkerId.set(workerId, target);
-
   extensionLog.debug("Worker iframe service: ready", {
     workerId,
     hostTabId,
     frameId,
     hadPendingReady: Boolean(pending),
   });
-
   if (pending) {
     clearTimeout(pending.timeoutId);
     pendingReadyByWorkerId.delete(workerId);
     pending.resolve(target);
   }
-
   return target;
 }
 
@@ -205,33 +202,34 @@ export function clearHostWorkerIframeTargets(hostTabId: number): void {
   const pendingWorkerIds = Array.from(pendingReadyByWorkerId.entries())
     .filter(([, pending]) => pending.hostTabId === hostTabId)
     .map(([workerId]) => workerId);
-  pendingWorkerIds.forEach((workerId) => rejectPendingReady(workerId, new Error(`Worker iframe host disposed: ${workerId}`)));
+  pendingWorkerIds.forEach((workerId) =>
+    rejectPendingReady(workerId, new Error(`Worker iframe host disposed: ${workerId}`)),
+  );
+
   const workerIds = Array.from(targetByWorkerId.entries())
     .filter(([, target]) => target.hostTabId === hostTabId)
     .map(([workerId]) => workerId);
-
   workerIds.forEach(clearWorkerIframeTarget);
 }
 
-function waitForWorkerIframeReady(workerId: string, hostTabId: number): Promise<WorkerIframeTarget> {
+function waitForWorkerIframeReady(
+  workerId: string,
+  hostTabId: number,
+): Promise<WorkerIframeTarget> {
   const existingTarget = targetByWorkerId.get(workerId);
   if (existingTarget) return Promise.resolve(existingTarget);
-
   return new Promise((resolve, reject) => {
     rejectPendingReady(workerId, new Error("Worker iframe readiness was superseded"));
-
     const timeoutId = setTimeout(() => {
       pendingReadyByWorkerId.delete(workerId);
       reject(new Error(`Worker iframe did not become ready: ${workerId}`));
-    }, READY_TIMEOUT_MS);
-
+    }, WORKER_POOL.WORKER_IFRAME_READY_TIMEOUT_MS);
     pendingReadyByWorkerId.set(workerId, { hostTabId, resolve, reject, timeoutId });
   });
 }
 
 function rejectPendingReady(workerId: string, error: Error): void {
   const pending = pendingReadyByWorkerId.get(workerId);
-
   if (pending) {
     clearTimeout(pending.timeoutId);
     pendingReadyByWorkerId.delete(workerId);
@@ -245,7 +243,7 @@ function clearWorkerIframeTarget(workerId: string): void {
 }
 
 function isMissingReceiverError(error: unknown): boolean {
-  return error instanceof Error && error.message.includes("Receiving end does not exist");
+  return error instanceof Error && error.message.includes(WORKER_POOL.MISSING_RECEIVER_ERROR_TEXT);
 }
 
 async function delay(delayMs: number): Promise<void> {

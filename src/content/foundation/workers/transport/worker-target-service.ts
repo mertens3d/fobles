@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/foundation/workers/transport/worker-target-service.ts
-
+import { CONST } from "../../../../constants/const";
 import {
   createWorkerIframeTarget,
   markWorkerIframeOwned,
@@ -23,22 +23,18 @@ import {
   type WorkerTarget,
 } from "../pool/worker-target";
 
-const USE_WORKER_IFRAMES = true;
-
 export async function createWorkerTarget(
   hostTabId: number | undefined,
   url: string,
   active: boolean,
 ): Promise<WorkerTarget | undefined> {
   let target: WorkerTarget | undefined;
-
-  if (USE_WORKER_IFRAMES && hostTabId !== undefined) {
+  if (CONST.FOBLES.WORKER_POOL.USE_WORKER_IFRAMES && hostTabId !== undefined) {
     target = await createWorkerIframeTarget(hostTabId, url);
   } else {
     const tabId = await createWorkerTab(url, active);
     if (tabId !== undefined) target = { kind: "tab", tabId };
   }
-
   return target;
 }
 
@@ -47,13 +43,11 @@ export async function navigateWorkerTarget(
   url: string,
 ): Promise<WorkerTarget> {
   let updatedTarget = target;
-
   if (isWorkerIframeTarget(target)) {
     updatedTarget = await navigateWorkerIframeTarget(target, url);
   } else {
     await navigateWorkerTab(target.tabId, url);
   }
-
   return updatedTarget;
 }
 
@@ -78,13 +72,11 @@ export async function sendTaskToWorkerTarget(
   task: WorkerTask,
 ): Promise<WorkerTaskExecutionResult | undefined> {
   let result: WorkerTaskExecutionResult | undefined;
-
   if (isWorkerIframeTarget(target)) {
     result = await sendTaskToWorkerIframe(target, task);
   } else {
     result = await sendTaskToWorkerTab(target.tabId, task);
   }
-
   return result;
 }
 

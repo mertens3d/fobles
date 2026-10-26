@@ -73,7 +73,29 @@ function Test-FoblesExcludedPath {
 
     return $false
 }
+function Sync-FoblesTypeScriptTextCopies {
+    $keep = @{}
+    $sourceFiles = git -c core.quotepath=off -C $script:SourceRoot ls-files --cached --others --exclude-standard -- '*.ts' '*.tsx'
 
+    foreach ($relative in $sourceFiles) {
+        $relativeWindows = $relative.Replace("/", "\")
+        $sourcePath = Join-Path $script:SourceRoot $relativeWindows
+        $targetPath = Join-Path $script:DestinationRoot "$relativeWindows.txt"
+
+        if ((Test-Path -LiteralPath $sourcePath) -and -not (Test-FoblesExcludedPath -Path $sourcePath)) {
+            $keep[$targetPath] = $true
+
+            if (-not (Test-Path -LiteralPath $targetPath) -or (Get-Item -LiteralPath $targetPath).LastWriteTimeUtc -ne (Get-Item -LiteralPath $sourcePath).LastWriteTimeUtc) {
+                New-Item -ItemType Directory -Path (Split-Path $targetPath) -Force | Out-Null
+                Copy-Item -LiteralPath $sourcePath -Destination $targetPath -Force
+            }
+        }
+    }
+
+    Get-ChildItem -LiteralPath $script:DestinationRoot -Recurse -File -Include "*.ts", "*.tsx", "*.ts.txt", "*.tsx.txt" |
+        Where-Object { -not $keep.ContainsKey($_.FullName) } |
+        Remove-Item -Force
+}
 function Invoke-FoblesOneDriveSync {
     if ($script:SyncRunning) {
         $script:SyncPending = $true
@@ -114,10 +136,9 @@ function Invoke-FoblesOneDriveSync {
                     }
                 }
 
-                if ($script:ExcludedFilePatterns.Count -gt 0) {
-                    $arguments += "/XF"
-                    $arguments += $script:ExcludedFilePatterns
-                }
+                $arguments += "/XF"
+                $arguments += $script:ExcludedFilePatterns
+                $arguments += $script:TextCopyExcludePatterns
 
                 & robocopy @arguments
                 $robocopyExitCode = $LASTEXITCODE
@@ -126,6 +147,7 @@ function Invoke-FoblesOneDriveSync {
                     Write-Error "Fobles OneDrive sync failed. Robocopy exit code: $robocopyExitCode"
                 }
                 else {
+                    Sync-FoblesTypeScriptTextCopies
                     Write-Host "Fobles OneDrive sync complete. Robocopy exit code: $robocopyExitCode"
                 }
             }
