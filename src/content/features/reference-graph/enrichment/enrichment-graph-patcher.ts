@@ -4,7 +4,7 @@ import type cytoscape from "cytoscape";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import { getGraphOwnedClasses, projectGraphNode } from "../graph-nodes/graph-node-builder";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
-import { getGraphPresentationState } from "../graph-nodes/graph-presentation-state";
+import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 
 type ProjectedGraphNodeData = ReturnType<typeof projectGraphNode>["data"];
 

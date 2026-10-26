@@ -1,6 +1,7 @@
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
-import type { FoblesConfigBase, FoblesStrategy, SingleInputFieldOptions } from "../fobles.types";
+import type { FoblesConfigBase, SingleInputFieldOptions } from "../fobles.types";
+import type { FoblesStrategy } from "../../../foundation/sitecore/fobles-strategy.types";
 import { createFoblesWrapper } from "./create-fobles-wrapper";
 import { createFoblesItemButton } from "./create-fobles-item-button";
 import { hideWithStyledSpacer } from "./hide-with-styled-spacer";

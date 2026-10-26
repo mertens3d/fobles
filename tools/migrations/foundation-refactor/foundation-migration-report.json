@@ -1,153 +1,58 @@
 {
-  "phase": "foundation-sitecore-and-acquisition",
+  "phase": "foundation-boundaries",
   "mode": "apply",
   "status": "applied",
   "moves": [
     {
-      "from": "src/content/sitecore-data",
-      "to": "src/content/foundation/sitecore/data"
+      "from": "src/content/features/reference-graph/reference-graph-helper.ts",
+      "to": "src/content/foundation/reference-data/model/slugify.ts"
     },
     {
-      "from": "src/content/features/augmentor/shared/guid.ts",
-      "to": "src/content/foundation/sitecore/guid.ts"
+      "from": "src/content/features/reference-graph/graph-nodes/graph-collapse.types.ts",
+      "to": "src/content/foundation/reference-data/model/graph-collapse.types.ts"
     },
     {
-      "from": "src/content/toolbar/jump-flyout/quick-info.ts",
-      "to": "src/content/foundation/sitecore/quick-info.ts"
-    },
-    {
-      "from": "src/content/macros",
-      "to": "src/content/foundation/sitecore/macros"
-    },
-    {
-      "from": "src/content/shell/work-session/work-session.types.ts",
-      "to": "src/content/foundation/workers/session/work-session.types.ts"
-    },
-    {
-      "from": "src/content/shell/health/health.types.ts",
-      "to": "src/content/foundation/diagnostics/health.types.ts"
-    },
-    {
-      "from": "src/content/shared/ui/reference-controls/lifecycle.types.ts",
-      "to": "src/content/foundation/reference-data/progress/lifecycle.types.ts"
-    },
-    {
-      "from": "src/content/features/reference-graph/lifecycle/acquire-reference-model.ts",
-      "to": "src/content/foundation/reference-data/acquisition/acquire-reference-model.ts"
-    },
-    {
-      "from": "src/content/features/reference-graph/lifecycle/root-cache-flow.ts",
-      "to": "src/content/foundation/reference-data/acquisition/root-cache-flow.ts"
-    },
-    {
-      "from": "src/content/features/reference-graph/lifecycle/root-revision.ts",
-      "to": "src/content/foundation/reference-data/acquisition/root-revision.ts"
-    },
-    {
-      "from": "src/content/shared/data/fobles-data-service.ts",
-      "to": "src/content/foundation/reference-data/reference-data-service.ts"
+      "from": "src/content/features/reference-graph/graph-nodes/graph-presentation-state.ts",
+      "to": "src/content/foundation/reference-data/model/graph-presentation-state.ts"
     }
   ],
   "symbolMoves": [
     {
-      "from": "src/content/features/augmentor/helper.ts",
-      "to": "src/content/foundation/sitecore/fobles-url.ts",
+      "from": "src/content/toolbar/types.ts",
+      "to": "src/content/foundation/sitecore/quick-info.types.ts",
       "symbols": [
-        "buildFoblesUrl",
-        "normalizeFoblesValue"
+        "QuickInfo",
+        "QuickInfoTemplate"
       ]
     },
     {
-      "from": "src/content/toolbar/jump-flyout/ai-pages.ts",
-      "to": "src/content/foundation/sitecore/current-item.ts",
+      "from": "src/content/features/augmentor/fobles.types.ts",
+      "to": "src/content/foundation/sitecore/fobles-strategy.types.ts",
       "symbols": [
-        "getCurrentItemId"
+        "FoblesStrategy"
+      ]
+    },
+    {
+      "from": "src/content/features/reference-graph/graph.types.ts",
+      "to": "src/content/foundation/sitecore/macros/tree-expand-macro.ts",
+      "symbols": [
+        "GlyphState"
       ]
     }
   ],
   "payloadFiles": [
-    "src/content/features/augmentor/helper.ts",
-    "src/content/features/reference-graph/lifecycle/acquire-reference-model.ts",
-    "src/content/features/reference-graph/prepared-reference-graph.ts",
-    "src/content/features/reference-graph/prepared-reference-graph.types.ts",
-    "src/content/foundation/reference-data/acquisition/prepare-reference-model.ts",
-    "src/content/foundation/sitecore/current-item.ts",
-    "src/content/foundation/sitecore/fobles-url.ts",
-    "src/content/toolbar/jump-flyout/ai-pages.ts"
+    "src/content/foundation/sitecore/fobles-strategy.types.ts",
+    "src/content/foundation/sitecore/quick-info.types.ts"
   ],
-  "scannedSourceFiles": 463,
-  "movedSourceFiles": 17,
-  "changedSourceFiles": 76,
-  "rewrittenSpecifiers": 111,
-  "splitSymbolImports": 15,
+  "scannedSourceFiles": 469,
+  "movedSourceFiles": 3,
+  "changedSourceFiles": 35,
+  "rewrittenSpecifiers": 24,
+  "splitSymbolImports": 7,
   "boundaryViolations": {
-    "total": 12,
-    "byRule": {
-      "foundation -> features": 10,
-      "foundation -> toolbar": 2
-    },
-    "details": [
-      {
-        "importer": "src/content/foundation/harvesting/collectors/helpers/harvest-helpers.ts",
-        "target": "src/content/toolbar/types.ts",
-        "rule": "foundation -> toolbar"
-      },
-      {
-        "importer": "src/content/foundation/reference-data/model/layout-reference-model-builder.ts",
-        "target": "src/content/features/reference-graph/reference-graph-helper.ts",
-        "rule": "foundation -> features"
-      },
-      {
-        "importer": "src/content/foundation/reference-data/model/layout-reference-model-builder.ts",
-        "target": "src/content/features/reference-graph/graph-nodes/graph-collapse.types.ts",
-        "rule": "foundation -> features"
-      },
-      {
-        "importer": "src/content/foundation/reference-data/model/reference-model-builder.ts",
-        "target": "src/content/features/reference-graph/graph-nodes/graph-collapse.types.ts",
-        "rule": "foundation -> features"
-      },
-      {
-        "importer": "src/content/foundation/reference-data/model/reference-model-node-factory.ts",
-        "target": "src/content/features/reference-graph/graph-nodes/graph-collapse.types.ts",
-        "rule": "foundation -> features"
-      },
-      {
-        "importer": "src/content/foundation/reference-data/model/reference-model-node-factory.ts",
-        "target": "src/content/features/reference-graph/graph-nodes/graph-presentation-state.ts",
-        "rule": "foundation -> features"
-      },
-      {
-        "importer": "src/content/foundation/reference-data/model/reference-model-node-id.ts",
-        "target": "src/content/features/reference-graph/graph-nodes/graph-collapse.types.ts",
-        "rule": "foundation -> features"
-      },
-      {
-        "importer": "src/content/foundation/reference-data/model/reference-model-provenance.types.ts",
-        "target": "src/content/features/augmentor/fobles.types.ts",
-        "rule": "foundation -> features"
-      },
-      {
-        "importer": "src/content/foundation/reference-data/model/rendering-reference-model-builder.ts",
-        "target": "src/content/features/reference-graph/graph-nodes/graph-collapse.types.ts",
-        "rule": "foundation -> features"
-      },
-      {
-        "importer": "src/content/foundation/reference-data/model/sections-reference-model-builder.ts",
-        "target": "src/content/features/reference-graph/graph-nodes/graph-collapse.types.ts",
-        "rule": "foundation -> features"
-      },
-      {
-        "importer": "src/content/foundation/sitecore/macros/tree-expand-macro.ts",
-        "target": "src/content/features/reference-graph/graph.types.ts",
-        "rule": "foundation -> features"
-      },
-      {
-        "importer": "src/content/foundation/sitecore/quick-info.ts",
-        "target": "src/content/toolbar/types.ts",
-        "rule": "foundation -> toolbar"
-      }
-    ]
+    "total": 0,
+    "byRule": {},
+    "details": []
   },
   "blocking": [],
   "warnings": [],

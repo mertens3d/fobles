@@ -5,7 +5,7 @@ import {
   isGraphCollapseKey,
   type ExpandedByCollapseKey,
   type GraphCollapseKey,
-} from "./graph-collapse.types";
+} from "../../../foundation/reference-data/model/graph-collapse.types";
 
 export async function getExpandedByCollapseKey(): Promise<ExpandedByCollapseKey> {
   const result = await getStorageValue<unknown>([STORAGE.KEY.REFERENCE_GRAPH.EXPANDED_BY_COLLAPSE_KEY], "local");

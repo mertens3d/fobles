@@ -6,7 +6,6 @@ import type { EnrichmentProgress } from "./enrichment/enrichment.types";
 import type { GraphParameterVisibilitySettings } from "./graph-parameter-visibility-settings";
 import type { getGraphViewportState } from "./graph-viewport-settings";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
-export type GlyphState = "expanded" | "collapsed" | "leaf";
 export type LayoutPreset = { label: string; build: () => cytoscape.LayoutOptions; };
 export type LayoutGraphPresetName = "dagre" | "cose-bilkent" | "fcose" | "breadthfirst";
 export type HarvestForLink = (link: string, filters: SitecoreHarvestFiltersState, existingResult?: SitecoreHarvestResult) => Promise<SitecoreHarvestResult | undefined>;

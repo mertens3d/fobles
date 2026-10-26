@@ -3,7 +3,7 @@
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import { isGuidLike } from "../../sitecore/guid";
-import { GRAPH_COLLAPSE_KEY } from "../../../features/reference-graph/graph-nodes/graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
 import {
   createReferenceModelItemNode,
   createReferenceModelNonItemNode,

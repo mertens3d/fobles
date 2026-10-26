@@ -46,6 +46,38 @@ block it. They are left exactly as they are and listed under "PRE-EXISTING stale
 moves still blocks, because its path cannot be recalculated. Two such test imports are redirected to their current files in the
 phase file; the rest need a human decision.
 
+## Phase 7 - clear the last Foundation boundary violations, then enforce them in the build
+
+```powershell
+pwsh -NoProfile -File .\tools\migrations\foundation-refactor\invoke-foundation-migration.ps1 -Phase 7 -DryRun
+pwsh -NoProfile -File .\tools\migrations\foundation-refactor\invoke-foundation-migration.ps1 -Phase 7
+```
+
+The phase sets `requireNoViolations`: the dry run is BLOCKED unless every Foundation boundary violation is gone after the phase, so a
+VALIDATED dry run means the boundary check will pass.
+
+| Change | From | To |
+| --- | --- | --- |
+| move | `features/reference-graph/reference-graph-helper.ts` (only `slugify`) | `foundation/reference-data/model/slugify.ts` |
+| move | `features/reference-graph/graph-nodes/graph-collapse.types.ts` | `foundation/reference-data/model/graph-collapse.types.ts` |
+| move | `features/reference-graph/graph-nodes/graph-presentation-state.ts` | `foundation/reference-data/model/graph-presentation-state.ts` |
+| symbol | `QuickInfo`, `QuickInfoTemplate` from `toolbar/types.ts` | `foundation/sitecore/quick-info.types.ts` |
+| symbol | `FoblesStrategy` from `features/augmentor/fobles.types.ts` | `foundation/sitecore/fobles-strategy.types.ts` |
+| symbol | `GlyphState` from `features/reference-graph/graph.types.ts` | `foundation/sitecore/macros/tree-expand-macro.ts` |
+
+Why the model's collapse keys and presentation state moved: the Reference Model builders stamp every node with a collapse key and
+a classification, so the types they use have to live where the builders do. Foundation cannot import from features.
+
+One type-level change: `graph-presentation-state.ts` used `keyof NodePresentationByKind` (a Graph UI type) for a node's `kind`. It now
+uses the `NodeKind` from `constants/_base/_REFERENCE_GRAPH_BASE`, which the node factory already passes in. That is the only edit that
+the dry run cannot type-check; `build:extension` does.
+
+`build:extension` now runs `tools/scripts/dev/check-boundaries.mjs` after `tsc` and fails on any violation.
+To stop enforcing, delete that one `run(...)` line from `tools/scripts/build/build-extension.js`.
+
+Names are unchanged. `GRAPH_COLLAPSE_KEY` and `getGraphPresentationState` still say "graph" even though they now live in Foundation.
+Renaming them is a separate step.
+
 `node tools/scripts/dev/check-boundaries.mjs` reports any import that crosses the layers the wrong way; it exits 1 if it finds one.
 
 Earlier phase files (01-05) are history; their source paths no longer exist.

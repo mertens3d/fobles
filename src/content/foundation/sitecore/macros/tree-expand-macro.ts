@@ -3,7 +3,7 @@
 import { CONST } from "../../../../constants/const";
 import type { TreeChildNode } from "../../reference-data/model/tree-child-node.types";
 import { formatFoId, stripGuidBraces } from "../guid";
-import type { GlyphState } from "../../../features/reference-graph/graph.types";
+export type GlyphState = "expanded" | "collapsed" | "leaf";
 
 export function getGlyphId(itemId: string): string {
   return `${CONST.SITECORE.TREE_ID_PREFIXES.GLYPH}${stripGuidBraces(itemId).replace(/-/g, "").toUpperCase()}`;

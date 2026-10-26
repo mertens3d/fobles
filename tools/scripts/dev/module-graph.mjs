@@ -6,7 +6,9 @@ export const SOURCE_EXTENSIONS = new Set([".ts", ".tsx", ".mts", ".cts", ".js", 
 
 const RESOLUTION_SUFFIXES = [".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs", ".d.ts"];
 const STRIP_SUFFIXES = [".d.ts", ".ts", ".tsx", ".mts", ".cts", ".js", ".jsx", ".mjs", ".cjs"];
-const EXCLUDED_DIRECTORY_NAMES = new Set(["node_modules", ".git", "dist", "build", "coverage", ".next", "test-results", "playwright-report", "test-artifacts", "artifacts"]);
+const EXCLUDED_DIRECTORY_NAMES = new Set(["node_modules", ".git", "dist", "coverage", ".next", "test-results", "playwright-report", "test-artifacts"]);
+// Generated output lives at the repository root. A nested directory with the same name, such as tools/scripts/build, is source.
+const EXCLUDED_ROOT_DIRECTORY_NAMES = new Set(["build", "artifacts"]);
 const MOCK_CALLEES = new Set(["vi.mock", "vi.doMock", "vi.importActual", "vi.importMock", "jest.mock", "jest.doMock", "jest.requireActual"]);
 
 export function normalizeSlashes(value) {
@@ -31,7 +33,11 @@ export async function enumerateFiles(root, { excludeDirectories = [] } = {}) {
       const entryPath = path.join(directory, entry.name);
 
       if (entry.isDirectory()) {
-        if (!EXCLUDED_DIRECTORY_NAMES.has(entry.name) && !excludedKeys.has(pathKey(entryPath))) await visit(entryPath);
+        const skipped = EXCLUDED_DIRECTORY_NAMES.has(entry.name)
+          || (directory === root && EXCLUDED_ROOT_DIRECTORY_NAMES.has(entry.name))
+          || excludedKeys.has(pathKey(entryPath));
+
+        if (!skipped) await visit(entryPath);
       } else if (entry.isFile()) {
         results.push(entryPath);
       }

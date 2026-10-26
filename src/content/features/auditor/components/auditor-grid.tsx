@@ -13,8 +13,8 @@ import {
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
 import { getExpandedByCollapseKey, setExpandedStateForCollapseKey } from "../../reference-graph/graph-nodes/graph-collapse-settings";
-import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "../../reference-graph/graph-nodes/graph-collapse.types";
-import { getGraphPresentationState } from "../../reference-graph/graph-nodes/graph-presentation-state";
+import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "../../../foundation/reference-data/model/graph-collapse.types";
+import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import type { AuditFinding } from "../audit-finding.types";
 import { buildAuditReportTree, type AuditReportTreeNode } from "../audit-report-tree";
 import { AuditorStatusCell } from "./auditor-status-cell";

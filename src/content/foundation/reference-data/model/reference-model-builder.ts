@@ -2,7 +2,7 @@
 
 import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
 import { CONST } from "../../../../constants/const";
-import { GRAPH_COLLAPSE_KEY } from "../../../features/reference-graph/graph-nodes/graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
 import { createReferenceModelNodeId } from "./layout-reference-model-builder";
 import { createLayoutReferenceModel } from "./reference-model-node-id";
 import { REFERENCE_MODEL_FAN_OUT_LIMITS } from "./reference-model-fan-out-limits";

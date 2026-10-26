@@ -49,6 +49,7 @@ run(process.execPath, [
   "-p",
   "tsconfig.json",
 ]);
+run(process.execPath, [join(projectRoot, "tools/scripts/dev/check-boundaries.mjs")]);
 
 async function bundle(entryPoint, outfile, format) {
   await esbuild.build({

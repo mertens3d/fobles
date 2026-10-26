@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/field-reference-resolution/field-reference.types.ts
 
-import type { FoblesStrategy } from "../features/augmentor/fobles.types";
+import type { FoblesStrategy } from "../foundation/sitecore/fobles-strategy.types";
 
 export type FieldReferenceConfidence = "strategy" | "inferred";
 

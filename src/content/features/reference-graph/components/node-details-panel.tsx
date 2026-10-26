@@ -5,7 +5,7 @@ import * as prettierPluginHtml from "prettier/plugins/html";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
 import { DialogIconButton } from "../../../shared/ui/dialog/dialog-icon-button";
-import { getGraphPresentationState } from "../graph-nodes/graph-presentation-state";
+import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 type NodeDetailsPanelProps = {
   selectedTreeNodeId: string | undefined;
   nodesById: Map<string, ReferenceModelNode>;

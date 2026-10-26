@@ -7,7 +7,7 @@ import { buildFoblesUrl } from "../../../sitecore/fobles-url";
 import { formatFoId } from "../../../sitecore/guid";
 import { extensionLog } from "../../../../logger";
 import { getQuickInfo } from "../../../sitecore/quick-info";
-import type { QuickInfo } from "../../../../toolbar/types";
+import type { QuickInfo } from "../../../sitecore/quick-info.types";
 
 export function getTemplateGuid(doc: Document): string | undefined {
   return (

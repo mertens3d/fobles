@@ -335,6 +335,14 @@ async function main() {
   }
 
   const violations = findViolations(edges);
+
+  if (configuration.requireNoViolations && violations.length > 0) {
+    blocking.push({
+      kind: "boundary-violations-remain",
+      count: violations.length,
+      hint: "This phase requires a clean boundary check. The violations are listed above and in the report.",
+    });
+  }
   const changed = records.filter((record) => record.finalContent !== record.diskContent);
   const moved = records.filter((record) => record.finalPath !== record.originalPath);
   const status = blocking.length > 0 ? "blocked" : applyChanges ? "applied" : "validated";

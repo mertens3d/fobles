@@ -2,7 +2,7 @@
 
 import { CONST } from "../../../../constants/const";
 import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
-import { GRAPH_COLLAPSE_KEY } from "../../../features/reference-graph/graph-nodes/graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
 import { createPageLayoutItemsByDeviceId, createLayoutSectionReferenceModel } from "./layout-reference-model-builder";
 import { createReferenceModelNonItemNode } from "./reference-model-node-factory";
 import { createSyntheticProvenance } from "./reference-model-provenance.types";

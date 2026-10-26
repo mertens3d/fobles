@@ -1,21 +1,4 @@
-export type FoblesStrategy =
-  | "drop-link"
-  | "drop-tree"
-  | "droplist"
-  | "file"
-  | "general-link"
-  | "icon"
-  | "image"
-  | "internal-link"
-  | "multilist-options"
-  | "multilist-with-search"
-  | "quick-info-section"
-  | "reference-links"
-  | "style-checklist"
-  | "tag-list"
-  | "template-path"
-  | "tree-list"
-  | "treelist-ex";
+import type { FoblesStrategy } from "../../foundation/sitecore/fobles-strategy.types";
 
 export type DroplinkFoblesStrategy = Extract<FoblesStrategy, "drop-link">;
 export type DropTreeFoblesStrategy = Extract<FoblesStrategy, "drop-tree">;

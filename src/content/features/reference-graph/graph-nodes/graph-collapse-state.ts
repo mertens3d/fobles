@@ -5,7 +5,7 @@ import {
   isGraphCollapseKey,
   type ExpandedByCollapseKey,
   type GraphCollapseKey,
-} from "./graph-collapse.types";
+} from "../../../foundation/reference-data/model/graph-collapse.types";
 
 export function initializeCollapsedTreeNodeIds(
   cy: cytoscape.Core,

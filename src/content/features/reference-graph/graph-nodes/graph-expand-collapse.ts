@@ -13,7 +13,7 @@ import {
   initializeCollapsedTreeNodeIds,
   readCollapseKey,
 } from "./graph-collapse-state";
-import type { ExpandedByCollapseKey } from "./graph-collapse.types";
+import type { ExpandedByCollapseKey } from "../../../foundation/reference-data/model/graph-collapse.types";
 import {
   applyGraphVisibility,
   createExpandCollapseOverlay,

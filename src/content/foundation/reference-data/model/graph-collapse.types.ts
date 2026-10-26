@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-collapse.types.ts
+// @source-path [fobles] src/content/foundation/reference-data/model/graph-collapse.types.ts
 export const GRAPH_COLLAPSE_KEY = {
   ROOT: "root", PARENT: "parent", CHILDREN: "children", CHILD: "child", TEMPLATE: "template", REFERRERS: "referrers", REFERRER: "referrer", CUSTOM_FIELDS: "customFields", STANDARD_FIELDS: "standardFields", SECTION: "section", FIELD: "field", LAYOUTS: "layouts", LAYOUT_SECTION: "layoutSection", DEVICE: "device", PAGE_LAYOUT: "pageLayout", PLACEHOLDER: "placeholder", RENDERING: "rendering", RENDERING_PARAMETERS: "renderingParameters", RENDERING_PARAMETER: "renderingParameter", DATASOURCE: "datasource", TESTS: "tests",
 } as const;

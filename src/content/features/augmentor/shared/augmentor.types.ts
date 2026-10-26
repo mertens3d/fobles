@@ -1,4 +1,4 @@
-import type { FoblesStrategy } from "../fobles.types";
+import type { FoblesStrategy } from "../../../foundation/sitecore/fobles-strategy.types";
 
 export type CreateFoblesWrapperOptions = {
   strategy: FoblesStrategy;

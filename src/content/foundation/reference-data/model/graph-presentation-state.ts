@@ -1,8 +1,7 @@
-// @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-presentation-state.ts
-import type { ReferenceModelBranch, ReferenceModelNode, RelationshipToParent } from "../../../foundation/reference-data/model/reference-model.types";
+// @source-path [fobles] src/content/foundation/reference-data/model/graph-presentation-state.ts
+import type { ReferenceModelBranch, ReferenceModelNode, RelationshipToParent } from "./reference-model.types";
 import type { GraphCollapseKey } from "./graph-collapse.types";
-import type { NodePresentationByKind } from "./node-presentation.types";
-type NodeKind = keyof NodePresentationByKind;
+import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 export type GraphPresentationState = { kind: NodeKind; collapseKey: GraphCollapseKey; branch?: ReferenceModelBranch; relationshipToParent?: RelationshipToParent; reverse?: boolean };
 const stateByNode = new WeakMap<ReferenceModelNode, GraphPresentationState>();
 export function setGraphPresentationState(node: ReferenceModelNode, state: GraphPresentationState): void { stateByNode.set(node, state); }

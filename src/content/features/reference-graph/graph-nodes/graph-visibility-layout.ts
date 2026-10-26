@@ -2,7 +2,7 @@
 
 import type cytoscape from "cytoscape";
 import { runGraphLayout } from "../cytoscape/graph-layout";
-import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/graph-collapse.types";
 
 export type GraphVisibilityLayoutContext = {
   getCurrentLayoutPresetName: () => Parameters<typeof runGraphLayout>[1];

@@ -1,0 +1,113 @@
+{
+  "phase": "foundation-boundaries",
+  "payload": "payload/07",
+  "requireNoViolations": true,
+  "moves": [
+    {
+      "from": "src/content/features/reference-graph/reference-graph-helper.ts",
+      "to": "src/content/foundation/reference-data/model/slugify.ts"
+    },
+    {
+      "from": "src/content/features/reference-graph/graph-nodes/graph-collapse.types.ts",
+      "to": "src/content/foundation/reference-data/model/graph-collapse.types.ts"
+    },
+    {
+      "from": "src/content/features/reference-graph/graph-nodes/graph-presentation-state.ts",
+      "to": "src/content/foundation/reference-data/model/graph-presentation-state.ts"
+    }
+  ],
+  "symbolMoves": [
+    {
+      "from": "src/content/toolbar/types.ts",
+      "to": "src/content/foundation/sitecore/quick-info.types.ts",
+      "symbols": [
+        "QuickInfo",
+        "QuickInfoTemplate"
+      ]
+    },
+    {
+      "from": "src/content/features/augmentor/fobles.types.ts",
+      "to": "src/content/foundation/sitecore/fobles-strategy.types.ts",
+      "symbols": [
+        "FoblesStrategy"
+      ]
+    },
+    {
+      "from": "src/content/features/reference-graph/graph.types.ts",
+      "to": "src/content/foundation/sitecore/macros/tree-expand-macro.ts",
+      "symbols": [
+        "GlyphState"
+      ]
+    }
+  ],
+  "textEdits": [
+    {
+      "file": "src/content/toolbar/types.ts",
+      "edits": [
+        {
+          "pattern": "\\s*export type QuickInfoTemplate\\s*=\\s*\\{[^}]*\\}\\s*;?\\s*export type QuickInfo\\s*=\\s*\\{[^}]*\\}\\s*;?\\s*$",
+          "flags": "",
+          "replace": "\n"
+        }
+      ]
+    },
+    {
+      "file": "src/content/features/augmentor/fobles.types.ts",
+      "edits": [
+        {
+          "pattern": "export type FoblesStrategy\\s*=\\s*(?:\\|\\s*\"[^\"]+\"\\s*)+;\\s*",
+          "flags": "",
+          "replace": ""
+        },
+        {
+          "pattern": "^",
+          "flags": "",
+          "replace": "import type { FoblesStrategy } from \"../../foundation/sitecore/fobles-strategy.types\";\n\n"
+        }
+      ]
+    },
+    {
+      "file": "src/content/features/reference-graph/graph.types.ts",
+      "edits": [
+        {
+          "pattern": "export type GlyphState\\s*=\\s*\"expanded\"\\s*\\|\\s*\"collapsed\"\\s*\\|\\s*\"leaf\"\\s*;\\s*",
+          "flags": "",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "file": "src/content/foundation/sitecore/macros/tree-expand-macro.ts",
+      "edits": [
+        {
+          "pattern": "import type \\{ GlyphState \\} from \"[^\"]*graph\\.types\";",
+          "flags": "",
+          "replace": "export type GlyphState = \"expanded\" | \"collapsed\" | \"leaf\";"
+        }
+      ]
+    },
+    {
+      "file": "src/content/features/reference-graph/graph-nodes/graph-presentation-state.ts",
+      "edits": [
+        {
+          "find": "import type { NodePresentationByKind } from \"./node-presentation.types\";",
+          "replace": "import type { NodeKind } from \"../../../../constants/_base/_REFERENCE_GRAPH_BASE\";"
+        },
+        {
+          "find": "type NodeKind = keyof NodePresentationByKind;\n",
+          "replace": ""
+        }
+      ]
+    },
+    {
+      "file": "tools/scripts/build/build-extension.js",
+      "edits": [
+        {
+          "pattern": "(\"tsconfig\\.json\",\\s*\\]\\);)",
+          "flags": "",
+          "replace": "$1\nrun(process.execPath, [join(projectRoot, \"tools/scripts/dev/check-boundaries.mjs\")]);"
+        }
+      ]
+    }
+  ]
+}

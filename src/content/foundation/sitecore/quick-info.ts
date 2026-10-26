@@ -1,5 +1,5 @@
 import { CONST } from "../../../constants/const.ts";
-import type { QuickInfo, QuickInfoTemplate } from "../../toolbar/types";
+import type { QuickInfo, QuickInfoTemplate } from "./quick-info.types";
 
 export const getQuickInfo = (
     doc: Document
