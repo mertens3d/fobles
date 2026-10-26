@@ -1,0 +1,114 @@
+.fobles-dialog-icon-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 6px;
+  border: 1px solid #7f9bc4;
+  border-radius: 3px;
+  background: #fff;
+  color: #203047;
+  font: 700 17px/1 Arial, sans-serif;
+  cursor: pointer;
+
+  &:hover { background: #eef4ff; }
+  &:focus-visible { outline: 2px solid #2f6fed; outline-offset: 2px; }
+  img { display: block; width: 16px; height: 16px; pointer-events: none; }
+}
+
+.fobles-auditor-help-trigger {
+  position: absolute;
+  top: 10px;
+  right: 50px;
+  z-index: 11;
+}
+
+.fobles-auditor-toolbar {
+  width: min(520px, 40%);
+  min-width: 360px;
+}
+
+.fobles-auditor-workspace {
+  position: relative;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+.fobles-auditor-workspace-main {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+}
+
+.fobles-auditor-workspace-details {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 20;
+  width: min(480px, 42%);
+  min-width: 360px;
+  overflow: auto;
+  background: #20344f;
+  box-shadow: -10px 0 24px rgba(0, 0, 0, 0.22);
+  animation: fobles-auditor-details-in 150ms ease-out;
+}
+
+@keyframes fobles-auditor-details-in {
+  from { transform: translateX(20px); opacity: 0; }
+  to { transform: translateX(0); opacity: 1; }
+}
+
+.fobles-auditor-grid .ag-cell {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fobles-auditor-selectable {
+  user-select: text;
+}
+
+.fobles-auditor-tree-toggle {
+  appearance: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 16px;
+  height: 16px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+}
+
+.fobles-auditor-tree-toggle img {
+  display: block;
+  width: 16px;
+  height: 16px;
+  pointer-events: none;
+}
+
+.fobles-auditor-navigate {
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 100ms linear;
+}
+
+.ag-row:hover .fobles-auditor-navigate,
+.fobles-auditor-navigate:focus-visible {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+@media (max-width: 1100px) {
+  .fobles-auditor-toolbar { width: 60%; }
+}
+
+@media (max-width: 800px) {
+  .fobles-auditor-toolbar { width: 100%; min-width: 0; }
+  .fobles-auditor-workspace-details { width: min(480px, 90%); min-width: 0; }
+}

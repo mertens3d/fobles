@@ -1,0 +1,13 @@
+.fobles-auditor-toolbar-shell { width: 100%; }
+.fobles-auditor-controls-shell { width: min(520px, 40%); min-width: 360px; }
+.fobles-auditor-toolbar-header { width: 100%; }
+.fobles-auditor-toolbar-controls { width: 100%; box-sizing: border-box; }
+.fobles-auditor-help-trigger { position: absolute; top: 10px; right: 50px; z-index: 35; }
+.fobles-auditor-help-corner { display: none !important; }
+.fobles-nav-auditor-button { display: inline-flex !important; align-items: center; justify-content: center; width: 40px !important; min-width: 40px !important; }
+.fobles-nav-auditor-button::before { display: block; color: #fff; }
+.fobles-auditor-navigate { opacity: 0 !important; pointer-events: none !important; }
+.ag-row:hover .fobles-auditor-navigate, .fobles-auditor-navigate:focus-visible { opacity: 1 !important; pointer-events: auto !important; }
+.fobles-auditor-grid .ag-cell { min-width: 0; overflow: hidden !important; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 1100px) { .fobles-auditor-controls-shell { width: 60%; } }
+@media (max-width: 800px) { .fobles-auditor-controls-shell { width: 100%; min-width: 0; } }

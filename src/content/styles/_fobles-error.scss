@@ -28,3 +28,23 @@
     cursor: pointer;
   }
 }
+
+.fobles-cleanup-dialog {
+  border-color: #2f6fed;
+  background: #f5f8ff;
+
+  .fobles-error-dialog__title {
+    color: #2458bd;
+  }
+
+  .fobles-error-dialog__close {
+    border-color: #2f6fed;
+    background: #2f6fed;
+    color: #fff;
+
+    &:hover,
+    &:focus-visible {
+      background: #2458bd;
+    }
+  }
+}

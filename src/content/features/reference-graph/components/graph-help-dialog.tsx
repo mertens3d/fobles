@@ -1,4 +1,5 @@
 import { useRef, type ReactNode } from "react";
+import { DialogIconButton } from "../../../shared/ui/dialog/dialog-icon-button";
 
 const GRAPH_HELP = {
   TITLE: "Reference Graph Help",
@@ -52,15 +53,12 @@ export function GraphHelpDialog({ dialogRef }: GraphHelpDialogProps) {
       <header className="fobles-reference-graph-help-header">
         <h2 id="fobles-reference-graph-help-title">{GRAPH_HELP.TITLE}</h2>
 
-        <button
-          type="button"
-          className="fobles-reference-graph-help-close"
-          aria-label="Close graph help"
-          title="Close"
+        <DialogIconButton
+          kind="close"
+          label="Close graph help"
           onClick={() => dialogRef.current?.close()}
-        >
-          ×
-        </button>
+          className="fobles-reference-graph-help-close"
+        />
       </header>
 
       <div className="fobles-reference-graph-help-content">

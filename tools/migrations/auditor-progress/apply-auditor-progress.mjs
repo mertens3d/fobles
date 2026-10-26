@@ -1,0 +1,13 @@
+import { readFile, writeFile } from "node:fs/promises";
+import { resolve } from "node:path";
+const root = process.cwd();
+const dialogPath = resolve(root, "src/content/features/auditor/components/auditor-dialog.tsx");
+const extScssPath = resolve(root, "src/content/styles/fobles-extension.scss");
+let dialog = await readFile(dialogPath, "utf8");
+dialog = dialog.replace(/\n\s*onHelp=\{\(\) => setShowHelp\(true\)\}/g, "");
+if (!dialog.includes('className="fobles-auditor-help-trigger"')) throw new Error("Shared Auditor help trigger is missing.");
+await writeFile(dialogPath, dialog, "utf8");
+let scss = await readFile(extScssPath, "utf8");
+if (!scss.includes('@use "auditor-runtime-fixes";')) scss = `${scss.trimEnd()}\n@use "auditor-runtime-fixes";\n`;
+await writeFile(extScssPath, scss, "utf8");
+console.log("Auditor runtime UI fixes applied.");
