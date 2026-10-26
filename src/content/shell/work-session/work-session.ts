@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/shell/work-session/work-session.ts
-import { showFoblesErrorDialog } from "../../../shared/error-dialog";
+import { showFoblesErrorDialog, updateFoblesCleanupDialog } from "../../../shared/error-dialog";
 import { extensionLog } from "../../logger";
 import { getRuntimeSettings } from "../../runtime-settings/runtime-settings";
 import type { HealthProvider, HealthReport } from "../health/health.types";
@@ -21,8 +21,28 @@ async function releasePoolLease(sessionId: string): Promise<void> {
   activeSessionCount = Math.max(0, activeSessionCount - 1);
   extensionLog.debug("Shell work session: pool lease released", { sessionId, activeSessionCount });
   if (activeSessionCount !== 0) return;
+  const initialIframeCount = document.querySelectorAll("iframe[data-worker-id]").length;
+  const startedAt = performance.now();
+  const timeoutMs = 10000;
+  const progressTimer = setInterval(() => {
+    const remaining = document.querySelectorAll("iframe[data-worker-id]").length;
+    updateFoblesCleanupDialog(document, {
+      removed: Math.max(0, initialIframeCount - remaining),
+      total: initialIframeCount,
+      remainingSeconds: Math.max(0, Math.ceil((timeoutMs - (performance.now() - startedAt)) / 1000)),
+      phase: "disposing",
+    });
+  }, 250);
   poolDisposalPromise ??= disposeBackgroundWorkerPool().finally(() => { poolDisposalPromise = undefined; });
-  try { await poolDisposalPromise; } finally { runFinalWorkerIframeCleanup(sessionId); }
+  try {
+    await Promise.race([poolDisposalPromise, new Promise<void>((resolve) => setTimeout(resolve, timeoutMs))]);
+  } finally {
+    clearInterval(progressTimer);
+    const remainingBeforeFailsafe = document.querySelectorAll("iframe[data-worker-id]").length;
+    if (remainingBeforeFailsafe > 0) updateFoblesCleanupDialog(document, { removed: Math.max(0, initialIframeCount - remainingBeforeFailsafe), total: initialIframeCount, remainingSeconds: 0, phase: "failsafe" });
+    runFinalWorkerIframeCleanup(sessionId);
+    updateFoblesCleanupDialog(document, { removed: initialIframeCount, total: initialIframeCount, remainingSeconds: 0, phase: "complete" });
+  }
   extensionLog.debug("Shell work session: final lease released; worker pool disposed", { sessionId });
 }
 export function createWorkSession(): WorkSession {
