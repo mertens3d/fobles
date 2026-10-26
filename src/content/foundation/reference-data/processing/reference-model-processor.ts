@@ -1,12 +1,12 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processor.ts
 import { extensionLog } from "../../../logger";
-import type { HealthReport } from "../../../shell/health/health.types";
-import { resolveSitecoreDataIdentity } from "../../../sitecore-data/sitecore-data-identity";
+import type { HealthReport } from "../../diagnostics/health.types";
+import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import { mergeEnrichedItem } from "../../harvesting/planner/enrichment-task-planner";
 import { createSitecoreItemLocator } from "../../harvesting/worker-task-executor";
 import { createErrorResult, type WorkerTask, type WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
-import type { WorkSession } from "../../../shell/work-session/work-session.types";
-import { buildFoblesUrl } from "../../../features/augmentor/helper";
+import type { WorkSession } from "../../workers/session/work-session.types";
+import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import type { ReferenceModelNode } from "../model/reference-model.types";
 import { collectEnrichmentGuidLookup, isEligibleForResolve } from "./resolve-candidate-collector";
 import { sortGuidsByEnrichmentPriority } from "./reference-model-processing-priority";

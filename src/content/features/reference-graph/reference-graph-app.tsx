@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph-app.tsx
 import type cytoscape from "cytoscape";
 import { useEffect, useRef } from "react";
-import type { WorkSession } from "../../shell/work-session/work-session.types";
+import type { WorkSession } from "../../foundation/workers/session/work-session.types";
 import { extensionLog } from "../../logger";
 import { GraphToolbar } from "./components/graph-toolbar";
 import { GraphZoomControls } from "./components/graph-zoom-controls";
@@ -12,7 +12,7 @@ import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";
 import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
-import { getFoblesDataSession } from "../../shared/data/fobles-data-service";
+import { getFoblesDataSession } from "../../foundation/reference-data/reference-data-service";
 import { subscribeRootRefresh } from "./lifecycle/root-refresh-events";
 const ZOOM_FACTOR = 1.2;
 const VIEWPORT_PADDING = 60;

@@ -1,10 +1,165 @@
 {
-  "phase": "reference-model-processing",
+  "phase": "foundation-sitecore-and-acquisition",
+  "payload": "payload/06",
+  "replaces": {
+    "src/content/features/augmentor/helper.ts": "a14af2b91603107db638daa7e5495865a71e268f44b94d4f780648d232b22d6d",
+    "src/content/toolbar/jump-flyout/ai-pages.ts": "04a0102f2a107999c17416a431ed958c40e1fef492fadda3336e15ff0209e8cf",
+    "src/content/features/reference-graph/lifecycle/acquire-reference-model.ts": "efc92b386b07196b722e1cc0ed12c8a3f327f7ea5b374e9d4237d204888ae7b7",
+    "src/content/features/reference-graph/prepared-reference-graph.types.ts": "296bcbba9a268bb22f0455d2c27b36b16bb9ac35e8e369bb90b8f25c1075a01c",
+    "src/content/features/reference-graph/prepared-reference-graph.ts": "bdcbc8db3137970d8e29408e7f2ee82b790d47592ded737af0de7882e38b5410"
+  },
   "moves": [
     {
-      "from": "src/content/shared/reference-model-processing",
-      "to": "src/content/foundation/reference-data/processing"
+      "from": "src/content/sitecore-data",
+      "to": "src/content/foundation/sitecore/data"
+    },
+    {
+      "from": "src/content/features/augmentor/shared/guid.ts",
+      "to": "src/content/foundation/sitecore/guid.ts"
+    },
+    {
+      "from": "src/content/toolbar/jump-flyout/quick-info.ts",
+      "to": "src/content/foundation/sitecore/quick-info.ts"
+    },
+    {
+      "from": "src/content/macros",
+      "to": "src/content/foundation/sitecore/macros"
+    },
+    {
+      "from": "src/content/shell/work-session/work-session.types.ts",
+      "to": "src/content/foundation/workers/session/work-session.types.ts"
+    },
+    {
+      "from": "src/content/shell/health/health.types.ts",
+      "to": "src/content/foundation/diagnostics/health.types.ts"
+    },
+    {
+      "from": "src/content/shared/ui/reference-controls/lifecycle.types.ts",
+      "to": "src/content/foundation/reference-data/progress/lifecycle.types.ts"
+    },
+    {
+      "from": "src/content/features/reference-graph/lifecycle/acquire-reference-model.ts",
+      "to": "src/content/foundation/reference-data/acquisition/acquire-reference-model.ts"
+    },
+    {
+      "from": "src/content/features/reference-graph/lifecycle/root-cache-flow.ts",
+      "to": "src/content/foundation/reference-data/acquisition/root-cache-flow.ts"
+    },
+    {
+      "from": "src/content/features/reference-graph/lifecycle/root-revision.ts",
+      "to": "src/content/foundation/reference-data/acquisition/root-revision.ts"
+    },
+    {
+      "from": "src/content/shared/data/fobles-data-service.ts",
+      "to": "src/content/foundation/reference-data/reference-data-service.ts"
     }
   ],
-  "redirects": []
+  "symbolMoves": [
+    {
+      "from": "src/content/features/augmentor/helper.ts",
+      "to": "src/content/foundation/sitecore/fobles-url.ts",
+      "symbols": [
+        "buildFoblesUrl",
+        "normalizeFoblesValue"
+      ]
+    },
+    {
+      "from": "src/content/toolbar/jump-flyout/ai-pages.ts",
+      "to": "src/content/foundation/sitecore/current-item.ts",
+      "symbols": [
+        "getCurrentItemId"
+      ]
+    }
+  ],
+  "textEdits": [
+    {
+      "file": "src/content/foundation/reference-data/processing/reference-model-session.ts",
+      "edits": [
+        {
+          "pattern": "import type \\{ PreparedReferenceGraph \\} from \"[^\"]*prepared-reference-graph\\.types\";",
+          "replace": "import type { PreparedReferenceModel } from \"../acquisition/prepare-reference-model\";"
+        },
+        {
+          "pattern": "\\bPreparedReferenceGraph\\b",
+          "replace": "PreparedReferenceModel"
+        },
+        {
+          "pattern": "(onRootRefresh\\?: \\(result: SitecoreHarvestResult\\) => void;)",
+          "replace": "$1\n  // Called once the model exists and before processing starts, so a consumer can derive its own view of it.\n  onModelReady?: (prepared: PreparedReferenceModel) => void;"
+        },
+        {
+          "pattern": "(onRootRefresh)(\\s*\\}: StartSharedReferenceModelSessionOptions)",
+          "replace": "$1, onModelReady$2"
+        },
+        {
+          "pattern": "(const \\{ itemId, prepared, decision \\} = acquired;)",
+          "replace": "$1\n  onModelReady?.(prepared);"
+        }
+      ]
+    },
+    {
+      "file": "src/content/shared/data/fobles-data-service.ts",
+      "edits": [
+        {
+          "pattern": "import type \\{ PreparedReferenceGraph \\} from \"[^\"]*prepared-reference-graph\\.types\";",
+          "replace": "import type { PreparedReferenceModel } from \"../../foundation/reference-data/acquisition/prepare-reference-model\";"
+        },
+        {
+          "pattern": "\\bPreparedReferenceGraph\\b",
+          "replace": "PreparedReferenceModel"
+        },
+        {
+          "pattern": "(onHarvestRequired\\?: \\(\\) => void;)",
+          "replace": "$1\n  // Called once the model exists and before processing starts, so a consumer can derive its own view of it.\n  onModelReady?: (model: PreparedReferenceModel) => void;"
+        },
+        {
+          "pattern": "(\\n\\s*)(onAcquireProgress: \\(step, status\\) => \\{)",
+          "replace": "$1onModelReady: request.onModelReady,$1$2"
+        }
+      ]
+    },
+    {
+      "file": "src/content/features/reference-graph/reference-graph.ts",
+      "edits": [
+        {
+          "find": "import { harvestGraphForLink } from \"./harvester\";",
+          "replace": "import { harvestGraphForLink } from \"./harvester\";\nimport { addGraphElements } from \"./prepared-reference-graph\";\nimport type { PreparedReferenceGraph } from \"./prepared-reference-graph.types\";"
+        },
+        {
+          "pattern": "(\\n)(\\s*)(this\\.dataSession = await openFoblesDataSession\\(\\{)",
+          "replace": "$1$2const graphHolder: { prepared?: PreparedReferenceGraph } = {};\n\n$2$3"
+        },
+        {
+          "pattern": "(\\n\\s*)(onAcquireProgress: \\(step, status\\) => handleHarvestProgress\\(this\\.doc, step, status\\),)",
+          "replace": "$1// Graph projects its Cytoscape elements the moment the model exists, before processing starts, so the first render$1// reflects the same initial processing state it always has.$1onModelReady: (model) => {$1  graphHolder.prepared = addGraphElements(model);$1},$1$2"
+        },
+        {
+          "pattern": "if \\(!this\\.dataSession\\) throw new Error\\(\"The requested data was unavailable\\.\"\\);",
+          "replace": "if (!this.dataSession || !graphHolder.prepared) throw new Error(\"The requested data was unavailable.\");"
+        },
+        {
+          "pattern": "const prepared = this\\.dataSession\\.data\\.model;",
+          "replace": "const prepared = graphHolder.prepared;"
+        }
+      ]
+    }
+  ],
+  "redirects": [
+    {
+      "from": "src/content/features/reference-graph/lifecycle/phase-progress-display.ts",
+      "to": "src/content/shared/ui/reference-controls/phase-progress-display.ts"
+    },
+    {
+      "from": "src/content/features/reference-graph/lifecycle/phase-progress-display",
+      "to": "src/content/shared/ui/reference-controls/phase-progress-display.ts"
+    },
+    {
+      "from": "src/content/features/reference-graph/lifecycle/lifecycle.types.ts",
+      "to": "src/content/shared/ui/reference-controls/lifecycle.types.ts"
+    },
+    {
+      "from": "src/content/features/reference-graph/lifecycle/lifecycle.types",
+      "to": "src/content/shared/ui/reference-controls/lifecycle.types.ts"
+    }
+  ]
 }

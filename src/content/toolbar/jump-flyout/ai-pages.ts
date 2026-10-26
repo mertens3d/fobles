@@ -1,11 +1,11 @@
-import { extractGuid } from "../../features/augmentor/shared/guid";
+import { getCurrentItemId } from "../../foundation/sitecore/current-item";
 import {
   getAiPagesMappings,
   onAiPagesMappingsChange,
   type AiPagesGroup,
   type AiPagesMapping,
 } from "../../../shared/ai-pages-mappings";
-import { getQuickInfo } from "./quick-info";
+import { getQuickInfo } from "../../foundation/sitecore/quick-info";
 
 type ResolvedAiPagesMapping = AiPagesMapping & Omit<AiPagesGroup, "mappings">;
 
@@ -21,9 +21,6 @@ void getAiPagesMappings().then((groups) => {
 onAiPagesMappingsChange((groups) => {
   aiPagesGroups = groups;
 });
-
-export const getCurrentItemId = (doc: Document): string | null =>
-  extractGuid(getQuickInfo(doc).itemId);
 
 const getAiPagesMapping = (itemPath: string): ResolvedAiPagesMapping | null => {
   const normalizedPath = normalizeContentPath(itemPath);

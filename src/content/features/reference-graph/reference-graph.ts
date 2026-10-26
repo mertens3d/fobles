@@ -2,10 +2,10 @@
 
 import { extensionLog } from "../../logger";
 import { createWorkSession } from "../../shell/work-session/work-session";
-import type { WorkSession } from "../../shell/work-session/work-session.types";
+import type { WorkSession } from "../../foundation/workers/session/work-session.types";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { PROGRESS_STEPS } from "../../foundation/harvesting/planner/harvest-steps";
-import { openFoblesDataSession, type FoblesDataSession } from "../../shared/data/fobles-data-service";
+import { openFoblesDataSession, type FoblesDataSession } from "../../foundation/reference-data/reference-data-service";
 import {
   closeReferenceGraphProgressModal,
   handleHarvestProgress,
@@ -13,6 +13,8 @@ import {
   openReferenceGraphProgressModal,
 } from "./build-progress";
 import { harvestGraphForLink } from "./harvester";
+import { addGraphElements } from "./prepared-reference-graph";
+import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 import { openReferenceGraphModal } from "./reference-graph-modal";
 import { acquireReferenceGraphSessionLock, releaseReferenceGraphSessionLock } from "./reference-graph-session-lock";
 import { startReferenceGraphTimer } from "./reference-graph-timing";
@@ -73,6 +75,8 @@ class ReferenceGraphSession {
 
     // The step-by-step progress dialog is only for a cold item: it opens right before a live harvest begins and is
     // fed by the data service's acquisition callbacks. A cache-served item never opens it.
+    const graphHolder: { prepared?: PreparedReferenceGraph } = {};
+
     this.dataSession = await openFoblesDataSession({
       flavor: "reference-model",
       target: "current-object",
@@ -80,6 +84,11 @@ class ReferenceGraphSession {
       workSession: this.workSession,
       signal: this.controller.signal,
       filters,
+      // Graph projects its Cytoscape elements the moment the model exists, before processing starts, so the first render
+      // reflects the same initial processing state it always has.
+      onModelReady: (model) => {
+        graphHolder.prepared = addGraphElements(model);
+      },
       onAcquireProgress: (step, status) => handleHarvestProgress(this.doc, step, status),
       onHarvestRequired: () => {
         initializeReferenceGraphProgressModal(this.doc, PROGRESS_STEPS, filters);
@@ -89,12 +98,12 @@ class ReferenceGraphSession {
 
     this.throwIfCancelled();
 
-    if (!this.dataSession) throw new Error("The requested data was unavailable.");
+    if (!this.dataSession || !graphHolder.prepared) throw new Error("The requested data was unavailable.");
 
     this.transition("displaying");
     closeReferenceGraphProgressModal(this.doc);
 
-    const prepared = this.dataSession.data.model;
+    const prepared = graphHolder.prepared;
 
     await openReferenceGraphModal(
       this.doc,

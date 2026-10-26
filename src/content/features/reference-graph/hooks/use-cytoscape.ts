@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/hooks/use-cytoscape.ts
 import type cytoscape from "cytoscape";
 import { useEffect } from "react";
-import type { WorkSession } from "../../../shell/work-session/work-session.types";
+import type { WorkSession } from "../../../foundation/workers/session/work-session.types";
 import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
 import { createGraphRuntime, disposeGraphRuntime, initializeGraphRuntime } from "../cytoscape/graph-runtime";
 import type { EnrichmentProgress } from "../enrichment/enrichment.types";

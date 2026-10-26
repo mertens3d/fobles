@@ -2,7 +2,7 @@
 
 import { SITECORE } from "../../constants/sitecore.ts";
 import { collectGuidOptionItems } from "../features/augmentor/shared/collect-select-options.ts";
-import { extractGuid, formatFoId, hasAnyGuidLikeOption } from "../features/augmentor/shared/guid.ts";
+import { extractGuid, formatFoId, hasAnyGuidLikeOption } from "../foundation/sitecore/guid.ts";
 import type { FieldReference } from "./field-reference.types";
 
 // Returning undefined means the field does not match the strategy. Returning an array, including an

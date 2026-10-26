@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/graph.types.ts
 import type cytoscape from "cytoscape";
-import type { WorkSession } from "../../shell/work-session/work-session.types";
+import type { WorkSession } from "../../foundation/workers/session/work-session.types";
 import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
 import type { EnrichmentProgress } from "./enrichment/enrichment.types";
 import type { GraphParameterVisibilitySettings } from "./graph-parameter-visibility-settings";

@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/shared/ui/reference-controls/phase-progress-bar.tsx
 
 import { computePhaseProgressDisplay } from "./phase-progress-display";
-import type { PhaseProgress } from "./lifecycle.types";
+import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
 
 type PhaseProgressBarProps = { label: string; progress: PhaseProgress | undefined };
 

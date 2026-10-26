@@ -1,60 +1,41 @@
 // @source-path [fobles] src/content/features/reference-graph/prepared-reference-graph.ts
-
 import { extensionLog } from "../../logger";
 import type {
   HarvestProgressCallback,
   SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../foundation/harvesting/sitecore-harvester.types";
-import { createReferenceModel } from "../../foundation/reference-data/model/reference-model-builder";
-import { buildReferenceModelNodeLookup } from "../../foundation/reference-data/model/reference-model-node-lookup";
+import { prepareReferenceModel, type PreparedReferenceModel } from "../../foundation/reference-data/acquisition/prepare-reference-model";
 import type { ProcessingStatus } from "../../foundation/reference-data/processing/processing-state";
 import { projectReferenceModelToGraphElements } from "./graph-nodes/graph-elements";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
 
 type PrepareReferenceGraphOptions = {
   signal?: AbortSignal;
-  // Not used while preparation is structural-only (enrichment now runs separately, after the
-  // graph is already built/rendered) - kept so existing callers don't need to change yet.
+  // Not used while preparation is structural-only (enrichment runs separately, after the graph is built) - kept so
+  // existing callers don't need to change.
   onProgress?: HarvestProgressCallback;
-  // Seeds the root node's own trust badge from the root-cache-flow decision that produced this
-  // harvest result - defaults to "enriched" (settled/check) for callers that predate this concept
-  // (reroot, lazy-filter-enable), since a result they hand in is always a just-completed harvest.
+  // Seeds the root node's own trust badge from the root-cache-flow decision that produced this harvest result.
   rootProcessingState?: ProcessingStatus;
 };
 
-// Single orchestration point for createReferenceModel -> node lookup -> graph projection. Both the
-// initial harvest and every lazy-filter/reroot/back re-render call this same function instead
-// of duplicating the pipeline. Enrichment is intentionally NOT run here - the graph must
-// build/render from the structural ReferenceModel first; enrichment patches it in afterward.
+// Graph's only addition to a prepared Reference Model: the Cytoscape elements projected from it.
+export function addGraphElements(model: PreparedReferenceModel): PreparedReferenceGraph {
+  const graphElements = projectReferenceModelToGraphElements(model.referenceModel, model.processingStateByTreeNodeId);
+
+  extensionLog.debug("Reference graph: elements projected", { nodeCount: model.nodesById.size });
+
+  return { ...model, graphElements };
+}
+
+// Used by every re-render that has a fresh harvest in hand (reroot, lazy filter enable, back): the headless
+// Reference Model comes from Foundation, then Graph projects it.
 export function prepareReferenceGraph(
   harvestedData: SitecoreHarvestResult,
   filters: SitecoreHarvestFiltersState,
-  { signal, rootProcessingState = "enriched" }: PrepareReferenceGraphOptions = {},
+  { signal, rootProcessingState }: PrepareReferenceGraphOptions = {},
 ): Promise<PreparedReferenceGraph | undefined> {
-  const referenceModel = createReferenceModel(harvestedData, filters);
-  const processingStateByTreeNodeId = new Map<string, ProcessingStatus>();
-  processingStateByTreeNodeId.set(referenceModel.treeNodeId, rootProcessingState);
+  const model = prepareReferenceModel(harvestedData, filters, { signal, rootProcessingState });
 
-  let prepared: PreparedReferenceGraph | undefined;
-
-  if (!signal?.aborted) {
-    const nodesById = buildReferenceModelNodeLookup(referenceModel);
-
-    const graphElements = projectReferenceModelToGraphElements(referenceModel, processingStateByTreeNodeId);
-
-    extensionLog.debug("Reference graph: prepared", {
-      nodeCount: nodesById.size,
-    });
-
-    prepared = {
-      harvestedData,
-      referenceModel,
-      nodesById,
-      graphElements,
-      processingStateByTreeNodeId,
-    };
-  }
-
-  return Promise.resolve(prepared);
+  return Promise.resolve(model ? addGraphElements(model) : undefined);
 }

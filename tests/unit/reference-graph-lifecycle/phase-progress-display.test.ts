@@ -2,7 +2,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { computePhaseProgressDisplay, isLifecycleProgressActive } from "../../../src/content/features/reference-graph/lifecycle/phase-progress-display.ts";
+import { computePhaseProgressDisplay, isLifecycleProgressActive } from "../../../src/content/shared/ui/reference-controls/phase-progress-display.ts";
 
 void test("0 / 0 (no work) renders as 100% complete", () => {
   const display = computePhaseProgressDisplay({ completed: 0, max: 0, status: "complete" });

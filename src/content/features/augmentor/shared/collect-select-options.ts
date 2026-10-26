@@ -1,4 +1,4 @@
-import { extractGuid } from "./guid.ts";
+import { extractGuid } from "../../../foundation/sitecore/guid.ts";
 import type { FoblesListItem } from "../fobles.types";
 
 // The "read a <select>'s options, resolve each to a GUID + label, drop anything unresolved"

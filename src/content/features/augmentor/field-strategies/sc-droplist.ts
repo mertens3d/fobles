@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { hasAnyGuidLikeOption } from "../shared/guid";
+import { hasAnyGuidLikeOption } from "../../../foundation/sitecore/guid";
 import type { DroplistFobles as DroplistConfig } from "../fobles.types";
 
 // See sc-droplink.ts for why this can't rely on aria-label; hasAnyGuidLikeOption is what tells

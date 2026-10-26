@@ -2,7 +2,7 @@
 import { showFoblesErrorDialog } from "../../../shared/error-dialog";
 import { extensionLog } from "../../logger";
 import { createWorkSession } from "../../shell/work-session/work-session";
-import type { WorkSession } from "../../shell/work-session/work-session.types";
+import type { WorkSession } from "../../foundation/workers/session/work-session.types";
 import { createAuditFindingStore, type AuditFindingStore } from "./audit-finding-store";
 import { createAuditRunner, type AuditRunner } from "./audit-runner";
 import { createAuditorSessionContainer, removeAuditorSessionContainer } from "./auditor-session-container";

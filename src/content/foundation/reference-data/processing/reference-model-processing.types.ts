@@ -1,4 +1,4 @@
-import type { HealthReport } from "../../../shell/health/health.types";
+import type { HealthReport } from "../../diagnostics/health.types";
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processing.types.ts
 import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "./processing-state";
 export type ReferenceModelProcessingProgress = { completedItemCount: number; maxItemCount: number; status: "idle" | "running" | "complete"; };

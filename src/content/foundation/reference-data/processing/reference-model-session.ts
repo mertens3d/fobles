@@ -1,12 +1,12 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-session.ts
 import { extensionLog } from "../../../logger";
-import { buildFoblesUrl } from "../../../features/augmentor/helper";
+import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import { harvestSitecoreWithWorkers } from "../../harvesting/coordinator/foreground-harvest-coordinator";
 import type { HarvestProgressCallback, SitecoreHarvestFiltersState } from "../../harvesting/sitecore-harvester.types";
 import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
-import type { WorkSession } from "../../../shell/work-session/work-session.types";
-import { acquireReferenceModelForCurrentItem } from "../../../features/reference-graph/lifecycle/acquire-reference-model";
-import type { PreparedReferenceGraph } from "../../../features/reference-graph/prepared-reference-graph.types";
+import type { WorkSession } from "../../workers/session/work-session.types";
+import { acquireReferenceModelForCurrentItem } from "../acquisition/acquire-reference-model";
+import type { PreparedReferenceModel } from "../acquisition/prepare-reference-model";
 import { collectEnrichmentGuidLookup } from "./resolve-candidate-collector";
 import { createReferenceModelHarvestQueue, type ReferenceModelHarvestQueue, type ReferenceModelHarvestProgress } from "./reference-model-harvest-queue";
 import { startReferenceModelProcessor } from "./reference-model-processor";
@@ -15,7 +15,7 @@ import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "./processing
 export type ReferenceModelSessionStateChange = (treeNodeIds: readonly string[], status: ProcessingStatus, state: ProcessingStateByTreeNodeId) => void | Promise<void>;
 export type SharedReferenceModelSession = {
   itemId: string;
-  prepared: PreparedReferenceGraph;
+  prepared: PreparedReferenceModel;
   resolveCandidateTreeNodeIds: ReadonlySet<string>;
   cacheRevalidationResultByTreeNodeId: ReadonlyMap<string, "passed" | "error">;
   processingCompletion: Promise<void>;
@@ -32,14 +32,17 @@ export type StartSharedReferenceModelSessionOptions = {
   onAcquireProgress?: HarvestProgressCallback;
   onHarvestRequired?: () => void;
   onRootRefresh?: (result: SitecoreHarvestResult) => void;
+  // Called once the model exists and before processing starts, so a consumer can derive its own view of it.
+  onModelReady?: (prepared: PreparedReferenceModel) => void;
 };
 const sessionsByWorkSessionId = new Map<string, SharedReferenceModelSession>();
 export function getSharedReferenceModelSession(workSessionId: string): SharedReferenceModelSession | undefined { return sessionsByWorkSessionId.get(workSessionId); }
-export async function startSharedReferenceModelSession({ doc, workSession, filters, signal, onAcquireProgress, onHarvestRequired, onRootRefresh }: StartSharedReferenceModelSessionOptions): Promise<SharedReferenceModelSession | undefined> {
+export async function startSharedReferenceModelSession({ doc, workSession, filters, signal, onAcquireProgress, onHarvestRequired, onRootRefresh, onModelReady }: StartSharedReferenceModelSessionOptions): Promise<SharedReferenceModelSession | undefined> {
   sessionsByWorkSessionId.get(workSession.id)?.dispose();
   const acquired = await acquireReferenceModelForCurrentItem(doc, filters, { signal, onProgress: onAcquireProgress, onHarvestRequired });
   if (!acquired || signal.aborted) return undefined;
   const { itemId, prepared, decision } = acquired;
+  onModelReady?.(prepared);
   const stateListeners = new Set<ReferenceModelSessionStateChange>();
   const processingProgressListeners = new Set<(progress: ReferenceModelProcessingProgress) => void>();
   const harvestProgressListeners = new Set<(progress: ReferenceModelHarvestProgress) => void>();

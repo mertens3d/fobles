@@ -2,7 +2,7 @@ import { FOBLES } from "../../../../constants/fobles";
 import type { StyleChecklistFobles as StyleChecklistConfig } from "../fobles.types";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
-import { formatFoId } from "../shared/guid";
+import { formatFoId } from "../../../foundation/sitecore/guid";
 
 export function applyStyleChecklistStrategy(doc: Document, config: StyleChecklistConfig): void {
   doc.querySelectorAll<HTMLInputElement>(config.FoblesTopSelector).forEach((checkbox) => {

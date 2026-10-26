@@ -8,8 +8,8 @@ import {
   getGlyphState,
   waitForExpansion,
   readChildNodes,
-} from "../../macros/tree-expand-macro";
-import { getQuickInfo } from "../../toolbar/jump-flyout/quick-info";
+} from "../sitecore/macros/tree-expand-macro";
+import { getQuickInfo } from "../sitecore/quick-info";
 
 
 // Finds itemId's own tree node, expanding it first (and restoring it back to collapsed

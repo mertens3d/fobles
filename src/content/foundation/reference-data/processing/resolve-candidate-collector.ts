@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/resolve-candidate-collector.ts
 
-import { stripGuidBraces } from "../../../features/augmentor/shared/guid.ts";
+import { stripGuidBraces } from "../../sitecore/guid.ts";
 import { isItemGraphNodeDataResolved } from "../../harvesting/enrichment/item-enricher.ts";
 import type { ReferenceModelNode } from "../model/reference-model.types";
 

@@ -2,7 +2,7 @@ import { FOBLES } from "../../../../constants/fobles";
 import type { DroplinkFobles as DroplinkConfig } from "../fobles.types";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
-import { extractGuid, hasAnyGuidLikeOption } from "../shared/guid";
+import { extractGuid, hasAnyGuidLikeOption } from "../../../foundation/sitecore/guid";
 
 const isDroplink = (select: HTMLSelectElement): boolean => {
   return hasAnyGuidLikeOption(select);

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/harvesting/collectors/referrer-collector.ts
 
-import { extractGuid } from "../../../features/augmentor/shared/guid";
+import { extractGuid } from "../../sitecore/guid";
 import { extensionLog } from "../../../logger";
 import { buildGalleryLinksUrl } from "./helpers/harvest-helpers";
 import { type HarvestContext, } from "../sitecore-harvester.types";

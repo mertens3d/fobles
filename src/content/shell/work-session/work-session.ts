@@ -2,11 +2,11 @@
 import { showFoblesErrorDialog, updateFoblesCleanupDialog } from "../../../shared/error-dialog";
 import { extensionLog } from "../../logger";
 import { getRuntimeSettings } from "../../runtime-settings/runtime-settings";
-import type { HealthProvider, HealthReport } from "../health/health.types";
+import type { HealthProvider, HealthReport } from "../../foundation/diagnostics/health.types";
 import { emergencyCleanupWorkerIframes } from "../../foundation/workers/iframe/worker-iframe-host";
 import { cancelWorkerRequest, disposeBackgroundWorkerPool, runWorkerTask } from "../../foundation/workers/pool/worker-pool-client";
 import type { WorkerTask, WorkerTaskResult } from "../../foundation/workers/tasks/worker-task.types";
-import type { WorkSession, WorkSessionState, WorkSessionTask } from "./work-session.types";
+import type { WorkSession, WorkSessionState, WorkSessionTask } from "../../foundation/workers/session/work-session.types";
 let activeSessionCount = 0;
 let poolDisposalPromise: Promise<void> | undefined;
 function runFinalWorkerIframeCleanup(sessionId: string): void {

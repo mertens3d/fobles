@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/hooks/use-reference-graph-render-actions.ts
 import type cytoscape from "cytoscape";
 import { useCallback } from "react";
-import type { WorkSession } from "../../../shell/work-session/work-session.types";
+import type { WorkSession } from "../../../foundation/workers/session/work-session.types";
 import { extensionLog } from "../../../logger";
 import type { SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
 import { handleHarvestProgress } from "../build-progress";

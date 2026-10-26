@@ -5,7 +5,7 @@ import {
 } from "../helper";
 import type { GeneralLinkFobles as GeneralLinkConfig } from "../fobles.types";
 import { applySingleInputFieldStrategy } from "../shared/apply-single-input-field";
-import { extractGuid } from "../shared/guid";
+import { extractGuid } from "../../../foundation/sitecore/guid";
 
 const getInternalTarget = (value: string): string | null => {
   const guid = extractGuid(value);

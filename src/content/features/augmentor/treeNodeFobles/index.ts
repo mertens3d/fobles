@@ -2,12 +2,14 @@ import { extensionLog } from "../../../logger";
 import { CONST } from "../../../../constants/const";
 import { FOBLES } from "../../../../constants/fobles";
 import {
-  buildFoblesUrl,
   openFoblesUrl,
 } from "../helper";
+import {
+  buildFoblesUrl,
+} from "../../../foundation/sitecore/fobles-url";
 import { attachFoblesTooltip } from "../shared/fobles-tooltip";
 import { assignFoblesItemId } from "../shared/fobles-item-id";
-import { formatFoId } from "../shared/guid";
+import { formatFoId } from "../../../foundation/sitecore/guid";
 import { forEachFrameDocument } from "../shared/frame-documents";
 
 export function clearTreeButtons(root: ParentNode = document): void {

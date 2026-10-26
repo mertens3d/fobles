@@ -1,5 +1,5 @@
 import { CONST} from "../../../constants/const";
-import { getCurrentItemId } from "./ai-pages";
+import { getCurrentItemId } from "../../foundation/sitecore/current-item";
 import { joinJumpFlyoutPath } from "../../../shared/jump-flyout/button-settings";
 import { getButtonSetting } from "./button-visibility";
 import type { FlyoutOption } from "../../../shared/jump-flyout/jump-flyout.types";

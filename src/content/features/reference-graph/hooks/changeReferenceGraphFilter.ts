@@ -1,6 +1,6 @@
 import { PROGRESS_STEPS } from "../../../foundation/harvesting/planner/harvest-steps";
 import { type SitecoreHarvestFiltersState, isHarvestStep } from "../../../foundation/harvesting/sitecore-harvester.types";
-import { buildFoblesUrl } from "../../augmentor/helper";
+import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import { openReferenceGraphProgressModal, closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal } from "../build-progress";
 import { createSingleFilterState } from "../graph-filters";
 import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";

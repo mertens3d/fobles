@@ -7,7 +7,7 @@ import {
   enqueueHarvest,
   setActiveHarvestQueue,
 } from "../../../src/content/features/reference-graph/lifecycle/active-harvest-queue.ts";
-import type { PhaseProgress } from "../../../src/content/features/reference-graph/lifecycle/lifecycle.types";
+import type { PhaseProgress } from "../../../src/content/foundation/reference-data/progress/lifecycle.types";
 
 void test("validation can introduce work into the harvest queue", () => {
   const enqueued: string[] = [];

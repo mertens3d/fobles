@@ -5,7 +5,7 @@ import { collectParent } from "./collectors/parent-collector";
 import { collectReferrers } from "./collectors/referrer-collector";
 import { collectLayouts } from "./collectors/section-collector/layout-collector/layout-collector";
 import { collectSections } from "./collectors/section-collector/section-collector";
-import { isGuidLike } from "../../features/augmentor/shared/guid";
+import { isGuidLike } from "../sitecore/guid";
 import { buildItemGraphNodeDataFromDoc, extractRevisionFromIconUrl } from "./enrichment/item-enricher";
 import { harvestStepRootItem } from "./harvest-sitecore";
 import {
@@ -13,7 +13,7 @@ import {
   getScStandardFieldsState,
   setScRawValuesState,
   setScStandardFieldsState,
-} from "../../macros/ribbon-toggle-macro";
+} from "../sitecore/macros/ribbon-toggle-macro";
 import type { HarvestContext, SitecoreHarvestResult } from "./sitecore-harvester.types";
 import {
   createCancelledResult,

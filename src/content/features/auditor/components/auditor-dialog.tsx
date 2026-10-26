@@ -11,10 +11,10 @@ import {
   getFoblesDataSession,
   subscribeFoblesAcquisitionProgress,
   type FoblesAcquisitionProgress,
-} from "../../../shared/data/fobles-data-service";
+} from "../../../foundation/reference-data/reference-data-service";
 import { createDialogCloseButton } from "../../../shared/dialog/dialog-close-button";
 import { DialogIconButton } from "../../../shared/ui/dialog/dialog-icon-button";
-import type { PhaseProgress } from "../../../shared/ui/reference-controls/lifecycle.types";
+import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
 import { LifecycleProgressFooter } from "../../../shared/ui/reference-controls/lifecycle-progress-footer";
 import { ReferenceModelViewer } from "../../../shared/ui/reference-model/reference-model-viewer";
 import { NodeDetailsPanel } from "../../reference-graph/components/node-details-panel";

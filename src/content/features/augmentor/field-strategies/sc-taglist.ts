@@ -1,7 +1,7 @@
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
 import type { TagListFobles as TagListConfig } from "../fobles.types";
-import { formatFoId } from "../shared/guid";
+import { formatFoId } from "../../../foundation/sitecore/guid";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";

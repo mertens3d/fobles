@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/shared/ui/reference-controls/phase-progress-display.ts
 
-import type { PhaseProgress } from "./lifecycle.types";
+import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
 
 export type PhaseProgressDisplay = { completed: number; max: number; percent: number };
 

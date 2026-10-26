@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/foundation/harvesting/enrichment/item-enricher.ts
 
 import { factoryItemGraphNodeData, type ItemGraphNodeData } from "../../reference-data/model/sitecore-item.types.ts";
-import { getQuickInfo } from "../../../toolbar/jump-flyout/quick-info.ts";
+import { getQuickInfo } from "../../sitecore/quick-info.ts";
 
 export function isItemGraphNodeDataResolved(item: ItemGraphNodeData): boolean {
     return Boolean(item.scItemId && item.scItemName && item.scItemPath && item.scTemplate);

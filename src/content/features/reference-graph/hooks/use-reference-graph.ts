@@ -11,7 +11,7 @@ import {
 } from "../graph-parameter-visibility-settings";
 import type { LayoutGraphPresetName } from "../graph.types";
 import type { PreparedReferenceGraph } from "../prepared-reference-graph.types";
-import type { PhaseProgress } from "../../../shared/ui/reference-controls/lifecycle.types";
+import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
 
 type UseReferenceGraphOptions = {
   initialPreparedGraph: PreparedReferenceGraph;

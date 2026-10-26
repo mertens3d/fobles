@@ -2,7 +2,7 @@
 
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
-import { isGuidLike } from "../../../features/augmentor/shared/guid";
+import { isGuidLike } from "../../sitecore/guid";
 import { GRAPH_COLLAPSE_KEY } from "../../../features/reference-graph/graph-nodes/graph-collapse.types";
 import {
   createReferenceModelItemNode,

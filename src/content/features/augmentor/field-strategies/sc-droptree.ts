@@ -1,5 +1,6 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { buildFoblesUrl, createFoblesButton, normalizeFoblesValue } from "../helper";
+import { createFoblesButton } from "../helper";
+import { buildFoblesUrl, normalizeFoblesValue } from "../../../foundation/sitecore/fobles-url";
 import { extensionLog } from "../../../logger";
 import { applyButtonClasses } from "../shared/apply-button-classes";
 import type { DropTreeFobles as DropTreeConfig } from "../fobles.types";

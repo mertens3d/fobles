@@ -3,7 +3,7 @@ import { CONST } from "../../../../constants/const";
 import type { InternalLinkFobles as InternalLinkConfig } from "../fobles.types";
 import { ensurePathShape } from "../helper";
 import { applySingleInputFieldStrategy } from "../shared/apply-single-input-field";
-import { extractGuid } from "../shared/guid";
+import { extractGuid } from "../../../foundation/sitecore/guid";
 
 const getInternalLinkTarget = (value: string): string | null => {
   const guid = extractGuid(value);

@@ -1,7 +1,8 @@
 import { FOBLES } from "../../../../constants/fobles";
 import type { ReferenceLinksFobles as ReferenceLinksConfig } from "../fobles.types";
-import { buildFoblesUrl, createFoblesButton } from "../helper";
-import { extractGuid } from "../shared/guid";
+import { createFoblesButton } from "../helper";
+import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
+import { extractGuid } from "../../../foundation/sitecore/guid";
 
 export function applyReferenceLinksStrategy(
   doc: Document,

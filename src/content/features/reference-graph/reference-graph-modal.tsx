@@ -3,7 +3,7 @@ import { createRoot } from "react-dom/client";
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { showFoblesCleanupDialog } from "../../../shared/error-dialog";
 import { createDialogCloseButton } from "../../shared/dialog/dialog-close-button";
-import type { WorkSession } from "../../shell/work-session/work-session.types";
+import type { WorkSession } from "../../foundation/workers/session/work-session.types";
 import { closeReferenceGraphProgressModal } from "./build-progress";
 import { disposeActiveEnrichmentController } from "./enrichment/enrichment-controller";
 import type { HarvestForLink } from "./graph.types";

@@ -1,5 +1,6 @@
 import { FOBLES } from "../../../../constants/fobles";
-import { buildFoblesUrl, createFoblesButton } from "../helper";
+import { createFoblesButton } from "../helper";
+import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import { applyButtonClasses } from "./apply-button-classes";
 import { assignFoblesItemId } from "./fobles-item-id";
 
