@@ -1,16 +1,20 @@
 {
-  "phase": "sitecore-data-cache",
+  "phase": "reference-model",
   "mode": "apply",
   "status": "applied",
   "moves": [
     {
-      "from": "src/content/sitecore-data-cache",
-      "to": "src/content/foundation/cache/sitecore-data"
+      "from": "src/content/features/reference-model/components",
+      "to": "src/content/shared/ui/reference-model"
+    },
+    {
+      "from": "src/content/features/reference-model",
+      "to": "src/content/foundation/reference-data/model"
     }
   ],
   "redirects": [],
-  "scannedSourceFiles": 462,
-  "rewrittenImports": 26,
-  "transformedFiles": 462,
+  "scannedSourceFiles": 463,
+  "rewrittenImports": 69,
+  "transformedFiles": 463,
   "unresolvedRelativeImports": []
 }

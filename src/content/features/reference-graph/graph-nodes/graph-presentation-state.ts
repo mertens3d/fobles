@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-presentation-state.ts
-import type { ReferenceModelBranch, ReferenceModelNode, RelationshipToParent } from "../../reference-model/reference-model.types";
+import type { ReferenceModelBranch, ReferenceModelNode, RelationshipToParent } from "../../../foundation/reference-data/model/reference-model.types";
 import type { GraphCollapseKey } from "./graph-collapse.types";
 import type { NodePresentationByKind } from "./node-presentation.types";
 type NodeKind = keyof NodePresentationByKind;

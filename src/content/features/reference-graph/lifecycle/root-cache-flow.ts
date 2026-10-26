@@ -2,7 +2,7 @@
 
 import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
 import type { SitecoreDataCacheRecord } from "../../../foundation/cache/sitecore-data/sitecore-data-cache.types";
-import type { RootItem } from "../../reference-model/sitecore-item.types";
+import type { RootItem } from "../../../foundation/reference-data/model/sitecore-item.types";
 import type { ProcessingStatus } from "../../../shared/reference-model-processing/processing-state";
 
 export type RootCacheDecision =

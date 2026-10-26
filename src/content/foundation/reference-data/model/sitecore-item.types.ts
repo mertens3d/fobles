@@ -1,10 +1,10 @@
-// @source-path [fobles] src/content/features/reference-model/sitecore-item.types.ts
+// @source-path [fobles] src/content/foundation/reference-data/model/sitecore-item.types.ts
 
-import type { FieldReference } from "../../field-reference-resolution/field-reference.types";
+import type { FieldReference } from "../../../field-reference-resolution/field-reference.types";
 import type {
   SitecoreDeviceXml,
   SitecoreRenderingXml,
-} from "../../foundation/harvesting/collectors/section-collector/layout-collector/sitecore-layout-xml-schema.types";
+} from "../../harvesting/collectors/section-collector/layout-collector/sitecore-layout-xml-schema.types";
 
 // Basic Sitecore item-shaped data - the harvester's conceptual output, with no enrichment
 // requirement. Shared downward by both sitecore-worker (task payloads) and sitecore-harvester

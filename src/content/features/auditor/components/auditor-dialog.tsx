@@ -11,7 +11,7 @@ import type { PhaseProgress } from "../../../shared/ui/reference-controls/lifecy
 import { PhaseProgressBar } from "../../../shared/ui/reference-controls/phase-progress-bar";
 import { NodeDetailsPanel } from "../../reference-graph/components/node-details-panel";
 import { getGraphPresentationState } from "../../reference-graph/graph-nodes/graph-presentation-state";
-import { ReferenceModelViewer } from "../../reference-model/components/reference-model-viewer";
+import { ReferenceModelViewer } from "../../../shared/ui/reference-model/reference-model-viewer";
 import type { AuditFinding, AuditFindingStatus } from "../audit-finding.types";
 import type { AuditFindingStore } from "../audit-finding-store";
 import {

@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-model/tree-child-node.types.ts
+// @source-path [fobles] src/content/foundation/reference-data/model/tree-child-node.types.ts
 
 // A single row read from an expanded Content Editor tree glyph - generic Sitecore tree-expansion
 // data, not Reference-Graph-specific (consumed by macros/tree-expand-macro.ts and the harvester).

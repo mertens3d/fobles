@@ -1,8 +1,8 @@
-// @source-path [fobles] src/content/features/reference-model/layout-reference-model-builder.ts
+// @source-path [fobles] src/content/foundation/reference-data/model/layout-reference-model-builder.ts
 
-import { CONST } from "../../../constants/const";
-import { slugify } from "../reference-graph/reference-graph-helper";
-import { GRAPH_COLLAPSE_KEY } from "../reference-graph/graph-nodes/graph-collapse.types";
+import { CONST } from "../../../../constants/const";
+import { slugify } from "../../../features/reference-graph/reference-graph-helper";
+import { GRAPH_COLLAPSE_KEY } from "../../../features/reference-graph/graph-nodes/graph-collapse.types";
 import type { LayoutSectionField, ItemGraphNodeData, LayoutDevice, ScControl } from "./sitecore-item.types";
 import { createPlaceholderTreeNodes } from "./placeholder-reference-model-builder";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";

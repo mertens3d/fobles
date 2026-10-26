@@ -6,7 +6,7 @@ import { extensionLog } from "../../logger";
 import { GraphToolbar } from "./components/graph-toolbar";
 import { GraphZoomControls } from "./components/graph-zoom-controls";
 import { NodeDetailsPanel } from "./components/node-details-panel";
-import { ReferenceModelViewer } from "../reference-model/components/reference-model-viewer";
+import { ReferenceModelViewer } from "../../shared/ui/reference-model/reference-model-viewer";
 import type { HarvestForLink } from "./graph.types";
 import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";

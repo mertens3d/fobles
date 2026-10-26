@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/foundation/harvesting/harvest-sitecore.ts
 
-import { type ItemGraphNodeData, factoryItemGraphNodeData, type RootItem } from "../../features/reference-model/sitecore-item.types";
-import type { TreeChildNode } from "../../features/reference-model/tree-child-node.types";
+import { type ItemGraphNodeData, factoryItemGraphNodeData, type RootItem } from "../reference-data/model/sitecore-item.types";
+import type { TreeChildNode } from "../reference-data/model/tree-child-node.types";
 import { extensionLog } from "../../logger";
 import {
   getGlyphId,

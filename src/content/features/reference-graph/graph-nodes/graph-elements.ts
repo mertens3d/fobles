@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-elements.ts
 
 import type cytoscape from "cytoscape";
-import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import { appendGraphNode } from "./graph-node-builder";
 import type { ProcessingStateByTreeNodeId } from "../../../shared/reference-model-processing/processing-state";
 

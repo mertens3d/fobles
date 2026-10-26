@@ -2,7 +2,7 @@
 
 import type cytoscape from "cytoscape";
 import type { SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
-import type { ReferenceModelNode } from "../reference-model/reference-model.types";
+import type { ReferenceModelNode } from "../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStateByTreeNodeId } from "../../shared/reference-model-processing/processing-state";
 
 // The fully prepared graph: the authoritative aggregate React state owns, replacing the old

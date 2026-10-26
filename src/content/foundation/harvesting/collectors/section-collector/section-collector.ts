@@ -2,7 +2,7 @@
 
 import { CONST } from "../../../../../constants/const";
 import { SITECORE } from "../../../../../constants/sitecore";
-import { type SitecoreHarvestSection, type SitecoreHarvestField, type ItemGraphNodeData, factoryItemGraphNodeData, type HarvestFieldLink } from "../../../../features/reference-model/sitecore-item.types";
+import { type SitecoreHarvestSection, type SitecoreHarvestField, type ItemGraphNodeData, factoryItemGraphNodeData, type HarvestFieldLink } from "../../../reference-data/model/sitecore-item.types";
 import { isGuidLike } from "../../../../features/augmentor/shared/guid";
 import { resolveFieldReferences } from "../../../../field-reference-resolution/field-reference-resolution";
 import type { HarvestContext } from "../../sitecore-harvester.types";

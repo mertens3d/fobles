@@ -2,7 +2,7 @@
 
 import { stripGuidBraces } from "../../features/augmentor/shared/guid.ts";
 import { isItemGraphNodeDataResolved } from "../../foundation/harvesting/enrichment/item-enricher.ts";
-import type { ReferenceModelNode } from "../../features/reference-model/reference-model.types";
+import type { ReferenceModelNode } from "../../foundation/reference-data/model/reference-model.types";
 
 // Item reference -> every treeNodeId representing that same unresolved item.
 // Prefer GUID when available; otherwise use the Sitecore path.

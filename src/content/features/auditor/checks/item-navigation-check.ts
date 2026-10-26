@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/auditor/checks/item-navigation-check.ts
 
-import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import { buildAuditFinding } from "../audit-finding-factory.ts";
 import type { AuditCheck, AuditCheckContext } from "../audit-check.types";
 import type { AuditFinding } from "../audit-finding.types";

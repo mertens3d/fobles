@@ -1,9 +1,9 @@
-// @source-path [fobles] src/content/features/reference-model/rendering-reference-model-builder.ts
+// @source-path [fobles] src/content/foundation/reference-data/model/rendering-reference-model-builder.ts
 
-import { CONST } from "../../../constants/const";
-import { extensionLog } from "../../logger";
-import { isGuidLike } from "../augmentor/shared/guid";
-import { GRAPH_COLLAPSE_KEY } from "../reference-graph/graph-nodes/graph-collapse.types";
+import { CONST } from "../../../../constants/const";
+import { extensionLog } from "../../../logger";
+import { isGuidLike } from "../../../features/augmentor/shared/guid";
+import { GRAPH_COLLAPSE_KEY } from "../../../features/reference-graph/graph-nodes/graph-collapse.types";
 import {
   createReferenceModelItemNode,
   createReferenceModelNonItemNode,

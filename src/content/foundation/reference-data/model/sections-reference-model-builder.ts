@@ -1,13 +1,13 @@
-// @source-path [fobles] src/content/features/reference-model/sections-reference-model-builder.ts
+// @source-path [fobles] src/content/foundation/reference-data/model/sections-reference-model-builder.ts
 
-import { CONST } from "../../../constants/const";
+import { CONST } from "../../../../constants/const";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
-import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "../reference-graph/graph-nodes/graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "../../../features/reference-graph/graph-nodes/graph-collapse.types";
 import { createFieldReferenceProvenance, createSyntheticProvenance } from "./reference-model-provenance.types";
 import type { ReferenceModelBranch, ReferenceModelNode, ReferenceModelNonItemNode } from "./reference-model.types";
 import { createReferenceModelNodeId } from "./layout-reference-model-builder";
 import type { SitecoreHarvestSection, SitecoreHarvestField, HarvestFieldLink } from "./sitecore-item.types";
-import type { SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
 
 export function createCustomFieldsTreeNode(
   graphReferenceResult: SitecoreHarvestResult,

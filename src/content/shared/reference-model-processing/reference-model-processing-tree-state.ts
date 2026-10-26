@@ -1,5 +1,5 @@
-import type { ItemGraphNodeData } from "../../features/reference-model/sitecore-item.types";
-import type { ReferenceModelNode, ReferenceModelItemNode } from "../../features/reference-model/reference-model.types";
+import type { ItemGraphNodeData } from "../../foundation/reference-data/model/sitecore-item.types";
+import type { ReferenceModelNode, ReferenceModelItemNode } from "../../foundation/reference-data/model/reference-model.types";
 
 // @source-path [fobles] src/content/shared/reference-model-processing/reference-model-processing-tree-state.ts
 export function itemsFor(treeNodeIds: readonly string[], nodesById: Map<string, ReferenceModelNode>): ItemGraphNodeData[] {

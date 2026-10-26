@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/features/reference-model/reference-model-node-lookup.ts
+// @source-path [fobles] src/content/foundation/reference-data/model/reference-model-node-lookup.ts
 
 import type { ReferenceModelNode } from "./reference-model.types";
 

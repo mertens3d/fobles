@@ -1,9 +1,13 @@
 {
-  "phase": "sitecore-data-cache",
+  "phase": "reference-model",
   "moves": [
     {
-      "from": "src/content/sitecore-data-cache",
-      "to": "src/content/foundation/cache/sitecore-data"
+      "from": "src/content/features/reference-model/components",
+      "to": "src/content/shared/ui/reference-model"
+    },
+    {
+      "from": "src/content/features/reference-model",
+      "to": "src/content/foundation/reference-data/model"
     }
   ],
   "redirects": []

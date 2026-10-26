@@ -8,8 +8,8 @@ import { referenceResolvedCheck } from "../../../src/content/features/auditor/ch
 import { cacheValidationCheck } from "../../../src/content/features/auditor/checks/cache-validation-check.ts";
 import { createAuditFindingStore } from "../../../src/content/features/auditor/audit-finding-store.ts";
 import type { AuditCheckContext } from "../../../src/content/features/auditor/audit-check.types";
-import type { ItemGraphNodeData } from "../../../src/content/features/reference-model/sitecore-item.types";
-import type { ReferenceModelItemNode, ReferenceModelNode } from "../../../src/content/features/reference-model/reference-model.types";
+import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types";
+import type { ReferenceModelItemNode, ReferenceModelNode } from "../../../src/content/foundation/reference-data/model/reference-model.types";
 import type { ProcessingStatus } from "../../../src/content/shared/reference-model-processing/processing-state.ts";
 
 function makeItem(overrides: Partial<ItemGraphNodeData> = {}): ItemGraphNodeData {

@@ -7,7 +7,7 @@ import { createSitecoreItemLocator } from "../../foundation/harvesting/worker-ta
 import { createErrorResult, type WorkerTask, type WorkerTaskExecutionResult } from "../../foundation/workers/tasks/worker-task.types";
 import type { WorkSession } from "../../shell/work-session/work-session.types";
 import { buildFoblesUrl } from "../../features/augmentor/helper";
-import type { ReferenceModelNode } from "../../features/reference-model/reference-model.types";
+import type { ReferenceModelNode } from "../../foundation/reference-data/model/reference-model.types";
 import { collectEnrichmentGuidLookup, isEligibleForResolve } from "./resolve-candidate-collector";
 import { sortGuidsByEnrichmentPriority } from "./reference-model-processing-priority";
 import { firstItemNode, itemsFor } from "./reference-model-processing-tree-state";

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/harvesting/planner/enrichment-task-planner.ts
 
-import type { ItemGraphNodeData } from "../../../features/reference-model/sitecore-item.types";
+import type { ItemGraphNodeData } from "../../reference-data/model/sitecore-item.types";
 import { buildFoblesUrl } from "../../../features/augmentor/helper";
 
 // Merges one worker-resolved ItemGraphNodeData into every ItemGraphNodeData object sharing its

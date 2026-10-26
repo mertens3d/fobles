@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/auditor/audit-check.types.ts
 
-import type { ReferenceModelNode } from "../reference-model/reference-model.types";
+import type { ReferenceModelNode } from "../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStateByTreeNodeId } from "../../shared/reference-model-processing/processing-state";
 import type { AuditFindingStore } from "./audit-finding-store";
 

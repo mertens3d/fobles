@@ -3,7 +3,7 @@ import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../../shared
 import { getGraphPresentationState } from "../reference-graph/graph-nodes/graph-presentation-state";
 import { resolveNodeLabel } from "../reference-graph/graph-nodes/node-label-resolver";
 import { NODE_PRESENTATION_BY_KIND } from "../reference-graph/graph-nodes/node-presentation";
-import type { ReferenceModelNode } from "../reference-model/reference-model.types";
+import type { ReferenceModelNode } from "../../foundation/reference-data/model/reference-model.types";
 import type { AuditFinding, AuditFindingStatus } from "./audit-finding.types";
 
 export type AuditDataOrigin = "Referenced" | "Cached" | "Live" | undefined;

@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment-controller.ts
 import type cytoscape from "cytoscape";
 import type { WorkSession } from "../../../shell/work-session/work-session.types";
-import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import { getFoblesDataSession } from "../../../shared/data/fobles-data-service";
 import type { ProcessingStateByTreeNodeId } from "../../../shared/reference-model-processing/processing-state";
 import { patchCytoscapeNodes } from "./enrichment-graph-patcher";

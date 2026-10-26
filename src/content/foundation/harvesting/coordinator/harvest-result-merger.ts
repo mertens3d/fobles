@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/harvesting/coordinator/harvest-result-merger.ts
 
-import type { RootItem } from "../../../features/reference-model/sitecore-item.types";
+import type { RootItem } from "../../reference-data/model/sitecore-item.types";
 import type { WorkerTaskSuccessResult } from "../../workers/tasks/worker-task.types";
 import type { HarvestRequest, SitecoreHarvestResult } from "../sitecore-harvester.types";
 

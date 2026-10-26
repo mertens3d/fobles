@@ -1,11 +1,18 @@
-# Foundation refactor - Phase 3: Sitecore data cache
+# Foundation refactor - Phase 4: Reference Model
 
-Moves `src/content/sitecore-data-cache` to `src/content/foundation/cache/sitecore-data`.
+UI refinements:
+- expands Auditor help with tree shortcuts, statuses, and data-origin meanings;
+- changes cleanup recovery presentation from red/error language to Fobles blue success/information styling;
+- replaces the quick-action magnifier with a rows/list glyph and normalizes its width.
 
-Run from the repository root:
+Architecture moves:
+- `src/content/features/reference-model/components` to `src/content/shared/ui/reference-model`;
+- remaining `src/content/features/reference-model` headless model code to `src/content/foundation/reference-data/model`.
+
+Run:
 
 ```powershell
-pwsh -NoProfile -File .\tools\migrations\foundation-refactor\invoke-sitecore-data-cache-migration.ps1
+pwsh -NoProfile -File .\tools\migrations\foundation-refactor\invoke-phase4-migration.ps1
 ```
 
-The wrapper performs a dry-run validation, applies the migration only after validation succeeds, recalculates relative imports and `@source-path` comments, writes `foundation-migration-report.json`, then runs `npm run build:extension`.
+The UI patch fails closed if current source shapes cannot be recognized. `phase4-ui-report.json` records changed files or the blocking mismatch. The migration then dry-runs, applies, writes `foundation-migration-report.json`, and runs `npm run build:extension`.

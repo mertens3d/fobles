@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { ICONS } from "../../../../constants/fobles.constants";
 import { copySanitizedText, downloadSanitizedText } from "../../../../shared/export/text-export";
-import type { ReferenceModelNode } from "../reference-model.types";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 
 const COPIED_FEEDBACK_DURATION_MS = 1500;
 

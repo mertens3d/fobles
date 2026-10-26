@@ -6,8 +6,8 @@ import {
   collectEnrichmentGuidLookup,
   isEligibleForResolve,
 } from "../../../src/content/shared/reference-model-processing/resolve-candidate-collector.ts";
-import type { ItemGraphNodeData } from "../../../src/content/features/reference-model/sitecore-item.types";
-import type { ReferenceModelItemNode, ReferenceModelNode } from "../../../src/content/features/reference-model/reference-model.types";
+import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types";
+import type { ReferenceModelItemNode, ReferenceModelNode } from "../../../src/content/foundation/reference-data/model/reference-model.types";
 
 const FIELD_NAMES_GUID = "96E5F4BA-A2CF-4A4C-A4E7-64DA88226362";
 

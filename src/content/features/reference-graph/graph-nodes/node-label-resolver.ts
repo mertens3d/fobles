@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/node-label-resolver.ts
 
-import type { ReferenceModelNode } from "../../reference-model/reference-model.types";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { NodePresentation, NodePresentationByKind } from "./node-presentation.types";
 type NodeKind = keyof NodePresentationByKind;
 import {

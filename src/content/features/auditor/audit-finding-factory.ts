@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/auditor/audit-finding-factory.ts
 
-import type { ItemGraphNodeData } from "../reference-model/sitecore-item.types";
+import type { ItemGraphNodeData } from "../../foundation/reference-data/model/sitecore-item.types";
 import { buildAuditFindingId } from "./audit-finding-id.ts";
 import type { AuditFinding, AuditFindingSeverity, AuditFindingStatus } from "./audit-finding.types";
 
