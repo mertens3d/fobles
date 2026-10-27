@@ -1,9 +1,8 @@
 // @source-path [fobles] src/content/styles/_auditor.scss
 //
-// The Auditor dialog, grid, and toolbar overrides, consolidated from six partials into one file.
-// Declaration order is the original cascade order. Where two rules target the same element, the later one wins, so do not
-// reorder rules without checking for same-selector or same-property overlap.
-
+// AI NOTE: The Auditor dialog, grid, and toolbar overrides, consolidated from six partials into one file.
+// AI NOTE: Declaration order is the original cascade order. Where two rules target the same element, the later one wins, so do not
+// AI NOTE: reorder rules without checking for same-selector or same-property overlap.
 .fobles-auditor-dialog {
   width: min(1320px, 94vw);
   height: min(820px, 92vh);
@@ -169,8 +168,8 @@
   min-height: 0;
 }
 .fobles-auditor-workspace-details {
-  border-left: 1px solid #d7dce4;
-  padding-left: 10px;
+  padding: 0;
+  border-left: 0;
 }
 .fobles-auditor-workspace-details .fobles-reference-graph-node-details {
   position: relative;
@@ -178,6 +177,11 @@
   width: auto;
   max-width: none;
   height: 100%;
+  min-height: 0;
+  max-height: none;
+  margin: 0;
+  overflow: auto;
+  border-radius: 0;
   box-sizing: border-box;
 }
 .fobles-auditor-grid-shell {
@@ -318,34 +322,45 @@
   background: #eef4ff;
 }
 .fobles-auditor-help-backdrop {
-  position: absolute;
+  position: fixed;
   inset: 0;
-  z-index: 150;
+  z-index: 1000;
   display: grid;
   place-items: center;
-  background: rgba(0, 0, 0, 0.3);
+  padding: 24px;
+  box-sizing: border-box;
+  background: rgba(22, 36, 54, 0.45);
 }
 .fobles-auditor-help {
-  position: relative;
-  width: min(680px, 82vw);
-  max-height: 78vh;
-  overflow: auto;
-  padding: 24px;
+  display: flex;
+  width: min(680px, 100%);
+  max-height: min(78vh, 100%);
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid #7f9bc4;
   border-radius: 8px;
   background: #fff;
-  box-shadow: 0 12px 36px rgba(0, 0, 0, 0.35);
+  box-shadow: 0 18px 48px rgba(0, 0, 0, 0.35);
 }
-.fobles-auditor-help-close {
-  position: absolute;
-  top: 10px;
-  right: 10px;
-  width: 30px;
-  height: 30px;
-  border: 1px solid #1f57c3;
-  border-radius: 4px;
-  background: #2f6fed;
-  color: #fff;
-  cursor: pointer;
+.fobles-auditor-help-header {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 12px 16px 12px 24px;
+  border-bottom: 1px solid #e0e5ed;
+  background: #f6f8fb;
+}
+.fobles-auditor-help-header h2 {
+  margin: 0;
+  color: #203047;
+  font-size: 18px;
+}
+.fobles-auditor-help-body {
+  min-height: 0;
+  overflow: auto;
+  padding: 4px 24px 24px;
 }
 .fobles-auditor-help h3 {
   margin: 18px 0 8px;
@@ -436,6 +451,23 @@
   height: 16px;
   pointer-events: none;
 }
+.fobles-dialog-icon-button--on-light img {
+  filter: brightness(0);
+}
+.fobles-dialog-icon-button--on-dark {
+  border-color: rgba(255, 255, 255, 0.55);
+  background: transparent;
+  color: #fff;
+}
+.fobles-dialog-icon-button--on-dark:hover {
+  background: rgba(255, 255, 255, 0.16);
+}
+.fobles-dialog-icon-button--on-dark:focus-visible {
+  outline-color: #fff;
+}
+.fobles-dialog-icon-button--on-dark img {
+  filter: brightness(0) invert(1);
+}
 .fobles-auditor-workspace {
   position: relative;
   flex: 1;
@@ -452,7 +484,7 @@
   z-index: 20;
   width: min(480px, 42%);
   min-width: 360px;
-  overflow: auto;
+  overflow: hidden;
   background: #20344f;
   box-shadow: -10px 0 24px rgba(0, 0, 0, 0.22);
   animation: fobles-auditor-details-in 150ms ease-out;
@@ -516,8 +548,26 @@
 .fobles-auditor-tree-actions {
   border: 0;
 }
+.fobles-auditor-grid,
+.fobles-auditor-grid .ag-root-wrapper,
 .fobles-auditor-grid .ag-row {
+  --ag-row-border: none;
+  border: 0 !important;
+}
+// AI NOTE: AG Grid draws the row line on the three cell containers inside each row (border-bottom: var(--ag-row-border)),
+// AI NOTE: not on .ag-row itself, so the row rule above never reached it.
+.fobles-auditor-grid .ag-row > .ag-grid-pinned-left-cells,
+.fobles-auditor-grid .ag-row > .ag-grid-pinned-right-cells,
+.fobles-auditor-grid .ag-row > .ag-grid-scrolling-cells {
   border-bottom: 0 !important;
+}
+.fobles-auditor-grid .ag-cell,
+.fobles-auditor-grid .ag-cell.ag-cell-focus,
+.fobles-auditor-grid .ag-cell:focus,
+.fobles-auditor-grid .ag-cell:focus-within {
+  border-color: transparent !important;
+  outline: 0 !important;
+  box-shadow: none !important;
 }
 .fobles-auditor-grid .ag-row.fobles-auditor-grid-row--item {
   background: rgba(47, 111, 237, 0.055);

@@ -7,6 +7,7 @@ import {
 import { FOBLES } from "../../constants/fobles";
 import { publishFoblesShellCommand } from "../shell/shell-events";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
+import { openIndexedDbViewer } from "../shared/ui/indexeddb-viewer/indexeddb-viewer";
 import {
   openJumpFlyoutOnHover,
   scheduleCloseJumpFlyoutOnHover,
@@ -14,11 +15,9 @@ import {
 import { toggleJumpFlyout } from "./handlers";
 import type { ToolbarContext } from "./types";
 import { createFlyoutTrigger } from "./shared-flyout/shared-flyout";
-
 const GRIP_ROWS = 5;
 const GRIP_COLUMNS = [3, 9];
 const GRIP_DOT_RADIUS = 1.3;
-
 export function createFoblesNavButton(
   context: ToolbarContext,
   options: {
@@ -39,7 +38,6 @@ export function createFoblesNavButton(
   button.addEventListener("click", options.onClick);
   return button;
 }
-
 export function createJumpsFlyoutTrigger(context: ToolbarContext): HTMLDivElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.FOBLES_NAV_BUTTON,
@@ -53,7 +51,6 @@ export function createJumpsFlyoutTrigger(context: ToolbarContext): HTMLDivElemen
     scheduleClose: () => scheduleCloseJumpFlyoutOnHover(context.doc),
   });
 }
-
 export function createLboltButton(context: ToolbarContext): HTMLButtonElement {
   return createFoblesNavButton(context, {
     className: CLASS.TOOLBAR_LBOLT_BUTTON,
@@ -63,7 +60,6 @@ export function createLboltButton(context: ToolbarContext): HTMLButtonElement {
     onClick: context.onToggleFeatures,
   });
 }
-
 export function createGraphButton(context: ToolbarContext): HTMLButtonElement {
   const button = createFoblesNavButton(context, {
     className: CLASS.TOOLBAR_GRAPH_BUTTON,
@@ -80,7 +76,6 @@ export function createGraphButton(context: ToolbarContext): HTMLButtonElement {
   button.appendChild(icon);
   return button;
 }
-
 export function createAuditorButton(context: ToolbarContext): HTMLButtonElement {
   return createFoblesNavButton(context, {
     className: CLASS.TOOLBAR_AUDITOR_BUTTON,
@@ -90,7 +85,15 @@ export function createAuditorButton(context: ToolbarContext): HTMLButtonElement 
     onClick: () => publishFoblesShellCommand("auditor:open", context.doc),
   });
 }
-
+export function createDeveloperButton(context: ToolbarContext): HTMLButtonElement {
+  return createFoblesNavButton(context, {
+    className: CLASS.TOOLBAR_DEVELOPER_BUTTON,
+    role: FOBLES.ATTRIBUTES.DATA.NAV_BUTTON_ROLE.DEVELOPER,
+    text: TEXT.DEVELOPER_BUTTON,
+    title: TEXT.DEVELOPER_TITLE,
+    onClick: () => openIndexedDbViewer(context.doc),
+  });
+}
 export function createToolbarCloseButton(context: ToolbarContext): HTMLButtonElement {
   const button = context.doc.createElement("button");
   button.type = "button";
@@ -105,7 +108,6 @@ export function createToolbarCloseButton(context: ToolbarContext): HTMLButtonEle
   button.addEventListener("click", () => context.setVisible(false));
   return button;
 }
-
 export function createToolbarGrip(context: ToolbarContext): SVGSVGElement {
   const svgNs = "http://www.w3.org/2000/svg";
   const svg = context.doc.createElementNS(svgNs, "svg");
@@ -126,7 +128,6 @@ export function createToolbarGrip(context: ToolbarContext): SVGSVGElement {
   }
   return svg;
 }
-
 export function createSetIseTabTitleButton(context: ToolbarContext): HTMLButtonElement {
   return createFoblesNavButton(context, {
     className: `${CLASS.FOBLES_NAV_BUTTON} ${CLASS.TOOLBAR_SET_ISE_TITLE_BUTTON}`,

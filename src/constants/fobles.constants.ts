@@ -1,14 +1,14 @@
 import type { ToolbarPlacement } from "../content/toolbar.types";
 import { CONST } from "./const";
 import type { AllowedPage } from "./constants.types";
-
 export const SYMBOLS = {
     LIGHTNING: "\u26A1\uFE0E",
     MAGNIFIER: "\u{1F50D}\uFE0E",
 } as const;
-
 export const TEXT = {
     AUDITOR_TITLE: "Audit the Reference Model for this item",
+    DEVELOPER_BUTTON: "Dev",
+    DEVELOPER_TITLE: "Developer tools: view or clear the IndexedDB cache",
     DRAG_NAV: "Drag to move Fobles navigation",
     GRAPH_TITLE: "Build a reference graph for this item",
     GROUP_NAME: {
@@ -31,14 +31,12 @@ export const TEXT = {
     VIEW: "View",
     VIEW_TITLE: "Toggle view actions",
 } as const;
-
 export const ICONS = {
     CLOSE: "/sitecore/shell/themes/standard/Images/Window%20Management/page_close.png",
     // This extension's own bundled asset (src/public/graph.svg) - needs chrome.runtime.getURL(...)
     // to resolve, not used as-is like CLOSE's Sitecore-hosted absolute path.
     GRAPH: "graph.svg",
 } as const;
-
 export const CLASS = {
     FOBLES_NAV_BUTTON: "fobles-nav-button",
     FOBLES_NAV_BUTTON_COMPACT: "fobles-nav-button--compact",
@@ -69,6 +67,7 @@ export const CLASS = {
     TOOLBAR_CLOSE_BUTTON: "fobles-toolbar-close-button",
     TOOLBAR_CLOSE_ICON: "fobles-toolbar-close-icon",
     TOOLBAR_CONTAINER: "fobles-toolbar-container",
+    TOOLBAR_DEVELOPER_BUTTON: "fobles-nav-button fobles-nav-developer-button",
     TOOLBAR_DRAGGING: "fobles-toolbar-dragging",
     TOOLBAR_GRAPH_BUTTON: "fobles-nav-button fobles-nav-graph-button",
     TOOLBAR_GRAPH_ICON: "fobles-toolbar-graph-icon",
@@ -77,7 +76,6 @@ export const CLASS = {
     TOOLBAR_RESIZING: "fobles-toolbar-resizing",
     TOOLBAR_SET_ISE_TITLE_BUTTON: "fobles-nav-set-ise-title-button",
 } as const;
-
 export const SELECTORS = {
     FOBLES_BUTTON: "[data-is-fobles-button='1']",
     FOBLES_PROCESSED: "[data-fobles-processed]",
@@ -91,29 +89,26 @@ export const SELECTORS = {
     TOOLBAR_BODY: ".fobles-toolbar-body",
     TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",
     TOOLBAR_CONTAINER: ".fobles-toolbar-container",
+    TOOLBAR_DEVELOPER_BUTTON: ".fobles-nav-developer-button",
     TOOLBAR_GRAPH_BUTTON: ".fobles-nav-graph-button",
     TOOLBAR_GRIP: ".fobles-toolbar-grip",
     TOOLBAR_LBOLT_BUTTON: ".fobles-nav-lbolt-button",
     TOOLBAR_SET_ISE_TITLE_BUTTON: ".fobles-nav-set-ise-title-button",
 } as const;
-
 export const TOOLBAR_CORNERS = [
     "upper-left",
     "upper-right",
     "bottom-right",
     "bottom-left",
 ] as const;
-
 export const DEFAULT_TOOLBAR_PLACEMENT: ToolbarPlacement = {
     corner: "upper-right",
     offsetX: 15,
     offsetY: 105,
 };
-
 export const CSS_PROPERTIES = {
     TOOLBAR_BACKGROUND: "--fobles-toolbar-background",
 } as const;
-
 export const FOBLES_PAGES: readonly AllowedPage[] = [
     {
         id: "ContentEditor",

@@ -1,5 +1,4 @@
 // @source-path [fobles] src/constants/extension-const.ts
-
 export const STORAGE = {
   KEY: {
     AI_PAGES_MAPPINGS: "aiPagesMappings",
@@ -23,13 +22,13 @@ export const STORAGE = {
     },
     PERSIST_DEBUG_LOGS: "persistDebugLogs",
     PERSISTED_LOG_ENTRIES: "persistedLogEntries",
+    SHOW_DEVELOPER_BUTTON: "showDeveloperButton",
     SHOW_RELOAD_EXTENSION_BUTTON: "showReloadExtensionButton",
     TURN_OFF_FOBLES_AFTER_NAVIGATION: "turnOffFoblesAfterNavigation",
     USER_ADMIN_PAGES: "userAdminPages",
     USER_TREE_JUMPS: "userTreeJumps",
   },
 } as const;
-
 export const MESSAGE = {
   ACTION: {
     PAGE_READY: "page-ready",
@@ -38,7 +37,6 @@ export const MESSAGE = {
     TOGGLE_LBOLT: "toggle-lbolt",
   },
 } as const;
-
 export const LOGGER = {
   NAMESPACE: "[Fobles]",
   PERSIST_DEBUG_LOGS: "persistDebugLogs",

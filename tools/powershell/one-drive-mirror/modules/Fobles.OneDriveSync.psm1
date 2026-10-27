@@ -74,27 +74,97 @@ function Test-FoblesExcludedPath {
     return $false
 }
 function Sync-FoblesTypeScriptTextCopies {
-    $keep = @{}
-    $sourceFiles = git -c core.quotepath=off -C $script:SourceRoot ls-files --cached --others --exclude-standard -- '*.ts' '*.tsx'
+    $safeDirectory = $script:SourceRoot.Replace("\", "/")
+    $sourceFiles = @(git -c "safe.directory=$safeDirectory" -c core.quotepath=off -C $script:SourceRoot ls-files --cached --others --exclude-standard -- '*.ts' '*.tsx')
 
-    foreach ($relative in $sourceFiles) {
-        $relativeWindows = $relative.Replace("/", "\")
-        $sourcePath = Join-Path $script:SourceRoot $relativeWindows
-        $targetPath = Join-Path $script:DestinationRoot "$relativeWindows.txt"
+    if ($LASTEXITCODE -ne 0) {
+        Write-Error "Fobles .ts.txt sync skipped: git ls-files failed (exit code $LASTEXITCODE). No .ts.txt files were deleted."
+    }
+    else {
+        $keep = @{}
 
-        if ((Test-Path -LiteralPath $sourcePath) -and -not (Test-FoblesExcludedPath -Path $sourcePath)) {
-            $keep[$targetPath] = $true
+        foreach ($relative in $sourceFiles) {
+            $relativeWindows = $relative.Replace("/", "\")
+            $sourcePath = Join-Path $script:SourceRoot $relativeWindows
+            $targetPath = Join-Path $script:DestinationRoot "$relativeWindows.txt"
 
-            if (-not (Test-Path -LiteralPath $targetPath) -or (Get-Item -LiteralPath $targetPath).LastWriteTimeUtc -ne (Get-Item -LiteralPath $sourcePath).LastWriteTimeUtc) {
-                New-Item -ItemType Directory -Path (Split-Path $targetPath) -Force | Out-Null
-                Copy-Item -LiteralPath $sourcePath -Destination $targetPath -Force
+            if ((Test-Path -LiteralPath $sourcePath) -and -not (Test-FoblesExcludedPath -Path $sourcePath)) {
+                $keep[$targetPath] = $true
+
+                if (-not (Test-Path -LiteralPath $targetPath) -or (Get-Item -LiteralPath $targetPath).LastWriteTimeUtc -ne (Get-Item -LiteralPath $sourcePath).LastWriteTimeUtc) {
+                    New-Item -ItemType Directory -Path (Split-Path $targetPath) -Force | Out-Null
+                    Copy-Item -LiteralPath $sourcePath -Destination $targetPath -Force
+                }
             }
         }
-    }
 
-    Get-ChildItem -LiteralPath $script:DestinationRoot -Recurse -File -Include "*.ts", "*.tsx", "*.ts.txt", "*.tsx.txt" |
-        Where-Object { -not $keep.ContainsKey($_.FullName) } |
-        Remove-Item -Force
+        Get-ChildItem -LiteralPath $script:DestinationRoot -Recurse -File -Include "*.ts", "*.tsx", "*.ts.txt", "*.tsx.txt" |
+            Where-Object { -not $keep.ContainsKey($_.FullName) } |
+            Remove-Item -Force
+    }
+}
+
+function Invoke-FoblesOneDriveSync {
+    if ($script:SyncRunning) {
+        $script:SyncPending = $true
+    }
+    else {
+        $script:SyncRunning = $true
+
+        try {
+            do {
+                $script:SyncPending = $false
+
+                Write-Host "Fobles OneDrive sync started: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+
+                $arguments = @(
+                    $script:SourceRoot,
+                    $script:DestinationRoot,
+                    "/MIR",
+                    "/FFT",
+                    "/R:1",
+                    "/W:1",
+                    "/NJH",
+                    "/NJS",
+                    "/NP"
+                )
+
+                if (
+                    $script:ExcludedDirectories.Count -gt 0 -or
+                    $script:ExcludedRelativePaths.Count -gt 0
+                ) {
+                    $arguments += "/XD"
+
+                    foreach ($directory in $script:ExcludedDirectories) {
+                        $arguments += [System.IO.Path]::Combine($script:SourceRoot, $directory)
+                    }
+
+                    foreach ($relativePath in $script:ExcludedRelativePaths) {
+                        $arguments += [System.IO.Path]::Combine($script:SourceRoot, $relativePath)
+                    }
+                }
+
+                $arguments += "/XF"
+                $arguments += $script:ExcludedFilePatterns
+                $arguments += "*.ts", "*.tsx", "*.ts.txt", "*.tsx.txt"
+
+                & robocopy @arguments
+                $robocopyExitCode = $LASTEXITCODE
+
+                if ($robocopyExitCode -ge 8) {
+                    Write-Error "Fobles OneDrive sync failed. Robocopy exit code: $robocopyExitCode"
+                }
+                else {
+                    Sync-FoblesTypeScriptTextCopies
+                    Write-Host "Fobles OneDrive sync complete. Robocopy exit code: $robocopyExitCode"
+                }
+            }
+            while ($script:SyncPending)
+        }
+        finally {
+            $script:SyncRunning = $false
+        }
+    }
 }
 function Invoke-FoblesOneDriveSync {
     if ($script:SyncRunning) {

@@ -1,10 +1,11 @@
 // @source-path [fobles] src/content/features/reference-graph/components/node-details-panel.tsx
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useState } from "react";
 import prettier from "prettier/standalone";
 import * as prettierPluginHtml from "prettier/plugins/html";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
-import { DialogIconButton } from "../../../shared/ui/dialog/dialog-icon-button";
+import { DetailsPanel } from "../../../shared/ui/details/details-panel";
+import { DETAILS_PANEL } from "../../../shared/ui/details/details-panel.const";
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 type NodeDetailsPanelProps = {
   selectedTreeNodeId: string | undefined;
@@ -225,11 +226,9 @@ export function NodeDetailsPanel({
   processingStateByTreeNodeId,
   onClose,
 }: NodeDetailsPanelProps) {
-  const panelRef = useRef<HTMLDivElement>(null);
   const treeNode = selectedTreeNodeId
     ? nodesById.get(selectedTreeNodeId)
     : undefined;
-  const [copied, setCopied] = useState(false);
   const [formattedRawSource, setFormattedRawSource] =
     useState<string | undefined>(undefined);
   const [formattedItemRawMarkup, setFormattedItemRawMarkup] =
@@ -277,24 +276,6 @@ export function NodeDetailsPanel({
     rawSource,
     itemRawMarkup,
   ]);
-  useEffect(() => {
-    if (!treeNode || !onClose) return;
-    const ownerDocument = panelRef.current?.ownerDocument;
-    if (!ownerDocument) return;
-    const handlePointerDown = (event: PointerEvent): void => {
-      const target = event.target;
-      if (target instanceof ownerDocument.defaultView!.Node && !panelRef.current?.contains(target)) onClose();
-    };
-    const handleKeyDown = (event: KeyboardEvent): void => {
-      if (event.key === "Escape") onClose();
-    };
-    ownerDocument.addEventListener("pointerdown", handlePointerDown, true);
-    ownerDocument.addEventListener("keydown", handleKeyDown, true);
-    return () => {
-      ownerDocument.removeEventListener("pointerdown", handlePointerDown, true);
-      ownerDocument.removeEventListener("keydown", handleKeyDown, true);
-    };
-  }, [treeNode, onClose]);
   if (!treeNode) {
     return null;
   }
@@ -312,44 +293,24 @@ export function NodeDetailsPanel({
         ];
   const diagnosticTreeNode =
     buildDiagnosticTreeNode(treeNode);
-  const handleCopy = (): void => {
-    void navigator.clipboard
-      .writeText(
+  return (
+    <DetailsPanel
+      title="Node Details"
+      closeLabel="Close node details"
+      onClose={onClose}
+      closeOnOutsidePointer
+      getCopyText={() =>
         buildClipboardText(
           diagnosticTreeNode,
           formattedRawSource,
           formattedItemRawMarkup,
-        ),
-      )
-      .then(() => {
-        setCopied(true);
-        window.setTimeout(() => {
-          setCopied(false);
-        }, 1500);
-      });
-  };
-  return (
-    <div ref={panelRef} className="fobles-reference-graph-node-details">
-      <div className="fobles-reference-graph-node-details-header">
-        <strong>Node Details</strong>
-        <div style={{ display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" }}>
-          <button
-            type="button"
-            className={
-              "fobles-reference-graph-button " +
-              "fobles-reference-graph-node-details-copy"
-            }
-            onClick={handleCopy}
-          >
-            {copied ? "Copied!" : "Copy"}
-          </button>
-          {onClose ? <DialogIconButton kind="close" label="Close node details" onClick={onClose} /> : null}
-        </div>
-      </div>
+        )
+      }
+    >
       {rows.map(([label, value]) => (
         <div
           key={label}
-          className="fobles-reference-graph-node-details-row"
+          className={DETAILS_PANEL.CLASS.ROW}
         >
           <strong>{label}: </strong>
           <span>{value}</span>
@@ -377,6 +338,6 @@ export function NodeDetailsPanel({
           <pre>{formattedItemRawMarkup}</pre>
         </details>
       )}
-    </div>
+    </DetailsPanel>
   );
 }

@@ -1,7 +1,6 @@
 import { FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS } from "./button-ids.ts";
 import { REFERENCE_GRAPH } from "./graph.const.ts";
 import { WORKER_POOL } from "./partials/fobles-workers.const.ts";
-
 // Shared constants used by fobles generation and cleanup
 export const FOBLES = {
   ATTRIBUTES: {
@@ -28,6 +27,7 @@ export const FOBLES = {
         LBOLT: "lbolt",
         GRAPH: "graph-trigger",
         AUDITOR: "auditor-trigger",
+        DEVELOPER: "developer-trigger",
         PROXY_FLYOUT_TRIGGER: "proxy-buttons-trigger",
         JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger",
       },
@@ -36,6 +36,7 @@ export const FOBLES = {
   OPTIONS_PAGE: {
     DEBUG_LOGGING: "debug-logging",
     SHOW_RELOAD_EXTENSION_BUTTON: "show-reload-extension-button",
+    SHOW_DEVELOPER_BUTTON: "show-developer-button",
     DEBUG_STATUS: "debug-status",
     VIEW_STORED_SETTINGS: "view-stored-settings",
     STORED_SETTINGS_OUTPUT: "stored-settings-output",

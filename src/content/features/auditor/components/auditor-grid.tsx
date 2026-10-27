@@ -1,5 +1,4 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-grid.tsx
-
 import { useEffect, useMemo, useRef, useState, type MouseEvent as ReactMouseEvent } from "react";
 import { AgGridReact } from "ag-grid-react";
 import {
@@ -18,21 +17,16 @@ import { getGraphPresentationState } from "../../../foundation/reference-data/mo
 import type { AuditFinding } from "../audit-finding.types";
 import { buildAuditReportTree, type AuditReportTreeNode } from "../audit-report-tree";
 import { AuditorStatusCell } from "./auditor-status-cell";
-
 ModuleRegistry.registerModules([AllCommunityModule]);
-
 const COLLAPSED_GLYPH = "/sitecore/shell/themes/standard/images/treemenu_collapsed.png";
 const EXPANDED_GLYPH = "/sitecore/shell/themes/standard/images/treemenu_expanded.png";
-
 type JourneyStage = "referenced" | "cached" | "live" | "tested";
-
 type AuditorTreeRow = AuditReportTreeNode & {
   collapseKey?: GraphCollapseKey;
   journeyStage: JourneyStage;
   sitecoreUrl?: string;
   isSitecoreItem: boolean;
 };
-
 export type AuditorGridProps = {
   referenceModelRoot: ReferenceModelNode;
   findings: readonly AuditFinding[];
@@ -40,45 +34,35 @@ export type AuditorGridProps = {
   onViewData: (treeNodeId: string) => void;
   onViewTestDetails: (finding: AuditFinding) => void;
 };
-
 type ToggleModifiers = { shiftKey?: boolean; ctrlKey?: boolean; metaKey?: boolean };
-
 const JOURNEY_RANK: Record<JourneyStage, number> = { referenced: 1, cached: 2, live: 3, tested: 4 };
 const JOURNEY_BY_RANK: Record<number, JourneyStage> = { 1: "referenced", 2: "cached", 3: "live", 4: "tested" };
-
 function isVisible(
   row: AuditorTreeRow,
   expanded: ReadonlySet<string>,
   rowsById: ReadonlyMap<string, AuditorTreeRow>,
 ): boolean {
   let parentId = row.parentId;
-
   while (parentId) {
     if (!expanded.has(parentId)) return false;
     parentId = rowsById.get(parentId)?.parentId;
   }
-
   return true;
 }
-
 // The second mousedown of a double-click is what selects a word, and a selection is what raises the browser's own
 // selection toolbar (copy / search / Copilot). The tree uses double-click to expand a row, so suppress the selection.
 // AG Grid detects double-clicks from the dblclick event, so this does not interfere with row expansion.
 function blockDoubleClickTextSelection(event: ReactMouseEvent<HTMLDivElement>): void {
   if (event.detail > 1) event.preventDefault();
 }
-
 function clearTextSelection(source: Event | null | undefined): void {
   const target = source?.target;
   const targetDocument = target instanceof Node ? target.ownerDocument ?? document : document;
-
   targetDocument.getSelection()?.removeAllRanges();
 }
-
 function JourneyCell({ stage }: { stage: JourneyStage }) {
   const count = JOURNEY_RANK[stage];
   const title = `${stage[0].toUpperCase()}${stage.slice(1)}: ${count} of 4 lifecycle stages reached`;
-
   return (
     <span className={`fobles-auditor-journey fobles-auditor-journey--${stage}`} title={title} aria-label={title}>
       {[0, 1, 2, 3].map((index) => (
@@ -87,7 +71,6 @@ function JourneyCell({ stage }: { stage: JourneyStage }) {
     </span>
   );
 }
-
 export function AuditorGrid({
   referenceModelRoot,
   findings,
@@ -97,56 +80,41 @@ export function AuditorGrid({
 }: AuditorGridProps) {
   const nodesById = useMemo(() => {
     const map = new Map<string, ReferenceModelNode>();
-
     const visit = (node: ReferenceModelNode): void => {
       map.set(node.treeNodeId, node);
       node.children.forEach(visit);
     };
-
     visit(referenceModelRoot);
-
     return map;
   }, [referenceModelRoot]);
-
   const liveSeen = useRef(new Set<string>());
-
   processingStateByTreeNodeId.forEach((status, treeNodeId) => {
     if (status === "enriched" || status === "not-found" || status === "failed") liveSeen.current.add(treeNodeId);
   });
-
   const findingsByNode = useMemo(() => {
     const map = new Map<string, AuditFinding[]>();
-
     findings.forEach((finding) => {
       if (!finding.referenceModelNodeId) return;
-
       const list = map.get(finding.referenceModelNodeId) ?? [];
-
       list.push(finding);
       map.set(finding.referenceModelNodeId, list);
     });
-
     return map;
   }, [findings]);
-
   const baseRows = useMemo(
     () => buildAuditReportTree(referenceModelRoot, findings, processingStateByTreeNodeId),
     [referenceModelRoot, findings, processingStateByTreeNodeId],
   );
-
   const allRows = useMemo<AuditorTreeRow[]>(() => {
     const results: AuditorTreeRow[] = [];
     const findingsByParent = new Map<string, AuditReportTreeNode[]>();
-
     baseRows
       .filter((row) => row.kind === "finding" && row.parentId)
       .forEach((row) => {
         const list = findingsByParent.get(row.parentId!) ?? [];
-
         list.push(row);
         findingsByParent.set(row.parentId!, list);
       });
-
     baseRows
       .filter((row) => row.kind !== "finding")
       .forEach((row) => {
@@ -160,7 +128,6 @@ export function AuditorGrid({
         const cached = processingStatus === "verified" || processingStatus === "stale" || processingStatus === "unverified";
         const ownStage: JourneyStage = allTerminal ? "tested" : live ? "live" : cached ? "cached" : "referenced";
         const sitecoreUrl = nodeFindings.find((finding) => finding.sitecoreUrl)?.sitecoreUrl;
-
         results.push({
           ...row,
           collapseKey: node ? getGraphPresentationState(node).collapseKey : undefined,
@@ -168,13 +135,9 @@ export function AuditorGrid({
           sitecoreUrl,
           isSitecoreItem: node?.nodeType === "item",
         });
-
         const tests = findingsByParent.get(row.id) ?? [];
-
         if (tests.length === 0) return;
-
         const testsId = `${row.id}:tests`;
-
         results.push({
           id: testsId,
           parentId: row.id,
@@ -194,7 +157,6 @@ export function AuditorGrid({
           sitecoreUrl: undefined,
           isSitecoreItem: false,
         });
-
         tests.forEach((test) => {
           results.push({
             ...test,
@@ -206,44 +168,31 @@ export function AuditorGrid({
           });
         });
       });
-
     const childrenByParent = new Map<string, AuditorTreeRow[]>();
-
     results.forEach((row) => {
       if (!row.parentId) return;
-
       const list = childrenByParent.get(row.parentId) ?? [];
-
       list.push(row);
       childrenByParent.set(row.parentId, list);
     });
-
-    const rollup = (row: AuditorTreeRow): number => {
+    const rollup = (row: AuditorTreeRow): number | undefined => {
+      const ownRank = row.isSitecoreItem ? JOURNEY_RANK[row.journeyStage] : undefined;
       const childRanks = (childrenByParent.get(row.id) ?? []).map(rollup);
-      const rank = childRanks.length
-        ? Math.max(JOURNEY_RANK[row.journeyStage], ...childRanks)
-        : JOURNEY_RANK[row.journeyStage];
-
-      row.journeyStage = JOURNEY_BY_RANK[rank];
-
+      const ranks = [ownRank, ...childRanks].filter((rank): rank is number => rank !== undefined);
+      const rank = ranks.length ? Math.min(...ranks) : undefined;
+      if (rank !== undefined) row.journeyStage = JOURNEY_BY_RANK[rank];
       return rank;
     };
-
     results.filter((row) => !row.parentId).forEach(rollup);
-
     return results;
   }, [baseRows, findingsByNode, nodesById, processingStateByTreeNodeId]);
-
   const rowsById = useMemo(() => new Map(allRows.map((row) => [row.id, row])), [allRows]);
   const expandableIds = useMemo(() => allRows.filter((row) => row.hasChildren).map((row) => row.id), [allRows]);
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
   const initialized = useRef(false);
-
   useEffect(() => {
     if (initialized.current) return;
-
     initialized.current = true;
-
     void getExpandedByCollapseKey().then((saved) => {
       setExpanded(
         new Set(
@@ -254,15 +203,12 @@ export function AuditorGrid({
       );
     });
   }, [allRows]);
-
   const visibleRows = useMemo(
     () => allRows.filter((row) => isVisible(row, expanded, rowsById)),
     [allRows, expanded, rowsById],
   );
-
   function descendantIds(rowId: string): string[] {
     const ids: string[] = [];
-
     const visit = (parentId: string): void => {
       allRows
         .filter((row) => row.parentId === parentId && row.hasChildren)
@@ -271,17 +217,12 @@ export function AuditorGrid({
           visit(row.id);
         });
     };
-
     visit(rowId);
-
     return ids;
   }
-
   function toggle(row: AuditorTreeRow, modifiers?: ToggleModifiers): void {
     if (!row.hasChildren) return;
-
     const opening = !expanded.has(row.id);
-
     setExpanded((current) => {
       const next = new Set(current);
       const targets = modifiers?.shiftKey
@@ -291,19 +232,14 @@ export function AuditorGrid({
               .filter((candidate) => candidate.hasChildren && candidate.collapseKey === row.collapseKey)
               .map((candidate) => candidate.id)
           : [row.id];
-
       targets.forEach((id) => (opening ? next.add(id) : next.delete(id)));
-
       return next;
     });
-
     if (row.collapseKey) void setExpandedStateForCollapseKey(row.collapseKey, opening);
   }
-
   function navigate(row: AuditorTreeRow): void {
     if (row.sitecoreUrl) window.open(row.sitecoreUrl, "_blank", "noopener,noreferrer");
   }
-
   const columnDefs = useMemo<ColDef<AuditorTreeRow>[]>(
     () => [
       { field: "status", headerName: "", width: 42, minWidth: 42, maxWidth: 42, cellRenderer: AuditorStatusCell },
@@ -341,18 +277,15 @@ export function AuditorGrid({
       {
         field: "label",
         headerName: "Item / Relationship",
-        flex: 2,
+        flex: 1,
         minWidth: 320,
         // Not selectable on purpose: text worth copying lives in the details panels. Selectable cells are what let a
         // double-click select a word and raise the browser's selection toolbar.
         cellClass: (params) => (params.data?.hasChildren ? "fobles-auditor-expandable-cell" : undefined),
         cellRenderer: (params: ICellRendererParams<AuditorTreeRow>) => {
           const row = params.data;
-
           if (!row) return null;
-
           const opened = expanded.has(row.id);
-
           return (
             <div
               className={`fobles-auditor-tree-row fobles-auditor-tree-row--${row.kind}${row.isSitecoreItem ? " fobles-auditor-tree-row--item" : ""}`}
@@ -378,7 +311,6 @@ export function AuditorGrid({
           );
         },
       },
-      { field: "path", headerName: "Path", flex: 2, minWidth: 360 },
       {
         headerName: "Actions",
         width: 120,
@@ -410,24 +342,19 @@ export function AuditorGrid({
     ],
     [allRows, expanded, onViewData, onViewTestDetails],
   );
-
   function handleRowDoubleClick(event: RowDoubleClickedEvent<AuditorTreeRow>): void {
     const target = event.event?.target;
-
     if (target instanceof Element && target.closest("button, a, input, select, textarea")) return;
     if (!event.data) return;
-
     toggle(event.data, event.event instanceof MouseEvent ? event.event : undefined);
     clearTextSelection(event.event);
   }
-
   return (
     <div className="fobles-auditor-grid-shell">
       <div className="fobles-auditor-tree-actions">
         <button type="button" onClick={() => setExpanded(new Set(expandableIds))}>Expand All</button>
         <button type="button" onClick={() => setExpanded(new Set())}>Collapse All</button>
       </div>
-
       <div
         className="fobles-auditor-grid"
         style={{ userSelect: "none" }}
