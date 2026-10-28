@@ -1,7 +1,6 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/rendering-reference-model-builder.ts
 
 import { CONST } from "../../../../constants/const";
-import { extensionLog } from "../../../logger";
 import { isGuidLike } from "../../sitecore/guid";
 import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
@@ -16,7 +15,9 @@ export function createRenderingReferenceModelNode(pageLayoutTreeNodeId: string, 
   const children: ReferenceModelNode[] = [];
 
   if (control.datasource) children.push(createDatasourceReferenceModelNode(renderingTreeNodeId, control.datasource));
-  const parameters = Object.entries(control.parameters).filter(([, value]) => value.trim().length > 0);
+
+  const parameters = Object.entries(control.parameters).filter(([, value]) => isReferenceValue(value));
+
   if (parameters.length > 0) children.push(createRenderingParametersReferenceModelNode(renderingTreeNodeId, parameters));
 
   return createReferenceModelItemNode({
@@ -45,6 +46,7 @@ function createDatasourceReferenceModelNode(renderingTreeNodeId: string, datasou
 
 function createRenderingParametersReferenceModelNode(renderingTreeNodeId: string, parameters: Array<[string, string]>): ReferenceModelNonItemNode {
   const treeNodeId = createReferenceModelNodeId(renderingTreeNodeId, CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETERS);
+
   return createReferenceModelNonItemNode({
     treeNodeId,
     name: "Rendering\nParameters",
@@ -53,34 +55,37 @@ function createRenderingParametersReferenceModelNode(renderingTreeNodeId: string
     collapseKey: GRAPH_COLLAPSE_KEY.RENDERING_PARAMETERS,
     branch: "layouts",
     relationshipToParent: "related",
-    children: parameters.map(([name, value]) => createSingleParameterReferenceModelNode(name, value, renderingTreeNodeId)),
+    children: parameters.map(([name, value]) => createSingleParameterReferenceModelNode(name, value, treeNodeId)),
   });
 }
 
-function createSingleParameterReferenceModelNode(name: string, value: string, renderingTreeNodeId: string): ReferenceModelNode {
-  const treeNodeId = createReferenceModelNodeId(renderingTreeNodeId, CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETER, name);
-  const candidateValue = decodeURIComponent(value);
-  extensionLog.debug("Parameter candidate values:", value, candidateValue, isGuidLike(candidateValue));
+function createSingleParameterReferenceModelNode(name: string, value: string, parametersTreeNodeId: string): ReferenceModelItemNode {
+  const candidateValue = decodeURIComponent(value).trim();
+  const scItem = isGuidLike(candidateValue)
+    ? factoryItemGraphNodeData({ scItemId: candidateValue })
+    : factoryItemGraphNodeData({ scItemPath: normalizeSitecorePath(candidateValue) });
 
-  if (isGuidLike(candidateValue)) {
-    return createReferenceModelItemNode({
-      treeNodeId,
-      scItem: factoryItemGraphNodeData({ scItemId: candidateValue }),
-      kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.RENDERING_PARAMETER,
-      provenance: { type: "rendering-parameter", parameterName: name, parameterValue: value, decodedValue: candidateValue, isItemReference: true },
-      collapseKey: GRAPH_COLLAPSE_KEY.RENDERING_PARAMETER,
-      branch: "layouts",
-      relationshipToParent: "related",
-    });
-  }
-
-  return createReferenceModelNonItemNode({
-    treeNodeId,
-    name: `${name}: ${value}`,
+  return createReferenceModelItemNode({
+    treeNodeId: createReferenceModelNodeId(parametersTreeNodeId, CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETER, name),
+    scItem,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.RENDERING_PARAMETER,
-    provenance: { type: "rendering-parameter", parameterName: name, parameterValue: value, decodedValue: candidateValue, isItemReference: false },
+    provenance: { type: "rendering-parameter", parameterName: name, parameterValue: value, decodedValue: candidateValue, isItemReference: true },
     collapseKey: GRAPH_COLLAPSE_KEY.RENDERING_PARAMETER,
     branch: "layouts",
     relationshipToParent: "related",
   });
+}
+
+function isReferenceValue(value: string): boolean {
+  const candidate = decodeURIComponent(value).trim();
+  return isGuidLike(candidate) || isSitecorePath(candidate);
+}
+
+function isSitecorePath(value: string): boolean {
+  const normalized = value.toLowerCase();
+  return normalized.startsWith("/sitecore/") || normalized.startsWith("sitecore/") || normalized.startsWith("local:");
+}
+
+function normalizeSitecorePath(value: string): string {
+  return value.toLowerCase().startsWith("sitecore/") ? `/${value}` : value;
 }
