@@ -5,7 +5,7 @@ export type ReferenceGraphLockResult = {
     acquired: boolean;
 };
 export async function acquireReferenceGraphSessionLock(): Promise<boolean> {
-    const result = await chrome.runtime.sendMessage({ type: REFERENCE_GRAPH_LOCK_ACQUIRE }) as ReferenceGraphLockResult;
+    const result = await chrome.runtime.sendMessage({ type: REFERENCE_GRAPH_LOCK_ACQUIRE });
     return result.acquired;
 }
 export async function releaseReferenceGraphSessionLock(): Promise<void> {

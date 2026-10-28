@@ -24,7 +24,6 @@ function quickInfoPayload(result: WorkerTaskExecutionResult): QuickInfoPayload |
 function harvestResultFromQuickInfo(payload: QuickInfoPayload): SitecoreHarvestResult | undefined {
   const rootItem = payload.result.status === "found" ? payload.result.value : undefined;
   if (!rootItem?.scItemId) return undefined;
-
   return {
     rootItem: { ...rootItem, scItemId: rootItem.scItemId },
     parent: undefined,
@@ -35,7 +34,6 @@ function harvestResultFromQuickInfo(payload: QuickInfoPayload): SitecoreHarvestR
     referrers: undefined,
   };
 }
-
 
 async function readRootQuickInfo(workSession: WorkSession, itemId: string): Promise<QuickInfoPayload | undefined> {
   const task: Omit<Extract<WorkerTask, { type: "get-quick-info" }>, "requestId"> = {
@@ -64,7 +62,7 @@ export async function acquireReferenceModelForCurrentItem(
 
   extensionLog.debug("Reference model: root cache decision", {
     decision: decision.kind,
-    cachedRevision: cachedRecord?.quickInfo?.value.revision,
+    cachedRevision: cachedRecord?.revision,
     liveRevision,
   });
 
@@ -78,10 +76,8 @@ export async function acquireReferenceModelForCurrentItem(
     harvestResult = harvestResultFromQuickInfo(payload);
     if (!harvestResult) return undefined;
 
-    await putFact(cacheKey, "quickInfo", payload, { revision: payload.revision });
+    await putFact(cacheKey, "quickInfo", { result: payload.result }, { revision: payload.revision });
     preparedFilters = { parent: false, children: false, referrers: false, customFields: false, standardFields: false, layouts: false, template: true };
-  } else if (decision.kind === "cache-only" && cachedRecord?.quickInfo) {
-    await putFact(cacheKey, "quickInfo", cachedRecord.quickInfo.value);
   }
 
   if (signal.aborted || !harvestResult) return undefined;

@@ -5,7 +5,7 @@ export type AuditorLockResult = {
     acquired: boolean;
 };
 export async function acquireAuditorSessionLock(): Promise<boolean> {
-    const result = await chrome.runtime.sendMessage({ type: AUDITOR_LOCK_ACQUIRE }) as AuditorLockResult;
+    const result = await chrome.runtime.sendMessage({ type: AUDITOR_LOCK_ACQUIRE });
     return result.acquired;
 }
 export async function releaseAuditorSessionLock(): Promise<void> {
