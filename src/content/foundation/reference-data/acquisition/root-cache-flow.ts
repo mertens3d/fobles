@@ -2,7 +2,8 @@
 
 import type { SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data-cache.types";
 import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
-import type { RootItem } from "../model/sitecore-item.types";
+import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
+import type { ItemGraphNodeData, RootItem } from "../model/sitecore-item.types";
 import type { ProcessingStatus } from "../processing/processing-state";
 
 export type RootCacheDecision =
@@ -32,9 +33,7 @@ export function assembleHarvestResultFromCacheRecord(
   if (typeof scItemId !== "string" || scItemId.length === 0) return undefined;
   if (!hasRequiredFacts(record, filters)) return undefined;
 
-  const scTemplate = quickInfo.scTemplate
-    ? { ...quickInfo.scTemplate, scTemplate: undefined, rawMarkup: undefined, facts: {} }
-    : undefined;
+  const scTemplate = itemFromLocator(quickInfo.scTemplate);
   const rootItem: RootItem = { ...quickInfo, scItemId, scTemplate, rawMarkup: undefined, facts: {} };
 
   return {
@@ -45,6 +44,22 @@ export function assembleHarvestResultFromCacheRecord(
     customFieldSections: filters.customFields ? record.customSections?.value.sections : undefined,
     standardFieldSections: filters.standardFields ? record.standardSections?.value.sections : undefined,
     layoutSectionFields: filters.layouts ? record.layout?.value.layoutSectionFields : undefined,
+  };
+}
+
+function itemFromLocator(locator: SitecoreItemLocator | undefined): ItemGraphNodeData | undefined {
+  if (!locator) return undefined;
+
+  return {
+    type: "scItem",
+    scItemName: undefined,
+    scItemId: locator.kind === "id" ? locator.value : undefined,
+    link: undefined,
+    scItemPath: locator.kind === "path" ? locator.value : undefined,
+    scTemplate: undefined,
+    scItemIcon: undefined,
+    rawMarkup: undefined,
+    facts: {},
   };
 }
 

@@ -2,7 +2,7 @@
 
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import type { SitecoreDataCacheKey, StoredQuickInfo } from "../../cache/sitecore-data/sitecore-data-cache.types";
-import type { WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
+import type { SitecoreItemLocator, WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
 import type { ItemGraphNodeData } from "../model/sitecore-item.types.ts";
 
 export type ResolveOutcome =
@@ -16,9 +16,7 @@ export type ResolveOutcome =
 export type CachedItemFact = { value: ItemGraphNodeData | undefined; revision: string | undefined; hadStructuralCache: boolean };
 
 function restoreQuickInfo(quickInfo: StoredQuickInfo): ItemGraphNodeData {
-  const scTemplate = quickInfo.scTemplate
-    ? { ...quickInfo.scTemplate, scTemplate: undefined, rawMarkup: undefined, facts: {} }
-    : undefined;
+ const scTemplate = itemFromLocator(quickInfo.scTemplate);
   return { ...quickInfo, scTemplate, rawMarkup: undefined, facts: {} };
 }
 
@@ -62,6 +60,23 @@ export async function verifyItemFact(
 
   return outcome;
 }
+
+function itemFromLocator(locator: SitecoreItemLocator | undefined): ItemGraphNodeData | undefined {
+  if (!locator) return undefined;
+
+  return {
+    type: "scItem",
+    scItemName: undefined,
+    scItemId: locator.kind === "id" ? locator.value : undefined,
+    link: undefined,
+    scItemPath: locator.kind === "path" ? locator.value : undefined,
+    scTemplate: undefined,
+    scItemIcon: undefined,
+    rawMarkup: undefined,
+    facts: {},
+  };
+}
+
 
 export async function resolveItemFact(
   key: SitecoreDataCacheKey,

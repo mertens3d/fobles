@@ -51,24 +51,9 @@ export function buildAuditReportTree(
   function visit(node: ReferenceModelNode, parentId: string | undefined, depth: number): { rows: AuditReportTreeNode[]; status: AuditFindingStatus; hasVisibleContent: boolean } {
     const childResults = node.children.map((child) => visit(child, node.treeNodeId, depth + 1));
     const nodeFindings = findingsByTreeNodeId.get(node.treeNodeId) ?? [];
-    const findingRows: AuditReportTreeNode[] = nodeFindings.map((finding) => ({
-      id: `finding:${finding.id}`,
-      parentId: node.treeNodeId,
-      depth: depth + 1,
-      kind: "finding",
-      label: `Test: ${finding.checkLabel}`,
-      details: finding.details ?? finding.summary,
-      path: finding.itemPath,
-      origin: undefined,
-      status: finding.status,
-      hasChildren: false,
-      referenceModelNodeId: finding.referenceModelNodeId,
-      icon: undefined,
-      finding,
-    }));
-    const visibleChildren = childResults.filter((result) => result.hasVisibleContent);
+    const visibleChildren = childResults;
     const descendantStatuses = [...nodeFindings.map((finding) => finding.status), ...visibleChildren.map((result) => result.status)];
-    const hasVisibleContent = descendantStatuses.length > 0;
+    const hasVisibleContent = true;
     const status = highestStatus(descendantStatuses);
     const processingStatus = processingStateByTreeNodeId.get(node.treeNodeId);
     const row: AuditReportTreeNode = {
@@ -81,12 +66,12 @@ export function buildAuditReportTree(
       path: node.nodeType === "item" ? node.scItem.scItemPath : undefined,
       origin: nodeOrigin(node, processingStatus),
       status,
-      hasChildren: visibleChildren.length > 0 || findingRows.length > 0,
+      hasChildren: visibleChildren.length > 0,
       referenceModelNodeId: node.treeNodeId,
       icon: node.nodeType === "item" ? node.scItem.scItemIcon : undefined,
       finding: nodeFindings[0],
     };
-    return { rows: [row, ...findingRows, ...visibleChildren.flatMap((result) => result.rows)], status, hasVisibleContent };
+    return { rows: [row, ...visibleChildren.flatMap((result) => result.rows)], status, hasVisibleContent };
   }
   return visit(referenceModelRoot, undefined, 0).rows;
 }

@@ -5,33 +5,20 @@ import { extensionLog } from "../../../../../logger";
 import { findFieldInput } from "../../helpers/harvest-helpers";
 import { readRenderingAttribute } from "./rendering-xml-attributes";
 import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
-import {
-  factoryItemGraphNodeData,
-  type ItemGraphNodeData,
-  type LayoutDevice,
-  type LayoutPlacement,
-  type LayoutSectionField,
-  type ScControl,
-} from "../../../../reference-data/model/sitecore-item.types";
+import { factoryItemGraphNodeData, type ItemGraphNodeData, type LayoutDevice, type LayoutPlacement, type LayoutSectionField, type ScControl } from "../../../../reference-data/model/sitecore-item.types";
 import type { HarvestContext } from "../../../sitecore-harvester.types";
 
 export const collectLayouts = async (harvestContext: HarvestContext): Promise<void> => {
-  harvestContext.result.layoutSectionFields = [
-    processLayoutFieldValue(harvestContext, "Renderings"),
-    processLayoutFieldValue(harvestContext, "Final renderings"),
-  ];
+  harvestContext.result.layoutSectionFields = [processLayoutFieldValue(harvestContext, "Renderings"), processLayoutFieldValue(harvestContext, "Final renderings")];
 };
 
 const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: string): LayoutSectionField => {
   const sectionFieldHtml = findFieldInput(harvestContext.doc, layoutName);
   const layoutSectionField: LayoutSectionField = { name: layoutName, devices: [], rawMarkup: sectionFieldHtml?.value };
   const xml = sectionFieldHtml?.value;
-
   if (!xml) return layoutSectionField;
-
   const rawProcessedXml = processLayoutXml(xml);
   extensionLog.debug("Processed layout XML:", rawProcessedXml);
-
   if (!rawProcessedXml) return layoutSectionField;
 
   for (const device of rawProcessedXml.r.d) {
@@ -47,23 +34,19 @@ const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: str
         rawData: rendering,
       },
     }));
-
     const deviceData: LayoutDevice = {
       scDeviceItem: factoryItemGraphNodeData({ scItemId: device.id }),
       scPageLayoutItem: device.l ? factoryItemGraphNodeData({ scItemId: device.l }) : undefined,
       placements: createLayoutPlacements(controls),
       rawData: device,
     };
-
     layoutSectionField.devices.push(deviceData);
   }
 
   return layoutSectionField;
 };
 
-export function createLayoutPlacements(
-  controls: ReadonlyArray<{ placeholderPath: string; control: ScControl }>,
-): LayoutPlacement[] {
+export function createLayoutPlacements(controls: ReadonlyArray<{ placeholderPath: string; control: ScControl }>): LayoutPlacement[] {
   const roots: LayoutPlacement[] = [];
   const placementsByPath = new Map<string, LayoutPlacement>();
 
@@ -77,13 +60,11 @@ export function createLayoutPlacements(
     for (const segment of segments) {
       currentPath = currentPath ? `${currentPath}/${segment}` : segment;
       placement = placementsByPath.get(currentPath);
-
       if (!placement) {
         placement = { path: currentPath, name: segment, sourcePaths: [], placements: [], controls: [] };
         placementsByPath.set(currentPath, placement);
         children.push(placement);
       }
-
       if (!placement.sourcePaths.includes(rawPath)) placement.sourcePaths.push(rawPath);
       children = placement.placements;
     }
@@ -105,9 +86,7 @@ function stripDynamicPlaceholderSuffix(segment: string): string {
 
 function createDatasourceItem(datasource: string | undefined, currentItemPath: string | undefined): ItemGraphNodeData | undefined {
   if (!datasource) return undefined;
-
   const item = factoryItemGraphNodeData();
-
   if (datasource.toLowerCase().startsWith("local:")) {
     if (currentItemPath) item.scItemPath = currentItemPath + datasource.slice("local:".length);
   } else if (datasource.startsWith("/")) {
@@ -115,21 +94,15 @@ function createDatasourceItem(datasource: string | undefined, currentItemPath: s
   } else {
     item.scItemId = datasource;
   }
-
   return item;
 }
 
 function parseParameters(raw?: string): Record<string, string> {
-  return Object.fromEntries(new URLSearchParams(raw ?? ""));
+  return Object.fromEntries(Array.from(new URLSearchParams(raw ?? "")).filter(([, value]) => value.trim().length > 0));
 }
 
 function processLayoutXml(xml: string): SitecoreLayoutXml | undefined {
-  const parser = new XMLParser({
-    ignoreAttributes: false,
-    attributeNamePrefix: "",
-    isArray: (_name, jPath) => jPath === "r.d" || jPath === "r.d.r",
-  });
-
+  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "", isArray: (_name, jPath) => jPath === "r.d" || jPath === "r.d.r" });
   try {
     return parser.parse(xml) as SitecoreLayoutXml;
   } catch (error) {

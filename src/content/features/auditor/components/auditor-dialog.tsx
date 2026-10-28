@@ -97,7 +97,7 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
   const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [viewReferenceModel, setViewReferenceModel] = useState(false);
   const [selectedTreeNodeId, setSelectedTreeNodeId] = useState<string>();
-  const [selectedTestFinding, setSelectedTestFinding] = useState<AuditFinding>();
+  const [selectedTestFindings, setSelectedTestFindings] = useState<readonly AuditFinding[]>([]);
   const [showHelp, setShowHelp] = useState(false);
   const startedAt = useRef(performance.now());
   const completedElapsedSeconds = useRef<number | undefined>(undefined);
@@ -339,8 +339,9 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
               referenceModelRoot={model.referenceModel}
               findings={visibleFindings}
               processingStateByTreeNodeId={model.processingStateByTreeNodeId}
+              modelRevision={modelRevision}
               onViewData={setSelectedTreeNodeId}
-              onViewTestDetails={setSelectedTestFinding}
+              onViewTestDetails={setSelectedTestFindings}
             />
           ) : null}
         </div>
@@ -355,11 +356,11 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
           </aside>
         ) : null}
       </div>
-      {selectedTestFinding ? (
+      {selectedTestFindings.length > 0 ? (
         <div
           className="fobles-auditor-test-details-backdrop"
           onMouseDown={(event) => {
-            if (event.currentTarget === event.target) setSelectedTestFinding(undefined);
+            if (event.currentTarget === event.target) setSelectedTestFindings([]);
           }}
         >
           <section
@@ -371,16 +372,21 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
             <DialogIconButton
               kind="close"
               label="Close test details"
-              onClick={() => setSelectedTestFinding(undefined)}
+              onClick={() => setSelectedTestFindings([])}
             />
-            <h2>{selectedTestFinding.checkLabel}</h2>
-            <dl>
-              <div><dt>Status</dt><dd>{selectedTestFinding.status}</dd></div>
-              <div><dt>Summary</dt><dd>{selectedTestFinding.summary}</dd></div>
-              {selectedTestFinding.details ? <div><dt>Details</dt><dd>{selectedTestFinding.details}</dd></div> : null}
-              {selectedTestFinding.context ? <div><dt>Context</dt><dd>{selectedTestFinding.context}</dd></div> : null}
-              {selectedTestFinding.itemPath ? <div><dt>Path</dt><dd>{selectedTestFinding.itemPath}</dd></div> : null}
-            </dl>
+            <h2>Test Details</h2>
+            {selectedTestFindings.map((finding) => (
+              <section key={finding.id} className="fobles-auditor-test-result">
+                <h3>{finding.checkLabel}</h3>
+                <dl>
+                  <div><dt>Status</dt><dd>{finding.status}</dd></div>
+                  <div><dt>Summary</dt><dd>{finding.summary}</dd></div>
+                  {finding.details ? <div><dt>Details</dt><dd>{finding.details}</dd></div> : null}
+                  {finding.context ? <div><dt>Context</dt><dd>{finding.context}</dd></div> : null}
+                  {finding.itemPath ? <div><dt>Path</dt><dd>{finding.itemPath}</dd></div> : null}
+                </dl>
+              </section>
+            ))}
           </section>
         </div>
       ) : null}
@@ -409,7 +415,7 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
                 <div><dt>Ctrl/Cmd + double-click row</dt><dd>Apply the same state to every node in that semantic category.</dd></div>
                 <div><dt>Shift + click</dt><dd>Expand or collapse the selected subtree.</dd></div>
                 <div><dt>View Data</dt><dd>Open a right-side details panel without resizing the audit table.</dd></div>
-                <div><dt>Test Details</dt><dd>Open the full result for one audit test.</dd></div>
+                <div><dt>Status icon</dt><dd>Open all test results for that item or relationship.</dd></div>
               </dl>
               <h3>Data journey</h3>
               <ul className="fobles-auditor-help-key">

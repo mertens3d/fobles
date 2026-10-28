@@ -7,7 +7,7 @@ import { createSitecoreItemProvenance, createSyntheticProvenance } from "./refer
 import type { ReferenceModelItemNode, ReferenceModelNode, ReferenceModelNonItemNode } from "./reference-model.types";
 import { createRenderingReferenceModelNode } from "./rendering-reference-model-builder";
 import { slugify } from "./slugify";
-import type { ItemGraphNodeData, LayoutDevice, LayoutPlacement, LayoutSectionField, ScControl } from "./sitecore-item.types";
+import type { ItemGraphNodeData, LayoutDevice, LayoutPlacement, LayoutSectionField } from "./sitecore-item.types";
 
 export function createReferenceModelNodeId(...parts: Array<string | undefined>): string {
   return parts.filter((part): part is string => Boolean(part)).map(slugify).join("-");
@@ -131,7 +131,6 @@ function createPlacementReferenceModelNode(scopeTreeNodeId: string, placement: L
       type: "placeholder",
       placeholderPath: placement.path,
       displayName: placement.name,
-      rawData: placement.controls.map((control: ScControl) => ({ "s:ph": control.rawData["s:ph"] })),
     },
     collapseKey: GRAPH_COLLAPSE_KEY.PLACEHOLDER,
     branch: "layouts",

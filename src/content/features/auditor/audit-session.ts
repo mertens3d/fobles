@@ -1,48 +1,74 @@
 // @source-path [fobles] src/content/features/auditor/audit-session.ts
+
 import { showFoblesErrorDialog } from "../../../shared/error-dialog";
-import { extensionLog } from "../../logger";
+import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { createWorkSession } from "../../shell/work-session/work-session";
+import { extensionLog } from "../../logger";
 import type { WorkSession } from "../../foundation/workers/session/work-session.types";
 import { createAuditFindingStore, type AuditFindingStore } from "./audit-finding-store";
 import { createAuditRunner, type AuditRunner } from "./audit-runner";
 import { createAuditorSessionContainer, removeAuditorSessionContainer } from "./auditor-session-container";
+import { getAuditorGraphFilters } from "./auditor-ui-settings";
 import { openAuditorDialog } from "./components/auditor-dialog";
+
 type AuditSessionState = "created" | "running" | "closing" | "closed";
+
 export class AuditSession {
   private readonly sessionId = crypto.randomUUID();
   private readonly findingStore: AuditFindingStore = createAuditFindingStore();
   private readonly workSession: WorkSession = createWorkSession();
-  private readonly runner: AuditRunner;
+  private runner: AuditRunner | undefined;
   private runnerPromise: Promise<void> | undefined;
   private closePromise: Promise<void> | undefined;
   private state: AuditSessionState = "created";
-  constructor(private readonly doc: Document) { this.runner = createAuditRunner({ doc: this.doc, findingStore: this.findingStore, workSession: this.workSession, onError: (error) => this.handleRunError(error) }); }
-  cancel(): Promise<void> { this.closePromise ??= this.close(); 
-return this.closePromise; }
+
+  constructor(private readonly doc: Document) {}
+
+  cancel(): Promise<void> {
+    this.closePromise ??= this.close();
+    return this.closePromise;
+  }
+
   async run(): Promise<void> {
     this.state = "running";
+    const [referenceGraphFilters, auditorGraphFilters] = await Promise.all([getReferenceGraphFilters(), getAuditorGraphFilters()]);
+    const filters = { ...referenceGraphFilters, ...auditorGraphFilters };
+    this.runner = createAuditRunner({
+      doc: this.doc,
+      findingStore: this.findingStore,
+      workSession: this.workSession,
+      filters,
+      onError: (error) => this.handleRunError(error),
+    });
     createAuditorSessionContainer(this.doc, this.sessionId);
-    extensionLog.debug("Auditor session: started", { sessionId: this.sessionId, workSessionId: this.workSession.id });
+    extensionLog.debug("Auditor session: started", { sessionId: this.sessionId, workSessionId: this.workSession.id, filters });
     this.runnerPromise = this.runner.run();
-    try { 
-await openAuditorDialog(this.doc, this.findingStore, this.workSession.id, () => this.cancel()); }
-    finally { await this.cancel(); }
+
+    try {
+      await openAuditorDialog(this.doc, this.findingStore, this.workSession.id, () => this.cancel());
+    } finally {
+      await this.cancel();
+    }
   }
+
   private handleRunError(error: unknown): void {
-    if (this.state === "closed") 
-return;
+    if (this.state === "closed") return;
     extensionLog.error("AUDITOR: audit run failed", { sessionId: this.sessionId, error });
-    showFoblesErrorDialog(this.doc, { title: "Fobles Auditor", messagePublicFacing: error instanceof Error ? error.message : "Something has gone wrong while auditing the Reference Model." });
+    showFoblesErrorDialog(this.doc, {
+      title: "Fobles Auditor",
+      messagePublicFacing: error instanceof Error ? error.message : "Something has gone wrong while auditing the Reference Model.",
+    });
   }
+
   private async close(): Promise<void> {
-    if (this.state === "closed") 
-return;
+    if (this.state === "closed") return;
     this.state = "closing";
     extensionLog.debug("Auditor session: cancellation requested", { sessionId: this.sessionId });
-    this.runner.dispose();
+    this.runner?.dispose();
     await this.workSession.cancel();
-    await this.runnerPromise?.catch((error: unknown) => { 
-extensionLog.debug("Auditor session: cancelled runner settled with error", { sessionId: this.sessionId, error }); });
+    await this.runnerPromise?.catch((error: unknown) => {
+      extensionLog.debug("Auditor session: cancelled runner settled with error", { sessionId: this.sessionId, error });
+    });
     this.findingStore.dispose();
     removeAuditorSessionContainer(this.doc, this.sessionId);
     this.state = "closed";

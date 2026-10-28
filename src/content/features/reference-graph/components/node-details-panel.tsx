@@ -80,51 +80,37 @@ function provenanceDetailRows(treeNode: ReferenceModelNode): DetailRow[] {
 
   return rows.filter(([, value]) => Boolean(value));
 }
-function resolveRawSource(
-  treeNode: ReferenceModelNode,
-): string | undefined {
+
+function resolveRawSource(treeNode: ReferenceModelNode): string | undefined {
   const provenance = treeNode.provenance;
   let rawSource: string | undefined;
+
   if (provenance.type === "sitecore-item") {
-    rawSource = provenance.rawData
-      ? JSON.stringify(provenance.rawData, null, 2)
-      : provenance.item.scItemId ??
-        provenance.item.scItemPath;
+    rawSource = provenance.rawData ? JSON.stringify(provenance.rawData, null, 2) : provenance.item.scItemId ?? provenance.item.scItemPath;
   } else if (provenance.type === "section-field") {
-    rawSource =
-      provenance.field.rawMarkup ??
-      provenance.fieldValue;
+    rawSource = provenance.field.rawMarkup ?? provenance.fieldValue;
   } else if (provenance.type === "field-reference") {
     rawSource = provenance.sourceValue;
   } else if (provenance.type === "layout-device") {
-    rawSource = JSON.stringify(
-      provenance.device.rawData,
-      null,
-      2,
-    );
+    rawSource = JSON.stringify(provenance.device.rawData, null, 2);
   } else if (provenance.type === "rendering-control") {
-    rawSource = JSON.stringify(
-      provenance.control.rawData,
-      null,
-      2,
-    );
+    rawSource = JSON.stringify(provenance.control.rawData, null, 2);
   } else if (provenance.type === "rendering-parameter") {
-    rawSource = JSON.stringify(
-      provenance.rawData,
-      null,
-      2,
-    );
+    rawSource = JSON.stringify({
+      parameterName: provenance.parameterName,
+      parameterValue: provenance.parameterValue,
+      decodedValue: provenance.decodedValue,
+      isItemReference: provenance.isItemReference,
+    }, null, 2);
   } else if (provenance.type === "placeholder") {
-    rawSource = JSON.stringify(
-      provenance.rawData,
-      null,
-      2,
-    );
+    rawSource = JSON.stringify(provenance.rawData, null, 2);
   } else if (provenance.type === "layout-xml") {
     rawSource = provenance.rawMarkup;
   }
+
   return rawSource;
 }
+
 function resolveItemRawMarkup(
   treeNode: ReferenceModelNode,
 ): string | undefined {

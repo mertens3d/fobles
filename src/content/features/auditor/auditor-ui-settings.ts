@@ -6,6 +6,7 @@ const AUDITOR_UI_KEY = {
   STATUS_FILTER: "fobles.auditor.filter.statuses",
   CHECK_FILTER: "fobles.auditor.filter.checks",
   GRAPH_FILTERS: "fobles.auditor.filter.graph",
+  HIDE_TESTS: "fobles.auditor.hide-tests",
 } as const;
 const DEFAULT_AUDITOR_CONTROLS_EXPANDED = true;
 
@@ -53,4 +54,13 @@ export async function getAuditorGraphFilters(): Promise<Partial<SitecoreHarvestF
 
 export async function setAuditorGraphFilters(filters: SitecoreHarvestFiltersState): Promise<void> {
   await chrome.storage.local.set({ [AUDITOR_UI_KEY.GRAPH_FILTERS]: filters });
+}
+
+export async function getAuditorHideTests(): Promise<boolean> {
+  const values = await chrome.storage.local.get(AUDITOR_UI_KEY.HIDE_TESTS);
+  return values[AUDITOR_UI_KEY.HIDE_TESTS] === true;
+}
+
+export async function setAuditorHideTests(hideTests: boolean): Promise<void> {
+  await chrome.storage.local.set({ [AUDITOR_UI_KEY.HIDE_TESTS]: hideTests });
 }

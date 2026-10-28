@@ -26,13 +26,15 @@ type AuditorTreeRow = AuditReportTreeNode & {
   journeyStage: JourneyStage;
   sitecoreUrl?: string;
   isSitecoreItem: boolean;
+  findings: readonly AuditFinding[];
 };
 export type AuditorGridProps = {
   referenceModelRoot: ReferenceModelNode;
   findings: readonly AuditFinding[];
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
+  modelRevision: number;
   onViewData: (treeNodeId: string) => void;
-  onViewTestDetails: (finding: AuditFinding) => void;
+  onViewTestDetails: (findings: readonly AuditFinding[]) => void;
 };
 type ToggleModifiers = { shiftKey?: boolean; ctrlKey?: boolean; metaKey?: boolean };
 const JOURNEY_RANK: Record<JourneyStage, number> = { referenced: 1, cached: 2, live: 3, tested: 4 };
@@ -71,7 +73,7 @@ function JourneyCell({ stage }: { stage: JourneyStage }) {
     </span>
   );
 }
-export function AuditorGrid({ referenceModelRoot, findings, processingStateByTreeNodeId, onViewData, onViewTestDetails }: AuditorGridProps) {
+export function AuditorGrid({ referenceModelRoot, findings, processingStateByTreeNodeId, modelRevision, onViewData, onViewTestDetails }: AuditorGridProps) {
   const nodesById = useMemo(() => {
     const map = new Map<string, ReferenceModelNode>();
     const visit = (node: ReferenceModelNode): void => {
@@ -80,7 +82,7 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
     };
     visit(referenceModelRoot);
     return map;
-  }, [referenceModelRoot]);
+  }, [referenceModelRoot, modelRevision]);
   const liveSeen = useRef(new Set<string>());
   processingStateByTreeNodeId.forEach((status, treeNodeId) => {
     if (status === "enriched" || status === "not-found" || status === "failed") liveSeen.current.add(treeNodeId);
@@ -97,18 +99,10 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
   }, [findings]);
   const baseRows = useMemo(
     () => buildAuditReportTree(referenceModelRoot, findings, processingStateByTreeNodeId),
-    [referenceModelRoot, findings, processingStateByTreeNodeId],
+    [referenceModelRoot, findings, processingStateByTreeNodeId, modelRevision],
   );
   const allRows = useMemo<AuditorTreeRow[]>(() => {
     const results: AuditorTreeRow[] = [];
-    const findingsByParent = new Map<string, AuditReportTreeNode[]>();
-    baseRows
-      .filter((row) => row.kind === "finding" && row.parentId)
-      .forEach((row) => {
-        const list = findingsByParent.get(row.parentId!) ?? [];
-        list.push(row);
-        findingsByParent.set(row.parentId!, list);
-      });
     baseRows
       .filter((row) => row.kind !== "finding")
       .forEach((row) => {
@@ -128,40 +122,17 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
           journeyStage: ownStage,
           sitecoreUrl,
           isSitecoreItem: node?.nodeType === "item",
+          findings: nodeFindings,
         });
-        const tests = findingsByParent.get(row.id) ?? [];
-        if (tests.length === 0) return;
-        const testsId = `${row.id}:tests`;
-        results.push({
-          id: testsId,
-          parentId: row.id,
-          depth: row.depth + 1,
-          kind: "reference-model",
-          label: "Tests",
-          details: undefined,
-          path: undefined,
-          origin: undefined,
-          status: row.status,
-          hasChildren: true,
-          referenceModelNodeId: row.referenceModelNodeId,
-          icon: undefined,
-          finding: undefined,
-          collapseKey: GRAPH_COLLAPSE_KEY.TESTS,
-          journeyStage: tests.every((test) => test.status !== "pending") ? "tested" : ownStage,
-          sitecoreUrl: undefined,
-          isSitecoreItem: false,
-        });
-        tests.forEach((test) => {
-          results.push({
-            ...test,
-            parentId: testsId,
-            depth: row.depth + 2,
-            journeyStage: test.status === "pending" ? ownStage : "tested",
-            sitecoreUrl: undefined,
-            isSitecoreItem: false,
-          });
-        });
+        return;
       });
+    const visibleChildCountByParent = new Map<string, number>();
+    results.forEach((row) => {
+      if (row.parentId) visibleChildCountByParent.set(row.parentId, (visibleChildCountByParent.get(row.parentId) ?? 0) + 1);
+    });
+    results.forEach((row) => {
+      row.hasChildren = (visibleChildCountByParent.get(row.id) ?? 0) > 0;
+    });
     const childrenByParent = new Map<string, AuditorTreeRow[]>();
     results.forEach((row) => {
       if (!row.parentId) return;
@@ -197,10 +168,27 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
       );
     });
   }, [allRows]);
+  useEffect(() => {
+    setExpanded((current) => {
+      const next = new Set(Array.from(current).filter((id) => rowsById.get(id)?.hasChildren));
+      let changed = next.size !== current.size;
+      allRows.forEach((row) => {
+        if (!row.hasChildren || next.has(row.id)) return;
+        const parentVisible = !row.parentId || next.has(row.parentId);
+        if (parentVisible) {
+          next.add(row.id);
+          changed = true;
+        }
+      });
+      return changed ? next : current;
+    });
+  }, [allRows, rowsById]);
   const visibleRows = useMemo(
     () => allRows.filter((row) => isVisible(row, expanded, rowsById)),
     [allRows, expanded, rowsById],
   );
+  const structureKey = useMemo(() => allRows.map((row) => `${row.id}:${row.parentId ?? ""}`).join("|"), [allRows]);
+
   function descendantIds(rowId: string): string[] {
     const ids: string[] = [];
     const visit = (parentId: string): void => {
@@ -311,17 +299,7 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
         minWidth: 120,
         maxWidth: 120,
         cellRenderer: (params: ICellRendererParams<AuditorTreeRow>) =>
-          params.data?.kind === "finding" && params.data.finding ? (
-            <button
-              type="button"
-              onClick={(event) => {
-                event.stopPropagation();
-                onViewTestDetails(params.data!.finding!);
-              }}
-            >
-              Test Details
-            </button>
-          ) : params.data?.referenceModelNodeId ? (
+          params.data?.referenceModelNodeId ? (
             <button
               type="button"
               onClick={(event) => {
@@ -355,6 +333,8 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
         onMouseDown={blockDoubleClickTextSelection}
       >
         <AgGridReact<AuditorTreeRow>
+          key={structureKey}
+          context={{ onViewTestDetails }}
           theme={themeQuartz}
           rowData={visibleRows}
           columnDefs={columnDefs}
