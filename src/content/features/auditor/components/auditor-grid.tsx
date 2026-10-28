@@ -71,7 +71,6 @@ function JourneyCell({ stage }: { stage: JourneyStage }) {
     </span>
   );
 }
-
 export function AuditorGrid({ referenceModelRoot, findings, processingStateByTreeNodeId, onViewData, onViewTestDetails }: AuditorGridProps) {
   const nodesById = useMemo(() => {
     const map = new Map<string, ReferenceModelNode>();
@@ -120,7 +119,7 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
           : undefined;
         const allTerminal = nodeFindings.length > 0 && nodeFindings.every((finding) => finding.status !== "pending");
         const live = Boolean(row.referenceModelNodeId && liveSeen.current.has(row.referenceModelNodeId));
-        const cached = processingStatus === "cached" || processingStatus === "verified" || processingStatus === "stale" || processingStatus === "unverified";
+        const cached = processingStatus === "cached" || processingStatus === "verified" || processingStatus === "revision-mismatch" || processingStatus === "unverified";
         const ownStage: JourneyStage = allTerminal ? "tested" : live ? "live" : cached ? "cached" : "referenced";
         const sitecoreUrl = nodeFindings.find((finding) => finding.sitecoreUrl)?.sitecoreUrl;
         results.push({

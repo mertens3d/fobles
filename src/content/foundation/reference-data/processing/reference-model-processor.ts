@@ -188,7 +188,7 @@ export function startReferenceModelProcessor({ doc, workSession, referenceModel,
           status = applyResolveOutcome(guid, treeNodeIds, outcome);
           value = outcome.kind === "not-found" || outcome.kind === "failed" ? undefined : outcome.value;
           extensionLog.debug("Reference model processor: resolve outcome", { guid, reference, outcome: outcome.kind, terminalStatus: status, hadCachedValue: Boolean(work?.cached?.value), treeNodeIds });
-          if (outcome.kind === "stale" && outcome.hadStructuralCache) {
+          if (outcome.kind === "revision-mismatch" && outcome.hadStructuralCache) {
             onStaleStructural?.(reference, treeNodeIds, (succeeded) => {
               if (!isStopped()) {
                 recordResult(guid, succeeded ? "enriched" : "failed", value);

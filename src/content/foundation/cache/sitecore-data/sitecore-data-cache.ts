@@ -6,7 +6,6 @@ import type {
   CachedValue,
   EvictOptions,
   ListItemsOptions,
-  PutFactOptions,
   SitecoreDataCacheKey,
   SitecoreDataCacheRecord,
   SitecoreDataFactMap,
@@ -56,7 +55,6 @@ export async function putFact<TName extends SitecoreDataFactName>(
   key: SitecoreDataCacheKey,
   factName: TName,
   value: SitecoreDataFactMap[TName],
-  options?: PutFactOptions,
 ): Promise<void> {
   const serializedKey = serializeCacheKey(key);
   const now = Date.now();
@@ -67,7 +65,7 @@ export async function putFact<TName extends SitecoreDataFactName>(
     record[factName] = {
       value: toPersistedValue(value, key.environment),
       cachedAt: now,
-      lastVerifiedAt: options?.verifiedAt ?? now,
+      lastVerifiedAt: now,
     } as SitecoreDataCacheRecord[TName];
     record.lastAccessedAt = now;
     await getRequestResult(store.put(record));

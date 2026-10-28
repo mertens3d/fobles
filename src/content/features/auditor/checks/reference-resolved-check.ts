@@ -10,9 +10,7 @@ import type {
   ReferenceResolvedDiagnostic,
   ResolveStateInterpretation,
 } from "./reference-resolved-check.types";
-
 const CHECK = AUDIT_CHECK.REFERENCE_RESOLVED;
-
 export function interpretResolveState(
   status: ProcessingStatus | undefined,
 ): ResolveStateInterpretation {
@@ -25,20 +23,18 @@ export function interpretResolveState(
       return { status: "warning", summary: CHECK.SUMMARY.UNVERIFIED };
     case "enriched":
     case "verified":
-    case "stale":
+    case "revision-mismatch":
       return { status: "passed", summary: CHECK.SUMMARY.RESOLVED };
     default:
       return { status: "pending", summary: CHECK.SUMMARY.PENDING };
   }
 }
-
 export const referenceResolvedCheck: AuditCheck = {
   key: CHECK.KEY,
   label: CHECK.LABEL,
   run(context: AuditCheckContext): Promise<void> {
     const findings: AuditFinding[] = [];
     const diagnostics: ReferenceResolvedDiagnostic[] = [];
-
     function visit(node: ReferenceModelNode): void {
       if (node.nodeType === "item" && context.resolveCandidateTreeNodeIds.has(node.treeNodeId)) {
         const processingStatus = context.processingStateByTreeNodeId.get(node.treeNodeId);
@@ -64,7 +60,6 @@ export const referenceResolvedCheck: AuditCheck = {
       }
       node.children.forEach(visit);
     }
-
     visit(context.referenceModelRoot);
     extensionLog.debug("Auditor reference resolved diagnostic: projection", {
       candidateCount: context.resolveCandidateTreeNodeIds.size,

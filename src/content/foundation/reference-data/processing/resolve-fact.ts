@@ -10,8 +10,8 @@ export type ResolveOutcome =
   | { kind: "verified"; value: ItemGraphNodeData }
   // Prior cache existed but its revision no longer matches - display data is refreshed; the
   // caller decides whether this item's cached structural facts also need a re-harvest.
-  | { kind: "stale"; value: ItemGraphNodeData; hadStructuralCache: boolean }
-  // The live read couldn't supply a revision at all - never conflated with "stale", since there
+  | { kind: "revision-mismatch"; value: ItemGraphNodeData; hadStructuralCache: boolean }
+  // The live read couldn't supply a revision at all - never conflated with "revision-mismatch", since there
   // is nothing to compare against (a missing/unreadable revision is not a revision mismatch).
   | { kind: "unverified"; value: ItemGraphNodeData }
   // The item does not exist live. Any cached record for it has been evicted so it cannot hydrate a ghost later.
@@ -54,11 +54,11 @@ export async function verifyItemFact(key: SitecoreDataCacheKey, prior: CachedIte
         await cache.putFact(key, "quickInfo", { result: resolved, revision });
         outcome = { kind: "enriched", value };
       } else if (prior.revision !== undefined && prior.revision === revision) {
-        await cache.putFact(key, "quickInfo", { result: resolved, revision }, { verifiedAt: Date.now() });
+        await cache.putFact(key, "quickInfo", { result: resolved, revision });
         outcome = { kind: "verified", value };
       } else {
         await cache.putFact(key, "quickInfo", { result: resolved, revision });
-        outcome = { kind: "stale", value, hadStructuralCache: prior.hadStructuralCache };
+        outcome = { kind: "revision-mismatch", value, hadStructuralCache: prior.hadStructuralCache };
       }
     }
   }

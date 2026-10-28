@@ -1,10 +1,8 @@
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/root-cache-flow.ts
-
 import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
 import type { SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data-cache.types";
 import type { RootItem } from "../model/sitecore-item.types";
 import type { ProcessingStatus } from "../processing/processing-state";
-
 export type RootCacheDecision =
   // Cached revision matches the live revision - cached data is trusted as-is, no re-harvest.
   | { kind: "cache-only"; result: SitecoreHarvestResult }
@@ -18,7 +16,6 @@ export type RootCacheDecision =
   // No usable cached root data (miss, or insufficient facts for the current filters) - fall
   // back to the existing, unconditional harvest.
   | { kind: "harvest-required" };
-
 // Mirrors harvest-task-planner's COLLECTOR_TASK_TYPE_BY_FILTER_KEY mapping: only the filters that
 // are actually enabled need their corresponding cache fact present.
 function hasRequiredFacts(record: SitecoreDataCacheRecord, filters: SitecoreHarvestFiltersState): boolean {
@@ -28,10 +25,8 @@ function hasRequiredFacts(record: SitecoreDataCacheRecord, filters: SitecoreHarv
   if (filters.customFields && !record.customSections) return false;
   if (filters.standardFields && !record.standardSections) return false;
   if (filters.layouts && !record.layout) return false;
-
   return true;
 }
-
 // The cache stores each collector fact independently (Phase 3B) - reassembling them into a
 // SitecoreHarvestResult is the one place that shape difference needs bridging back.
 export function assembleHarvestResultFromCacheRecord(
@@ -39,13 +34,10 @@ export function assembleHarvestResultFromCacheRecord(
   filters: SitecoreHarvestFiltersState,
 ): SitecoreHarvestResult | undefined {
   if (!record?.quickInfo) return undefined;
-
   const resolved = record.quickInfo.value.result;
   if (resolved.status !== "found" || !resolved.value?.scItemId) return undefined;
   if (!hasRequiredFacts(record, filters)) return undefined;
-
   const rootItem: RootItem = { ...resolved.value, scItemId: resolved.value.scItemId };
-
   return {
     rootItem,
     parent: filters.parent ? record.parent?.value.parent : undefined,
@@ -56,7 +48,6 @@ export function assembleHarvestResultFromCacheRecord(
     layoutSectionFields: filters.layouts ? record.layout?.value.layoutSectionFields : undefined,
   };
 }
-
 // The INITIAL ROOT FLOW decision point - cheap (no worker call): the live revision is read
 // directly from the current Content Editor page's own header icon, never from a worker task.
 export function decideRootCacheUsage(
@@ -66,24 +57,20 @@ export function decideRootCacheUsage(
 ): RootCacheDecision {
   const result = assembleHarvestResultFromCacheRecord(record, filters);
   if (!result) return { kind: "harvest-required" };
-
   // An unreadable live revision is not a revision mismatch - the cache is still shown, just
   // never claimed as re-verified, and never auto-queued for re-harvest on this basis alone.
   if (liveRevision === undefined) return { kind: "cache-unverified", result };
-
   const cachedRevision = record?.quickInfo?.value.revision;
-
   return cachedRevision === liveRevision
     ? { kind: "cache-only", result }
     : { kind: "cache-then-reharvest", result };
 }
-
 // Seeds the root node's own trust badge from whichever branch produced its data - a fresh
 // harvest (or a harvest-required fallback) is always trustworthy the moment it completes.
 export function rootProcessingStateForDecision(decisionKind: RootCacheDecision["kind"]): ProcessingStatus {
   switch (decisionKind) {
     case "cache-only": return "verified";
-    case "cache-then-reharvest": return "stale";
+    case "cache-then-reharvest": return "revision-mismatch";
     case "cache-unverified": return "unverified";
     case "harvest-required": return "enriched";
   }

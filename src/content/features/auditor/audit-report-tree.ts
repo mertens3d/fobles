@@ -5,7 +5,6 @@ import { resolveNodeLabel } from "../reference-graph/graph-nodes/node-label-reso
 import { NODE_PRESENTATION_BY_KIND } from "../reference-graph/graph-nodes/node-presentation";
 import type { ReferenceModelNode } from "../../foundation/reference-data/model/reference-model.types";
 import type { AuditFinding, AuditFindingStatus } from "./audit-finding.types";
-
 export type AuditDataOrigin = "Referenced" | "Cached" | "Live" | undefined;
 export type AuditReportTreeNode = {
   id: string;
@@ -22,26 +21,21 @@ export type AuditReportTreeNode = {
   icon: string | undefined;
   finding: AuditFinding | undefined;
 };
-
 const STATUS_WEIGHT: Readonly<Record<AuditFindingStatus, number>> = { passed: 0, pending: 1, warning: 2, error: 3 };
-
 function highestStatus(statuses: readonly AuditFindingStatus[]): AuditFindingStatus {
   return statuses.reduce<AuditFindingStatus>((highest, status) => STATUS_WEIGHT[status] > STATUS_WEIGHT[highest] ? status : highest, "passed");
 }
-
 function nodeLabel(node: ReferenceModelNode): string {
   const presentationState = getGraphPresentationState(node);
   const presentation = NODE_PRESENTATION_BY_KIND[presentationState.kind];
   return resolveNodeLabel(node, presentation, presentationState.kind).replace(/\s*\n\s*/g, " ").trim();
 }
-
 function nodeOrigin(node: ReferenceModelNode, processingStatus: ProcessingStatus | undefined): AuditDataOrigin {
   if (node.provenance.type === "field-reference" || node.provenance.type === "rendering-parameter") return "Referenced";
-  if (processingStatus === "cached" || processingStatus === "verified" || processingStatus === "stale" || processingStatus === "unverified") return "Cached";
+  if (processingStatus === "cached" || processingStatus === "verified" || processingStatus === "revision-mismatch" || processingStatus === "unverified") return "Cached";
   if (processingStatus === "enriched" || processingStatus === "not-found" || processingStatus === "failed") return "Live";
   return undefined;
 }
-
 export function buildAuditReportTree(
   referenceModelRoot: ReferenceModelNode,
   findings: readonly AuditFinding[],
@@ -54,7 +48,6 @@ export function buildAuditReportTree(
     nodeFindings.push(finding);
     findingsByTreeNodeId.set(finding.referenceModelNodeId, nodeFindings);
   });
-
   function visit(node: ReferenceModelNode, parentId: string | undefined, depth: number): { rows: AuditReportTreeNode[]; status: AuditFindingStatus; hasVisibleContent: boolean } {
     const childResults = node.children.map((child) => visit(child, node.treeNodeId, depth + 1));
     const nodeFindings = findingsByTreeNodeId.get(node.treeNodeId) ?? [];
@@ -95,6 +88,5 @@ export function buildAuditReportTree(
     };
     return { rows: [row, ...findingRows, ...visibleChildren.flatMap((result) => result.rows)], status, hasVisibleContent };
   }
-
   return visit(referenceModelRoot, undefined, 0).rows;
 }

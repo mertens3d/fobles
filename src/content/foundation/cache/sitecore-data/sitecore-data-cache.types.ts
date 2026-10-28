@@ -51,11 +51,6 @@ export type SitecoreDataCacheRecord = {
   itemValue: string;
   lastAccessedAt: number;
 } & SitecoreDataCacheFacts;
-export type PutFactOptions = {
-  // Timestamp the value was last confirmed live; omit for a write that is itself the
-  // verification (lastVerifiedAt defaults to the same "now" as cachedAt).
-  verifiedAt?: number;
-};
 export type EvictOptions = {
   maxItemRecords?: number;
 };
