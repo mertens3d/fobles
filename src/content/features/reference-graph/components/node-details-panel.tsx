@@ -41,11 +41,10 @@ function itemDetailRows(
   }
   return rows;
 }
-function provenanceDetailRows(
-  treeNode: ReferenceModelNode,
-): DetailRow[] {
+function provenanceDetailRows(treeNode: ReferenceModelNode): DetailRow[] {
   const provenance = treeNode.provenance;
   let rows: DetailRow[] = [];
+
   if (provenance.type === "section") {
     rows = [["Section", provenance.section.name]];
   } else if (provenance.type === "section-field") {
@@ -62,20 +61,9 @@ function provenanceDetailRows(
       ["Source Value", provenance.sourceValue],
     ];
   } else if (provenance.type === "layout-device") {
-    rows = [[
-      "Device",
-      provenance.device.scDeviceItem.scItemName ??
-        provenance.device.scDeviceItem.scItemId ??
-        "",
-    ]];
+    rows = [["Device", provenance.device.scDeviceItem.scItemName ?? provenance.device.scDeviceItem.scItemId ?? ""]];
   } else if (provenance.type === "rendering-control") {
-    rows = [
-      [
-        "Placeholder",
-        provenance.control.placeholder ?? "(no placeholder)",
-      ],
-      ["Rendering UID", provenance.control.uid ?? ""],
-    ];
+    rows = [["Rendering UID", provenance.control.uid ?? ""]];
   } else if (provenance.type === "rendering-parameter") {
     rows = [
       ["Parameter Name", provenance.parameterName],
@@ -89,6 +77,7 @@ function provenanceDetailRows(
   } else if (provenance.type === "synthetic") {
     rows = [["Synthetic", provenance.label]];
   }
+
   return rows.filter(([, value]) => Boolean(value));
 }
 function resolveRawSource(
@@ -229,10 +218,8 @@ export function NodeDetailsPanel({
   const treeNode = selectedTreeNodeId
     ? nodesById.get(selectedTreeNodeId)
     : undefined;
-  const [formattedRawSource, setFormattedRawSource] =
-    useState<string | undefined>(undefined);
-  const [formattedItemRawMarkup, setFormattedItemRawMarkup] =
-    useState<string | undefined>(undefined);
+  const [formattedRawSource, setFormattedRawSource] = useState<string | undefined>(undefined);
+  const [formattedItemRawMarkup, setFormattedItemRawMarkup] = useState<string | undefined>(undefined);
   const rawSource = treeNode
     ? resolveRawSource(treeNode)
     : undefined;
