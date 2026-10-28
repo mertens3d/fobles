@@ -3,47 +3,18 @@ export const INDEXEDDB_VIEWER = {
   DIALOG_ID: "fobles-indexeddb-viewer-dialog",
   MAX_ROWS: 200,
   STYLE_ELEMENT_ID: "fobles-indexeddb-viewer-style",
-  CLASS: {
-    DIALOG: "fobles-idb-dialog",
-    APP: "fobles-idb-app",
-    HEADER: "fobles-idb-header",
-    TOOLBAR: "fobles-idb-toolbar",
-    STATUS: "fobles-idb-status",
-    WORKSPACE: "fobles-idb-workspace",
-    TABLE_WRAP: "fobles-idb-table-wrap",
-    TABLE: "fobles-idb-table",
-    VALUE_CELL: "fobles-idb-value-cell",
-    SELECTED_ROW: "is-selected",
-    DANGER: "fobles-idb-danger",
-    DETAILS: "fobles-idb-details",
-  },
-  TEXT: {
-    TITLE: "Fobles IndexedDB",
-    REFRESH: "Refresh",
-    CLEAR: "Clear database",
-    SEARCH_PLACEHOLDER: "Search keys and values...",
-    SEARCH_LABEL: "Search cached records",
-    NO_ROWS: "No matching records.",
-    LOADING: "Loading...",
-    LOAD_FAILED: "Could not read the cache",
-    CONFIRM_CLEAR: "Delete every cached Sitecore item? This cannot be undone.",
-    KEY_HEADER: "Key",
-    VALUE_HEADER: "Value",
-    VALUE_CELL_TITLE: "Click to view the entire value",
-    DETAILS_TITLE: "Record Details",
-    DETAILS_CLOSE: "Close record details",
-    DETAILS_KEY: "Key: ",
-    EXPAND_ALL: "Expand all",
-    COLLAPSE_ALL: "Collapse all",
-  },
+  CLASS: { DIALOG: "fobles-idb-dialog", APP: "fobles-idb-app", HEADER: "fobles-idb-header", TABS: "fobles-idb-tabs", ACTIVE_TAB: "is-active", TOOLBAR: "fobles-idb-toolbar", STATUS: "fobles-idb-status", WORKSPACE: "fobles-idb-workspace", TABLE_WRAP: "fobles-idb-table-wrap", TABLE: "fobles-idb-table", VALUE_CELL: "fobles-idb-value-cell", SELECTED_ROW: "is-selected", DANGER: "fobles-idb-danger", DETAILS: "fobles-idb-details" },
+  TEXT: { TITLE: "Fobles IndexedDB", SITECORE_ITEMS: "Sitecore Items", SITECORE_FACTS: "Sitecore Facts", STORE_TABS_LABEL: "IndexedDB object stores", REFRESH: "Refresh", CLEAR: "Clear database", SEARCH_PLACEHOLDER: "Search keys and values...", SEARCH_LABEL: "Search cached records", NO_ROWS: "No matching records.", LOADING: "Loading...", LOAD_FAILED: "Could not read the cache", CONFIRM_CLEAR: "Delete every cached Sitecore item and fact? This cannot be undone.", KEY_HEADER: "Key", VALUE_HEADER: "Value", VALUE_CELL_TITLE: "Click to view the entire value", DETAILS_TITLE: "Record Details", DETAILS_CLOSE: "Close record details", DETAILS_KEY: "Key: ", EXPAND_ALL: "Expand all", COLLAPSE_ALL: "Collapse all" },
 } as const;
-
 export const INDEXEDDB_VIEWER_STYLE = `
 .${INDEXEDDB_VIEWER.CLASS.DIALOG}{width:min(1100px,94vw);height:min(720px,90vh);padding:16px;overflow:hidden;border:1px solid #7f9bc4;border-radius:8px;background:#fff;color:#203047;font:13px/1.4 Arial,sans-serif;box-shadow:0 12px 36px rgba(0,0,0,.35)}
 .${INDEXEDDB_VIEWER.CLASS.DIALOG}::backdrop{background:rgba(0,0,0,.45)}
 .${INDEXEDDB_VIEWER.CLASS.APP}{display:flex;width:100%;height:100%;min-height:0;flex-direction:column;gap:8px}
 .${INDEXEDDB_VIEWER.CLASS.HEADER}{padding-right:56px}
 .${INDEXEDDB_VIEWER.CLASS.HEADER} h2{margin:0;font-size:16px}
+.${INDEXEDDB_VIEWER.CLASS.TABS}{display:flex;gap:4px;border-bottom:1px solid #7f9bc4}
+.${INDEXEDDB_VIEWER.CLASS.TABS} button{padding:6px 12px;border:1px solid transparent;border-bottom:0;border-radius:4px 4px 0 0;background:transparent;color:#203047;cursor:pointer}
+.${INDEXEDDB_VIEWER.CLASS.TABS} button.${INDEXEDDB_VIEWER.CLASS.ACTIVE_TAB}{border-color:#7f9bc4;background:#eef4ff;font-weight:700}
 .${INDEXEDDB_VIEWER.CLASS.TOOLBAR}{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
 .${INDEXEDDB_VIEWER.CLASS.TOOLBAR} input[type=search]{flex:1;min-width:200px;padding:5px 8px;border:1px solid #7f9bc4;border-radius:4px}
 .${INDEXEDDB_VIEWER.CLASS.TOOLBAR} button{padding:5px 10px;border:1px solid #7f9bc4;border-radius:4px;background:#fff;cursor:pointer}

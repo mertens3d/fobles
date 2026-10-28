@@ -1,63 +1,20 @@
 // @source-path [fobles] src/content/foundation/cache/sitecore-data/sitecore-data-cache.types.ts
-import type { SitecoreItemLocator, WorkerTaskPayloadByType } from "../../workers/tasks/worker-task.types";
-// One Sitecore item's identity: which Sitecore origin/environment, database, and language it was
-// read from, plus how it was located. Two keys differing in any one of these refer to genuinely
-// different data and must never share a cache record.
-// AI NOTE: environment is an input only. It derives the page origin for toPersistedValue and is never stored on a record or put in the
-// AI NOTE: serialized key, because IndexedDB is already scoped to that origin.
-export type SitecoreDataCacheKey = {
-  environment: string;
-  database: string;
-  language: string;
-  item: SitecoreItemLocator;
-};
-export type CachedValue<TValue> = {
-  value: TValue;
-  cachedAt: number;
-  // When this value was last confirmed live against Sitecore - distinct from cachedAt so a
-  // future live-data manager can tell "freshly written" apart from "written long ago but
-  // re-verified recently" without this module needing to know what "stale" means.
-  lastVerifiedAt: number;
-};
-// Reuses the Phase 2 worker payload shapes directly (including get-quick-info's found/not-found/
-// error semantics) rather than re-declaring equivalent result interfaces.
-export type QuickInfoPayload = WorkerTaskPayloadByType["get-quick-info"];
-export type ParentPayload = WorkerTaskPayloadByType["get-parent"];
-export type ChildrenPayload = WorkerTaskPayloadByType["get-children"];
-export type ReferrersPayload = WorkerTaskPayloadByType["get-referrers"];
-export type CustomFieldsPayload = WorkerTaskPayloadByType["get-custom-fields"];
-export type StandardFieldsPayload = WorkerTaskPayloadByType["get-standard-fields"];
-export type LayoutPayload = WorkerTaskPayloadByType["get-layout"];
+import type { ItemGraphNodeData, LayoutSectionField, SitecoreHarvestSection } from "../../reference-data/model/sitecore-item.types";
+import type { SitecoreItemLocator, SitecoreResolvedResult } from "../../workers/tasks/worker-task.types";
+export type SitecoreDataCacheKey = { environment: string; database: string; language: string; item: SitecoreItemLocator };
 export type SitecoreDataFactMap = {
-  quickInfo: QuickInfoPayload;
-  parent: ParentPayload;
-  children: ChildrenPayload;
-  referrers: ReferrersPayload;
-  customSections: CustomFieldsPayload;
-  standardSections: StandardFieldsPayload;
-  layout: LayoutPayload;
+  quickInfo: { result: SitecoreResolvedResult<ItemGraphNodeData>; revision?: string };
+  parent: { parent: ItemGraphNodeData | undefined };
+  children: { childItems: readonly ItemGraphNodeData[] };
+  referrers: { referrers: readonly ItemGraphNodeData[] };
+  customSections: { sections: readonly SitecoreHarvestSection[] };
+  standardSections: { sections: readonly SitecoreHarvestSection[] };
+  layout: { layoutSectionFields: readonly LayoutSectionField[] };
 };
 export type SitecoreDataFactName = keyof SitecoreDataFactMap;
-// Distributing over SitecoreDataFactName keeps each fact's CachedValue tied to its own payload
-// type, so getFact/putFact stay fully typed per fact name with no `any`/cast required.
-export type SitecoreDataCacheFacts = {
-  [TName in SitecoreDataFactName]?: CachedValue<SitecoreDataFactMap[TName]>;
-};
-export type SitecoreDataCacheRecord = {
-  key: string;
-  database: string;
-  language: string;
-  itemKind: SitecoreItemLocator["kind"];
-  itemValue: string;
-  lastAccessedAt: number;
-} & SitecoreDataCacheFacts;
-export type EvictOptions = {
-  maxItemRecords?: number;
-};
-// Minimum surface a future Cache Inspector needs: enumerate + filter by identity + order by
-// recency. Payload text search and per-fact verification-time sorting are deliberately deferred.
-export type ListItemsOptions = {
-  database?: string;
-  language?: string;
-  sortDirection?: "asc" | "desc";
-};
+export type SitecoreDataFact<T = unknown> = { value: T; cachedAt: number; lastVerifiedAt?: number };
+export type SitecoreDataCacheItemRecord = { key: string; database: string; language: string; itemKind: SitecoreItemLocator["kind"]; itemValue: string; revision?: string; lastAccessedAt: number };
+export type SitecoreDataCacheFactRecord<K extends SitecoreDataFactName = SitecoreDataFactName> = { key: string; itemKey: string; factName: K; fact: SitecoreDataFact<SitecoreDataFactMap[K]> };
+export type SitecoreDataCacheRecord = SitecoreDataCacheItemRecord & { [K in SitecoreDataFactName]?: SitecoreDataFact<SitecoreDataFactMap[K]> };
+export type QuickInfoPayload = SitecoreDataFactMap["quickInfo"];
+export type SitecoreDataFactValueByName = SitecoreDataFactMap;
