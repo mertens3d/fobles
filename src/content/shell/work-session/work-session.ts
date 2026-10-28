@@ -10,7 +10,7 @@ import {
   disposeBackgroundWorkerPool,
   runWorkerTask,
 } from "../../foundation/workers/pool/worker-pool-client";
-import type { WorkerTask, WorkerTaskResult } from "../../foundation/workers/tasks/worker-task.types";
+import type { WorkerTaskResult } from "../../foundation/workers/tasks/worker-task.types";
 import type {
   WorkSession,
   WorkSessionState,
@@ -173,7 +173,7 @@ export function createWorkSession(): WorkSession {
 
   async function runTask(task: WorkSessionTask): Promise<WorkerTaskResult | undefined> {
     if (state !== "open" || controller.signal.aborted) return undefined;
-    return await track(runWorkerTask({ ...task, requestId: id } as WorkerTask), task.taskId);
+    return await track(runWorkerTask({ ...task, requestId: id }), task.taskId);
   }
 
   async function settleActiveTasks(): Promise<void> {

@@ -23,4 +23,3 @@ export type AuditCheck = {
     readonly label: string;
     run(context: AuditCheckContext): Promise<void>;
 };
-

@@ -11,9 +11,9 @@ import type {
 import { PROGRESS_STEPS } from "../harvesting/planner/harvest-steps";
 import type { PreparedReferenceModel } from "./acquisition/prepare-reference-model";
 import { startSharedReferenceModelSession, type ReferenceModelSessionStateChange, type SharedReferenceModelSession } from "./processing/reference-model-session";
-import type { ReferenceModelHarvestProgress } from "./processing/reference-model-harvest-queue";
 import type { ReferenceModelProcessingProgress } from "./processing/reference-model-processing.types";
 import type { PhaseProgress } from "./progress/lifecycle.types";
+import type { ReferenceModelHarvestProgress } from "./processing/reference-model-harvest-queue";
 
 export type FoblesDataFlavor = "reference-model";
 

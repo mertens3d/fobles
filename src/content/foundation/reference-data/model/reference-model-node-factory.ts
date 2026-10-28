@@ -1,8 +1,7 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/reference-model-node-factory.ts
 
-import { CONST } from "../../../../constants/const";
 import type { ItemGraphNodeData } from "./sitecore-item.types";
-import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "./graph-collapse.types";
+import { type GraphCollapseKey } from "./graph-collapse.types";
 import type { ReferenceModelProvenance } from "./reference-model-provenance.types";
 import type {
   ReferenceModelBranch,
@@ -12,10 +11,7 @@ import type {
   ReferenceModelTruncation,
   RelationshipToParent,
 } from "./reference-model.types";
-import { createReferenceModelNodeId } from "./layout-reference-model-builder";
-import type { PlaceholderTreeNode } from "./reference-model.types";
 import { setGraphPresentationState } from "./graph-presentation-state";
-import { createRenderingReferenceModelNode } from "./rendering-reference-model-builder";
 import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 
 type ReferenceModelNodeOptions = {

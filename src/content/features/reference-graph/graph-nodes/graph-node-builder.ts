@@ -241,7 +241,6 @@ export function projectGraphNode(treeNode: ReferenceModelNode, parentTreeNodeId?
   return { data: graphNodeData, classes };
 }
 
-
 function getFilterClass(treeNode: ReferenceModelNode): string | undefined {
   let filterClass: string | undefined;
 

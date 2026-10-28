@@ -1,6 +1,5 @@
 // @source-path [fobles] src/content/foundation/workers/tasks/worker-task.types.ts
 
-
 import type { ItemGraphNodeData, SitecoreHarvestSection, LayoutSectionField } from "../../reference-data/model/sitecore-item.types";
 import type { WorkerTarget } from "../pool/worker-target";
 

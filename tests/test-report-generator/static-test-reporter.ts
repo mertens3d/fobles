@@ -193,7 +193,6 @@ export default class StaticTestReporter implements Reporter {
     });
   }
 
-
   onEnd(fullResult: FullResult): void {
     this.writeReport(fullResult);
   }

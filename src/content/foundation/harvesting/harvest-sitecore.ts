@@ -11,7 +11,6 @@ import {
 } from "../sitecore/macros/tree-expand-macro";
 import { getQuickInfo } from "../sitecore/quick-info";
 
-
 // Finds itemId's own tree node, expanding it first (and restoring it back to collapsed
 // afterward) if needed, then returns its direct children. Only the live document can actually
 // expand anything - see waitForExpansion's note - so a fetched/static document just reports

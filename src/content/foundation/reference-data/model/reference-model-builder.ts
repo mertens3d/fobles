@@ -11,7 +11,6 @@ import { createSitecoreItemProvenance, createSyntheticProvenance } from "./refer
 import type { ReferenceModelItemNode, ReferenceModelNonItemNode, ReferenceModelTruncation } from "./reference-model.types";
 import { createCustomFieldsTreeNode, createStandardFieldsTreeNode } from "./sections-reference-model-builder";
 
-
 export function createReferenceModel(
   graphReferenceResult: SitecoreHarvestResult,
   filters: SitecoreHarvestFiltersState,
@@ -37,7 +36,6 @@ export function createReferenceModel(
     collapseKey: GRAPH_COLLAPSE_KEY.ROOT,
     children,
   });
-
 
   return rootTreeNode;
 }

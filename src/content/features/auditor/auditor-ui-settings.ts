@@ -47,7 +47,7 @@ export async function getAuditorGraphFilters(): Promise<Partial<SitecoreHarvestF
   const values = await chrome.storage.local.get(AUDITOR_UI_KEY.GRAPH_FILTERS);
   const stored: unknown = values[AUDITOR_UI_KEY.GRAPH_FILTERS];
   let result: Partial<SitecoreHarvestFiltersState> | undefined;
-  if (stored && typeof stored === "object" && !Array.isArray(stored)) result = stored as Partial<SitecoreHarvestFiltersState>;
+  if (stored && typeof stored === "object" && !Array.isArray(stored)) result = stored;
   return result;
 }
 

@@ -11,7 +11,6 @@ import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";
 import { EnableFoblesDeveloperLogging, GetFoblesPersistedLogs } from "../macros/fobles-macros";
 
-
 const extensionPath = path.resolve("./dist/unpacked");
 
 // launchPersistentContext (below) bypasses Playwright's own context/page fixtures entirely, so
@@ -278,7 +277,6 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
   },
 });
 
-
 export async function enableFoblesTestLogging(context: BrowserContext): Promise<void> {
   const serviceWorker = context.serviceWorkers()[0];
 
@@ -297,7 +295,6 @@ export async function enableFoblesTestLogging(context: BrowserContext): Promise<
 
   console.log("[fobles] Debug + persisted logging enabled for test run");
 }
-
 
 export { expect } from "@playwright/test";
 export type { Frame, Locator, Page, TestInfo } from "@playwright/test";
