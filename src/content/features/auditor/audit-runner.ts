@@ -22,8 +22,22 @@ export function createAuditRunner({ doc, findingStore, workSession, onError }: A
       dataSession = await openFoblesDataSession({ flavor: "reference-model", target: "current-object", doc, workSession, signal: workSession.signal, filters: completeFilters });
       if (disposed || workSession.signal.aborted || !dataSession) return;
       const data = dataSession.data;
-      function buildContext(): AuditCheckContext { return { signal: workSession.signal, referenceModelRoot: data.model.referenceModel, referenceModelNodesById: data.model.nodesById, findingStore, processingStateByTreeNodeId: data.model.processingStateByTreeNodeId, resolveCandidateTreeNodeIds: data.resolveCandidateTreeNodeIds, cacheRevalidationResultByTreeNodeId: data.cacheRevalidationResultByTreeNodeId, buildSitecoreUrl: buildFoblesUrl }; }
-      async function project(): Promise<void> { await referenceResolvedCheck.run(buildContext()); await cacheValidationCheck.run(buildContext()); }
+      function buildContext(): AuditCheckContext {
+        return {
+          signal: workSession.signal,
+          referenceModelRoot: data.model.referenceModel,
+          referenceModelNodesById: data.model.nodesById,
+          findingStore,
+          processingStateByTreeNodeId: data.model.processingStateByTreeNodeId,
+          resolveCandidateTreeNodeIds: data.resolveCandidateTreeNodeIds,
+          cacheRevalidationResultByTreeNodeId: data.cacheRevalidationResultByTreeNodeId,
+          buildSitecoreUrl: buildFoblesUrl
+        };
+      }
+      async function project(): Promise<void> {
+        await referenceResolvedCheck.run(buildContext());
+        await cacheValidationCheck.run(buildContext());
+      }
       await itemResolvedCheck.run(buildContext());
       await itemNavigationCheck.run(buildContext());
       unsubscribe = dataSession.subscribeChange(() => project());

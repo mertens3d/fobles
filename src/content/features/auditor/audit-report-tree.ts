@@ -37,7 +37,7 @@ function nodeLabel(node: ReferenceModelNode): string {
 
 function nodeOrigin(node: ReferenceModelNode, processingStatus: ProcessingStatus | undefined): AuditDataOrigin {
   if (node.provenance.type === "field-reference" || node.provenance.type === "rendering-parameter") return "Referenced";
-  if (processingStatus === "verified" || processingStatus === "stale" || processingStatus === "unverified") return "Cached";
+  if (processingStatus === "cached" || processingStatus === "verified" || processingStatus === "stale" || processingStatus === "unverified") return "Cached";
   if (processingStatus === "enriched" || processingStatus === "not-found" || processingStatus === "failed") return "Live";
   return undefined;
 }

@@ -46,6 +46,7 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
   const stateListeners = new Set<ReferenceModelSessionStateChange>();
   const processingProgressListeners = new Set<(progress: ReferenceModelProcessingProgress) => void>();
   const harvestProgressListeners = new Set<(progress: ReferenceModelHarvestProgress) => void>();
+  const harvestActivityListeners = new Set<() => void>();
   let latestProcessingProgress: ReferenceModelProcessingProgress | undefined;
   let latestHarvestProgress: ReferenceModelHarvestProgress | undefined;
   const cacheRevalidationResultByTreeNodeId = new Map<string, "passed" | "error">();
@@ -57,9 +58,11 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
       const result = await harvestSitecoreWithWorkers({ requestId: workSession.id, url: buildFoblesUrl(reference), filters }, { signal: harvestSignal });
       if (result) onRootRefresh?.(result);
     },
-    onProgress: (progress: ReferenceModelHarvestProgress) => { latestHarvestProgress = progress; harvestProgressListeners.forEach((listener) => listener(progress)); },
+    onProgress: (progress: ReferenceModelHarvestProgress) => { latestHarvestProgress = progress; harvestProgressListeners.forEach((listener) => listener(progress)); harvestActivityListeners.forEach((listener) => listener()); },
     onError: (reference: string, error: unknown) => extensionLog.warn("Reference model session: stale re-harvest failed", { workSessionId: workSession.id, reference, error }),
   });
+  // Enqueued before the processor starts so its exit condition always sees a pending root re-harvest.
+  if (decision.kind === "cache-then-reharvest") harvestQueue.enqueue(itemId);
   const processor: ReferenceModelProcessingController = startReferenceModelProcessor({
     doc,
     workSession,
@@ -69,6 +72,10 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
     onStateChange: async (treeNodeIds, status, state) => { for (const listener of stateListeners) await listener(treeNodeIds, status, state); },
     onStaleStructural: (reference, treeNodeIds, setTerminalState) => harvestQueue.enqueue(reference, (succeeded) => { treeNodeIds.forEach((treeNodeId) => cacheRevalidationResultByTreeNodeId.set(treeNodeId, succeeded ? "passed" : "error")); setTerminalState(succeeded); }),
     onProgress: (progress) => { latestProcessingProgress = progress; processingProgressListeners.forEach((listener) => listener(progress)); },
+    harvestActivity: {
+      pendingCount: () => (latestHarvestProgress ? latestHarvestProgress.max - latestHarvestProgress.completed : 0),
+      subscribe: (listener) => { harvestActivityListeners.add(listener); return () => harvestActivityListeners.delete(listener); },
+    },
   });
   const session: SharedReferenceModelSession = {
     itemId,
@@ -79,9 +86,8 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
     subscribeStateChange: (listener) => { stateListeners.add(listener); return () => stateListeners.delete(listener); },
     subscribeProcessingProgress: (listener) => { processingProgressListeners.add(listener); if (latestProcessingProgress) listener(latestProcessingProgress); return () => processingProgressListeners.delete(listener); },
     subscribeHarvestProgress: (listener) => { harvestProgressListeners.add(listener); if (latestHarvestProgress) listener(latestHarvestProgress); return () => harvestProgressListeners.delete(listener); },
-    dispose: () => { if (disposed) return; disposed = true; processor.dispose(); harvestQueue.dispose(); stateListeners.clear(); processingProgressListeners.clear(); harvestProgressListeners.clear(); if (sessionsByWorkSessionId.get(workSession.id) === session) sessionsByWorkSessionId.delete(workSession.id); },
+    dispose: () => { if (disposed) return; disposed = true; processor.dispose(); harvestQueue.dispose(); stateListeners.clear(); processingProgressListeners.clear(); harvestProgressListeners.clear(); harvestActivityListeners.clear(); if (sessionsByWorkSessionId.get(workSession.id) === session) sessionsByWorkSessionId.delete(workSession.id); },
   };
   sessionsByWorkSessionId.set(workSession.id, session);
-  if (decision.kind === "cache-then-reharvest") harvestQueue.enqueue(itemId);
   return session;
 }

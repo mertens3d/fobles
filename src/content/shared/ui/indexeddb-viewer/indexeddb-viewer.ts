@@ -3,9 +3,9 @@ import { createElement } from "react";
 import { createRoot } from "react-dom/client";
 import { createDialogCloseButton } from "../../dialog/dialog-close-button";
 import { JSON_TREE, JSON_TREE_STYLE } from "../json-tree/json-tree.const";
+import { DEVELOPER_DIALOG, DEVELOPER_DIALOG_STYLE } from "./developer-dialog.const";
+import { DeveloperDialogApp } from "./developer-dialog-app";
 import { INDEXEDDB_VIEWER, INDEXEDDB_VIEWER_STYLE } from "./indexeddb-viewer.const";
-import { IndexedDbViewerApp } from "./indexeddb-viewer-app";
-
 function ensureStyle(doc: Document, id: string, css: string): void {
   if (!doc.getElementById(id)) {
     const style = doc.createElement("style");
@@ -14,11 +14,12 @@ function ensureStyle(doc: Document, id: string, css: string): void {
     doc.head.appendChild(style);
   }
 }
-
+// Opens the developer dialog (tabs: Fobles IndexedDB, Runtime Settings). Name and location are unchanged so the toolbar's developer button needs no edit.
 export function openIndexedDbViewer(doc: Document): void {
   doc.getElementById(INDEXEDDB_VIEWER.DIALOG_ID)?.remove();
   ensureStyle(doc, JSON_TREE.STYLE_ELEMENT_ID, JSON_TREE_STYLE);
   ensureStyle(doc, INDEXEDDB_VIEWER.STYLE_ELEMENT_ID, INDEXEDDB_VIEWER_STYLE);
+  ensureStyle(doc, DEVELOPER_DIALOG.STYLE_ELEMENT_ID, DEVELOPER_DIALOG_STYLE);
   const dialog = doc.createElement("dialog");
   const appHost = doc.createElement("div");
   const appRoot = createRoot(appHost);
@@ -36,5 +37,5 @@ export function openIndexedDbViewer(doc: Document): void {
     { once: true },
   );
   dialog.showModal();
-  appRoot.render(createElement(IndexedDbViewerApp, { doc }));
+  appRoot.render(createElement(DeveloperDialogApp, { doc }));
 }

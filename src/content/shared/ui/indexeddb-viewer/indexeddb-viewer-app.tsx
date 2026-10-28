@@ -7,9 +7,7 @@ import { JSON_TREE } from "../json-tree/json-tree.const";
 import { INDEXEDDB_VIEWER } from "./indexeddb-viewer.const";
 import { clearSitecoreDataCache, filterCacheRows, loadCacheRows } from "./indexeddb-viewer-service";
 import type { CacheRow, IndexedDbViewerAppProps } from "./indexeddb-viewer.types";
-
 const { CLASS, TEXT } = INDEXEDDB_VIEWER;
-
 export function IndexedDbViewerApp({ doc }: IndexedDbViewerAppProps) {
   const [rows, setRows] = useState<CacheRow[]>([]);
   const [loaded, setLoaded] = useState(false);
@@ -20,7 +18,6 @@ export function IndexedDbViewerApp({ doc }: IndexedDbViewerAppProps) {
   const [treeVersion, setTreeVersion] = useState(0);
   const deferredQuery = useDeferredValue(query);
   const win = doc.defaultView ?? window;
-
   const reload = useCallback(async (): Promise<void> => {
     try {
       setRows(await loadCacheRows());
@@ -31,26 +28,21 @@ export function IndexedDbViewerApp({ doc }: IndexedDbViewerAppProps) {
       setLoaded(true);
     }
   }, []);
-
   useEffect(() => {
     void reload();
   }, [reload]);
-
   const matches = useMemo(() => filterCacheRows(rows, deferredQuery), [rows, deferredQuery]);
   const shown = useMemo(() => matches.slice(0, INDEXEDDB_VIEWER.MAX_ROWS), [matches]);
   const selected = useMemo(() => rows.find((row) => row.key === selectedKey), [rows, selectedKey]);
-
   function selectRow(row: CacheRow): void {
     setSelectedKey(row.key);
     setOpenDepth(JSON_TREE.DEFAULT_OPEN_DEPTH);
     setTreeVersion((current) => current + 1);
   }
-
   function setTreeDepth(depth: number): void {
     setOpenDepth(depth);
     setTreeVersion((current) => current + 1);
   }
-
   async function handleClear(): Promise<void> {
     if (win.confirm(TEXT.CONFIRM_CLEAR)) {
       await clearSitecoreDataCache();
@@ -58,17 +50,12 @@ export function IndexedDbViewerApp({ doc }: IndexedDbViewerAppProps) {
       await reload();
     }
   }
-
   let status: string;
   if (error) status = `${TEXT.LOAD_FAILED}: ${error}`;
   else if (!loaded) status = TEXT.LOADING;
   else status = `${matches.length} of ${rows.length} records match. Showing ${shown.length}.`;
-
   return (
     <div className={CLASS.APP}>
-      <header className={CLASS.HEADER}>
-        <h2>{TEXT.TITLE}</h2>
-      </header>
       <div className={CLASS.TOOLBAR}>
         <input
           type="search"
