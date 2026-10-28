@@ -1,0 +1,10 @@
+Add this block after the Auditor boundary rule and before the e2e rule in eslint.config.js:
+{
+  // Temporary exemptions for pre-boundary Auditor imports. Remove as these Graph-owned modules move to shared/foundation ownership.
+  files: [
+    "src/content/features/auditor/audit-report-tree.ts",
+    "src/content/features/auditor/components/auditor-dialog.tsx",
+    "src/content/features/auditor/components/auditor-grid.tsx",
+  ],
+  rules: { "@typescript-eslint/no-restricted-imports": "off" },
+},

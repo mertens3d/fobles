@@ -12,12 +12,18 @@ export type RootCacheDecision =
   | { kind: "harvest-required" };
 
 function hasRequiredFacts(record: SitecoreDataCacheRecord, filters: SitecoreHarvestFiltersState): boolean {
-  if (filters.parent && !record.parent) return false;
-  if (filters.children && !record.children) return false;
-  if (filters.referrers && !record.referrers) return false;
-  if (filters.customFields && !record.customSections) return false;
-  if (filters.standardFields && !record.standardSections) return false;
-  if (filters.layouts && !record.layout) return false;
+  if (filters.parent && !record.parent) 
+return false;
+  if (filters.children && !record.children) 
+return false;
+  if (filters.referrers && !record.referrers) 
+return false;
+  if (filters.customFields && !record.customSections) 
+return false;
+  if (filters.standardFields && !record.standardSections) 
+return false;
+  if (filters.layouts && !record.layout) 
+return false;
   return true;
 }
 
@@ -25,10 +31,13 @@ export function assembleHarvestResultFromCacheRecord(
   record: SitecoreDataCacheRecord | undefined,
   filters: SitecoreHarvestFiltersState,
 ): SitecoreHarvestResult | undefined {
-  if (!record?.quickInfo) return undefined;
+  if (!record?.quickInfo) 
+return undefined;
   const quickInfo = record.quickInfo;
-  if (!quickInfo.scItemId) return undefined;
-  if (!hasRequiredFacts(record, filters)) return undefined;
+  if (!quickInfo.scItemId) 
+return undefined;
+  if (!hasRequiredFacts(record, filters)) 
+return undefined;
   const scTemplate = quickInfo.scTemplate ? { ...quickInfo.scTemplate, rawMarkup: undefined, facts: {} } : undefined;
   const rootItem: RootItem = { ...quickInfo, scTemplate, rawMarkup: undefined, facts: {}, scItemId: quickInfo.scItemId };
   return {
@@ -48,8 +57,10 @@ export function decideRootCacheUsage(
   liveRevision: string | undefined,
 ): RootCacheDecision {
   const result = assembleHarvestResultFromCacheRecord(record, filters);
-  if (!result) return { kind: "harvest-required" };
-  if (liveRevision === undefined) return { kind: "cache-unverified", result };
+  if (!result) 
+return { kind: "harvest-required" };
+  if (liveRevision === undefined) 
+return { kind: "cache-unverified", result };
   return record?.revision === liveRevision ? { kind: "cache-only", result } : { kind: "cache-then-reharvest", result };
 }
 

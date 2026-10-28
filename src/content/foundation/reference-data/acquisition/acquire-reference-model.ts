@@ -23,7 +23,8 @@ function quickInfoPayload(result: WorkerTaskExecutionResult): QuickInfoPayload |
 
 function harvestResultFromQuickInfo(payload: QuickInfoPayload): SitecoreHarvestResult | undefined {
   const rootItem = payload.result.status === "found" ? payload.result.value : undefined;
-  if (!rootItem?.scItemId) return undefined;
+  if (!rootItem?.scItemId) 
+return undefined;
   return {
     rootItem: { ...rootItem, scItemId: rootItem.scItemId },
     parent: undefined,
@@ -53,7 +54,8 @@ export async function acquireReferenceModelForCurrentItem(
   { signal }: AcquireReferenceModelOptions,
 ): Promise<AcquiredReferenceModel | undefined> {
   const itemId = getCurrentItemId(doc);
-  if (!itemId) throw new Error("Something has gone wrong. The current Sitecore item could not be resolved.");
+  if (!itemId) 
+throw new Error("Something has gone wrong. The current Sitecore item could not be resolved.");
 
   const cacheKey: SitecoreDataCacheKey = { ...resolveSitecoreDataIdentity(doc), item: createSitecoreItemLocator(itemId) };
   const cachedRecord = await getItem(cacheKey);
@@ -71,16 +73,19 @@ export async function acquireReferenceModelForCurrentItem(
 
   if (decision.kind === "harvest-required") {
     const payload = await readRootQuickInfo(workSession, itemId);
-    if (signal.aborted || !payload) return undefined;
+    if (signal.aborted || !payload) 
+return undefined;
 
     harvestResult = harvestResultFromQuickInfo(payload);
-    if (!harvestResult) return undefined;
+    if (!harvestResult) 
+return undefined;
 
     await putFact(cacheKey, "quickInfo", { result: payload.result }, { revision: payload.revision });
     preparedFilters = { parent: false, children: false, referrers: false, customFields: false, standardFields: false, layouts: false, template: true };
   }
 
-  if (signal.aborted || !harvestResult) return undefined;
+  if (signal.aborted || !harvestResult) 
+return undefined;
 
   const prepared = prepareReferenceModel(harvestResult, preparedFilters, {
     signal,

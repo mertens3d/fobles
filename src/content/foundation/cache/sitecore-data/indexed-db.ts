@@ -29,10 +29,12 @@ function openDatabase(): Promise<IDBDatabase> {
     const request = indexedDB.open(DATABASE_NAME, DATABASE_VERSION);
     request.onupgradeneeded = () => {
       const db = request.result;
-      if (db.objectStoreNames.contains(ITEM_STORE_NAME)) db.deleteObjectStore(ITEM_STORE_NAME);
+      if (db.objectStoreNames.contains(ITEM_STORE_NAME)) 
+db.deleteObjectStore(ITEM_STORE_NAME);
       const itemStore = db.createObjectStore(ITEM_STORE_NAME, { keyPath: "key" });
       itemStore.createIndex(LAST_ACCESSED_INDEX_NAME, "lastAccessedAt");
-      if (db.objectStoreNames.contains(FACT_STORE_NAME)) db.deleteObjectStore(FACT_STORE_NAME);
+      if (db.objectStoreNames.contains(FACT_STORE_NAME)) 
+db.deleteObjectStore(FACT_STORE_NAME);
       const factStore = db.createObjectStore(FACT_STORE_NAME, { keyPath: "key" });
       factStore.createIndex(FACT_ITEM_KEY_INDEX_NAME, "itemKey");
     };
@@ -67,5 +69,6 @@ export async function runItemStoreTransaction<T>(
 export function resetDatabaseConnectionForTests(): void {
   const pending = openDatabasePromise;
   openDatabasePromise = undefined;
-  if (pending) void pending.then((db) => db.close()).catch(() => undefined);
+  if (pending) 
+void pending.then((db) => db.close()).catch(() => undefined);
 }
