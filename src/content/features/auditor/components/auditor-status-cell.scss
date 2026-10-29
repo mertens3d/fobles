@@ -1,0 +1,39 @@
+// @source-path [fobles] src/content/features/auditor/components/auditor-status-cell.scss
+
+.fobles-auditor-status {
+  box-sizing: border-box;
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 3px;
+  background: transparent;
+  font: inherit;
+  line-height: 1;
+  vertical-align: middle;
+}
+
+.fobles-auditor-status--cascade {
+  cursor: default;
+  opacity: 0.45;
+}
+
+.fobles-auditor-status--action {
+  cursor: pointer;
+  opacity: 0.72;
+  transition: background-color 120ms ease, border-color 120ms ease, box-shadow 120ms ease, opacity 120ms ease, transform 120ms ease;
+}
+
+.fobles-auditor-status--action:hover,
+.fobles-auditor-status--action:focus-visible,
+.fobles-auditor-status--action.is-row-hovered {
+  border-color: #76b9ed;
+  background: #e7f3ff;
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.9), 0 1px 3px rgba(0, 90, 158, 0.35);
+  opacity: 1;
+  transform: translateY(-1px);
+  outline: 0;
+}

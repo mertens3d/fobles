@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/styles/fobles-extension.scss
+
 @use "content-editor-fields";
 @use "content-editor-tree";
 @use "fobles-flyout";
@@ -5,5 +7,7 @@
 @use "reference-graph";
 @use "dialog";
 @use "auditor";
+@use "../features/auditor/components/auditor-status-cell";
+@use "../features/auditor/components/auditor-grid";
 @use "iframe-workers";
 @use "fobles-error";

@@ -1,0 +1,333 @@
+// @source-path [fobles] src/content/features/auditor/components/auditor-grid.scss
+
+.fobles-auditor-grid {
+  user-select: none;
+
+  .ag-row,
+  .ag-row-even,
+  .ag-row-odd {
+    min-height: 26px;
+    font-size: 12px;
+  }
+
+  .ag-cell {
+    display: flex;
+    align-items: center;
+    line-height: 26px;
+  }
+}
+
+.fobles-auditor-tree-row {
+  display: inline-flex;
+  min-width: 0;
+  height: 26px;
+  align-items: center;
+  gap: 4px;
+  padding-left: calc(var(--fobles-auditor-tree-depth) * 20px);
+  font-size: 12px;
+  line-height: 26px;
+  white-space: nowrap;
+}
+
+.fobles-auditor-tree-toggle,
+.fobles-auditor-tree-spacer {
+  box-sizing: border-box;
+  display: inline-flex;
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+
+.fobles-auditor-tree-toggle {
+  cursor: pointer;
+}
+
+.fobles-auditor-tree-toggle img,
+.fobles-auditor-tree-icon {
+  display: block;
+  width: 16px;
+  height: 16px;
+  object-fit: contain;
+}
+
+.fobles-auditor-tree-icon {
+  flex: 0 0 16px;
+}
+
+.fobles-auditor-tree-label {
+  display: inline-flex;
+  min-width: 0;
+  align-items: baseline;
+  overflow: hidden;
+}
+
+.fobles-auditor-tree-label-name {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fobles-auditor-tree-label-qualifier {
+  position: relative;
+  top: -3px;
+  flex: 0 0 auto;
+  margin-left: 5px;
+  color: #7a8290;
+  font-size: 10px;
+  font-weight: 400;
+  line-height: 1;
+}
+
+.fobles-auditor-grid .ag-header {
+  display: none;
+}
+
+.fobles-auditor-grid .ag-row,
+.fobles-auditor-grid .ag-cell {
+  height: 26px !important;
+  min-height: 26px !important;
+  line-height: 26px !important;
+}
+
+.fobles-auditor-data-action-cell {
+  justify-content: center;
+  padding: 0 !important;
+}
+
+.fobles-auditor-data-action {
+  display: inline-flex;
+  width: 22px;
+  height: 22px;
+  align-items: center;
+  justify-content: center;
+  padding: 0 !important;
+  border: 1px solid transparent !important;
+  border-radius: 3px;
+  background: transparent !important;
+  color: #2f6fed;
+  font: 15px/1 Arial, sans-serif;
+  opacity: 0;
+  pointer-events: none;
+  transition: background-color 100ms ease, border-color 100ms ease, opacity 100ms ease;
+}
+
+.ag-row:hover .fobles-auditor-data-action,
+.fobles-auditor-data-action:focus-visible {
+  border-color: #76b9ed !important;
+  background: #e7f3ff !important;
+  opacity: 1;
+  pointer-events: auto;
+  outline: 0;
+}
+
+.fobles-auditor-dialog {
+  width: min(960px, calc(100vw - 40px));
+}
+
+.fobles-auditor-summary {
+  display: none;
+}
+
+.fobles-auditor-search-row {
+  width: 100%;
+  min-width: 0;
+  margin: 4px 0 6px;
+}
+
+.fobles-auditor-search-row .fobles-filter-search {
+  width: min(280px, 100%);
+  height: 24px;
+  padding: 2px 6px;
+  font: 12px/18px Arial, sans-serif;
+}
+
+.fobles-auditor-dialog {
+  width: min(740px, calc(100vw - 40px));
+}
+
+.fobles-auditor-search-row {
+  display: none;
+}
+
+.fobles-auditor-grid-toolbar {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 2px 0 5px;
+}
+
+.fobles-auditor-grid-search {
+  box-sizing: border-box;
+  width: 220px;
+  height: 24px;
+  padding: 2px 6px;
+  border: 1px solid #a9a9a9;
+  background: #fff;
+  color: #202020;
+  font: 12px/18px Arial, sans-serif;
+}
+
+.fobles-auditor-grid-search:focus {
+  border-color: #2f6fed;
+  outline: 1px solid #2f6fed;
+  outline-offset: -1px;
+}
+
+.fobles-auditor-tree-actions {
+  min-height: 24px;
+  padding: 0;
+}
+
+.fobles-auditor-grid {
+  overflow: auto;
+}
+
+.fobles-auditor-grid .ag-root-wrapper,
+.fobles-auditor-grid .ag-root,
+.fobles-auditor-grid .ag-body-viewport,
+.fobles-auditor-grid .ag-center-cols-viewport {
+  min-width: 640px;
+}
+
+.fobles-auditor-navigate-cell {
+  width: 26px !important;
+  min-width: 26px !important;
+  max-width: 26px !important;
+}
+
+.fobles-auditor-controls-shell .fobles-dialog-icon-button {
+  position: absolute;
+  top: 10px;
+  right: 52px;
+  z-index: 31;
+}
+
+.fobles-auditor-help-button {
+  position: absolute !important;
+  top: 10px;
+  right: 52px;
+  z-index: 31;
+}
+
+.fobles-auditor-toolbar-controls {
+  gap: 6px;
+}
+
+.fobles-auditor-filter-actions {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.fobles-auditor-toolbar-action {
+  box-sizing: border-box;
+  height: 26px;
+  min-height: 26px;
+  padding: 2px 10px !important;
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 20px;
+}
+
+.fobles-auditor-toolbar-action--primary {
+  min-width: 142px;
+}
+
+.fobles-auditor-toolbar-action--secondary {
+  min-width: 90px;
+}
+
+.fobles-auditor-grid .ag-cell[col-id="status"] {
+  padding-right: 2px !important;
+  padding-left: 2px !important;
+}
+
+.fobles-auditor-grid .ag-cell[col-id="journeyStage"] {
+  padding-right: 3px !important;
+  padding-left: 3px !important;
+}
+
+.fobles-auditor-navigate-cell {
+  width: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  padding: 0 !important;
+  justify-content: center;
+}
+
+.fobles-auditor-navigate {
+  width: 18px;
+  height: 18px;
+  padding: 0 !important;
+}
+
+.fobles-auditor-dialog {
+  width: min(640px, calc(100vw - 32px));
+  height: min(640px, calc(100vh - 32px));
+  max-height: calc(100vh - 32px);
+}
+
+.fobles-auditor-grid-shell,
+.fobles-auditor-workspace,
+.fobles-auditor-workspace-main {
+  min-height: 0;
+}
+
+.fobles-auditor-grid {
+  max-height: 430px;
+}
+
+.fobles-auditor-grid .ag-cell[col-id="status"] {
+  padding-right: 2px !important;
+  padding-left: 2px !important;
+}
+
+.fobles-auditor-grid .ag-cell[col-id="journeyStage"] {
+  padding-right: 3px !important;
+  padding-left: 3px !important;
+}
+
+.fobles-auditor-navigate-cell {
+  width: 20px !important;
+  min-width: 20px !important;
+  max-width: 20px !important;
+  padding: 0 !important;
+  justify-content: center;
+}
+
+.fobles-auditor-navigate {
+  width: 18px;
+  height: 18px;
+  padding: 0 !important;
+}
+
+.fobles-auditor-help-button {
+  position: fixed !important;
+  top: calc(50% - min(320px, calc(50vh - 16px)) + 10px);
+  left: calc(50% + min(320px, calc(50vw - 16px)) - 84px);
+  z-index: 2147483647;
+}
+
+.fobles-auditor-filter-actions {
+  display: flex;
+  gap: 6px;
+  margin-top: 6px;
+}
+
+.fobles-auditor-toolbar-action {
+  box-sizing: border-box;
+  height: 26px;
+  padding: 2px 10px !important;
+  border-radius: 3px;
+  font-size: 12px;
+  line-height: 20px;
+}

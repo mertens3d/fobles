@@ -4,41 +4,16 @@ export type ControlsHeaderProps = {
   title: string;
   expanded: boolean;
   onExpandedChange: (expanded: boolean) => void;
-  onHelp: () => void;
-  helpLabel: string;
+  onHelp?: () => void;
+  helpLabel?: string;
   disabled?: boolean;
 };
 
-// The collapsible "Controls" header bar with the round help button, shared by Reference Graph and Auditor.
-// It deliberately renders Graph's existing class names so both tools get the identical bar and `?` button.
-export function ControlsHeader({
-  title,
-  expanded,
-  onExpandedChange,
-  onHelp,
-  helpLabel,
-  disabled,
-}: ControlsHeaderProps) {
+export function ControlsHeader({ title, expanded, onExpandedChange, onHelp, helpLabel = "Help", disabled }: ControlsHeaderProps) {
   return (
-    <div className="fobles-reference-graph-controls-heading">
-      <button
-        type="button"
-        className="fobles-reference-graph-controls-header"
-        aria-expanded={expanded}
-        disabled={disabled}
-        onClick={() => onExpandedChange(!expanded)}
-      >
-        {title}
-      </button>
-      <button
-        type="button"
-        className="fobles-reference-graph-help-button"
-        title={helpLabel}
-        aria-label={helpLabel}
-        onClick={onHelp}
-      >
-        ?
-      </button>
+    <div className="fobles-reference-graph-controls-heading-row">
+      <button type="button" className="fobles-reference-graph-controls-expander" disabled={disabled} onClick={() => onExpandedChange(!expanded)}>{title}</button>
+      {onHelp ? <button type="button" className="fobles-reference-graph-help-button" aria-label={helpLabel} title={helpLabel} onClick={onHelp}>?</button> : null}
     </div>
   );
 }

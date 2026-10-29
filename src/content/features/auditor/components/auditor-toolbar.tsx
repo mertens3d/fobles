@@ -1,30 +1,19 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-toolbar.tsx
+
 import { useEffect, useState, type ReactNode } from "react";
 import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
-import { FilterGroup } from "../../../shared/ui/filters/filter-shell";
 import { ControlsHeader } from "../../../shared/ui/reference-controls/controls-header";
 import { GraphFilterList } from "../../../shared/ui/reference-controls/graph-filter-list";
 import { ViewReferenceModelButton } from "../../../shared/ui/reference-controls/view-reference-model-button";
 import { getAuditorControlsExpanded, setAuditorControlsExpanded } from "../auditor-ui-settings";
-import { CACHE_VALIDATION_CHECK_KEY, CACHE_VALIDATION_CHECK_LABEL } from "../checks/cache-validation-check";
-import { ITEM_NAVIGATION_CHECK_KEY, ITEM_NAVIGATION_CHECK_LABEL } from "../checks/item-navigation-check";
-import { ITEM_RESOLVED_CHECK_KEY, ITEM_RESOLVED_CHECK_LABEL } from "../checks/item-resolved-check";
-import { AUDIT_CHECK } from "../../../../constants/audit-checks.const";
-
-const CHECK_OPTIONS = [
-  { key: ITEM_RESOLVED_CHECK_KEY, label: ITEM_RESOLVED_CHECK_LABEL },
-  { key: AUDIT_CHECK.REFERENCE_RESOLVED.KEY, label: AUDIT_CHECK.REFERENCE_RESOLVED.LABEL },
-  { key: CACHE_VALIDATION_CHECK_KEY, label: CACHE_VALIDATION_CHECK_LABEL },
-  { key: ITEM_NAVIGATION_CHECK_KEY, label: ITEM_NAVIGATION_CHECK_LABEL },
-] as const;
 
 export type AuditorToolbarProps = {
-  selectedChecks: ReadonlySet<string>;
-  onToggleCheck: (checkKey: string) => void;
-  onReset: () => void;
+  selectedChecks?: ReadonlySet<string>;
+  onToggleCheck?: (checkKey: string) => void;
+  onReset?: () => void;
   onExport: () => void;
   onViewReferenceModel: () => void;
-  onHelp: () => void;
+  onHelp?: () => void;
   graphFilters: SitecoreHarvestFiltersState;
   onGraphFilterChange: (key: keyof SitecoreHarvestFiltersState, checked: boolean) => void;
   onClearGraphFilters: () => void;
@@ -50,6 +39,10 @@ export function AuditorToolbar(props: AuditorToolbarProps) {
     };
   }, []);
 
+  useEffect(() => {
+    if (settingsLoaded && props.selectedChecks?.size) props.onReset?.();
+  }, [props, settingsLoaded]);
+
   function changeExpanded(next: boolean): void {
     setExpanded(next);
     void setAuditorControlsExpanded(next);
@@ -57,34 +50,13 @@ export function AuditorToolbar(props: AuditorToolbarProps) {
 
   return (
     <div className="fobles-auditor-controls-shell">
-      <ControlsHeader
-        title="Controls"
-        expanded={expanded}
-        onExpandedChange={changeExpanded}
-        onHelp={props.onHelp}
-        helpLabel="Auditor help"
-        disabled={!settingsLoaded}
-      />
+      <ControlsHeader title="Controls" expanded={expanded} onExpandedChange={changeExpanded} disabled={!settingsLoaded} />
       {expanded ? (
         <div className="fobles-auditor-toolbar-controls">
-          <button type="button" className="fobles-filter-reset" onClick={props.onReset}>Reset</button>
-          <FilterGroup
-            label="Filter by check"
-            options={CHECK_OPTIONS}
-            selected={props.selectedChecks}
-            onToggle={props.onToggleCheck}
-          />
-          <GraphFilterList
-            filters={props.graphFilters}
-            onChange={props.onGraphFilterChange}
-            onClearFilters={props.onClearGraphFilters}
-          />
-          <div className="fobles-filter-actions">
-            <ViewReferenceModelButton
-              onViewReferenceModel={props.onViewReferenceModel}
-              className="fobles-reference-graph-button fobles-reference-graph-view-reference-model"
-            />
-            <button type="button" className="fobles-auditor-toolbar-action" onClick={props.onExport}>Export CSV</button>
+          <GraphFilterList filters={props.graphFilters} onChange={props.onGraphFilterChange} onClearFilters={props.onClearGraphFilters} clearLabel="Clear Filters" />
+          <div className="fobles-filter-actions fobles-auditor-filter-actions">
+            <ViewReferenceModelButton onViewReferenceModel={props.onViewReferenceModel} className="fobles-auditor-toolbar-action fobles-auditor-toolbar-action--primary" />
+            <button type="button" className="fobles-auditor-toolbar-action fobles-auditor-toolbar-action--secondary" onClick={props.onExport}>Export CSV</button>
           </div>
         </div>
       ) : null}
