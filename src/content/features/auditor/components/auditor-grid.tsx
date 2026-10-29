@@ -7,7 +7,9 @@ import type { ReferenceModelNode } from "../../../foundation/reference-data/mode
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
 import { getExpandedByCollapseKey, setExpandedStateForCollapseKey } from "../../reference-graph/graph-nodes/graph-collapse-settings";
 import type { AuditFinding } from "../audit-finding.types";
+import { DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS, getAuditorLayoutViewSettings, subscribeAuditorLayoutViewSettings, type AuditorLayoutViewSettings } from "../auditor-layout-view-settings";
 import { descendantExpandableIds, isAuditorRowVisible, reconcileExpandedRows } from "../auditor-grid/auditor-expansion-state";
+import { applyAuditorLayoutView } from "../auditor-grid/auditor-layout-row-filter";
 import { projectAuditorRows } from "../auditor-grid/auditor-row-projector";
 import type { AuditorTreeRow, ToggleModifiers } from "../auditor-grid/auditor-grid.types";
 import { AuditorDataAction } from "./auditor-data-action";
@@ -47,11 +49,31 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
     () => projectAuditorRows(referenceModelRoot, findings, processingStateByTreeNodeId, liveSeen.current),
     [referenceModelRoot, findings, processingStateByTreeNodeId, modelRevision],
   );
-  const rowsById = useMemo(() => new Map(allRows.map((row) => [row.id, row])), [allRows]);
-  const expandableIds = useMemo(() => allRows.filter((row) => row.hasChildren).map((row) => row.id), [allRows]);
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
+  const [layoutView, setLayoutView] = useState<AuditorLayoutViewSettings>(DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS);
+  const [templateVisible, setTemplateVisible] = useState(true);
+  const projectedRows = useMemo(
+    () => applyAuditorLayoutView(allRows, layoutView).filter((row) => templateVisible || !row.label.toLowerCase().includes("(template)")),
+    [allRows, layoutView, templateVisible],
+  );
+  const rowsById = useMemo(() => new Map(projectedRows.map((row) => [row.id, row])), [projectedRows]);
+  const expandableIds = useMemo(() => projectedRows.filter((row) => row.hasChildren).map((row) => row.id), [projectedRows]);
   const [query, setQuery] = useState("");
   const initialized = useRef(false);
+
+  useEffect(() => {
+    const handleGraphFilterChange = (event: Event): void => {
+      const detail = (event as CustomEvent<{ key: string; checked: boolean }>).detail;
+      if (detail.key === "template") setTemplateVisible(detail.checked);
+    };
+    window.addEventListener("fobles:auditor-graph-filter-change", handleGraphFilterChange);
+    return () => window.removeEventListener("fobles:auditor-graph-filter-change", handleGraphFilterChange);
+  }, []);
+
+  useEffect(() => {
+    void getAuditorLayoutViewSettings().then(setLayoutView);
+    return subscribeAuditorLayoutViewSettings(setLayoutView);
+  }, []);
 
   useEffect(() => {
     if (initialized.current) return;
@@ -64,8 +86,8 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
   }, [allRows]);
 
   useEffect(() => {
-    setExpanded((current) => reconcileExpandedRows(current, allRows, rowsById));
-  }, [allRows, rowsById]);
+    setExpanded((current) => reconcileExpandedRows(current, projectedRows, rowsById));
+  }, [projectedRows, rowsById]);
 
   const searchedRowIds = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -86,8 +108,8 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
     return matchingIds;
   }, [allRows, query, rowsById]);
   const visibleRows = useMemo(
-    () => allRows.filter((row) => searchedRowIds ? searchedRowIds.has(row.id) : isAuditorRowVisible(row, expanded, rowsById)),
-    [allRows, expanded, rowsById, searchedRowIds],
+    () => projectedRows.filter((row) => searchedRowIds ? searchedRowIds.has(row.id) : isAuditorRowVisible(row, expanded, rowsById)),
+    [projectedRows, expanded, rowsById, searchedRowIds],
   );
   const structureKey = useMemo(() => allRows.map((row) => `${row.id}:${row.parentId ?? ""}`).join("|"), [allRows]);
 
@@ -117,20 +139,20 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
 
   const columnDefs = useMemo<ColDef<AuditorTreeRow>[]>(
     () => [
-      { field: "status", headerName: "", width: 30, minWidth: 30, maxWidth: 30, cellRenderer: AuditorStatusCell },
+      { field: "status", headerName: "", width: 24, minWidth: 24, maxWidth: 24, cellRenderer: AuditorStatusCell },
       {
         field: "journeyStage",
         headerName: "",
-        width: 42,
-        minWidth: 42,
-        maxWidth: 42,
+        width: 34,
+        minWidth: 34,
+        maxWidth: 34,
         cellRenderer: (params: ICellRendererParams<AuditorTreeRow>) => params.data?.isSitecoreItem ? <AuditorJourneyCell stage={params.data.journeyStage} /> : null,
       },
       {
         headerName: "",
-        width: 20,
-        minWidth: 20,
-        maxWidth: 20,
+        width: 18,
+        minWidth: 18,
+        maxWidth: 18,
         cellClass: "fobles-auditor-navigate-cell",
         cellRenderer: (params: ICellRendererParams<AuditorTreeRow>) => params.data?.sitecoreUrl && params.data.isSitecoreItem ? (
           <button
@@ -143,7 +165,7 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
               navigate(params.data!);
             }}
           >
-            ◎
+            <span aria-hidden="true" />
           </button>
         ) : null,
       },
