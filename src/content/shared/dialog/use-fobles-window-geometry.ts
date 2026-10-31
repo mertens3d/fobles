@@ -104,7 +104,9 @@ export function useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeigh
         return next;
       }
       const restoreRect = dialogRef.current ? readRect(dialogRef.current) : current;
-      const next: FoblesWindowState = { ...current, restoreRect, collapsed: true, maximized: false };
+      // Minimizing docks the title bar to the bottom of the screen, like a normal OS window.
+      const dockedTop = viewportRect(window).height - FOBLES_WINDOW_TITLE_BAR_HEIGHT - FOBLES_WINDOW_VIEWPORT_MARGIN;
+      const next: FoblesWindowState = { ...current, restoreRect, collapsed: true, maximized: false, top: dockedTop };
       persist(next);
       return next;
     });

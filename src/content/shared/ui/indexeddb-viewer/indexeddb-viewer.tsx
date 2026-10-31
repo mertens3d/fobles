@@ -1,5 +1,5 @@
-// @source-path [fobles] src/content/shared/ui/indexeddb-viewer/indexeddb-viewer.ts
-import { createElement } from "react";
+// @source-path [fobles] src/content/shared/ui/indexeddb-viewer/indexeddb-viewer.tsx
+
 import { createRoot } from "react-dom/client";
 import { FoblesWindow } from "../../dialog/fobles-window";
 import { clearFoblesWindowHost, replaceFoblesWindowHost } from "../../dialog/fobles-window-host-registry";
@@ -7,6 +7,7 @@ import { JSON_TREE, JSON_TREE_STYLE } from "../json-tree/json-tree.const";
 import { DEVELOPER_DIALOG, DEVELOPER_DIALOG_STYLE } from "./developer-dialog.const";
 import { DeveloperDialogApp } from "./developer-dialog-app";
 import { INDEXEDDB_VIEWER, INDEXEDDB_VIEWER_STYLE } from "./indexeddb-viewer.const";
+
 function ensureStyle(doc: Document, id: string, css: string): void {
   if (!doc.getElementById(id)) {
     const style = doc.createElement("style");
@@ -15,6 +16,7 @@ function ensureStyle(doc: Document, id: string, css: string): void {
     doc.head.appendChild(style);
   }
 }
+
 // Opens the developer dialog (tabs: Fobles IndexedDB, Runtime Settings). Name and location are unchanged so the toolbar's developer button needs no edit.
 export function openIndexedDbViewer(doc: Document): void {
   ensureStyle(doc, JSON_TREE.STYLE_ELEMENT_ID, JSON_TREE_STYLE);
@@ -32,17 +34,18 @@ export function openIndexedDbViewer(doc: Document): void {
   }
 
   root.render(
-    createElement(FoblesWindow, {
-      id: INDEXEDDB_VIEWER.DIALOG_ID,
-      className: INDEXEDDB_VIEWER.CLASS.DIALOG,
-      title: DEVELOPER_DIALOG.TEXT.TITLE,
-      storageKey: "fobles.window.developer",
-      defaultWidth: Math.min(1100, (doc.defaultView?.innerWidth ?? 1200) - 60),
-      defaultHeight: Math.min(720, (doc.defaultView?.innerHeight ?? 800) - 60),
-      minWidth: 640,
-      minHeight: 420,
-      onClose: handleClose,
-      children: createElement(DeveloperDialogApp, { doc }),
-    }),
+    <FoblesWindow
+      id={INDEXEDDB_VIEWER.DIALOG_ID}
+      className={INDEXEDDB_VIEWER.CLASS.DIALOG}
+      title={DEVELOPER_DIALOG.TEXT.TITLE}
+      storageKey="fobles.window.developer"
+      defaultWidth={Math.min(1100, (doc.defaultView?.innerWidth ?? 1200) - 60)}
+      defaultHeight={Math.min(720, (doc.defaultView?.innerHeight ?? 800) - 60)}
+      minWidth={640}
+      minHeight={420}
+      onClose={handleClose}
+    >
+      <DeveloperDialogApp doc={doc} />
+    </FoblesWindow>,
   );
 }

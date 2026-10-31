@@ -1,5 +1,7 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window-titlebar.tsx
 
+import { DialogIconButton } from "../ui/dialog/dialog-icon-button";
+
 export type FoblesWindowTitlebarProps = {
   title: string;
   collapsed: boolean;
@@ -18,10 +20,10 @@ export function FoblesWindowTitlebar({ title, collapsed, maximized, onHelp, onTo
     <div className="fobles-window-titlebar" onPointerDown={onPointerDown} onPointerMove={onPointerMove} onPointerUp={onPointerUp} onPointerCancel={onPointerUp} onDoubleClick={onToggleMaximize}>
       <div className="fobles-window-title">{title}</div>
       <div className="fobles-window-actions">
-        {onHelp && <button type="button" className="fobles-window-button fobles-window-help" title="Help" aria-label="Help" onClick={onHelp}>?</button>}
-        <button type="button" className="fobles-window-button fobles-window-collapse" title={collapsed ? "Restore" : "Collapse"} aria-label={collapsed ? "Restore" : "Collapse"} onClick={onToggleCollapse}>{collapsed ? "▢" : "_"}</button>
+        {onHelp && <DialogIconButton kind="help" label="Help" surface="dark" onClick={onHelp} />}
+        <button type="button" className="fobles-window-button fobles-window-collapse" title={collapsed ? "Restore" : "Minimize"} aria-label={collapsed ? "Restore" : "Minimize"} onClick={onToggleCollapse}>{collapsed ? "▢" : "_"}</button>
         <button type="button" className="fobles-window-button fobles-window-maximize" title={maximized ? "Restore" : "Maximize"} aria-label={maximized ? "Restore" : "Maximize"} onClick={onToggleMaximize}>{maximized ? "❐" : "□"}</button>
-        <button type="button" className="fobles-window-button fobles-window-close" title="Close" aria-label="Close" onClick={onClose}>×</button>
+        <DialogIconButton kind="close" label="Close" surface="dark" onClick={onClose} />
       </div>
     </div>
   );
