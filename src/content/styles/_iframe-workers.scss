@@ -1,3 +1,6 @@
+/* @source-path [fobles] src/content/styles/_iframe-workers.scss */
+@use "tokens" as *;
+
 .fobles-worker-iframe-container {
   &--hidden {
     position: fixed;
@@ -13,7 +16,7 @@
     position: fixed;
     right: 20px;
     bottom: 20px;
-    z-index: 2147483646;
+    z-index: $fobles-worker-iframe-z-index;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -24,12 +27,6 @@
     background: #fff;
     box-shadow: 0 10px 30px rgba(0, 0, 0, 0.3);
   }
-}
-
-.fobles-worker-iframe-container {
-  z-index: 1000;
-
-  // keep the rest of the existing class exactly as-is
 }
 
 .fobles-worker-iframe {
