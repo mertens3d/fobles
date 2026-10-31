@@ -128,7 +128,9 @@ signal(); }
     if (!liveStepEnabled) 
 extensionLog.debug("Reference model processor: live step disabled by runtime setting testing.showJourneyStepLive; references use cached values only", { workSessionId: workSession.id });
     while (!isStopped()) {
-      if (cacheQueue.length > 0) {
+      if ((harvestActivity?.pendingCount() ?? 0) > 0) {
+        await nextEvent();
+      } else if (cacheQueue.length > 0) {
         const guid = cacheQueue.shift();
         if (guid) 
 await hydrateFromCache(guid, liveStepEnabled);

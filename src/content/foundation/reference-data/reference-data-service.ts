@@ -22,7 +22,7 @@ export type FoblesDataRequest = {
   onModelReady?: (model: PreparedReferenceModel) => void;
 };
 export type FoblesReferenceModelData = { itemId: string; model: PreparedReferenceModel; resolveCandidateTreeNodeIds: ReadonlySet<string>; cacheRevalidationResultByTreeNodeId: ReadonlyMap<string, "passed" | "error"> };
-export type FoblesDataSession = { data: FoblesReferenceModelData; completion: Promise<void>; subscribeChange: (listener: ReferenceModelSessionStateChange) => () => void; subscribeProcessingProgress: (listener: (progress: ReferenceModelProcessingProgress) => void) => () => void; subscribeHarvestProgress: (listener: (progress: ReferenceModelHarvestProgress) => void) => () => void; dispose: () => void };
+export type FoblesDataSession = { data: FoblesReferenceModelData; completion: Promise<void>; subscribeChange: (listener: ReferenceModelSessionStateChange) => () => void; subscribeProcessingProgress: (listener: (progress: ReferenceModelProcessingProgress) => void) => () => void; subscribeHarvestProgress: (listener: (progress: ReferenceModelHarvestProgress) => void) => () => void; updateFilters: (filters: SitecoreHarvestFiltersState) => void; dispose: () => void };
 export type FoblesAcquisitionProgress = { harvestRequired: boolean; progress: PhaseProgress };
 type AcquisitionProgressListener = (progress: FoblesAcquisitionProgress) => void;
 type AcquisitionState = { harvestRequired: boolean; finished: boolean; statusByStepKey: Map<StepKey, HarvestProgressStatus>; listeners: Set<AcquisitionProgressListener> };
@@ -109,6 +109,7 @@ export async function openFoblesDataSession(request: FoblesDataRequest): Promise
     subscribeChange: source.subscribeStateChange,
     subscribeProcessingProgress: source.subscribeProcessingProgress,
     subscribeHarvestProgress: source.subscribeHarvestProgress,
+    updateFilters: source.updateFilters,
     dispose: () => {
       source.dispose();
       acquisition.listeners.clear();

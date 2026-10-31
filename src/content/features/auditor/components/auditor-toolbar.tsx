@@ -30,7 +30,6 @@ export type AuditorToolbarProps = {
   onReset?: () => void;
   onExport: () => void;
   onViewReferenceModel: () => void;
-  onHelp?: () => void;
   graphFilters: SitecoreHarvestFiltersState;
   onGraphFilterChange: (key: keyof SitecoreHarvestFiltersState, checked: boolean) => void;
   onClearGraphFilters: () => void;
@@ -86,7 +85,6 @@ export function AuditorToolbar(props: AuditorToolbarProps) {
   return (
     <div className="fobles-auditor-controls-shell">
       <button type="button" className="fobles-auditor-controls-expander" disabled={!settingsLoaded} aria-expanded={expanded} onClick={() => changeExpanded(!expanded)}>Controls</button>
-      {props.onHelp ? <button type="button" className="fobles-auditor-help-button" title="Auditor help" aria-label="Auditor help" onClick={props.onHelp}>?</button> : null}
       {expanded ? (
         <div className="fobles-auditor-toolbar-controls">
           <div className="fobles-auditor-filter-list">

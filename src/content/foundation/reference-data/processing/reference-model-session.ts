@@ -19,7 +19,7 @@ import { startReferenceModelProcessor } from "./reference-model-processor";
 import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "./processing-state";
 
 export type ReferenceModelSessionStateChange = (treeNodeIds: readonly string[], status: ProcessingStatus, state: ProcessingStateByTreeNodeId) => void | Promise<void>;
-export type SharedReferenceModelSession = { itemId: string; prepared: PreparedReferenceModel; resolveCandidateTreeNodeIds: ReadonlySet<string>; cacheRevalidationResultByTreeNodeId: ReadonlyMap<string, "passed" | "error">; processingCompletion: Promise<void>; subscribeStateChange: (listener: ReferenceModelSessionStateChange) => () => void; subscribeProcessingProgress: (listener: (progress: ReferenceModelProcessingProgress) => void) => () => void; subscribeHarvestProgress: (listener: (progress: ReferenceHarvestingProgress) => void) => () => void; dispose: () => void };
+export type SharedReferenceModelSession = { itemId: string; prepared: PreparedReferenceModel; resolveCandidateTreeNodeIds: ReadonlySet<string>; cacheRevalidationResultByTreeNodeId: ReadonlyMap<string, "passed" | "error">; processingCompletion: Promise<void>; subscribeStateChange: (listener: ReferenceModelSessionStateChange) => () => void; subscribeProcessingProgress: (listener: (progress: ReferenceModelProcessingProgress) => void) => () => void; subscribeHarvestProgress: (listener: (progress: ReferenceHarvestingProgress) => void) => () => void; updateFilters: (filters: SitecoreHarvestFiltersState) => void; dispose: () => void };
 export type StartSharedReferenceModelSessionOptions = { doc: Document; workSession: WorkSession; filters: SitecoreHarvestFiltersState; signal: AbortSignal; onAcquireProgress?: HarvestProgressCallback; onHarvestRequired?: () => void; onRootRefresh?: (result: SitecoreHarvestResult) => void; onModelReady?: (prepared: PreparedReferenceModel) => void };
 
 const sessionsByWorkSessionId = new Map<string, SharedReferenceModelSession>();
@@ -88,7 +88,13 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
   const rootItem: SitecoreItemLocator = { kind: "id", value: itemId };
   const rootFacts = FACTS_BY_FILTER.filter(([filter]) => filters[filter]).map(([, factName]) => factName);
   let disposed = false;
+  let activeFilters = filters;
   let harvestingQueue: ReferenceHarvestingQueue;
+
+  function isFactEnabled(factName: SitecoreDataFactName): boolean {
+    if (factName === "quickInfo") return true;
+    return FACTS_BY_FILTER.some(([filter, fact]) => fact === factName && activeFilters[filter]);
+  }
 
   function cacheKey(item: SitecoreItemLocator): SitecoreDataCacheKey {
     return { ...identity, item };
@@ -103,7 +109,7 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
   async function hydrateOrQueue(item: SitecoreItemLocator): Promise<void> {
     const cached = await cache.getFact(cacheKey(item), "quickInfo");
     if (cached) {
-      await publish(patchReferenceModelFact(prepared, item, "quickInfo", cached.value, filters));
+      await publish(patchReferenceModelFact(prepared, item, "quickInfo", cached.value, activeFilters));
       return;
     }
     harvestingQueue.enqueue({ item, factName: "quickInfo" });
@@ -115,7 +121,7 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
     if (!result || result.status !== "success" || result.type !== "get-quick-info") throw new Error(`Quick Info failed for ${job.item.value}`);
     const value: SitecoreDataFactMap["quickInfo"] = { result: result.payload.result };
     await cache.putFact(cacheKey(job.item), "quickInfo", value, { revision: result.payload.revision });
-    await publish(patchReferenceModelFact(prepared, job.item, "quickInfo", value, filters));
+    await publish(patchReferenceModelFact(prepared, job.item, "quickInfo", value, activeFilters));
     await Promise.all(relationshipLocators("quickInfo", value).map(hydrateOrQueue));
   }
 
@@ -134,7 +140,7 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
     if (!result) throw new Error(`Reference Harvesting produced no ${job.factName} fact for ${job.item.value}`);
     const value = factFromResult(job.factName, result);
     await cache.putFact(cacheKey(job.item), job.factName, value);
-    await publish(patchReferenceModelFact(prepared, job.item, job.factName, value, filters));
+    await publish(patchReferenceModelFact(prepared, job.item, job.factName, value, activeFilters));
     await Promise.all(relationshipLocators(job.factName, value).map(hydrateOrQueue));
     if (sameItem(job.item, rootItem)) onRootRefresh?.(prepared.harvestedData);
   }
@@ -206,6 +212,11 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
       harvestProgressListeners.add(listener);
       if (latestHarvestProgress) listener(latestHarvestProgress);
       return () => harvestProgressListeners.delete(listener);
+    },
+    updateFilters: (nextFilters) => {
+      activeFilters = nextFilters;
+      harvestingQueue.remove((job) => !isFactEnabled(job.factName));
+      harvestActivityListeners.forEach((listener) => listener());
     },
     dispose: () => {
       if (disposed) return;

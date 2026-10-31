@@ -26,7 +26,7 @@ Unzip over the repo root. Everything under `src/` has a verified path. Everythin
 Reviewed, no change needed: shell-runtime.ts, worker-target.ts (types - see Blocked 2), fobles-workers.const.ts (aside from additions).
 
 ## Blocked / deferred
-1. **Blank lines.** The OneDrive reader strips blank lines, so I could not see yours. I inserted blank lines by my own rule (between top-level declarations and logical groups). Expect whitespace-only diff noise.
+1. **Blank lines.** The SourceMirror reader strips blank lines, so I could not see yours. I inserted blank lines by my own rule (between top-level declarations and logical groups). Expect whitespace-only diff noise.
 2. **Exported types left in logic files** (moving them needs every importer, and no re-exports allowed): `WorkerIframeTarget` and `PendingWorkerReady` (worker-iframe-service.ts), `WorkerTabTarget` and `WorkerTarget` (worker-target.ts), `WorkerIframeEmergencyCleanupResult` (worker-iframe-host.ts). Find importers: `Get-ChildItem src -Recurse -Include *.ts,*.tsx | Select-String -Pattern 'WorkerIframeTarget|WorkerTarget|WorkerTabTarget|WorkerIframeEmergencyCleanupResult'`
 3. **Removed exports - fix importers.** `REFERENCE_RESOLVED_CHECK_KEY` and `REFERENCE_RESOLVED_CHECK_LABEL` no longer exist. Find importers: `Get-ChildItem src -Recurse -Include *.ts,*.tsx | Select-String -Pattern 'REFERENCE_RESOLVED_CHECK_'`
 4. **quick-info.ts selectors** `"span"`, `"a"`, `input.scEditorHeaderQuickInfoInputID[readonly]`, `input.scEditorHeaderQuickInfoInput[readonly]` should go into `CONST.SITECORE.SELECTORS`. I cannot see that file, so they are unchanged.

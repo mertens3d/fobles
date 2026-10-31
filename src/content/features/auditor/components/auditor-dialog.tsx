@@ -103,6 +103,9 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
   const completedElapsedSeconds = useRef<number | undefined>(undefined);
   const dataSession = useFoblesDataSessionWhenReady(workSessionId);
   const data = dataSession?.data;
+  useEffect(() => {
+    if (filtersLoaded) dataSession?.updateFilters(graphFilters);
+  }, [dataSession, filtersLoaded, graphFilters]);
   const model = data?.model;
   useEffect(() => findingStore.subscribe(setSnapshot), [findingStore]);
   // AI NOTE: A cold item runs a live harvest before any data session exists. Subscribe by work-session id up front so
@@ -223,12 +226,11 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
   const filterableFindings = useMemo(() => {
     const nodesById = model?.nodesById;
     const normalizedQuery = query.trim().toLowerCase();
-    const anyGraphFilterEnabled = Object.values(graphFilters).some(Boolean);
     return projectedFindings.filter((finding) => {
       if (selectedChecks.size > 0 && !selectedChecks.has(finding.checkKey)) return false;
       const node = finding.referenceModelNodeId ? nodesById?.get(finding.referenceModelNodeId) : undefined;
       const branch = node ? getGraphPresentationState(node).branch : undefined;
-      if (anyGraphFilterEnabled && branch && !graphFilters[branch]) return false;
+      if (branch && !graphFilters[branch]) return false;
       if (!normalizedQuery) return true;
       const searchable = [
         finding.dataType,
@@ -283,6 +285,7 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
   }
   return (
     <div className="fobles-auditor-app">
+      <button type="button" className="fobles-auditor-help-button" title="Auditor help" aria-label="Auditor help" onClick={() => setShowHelp(true)}>?</button>
       <AuditorSummary
         counts={summary}
         selectedStatuses={selectedStatuses}
@@ -306,7 +309,6 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
           );
         }}
         onViewReferenceModel={() => setViewReferenceModel(true)}
-        onHelp={() => setShowHelp(true)}
         footer={
           <LifecycleProgressFooter
             harvestProgress={harvestProgress ?? (acquisitionProgress?.harvestRequired ? acquisitionProgress.progress : undefined)}

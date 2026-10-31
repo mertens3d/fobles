@@ -1,12 +1,38 @@
+# @source-path [fobles] tools/powershell/source-mirror/modules/Fobles.SourceMirrorSync.psm1
+
 $script:SourceRoot = "C:\Projects\fobles"
-$script:DestinationRoot = "C:\Users\gregory.mertens\OneDrive - Kestra Financial\Projects\fobles"
 $script:DebounceMilliseconds = 2000
-$script:SyncMutexName = "Global\Fobles.OneDriveSync"
+$script:SyncMutexName = "Global\Fobles.SourceMirrorSync"
 $script:ExcludedDirectories = @("node_modules", ".git", "build", "dist", "coverage", ".next", "test-results", "playwright-report", "artifacts")
 $script:ExcludedRelativePaths = @("playwright\test-artifacts\browser-profile")
-$script:ExcludedFilePatterns = @("*.log", "*.tmp", "*.cache", "*.ts.txt", "*.tsx.txt")
+$script:ExcludedFilePatterns = @("*.log", "*.tmp", "*.cache", "*.ts.txt", "*.tsx.txt", ".env")
 $script:Watcher = $null
 $script:EventSubscriptions = @()
+
+function Get-MirrorDestination {
+    $envPath = Join-Path $script:SourceRoot ".env"
+    if (-not (Test-Path -LiteralPath $envPath)) {
+        throw "Missing .env file: $envPath"
+    }
+
+    $line = Get-Content -LiteralPath $envPath |
+        Where-Object { $_ -match '^\s*FOBLES_MIRROR_DESTINATION\s*=' } |
+        Select-Object -First 1
+
+    if (-not $line) {
+        throw "FOBLES_MIRROR_DESTINATION is not defined in $envPath"
+    }
+
+    $destination = ($line -split '=', 2)[1].Trim().Trim('"').Trim("'")
+
+    if ([string]::IsNullOrWhiteSpace($destination)) {
+        throw "FOBLES_MIRROR_DESTINATION is empty in $envPath"
+    }
+
+    return $destination
+}
+
+$script:DestinationRoot = Get-MirrorDestination
 
 function Test-FoblesExcludedPath {
     param([Parameter(Mandatory)][string]$Path)
@@ -51,16 +77,17 @@ function Sync-FoblesTypeScriptTextCopies {
         Remove-Item -Force
 }
 
-function Invoke-FoblesOneDriveSync {
+function Invoke-FoblesMirrorSync {
+
     $mutex = [System.Threading.Mutex]::new($false, $script:SyncMutexName)
     $lockTaken = $false
     try {
         try { $lockTaken = $mutex.WaitOne([TimeSpan]::FromMinutes(5)) }
         catch [System.Threading.AbandonedMutexException] { $lockTaken = $true }
-        if (-not $lockTaken) { throw "Timed out waiting for another Fobles OneDrive sync to finish." }
-        Write-Host "Fobles OneDrive sync started: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+        if (-not $lockTaken) { throw "Timed out waiting for another Fobles FoblesMirror sync to finish." }
+        Write-Host "Fobles FoblesMirror sync started: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
         $arguments = @($script:SourceRoot, $script:DestinationRoot, "/MIR", "/FFT", "/R:1", "/W:1", "/NJH", "/NJS", "/NP", "/XD")
-        foreach ($directory in $script:ExcludedDirectories) { $arguments += [System.IO.Path]::Combine($script:SourceRoot, $directory) }
+        foreach ($directory in $script:ExcludedDirectories) { $arguments += $directory }
         foreach ($relativePath in $script:ExcludedRelativePaths) { $arguments += [System.IO.Path]::Combine($script:SourceRoot, $relativePath) }
         $arguments += "/XF"
         $arguments += $script:ExcludedFilePatterns
@@ -68,7 +95,7 @@ function Invoke-FoblesOneDriveSync {
         $robocopyExitCode = $LASTEXITCODE
         if ($robocopyExitCode -ge 8) { throw "Robocopy failed with exit code $robocopyExitCode." }
         Sync-FoblesTypeScriptTextCopies
-        Write-Host "Fobles OneDrive sync complete. Robocopy exit code: $robocopyExitCode"
+        Write-Host "Fobles FoblesMirror sync complete. Robocopy exit code: $robocopyExitCode"
     } finally {
         if ($lockTaken) { $mutex.ReleaseMutex() }
         $mutex.Dispose()
@@ -77,7 +104,7 @@ function Invoke-FoblesOneDriveSync {
 
 function Test-FoblesWatcherEventRelevant {
     param([Parameter(Mandatory)][System.Management.Automation.PSEventArgs]$EventRecord)
-    if ($EventRecord.SourceIdentifier -eq "Fobles.OneDrive.Error") { Write-Warning "Watcher error or overflow; forcing full sync."; return $true }
+    if ($EventRecord.SourceIdentifier -eq "Fobles.SourceMirror.Error") { Write-Warning "Watcher error or overflow; forcing full sync."; return $true }
     $eventPath = $EventRecord.SourceEventArgs.FullPath
     if ([string]::IsNullOrWhiteSpace($eventPath) -or (Test-FoblesExcludedPath -Path $eventPath)) { return $false }
     Write-Host "Fobles change detected [$($EventRecord.SourceEventArgs.ChangeType)]: $eventPath"
@@ -91,7 +118,7 @@ function Wait-FoblesDebounceWindow {
     $deadline = [DateTime]::UtcNow.AddMilliseconds($script:DebounceMilliseconds)
     while ([DateTime]::UtcNow -lt $deadline) {
         $eventRecord = Wait-Event -Timeout 1
-        if ($null -ne $eventRecord -and $eventRecord.SourceIdentifier.StartsWith("Fobles.OneDrive.")) {
+        if ($null -ne $eventRecord -and $eventRecord.SourceIdentifier.StartsWith("Fobles.SourceMirror.")) {
             if (Test-FoblesWatcherEventRelevant -EventRecord $eventRecord) { $relevant = $true; $deadline = [DateTime]::UtcNow.AddMilliseconds($script:DebounceMilliseconds) }
             Remove-Event -EventIdentifier $eventRecord.EventIdentifier -ErrorAction SilentlyContinue
         }
@@ -99,13 +126,13 @@ function Wait-FoblesDebounceWindow {
     return $relevant
 }
 
-function Start-FoblesOneDriveWatcher {
-    if ($script:Watcher) { throw "Fobles OneDrive watcher is already running." }
+function Start-FoblesSourceMirrorWatcher {
+    if ($script:Watcher) { throw "Fobles SourceMirror watcher is already running." }
     Get-EventSubscriber |
-        Where-Object SourceIdentifier -Like "Fobles.OneDrive.*" |
+        Where-Object SourceIdentifier -Like "Fobles.SourceMirror.*" |
         Unregister-Event
     Get-Event |
-        Where-Object SourceIdentifier -Like "Fobles.OneDrive.*" |
+        Where-Object SourceIdentifier -Like "Fobles.SourceMirror.*" |
         Remove-Event
     if (-not (Test-Path -LiteralPath $script:SourceRoot)) { throw "Source directory does not exist: $script:SourceRoot" }
     New-Item -ItemType Directory -Path $script:DestinationRoot -Force | Out-Null
@@ -114,32 +141,32 @@ function Start-FoblesOneDriveWatcher {
     $script:Watcher.InternalBufferSize = 65536
     $script:Watcher.NotifyFilter = [System.IO.NotifyFilters]::FileName -bor [System.IO.NotifyFilters]::DirectoryName -bor [System.IO.NotifyFilters]::LastWrite -bor [System.IO.NotifyFilters]::Size
     $script:EventSubscriptions = @(
-        Register-ObjectEvent $script:Watcher Changed -SourceIdentifier "Fobles.OneDrive.Changed"
-        Register-ObjectEvent $script:Watcher Created -SourceIdentifier "Fobles.OneDrive.Created"
-        Register-ObjectEvent $script:Watcher Deleted -SourceIdentifier "Fobles.OneDrive.Deleted"
-        Register-ObjectEvent $script:Watcher Renamed -SourceIdentifier "Fobles.OneDrive.Renamed"
-        Register-ObjectEvent $script:Watcher Error -SourceIdentifier "Fobles.OneDrive.Error"
+        Register-ObjectEvent $script:Watcher Changed -SourceIdentifier "Fobles.SourceMirror.Changed"
+        Register-ObjectEvent $script:Watcher Created -SourceIdentifier "Fobles.SourceMirror.Created"
+        Register-ObjectEvent $script:Watcher Deleted -SourceIdentifier "Fobles.SourceMirror.Deleted"
+        Register-ObjectEvent $script:Watcher Renamed -SourceIdentifier "Fobles.SourceMirror.Renamed"
+        Register-ObjectEvent $script:Watcher Error -SourceIdentifier "Fobles.SourceMirror.Error"
     )
     $script:Watcher.EnableRaisingEvents = $true
-    Invoke-FoblesOneDriveSync
+    Invoke-FoblesMirrorSync
     try {
         while ($true) {
             $eventRecord = Wait-Event -Timeout 1
-            if ($null -ne $eventRecord -and $eventRecord.SourceIdentifier.StartsWith("Fobles.OneDrive.") -and (Wait-FoblesDebounceWindow -InitialEvent $eventRecord)) { Invoke-FoblesOneDriveSync }
+            if ($null -ne $eventRecord -and $eventRecord.SourceIdentifier.StartsWith("Fobles.SourceMirror.") -and (Wait-FoblesDebounceWindow -InitialEvent $eventRecord)) { Invoke-FoblesMirrorSync }
         }
-    } finally { Stop-FoblesOneDriveWatcher }
+    } finally { Stop-FoblesSourceMirrorWatcher }
 }
 
-function Stop-FoblesOneDriveWatcher {
+function Stop-FoblesSourceMirrorWatcher {
     if ($script:Watcher) { $script:Watcher.EnableRaisingEvents = $false }
     foreach ($subscription in $script:EventSubscriptions) { Unregister-Event -SubscriptionId $subscription.Id -ErrorAction SilentlyContinue }
     $script:EventSubscriptions = @()
-    Get-Event | Where-Object SourceIdentifier -Like "Fobles.OneDrive.*" | Remove-Event -ErrorAction SilentlyContinue
+    Get-Event | Where-Object SourceIdentifier -Like "Fobles.SourceMirror.*" | Remove-Event -ErrorAction SilentlyContinue
     if ($script:Watcher) { $script:Watcher.Dispose(); $script:Watcher = $null }
 }
 
-function Get-FoblesOneDriveWatcherStatus {
+function Get-FoblesSourceMirrorWatcherStatus {
     [PSCustomObject]@{ Running = $null -ne $script:Watcher -and $script:Watcher.EnableRaisingEvents; Source = $script:SourceRoot; Destination = $script:DestinationRoot; DebounceMilliseconds = $script:DebounceMilliseconds; MutexName = $script:SyncMutexName }
 }
 
-Export-ModuleMember -Function @("Start-FoblesOneDriveWatcher", "Stop-FoblesOneDriveWatcher", "Get-FoblesOneDriveWatcherStatus", "Invoke-FoblesOneDriveSync")
+Export-ModuleMember -Function @("Start-FoblesSourceMirrorWatcher", "Stop-FoblesSourceMirrorWatcher", "Get-FoblesSourceMirrorWatcherStatus", "Invoke-FoblesMirrorSync")

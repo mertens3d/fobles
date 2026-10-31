@@ -11,6 +11,7 @@ const WORKER_ID_QUERY_PARAMETER = "foblesWorker";
 const READY_TIMEOUT_MS = 20000;
 const READY_POLL_INTERVAL_MS = 100;
 const activeTaskControllers = new Map<string, AbortController>();
+const WORKER_ACTIVITY_ID = `${WORKER_BANNER_ID}-activity`;
 
 function taskKey(requestId: string, taskId: string): string { 
 return `${requestId}:${taskId}`; }
@@ -38,9 +39,11 @@ activeTaskControllers.get(taskKey(message.requestId, message.taskId))?.abort();
       const { task } = message;
       const controller = new AbortController();
       activeTaskControllers.set(taskKey(task.requestId, task.taskId), controller);
+      updateWorkerActivity(document, task, "Running");
       void executeWorkerTask(document, task, controller.signal)
-        .then(sendResponse)
-        .catch((error: unknown) => { extensionLog.error("Worker task failed", { task, error }); 
+        .then((result) => { updateWorkerActivity(document, task, result.status === "success" ? "Completed" : "Failed"); sendResponse(result); })
+        .catch((error: unknown) => { updateWorkerActivity(document, task, "Failed"); 
+extensionLog.error("Worker task failed", { task, error }); 
 sendResponse(undefined); })
         .finally(() => { activeTaskControllers.delete(taskKey(task.requestId, task.taskId)); });
       keepMessageChannelOpen = true;
@@ -79,6 +82,10 @@ function addWorkerBanner(doc: Document): void {
   const message = doc.createElement("div");
   message.textContent = "This page is temporarily being used by Fobles for background processing.";
   message.style.cssText = ["font-size:18px", "line-height:1.5"].join(";");
+  const activity = doc.createElement("div");
+  activity.id = WORKER_ACTIVITY_ID;
+  activity.style.cssText = ["margin-top:18px", "font-size:14px", "line-height:1.5", "text-align:left", "overflow-wrap:anywhere"].join(";");
+  activity.textContent = "Status: Waiting for work";
   const adoptButton = doc.createElement("button");
   adoptButton.type = "button";
   adoptButton.textContent = "Use this tab instead";
@@ -89,9 +96,15 @@ event.preventDefault();
 event.stopPropagation(); 
 overlay.remove(); 
 void chrome.runtime.sendMessage({ type: MESSAGE_TYPE.WORKER_ADOPTED } satisfies WorkerAdoptedMessage); });
-  panel.append(heading, message, adoptButton);
+  panel.append(heading, message, activity, adoptButton);
   overlay.appendChild(panel);
   doc.documentElement.appendChild(overlay);
+}
+
+function updateWorkerActivity(doc: Document, task: WorkerTask, status: string): void {
+  const activity = doc.getElementById(WORKER_ACTIVITY_ID);
+  if (!activity) return;
+  activity.textContent = `Status: ${status} | Job: ${task.type} | Task: ${task.taskId} | URL: ${task.url}`;
 }
 
 async function delay(delayMs: number): Promise<void> { 

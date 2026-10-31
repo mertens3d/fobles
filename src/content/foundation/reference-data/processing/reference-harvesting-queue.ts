@@ -14,6 +14,7 @@ export type ReferenceHarvestingQueueOptions = {
 type QueuedReferenceHarvestingJob = ReferenceHarvestingJob & { onSettled?: (succeeded: boolean) => void };
 export type ReferenceHarvestingQueue = {
   enqueue: (job: ReferenceHarvestingJob, onSettled?: (succeeded: boolean) => void) => void;
+  remove: (predicate: (job: ReferenceHarvestingJob) => boolean) => number;
   pendingCount: () => number;
   dispose: () => void;
 };
@@ -73,11 +74,25 @@ export function createReferenceHarvestingQueue({ runJob, onProgress, onError }: 
     reportProgress();
     void processJobs();
   }
+  function remove(predicate: (job: ReferenceHarvestingJob) => boolean): number {
+    if (disposed) return 0;
+    let removed = 0;
+    for (let index = jobs.length - 1; index >= 0; index -= 1) {
+      const job = jobs[index];
+      if (!predicate(job)) continue;
+      jobs.splice(index, 1);
+      seen.delete(referenceHarvestingJobKey(job));
+      job.onSettled?.(false);
+      removed += 1;
+    }
+    if (removed > 0) reportProgress();
+    return removed;
+  }
   function dispose(): void {
     if (disposed) return;
     disposed = true;
     jobs.length = 0;
     controller.abort();
   }
-  return { enqueue, pendingCount, dispose };
+  return { enqueue, remove, pendingCount, dispose };
 }
