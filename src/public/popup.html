@@ -109,33 +109,7 @@
     </style>
   </head>
   <body>
-    <h1>Fobles</h1>
-    <ol>
-      <li>Set Site access in the browser's extension controls.</li>
-      <li>Open a page on an approved Sitecore domain.</li>
-      <li>
-        In Chrome Extensions Shortcuts, verify or assign
-        <span class="shortcut">Ctrl+Shift+E</span> for Toggle Fobles.
-      </li>
-    </ol>
-    <p class="hint">Open <strong>chrome://extensions/shortcuts</strong> to manage shortcuts. On macOS, use Command+Shift+E.</p>
-    <label class="visibility-setting">
-      <input id="fobles-nav-visible" type="checkbox" />
-      <span>Fobles navigation visible</span>
-    </label>
-    <label class="visibility-setting">
-      <input id="fobles-nav-warning-visible" type="checkbox" />
-      <span>Warn before same-tab Fobles navigation</span>
-    </label>
-    <label class="visibility-setting">
-      <input id="turn-off-fobles-after-navigation" type="checkbox" />
-      <span>Turn off Fobles after opening an item</span>
-    </label>
-    <button id="reload-extension" type="button" hidden>Reload Extension</button>
-
-    <button id="view-persisted-logs" type="button" hidden>View Logs</button>
-
-    <button id="open-options" type="button">Additional Settings</button>
+    <div id="popup-root"></div>
     <aside class="build-info">
       <div>Fobles for Sitecore</div>
       <div>Build: <strong>__BUILD_STAMP__</strong></div>
