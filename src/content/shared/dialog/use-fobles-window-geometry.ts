@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
-import { FOBLES_WINDOW_TITLE_BAR_HEIGHT, FOBLES_WINDOW_VIEWPORT_MARGIN } from "./fobles-window.const";
-import type { FoblesWindowState, ResizeEdge, WindowRect } from "./fobles-window.types";
+import { FOBLES_WINDOW_STATE_TYPE, FOBLES_WINDOW_TITLE_BAR_HEIGHT, FOBLES_WINDOW_VIEWPORT_MARGIN } from "./fobles-window.const";
+import type { FoblesWindowGeometry, FoblesWindowGeometryOptions, FoblesWindowState, ResizeEdge, WindowRect } from "./fobles-window.types";
 
 function viewportRect(win: Window): { width: number; height: number } {
   return { width: win.innerWidth, height: win.innerHeight };
@@ -30,27 +30,9 @@ function readRect(element: HTMLElement): WindowRect {
   return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
 }
 
-export type FoblesWindowGeometryOptions = { storageKey: string; defaultWidth: number; defaultHeight: number; minWidth: number; minHeight: number };
-
-export type FoblesWindowGeometry = {
-  dialogRef: React.RefObject<HTMLDivElement | null>;
-  style: React.CSSProperties;
-  collapsed: boolean;
-  maximized: boolean;
-  dragging: boolean;
-  toggleCollapse: () => void;
-  toggleMaximize: () => void;
-  onTitlePointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onTitlePointerMove: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onTitlePointerUp: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onResizePointerDown: (event: React.PointerEvent<HTMLDivElement>, edge: ResizeEdge) => void;
-  onResizePointerMove: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onResizePointerUp: (event: React.PointerEvent<HTMLDivElement>) => void;
-};
-
 export function useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeight, minWidth, minHeight }: FoblesWindowGeometryOptions): FoblesWindowGeometry {
   const dialogRef = useRef<HTMLDivElement | null>(null);
-  const [state, setState] = useState<FoblesWindowState>(() => ({ type: "foblesWindowState", ...centeredRect(window, defaultWidth, defaultHeight, minWidth, minHeight), collapsed: false, maximized: false }));
+  const [state, setState] = useState<FoblesWindowState>(() => ({ type: FOBLES_WINDOW_STATE_TYPE, ...centeredRect(window, defaultWidth, defaultHeight, minWidth, minHeight), collapsed: false, maximized: false }));
   const [dragging, setDragging] = useState(false);
   const stateRef = useRef(state);
   stateRef.current = state;
@@ -75,7 +57,7 @@ export function useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeigh
       if (!stored || typeof stored !== "object") return;
       const candidate = stored as Partial<FoblesWindowState>;
       const hasValidRect = [candidate.left, candidate.top, candidate.width, candidate.height].every((value) => typeof value === "number" && Number.isFinite(value));
-      if ((candidate.type === undefined || candidate.type === "foblesWindowState") && hasValidRect) {
+      if ((candidate.type === undefined || candidate.type === FOBLES_WINDOW_STATE_TYPE) && hasValidRect) {
         setState((current) => ({ ...current, ...(candidate as FoblesWindowState), collapsed: candidate.collapsed === true, maximized: candidate.maximized === true }));
       }
     });

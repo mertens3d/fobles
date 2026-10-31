@@ -1,0 +1,115 @@
+/* @source-path [fobles] src/content/shared/ui/indexeddb-viewer/developer-dialog.scss */
+
+.fobles-dev-shell {
+  display: flex;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fobles-dev-header {
+  padding-right: 56px;
+
+  h2 {
+    margin: 0;
+    font-size: 16px;
+  }
+}
+
+.fobles-dev-tablist {
+  display: flex;
+  gap: 4px;
+  border-bottom: 1px solid #7f9bc4;
+}
+
+.fobles-dev-tab {
+  margin-bottom: -1px;
+  padding: 6px 14px;
+  border: 1px solid transparent;
+  border-radius: 4px 4px 0 0;
+  background: transparent;
+  color: #203047;
+  cursor: pointer;
+  font: 13px Arial, sans-serif;
+
+  &:hover {
+    background: #eef4ff;
+  }
+
+  &.is-selected {
+    border-color: #7f9bc4;
+    border-bottom-color: #fff;
+    background: #fff;
+    font-weight: bold;
+  }
+}
+
+.fobles-dev-panel {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+
+  &[hidden] {
+    display: none;
+  }
+
+  > .fobles-idb-app {
+    flex: 1;
+    height: auto;
+  }
+}
+
+.fobles-dev-editor {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.fobles-dev-editor-text {
+  flex: 1;
+  min-height: 0;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px;
+  resize: none;
+  overflow: auto;
+  border: 1px solid #7f9bc4;
+  border-radius: 4px;
+  white-space: pre;
+  tab-size: 2;
+  font: 12px/1.5 Consolas, monospace;
+  color: #203047;
+  background: #fff;
+}
+
+.fobles-dev-editor-toolbar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+
+  button {
+    padding: 5px 14px;
+    border: 1px solid #7f9bc4;
+    border-radius: 4px;
+    background: #fff;
+    cursor: pointer;
+
+    &:disabled {
+      cursor: default;
+      opacity: 0.6;
+    }
+  }
+}
+
+.fobles-dev-editor-status {
+  color: #556;
+
+  &.is-error {
+    color: #9b1c1c;
+  }
+}

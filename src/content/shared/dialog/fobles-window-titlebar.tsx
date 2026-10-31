@@ -1,19 +1,7 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window-titlebar.tsx
 
 import { DialogIconButton } from "../ui/dialog/dialog-icon-button";
-
-export type FoblesWindowTitlebarProps = {
-  title: string;
-  collapsed: boolean;
-  maximized: boolean;
-  onHelp?: () => void;
-  onToggleCollapse: () => void;
-  onToggleMaximize: () => void;
-  onClose: () => void;
-  onPointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onPointerMove: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onPointerUp: (event: React.PointerEvent<HTMLDivElement>) => void;
-};
+import type { FoblesWindowTitlebarProps } from "./fobles-window.types";
 
 export function FoblesWindowTitlebar({ title, collapsed, maximized, onHelp, onToggleCollapse, onToggleMaximize, onClose, onPointerDown, onPointerMove, onPointerUp }: FoblesWindowTitlebarProps) {
   return (

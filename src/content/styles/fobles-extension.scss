@@ -10,5 +10,8 @@
 @use "auditor";
 @use "../features/auditor/components/auditor-status-cell";
 @use "../features/auditor/components/auditor-grid";
+@use "../shared/ui/json-tree/json-tree";
+@use "../shared/ui/indexeddb-viewer/indexeddb-viewer";
+@use "../shared/ui/indexeddb-viewer/developer-dialog";
 @use "iframe-workers";
 @use "fobles-error";
