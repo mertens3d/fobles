@@ -26,6 +26,12 @@
   }
 }
 
+.fobles-worker-iframe-container {
+  z-index: 1000;
+
+  // keep the rest of the existing class exactly as-is
+}
+
 .fobles-worker-iframe {
   display: block;
 

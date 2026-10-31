@@ -2,9 +2,10 @@
 
 export const AUDITOR_LAYOUT_VIEW_KEYS = ["device", "page-layout", "placeholder", "rendering", "datasource", "parameter"] as const;
 export type AuditorLayoutViewKey = typeof AUDITOR_LAYOUT_VIEW_KEYS[number];
-export type AuditorLayoutViewSettings = Readonly<Record<AuditorLayoutViewKey, boolean>>;
+export type AuditorLayoutViewSettings = Readonly<Record<AuditorLayoutViewKey, boolean>> & { readonly type: "auditorLayoutViewSettings" };
 
 export const DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS: AuditorLayoutViewSettings = {
+  type: "auditorLayoutViewSettings",
   device: true,
   "page-layout": true,
   placeholder: true,
@@ -23,7 +24,7 @@ export async function getAuditorLayoutViewSettings(): Promise<AuditorLayoutViewS
   if (!stored || typeof stored !== "object" || Array.isArray(stored)) return DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS;
 
   const record = stored as Record<string, unknown>;
-  return Object.fromEntries(AUDITOR_LAYOUT_VIEW_KEYS.map((key) => [key, typeof record[key] === "boolean" ? record[key] : true])) as AuditorLayoutViewSettings;
+  return { type: "auditorLayoutViewSettings", ...Object.fromEntries(AUDITOR_LAYOUT_VIEW_KEYS.map((key) => [key, typeof record[key] === "boolean" ? record[key] : true])) } as AuditorLayoutViewSettings;
 }
 
 export async function setAuditorLayoutViewSettings(settings: AuditorLayoutViewSettings): Promise<void> {

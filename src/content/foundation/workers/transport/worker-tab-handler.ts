@@ -85,7 +85,7 @@ function addWorkerBanner(doc: Document): void {
   const activity = doc.createElement("div");
   activity.id = WORKER_ACTIVITY_ID;
   activity.style.cssText = ["margin-top:18px", "font-size:14px", "line-height:1.5", "text-align:left", "overflow-wrap:anywhere"].join(";");
-  activity.textContent = "Status: Waiting for work";
+  activity.textContent = "Ready for background work";
   const adoptButton = doc.createElement("button");
   adoptButton.type = "button";
   adoptButton.textContent = "Use this tab instead";
@@ -101,10 +101,41 @@ void chrome.runtime.sendMessage({ type: MESSAGE_TYPE.WORKER_ADOPTED } satisfies 
   doc.documentElement.appendChild(overlay);
 }
 
+function workerTaskLabel(task: WorkerTask): string {
+  switch (task.type) {
+    case "get-quick-info": return "Reading item information";
+    case "get-parent": return "Reading parent item";
+    case "get-children": return "Reading child items";
+    case "get-referrers": return "Reading referring items";
+    case "get-custom-fields": return "Reading custom fields";
+    case "get-standard-fields": return "Reading standard fields";
+    case "get-layout": return "Reading layout information";
+    case "set-raw-values": return "Updating raw field values";
+    case "set-standard-fields": return "Updating standard fields";
+  }
+}
+
+function workerItemLabel(task: WorkerTask): string {
+  try {
+    const url = new URL(task.url);
+    return url.searchParams.get("id") ?? url.searchParams.get("sc_itemid") ?? url.searchParams.get("fo") ?? url.pathname;
+  } catch {
+    return "Current Sitecore item";
+  }
+}
+
 function updateWorkerActivity(doc: Document, task: WorkerTask, status: string): void {
   const activity = doc.getElementById(WORKER_ACTIVITY_ID);
   if (!activity) return;
-  activity.textContent = `Status: ${status} | Job: ${task.type} | Task: ${task.taskId} | URL: ${task.url}`;
+  const friendlyStatus = status === "Running" ? "Working" : status === "Completed" ? "Complete" : "Failed";
+  activity.replaceChildren();
+  const statusLine = doc.createElement("div");
+  statusLine.textContent = `Status: ${friendlyStatus}`;
+  const taskLine = doc.createElement("div");
+  taskLine.textContent = `Task: ${workerTaskLabel(task)}`;
+  const itemLine = doc.createElement("div");
+  itemLine.textContent = `Item: ${workerItemLabel(task)}`;
+  activity.append(statusLine, taskLine, itemLine);
 }
 
 async function delay(delayMs: number): Promise<void> { 

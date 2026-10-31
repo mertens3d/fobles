@@ -7,6 +7,7 @@ export const REFERENCE_GRAPH_SESSION_CONTAINER_ID = "fobles-reference-graph-sess
 export function createReferenceGraphSessionContainer(doc: Document, sessionId: string): HTMLDivElement {
   doc.getElementById(REFERENCE_GRAPH_SESSION_CONTAINER_ID)?.remove();
   const container = doc.createElement("div");
+  container.className = "fobles-specialist-session";
   container.id = REFERENCE_GRAPH_SESSION_CONTAINER_ID;
   container.dataset.foblesReferenceGraphSession = sessionId;
   doc.body.appendChild(container);

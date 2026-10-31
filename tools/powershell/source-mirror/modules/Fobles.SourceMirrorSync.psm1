@@ -84,8 +84,8 @@ function Invoke-FoblesMirrorSync {
     try {
         try { $lockTaken = $mutex.WaitOne([TimeSpan]::FromMinutes(5)) }
         catch [System.Threading.AbandonedMutexException] { $lockTaken = $true }
-        if (-not $lockTaken) { throw "Timed out waiting for another Fobles FoblesMirror sync to finish." }
-        Write-Host "Fobles FoblesMirror sync started: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
+        if (-not $lockTaken) { throw "Timed out waiting for another Fobles source mirror sync to finish." }
+        Write-Host "Fobles source mirror sync started: $(Get-Date -Format 'yyyy-MM-dd HH:mm:ss')"
         $arguments = @($script:SourceRoot, $script:DestinationRoot, "/MIR", "/FFT", "/R:1", "/W:1", "/NJH", "/NJS", "/NP", "/XD")
         foreach ($directory in $script:ExcludedDirectories) { $arguments += $directory }
         foreach ($relativePath in $script:ExcludedRelativePaths) { $arguments += [System.IO.Path]::Combine($script:SourceRoot, $relativePath) }
@@ -95,7 +95,7 @@ function Invoke-FoblesMirrorSync {
         $robocopyExitCode = $LASTEXITCODE
         if ($robocopyExitCode -ge 8) { throw "Robocopy failed with exit code $robocopyExitCode." }
         Sync-FoblesTypeScriptTextCopies
-        Write-Host "Fobles FoblesMirror sync complete. Robocopy exit code: $robocopyExitCode"
+        Write-Host "Fobles source mirror sync complete. Robocopy exit code: $robocopyExitCode"
     } finally {
         if ($lockTaken) { $mutex.ReleaseMutex() }
         $mutex.Dispose()

@@ -61,6 +61,13 @@ export function ReferenceGraphApp({
   });
 
   useEffect(() => {
+    const container = containerRef.current;
+    if (!container || typeof ResizeObserver === "undefined") return;
+    const observer = new ResizeObserver(() => cyRef.current?.resize());
+    observer.observe(container);
+    return () => observer.disconnect();
+  }, []);
+  useEffect(() => {
     const session = getFoblesDataSession(workSession.id);
     return session?.subscribeHarvestProgress(graphState.setHarvestProgress);
   }, [workSession.id, graphState.setHarvestProgress]);

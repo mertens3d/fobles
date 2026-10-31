@@ -4,6 +4,7 @@ import type { ReferenceModelNode } from "../../../foundation/reference-data/mode
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
+import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
 import type { AuditFinding } from "../audit-finding.types";
 import { buildAuditReportTree } from "../audit-report-tree";
 import type { AuditorTreeRow, JourneyStage } from "./auditor-grid.types";
@@ -42,13 +43,20 @@ export function projectAuditorRows(
   findings: readonly AuditFinding[],
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId,
   liveSeen: ReadonlySet<string>,
+  graphFilters: SitecoreHarvestFiltersState,
 ): AuditorTreeRow[] {
   const nodesById = indexReferenceModelNodes(referenceModelRoot);
   const findingsByNode = indexFindingsByNode(findings);
   const results: AuditorTreeRow[] = [];
 
   buildAuditReportTree(referenceModelRoot, findings, processingStateByTreeNodeId)
-    .filter((row) => row.kind !== "finding")
+    .filter((row) => {
+      if (row.kind === "finding") return false;
+      const node = row.referenceModelNodeId ? nodesById.get(row.referenceModelNodeId) : undefined;
+      if (!node) return true;
+      const branch = getGraphPresentationState(node).branch;
+      return !branch || graphFilters[branch];
+    })
     .forEach((row) => {
       const node = row.referenceModelNodeId ? nodesById.get(row.referenceModelNodeId) : undefined;
       const nodeFindings = row.referenceModelNodeId ? findingsByNode.get(row.referenceModelNodeId) ?? [] : [];

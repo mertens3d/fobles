@@ -1,0 +1,193 @@
+/* @source-path [fobles] src/content/styles/_window.scss */
+@use "tokens" as *;
+
+.fobles-specialist-session {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  pointer-events: none;
+}
+
+.fobles-specialist-session > .fobles-window {
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.fobles-window {
+  position: absolute !important;
+  box-sizing: border-box !important;
+  transform: none !important;
+  max-width: none !important;
+  max-height: none !important;
+  inset: auto !important;
+  margin: 0 !important;
+  padding: 0 !important;
+  overflow: hidden !important;
+  resize: none;
+  transition: none !important;
+  border: 1px solid #7f9bc4;
+  border-radius: 4px;
+  background: $fobles-white;
+  box-shadow: 0 12px 36px $fobles-shadow-dialog;
+  color: $fobles-text;
+
+  &.is-collapsed {
+    min-height: 34px !important;
+  }
+
+  &.is-collapsed .fobles-window-content,
+  &.is-collapsed .fobles-window-resize {
+    display: none;
+  }
+
+  &.is-maximized {
+    border-radius: 2px;
+  }
+}
+
+.fobles-window-titlebar {
+  display: flex;
+  height: 34px;
+  box-sizing: border-box;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 0 5px 0 10px;
+  border-bottom: 1px solid #1d4f9c;
+  background: linear-gradient(#467cc3, #2d5f9f);
+  color: #fff;
+  cursor: move;
+  user-select: none;
+  touch-action: none;
+}
+
+.fobles-window-title {
+  min-width: 0;
+  overflow: hidden;
+  font: 600 13px/32px Arial, sans-serif;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fobles-window-actions {
+  display: flex;
+  flex: 0 0 auto;
+  align-items: center;
+  gap: 2px;
+}
+
+.fobles-window-button {
+  appearance: none;
+  display: inline-flex;
+  width: 25px;
+  height: 24px;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  border: 1px solid transparent;
+  border-radius: 2px;
+  background: transparent;
+  color: #fff;
+  font: 600 15px/20px Arial, sans-serif;
+  cursor: default;
+}
+
+.fobles-window-button:hover,
+.fobles-window-button:focus-visible {
+  border-color: rgba(255, 255, 255, 0.55);
+  background: rgba(255, 255, 255, 0.16);
+  outline: 0;
+}
+
+.fobles-window-close:hover,
+.fobles-window-close:focus-visible {
+  border-color: #b20d0d;
+  background: #c42b1c;
+}
+
+.fobles-window-content {
+  position: relative;
+  width: 100%;
+  height: calc(100% - 34px);
+  min-width: 0;
+  min-height: 0;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+.fobles-window-resize {
+  position: absolute;
+  z-index: 20;
+}
+
+.fobles-window-resize--n,
+.fobles-window-resize--s {
+  left: 7px;
+  right: 7px;
+  height: 7px;
+  cursor: ns-resize;
+}
+
+.fobles-window-resize--n {
+  top: 0;
+}
+
+.fobles-window-resize--s {
+  bottom: 0;
+}
+
+.fobles-window-resize--e,
+.fobles-window-resize--w {
+  top: 7px;
+  bottom: 7px;
+  width: 7px;
+  cursor: ew-resize;
+}
+
+.fobles-window-resize--e {
+  right: 0;
+}
+
+.fobles-window-resize--w {
+  left: 0;
+}
+
+.fobles-window-resize--ne,
+.fobles-window-resize--nw,
+.fobles-window-resize--se,
+.fobles-window-resize--sw {
+  width: 11px;
+  height: 11px;
+}
+
+.fobles-window-resize--ne {
+  top: 0;
+  right: 0;
+  cursor: nesw-resize;
+}
+
+.fobles-window-resize--nw {
+  top: 0;
+  left: 0;
+  cursor: nwse-resize;
+}
+
+.fobles-window-resize--se {
+  right: 0;
+  bottom: 0;
+  cursor: nwse-resize;
+}
+
+.fobles-window-resize--sw {
+  bottom: 0;
+  left: 0;
+  cursor: nesw-resize;
+}
+
+.fobles-auditor-dialog .fobles-window-content {
+  padding: 10px 12px 12px;
+}
+
+.fobles-idb-dialog .fobles-window-content {
+  padding: 12px 16px 16px;
+}

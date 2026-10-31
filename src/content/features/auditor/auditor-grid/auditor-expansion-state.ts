@@ -29,12 +29,12 @@ export function descendantExpandableIds(rowId: string, rows: readonly AuditorTre
   return ids;
 }
 
-export function reconcileExpandedRows(current: ReadonlySet<string>, rows: readonly AuditorTreeRow[], rowsById: ReadonlyMap<string, AuditorTreeRow>): ReadonlySet<string> {
+export function reconcileExpandedRows(current: ReadonlySet<string>, explicitlyCollapsed: ReadonlySet<string>, rows: readonly AuditorTreeRow[], rowsById: ReadonlyMap<string, AuditorTreeRow>): ReadonlySet<string> {
   const next = new Set(Array.from(current).filter((id) => rowsById.get(id)?.hasChildren));
   let changed = next.size !== current.size;
 
   rows.forEach((row) => {
-    if (!row.hasChildren || next.has(row.id)) return;
+    if (!row.hasChildren || next.has(row.id) || explicitlyCollapsed.has(row.id)) return;
 
     const parentVisible = !row.parentId || next.has(row.parentId);
     if (!parentVisible) return;

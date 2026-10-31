@@ -53,7 +53,7 @@ export async function getAuditorGraphFilters(): Promise<Partial<SitecoreHarvestF
 }
 
 export async function setAuditorGraphFilters(filters: SitecoreHarvestFiltersState): Promise<void> {
-  await chrome.storage.local.set({ [AUDITOR_UI_KEY.GRAPH_FILTERS]: filters });
+  await chrome.storage.local.set({ [AUDITOR_UI_KEY.GRAPH_FILTERS]: { type: "auditorGraphFilters", ...filters } });
 }
 
 export async function getAuditorHideTests(): Promise<boolean> {

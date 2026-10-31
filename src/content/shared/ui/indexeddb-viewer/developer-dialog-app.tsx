@@ -19,9 +19,6 @@ export function DeveloperDialogApp({ doc }: IndexedDbViewerAppProps) {
   const [activeTab, setActiveTab] = useState<DeveloperTabId>(TAB_ID.INDEXEDDB);
   return (
     <div className={CLASS.SHELL}>
-      <header className={CLASS.HEADER}>
-        <h2>{TEXT.TITLE}</h2>
-      </header>
       <div className={CLASS.TABLIST} role="tablist" aria-label={TEXT.TABLIST_LABEL}>
         {TABS.map((tab) => (
           <button

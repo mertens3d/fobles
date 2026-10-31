@@ -5,6 +5,7 @@ import { AgGridReact } from "ag-grid-react";
 import { AllCommunityModule, ModuleRegistry, themeQuartz, type ColDef, type ICellRendererParams, type RowDoubleClickedEvent } from "ag-grid-community";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
+import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
 import { getExpandedByCollapseKey, setExpandedStateForCollapseKey } from "../../reference-graph/graph-nodes/graph-collapse-settings";
 import type { AuditFinding } from "../audit-finding.types";
 import { DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS, getAuditorLayoutViewSettings, subscribeAuditorLayoutViewSettings, type AuditorLayoutViewSettings } from "../auditor-layout-view-settings";
@@ -24,6 +25,7 @@ export type AuditorGridProps = {
   findings: readonly AuditFinding[];
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
   modelRevision: number;
+  graphFilters: SitecoreHarvestFiltersState;
   onViewData: (treeNodeId: string) => void;
   onViewTestDetails: (findings: readonly AuditFinding[]) => void;
 };
@@ -38,7 +40,7 @@ function clearTextSelection(source: Event | null | undefined): void {
   targetDocument.getSelection()?.removeAllRanges();
 }
 
-export function AuditorGrid({ referenceModelRoot, findings, processingStateByTreeNodeId, modelRevision, onViewData, onViewTestDetails }: AuditorGridProps) {
+export function AuditorGrid({ referenceModelRoot, findings, processingStateByTreeNodeId, modelRevision, graphFilters, onViewData, onViewTestDetails }: AuditorGridProps) {
   const liveSeen = useRef(new Set<string>());
 
   processingStateByTreeNodeId.forEach((status, treeNodeId) => {
@@ -46,10 +48,11 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
   });
 
   const allRows = useMemo(
-    () => projectAuditorRows(referenceModelRoot, findings, processingStateByTreeNodeId, liveSeen.current),
-    [referenceModelRoot, findings, processingStateByTreeNodeId, modelRevision],
+    () => projectAuditorRows(referenceModelRoot, findings, processingStateByTreeNodeId, liveSeen.current, graphFilters),
+    [referenceModelRoot, findings, processingStateByTreeNodeId, modelRevision, graphFilters],
   );
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
+  const [explicitlyCollapsed, setExplicitlyCollapsed] = useState<ReadonlySet<string>>(() => new Set());
   const [layoutView, setLayoutView] = useState<AuditorLayoutViewSettings>(DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS);
   const [templateVisible, setTemplateVisible] = useState(true);
   const projectedRows = useMemo(
@@ -80,14 +83,17 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
 
     initialized.current = true;
 
-    void getExpandedByCollapseKey().then((saved) => {
-      setExpanded(new Set(allRows.filter((row) => row.hasChildren && (!row.collapseKey || saved[row.collapseKey])).map((row) => row.id)));
+    void Promise.all([getExpandedByCollapseKey(), chrome.storage.local.get("fobles.auditor.expansion-state")]).then(([saved, values]) => {
+      const stored = values["fobles.auditor.expansion-state"] as { type?: string; collapsedIds?: unknown } | undefined;
+      const collapsed = new Set(Array.isArray(stored?.collapsedIds) ? stored.collapsedIds.filter((id): id is string => typeof id === "string") : []);
+      setExplicitlyCollapsed(collapsed);
+      setExpanded(new Set(allRows.filter((row) => row.hasChildren && !collapsed.has(row.id) && (!row.collapseKey || saved[row.collapseKey])).map((row) => row.id)));
     });
   }, [allRows]);
 
   useEffect(() => {
-    setExpanded((current) => reconcileExpandedRows(current, projectedRows, rowsById));
-  }, [projectedRows, rowsById]);
+    setExpanded((current) => reconcileExpandedRows(current, explicitlyCollapsed, projectedRows, rowsById));
+  }, [explicitlyCollapsed, projectedRows, rowsById]);
 
   const searchedRowIds = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
@@ -127,6 +133,12 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
           : [row.id];
 
       targets.forEach((id) => (opening ? next.add(id) : next.delete(id)));
+      setExplicitlyCollapsed((currentCollapsed) => {
+        const nextCollapsed = new Set(currentCollapsed);
+        targets.forEach((id) => (opening ? nextCollapsed.delete(id) : nextCollapsed.add(id)));
+        void chrome.storage.local.set({ "fobles.auditor.expansion-state": { type: "auditorExpansionState", collapsedIds: Array.from(nextCollapsed) } });
+        return nextCollapsed;
+      });
       return next;
     });
 

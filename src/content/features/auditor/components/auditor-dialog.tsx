@@ -12,7 +12,7 @@ import {
   subscribeFoblesAcquisitionProgress,
   type FoblesAcquisitionProgress,
 } from "../../../foundation/reference-data/reference-data-service";
-import { createDialogCloseButton } from "../../../shared/dialog/dialog-close-button";
+import { createFoblesWindow } from "../../../shared/dialog/fobles-window";
 import { DialogIconButton } from "../../../shared/ui/dialog/dialog-icon-button";
 import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
 import { LifecycleProgressFooter } from "../../../shared/ui/reference-controls/lifecycle-progress-footer";
@@ -20,6 +20,7 @@ import { ReferenceModelViewer } from "../../../shared/ui/reference-model/referen
 import { NodeDetailsPanel } from "../../reference-graph/components/node-details-panel";
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import type { AuditFinding, AuditFindingStatus } from "../audit-finding.types";
+import { requireAuditorSessionContainer } from "../auditor-session-container";
 import type { AuditFindingStore } from "../audit-finding-store";
 import {
   getAuditorCheckFilter,
@@ -200,6 +201,11 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
   }
   const resolveComplete = resolveProgress?.status === "complete";
   useEffect(() => {
+    const showHelpFromWindow = (): void => setShowHelp(true);
+    window.addEventListener("fobles:auditor-help", showHelpFromWindow);
+    return () => window.removeEventListener("fobles:auditor-help", showHelpFromWindow);
+  }, []);
+  useEffect(() => {
     logHeapSnapshot("auditor-opened", { workSessionId });
   }, [workSessionId]);
   useEffect(() => {
@@ -285,7 +291,6 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
   }
   return (
     <div className="fobles-auditor-app">
-      <button type="button" className="fobles-auditor-help-button" title="Auditor help" aria-label="Auditor help" onClick={() => setShowHelp(true)}>?</button>
       <AuditorSummary
         counts={summary}
         selectedStatuses={selectedStatuses}
@@ -342,6 +347,7 @@ function AuditorApp({ doc, findingStore, workSessionId }: AuditorAppProps) {
               findings={visibleFindings}
               processingStateByTreeNodeId={model.processingStateByTreeNodeId}
               modelRevision={modelRevision}
+              graphFilters={graphFilters}
               onViewData={setSelectedTreeNodeId}
               onViewTestDetails={setSelectedTestFindings}
             />
@@ -453,15 +459,22 @@ export function openAuditorDialog(
 ): Promise<void> {
   doc.getElementById(AUDITOR_DIALOG_ID)?.remove();
   return new Promise<void>((resolve) => {
-    const dialog = doc.createElement("dialog");
-    dialog.id = AUDITOR_DIALOG_ID;
-    dialog.className = "fobles-auditor-dialog";
-    const closeButton = createDialogCloseButton(doc, dialog);
+    const { window: dialog, content, dispose } = createFoblesWindow(doc, {
+      id: AUDITOR_DIALOG_ID,
+      className: "fobles-auditor-dialog",
+      title: "Fobles Reference Audit",
+      storageKey: "fobles.window.auditor",
+      defaultWidth: Math.min(760, (doc.defaultView?.innerWidth ?? 1000) - 40),
+      defaultHeight: Math.min(760, (doc.defaultView?.innerHeight ?? 800) - 40),
+      minWidth: 560,
+      minHeight: 420,
+      onHelp: () => window.dispatchEvent(new CustomEvent("fobles:auditor-help")),
+      owner: requireAuditorSessionContainer(doc),
+    });
     const appHost = doc.createElement("div");
     appHost.style.cssText = "position:relative;width:100%;height:100%;";
     const appRoot = createRoot(appHost);
-    dialog.append(closeButton, appHost);
-    doc.body.appendChild(dialog);
+    content.appendChild(appHost);
     dialog.addEventListener(
       "close",
       () => {
@@ -472,6 +485,7 @@ export function openAuditorDialog(
             await onCancelRequested();
           } finally {
             if (cleanupDialog.isConnected) cleanupDialog.close();
+            dispose();
             appRoot.unmount();
             dialog.remove();
             logHeapSnapshot("auditor-closed", { workSessionId });
@@ -482,13 +496,6 @@ export function openAuditorDialog(
       },
       { once: true },
     );
-    dialog.showModal();
-    appRoot.render(
-      <AuditorApp
-        doc={doc}
-        findingStore={findingStore}
-        workSessionId={workSessionId}
-      />,
-    );
+    appRoot.render(<AuditorApp doc={doc} findingStore={findingStore} workSessionId={workSessionId} />);
   });
 }

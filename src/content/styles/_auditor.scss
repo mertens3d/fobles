@@ -705,3 +705,10 @@
   width: auto !important;
   min-width: 80px;
 }
+
+.fobles-window.fobles-auditor-dialog { padding: 0; }
+.fobles-window.fobles-auditor-dialog .fobles-auditor-app::before { display: none; content: none; }
+.fobles-window.fobles-auditor-dialog .fobles-auditor-help-button { top: 8px !important; right: 8px !important; }
+
+/* Help is owned by the shared Fobles window title bar. */
+.fobles-auditor-app > .fobles-auditor-help-button { display: none !important; }

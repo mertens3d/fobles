@@ -7,6 +7,7 @@ export const AUDITOR_SESSION_CONTAINER_ID = "fobles-auditor-session";
 export function createAuditorSessionContainer(doc: Document, sessionId: string): HTMLDivElement {
   doc.getElementById(AUDITOR_SESSION_CONTAINER_ID)?.remove();
   const container = doc.createElement("div");
+  container.className = "fobles-specialist-session";
   container.id = AUDITOR_SESSION_CONTAINER_ID;
   container.dataset.foblesAuditorSession = sessionId;
   doc.body.appendChild(container);

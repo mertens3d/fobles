@@ -217,7 +217,7 @@ export function createWorkSession(): WorkSession {
 
   healthTimer = setInterval(() => {
     const report = getHealth();
-    extensionLog.debug("Shell health: poll", report);
+    // extensionLog.debug("Shell health: poll", report);
     if (report.state === "unhealthy") {
       extensionLog.error("Shell health: unhealthy specialist; cancelling", report);
       void cancel();

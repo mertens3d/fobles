@@ -16,7 +16,7 @@ export function createRenderingReferenceModelNode(pageLayoutTreeNodeId: string, 
 
   if (control.datasource) children.push(createDatasourceReferenceModelNode(renderingTreeNodeId, control.datasource));
 
-  const parameters = Object.entries(control.parameters).filter(([, value]) => isReferenceValue(value));
+  const parameters = Object.entries(control.parameters ?? {}).filter(([, value]) => isReferenceValue(value));
 
   if (parameters.length > 0) children.push(createRenderingParametersReferenceModelNode(renderingTreeNodeId, parameters));
 
