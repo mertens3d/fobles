@@ -12,7 +12,8 @@ import {
   subscribeFoblesAcquisitionProgress,
   type FoblesAcquisitionProgress,
 } from "../../../foundation/reference-data/reference-data-service";
-import { createFoblesWindow } from "../../../shared/dialog/fobles-window";
+import { FoblesWindow } from "../../../shared/dialog/fobles-window";
+import { clearFoblesWindowHost, replaceFoblesWindowHost } from "../../../shared/dialog/fobles-window-host-registry";
 import { DialogIconButton } from "../../../shared/ui/dialog/dialog-icon-button";
 import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
 import { LifecycleProgressFooter } from "../../../shared/ui/reference-controls/lifecycle-progress-footer";
@@ -457,45 +458,45 @@ export function openAuditorDialog(
   workSessionId: string,
   onCancelRequested: () => Promise<void>,
 ): Promise<void> {
-  doc.getElementById(AUDITOR_DIALOG_ID)?.remove();
   return new Promise<void>((resolve) => {
-    const { window: dialog, content, dispose } = createFoblesWindow(doc, {
-      id: AUDITOR_DIALOG_ID,
-      className: "fobles-auditor-dialog",
-      title: "Fobles Reference Audit",
-      storageKey: "fobles.window.auditor",
-      defaultWidth: Math.min(760, (doc.defaultView?.innerWidth ?? 1000) - 40),
-      defaultHeight: Math.min(760, (doc.defaultView?.innerHeight ?? 800) - 40),
-      minWidth: 560,
-      minHeight: 420,
-      onHelp: () => window.dispatchEvent(new CustomEvent("fobles:auditor-help")),
-      owner: requireAuditorSessionContainer(doc),
-    });
-    const appHost = doc.createElement("div");
-    appHost.style.cssText = "position:relative;width:100%;height:100%;";
-    const appRoot = createRoot(appHost);
-    content.appendChild(appHost);
-    dialog.addEventListener(
-      "fobles-window-close",
-      () => {
-        void (async () => {
-          logHeapSnapshot("auditor-closing", { workSessionId });
-          const cleanupDialog = showFoblesCleanupDialog(doc);
-          try {
-            await onCancelRequested();
-          } finally {
-            if (cleanupDialog.isConnected) cleanupDialog.close();
-            dispose();
-            appRoot.unmount();
-            dialog.remove();
-            logHeapSnapshot("auditor-closed", { workSessionId });
-            window.setTimeout(() => logHeapSnapshot("auditor-closed+10s", { workSessionId }), 10000);
-            resolve();
-          }
-        })();
-      },
-      { once: true },
+    const host = doc.createElement("div");
+    requireAuditorSessionContainer(doc).appendChild(host);
+    const root = createRoot(host);
+    replaceFoblesWindowHost(doc, AUDITOR_DIALOG_ID, host, root);
+
+    function handleClose(): void {
+      void (async () => {
+        logHeapSnapshot("auditor-closing", { workSessionId });
+        const cleanupDialog = showFoblesCleanupDialog(doc);
+        try {
+          await onCancelRequested();
+        } finally {
+          if (cleanupDialog.isConnected) cleanupDialog.close();
+          clearFoblesWindowHost(doc, AUDITOR_DIALOG_ID);
+          root.unmount();
+          host.remove();
+          logHeapSnapshot("auditor-closed", { workSessionId });
+          window.setTimeout(() => logHeapSnapshot("auditor-closed+10s", { workSessionId }), 10000);
+          resolve();
+        }
+      })();
+    }
+
+    root.render(
+      <FoblesWindow
+        id={AUDITOR_DIALOG_ID}
+        className="fobles-auditor-dialog"
+        title="Fobles Reference Audit"
+        storageKey="fobles.window.auditor"
+        defaultWidth={Math.min(760, (doc.defaultView?.innerWidth ?? 1000) - 40)}
+        defaultHeight={Math.min(760, (doc.defaultView?.innerHeight ?? 800) - 40)}
+        minWidth={560}
+        minHeight={420}
+        onHelp={() => window.dispatchEvent(new CustomEvent("fobles:auditor-help"))}
+        onClose={handleClose}
+      >
+        <AuditorApp doc={doc} findingStore={findingStore} workSessionId={workSessionId} />
+      </FoblesWindow>,
     );
-    appRoot.render(<AuditorApp doc={doc} findingStore={findingStore} workSessionId={workSessionId} />);
   });
 }
