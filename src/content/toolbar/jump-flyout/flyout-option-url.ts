@@ -1,7 +1,7 @@
 import { CONST} from "../../../constants/const";
 import { getCurrentItemId } from "../../foundation/sitecore/current-item";
 import { joinJumpFlyoutPath } from "../../../shared/jump-flyout/button-settings";
-import { getButtonSetting } from "./button-visibility";
+import { getJumpFlyoutButtonSetting } from "./use-jump-flyout-button-settings";
 import type { FlyoutOption } from "../../../shared/jump-flyout/jump-flyout.types";
 
 function getCurrentDatabase(doc: Document): string | null {
@@ -31,7 +31,7 @@ function getCurrentDatabase(doc: Document): string | null {
 // A "path" option jumps the content editor tree (fo=), a "url" option navigates directly.
 export function buildFlyoutOptionUrl(doc: Document, option: FlyoutOption): string {
   if (option.path !== undefined) {
-    const fullPath = joinJumpFlyoutPath(option.path, getButtonSetting(option.id)?.encodedPathSuffix ?? "");
+    const fullPath = joinJumpFlyoutPath(option.path, getJumpFlyoutButtonSetting(option.id)?.encodedPathSuffix ?? "");
     return `${window.location.origin}${CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY}?sc_bw=1&fo=${fullPath}`;
   }
 

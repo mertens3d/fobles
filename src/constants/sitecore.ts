@@ -70,7 +70,7 @@ export const SITECORE = {
     SHELL_DEFAULT: "/sitecore/shell/default.aspx",
     TEMPLATE_MANAGER: "/sitecore/shell/Applications/Templates/Template-Manager",
   },
-  // Mirrors src/content/toolbar/sc-proxy-buttons.ts's real ribbon checkbox ids for these same toggles.
+  // Mirrors src/content/toolbar/proxy-flyout/proxy-flyout.const.ts's real ribbon checkbox ids for these same toggles.
   RIBBON_CHECKBOXES: {
     RAW_VALUES: "Check_BBDED3F008D144C82A983B54F0424BBC1",
     STANDARD_FIELDS: "Check_BC29C1D329FB74DA585083FEC2AF3A81D",
