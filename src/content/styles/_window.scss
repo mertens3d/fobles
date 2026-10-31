@@ -8,7 +8,9 @@
   pointer-events: none;
 }
 
-.fobles-specialist-session > .fobles-window {
+// Descendant (not direct-child) combinator: the window may be nested one level deeper inside a
+// React mount host div, not necessarily an immediate child of the session container.
+.fobles-specialist-session .fobles-window {
   z-index: 10;
   pointer-events: auto;
 }
