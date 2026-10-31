@@ -180,13 +180,15 @@ export function createFoblesWindow(doc: Document, options: FoblesWindowOptions):
     persist();
   };
 
-  function beginResizeOperation(event: PointerEvent, edge?: string): void {
+  function beginResizeOperation(event: PointerEvent, handle: HTMLElement, edge?: string): void {
     if (event.button !== 0 || disposed || !edge) return;
     event.preventDefault();
+    const pointerId = event.pointerId;
     const start = readRect(dialog);
     const startX = event.clientX;
     const startY = event.clientY;
     const move = (moveEvent: PointerEvent): void => {
+      if (moveEvent.pointerId !== pointerId) return;
       const dx = moveEvent.clientX - startX;
       const dy = moveEvent.clientY - startY;
       let next = { ...start };
@@ -198,20 +200,27 @@ export function createFoblesWindow(doc: Document, options: FoblesWindowOptions):
       state = { ...state, ...next, maximized: false, collapsed: false, restoreRect: undefined };
       applyState();
     };
+    // Pointer capture keeps delivering move/up events to this handle even once the cursor
+    // crosses onto an iframe (e.g. a worker iframe), which plain document listeners can't see past.
     const endResize = (): void => {
-      doc.removeEventListener("pointermove", move, true);
-      doc.removeEventListener("pointerup", endResize, true);
-      doc.removeEventListener("pointercancel", endResize, true);
+      handle.removeEventListener("pointermove", move);
+      handle.removeEventListener("pointerup", endResize);
+      handle.removeEventListener("pointercancel", endResize);
+      if (handle.hasPointerCapture(pointerId)) handle.releasePointerCapture(pointerId);
       operationCleanup = undefined;
       persist();
     };
     operationCleanup?.();
     operationCleanup = endResize;
-    doc.addEventListener("pointermove", move, true);
-    doc.addEventListener("pointerup", endResize, true);
-    doc.addEventListener("pointercancel", endResize, true);
+    handle.setPointerCapture(pointerId);
+    handle.addEventListener("pointermove", move);
+    handle.addEventListener("pointerup", endResize);
+    handle.addEventListener("pointercancel", endResize);
   }
-  const handleResizePointerDown = (event: PointerEvent): void => beginResizeOperation(event, (event.currentTarget as HTMLElement).dataset.edge);
+  const handleResizePointerDown = (event: PointerEvent): void => {
+    const handle = event.currentTarget as HTMLElement;
+    beginResizeOperation(event, handle, handle.dataset.edge);
+  };
   const handleViewportResize = (): void => { applyState(); persist(); };
   titleBar.addEventListener("pointerdown", handleTitlePointerDown);
   titleBar.addEventListener("pointermove", handleTitlePointerMove);

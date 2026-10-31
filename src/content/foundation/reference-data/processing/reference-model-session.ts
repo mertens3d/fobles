@@ -214,8 +214,12 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
       return () => harvestProgressListeners.delete(listener);
     },
     updateFilters: (nextFilters) => {
+      const previousFilters = activeFilters;
       activeFilters = nextFilters;
       harvestingQueue.remove((job) => !isFactEnabled(job.factName));
+      // A filter that just turned on was never part of the original harvest, so the root item's
+      // fact for it has to be (re)enqueued now - otherwise it never joins the reference model.
+      FACTS_BY_FILTER.filter(([filter, factName]) => !previousFilters[filter] && nextFilters[filter] && isFactEnabled(factName)).forEach(([, factName]) => harvestingQueue.enqueue({ item: rootItem, factName }));
       harvestActivityListeners.forEach((listener) => listener());
     },
     dispose: () => {

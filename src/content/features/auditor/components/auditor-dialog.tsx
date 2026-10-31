@@ -476,7 +476,7 @@ export function openAuditorDialog(
     const appRoot = createRoot(appHost);
     content.appendChild(appHost);
     dialog.addEventListener(
-      "close",
+      "fobles-window-close",
       () => {
         void (async () => {
           logHeapSnapshot("auditor-closing", { workSessionId });
