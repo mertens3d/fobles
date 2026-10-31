@@ -63,7 +63,7 @@ async function bundle(entryPoint, outfile, format) {
 
 await bundle("src/content/index.ts", "dist/unpacked/content.js", "iife");
 await bundle("src/background/index.ts", "dist/unpacked/background.js", "esm");
-await bundle("src/options/index.ts", "dist/unpacked/options.js", "iife");
+await bundle("src/options/index.tsx", "dist/unpacked/options.js", "iife");
 await bundle("src/popup/index.ts", "dist/unpacked/popup.js", "iife");
 
 run(process.execPath, [
