@@ -1,0 +1,11 @@
+// @source-path [fobles] src/content/styles/_reference-model-details.scss
+.fobles-auditor-app .fobles-details-panel,
+.fobles-reference-graph .fobles-details-panel {
+  width: min(460px, calc(100vw - 32px));
+  min-width: min(420px, calc(100vw - 32px));
+}
+.fobles-auditor-app .fobles-details-panel-row,
+.fobles-reference-graph .fobles-details-panel-row {
+  overflow-wrap: normal;
+  word-break: normal;
+}

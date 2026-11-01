@@ -11,18 +11,9 @@ import { getWorkerPoolMaxWorkers, onWorkerPoolMaxWorkersChange } from "./worker-
 import { markWorkerReady, resetWorkerReadiness } from "./worker-readiness";
 import { createCancelledResult, type ActiveWorkerTask, type PoolWorker, type QueuedTask, type WorkerExecutorContext, type WorkerTask, type WorkerTaskResult } from "../tasks/worker-task.types";
 import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
+import type { WorkerPoolState } from "./worker-pool-state";
+import { cancelWorkerIdleDisposal, scheduleWorkerIdleDisposal } from "./worker-idle-disposal";
 
-type WorkerPoolState = {
-  hostTabId: number | undefined;
-  generation: number;
-  workers: PoolWorker[];
-  queue: QueuedTask[];
-  cancelledRequestIds: Set<string>;
-  activeTaskByWorkerKey: Map<string, ActiveWorkerTask>;
-  lastProgressAt: number;
-  recoveryCount: number;
-  healthTimer: ReturnType<typeof setInterval> | undefined;
-};
 
 let maxWorkers = DEFAULT_RUNTIME_SETTINGS.workerPool.maxWorkers;
 const poolsByHostTabId = new Map<number, WorkerPoolState>();
@@ -31,7 +22,7 @@ let fallbackPool: WorkerPoolState | undefined;
 const RETIRED_WORKER_GRACE_MS = 10000;
 
 function createPool(hostTabId: number | undefined): WorkerPoolState {
-  const pool: WorkerPoolState = { hostTabId, generation: 0, workers: [], queue: [], cancelledRequestIds: new Set<string>(), activeTaskByWorkerKey: new Map<string, ActiveWorkerTask>(), lastProgressAt: performance.now(), recoveryCount: 0, healthTimer: undefined };
+  const pool: WorkerPoolState = { hostTabId, generation: 0, workers: [], queue: [], cancelledRequestIds: new Set<string>(), activeTaskByWorkerKey: new Map<string, ActiveWorkerTask>(), lastProgressAt: performance.now(), recoveryCount: 0, healthTimer: undefined, idleDisposalTimer: undefined };
   startPoolHealthSupervisor(pool);
   return pool;
 }
@@ -215,6 +206,11 @@ function scheduleNext(pool: WorkerPoolState): void {
       scheduling = false;
     }
   }
+  scheduleWorkerIdleDisposal(pool, async (worker, reason) => {
+    if (worker.state !== "idle") return;
+    retireWorker(pool, worker);
+    await destroyRetiredWorker(pool, worker, reason);
+  });
 }
 
 export async function runPoolTask(task: WorkerTask, hostTabId: number | undefined): Promise<WorkerTaskResult> {
@@ -229,6 +225,7 @@ return createCancelledResult(task);
       return;
     }
     publishActivityToHost(hostTabId, { source: "worker", requestId: task.requestId, activityId: task.taskId, kind: task.type, label: labelForWorkerTask(task), state: "queued" });
+    cancelWorkerIdleDisposal(pool);
     const submittedAt = performance.now();
     pool.queue.push({ task, hostTabId, retried: false, editorStateChangeCount: 0, submittedAt, deadlineAt: submittedAt + getRuntimeSettings().workerPool.taskTimeoutMs, recoveryCount: 0, resolve });
     markPoolProgress(pool, "task-queued");
@@ -307,6 +304,7 @@ await disposeOnePool(pool);
 }
 
 async function disposeOnePool(pool: WorkerPoolState): Promise<void> {
+  cancelWorkerIdleDisposal(pool);
   if (pool.healthTimer !== undefined) { 
 clearInterval(pool.healthTimer); 
 pool.healthTimer = undefined; }
