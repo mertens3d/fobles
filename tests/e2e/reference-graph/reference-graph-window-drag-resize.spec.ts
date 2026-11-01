@@ -2,6 +2,7 @@ import { expect, foblesTest } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { ClickFoblesGraphButton, CloseFoblesGraph } from "../../macros/fobles-macros";
 import { setupReferenceGraphState } from "../harvest/harvest-test-helpers";
+import { expectBoxClose, getRequiredBoundingBox } from "../../helpers/shared-window-geometry-helpers";
 
 // Regression coverage for the shared FoblesWindow title-bar drag and corner resize, and the
 // historical defect where resize continued moving the window after the mouse button was released.
@@ -16,11 +17,8 @@ foblesTest.describe("Shared specialist window drag and resize", () => {
     const titleBar = dialog.locator(".fobles-window-titlebar");
     await expect(dialog).toBeVisible();
 
-    const before = await dialog.boundingBox();
-    if (!before) throw new Error("Expected the graph window to have a bounding box.");
-
-    const titleBox = await titleBar.boundingBox();
-    if (!titleBox) throw new Error("Expected the title bar to have a bounding box.");
+    const before = await getRequiredBoundingBox(dialog, "the graph window");
+    const titleBox = await getRequiredBoundingBox(titleBar, "the title bar");
     const startX = titleBox.x + titleBox.width / 2;
     const startY = titleBox.y + titleBox.height / 2;
     const deltaX = 80;
@@ -30,22 +28,16 @@ foblesTest.describe("Shared specialist window drag and resize", () => {
     await page.mouse.down();
     await page.mouse.move(startX + deltaX, startY + deltaY, { steps: 5 });
 
-    const midDrag = await dialog.boundingBox();
-    if (!midDrag) throw new Error("Expected the graph window to have a bounding box mid-drag.");
-    expect(midDrag.x).toBeCloseTo(before.x + deltaX, 0);
-    expect(midDrag.y).toBeCloseTo(before.y + deltaY, 0);
-    expect(midDrag.width).toBeCloseTo(before.width, 0);
-    expect(midDrag.height).toBeCloseTo(before.height, 0);
+    const midDrag = await getRequiredBoundingBox(dialog, "the graph window mid-drag");
+    expectBoxClose(midDrag, { x: before.x + deltaX, y: before.y + deltaY, width: before.width, height: before.height });
 
     await page.mouse.up();
-    const afterRelease = await dialog.boundingBox();
-    if (!afterRelease) throw new Error("Expected the graph window to have a bounding box after release.");
+    const afterRelease = await getRequiredBoundingBox(dialog, "the graph window after release");
 
     // Regression: pointer movement after release must not continue moving the window.
     await page.mouse.move(startX + deltaX + 200, startY + deltaY + 200, { steps: 5 });
-    const afterStrayMove = await dialog.boundingBox();
-    expect(afterStrayMove?.x).toBeCloseTo(afterRelease.x, 0);
-    expect(afterStrayMove?.y).toBeCloseTo(afterRelease.y, 0);
+    const afterStrayMove = await getRequiredBoundingBox(dialog, "the graph window after a stray post-release move");
+    expectBoxClose(afterStrayMove, afterRelease, ["x", "y"]);
 
     await CloseFoblesGraph(page);
   });
@@ -60,11 +52,8 @@ foblesTest.describe("Shared specialist window drag and resize", () => {
     const resizeHandle = dialog.locator(".fobles-window-resize--se");
     await expect(dialog).toBeVisible();
 
-    const before = await dialog.boundingBox();
-    if (!before) throw new Error("Expected the graph window to have a bounding box.");
-
-    const handleBox = await resizeHandle.boundingBox();
-    if (!handleBox) throw new Error("Expected the southeast resize handle to have a bounding box.");
+    const before = await getRequiredBoundingBox(dialog, "the graph window");
+    const handleBox = await getRequiredBoundingBox(resizeHandle, "the southeast resize handle");
     const startX = handleBox.x + handleBox.width / 2;
     const startY = handleBox.y + handleBox.height / 2;
     const deltaX = 60;
@@ -74,23 +63,17 @@ foblesTest.describe("Shared specialist window drag and resize", () => {
     await page.mouse.down();
     await page.mouse.move(startX + deltaX, startY + deltaY, { steps: 5 });
 
-    const midResize = await dialog.boundingBox();
-    if (!midResize) throw new Error("Expected the graph window to have a bounding box mid-resize.");
-    expect(midResize.width).toBeCloseTo(before.width + deltaX, 0);
-    expect(midResize.height).toBeCloseTo(before.height + deltaY, 0);
+    const midResize = await getRequiredBoundingBox(dialog, "the graph window mid-resize");
     // Resizing from the southeast corner must not relocate the window.
-    expect(midResize.x).toBeCloseTo(before.x, 0);
-    expect(midResize.y).toBeCloseTo(before.y, 0);
+    expectBoxClose(midResize, { x: before.x, y: before.y, width: before.width + deltaX, height: before.height + deltaY });
 
     await page.mouse.up();
-    const afterRelease = await dialog.boundingBox();
-    if (!afterRelease) throw new Error("Expected the graph window to have a bounding box after release.");
+    const afterRelease = await getRequiredBoundingBox(dialog, "the graph window after release");
 
     // Historical defect: resize continued to track the pointer after mouseup.
     await page.mouse.move(startX + deltaX + 200, startY + deltaY + 200, { steps: 5 });
-    const afterStrayMove = await dialog.boundingBox();
-    expect(afterStrayMove?.width).toBeCloseTo(afterRelease.width, 0);
-    expect(afterStrayMove?.height).toBeCloseTo(afterRelease.height, 0);
+    const afterStrayMove = await getRequiredBoundingBox(dialog, "the graph window after a stray post-release move");
+    expectBoxClose(afterStrayMove, afterRelease, ["width", "height"]);
 
     await CloseFoblesGraph(page);
   });

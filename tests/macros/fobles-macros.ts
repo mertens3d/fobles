@@ -33,6 +33,25 @@ export async function CloseFoblesGraph(page: Page): Promise<void> {
     timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS,
   });
 }
+
+// Generic shared-FoblesWindow chrome macros (collapse/maximize toggle buttons are identical
+// markup across Auditor/Graph/Developer dialogs) - callers pass whichever dialog locator is open.
+export async function ToggleFoblesWindowCollapse(page: Page, dialog: Locator): Promise<void> {
+  console.log(`[fobles Macro] ${ToggleFoblesWindowCollapse.name}`);
+
+  const collapseButton = dialog.locator(".fobles-window-collapse");
+  await expect(collapseButton).toBeVisible();
+  await clickWithMouseMarker(page, collapseButton, "Fobles Window Collapse/Restore");
+}
+
+export async function ToggleFoblesWindowMaximize(page: Page, dialog: Locator): Promise<void> {
+  console.log(`[fobles Macro] ${ToggleFoblesWindowMaximize.name}`);
+
+  const maximizeButton = dialog.locator(".fobles-window-maximize");
+  await expect(maximizeButton).toBeVisible();
+  await clickWithMouseMarker(page, maximizeButton, "Fobles Window Maximize/Restore");
+}
+
 export async function WaitForFoblesGraphEnrichmentComplete(page: Page): Promise<void> {
   console.log(`[fobles Macro] ${WaitForFoblesGraphEnrichmentComplete.name}`);
 
