@@ -1,5 +1,4 @@
 // @source-path [fobles] src/content/styles/fobles-extension.scss
-
 @use "content-editor-fields";
 @use "content-editor-tree";
 @use "fobles-flyout";
@@ -8,8 +7,12 @@
 @use "dialog";
 @use "window";
 @use "auditor";
-@use "../features/auditor/components/auditor-status-cell";
-@use "../features/auditor/components/auditor-grid";
+@use "../features/auditor/components/auditor-status-cell/auditor-status-cell";
+@use "../features/auditor/components/auditor-grid/auditor-grid";
+@use "../features/auditor/components/auditor-tree-cell/auditor-tree-cell";
+@use "../features/auditor/components/auditor-journey-cell/auditor-journey-cell";
+@use "../features/auditor/components/auditor-data-action/auditor-data-action";
+@use "../features/auditor/components/auditor-navigate/auditor-navigate";
 @use "../shared/ui/json-tree/json-tree";
 @use "../shared/ui/indexeddb-viewer/indexeddb-viewer";
 @use "../shared/ui/indexeddb-viewer/developer-dialog";

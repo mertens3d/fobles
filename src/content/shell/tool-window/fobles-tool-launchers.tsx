@@ -2,7 +2,6 @@
 import { REFERENCE_GRAPH } from "../../../constants/graph.const";
 import { showFoblesCleanupDialog } from "../../../shared/error-dialog";
 import type { AuditFindingStore } from "../../features/auditor/audit-finding-store";
-import { createAuditorView } from "../../features/auditor/components/auditor-dialog";
 import { closeReferenceGraphProgressModal } from "../../features/reference-graph/build-progress";
 import { disposeActiveEnrichmentController } from "../../features/reference-graph/enrichment/enrichment-controller";
 import type { HarvestForLink } from "../../features/reference-graph/graph.types";
@@ -14,6 +13,7 @@ import { DEVELOPER_DIALOG } from "../../shared/ui/indexeddb-viewer/developer-dia
 import { createDeveloperView } from "../../shared/ui/indexeddb-viewer/indexeddb-viewer";
 import { INDEXEDDB_VIEWER } from "../../shared/ui/indexeddb-viewer/indexeddb-viewer.const";
 import { openFoblesToolWindow } from "./fobles-tool-window";
+import { createAuditorView } from "../../features/auditor/components/auditor-dialog/auditor-dialog";
 
 export const AUDITOR_DIALOG_ID = "fobles-auditor-dialog";
 

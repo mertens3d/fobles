@@ -5,7 +5,6 @@ import { GRAPH_VIEWPORT } from "../../../constants/graph-viewport.const";
 import { extensionLog } from "../../logger";
 import { GraphToolbar } from "./components/graph-toolbar";
 import { GraphZoomControls } from "./components/graph-zoom-controls";
-import { NodeDetailsPanel } from "../../shared/ui/reference-model/node-details-panel";
 import { ReferenceModelViewer } from "../../shared/ui/reference-model/reference-model-viewer";
 import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";
@@ -13,6 +12,7 @@ import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
 import type { ReferenceGraphAppProps } from "./reference-graph-app.types";
 import { getFoblesDataSession } from "../../foundation/reference-data/reference-data-service";
 import { subscribeRootRefresh } from "./lifecycle/root-refresh-events";
+import { NodeDetailsPanel } from "../../shared/ui/details/node-details-panel";
 
 export function ReferenceGraphApp({
   doc,

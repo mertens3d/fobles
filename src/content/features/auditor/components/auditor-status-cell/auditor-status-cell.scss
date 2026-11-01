@@ -1,0 +1,5 @@
+// @source-path [fobles] src/content/features/auditor/components/auditor-status-cell/auditor-status-cell.scss
+.fobles-auditor-status { display: inline-flex; width: 20px; height: 20px; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; font: 13px/1 "Segoe UI Emoji", "Apple Color Emoji", sans-serif; }
+.fobles-auditor-status--cascade { opacity: 0.65; }
+.fobles-auditor-status--action { border-radius: 3px; cursor: pointer; }
+.fobles-auditor-status--action.is-row-hovered, .fobles-auditor-status--action:hover, .fobles-auditor-status--action:focus-visible { background: #e7f3ff; outline: 1px solid #76b9ed; }
