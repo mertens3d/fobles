@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/foundation/workers/iframe/worker-iframe-host.ts
+
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import { getRuntimeSettings, initializeRuntimeSettings } from "../../../runtime-settings/runtime-settings";
@@ -23,8 +25,8 @@ return;
     (message: WorkerIframeHostMessage, _sender, sendResponse) => {
       if (message.type === WORKER_IFRAME_CREATE_MESSAGE_TYPE) {
         void createWorkerIframe(doc, message.url)
-          .then(sendResponse)
-          .catch((error) => {
+          .then((result) => sendResponse(result))
+          .catch((error: unknown) => {
             extensionLog.error("Worker iframe host: iframe creation failed", { error });
             sendResponse(undefined);
           });

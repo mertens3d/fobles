@@ -4,7 +4,8 @@ import { getRequestResult, runCacheTransaction } from "../../../foundation/cache
 import { previewJson } from "../json-tree/json-tree-preview";
 import type { CacheRow, CacheRowsByStore } from "./indexeddb-viewer.types";
 function toRow(record: Record<string, unknown>): CacheRow {
-  const key = String(record.key ?? "");
+  const rawKey = record.key;
+  const key = typeof rawKey === "string" || typeof rawKey === "number" || typeof rawKey === "bigint" || typeof rawKey === "boolean" ? String(rawKey) : "";
   const { key: _, ...value } = record;
   return { key, record, preview: previewJson(value), searchText: JSON.stringify(record).toLowerCase() };
 }

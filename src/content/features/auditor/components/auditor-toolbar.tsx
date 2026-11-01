@@ -91,7 +91,10 @@ export function AuditorToolbar(props: AuditorToolbarProps) {
             <button type="button" className="fobles-auditor-clear-filters" onClick={props.onClearGraphFilters}>Clear Filters</button>
             {CONST.FOBLES.REFERENCE_GRAPH.FILTER_DEFS.map((filter) => (
               <label key={filter.key}>
-                <input type="checkbox" checked={props.graphFilters[filter.key]} onChange={(event) => { props.onGraphFilterChange(filter.key, event.currentTarget.checked); window.dispatchEvent(new CustomEvent("fobles:auditor-graph-filter-change", { detail: { key: filter.key, checked: event.currentTarget.checked } })); }} />
+                <input type="checkbox" checked={props.graphFilters[filter.key]} onChange={(event) => {
+                    props.onGraphFilterChange(filter.key, event.currentTarget.checked);
+                    window.dispatchEvent(new CustomEvent("fobles:auditor-graph-filter-change", { detail: { key: filter.key, checked: event.currentTarget.checked } }));
+                  }} />
                 <span>{filter.label}</span>
               </label>
             ))}

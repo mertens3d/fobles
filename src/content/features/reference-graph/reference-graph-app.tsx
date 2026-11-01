@@ -5,7 +5,7 @@ import { GRAPH_VIEWPORT } from "../../../constants/graph-viewport.const";
 import { extensionLog } from "../../logger";
 import { GraphToolbar } from "./components/graph-toolbar";
 import { GraphZoomControls } from "./components/graph-zoom-controls";
-import { NodeDetailsPanel } from "./components/node-details-panel";
+import { NodeDetailsPanel } from "../../shared/ui/reference-model/node-details-panel";
 import { ReferenceModelViewer } from "../../shared/ui/reference-model/reference-model-viewer";
 import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";

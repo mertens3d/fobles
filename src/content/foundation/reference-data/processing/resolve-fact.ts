@@ -77,7 +77,6 @@ function itemFromLocator(locator: SitecoreItemLocator | undefined): ItemGraphNod
   };
 }
 
-
 export async function resolveItemFact(
   key: SitecoreDataCacheKey,
   fetchLive: () => Promise<WorkerTaskExecutionResult>,

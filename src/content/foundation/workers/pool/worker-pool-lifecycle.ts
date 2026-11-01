@@ -26,8 +26,10 @@ export async function disposeWorkerPoolLifecycle({ workers, queue, activeTaskByW
   extensionLog.debug("Worker pool: immediate disposal started", { previousGeneration: generation, nextGeneration, workerCount: workers.length, queuedTaskCount: queue.length, activeTaskCount: active.length, targetCount: targets.length });
   const closeResults = await Promise.allSettled(targets.map((target) => closeWorkerTarget(target)));
   closeResults.forEach((result, index) => {
-    if (result.status === "rejected") 
-extensionLog.warn("Worker pool: target cleanup failed during disposal", { target: targets[index], error: result.reason });
+    if (result.status === "rejected") {
+      const error = result.reason instanceof Error ? result.reason : String(result.reason);
+      extensionLog.warn("Worker pool: target cleanup failed during disposal", { target: targets[index], error });
+    }
   });
   cancelledRequestIds.clear();
   extensionLog.debug("Worker pool: disposed", { generation: nextGeneration, closedTargets: targets, failedTargetCount: closeResults.filter((result) => result.status === "rejected").length });
@@ -37,8 +39,7 @@ function collectWorkerTargets(workers: readonly PoolWorker[]): NonNullable<PoolW
   const targetsByKey = new Map<string, NonNullable<PoolWorker["target"]>>();
   workers.forEach((worker) => {
     const target = worker.target;
-    if (target) 
-targetsByKey.set(target.kind === "tab" ? `tab:${target.tabId}` : `iframe:${target.workerId}`, target);
+    if (target) targetsByKey.set(target.kind === "tab" ? `tab:${target.tabId}` : `iframe:${target.workerId}`, target);
   });
   return Array.from(targetsByKey.values());
 }

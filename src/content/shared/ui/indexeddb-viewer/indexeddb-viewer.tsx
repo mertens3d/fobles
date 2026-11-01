@@ -1,7 +1,6 @@
 // @source-path [fobles] src/content/shared/ui/indexeddb-viewer/indexeddb-viewer.tsx
 
 import { createRoot } from "react-dom/client";
-import { FoblesWindow } from "../../dialog/fobles-window";
 import { clearFoblesWindowHost, replaceFoblesWindowHost } from "../../dialog/fobles-window-host-registry";
 import { DEVELOPER_DIALOG } from "./developer-dialog.const";
 import { DeveloperDialogApp } from "./developer-dialog-app";

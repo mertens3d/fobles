@@ -3,7 +3,7 @@
 import type cytoscape from "cytoscape";
 import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
 import type { LayoutGraphPresetName } from "../graph.types";
-import { getExpandedByCollapseKey, setExpandedStateForCollapseKey } from "./graph-collapse-settings";
+import { getExpandedByCollapseKey, setExpandedStateForCollapseKey } from "../../../shared/ui/reference-model/graph-collapse-settings";
 import {
   collapseDescendants,
   collapseExpandableChildren,

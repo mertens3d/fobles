@@ -6,7 +6,12 @@ import { createReferenceHarvestingQueue } from "../../../src/content/foundation/
 
 void test("deduplicates normalized item and fact jobs", async () => {
   const runs: string[] = [];
-  const queue = createReferenceHarvestingQueue({ runJob: (job) => { runs.push(`${job.item.kind}:${job.item.value}:${job.factName}`); return Promise.resolve(); } });
+  const queue = createReferenceHarvestingQueue({
+    runJob: (job) => {
+      runs.push(`${job.item.kind}:${job.item.value}:${job.factName}`);
+      return Promise.resolve();
+    },
+  });
   queue.enqueue({ item: { kind: "id", value: "{ABC}" }, factName: "quickInfo" });
   queue.enqueue({ item: { kind: "id", value: "abc" }, factName: "quickInfo" });
   queue.enqueue({ item: { kind: "id", value: "abc" }, factName: "children" });

@@ -6,7 +6,7 @@ const NON_PERSISTED_KEYS: ReadonlySet<string> = new Set([...SITECORE_DATA_CACHE.
 const ORIGIN_RELATIVE_KEYS: ReadonlySet<string> = new Set(SITECORE_DATA_CACHE.ORIGIN_RELATIVE_KEYS);
 const OMIT = Symbol("omit-persisted-value");
 
-type PersistedNode = unknown | typeof OMIT;
+type PersistedNode = unknown;
 
 function resolveOrigin(environment: string): string | undefined {
   let origin: string | undefined;

@@ -81,7 +81,7 @@ export async function putFact<K extends SitecoreDataFactName>(key: SitecoreDataC
       return;
     }
     await getRequestResult(itemStore.put(itemRecord));
-    const storedFactName = factName as SitecoreStoredFactName;
+    const storedFactName = factName;
     const storedValue = storeFactValue(storedFactName, value as SitecoreDataFactMap[SitecoreStoredFactName]);
     const fact: SitecoreDataCacheFactRecord["fact"] = { value: toPersistedValue(storedValue, key.environment), cachedAt: now, ...(options.lastVerifiedAt === undefined ? {} : { lastVerifiedAt: options.lastVerifiedAt }) };
     await getRequestResult(factStore.put({ key: factKey(itemKey, storedFactName), itemKey, factName: storedFactName, fact }));
@@ -101,7 +101,7 @@ export async function getFact<K extends SitecoreDataFactName>(key: SitecoreDataC
       const value = { result: { requested: key.item, resolved: { itemId: runtimeItem.scItemId ?? "", path: runtimeItem.scItemPath }, value: runtimeItem, status: "found" as const } };
       return { value, cachedAt: item.lastAccessedAt } as SitecoreDataFact<SitecoreDataFactValueByName[K]>;
     }
-    const storedFactName = factName as SitecoreStoredFactName;
+    const storedFactName = factName;
     const record = await getRequestResult(factStore.get(factKey(itemKey, storedFactName))) as SitecoreDataCacheFactRecord | undefined;
     return record ? restoreFact(record) as SitecoreDataFact<SitecoreDataFactValueByName[K]> : undefined;
   });

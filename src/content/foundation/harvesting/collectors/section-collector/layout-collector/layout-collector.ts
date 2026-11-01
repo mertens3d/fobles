@@ -9,8 +9,9 @@ import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
 import { factoryItemGraphNodeData, type ItemGraphNodeData, type LayoutDevice, type LayoutPlacement, type LayoutSectionField, type ScControl } from "../../../../reference-data/model/sitecore-item.types";
 import type { HarvestContext } from "../../../sitecore-harvester.types";
 
-export const collectLayouts = async (harvestContext: HarvestContext): Promise<void> => {
+export const collectLayouts = (harvestContext: HarvestContext): Promise<void> => {
   harvestContext.result.layoutSectionFields = [processLayoutFieldValue(harvestContext, "Renderings"), processLayoutFieldValue(harvestContext, "Final renderings")];
+  return Promise.resolve();
 };
 
 const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: string): LayoutSectionField => {

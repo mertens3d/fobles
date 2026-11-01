@@ -41,7 +41,10 @@ activeTaskControllers.get(taskKey(message.requestId, message.taskId))?.abort();
       activeTaskControllers.set(taskKey(task.requestId, task.taskId), controller);
       updateWorkerActivity(document, task, "Running");
       void executeWorkerTask(document, task, controller.signal)
-        .then((result) => { updateWorkerActivity(document, task, result.status === "success" ? "Completed" : "Failed"); sendResponse(result); })
+        .then((result) => {
+          updateWorkerActivity(document, task, result.status === "success" ? "Completed" : "Failed");
+          sendResponse(result);
+        })
         .catch((error: unknown) => { updateWorkerActivity(document, task, "Failed"); 
 extensionLog.error("Worker task failed", { task, error }); 
 sendResponse(undefined); })

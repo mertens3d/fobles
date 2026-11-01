@@ -1,11 +1,13 @@
+// @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-node-builder.ts
+
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../../../foundation/reference-data/processing/processing-state";
 import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "../../../foundation/reference-data/model/graph-collapse.types";
 import { kindClass } from "./graph-helpers";
-import { resolveNodeLabel } from "./node-label-resolver";
-import { NODE_PRESENTATION_BY_KIND } from "./node-presentation";
+import { resolveNodeLabel } from "../../../shared/ui/reference-model/node-label-resolver";
+import { NODE_PRESENTATION_BY_KIND } from "../../../shared/ui/reference-model/node-presentation";
 import type { GraphNodeData } from "./graph-node.types";
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import { iconForProcessingState } from "./processing-icon";

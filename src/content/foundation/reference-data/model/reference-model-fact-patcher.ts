@@ -40,13 +40,26 @@ function emptyHarvest(item: RootItem): SitecoreHarvestResult {
 
 function applyFact(result: SitecoreHarvestResult, factName: SitecoreDataFactName, value: SitecoreDataFactValueByName[SitecoreDataFactName]): void {
   switch (factName) {
-    case "quickInfo": break;
-    case "parent": result.parent = (value as SitecoreDataFactValueByName["parent"]).parent; break;
-    case "children": result.childItems = (value as SitecoreDataFactValueByName["children"]).childItems; break;
-    case "referrers": result.referrers = (value as SitecoreDataFactValueByName["referrers"]).referrers; break;
-    case "customSections": result.customFieldSections = (value as SitecoreDataFactValueByName["customSections"]).sections; break;
-    case "standardSections": result.standardFieldSections = (value as SitecoreDataFactValueByName["standardSections"]).sections; break;
-    case "layout": result.layoutSectionFields = (value as SitecoreDataFactValueByName["layout"]).layoutSectionFields; break;
+    case "quickInfo":
+      break;
+    case "parent":
+      result.parent = (value as SitecoreDataFactValueByName["parent"]).parent;
+      break;
+    case "children":
+      result.childItems = (value as SitecoreDataFactValueByName["children"]).childItems;
+      break;
+    case "referrers":
+      result.referrers = (value as SitecoreDataFactValueByName["referrers"]).referrers;
+      break;
+    case "customSections":
+      result.customFieldSections = (value as SitecoreDataFactValueByName["customSections"]).sections;
+      break;
+    case "standardSections":
+      result.standardFieldSections = (value as SitecoreDataFactValueByName["standardSections"]).sections;
+      break;
+    case "layout":
+      result.layoutSectionFields = (value as SitecoreDataFactValueByName["layout"]).layoutSectionFields;
+      break;
   }
 }
 

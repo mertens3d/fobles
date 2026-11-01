@@ -6,7 +6,7 @@ import { AllCommunityModule, ModuleRegistry, themeQuartz, type ColDef, type ICel
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing-state";
 import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
-import { getExpandedByCollapseKey, setExpandedStateForCollapseKey } from "../../reference-graph/graph-nodes/graph-collapse-settings";
+import { getExpandedByCollapseKey, setExpandedStateForCollapseKey } from "../../../shared/ui/reference-model/graph-collapse-settings";
 import type { AuditFinding } from "../audit-finding.types";
 import { DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS, getAuditorLayoutViewSettings, subscribeAuditorLayoutViewSettings, type AuditorLayoutViewSettings } from "../auditor-layout-view-settings";
 import { descendantExpandableIds, isAuditorRowVisible, reconcileExpandedRows } from "../auditor-grid/auditor-expansion-state";

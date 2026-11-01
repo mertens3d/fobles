@@ -272,6 +272,9 @@ return await dispatchTasks(planCollectorTasks(request), onProgress, cacheKey);
     layoutTaskCount: layoutTasks.length,
   });
 
+  let harvestResults: WorkerTaskResult[] | undefined;
+  let harvestError: unknown;
+
   try {
     await setAndVerifyEditorState(request, false, request.filters.standardFields, "normal-harvest");
     const normalResults = await dispatchTasks(normalTasks, onProgress, cacheKey);
@@ -281,20 +284,20 @@ return await dispatchTasks(planCollectorTasks(request), onProgress, cacheKey);
     // always required here, unlike the generic section/field harvest above.
     await setAndVerifyEditorState(request, true, true, "layout-harvest");
     const layoutResults = await dispatchTasks(layoutTasks, onProgress, cacheKey);
-
-    return [...normalResults, ...layoutResults];
-  } finally {
-    try {
-      await restoreOriginalState(request);
-    } catch (restoreError) {
-      extensionLog.error("Reference graph: restoration verification failed", {
-        requestId: request.requestId,
-        restoreError,
-      });
-
-      throw new Error("Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.");
-    }
+    harvestResults = [...normalResults, ...layoutResults];
+  } catch (error: unknown) {
+    harvestError = error;
   }
+
+  try {
+    await restoreOriginalState(request);
+  } catch (restoreError: unknown) {
+    extensionLog.error("Reference graph: restoration verification failed", { requestId: request.requestId, restoreError });
+    throw new Error("Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.", { cause: restoreError });
+  }
+
+  if (harvestError !== undefined) throw harvestError instanceof Error ? harvestError : new Error("Harvest failed with a non-Error value", { cause: harvestError });
+  return harvestResults ?? [];
 }
 
 async function setAndVerifyEditorState(

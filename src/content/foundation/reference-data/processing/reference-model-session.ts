@@ -89,7 +89,6 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
   const rootFacts = FACTS_BY_FILTER.filter(([filter]) => filters[filter]).map(([, factName]) => factName);
   let disposed = false;
   let activeFilters = filters;
-  let harvestingQueue: ReferenceHarvestingQueue;
 
   function isFactEnabled(factName: SitecoreDataFactName): boolean {
     if (factName === "quickInfo") return true;
@@ -145,7 +144,7 @@ export async function startSharedReferenceModelSession({ doc, workSession, filte
     if (sameItem(job.item, rootItem)) onRootRefresh?.(prepared.harvestedData);
   }
 
-  harvestingQueue = createReferenceHarvestingQueue({
+  const harvestingQueue: ReferenceHarvestingQueue = createReferenceHarvestingQueue({
     runJob: async (job, harvestSignal) => job.factName === "quickInfo" ? runQuickInfo(job) : runCrop(job, harvestSignal),
     onProgress: (progress) => {
       latestHarvestProgress = progress;

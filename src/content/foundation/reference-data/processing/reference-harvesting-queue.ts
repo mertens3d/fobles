@@ -32,7 +32,9 @@ export function createReferenceHarvestingQueue({ runJob, onProgress, onError }: 
   let processing = false;
   let disposed = false;
 
-  function pendingCount(): number { return jobs.length + (processing ? 1 : 0); }
+  function pendingCount(): number {
+    return jobs.length + (processing ? 1 : 0);
+  }
   function reportProgress(): void {
     onProgress?.({ completed, max: seen.size, status: disposed || (!processing && jobs.length === 0) ? "complete" : "running" });
   }
