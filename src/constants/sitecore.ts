@@ -70,6 +70,31 @@ export const SITECORE = {
     SHELL_DEFAULT: "/sitecore/shell/default.aspx",
     TEMPLATE_MANAGER: "/sitecore/shell/Applications/Templates/Template-Manager",
   },
+  // Item Type/Site/Tenant classification and template-context Reference Harvesting (first slice).
+  // Base-template path arrays, not ids: ids aren't known until a configured path is resolved
+  // against a live Sitecore instance, so paths are the only thing that can be hard-coded here.
+  CLASSIFICATION: {
+    // Only items at or below these roots are eligible for their respective classification passes.
+    PATH_ROOTS: {
+      CONTENT: "/sitecore/content",
+      TEMPLATES: "/sitecore/templates",
+    },
+    // Multiple paths per classification since more base templates are expected later.
+    BASE_TEMPLATE_PATHS: {
+      PAGE: ["/sitecore/templates/Foundation/Experience Accelerator/Multisite/Content/Page"],
+      SITE: ["/sitecore/templates/Foundation/Experience Accelerator/Multisite/Base/_Base Site Root"],
+      TENANT: ["/sitecore/templates/Foundation/Experience Accelerator/Multisite/Base/_Base Tenant"],
+    },
+    // "__Base template" is a generic Standard Template field (Advanced section), not special-cased
+    // by harvesting - this is only the label used to find it within an already-harvested section.
+    FIELD_LABELS: {
+      BASE_TEMPLATE: "__Base template",
+    },
+    // "__Standard Values" is a child item of the template, not a field - found via the children fact.
+    ITEM_NAMES: {
+      STANDARD_VALUES: "__Standard Values",
+    },
+  },
   // Mirrors src/content/toolbar/proxy-flyout/proxy-flyout.const.ts's real ribbon checkbox ids for these same toggles.
   RIBBON_CHECKBOXES: {
     RAW_VALUES: "Check_BBDED3F008D144C82A983B54F0424BBC1",
