@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window.types.ts
 
-import type { FOBLES_WINDOW_STATE_TYPE } from "./fobles-window.const";
+import type { CSSProperties, PointerEvent, ReactNode, RefObject } from "react";
+import type { FOBLES_WINDOW_STATE_TYPE } from "./fobles-window.const.ts";
 
 export type WindowRect = { left: number; top: number; width: number; height: number };
 export type FoblesWindowState = WindowRect & { type: typeof FOBLES_WINDOW_STATE_TYPE; collapsed: boolean; maximized: boolean; restoreRect?: WindowRect };
@@ -16,23 +17,23 @@ export type FoblesWindowProps = {
   minHeight: number;
   onClose: () => void;
   onHelp?: () => void;
-  children: React.ReactNode;
+  children: ReactNode;
 };
 export type FoblesWindowGeometryOptions = { storageKey: string; defaultWidth: number; defaultHeight: number; minWidth: number; minHeight: number };
 export type FoblesWindowGeometry = {
-  dialogRef: React.RefObject<HTMLDivElement | null>;
-  style: React.CSSProperties;
+  dialogRef: RefObject<HTMLDivElement | null>;
+  style: CSSProperties;
   collapsed: boolean;
   maximized: boolean;
   dragging: boolean;
   toggleCollapse: () => void;
   toggleMaximize: () => void;
-  onTitlePointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onTitlePointerMove: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onTitlePointerUp: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onResizePointerDown: (event: React.PointerEvent<HTMLDivElement>, edge: ResizeEdge) => void;
-  onResizePointerMove: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onResizePointerUp: (event: React.PointerEvent<HTMLDivElement>) => void;
+  onTitlePointerDown: (event: PointerEvent<HTMLDivElement>) => void;
+  onTitlePointerMove: (event: PointerEvent<HTMLDivElement>) => void;
+  onTitlePointerUp: (event: PointerEvent<HTMLDivElement>) => void;
+  onResizePointerDown: (event: PointerEvent<HTMLDivElement>, edge: ResizeEdge) => void;
+  onResizePointerMove: (event: PointerEvent<HTMLDivElement>) => void;
+  onResizePointerUp: (event: PointerEvent<HTMLDivElement>) => void;
 };
 export type FoblesWindowTitlebarProps = {
   title: string;
@@ -42,7 +43,7 @@ export type FoblesWindowTitlebarProps = {
   onToggleCollapse: () => void;
   onToggleMaximize: () => void;
   onClose: () => void;
-  onPointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onPointerMove: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onPointerUp: (event: React.PointerEvent<HTMLDivElement>) => void;
+  onPointerDown: (event: PointerEvent<HTMLDivElement>) => void;
+  onPointerMove: (event: PointerEvent<HTMLDivElement>) => void;
+  onPointerUp: (event: PointerEvent<HTMLDivElement>) => void;
 };

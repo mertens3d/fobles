@@ -3,32 +3,8 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 import { FOBLES_WINDOW_STATE_TYPE, FOBLES_WINDOW_TITLE_BAR_HEIGHT, FOBLES_WINDOW_VIEWPORT_MARGIN } from "./fobles-window.const";
+import { centeredRect, clampRect, parsePersistedFoblesWindowState, readRect, viewportRect } from "./fobles-window-geometry-math";
 import type { FoblesWindowGeometry, FoblesWindowGeometryOptions, FoblesWindowState, ResizeEdge, WindowRect } from "./fobles-window.types";
-
-function viewportRect(win: Window): { width: number; height: number } {
-  return { width: win.innerWidth, height: win.innerHeight };
-}
-
-function clampRect(win: Window, rect: WindowRect, minWidth: number, minHeight: number): WindowRect {
-  const viewport = viewportRect(win);
-  const maxWidth = Math.max(minWidth, viewport.width - FOBLES_WINDOW_VIEWPORT_MARGIN * 2);
-  const maxHeight = Math.max(minHeight, viewport.height - FOBLES_WINDOW_VIEWPORT_MARGIN * 2);
-  const width = Math.min(maxWidth, Math.max(minWidth, rect.width));
-  const height = Math.min(maxHeight, Math.max(minHeight, rect.height));
-  const left = Math.min(viewport.width - FOBLES_WINDOW_VIEWPORT_MARGIN - width, Math.max(FOBLES_WINDOW_VIEWPORT_MARGIN, rect.left));
-  const top = Math.min(viewport.height - FOBLES_WINDOW_VIEWPORT_MARGIN - FOBLES_WINDOW_TITLE_BAR_HEIGHT, Math.max(FOBLES_WINDOW_VIEWPORT_MARGIN, rect.top));
-  return { left, top, width, height };
-}
-
-function centeredRect(win: Window, width: number, height: number, minWidth: number, minHeight: number): WindowRect {
-  const viewport = viewportRect(win);
-  return clampRect(win, { left: Math.round((viewport.width - width) / 2), top: Math.round((viewport.height - height) / 2), width, height }, minWidth, minHeight);
-}
-
-function readRect(element: HTMLElement): WindowRect {
-  const rect = element.getBoundingClientRect();
-  return { left: rect.left, top: rect.top, width: rect.width, height: rect.height };
-}
 
 export function useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeight, minWidth, minHeight }: FoblesWindowGeometryOptions): FoblesWindowGeometry {
   const dialogRef = useRef<HTMLDivElement | null>(null);
@@ -36,6 +12,9 @@ export function useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeigh
   const [dragging, setDragging] = useState(false);
   const stateRef = useRef(state);
   stateRef.current = state;
+  // Set the moment the user first drags/resizes/collapses/maximizes, so a still-in-flight
+  // storage hydration can no longer stomp a newer in-session interaction once it resolves.
+  const hasUserInteractedRef = useRef(false);
 
   const persist = useCallback(
     (next: FoblesWindowState) => {
@@ -52,19 +31,14 @@ export function useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeigh
   useEffect(() => {
     let active = true;
     void getStorageValue<unknown>([storageKey], "local").then((values) => {
-      if (!active) return;
-      const stored = values[storageKey];
-      if (!stored || typeof stored !== "object") return;
-      const candidate = stored as Partial<FoblesWindowState>;
-      const hasValidRect = [candidate.left, candidate.top, candidate.width, candidate.height].every((value) => typeof value === "number" && Number.isFinite(value));
-      if ((candidate.type === undefined || candidate.type === FOBLES_WINDOW_STATE_TYPE) && hasValidRect) {
-        setState((current) => ({ ...current, ...(candidate as FoblesWindowState), collapsed: candidate.collapsed === true, maximized: candidate.maximized === true }));
-      }
+      if (!active || hasUserInteractedRef.current) return;
+      const hydrated = parsePersistedFoblesWindowState(values[storageKey], window, minWidth, minHeight);
+      if (hydrated) setState((current) => ({ ...current, ...hydrated }));
     });
     return () => {
       active = false;
     };
-  }, [storageKey]);
+  }, [storageKey, minWidth, minHeight]);
 
   useEffect(() => {
     function onViewportResize(): void {
@@ -79,6 +53,7 @@ export function useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeigh
   }, [minWidth, minHeight, persist]);
 
   const toggleCollapse = useCallback(() => {
+    hasUserInteractedRef.current = true;
     setState((current) => {
       if (current.collapsed) {
         const next: FoblesWindowState = { ...current, ...restoreRectOrDefault(current), collapsed: false, maximized: false, restoreRect: undefined };
@@ -95,6 +70,7 @@ export function useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeigh
   }, [persist, restoreRectOrDefault]);
 
   const toggleMaximize = useCallback(() => {
+    hasUserInteractedRef.current = true;
     setState((current) => {
       if (current.maximized) {
         const next: FoblesWindowState = { ...current, ...restoreRectOrDefault(current), collapsed: false, maximized: false, restoreRect: undefined };
@@ -116,6 +92,7 @@ export function useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeigh
     event.preventDefault();
     const rect = dialogRef.current?.getBoundingClientRect();
     if (!rect) return;
+    hasUserInteractedRef.current = true;
     dragStartRef.current = { pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY, left: rect.left, top: rect.top };
     event.currentTarget.setPointerCapture(event.pointerId);
     setDragging(true);
@@ -153,6 +130,7 @@ export function useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeigh
     event.preventDefault();
     const dialog = dialogRef.current;
     if (!dialog) return;
+    hasUserInteractedRef.current = true;
     resizeStartRef.current = { pointerId: event.pointerId, edge, startX: event.clientX, startY: event.clientY, rect: readRect(dialog) };
     event.currentTarget.setPointerCapture(event.pointerId);
   }, []);
