@@ -1,4 +1,4 @@
-import { requireReferenceGraphSessionContainer } from "./reference-graph-session-container";
+// @source-path [fobles] src/content/features/reference-graph/build-progress.ts
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { CONST } from "../../../constants/const";
@@ -13,10 +13,7 @@ let unsubscribeActivity: (() => void) | undefined;
 let activities: ActivityEvent[] = [];
 
 function renderProgressDialog(): void {
-  progressRoot?.render(createElement(ReferenceGraphProgressDialog, {
-    activities,
-    onCancel: () => progressCancelHandler?.(),
-  }));
+  progressRoot?.render(createElement(ReferenceGraphProgressDialog, { activities, onCancel: () => progressCancelHandler?.() }));
 }
 
 function disposeProgressDialog(): void {
@@ -30,33 +27,19 @@ function disposeProgressDialog(): void {
   progressCancelHandler = undefined;
 }
 
-export function initializeReferenceGraphProgressModal(
-  _doc: Document,
-  _steps: readonly ProgressStep[],
-  _filters: SitecoreHarvestFiltersState,
-): void {
+export function initializeReferenceGraphProgressModal(_doc: Document, _steps: readonly ProgressStep[], _filters: SitecoreHarvestFiltersState): void {
   renderProgressDialog();
 }
 
-export function handleHarvestProgress(
-  _doc: Document,
-  _step: Pick<ProgressStep, "stepKey" | "label">,
-  _status: HarvestProgressStatus,
-): void {
+export function handleHarvestProgress(_doc: Document, _step: Pick<ProgressStep, "stepKey" | "label">, _status: HarvestProgressStatus): void {
   // Legacy compatibility; logical worker/cache activity is authoritative.
 }
 
-export function updateReferenceGraphProgressModalSkipped(
-  doc: Document,
-  step: Pick<ProgressStep, "stepKey" | "label">,
-): void {
+export function updateReferenceGraphProgressModalSkipped(doc: Document, step: Pick<ProgressStep, "stepKey" | "label">): void {
   handleHarvestProgress(doc, step, "skipped");
 }
 
-export function updateReferenceGraphProgressModal(
-  doc: Document,
-  step: Pick<ProgressStep, "stepKey" | "label">,
-): void {
+export function updateReferenceGraphProgressModal(doc: Document, step: Pick<ProgressStep, "stepKey" | "label">): void {
   handleHarvestProgress(doc, step, "complete");
 }
 
@@ -65,26 +48,21 @@ export function closeReferenceGraphProgressModal(_doc: Document): void {
   else disposeProgressDialog();
 }
 
-export function openReferenceGraphProgressModal(
-  doc: Document,
-  onCancel: () => void,
-): void {
+export function openReferenceGraphProgressModal(doc: Document, onCancel: () => void): void {
   disposeProgressDialog();
   const dialog = doc.createElement("dialog");
   const reactHost = doc.createElement("div");
   dialog.id = CONST.FOBLES.REFERENCE_GRAPH.DOM.IDS.PROGRESS_DIALOG_ID;
   dialog.className = "fobles-reference-graph-progress";
   dialog.appendChild(reactHost);
-  requireReferenceGraphSessionContainer(doc).appendChild(dialog);
+  doc.body.appendChild(dialog);
   progressDialog = dialog;
   progressRoot = createRoot(reactHost);
   progressCancelHandler = onCancel;
   activities = [];
   unsubscribeActivity = subscribeActivity((activity) => {
     const existing = activities.findIndex((item) => item.activityId === activity.activityId);
-    activities = existing < 0
-      ? [...activities, activity]
-      : activities.map((item, index) => index === existing ? activity : item);
+    activities = existing < 0 ? [...activities, activity] : activities.map((item, index) => index === existing ? activity : item);
     renderProgressDialog();
   });
   dialog.addEventListener("close", disposeProgressDialog, { once: true });

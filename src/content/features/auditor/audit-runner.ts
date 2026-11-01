@@ -1,9 +1,8 @@
 // @source-path [fobles] src/content/features/auditor/audit-runner.ts
-
-import { buildFoblesUrl } from "../../foundation/sitecore/fobles-url";
 import type { SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
-import { openFoblesDataSession, type FoblesDataSession } from "../../foundation/reference-data/reference-data-service";
-import type { WorkSession } from "../../foundation/workers/session/work-session.types";
+import { openFoblesDataAcquisition, type FoblesDataAcquisition } from "../../foundation/reference-data/reference-data-acquisition";
+import { buildFoblesUrl } from "../../foundation/sitecore/fobles-url";
+import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
 import type { AuditCheckContext } from "./audit-check.types";
 import type { AuditFindingStore } from "./audit-finding-store";
 import { cacheValidationCheck } from "./checks/cache-validation-check";
@@ -11,11 +10,11 @@ import { itemNavigationCheck } from "./checks/item-navigation-check";
 import { itemResolvedCheck } from "./checks/item-resolved-check";
 import { referenceResolvedCheck } from "./checks/reference-resolved-check";
 
-export type AuditRunnerOptions = { doc: Document; findingStore: AuditFindingStore; workSession: WorkSession; filters: SitecoreHarvestFiltersState; onError?: (error: unknown) => void };
+export type AuditRunnerOptions = { doc: Document; findingStore: AuditFindingStore; workOperation: WorkOperation; filters: SitecoreHarvestFiltersState; onError?: (error: unknown) => void };
 export type AuditRunner = { run: () => Promise<void>; dispose: () => void };
 
-export function createAuditRunner({ doc, findingStore, workSession, filters, onError }: AuditRunnerOptions): AuditRunner {
-  let dataSession: FoblesDataSession | undefined;
+export function createAuditRunner({ doc, findingStore, workOperation, filters, onError }: AuditRunnerOptions): AuditRunner {
+  let dataAcquisition: FoblesDataAcquisition | undefined;
   let unsubscribe: (() => void) | undefined;
   let disposed = false;
 
@@ -23,26 +22,19 @@ export function createAuditRunner({ doc, findingStore, workSession, filters, onE
     if (disposed) return;
     disposed = true;
     unsubscribe?.();
-    dataSession?.dispose();
+    dataAcquisition?.dispose();
   }
 
   async function run(): Promise<void> {
     try {
-      dataSession = await openFoblesDataSession({ flavor: "reference-model", target: "current-object", doc, workSession, signal: workSession.signal, filters });
-      if (disposed || workSession.signal.aborted || !dataSession) return;
-      const data = dataSession.data;
+      dataAcquisition = await openFoblesDataAcquisition({ flavor: "reference-model", target: "current-object", doc, workOperation, signal: workOperation.signal, filters });
+      if (disposed || workOperation.signal.aborted || !dataAcquisition) return;
+      const data = dataAcquisition.data;
 
       function buildContext(): AuditCheckContext {
-        return {
-          signal: workSession.signal,
-          referenceModelRoot: data.model.referenceModel,
-          referenceModelNodesById: data.model.nodesById,
-          findingStore,
-          processingStateByTreeNodeId: data.model.processingStateByTreeNodeId,
-          resolveCandidateTreeNodeIds: data.resolveCandidateTreeNodeIds,
-          cacheRevalidationResultByTreeNodeId: data.cacheRevalidationResultByTreeNodeId,
-          buildSitecoreUrl: buildFoblesUrl,
-        };
+        return { signal: workOperation.signal, referenceModelRoot: data.model.referenceModel, referenceModelNodesById: data.model.nodesById, findingStore,
+          processingStateByTreeNodeId: data.model.processingStateByTreeNodeId, resolveCandidateTreeNodeIds: data.resolveCandidateTreeNodeIds,
+          cacheRevalidationResultByTreeNodeId: data.cacheRevalidationResultByTreeNodeId, buildSitecoreUrl: buildFoblesUrl };
       }
 
       async function project(): Promise<void> {
@@ -52,16 +44,12 @@ export function createAuditRunner({ doc, findingStore, workSession, filters, onE
 
       await itemResolvedCheck.run(buildContext());
       await itemNavigationCheck.run(buildContext());
-      unsubscribe = dataSession.subscribeChange(() => project());
+      unsubscribe = dataAcquisition.subscribeChange(() => project());
       await project();
-      await dataSession.completion;
-
-      if (!disposed && !workSession.signal.aborted) {
-        await project();
-        await workSession.complete();
-      }
+      await dataAcquisition.completion;
+      if (!disposed && !workOperation.signal.aborted) { await project(); await workOperation.complete(); }
     } catch (error) {
-      if (!disposed && !workSession.signal.aborted) onError?.(error);
+      if (!disposed && !workOperation.signal.aborted) onError?.(error);
     }
   }
 

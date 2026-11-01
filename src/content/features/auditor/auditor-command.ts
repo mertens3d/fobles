@@ -1,33 +1,18 @@
 // @source-path [fobles] src/content/features/auditor/auditor-command.ts
+import { AuditOperation } from "./audit-operation";
+import { openAuditorToolWindow } from "../../shell/tool-window/fobles-tool-launchers";
 
-import { showFoblesErrorDialog } from "../../../shared/error-dialog";
-import { AuditSession } from "./audit-session";
-import { acquireAuditorSessionLock, releaseAuditorSessionLock } from "./auditor-session-lock";
+let activeAuditOperation: AuditOperation | undefined;
 
-let activeAuditSession: AuditSession | undefined;
-
-// The toolbar-invokable entry point for the Fobles Auditor - mirrors openReferenceGraph's own
-// singleton + cross-tab lock pattern so the two features can never collide over one tab's worker
-// pool, but uses its own lock/session identity rather than sharing Reference Graph's.
 export async function openAuditor(doc: Document): Promise<void> {
-  if (activeAuditSession) return;
-
-  const acquired = await acquireAuditorSessionLock();
-  if (!acquired) {
-    showFoblesErrorDialog(doc, {
-      title: "Auditor Already Active",
-      messagePublicFacing: "Only one Fobles Auditor can be active in this browser session. Close the existing Auditor, or use another browser profile or Incognito window.",
-    });
-    return;
-  }
-
-  const session = new AuditSession(doc);
-  activeAuditSession = session;
-
+  if (activeAuditOperation) return;
+  const operation = new AuditOperation(doc);
+  activeAuditOperation = operation;
   try {
-    await session.run();
+    await operation.run();
+    await openAuditorToolWindow(doc, operation.findings, operation.workOperationId, () => operation.cancel());
   } finally {
-    if (activeAuditSession === session) activeAuditSession = undefined;
-    await releaseAuditorSessionLock();
+    if (activeAuditOperation === operation) activeAuditOperation = undefined;
+    await operation.cancel();
   }
 }
