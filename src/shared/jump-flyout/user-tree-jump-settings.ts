@@ -1,8 +1,8 @@
-import { CONST } from "../../constants/const";
-import { STORAGE } from "../../constants/extension-const";
-import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
-import { joinJumpFlyoutPath, normalizeJumpFlyoutIconPath, sanitizeJumpFlyoutPathSuffix } from "./button-settings";
-import { USER_TREE_JUMP } from "../../constants/user-tree-jump-constants";
+import { CONST } from "../../constants/const.ts";
+import { STORAGE } from "../../constants/extension-const.ts";
+import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage.ts";
+import { joinJumpFlyoutPath, normalizeJumpFlyoutIconPath, sanitizeJumpFlyoutPathSuffix } from "./button-settings.ts";
+import { USER_TREE_JUMP } from "../../constants/user-tree-jump-constants.ts";
 import type { UserTreeJump } from "./jump-flyout.types";
 
 export type { UserTreeJump } from "./jump-flyout.types";

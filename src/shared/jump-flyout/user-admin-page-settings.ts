@@ -1,7 +1,7 @@
-import { STORAGE } from "../../constants/extension-const";
-import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage";
-import { normalizeJumpFlyoutIconPath } from "./button-settings";
-import { USER_ADMIN_PAGE } from "./user-admin-page-constants";
+import { STORAGE } from "../../constants/extension-const.ts";
+import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage.ts";
+import { normalizeJumpFlyoutIconPath } from "./button-settings.ts";
+import { USER_ADMIN_PAGE } from "./user-admin-page-constants.ts";
 import type { UserAdminPage } from "./jump-flyout.types";
 
 export type { UserAdminPage } from "./jump-flyout.types";
