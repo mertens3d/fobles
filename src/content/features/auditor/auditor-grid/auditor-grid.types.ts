@@ -14,5 +14,10 @@ export type AuditorTreeRow = AuditReportTreeNode & {
   sitecoreUrl?: string;
   isSitecoreItem: boolean;
   findings: readonly AuditFinding[];
+  descendantFailures: readonly AuditorDescendantFailure[];
   searchText: string;
 };
+
+export type AuditorDescendantFailure = { rowId: string; label: string; hierarchy: readonly string[]; findings: readonly AuditFinding[] };
+
+export type AuditorTestDetailsSelection = { row: AuditorTreeRow; ancestors: readonly AuditorTreeRow[] };

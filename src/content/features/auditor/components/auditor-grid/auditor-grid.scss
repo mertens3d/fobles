@@ -204,19 +204,9 @@
   padding-left: 1px !important;
 }
 
-.fobles-auditor-navigate-cell {
-  width: 18px !important;
-  min-width: 18px !important;
-  max-width: 18px !important;
-  padding: 0 !important;
-  justify-content: center;
-}
 
-.fobles-auditor-navigate {
-  width: 16px;
-  height: 18px;
-  padding: 0 !important;
-}
+
+
 
 .fobles-auditor-data-action-cell {
   justify-content: center;
@@ -539,37 +529,5 @@
   white-space: pre;
 }
 
-/* Sitecore-tree-like navigate affordance replaces the globe/radio-looking glyph. */
-.fobles-auditor-navigate {
-  display: inline-flex;
-  width: 16px;
-  height: 16px;
-  align-items: center;
-  justify-content: center;
-  padding: 0 !important;
-  border: 1px solid #2b66cf !important;
-  border-radius: 3px;
-  background: linear-gradient(#4385f5, #2866d7) !important;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
-  opacity: 0;
-  cursor: pointer;
-  transition: opacity 100ms ease, box-shadow 100ms ease, transform 100ms ease;
-}
-
-.fobles-auditor-navigate > span {
-  width: 4px;
-  height: 4px;
-  border-radius: 50%;
-  background: #fff;
-}
-
-.ag-row:hover .fobles-auditor-navigate,
-.fobles-auditor-navigate:focus-visible {
-  opacity: 1;
-  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.45), 0 1px 2px rgba(0, 65, 140, 0.35);
-  outline: 0;
-}
-
-.fobles-auditor-navigate:hover {
-  transform: translateY(-1px);
-}
+.fobles-dialog-icon-button { border-color: transparent !important; box-shadow: none !important; }
+.fobles-dialog-icon-button:not(:hover):not(:focus-visible) { border-color: transparent !important; box-shadow: none !important; }

@@ -12,7 +12,7 @@ import { DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS, getAuditorLayoutViewSettings, sub
 import { descendantExpandableIds, isAuditorRowVisible, reconcileExpandedRows } from "../../auditor-grid/auditor-expansion-state";
 import { applyAuditorLayoutView } from "../../auditor-grid/auditor-layout-row-filter";
 import { projectAuditorRows } from "../../auditor-grid/auditor-row-projector";
-import type { AuditorTreeRow, ToggleModifiers } from "../../auditor-grid/auditor-grid.types.ts";
+import type { AuditorTestDetailsSelection, AuditorTreeRow, ToggleModifiers } from "../../auditor-grid/auditor-grid.types.ts";
 import { AuditorDataAction } from "../auditor-data-action/auditor-data-action";
 import { AuditorJourneyCell } from "../auditor-journey-cell/auditor-journey-cell";
 import { AuditorNavigate } from "../auditor-navigate/auditor-navigate";
@@ -21,7 +21,7 @@ import { AuditorTreeCell } from "../auditor-tree-cell/auditor-tree-cell";
 
 ModuleRegistry.registerModules([AllCommunityModule]);
 
-export type AuditorGridProps = { referenceModelRoot: ReferenceModelNode; findings: readonly AuditFinding[]; processingStateByTreeNodeId: ProcessingStateByTreeNodeId; modelRevision: number; graphFilters: SitecoreHarvestFiltersState; onViewData: (treeNodeId: string) => void; onViewTestDetails: (findings: readonly AuditFinding[]) => void; };
+export type AuditorGridProps = { referenceModelRoot: ReferenceModelNode; findings: readonly AuditFinding[]; processingStateByTreeNodeId: ProcessingStateByTreeNodeId; modelRevision: number; graphFilters: SitecoreHarvestFiltersState; onViewData: (treeNodeId: string) => void; onViewTestDetails: (selection: AuditorTestDetailsSelection) => void; };
 
 function blockDoubleClickTextSelection(event: ReactMouseEvent<HTMLDivElement>): void {
   if (event.detail > 1) event.preventDefault();
@@ -96,6 +96,18 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
     if (row.sitecoreUrl) window.open(row.sitecoreUrl, "_blank", "noopener,noreferrer");
   }
 
+  function viewTestDetails(row: AuditorTreeRow): void {
+    const ancestors: AuditorTreeRow[] = [];
+    let parentId = row.parentId;
+    while (parentId) {
+      const parent = rowsById.get(parentId);
+      if (!parent) break;
+      ancestors.unshift(parent);
+      parentId = parent.parentId;
+    }
+    onViewTestDetails({ row, ancestors });
+  }
+
   const columnDefs = useMemo<ColDef<AuditorTreeRow>[]>(() => [
     { field: "status", headerName: "", width: 24, minWidth: 24, maxWidth: 24, cellRenderer: AuditorStatusCell },
     { field: "journeyStage", headerName: "", width: 34, minWidth: 34, maxWidth: 34, cellRenderer: (params: ICellRendererParams<AuditorTreeRow>) => params.data?.isSitecoreItem ? <AuditorJourneyCell stage={params.data.journeyStage} /> : null },
@@ -109,5 +121,5 @@ export function AuditorGrid({ referenceModelRoot, findings, processingStateByTre
     if (!(target instanceof Element && target.closest("button, a, input, select, textarea")) && event.data) { toggle(event.data, event.event instanceof MouseEvent ? event.event : undefined); clearTextSelection(event.event); }
   }
 
-  return <div className="fobles-auditor-grid-shell"><div className="fobles-auditor-grid-toolbar"><input type="search" className="fobles-auditor-grid-search" placeholder="Search..." aria-label="Search Auditor tree" value={query} onChange={(event) => setQuery(event.target.value)} /><div className="fobles-auditor-tree-actions"><button type="button" onClick={() => setExpanded(new Set(expandableIds))}>Expand All</button><button type="button" onClick={() => setExpanded(new Set())}>Collapse All</button></div></div><div className="fobles-auditor-grid" onMouseDown={blockDoubleClickTextSelection}><AgGridReact<AuditorTreeRow> key={structureKey} context={{ onViewTestDetails }} theme={themeQuartz} rowData={visibleRows} columnDefs={columnDefs} getRowId={(params) => params.data.id} getRowClass={(params) => params.data?.isSitecoreItem ? "fobles-auditor-grid-row--item" : "fobles-auditor-grid-row--relationship"} defaultColDef={{ resizable: false, sortable: false }} headerHeight={0} rowHeight={26} ensureDomOrder onRowDoubleClicked={handleRowDoubleClick} animateRows={false} /></div></div>;
+  return <div className="fobles-auditor-grid-shell"><div className="fobles-auditor-grid-toolbar"><input type="search" className="fobles-auditor-grid-search" placeholder="Search..." aria-label="Search Auditor tree" value={query} onChange={(event) => setQuery(event.target.value)} /><div className="fobles-auditor-tree-actions"><button type="button" onClick={() => setExpanded(new Set(expandableIds))}>Expand All</button><button type="button" onClick={() => setExpanded(new Set())}>Collapse All</button></div></div><div className="fobles-auditor-grid" onMouseDown={blockDoubleClickTextSelection}><AgGridReact<AuditorTreeRow> key={structureKey} context={{ onViewTestDetails: viewTestDetails }} theme={themeQuartz} rowData={visibleRows} columnDefs={columnDefs} getRowId={(params) => params.data.id} getRowClass={(params) => params.data?.isSitecoreItem ? "fobles-auditor-grid-row--item" : "fobles-auditor-grid-row--relationship"} defaultColDef={{ resizable: false, sortable: false }} headerHeight={0} rowHeight={26} ensureDomOrder onRowDoubleClicked={handleRowDoubleClick} animateRows={false} /></div></div>;
 }

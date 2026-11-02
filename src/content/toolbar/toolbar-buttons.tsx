@@ -3,7 +3,7 @@ import { CLASS, ICONS, SYMBOLS, TEXT } from "../../constants/fobles.constants";
 import { FOBLES } from "../../constants/fobles";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import { publishFoblesShellCommand } from "../shell/shell-events";
-import { openDeveloperToolWindow } from "../shell/tool-window/fobles-tool-launchers";
+import { openDeveloperUtility } from "../shell/utility/fobles-utility-launchers";
 import type { ToolbarContext } from "./types";
 
 export type ToolbarNavButtonProps = { className: string; title: string; onClick: (event: React.MouseEvent) => void; role?: string; ariaLabel?: string; text?: string; children?: React.ReactNode };
@@ -25,7 +25,7 @@ export function AuditorButton({ context }: { context: ToolbarContext }) {
 }
 
 export function DeveloperButton({ context }: { context: ToolbarContext }) {
-  return <ToolbarNavButton className={CLASS.TOOLBAR_DEVELOPER_BUTTON} role={FOBLES.ATTRIBUTES.DATA.NAV_BUTTON_ROLE.DEVELOPER} title={TEXT.DEVELOPER_TITLE} text={TEXT.DEVELOPER_BUTTON} onClick={() => openDeveloperToolWindow(context.doc)} />;
+  return <ToolbarNavButton className={CLASS.TOOLBAR_DEVELOPER_BUTTON} role={FOBLES.ATTRIBUTES.DATA.NAV_BUTTON_ROLE.DEVELOPER} title={TEXT.DEVELOPER_TITLE} text={TEXT.DEVELOPER_BUTTON} onClick={() => openDeveloperUtility(context.doc)} />;
 }
 
 export function SetIseTabTitleButton({ context }: { context: ToolbarContext }) {

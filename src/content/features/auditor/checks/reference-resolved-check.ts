@@ -53,7 +53,12 @@ export const referenceResolvedCheck: AuditCheck = {
             status: interpreted.status,
             referenceModelNodeId: node.treeNodeId,
             item: node.scItem,
-            summary: interpreted.summary,
+            summary: processingStatus === "not-found"
+              ? `Referenced item ${node.scItem.scItemId ?? node.scItem.scItemPath ?? "(unknown)"} could not be found.`
+              : interpreted.summary,
+            context: node.provenance.type === "rendering-parameter"
+              ? `Rendering parameter ${node.provenance.parameterName} references ${node.provenance.decodedValue || node.provenance.parameterValue}.`
+              : undefined,
             buildSitecoreUrl: context.buildSitecoreUrl,
           }),
         );

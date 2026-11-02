@@ -1,4 +1,4 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-journey-cell/auditor-journey-cell.scss
 .fobles-auditor-journey { display: inline-flex; width: 30px; height: 10px; align-items: center; justify-content: center; gap: 2px; }
-.fobles-auditor-journey > span { width: 5px; height: 5px; border-radius: 50%; background: #c7ced8; }
+.fobles-auditor-journey > span { width: 4px; height: 7px; border: 0; border-radius: 2px; background: #c7ced8; }
 .fobles-auditor-journey > .is-complete { background: #2f6fed; }

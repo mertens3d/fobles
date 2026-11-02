@@ -5,7 +5,8 @@ import { PROGRESS_STEPS } from "../../foundation/harvesting/planner/harvest-step
 import { openFoblesDataAcquisition, type FoblesDataAcquisition } from "../../foundation/reference-data/reference-data-acquisition";
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
 import { extensionLog } from "../../logger";
-import { openReferenceGraphToolWindow } from "../../shell/tool-window/fobles-tool-launchers";
+import { openReferenceGraphUtility } from "../../shell/utility/fobles-utility-launchers";
+import { runWithFoblesUtilityLock } from "../../shell/utility/fobles-utility";
 import { createWorkOperation } from "../../shell/work-operation/work-operation";
 import { closeReferenceGraphProgressModal, handleHarvestProgress, initializeReferenceGraphProgressModal, openReferenceGraphProgressModal } from "./build-progress";
 import { harvestGraphForLink } from "./harvester";
@@ -42,7 +43,7 @@ class ReferenceGraphOperation {
       onHarvestRequired: () => { initializeReferenceGraphProgressModal(this.doc, PROGRESS_STEPS, filters); openReferenceGraphProgressModal(this.doc, () => this.cancel()); } });
     this.throwIfCancelled(); if (!this.dataAcquisition || !graphHolder.prepared) throw new Error("The requested data was unavailable.");
     this.transition("displaying"); closeReferenceGraphProgressModal(this.doc); const prepared = graphHolder.prepared;
-    await openReferenceGraphToolWindow(this.doc, this.workOperation, prepared, async (link, graphFilters, existingResult) => await harvestGraphForLink(link, this.doc, this.controller, graphFilters, existingResult));
+    await openReferenceGraphUtility(this.doc, this.workOperation, prepared, async (link, graphFilters, existingResult) => await harvestGraphForLink(link, this.doc, this.controller, graphFilters, existingResult), true);
   }
 
   private throwIfCancelled(): void { if (this.controller.signal.aborted) throw new DOMException("Reference Graph cancelled", "AbortError"); }
@@ -54,6 +55,8 @@ class ReferenceGraphOperation {
 
 export async function openReferenceGraph(doc: Document): Promise<void> {
   if (activeReferenceGraphOperation) return;
-  const operation = new ReferenceGraphOperation(doc); activeReferenceGraphOperation = operation;
-  try { await operation.run(); } finally { if (activeReferenceGraphOperation === operation) activeReferenceGraphOperation = undefined; }
+  await runWithFoblesUtilityLock(doc, async () => {
+    const operation = new ReferenceGraphOperation(doc); activeReferenceGraphOperation = operation;
+    try { await operation.run(); } finally { if (activeReferenceGraphOperation === operation) activeReferenceGraphOperation = undefined; }
+  });
 }

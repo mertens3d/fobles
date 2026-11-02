@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-status-cell/auditor-status-cell.scss
-.fobles-auditor-status { display: inline-flex; width: 20px; height: 20px; align-items: center; justify-content: center; padding: 0; border: 0; background: transparent; font: 13px/1 "Segoe UI Emoji", "Apple Color Emoji", sans-serif; }
-.fobles-auditor-status--cascade { opacity: 0.65; }
-.fobles-auditor-status--action { border-radius: 3px; cursor: pointer; }
-.fobles-auditor-status--action.is-row-hovered, .fobles-auditor-status--action:hover, .fobles-auditor-status--action:focus-visible { background: #e7f3ff; outline: 1px solid #76b9ed; }
+.fobles-auditor-status { box-sizing: border-box; display: inline-flex; width: 20px !important; min-width: 20px !important; max-width: 20px !important; height: 20px !important; min-height: 20px !important; max-height: 20px !important; align-items: center; justify-content: center; padding: 0 !important; border: 0 !important; outline: 0; background: transparent !important; box-shadow: none !important; font: inherit; }
+.fobles-auditor-status--cascade { opacity: 0.62; }
+.fobles-auditor-status--action { cursor: pointer; }
+.fobles-auditor-status--action:hover, .fobles-auditor-status--action:focus-visible, .fobles-auditor-status--action.is-row-hovered { border: 0 !important; outline: 0; background: transparent !important; box-shadow: none !important; }

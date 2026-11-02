@@ -27,6 +27,7 @@ import {
 import { interpretResolveState } from "../../checks/reference-resolved-check";
 import { downloadAuditFindingsCsv } from "../../export/audit-csv-exporter";
 import { AuditorGrid } from "../auditor-grid/auditor-grid";
+import type { AuditorTestDetailsSelection } from "../../auditor-grid/auditor-grid.types.ts";
 import { AuditorHelpDialog } from "../auditor-help-dialog/auditor-help-dialog";
 import { AuditorTestDetailsDialog } from "../auditor-test-details-dialog/auditor-test-details-dialog";
 import { AuditorSummary } from "../auditor-summary/auditor-summary";
@@ -94,7 +95,7 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   const [filtersLoaded, setFiltersLoaded] = useState(false);
   const [viewReferenceModel, setViewReferenceModel] = useState(false);
   const [selectedTreeNodeId, setSelectedTreeNodeId] = useState<string>();
-  const [selectedTestFindings, setSelectedTestFindings] = useState<readonly AuditFinding[]>([]);
+  const [selectedTestDetails, setSelectedTestDetails] = useState<AuditorTestDetailsSelection | undefined>(undefined);
   const [showHelp, setShowHelp] = useState(false);
   const startedAt = useRef(performance.now());
   const completedElapsedSeconds = useRef<number | undefined>(undefined);
@@ -345,7 +346,7 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
               modelRevision={modelRevision}
               graphFilters={graphFilters}
               onViewData={setSelectedTreeNodeId}
-              onViewTestDetails={setSelectedTestFindings}
+              onViewTestDetails={setSelectedTestDetails}
             />
           ) : null}
         </div>
@@ -360,7 +361,7 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
           </aside>
         ) : null}
       </div>
-      <AuditorTestDetailsDialog findings={selectedTestFindings} onClose={() => setSelectedTestFindings([])} />
+      <AuditorTestDetailsDialog selection={selectedTestDetails} onClose={() => setSelectedTestDetails(undefined)} />
       <AuditorHelpDialog open={showHelp} onClose={() => setShowHelp(false)} />
     </div>
   );

@@ -1,0 +1,9 @@
+// @source-path [fobles] src/content/shared/ui/fobles-message-dialog/fobles-message-dialog.scss
+.fobles-message-dialog-backdrop { z-index: 12000; display: grid; place-items: center; padding: 18px; background: rgb(16 35 57 / 24%); pointer-events: auto; }
+.fobles-message-dialog { width: min(460px, calc(100% - 32px)); padding: 18px 20px; border: 1px solid #7aa7df; border-radius: 3px; background: #fff; box-shadow: 0 12px 30px rgb(20 42 70 / 28%); color: #263a55; font: 12px/1.45 Arial, sans-serif; }
+.fobles-message-dialog__title { margin: 0 0 8px; color: #172e4d; font-size: 16px; font-weight: 600; }
+.fobles-message-dialog__message { color: #41546e; }
+.fobles-message-dialog__actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 16px; }
+.fobles-message-dialog__actions button { min-width: 92px; padding: 6px 12px; border: 1px solid #9aa8b8; border-radius: 2px; background: #f8fafc; color: #263a55; font: inherit; }
+.fobles-message-dialog__actions button:hover, .fobles-message-dialog__actions button:focus-visible { border-color: #5d8fc8; background: #edf5ff; outline: 0; }
+.fobles-message-dialog__actions button.is-primary { border-color: #2b66cf; background: linear-gradient(#4385f5, #2866d7); color: #fff; }

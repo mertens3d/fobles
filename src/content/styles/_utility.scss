@@ -1,0 +1,33 @@
+// @source-path [fobles] src/content/styles/_utility.scss
+.fobles-utility-container {
+  position: fixed;
+  inset: 0;
+  z-index: 11000;
+  pointer-events: none;
+}
+
+.fobles-utility-container.fobles-utility-container--lock-host {
+  pointer-events: auto;
+}
+
+.fobles-utility-host,
+.fobles-utility-root {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fobles-utility-content {
+  pointer-events: auto;
+}
+
+.fobles-utility-lock-host {
+  position: absolute;
+  inset: 0;
+  pointer-events: auto;
+}
+
+.fobles-utility-lock-host > .fobles-message-dialog-backdrop {
+  position: absolute;
+  inset: 0;
+}

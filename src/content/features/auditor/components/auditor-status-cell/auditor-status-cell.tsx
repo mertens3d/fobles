@@ -3,11 +3,12 @@
 import { useEffect, useRef, useState } from "react";
 import type { ICellRendererParams } from "ag-grid-community";
 import type { AuditFinding, AuditFindingStatus } from "../../audit-finding.types";
+import type { AuditorTreeRow } from "../../auditor-grid/auditor-grid.types";
+import { AuditorStatusIcon } from "../auditor-status-icon/auditor-status-icon";
 
-const STATUS_GLYPH: Readonly<Record<AuditFindingStatus, string>> = { pending: "⏳", passed: "✅", warning: "⚠️", error: "❌" };
 const STATUS_LABEL: Readonly<Record<AuditFindingStatus, string>> = { pending: "Pending", passed: "Passed", warning: "Warning", error: "Sitecore Error" };
-type StatusRow = { status: AuditFindingStatus; findings: readonly AuditFinding[]; isSitecoreItem: boolean };
-type AuditorStatusCellContext = { onViewTestDetails?: (findings: readonly AuditFinding[]) => void };
+type StatusRow = AuditorTreeRow;
+type AuditorStatusCellContext = { onViewTestDetails?: (row: AuditorTreeRow) => void };
 
 export function AuditorStatusCell(props: ICellRendererParams<StatusRow>) {
   const buttonRef = useRef<HTMLButtonElement>(null);
@@ -26,6 +27,6 @@ export function AuditorStatusCell(props: ICellRendererParams<StatusRow>) {
     row.addEventListener("mouseleave", deactivate);
     return (): void => { row.removeEventListener("mouseenter", activate); row.removeEventListener("mouseleave", deactivate); };
   }, [interactive]);
-  if (!interactive) return <span className="fobles-auditor-status fobles-auditor-status--cascade" title={`${STATUS_LABEL[status]} from descendant results`}>{STATUS_GLYPH[status]}</span>;
-  return <button ref={buttonRef} type="button" className={`fobles-auditor-status fobles-auditor-status--action${rowHovered ? " is-row-hovered" : ""}`} title={`View test details (${findings.length})`} aria-label={`View test details: ${STATUS_LABEL[status]}, ${findings.length} result${findings.length === 1 ? "" : "s"}`} onClick={(event) => { event.stopPropagation(); onViewTestDetails(findings); }}>{STATUS_GLYPH[status]}</button>;
+  if (!interactive) return <span className="fobles-auditor-status fobles-auditor-status--cascade" title={`${STATUS_LABEL[status]} from descendant results`}><AuditorStatusIcon status={status} /></span>;
+  return <button ref={buttonRef} type="button" className={`fobles-auditor-status fobles-auditor-status--action${rowHovered ? " is-row-hovered" : ""}`} title={`View test details (${findings.length})`} aria-label={`View test details: ${STATUS_LABEL[status]}, ${findings.length} result${findings.length === 1 ? "" : "s"}`} onClick={(event) => { event.stopPropagation(); if (props.data) onViewTestDetails(props.data); }}><AuditorStatusIcon status={status} /></button>;
 }

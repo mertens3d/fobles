@@ -1,6 +1,7 @@
 /// <reference types="chrome" />
 
 import { LOGGER, MESSAGE } from "../constants/extension-const";
+import "./fobles-utility-lock-registration";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
 import { extensionLog } from "../content/logger";
 import { clearHostWorkerIframeTargets, markWorkerIframeReady } from "../content/foundation/workers/iframe/worker-iframe-service";

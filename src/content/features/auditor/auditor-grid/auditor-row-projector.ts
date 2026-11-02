@@ -7,7 +7,7 @@ import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-
 import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
 import type { AuditFinding } from "../audit-finding.types";
 import { buildAuditReportTree } from "../audit-report-tree";
-import type { AuditorTreeRow, JourneyStage } from "./auditor-grid.types";
+import type { AuditorDescendantFailure, AuditorTreeRow, JourneyStage } from "./auditor-grid.types";
 
 const JOURNEY_RANK: Record<JourneyStage, number> = { referenced: 1, cached: 2, live: 3, tested: 4 };
 const JOURNEY_BY_RANK: Record<number, JourneyStage> = { 1: "referenced", 2: "cached", 3: "live", 4: "tested" };
@@ -78,6 +78,7 @@ export function projectAuditorRows(
           : undefined,
         isSitecoreItem: node?.nodeType === "item",
         findings: nodeFindings,
+        descendantFailures: [],
         searchText: [row.label, node?.nodeType === "item" ? node.scItem.scItemName : undefined, node?.nodeType === "item" ? node.scItem.scItemId : undefined, node?.nodeType === "item" ? node.scItem.scItemPath : undefined]
           .filter((value): value is string => Boolean(value))
           .join(" ")
@@ -86,8 +87,33 @@ export function projectAuditorRows(
     });
 
   setVisibleChildren(results);
+  populateDescendantFailures(results);
   rollupJourney(results);
   return results;
+}
+
+function populateDescendantFailures(rows: AuditorTreeRow[]): void {
+  const rowsById = new Map(rows.map((row) => [row.id, row]));
+  rows.forEach((sourceRow) => {
+    const findings = sourceRow.findings.filter((finding) => finding.status === "error" || finding.status === "warning");
+    if (findings.length === 0) return;
+    const hierarchy = [sourceRow.label];
+    let parentId = sourceRow.parentId;
+    while (parentId) {
+      const parent = rowsById.get(parentId);
+      if (!parent) break;
+      hierarchy.unshift(parent.label);
+      parentId = parent.parentId;
+    }
+    const failure: AuditorDescendantFailure = { rowId: sourceRow.id, label: sourceRow.label, hierarchy, findings };
+    let ancestorId = sourceRow.parentId;
+    while (ancestorId) {
+      const ancestor = rowsById.get(ancestorId);
+      if (!ancestor) break;
+      ancestor.descendantFailures = [...ancestor.descendantFailures, failure];
+      ancestorId = ancestor.parentId;
+    }
+  });
 }
 
 function setVisibleChildren(rows: AuditorTreeRow[]): void {

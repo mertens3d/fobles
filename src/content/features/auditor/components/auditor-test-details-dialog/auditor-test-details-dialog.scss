@@ -1,0 +1,42 @@
+// @source-path [fobles] src/content/features/auditor/components/auditor-test-details-dialog/auditor-test-details-dialog.scss
+.fobles-auditor-test-details-backdrop { position: fixed; inset: 0; z-index: 2147483646; display: flex; align-items: flex-start; justify-content: center; padding: 22px; background: rgba(22, 39, 61, 0.28); }
+.fobles-auditor-test-details { position: relative; width: min(760px, calc(100vw - 44px)); max-height: calc(100vh - 44px); overflow: auto; padding: 18px 22px 20px; border: 1px solid #7aa7df; border-radius: 3px; background: #fff; box-shadow: 0 14px 32px rgba(28, 48, 74, 0.24); color: #20344f; font: 12px/1.4 Arial, sans-serif; }
+.fobles-auditor-test-details > .fobles-dialog-icon-button { position: absolute; top: 10px; right: 10px; }
+.fobles-auditor-test-details-header { padding: 0 42px 13px 0; border-bottom: 1px solid #d7e0eb; }
+.fobles-auditor-test-details-header h2 { margin: 0 0 7px; color: #172e4d; font-size: 20px; font-weight: 600; }
+.fobles-auditor-test-details-parent { display: flex; gap: 8px; align-items: baseline; color: #344a66; }
+.fobles-auditor-test-details-parent strong { color: #172e4d; }
+.fobles-auditor-test-results { display: grid; gap: 10px; padding-top: 12px; }
+.fobles-auditor-test-result { padding: 10px 12px; border: 1px solid #d8e0e9; border-left-width: 3px; border-radius: 2px; background: #fafbfd; }
+.fobles-auditor-test-result--passed { border-left-color: #239b56; background: #f4fbf6; }
+.fobles-auditor-test-result--warning, .fobles-auditor-test-result--pending { border-left-color: #d5a320; }
+.fobles-auditor-test-result--error { border-left-color: #d13438; background: #fff6f6; }
+.fobles-auditor-test-result-heading { display: flex; gap: 9px; align-items: flex-start; margin-bottom: 7px; }
+.fobles-auditor-test-result-heading h3 { margin: 0; color: #172e4d; font-size: 13px; font-weight: 600; }
+.fobles-auditor-test-result-status { color: #66788d; font-size: 11px; }
+.fobles-auditor-test-result-icon { display: inline-flex; width: 18px; height: 18px; flex: 0 0 18px; align-items: center; justify-content: center; border-radius: 50%; color: #fff; font-size: 12px; font-weight: 700; }
+.fobles-auditor-test-result--passed .fobles-auditor-test-result-icon { background: #239b56; }
+.fobles-auditor-test-result--warning .fobles-auditor-test-result-icon, .fobles-auditor-test-result--pending .fobles-auditor-test-result-icon { background: #c28d12; }
+.fobles-auditor-test-result--error .fobles-auditor-test-result-icon { background: #d13438; }
+.fobles-auditor-test-result dl { display: grid; gap: 5px; margin: 0; }
+.fobles-auditor-test-result dl > div { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 10px; }
+.fobles-auditor-test-result dt { color: #263a55; font-weight: 700; }
+.fobles-auditor-test-result dd { min-width: 0; margin: 0; overflow-wrap: anywhere; color: #263a55; }
+
+.fobles-auditor-test-result--passed .fobles-auditor-test-result-status { color: #176b3a; font-weight: 700; }
+.fobles-auditor-test-result--error .fobles-auditor-test-result-status { color: #a4262c; font-weight: 700; }
+.fobles-auditor-test-details-row-name { margin-top: 4px; color: #172e4d; font-size: 14px; font-weight: 700; }
+.fobles-auditor-test-details-row-info { display: grid; gap: 3px; margin: 7px 0 0; }
+.fobles-auditor-test-details-row-info > div { display: grid; grid-template-columns: 86px minmax(0, 1fr); gap: 10px; }
+.fobles-auditor-test-details-row-info dt { color: #41546e; font-weight: 700; }
+.fobles-auditor-test-details-row-info dd { min-width: 0; margin: 0; overflow-wrap: anywhere; color: #41546e; }
+.fobles-auditor-descendant-failures, .fobles-auditor-own-tests { padding-top: 13px; }
+.fobles-auditor-descendant-failures > h3, .fobles-auditor-own-tests > h3 { margin: 0 0 9px; color: #172e4d; font-size: 13px; font-weight: 700; }
+.fobles-auditor-descendant-failures > h3 span { display: inline-flex; min-width: 18px; height: 18px; align-items: center; justify-content: center; margin-left: 5px; border-radius: 9px; background: #d13438; color: #fff; font-size: 11px; }
+.fobles-auditor-descendant-failure { margin-bottom: 10px; padding: 10px; border: 1px solid #edc4c6; border-radius: 2px; background: #fffafa; }
+.fobles-auditor-descendant-failure-heading { display: flex; gap: 8px; align-items: flex-start; margin-bottom: 8px; color: #a4262c; }
+.fobles-auditor-descendant-failure-heading > span { display: inline-flex; width: 18px; height: 18px; flex: 0 0 18px; align-items: center; justify-content: center; border-radius: 50%; background: #d13438; color: #fff; font-weight: 700; }
+.fobles-auditor-descendant-failure-heading strong { color: #172e4d; }
+.fobles-auditor-descendant-failure-heading div div { margin-top: 2px; color: #66788d; font-size: 11px; }
+.fobles-auditor-test-result-icon { background: transparent !important; }
+.fobles-auditor-descendant-failure-heading > span { background: transparent !important; }
