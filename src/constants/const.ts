@@ -1,7 +1,5 @@
-import { FOBLES } from "./fobles.ts";
-import { SITECORE } from "./sitecore.ts";
+// @source-path [fobles] src/constants/const.ts
+import { FOBLES } from "./fobles";
+import { SITECORE } from "./sitecore";
 
-export const CONST = {
-    SITECORE: SITECORE,
-    FOBLES: FOBLES
-}
+export const CONST = { FOBLES, SITECORE } as const;

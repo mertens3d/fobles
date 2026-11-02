@@ -1,7 +1,9 @@
+// @source-path [fobles] src/constants/fobles.ts
 import { FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS } from "./button-ids.ts";
+import { LOGGER, MESSAGE, STORAGE } from "./extension-const";
 import { REFERENCE_GRAPH } from "./graph.const.ts";
 import { WORKER_POOL } from "./partials/fobles-workers.const.ts";
-// Shared constants used by fobles generation and cleanup
+
 export const FOBLES = {
   ATTRIBUTES: {
     BUTTON: "data-is-fobles-button",
@@ -18,10 +20,10 @@ export const FOBLES = {
         PROXY_BUTTONS: "data-proxy-buttons",
         JUMP_FLYOUT: "data-jump-flyout",
         TEMPLATE_BUTTON: "data-template-button",
-        VISIBLE: "data-visible",
+        VISIBLE: "data-visible"
       },
       VALUE: {
-        PERSISTENT: "persistent",
+        PERSISTENT: "persistent"
       },
       NAV_BUTTON_ROLE: {
         LBOLT: "lbolt",
@@ -29,9 +31,9 @@ export const FOBLES = {
         AUDITOR: "auditor-trigger",
         DEVELOPER: "developer-trigger",
         PROXY_FLYOUT_TRIGGER: "proxy-buttons-trigger",
-        JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger",
-      },
-    },
+        JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger"
+      }
+    }
   },
   OPTIONS_PAGE: {
     DEBUG_LOGGING: "debug-logging",
@@ -50,8 +52,50 @@ export const FOBLES = {
     SCROLL_PERSISTED_LOGS_BOTTOM: "scroll-persisted-logs-bottom",
     COPY_PERSISTED_LOGS: "copy-persisted-logs"
   },
-  WORKER_POOL: WORKER_POOL,
-  REFERENCE_GRAPH: REFERENCE_GRAPH,
+  WORKER_POOL,
+  REFERENCE_GRAPH,
+  LOGGER,
+  MESSAGE,
+  STORAGE,
+  WORKER: {
+    DEBUG: {
+      MEMORY: false,
+      POOL: false
+    },
+    MESSAGE_TYPE: {
+      POOL_CANCEL_REQUEST: "POOL_CANCEL_REQUEST",
+      POOL_CANCEL_TASK: "POOL_CANCEL_TASK",
+      POOL_DISPOSE: "FOBLES_REFERENCE_GRAPH_POOL_DISPOSE",
+      POOL_RUN_TASK: "POOL_RUN_TASK",
+      WORKER_ADOPTED: "FOBLES_REFERENCE_GRAPH_WORKER_ADOPTED",
+      WORKER_READY: "WORKER_READY",
+      WORKER_SET_OWNED: "FOBLES_REFERENCE_GRAPH_WORKER_SET_OWNED",
+      WORKER_TASK_CANCEL: "WORKER_TASK_CANCEL",
+      WORKER_TASK_EXECUTE: "WORKER_TASK_EXECUTE",
+      IFRAME: {
+        READY: "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_READY",
+        CREATE: "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_CREATE",
+        NAVIGATE: "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_NAVIGATE",
+        REMOVE: "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_REMOVE",
+        REMOVE_ALL: "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_REMOVE_ALL"
+      }
+    },
+    TAB: {
+      BANNER_ID: "fobles-background-worker-banner",
+      ID_QUERY_PARAMETER: "foblesWorker",
+      READY_TIMEOUT_MS: 20_000,
+      READY_POLL_INTERVAL_MS: 100,
+      MAX_SEND_ATTEMPTS: 50,
+      SEND_RETRY_DELAY_MS: 50
+    },
+    MEMORY: {
+      MB: 1024 * 1024,
+      SAMPLE_DELAY_MS: [
+        1_000,
+        5_000
+      ]
+    }
+  },
   CLASSES: {
     BUTTONS: {
       ACTION: "fobles-action-button",
@@ -70,27 +114,27 @@ export const FOBLES = {
       TAG_LIST: "fobles-button--tag-list",
       TEMPLATE_PATH: "fobles-button--template-path",
       TREE_LIST: "fobles-button--tree-list",
-      TREELIST_EX: "fobles-button--treelist-ex",
+      TREELIST_EX: "fobles-button--treelist-ex"
     },
     DIALOG: {
       ACTIONS: "fobles-confirm-dialog-actions",
       BASE: "fobles-confirm-dialog",
       CANCEL: "fobles-confirm-dialog-cancel",
       CONTINUE: "fobles-confirm-dialog-continue",
-      SETTING: "fobles-confirm-dialog-setting",
+      SETTING: "fobles-confirm-dialog-setting"
     },
     FIELD_SPACER: "fobles-field-spacer",
     HIDDEN: "fobles-hidden",
     TOOLTIP: {
       BASE: "fobles-tooltip",
       PRIMARY: "fobles-tooltip-primary",
-      SECONDARY: "fobles-tooltip-secondary",
+      SECONDARY: "fobles-tooltip-secondary"
     },
     TREE: {
       BUTTON: "tree-fobles-button",
       GLYPH_HIDDEN: "fobles-hidden",
       SPACER: "tree-fobles-spacer",
-      WRAPPER: "tree-fobles-wrapper",
+      WRAPPER: "tree-fobles-wrapper"
     },
     WRAPPERS: {
       BASE: "fobles-wrapper",
@@ -109,21 +153,17 @@ export const FOBLES = {
       TAG_LIST: "fobles-wrapper--tag-list",
       TEMPLATE_PATH: "fobles-wrapper--template-path",
       TREE_LIST: "fobles-wrapper--tree-list",
-      TREELIST_EX: "fobles-wrapper--treelist-ex",
-    },
+      TREELIST_EX: "fobles-wrapper--treelist-ex"
+    }
   },
   CSS_PROPERTIES: {
     HEIGHT: "--fobles-height",
     LIST_HEIGHT: "--fobles-list-height",
-    TREE_HEIGHT: "--tree-fobles-height",
+    TREE_HEIGHT: "--tree-fobles-height"
   },
-  // A strategy whose Fobles-decorated field renders more than one independent pane (e.g.
-  // Multilist with Search's "all items" search-results pane versus its "selected items" pane)
-  // tags each pane's wrapper with ATTRIBUTES.PANE so callers can target the one they actually mean
-  // instead of relying on DOM order.
   PANES: {
     ALL: "all",
-    SELECTED: "selected",
+    SELECTED: "selected"
   },
   SELECTORS: {
     BUTTON: "[data-is-fobles-button='1']",
@@ -131,7 +171,7 @@ export const FOBLES = {
     HIDDEN_PROCESSED: ".fobles-hidden[data-fobles-processed]",
     PROCESSED: "[data-fobles-processed]",
     TEMPLATE_BUTTON: "[data-template-button='1']",
-    WRAPPER: "[data-fobles-wrapper]",
+    WRAPPER: "[data-fobles-wrapper]"
   },
   STRATEGIES: {
     DROP_LINK: "drop-link",
@@ -150,16 +190,18 @@ export const FOBLES = {
     TAG_LIST: "tag-list",
     TEMPLATE_PATH: "template-path",
     TREE_LIST: "tree-list",
-    TREELIST_EX: "treelist-ex",
+    TREELIST_EX: "treelist-ex"
   },
   SYMBOLS: {
-    TREE_BUTTON: "\u2022",
+    TREE_BUTTON: "\u2022"
   },
   TOOLBAR: {
     JUMP_FLYOUT: {
-      BUTTON_IDS: FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS,
+      BUTTON_IDS: FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS
     },
-    GROUPS: {}
+    GROUPS: {
+
+    }
   },
   TEXT: {
     CONFIRM: {
@@ -167,11 +209,11 @@ export const FOBLES = {
       CONTINUE: "Continue",
       MESSAGE: "Sitecore will reload Content Editor with a different item query. This clears the Back and Forward navigation history for this tab.",
       SETTING: "Warn before same-tab Fobles navigation",
-      TITLE: "Open this item in the current tab?",
+      TITLE: "Open this item in the current tab?"
     },
     TOOLTIP: {
       PRIMARY: "Open in this tab",
-      SECONDARY: "Ctrl/Cmd+Click opens a new tab",
-    },
-  },
+      SECONDARY: "Ctrl/Cmd+Click opens a new tab"
+    }
+  }
 } as const;

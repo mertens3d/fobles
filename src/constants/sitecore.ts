@@ -1,3 +1,4 @@
+// @source-path [fobles] src/constants/sitecore.ts
 import type { selectorHints } from "./_base/const.types";
 
 export const SITECORE = {
@@ -8,27 +9,24 @@ export const SITECORE = {
     IMAGE: "contentimage",
     INTERNAL_LINK: "contentinternallink",
   },
-  // Well-known system item ids Sitecore ships with every install.
   DEVICES: {
     DEFAULT: "{FE5D7FDF-89C0-4D99-9AA3-B5FBD009C9F3}",
   },
   SEARCH_PARAMS: {
     DATABASE: "db",
-    // Alternate query keys Sitecore itself uses to indicate the current database.
-    DATABASE_KEYS: ["db", "sc_content"],
+    DATABASE_KEYS: [
+      "db",
+      "sc_content",
+    ],
     ITEM_ID: "id",
     XML_CONTROL: "xmlcontrol",
   },
-
   HARVEST: {
-    // Quick Info is a differently-shaped table (see getQuickInfoValue), not a field-marker
-    // section at all; Renderings/Final renderings get their own rich subtree (parseDevice)
-    // instead of a flat raw-value leaf. Standard Template sections (Appearance/Security/
-    // Statistics/...) are NOT excluded - they're classified into the Standard Fields crop below.
     EXCLUDED_SECTION_NAMES_LC: new Set(["quick info"]),
-    EXCLUDED_FIELD_LABEL_PREFIXES: ["final renderings", "renderings"],
-    // Sitecore's Standard Template section captions - fields under these go to the Standard
-    // Fields crop instead of the ordinary Fields crop. Compare lowercased/trimmed.
+    EXCLUDED_FIELD_LABEL_PREFIXES: [
+      "final renderings",
+      "renderings",
+    ],
     STANDARD_SECTION_NAMES_LC: new Set([
       "advanced",
       "appearance",
@@ -47,12 +45,12 @@ export const SITECORE = {
       "version",
       "workflow",
     ]),
-    // These Standard Template fields hold Sitecore revision stamps, not item references - their
-    // values are GUID-shaped by coincidence of format, never a droplink/droptree/etc relationship.
-    // Generic GUID inference must never treat them as field-reference item nodes.
-    NON_REFERENCE_GUID_FIELD_LABELS_LC: new Set(["revision", "shared revision", "unversioned revision"]),
+    NON_REFERENCE_GUID_FIELD_LABELS_LC: new Set([
+      "revision",
+      "shared revision",
+      "unversioned revision",
+    ]),
   },
-  // Named so every path used to build FOBLES_PAGES has an identifier, not just a bare literal.
   RELATIVE_PATHS_ENCODED: {
     CHANGE_TEMPLATE: "/sitecore/shell/Applications/Templates/Change%20template.aspx",
     CONTENT_EDITOR_LEGACY: "/sitecore/shell/Applications/Content%20Editor.aspx",
@@ -60,66 +58,101 @@ export const SITECORE = {
     CONTENT_MANAGER: "/sitecore/shell/Applications/Content%20Manager/default.aspx",
     FIELD_EDITOR: "/sitecore/shell/Applications/Field%20Editor.aspx",
     KICK_USERS: "/sitecore/client/Applications/LicenseOptions/KickUser.aspx",
-    // Sitecore's media request virtual path; can appear nested after another page's path segment
-    // (e.g. behind Content Editor.aspx) but is never itself a page eligible for the toolbar.
     MEDIA_REQUEST_SEGMENT: "/sitecore/shell/applications/-/media/",
     POWERSHELL_ISE: "/sitecore/shell/Applications/PowerShell/PowerShellIse",
     POWERSHELL_SCRIPT_LIBRARY: "/sitecore/system/Modules/PowerShell/Script Library",
-    // Required root for user-defined Tree Jumps (src/shared/jump-flyout/user-tree-jump-constants.ts).
     ROOT: "/sitecore",
     SHELL_DEFAULT: "/sitecore/shell/default.aspx",
     TEMPLATE_MANAGER: "/sitecore/shell/Applications/Templates/Template-Manager",
   },
-  // Item Type/Site/Tenant classification and template-context Reference Harvesting (first slice).
-  // Base-template path arrays, not ids: ids aren't known until a configured path is resolved
-  // against a live Sitecore instance, so paths are the only thing that can be hard-coded here.
   CLASSIFICATION: {
-    // Only items at or below these roots are eligible for their respective classification passes.
     PATH_ROOTS: {
       CONTENT: "/sitecore/content",
       TEMPLATES: "/sitecore/templates",
     },
-    // Multiple paths per classification since more base templates are expected later.
     BASE_TEMPLATE_PATHS: {
       PAGE: ["/sitecore/templates/Foundation/Experience Accelerator/Multisite/Content/Page"],
       SITE: ["/sitecore/templates/Foundation/Experience Accelerator/Multisite/Base/_Base Site Root"],
       TENANT: ["/sitecore/templates/Foundation/Experience Accelerator/Multisite/Base/_Base Tenant"],
     },
-    // "__Base template" is a generic Standard Template field (Advanced section), not special-cased
-    // by harvesting - this is only the label used to find it within an already-harvested section.
     FIELD_LABELS: {
       BASE_TEMPLATE: "__Base template",
     },
-    // "__Standard Values" is a child item of the template, not a field - found via the children fact.
     ITEM_NAMES: {
       STANDARD_VALUES: "__Standard Values",
     },
   },
-  // Mirrors src/content/toolbar/proxy-flyout/proxy-flyout.const.ts's real ribbon checkbox ids for these same toggles.
   RIBBON_CHECKBOXES: {
     RAW_VALUES: "Check_BBDED3F008D144C82A983B54F0424BBC1",
     STANDARD_FIELDS: "Check_BC29C1D329FB74DA585083FEC2AF3A81D",
   },
-  ICONS:{
-    // SPINNER_SRC: "/sitecore/shell/themes/standard/Images/ProgressIndicator/sc-spinner32.gif",
+  ICONS: {
+    APPLICATIONS: {
+      AI_PAGES_EDIT_48: "/~/icon/applicationsv2/48x48/edit.png",
+      BULLET_BALL_GLASS_GREEN_32: "/~/icon/applications/32x32/bullet_ball_glass_green.png",
+      BULLET_BALL_GLASS_RED_32: "/~/icon/applications/32x32/bullet_ball_glass_red.png",
+      BULLET_BALL_GLASS_YELLOW_32: "/~/icon/applications/32x32/bullet_ball_glass_yellow.png",
+      DOCUMENT_GEAR_48: "/-/icon/Applications/48x48/document_gear.png",
+      DATABASE_48: "/-/icon/Applications/48x48/database.png",
+      FOLDER_WINDOW_48: "/-/icon/Applications/48x48/folder_window.png",
+      CD_48: "/-/icon/Applications/48x48/cd.png",
+      DOCUMENT_TEXT_48: "/-/icon/Applications/48x48/document_text.png",
+      PHOTO_SCENERY_48: "/-/icon/applications/48x48/photo_scenery.png",
+      GEAR_VIEW_48: "/~/icon/applications/48x48/gear_view.png",
+      CHART_48: "/-/icon/Applications/48x48/chart.png",
+      FOLDER_CUBES_48: "/-/icon/Applications/48x48/folder_cubes.png",
+      WARNING_32: "/~/icon/applications/32x32/warning.png",
+    },
+    BUSINESS: {
+      TABLE_SELECTION_BLOCK_48: "/-/icon/business/48x48/table_selection_block.png",
+    },
+    IMAGING: {
+      MASK_SQUARE_D_32: "/~/icon/imaging/32x32/mask_square_d.png",
+    },
+    LAUNCHPAD: {
+      CONTENT_EDITOR_48: "/-/icon/launchpadicons/48x48/contenteditor.png",
+      CONTROL_PANEL_48: "/-/icon/launchpadicons/48x48/controlpanel.png",
+      DESKTOP_48: "/-/icon/launchpadicons/48x48/desktop.png",
+      DOTS_GRID: "/sitecore/shell/client/Applications/LaunchPad/Assets/dots-grid.svg",
+    },
+    LICENSE_OPTIONS: {
+      USER: "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png",
+    },
+    OFFICE: {
+      CHECK_16: "/~/icon/office/16x16/check.png",
+      LAYOUT_DETAILS_24: "/~/icon/office/24x24/layout_details.png",
+      REFRESH_16: "/~/icon/office/16x16/refresh.png",
+    },
+    PEOPLE: {
+      HOURGLASS_16: "/~/icon/people/16x16/hourglass.png",
+      HOURGLASS_32: "/~/icon/people/32x32/hourglass.png",
+    },
+    POWERSHELL: {
+      ISE_48: "/-/icon/powershell/48x48/ise8.png",
+      SCRIPT_LIBRARY_48: "/-/icon//powershell/48x48/spe.png",
+    },
+    SOFTWARE: {
+      ELEMENTS_48: "/-/icon/software/48x48/elements1.png",
+    },
+    TREE: {
+      COLLAPSED: "/sitecore/shell/themes/standard/images/treemenu_collapsed.png",
+      EXPANDED: "/sitecore/shell/themes/standard/images/treemenu_expanded.png",
+    },
+    WORD_PROCESSING: {
+      SEARCH_A_H_32: "/-/icon/wordprocessing/32x32/search_a_h.png",
+    },
     SPINNER_SRC: "/~/icon/people/32x32/hourglass.png",
-    // Per-node processing-state badge icons (see graph-nodes/processing-icon.ts) - standard
-    // Sitecore icon-library paths, same convention as SPINNER_SRC above; verify against a live
-    // Sitecore instance if a badge ever renders as a broken image.
     PROCESSING_STATE: {
       HOURGLASS: "/~/icon/people/16x16/hourglass.png",
       CHECK: "/~/icon/office/16x16/check.png",
       REFRESH: "/~/icon/office/16x16/refresh.png",
       WARNING: "/~/icon/applications/32x32/warning.png",
-      
     },
   },
   IDS: {
     CONTENT_EDITOR: {
-      NAVIGATION: {
-
-      }
-    }
+      NAVIGATION: {},
+    },
   },
   QUICK_INFO: {
     LABEL_PREFIX: {
@@ -148,7 +181,6 @@ export const SITECORE = {
         "a[id$='_Nav_ViewStrip']",
         "a[onclick*=\"'_Strip_ViewStrip'\"]",
       ],
-
     } satisfies Record<string, selectorHints>,
     QUICK_INFO_CELL: "td.scEditorSectionPanelCell > table.scEditorQuickInfo",
     COMBOBOX: ".scCombobox",
@@ -163,8 +195,6 @@ export const SITECORE = {
     FIELD_LABEL_ADMINISTRATOR: ".scEditorFieldLabelAdministrator",
     GLOBAL_HEADER: ".sc-globalHeader",
     GLOBAL_HEADER_CONTENT: ".sc-globalHeader-content",
-    // The item header's own icon - distinct from field icons, tree-node glyphs, layout-device
-    // icons, and the Standard Template "Icon" field.
     ITEM_HEADER_ICON: ".scEditorHeader > .scEditorHeaderIcon img.scEditorHeaderIcon",
     MULTILIST: {
       ROOT: ".scContentControlMultilist",
@@ -191,21 +221,12 @@ export const SITECORE = {
       NODES_WITH_ID: ".scContentTreeNode[id]",
       ROOT: "#ContentTreeInnerPanel, #Treeview, [onclick*='Sitecore.Treeview.onTreeClick']",
     },
-
-    // #ContentTreeInnerPanel/#Treeview cover the two ids already confirmed; the attribute
-    // selector is Sitecore's own generic Treeview webcontrol root marker (every tree panel wires
-    // its root's onclick to this same handler), so it also catches trees with other container
-    // ids - e.g. Add From Template's own "Templates" tree root - without needing one hardcoded id
-    // per dialog.
     URI_ELEMENT: "[onfocus*='sitecore://'], [onblur*='sitecore://']",
   },
   TREE_ID_PREFIXES: {
     GLYPH: "Tree_Glyph_",
     NODE: "Tree_Node_",
     SELECT_RENDERING: "Treeview_",
-    // Change Template dialog's own tree widget (see src/content/features/augmentor/
-    // treeNodeFobles/index.ts's getTreeNodeItemId) - its nodes carry the item id directly on this
-    // prefix rather than via a Tree_Node_-prefixed anchor.
     TEMPLATE_LISTER: "TemplateLister_",
   },
   XML_CONTROLS: {
