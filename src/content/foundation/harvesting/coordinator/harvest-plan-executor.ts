@@ -6,10 +6,17 @@ import { HARVEST_STEP_BY_TASK_TYPE } from "../planner/harvest-steps";
 import type { HarvestProgressCallback, HarvestRequest, ProgressStep } from "../sitecore-harvester.types";
 import { cancelWorkerTask, runWorkerTask } from "../../workers/pool/worker-pool-client";
 import { createErrorResult, type WorkerTask, type WorkerTaskResult, type WorkerTaskType } from "../../workers/tasks/worker-task.types";
-import { createSetRawValuesTask, createSetStandardFieldsTask, planCollectorTaskGroups, planCollectorTasks, requestedLocatorFromUrl } from "../planner/harvest-task-planner";
+import {
+  createSetRawValuesTask,
+  createSetStandardFieldsTask,
+  planCollectorTaskGroups,
+  planCollectorTasks,
+  requestedLocatorFromUrl,
+} from "../planner/harvest-task-planner";
 import { factNameForTaskType, getFact } from "../../sitecore/data/sitecore-data-service";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data-cache.types";
+import { runWithReferenceHarvestingLease } from "./reference-harvesting-lease";
 
 const TASK_TIMEOUT_MS = 30000;
 
@@ -38,24 +45,16 @@ function buildSuccessResultFromFact(task: WorkerTask, value: unknown): WorkerTas
   } as WorkerTaskResult;
 }
 
-async function runTaskThroughCache(
-  task: WorkerTask,
-  cacheKey: SitecoreDataCacheKey | undefined,
-): Promise<WorkerTaskResult> {
+async function runTaskThroughCache(task: WorkerTask, cacheKey: SitecoreDataCacheKey | undefined): Promise<WorkerTaskResult> {
   const factName = cacheKey ? factNameForTaskType(task.type) : undefined;
-  if (!cacheKey || !factName) 
-return runWorkerTaskWithTimeout(task);
+  if (!cacheKey || !factName) return runWorkerTaskWithTimeout(task);
 
-  const outcome = await getFact(
-    cacheKey,
-    factName,
-    () => runWorkerTaskWithTimeout(task),
-    { activityId: task.taskId, requestId: task.requestId },
-  );
+  const outcome = await getFact(cacheKey, factName, () => runWorkerTaskWithTimeout(task), {
+    activityId: task.taskId,
+    requestId: task.requestId,
+  });
 
-  return outcome.outcome === "unresolved"
-    ? (outcome.result as WorkerTaskResult)
-    : buildSuccessResultFromFact(task, outcome.fact.value);
+  return outcome.outcome === "unresolved" ? (outcome.result as WorkerTaskResult) : buildSuccessResultFromFact(task, outcome.fact.value);
 }
 
 async function runWorkerTaskWithTimeout(task: WorkerTask): Promise<WorkerTaskResult> {
@@ -87,15 +86,16 @@ async function runWorkerTaskWithTimeout(task: WorkerTask): Promise<WorkerTaskRes
 
       extensionLog.debug(
         `Reference graph: worker task returned` +
-        ` taskId=${task.taskId}` +
-        ` taskType=${task.type}` +
-        ` status=${result.status}` +
-        ` resultType=${result.type}` +
-        ` returnedValue=${result.status === "success" && (result.type === "set-raw-values" || result.type === "set-standard-fields")
-          ? String(result.payload.value)
-          : "undefined"
-        }` +
-        ` errorMessage=${result.status === "error" ? result.errorMessage : "undefined"}`,
+          ` taskId=${task.taskId}` +
+          ` taskType=${task.type}` +
+          ` status=${result.status}` +
+          ` resultType=${result.type}` +
+          ` returnedValue=${
+            result.status === "success" && (result.type === "set-raw-values" || result.type === "set-standard-fields")
+              ? String(result.payload.value)
+              : "undefined"
+          }` +
+          ` errorMessage=${result.status === "error" ? result.errorMessage : "undefined"}`,
       );
 
       return result;
@@ -108,18 +108,14 @@ async function runWorkerTaskWithTimeout(task: WorkerTask): Promise<WorkerTaskRes
         error,
       });
 
-      return createErrorResult(
-        task,
-        error instanceof Error ? error.message : "Worker task rejected",
-      );
+      return createErrorResult(task, error instanceof Error ? error.message : "Worker task rejected");
     },
   );
 
   try {
     return await Promise.race([workerResult, timeoutResult]);
   } finally {
-    if (timeoutId !== undefined) 
-clearTimeout(timeoutId);
+    if (timeoutId !== undefined) clearTimeout(timeoutId);
   }
 }
 
@@ -127,10 +123,7 @@ function throwForCancelledResults(results: readonly WorkerTaskResult[]): void {
   const cancellations = results.filter((result) => result.status === "cancelled");
 
   if (cancellations.length > 0) {
-    throw new DOMException(
-      `Harvest cancelled while executing: ${cancellations.map((result) => result.type).join(", ")}`,
-      "AbortError",
-    );
+    throw new DOMException(`Harvest cancelled while executing: ${cancellations.map((result) => result.type).join(", ")}`, "AbortError");
   }
 }
 
@@ -149,24 +142,19 @@ async function dispatchTasks(
   const results = await Promise.all(
     tasks.map(async (task): Promise<WorkerTaskResult> => {
       const step = stepForTaskType(task.type);
-      if (step) 
-onProgress?.(step, "active");
+      if (step) onProgress?.(step, "active");
 
       const result = await runTaskThroughCache(task, cacheKey);
 
       if (result.status === "cancelled") {
-        throw new DOMException(
-          `Harvest cancelled while executing: ${result.type}`,
-          "AbortError",
-        );
+        throw new DOMException(`Harvest cancelled while executing: ${result.type}`, "AbortError");
       }
 
       if (result.status === "error") {
         extensionLog.warn("Reference graph: collector task failed", { task, result });
       }
 
-      if (step) 
-onProgress?.(step, result.status === "success" ? "complete" : "skipped");
+      if (step) onProgress?.(step, result.status === "success" ? "complete" : "skipped");
       return result;
     }),
   );
@@ -177,8 +165,7 @@ onProgress?.(step, result.status === "success" ? "complete" : "skipped");
 
 async function restoreOriginalState(request: HarvestRequest): Promise<void> {
   const original = request.session?.originalEditorState;
-  if (!original) 
-return;
+  if (!original) return;
 
   await initializeRuntimeSettings();
 
@@ -205,12 +192,7 @@ return;
     });
 
     try {
-      await setAndVerifyEditorState(
-        restorationRequest,
-        original.rawValues,
-        original.standardFields,
-        "restore-original-state",
-      );
+      await setAndVerifyEditorState(restorationRequest, original.rawValues, original.standardFields, "restore-original-state");
 
       extensionLog.debug("Reference graph: original editor state restored", {
         cancelledRequestId: request.requestId,
@@ -225,23 +207,17 @@ return;
     } catch (error) {
       restorationError = error;
 
-      const cancelled =
-        error instanceof DOMException &&
-        error.name === "AbortError";
+      const cancelled = error instanceof DOMException && error.name === "AbortError";
 
-      if (!cancelled || attempt === maximumAttempts) 
-break;
+      if (!cancelled || attempt === maximumAttempts) break;
 
-      extensionLog.warn(
-        "Reference graph: restoration task was cancelled; retrying with a fresh request",
-        {
-          cancelledRequestId: request.requestId,
-          restorationRequestId: restorationRequest.requestId,
-          attempt,
-          maximumAttempts,
-          error,
-        },
-      );
+      extensionLog.warn("Reference graph: restoration task was cancelled; retrying with a fresh request", {
+        cancelledRequestId: request.requestId,
+        restorationRequestId: restorationRequest.requestId,
+        attempt,
+        maximumAttempts,
+        error,
+      });
 
       await new Promise<void>((resolve) => {
         setTimeout(resolve, 0);
@@ -260,9 +236,18 @@ export async function executeHarvestPlan(
 
   const cacheKey = resolveHarvestCacheKey(request);
 
-  if (!request.session) 
-return await dispatchTasks(planCollectorTasks(request), onProgress, cacheKey);
+  const session = request.session;
+  if (!session) return await dispatchTasks(planCollectorTasks(request), onProgress, cacheKey);
 
+  const statefulRequest: HarvestRequest & { session: NonNullable<HarvestRequest["session"]> } = { ...request, session };
+  return await runWithReferenceHarvestingLease(() => executeStatefulHarvestPlan(statefulRequest, onProgress, cacheKey));
+}
+
+async function executeStatefulHarvestPlan(
+  request: HarvestRequest & { session: NonNullable<HarvestRequest["session"]> },
+  onProgress: HarvestProgressCallback | undefined,
+  cacheKey: SitecoreDataCacheKey | undefined,
+): Promise<WorkerTaskResult[]> {
   const { normalTasks, layoutTasks } = planCollectorTaskGroups(request);
 
   extensionLog.debug("Reference graph: executing harvest plan", {
@@ -293,10 +278,13 @@ return await dispatchTasks(planCollectorTasks(request), onProgress, cacheKey);
     await restoreOriginalState(request);
   } catch (restoreError: unknown) {
     extensionLog.error("Reference graph: restoration verification failed", { requestId: request.requestId, restoreError });
-    throw new Error("Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.", { cause: restoreError });
+    throw new Error("Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.", {
+      cause: restoreError,
+    });
   }
 
-  if (harvestError !== undefined) throw harvestError instanceof Error ? harvestError : new Error("Harvest failed with a non-Error value", { cause: harvestError });
+  if (harvestError !== undefined)
+    throw harvestError instanceof Error ? harvestError : new Error("Harvest failed with a non-Error value", { cause: harvestError });
   return harvestResults ?? [];
 }
 
@@ -311,7 +299,13 @@ async function setAndVerifyEditorState(
   }
 
   if (standardFields !== undefined) {
-    await setAndVerifyOneEditorValue(request, createSetStandardFieldsTask(request, standardFields), standardFields, "standardFields", phase);
+    await setAndVerifyOneEditorValue(
+      request,
+      createSetStandardFieldsTask(request, standardFields),
+      standardFields,
+      "standardFields",
+      phase,
+    );
   }
 }
 
@@ -339,15 +333,15 @@ async function setAndVerifyOneEditorValue(
 
   extensionLog.debug(
     `Reference graph: editor-state task result` +
-    ` requestId=${request.requestId}` +
-    ` taskId=${task.taskId}` +
-    ` phase=${phase}` +
-    ` label=${label}` +
-    ` requestedValue=${String(requestedValue)}` +
-    ` resultStatus=${result.status}` +
-    ` resultType=${result.type}` +
-    ` returnedValue=${String(returnedValue)}` +
-    ` errorMessage=${result.status === "error" ? result.errorMessage : "undefined"}`,
+      ` requestId=${request.requestId}` +
+      ` taskId=${task.taskId}` +
+      ` phase=${phase}` +
+      ` label=${label}` +
+      ` requestedValue=${String(requestedValue)}` +
+      ` resultStatus=${result.status}` +
+      ` resultType=${result.type}` +
+      ` returnedValue=${String(returnedValue)}` +
+      ` errorMessage=${result.status === "error" ? result.errorMessage : "undefined"}`,
   );
 
   throwForCancelledResults([result]);
@@ -358,20 +352,20 @@ async function setAndVerifyOneEditorValue(
   if (!verified) {
     extensionLog.error(
       `Reference graph: editor-state result mismatch` +
-      ` requestId=${request.requestId}` +
-      ` taskId=${task.taskId}` +
-      ` phase=${phase}` +
-      ` label=${label}` +
-      ` requestedValue=${String(requestedValue)}` +
-      ` resultStatus=${result.status}` +
-      ` resultType=${result.type}` +
-      ` returnedValue=${String(returnedValue)}`,
+        ` requestId=${request.requestId}` +
+        ` taskId=${task.taskId}` +
+        ` phase=${phase}` +
+        ` label=${label}` +
+        ` requestedValue=${String(requestedValue)}` +
+        ` resultStatus=${result.status}` +
+        ` resultType=${result.type}` +
+        ` returnedValue=${String(returnedValue)}`,
     );
 
     throw new Error(
       `Editor-state verification failed during ${phase} (${label}): ` +
-      `requested=${String(requestedValue)}, returned=${String(returnedValue)}; ` +
-      `status=${result.status}, type=${result.type}`,
+        `requested=${String(requestedValue)}, returned=${String(returnedValue)}; ` +
+        `status=${result.status}, type=${result.type}`,
     );
   }
 
