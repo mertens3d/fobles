@@ -1,5 +1,5 @@
-import { expect, foblesTest } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
+import { expect, foblesTest } from "../../fixtures/playwright";
 import {
   ClickFoblesGraphButton,
   CloseFoblesGraph,

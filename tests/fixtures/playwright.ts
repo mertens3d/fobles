@@ -1,75 +1,23 @@
 // @source-path [fobles] tests/fixtures/playwright.ts
 
-import { chromium, type BrowserContext, test as base, type Request } from "@playwright/test";
-import fs from "node:fs";
-import path from "node:path";
+import { chromium, type BrowserContext, test as base } from "@playwright/test";
 import { installConsoleLogging, logDiagnostic } from "./playwright-logging";
 import { logoutCurrentSitecoreSession } from "./sitecore";
 import { TEST_CONST } from "../constants/TEST_CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";
-import { EnableFoblesDeveloperLogging, GetFoblesPersistedLogs } from "../macros/fobles-macros";
+import { EnableFoblesDeveloperLogging } from "../macros/fobles-macros";
 import { createBrowserProfile } from "./browser-profile";
 import { restoreWindowPosition, saveWindowPosition } from "./browser-location";
-
-const extensionPath = path.resolve("./dist/unpacked");
+import { attachPageDiagnosticHandlers } from "./playwright-page-diagnostic-handlers";
+import { cleanPromoVideoFiles, getPromoVideoDir, renamePromoVideoFiles } from "./playwright-video-files";
+import { attachPersistedLogs } from "./playwright-persisited-logs";
+import { TEST_CONSTB } from "./playwright.const";
 
 // This fixture launches its own context, so playwright.config.ts's use.video
 // setting is not consulted. RECORD_VIDEO controls recording here directly.
 // The context is shared for the worker's entire run.
-const promoVideoDir = path.resolve("./playwright/test-artifacts/playwright-results/promo-video");
-
-const VIEWPORT_SIZE = RECORD_VIDEO ? { width: 1100, height: 720 } : { width: 800, height: 720 };
-
-// See tests/README.md's Promo Video section for naming and ordering.
-function renamePromoVideoFiles(): void {
-  const files = fs
-    .readdirSync(promoVideoDir)
-    .filter((name) => name.endsWith(".webm"))
-    .map((name) => {
-      const fullPath = path.join(promoVideoDir, name);
-      return { fullPath, sizeBytes: fs.statSync(fullPath).size };
-    })
-    .sort((a, b) => a.sizeBytes - b.sizeBytes);
-
-  files.forEach((file, index) => {
-    const isMainVideo = index === files.length - 1;
-    const newName = isMainVideo ? "main.webm" : `secondary-${index + 1}.webm`;
-    fs.renameSync(file.fullPath, path.join(promoVideoDir, newName));
-  });
-}
-
-// Ignore missing Sitecore icons unrelated to Fobles.
-function isIgnorableDiagnosticUrl(url: string): boolean {
-  return TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_DIAGNOSTIC_URL_PATTERN.test(url);
-}
-
-// Ignore the known Chromium warning repeated on Sitecore iframe navigation.
-function isIgnorableConsoleWarning(text: string): boolean {
-  return TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_CONSOLE_WARNING_PATTERN.test(text);
-}
-
-function isIgnorableConsoleError(text: string): boolean {
-  let isIgnoreable = false;
-
-  if (TEST_CONST.TESTING.DIAGNOSTIC.IGNORABLE_CONSOLE_MESSAGES.some((msg) => text.includes(msg))) {
-    isIgnoreable = true;
-  }
-
-  return isIgnoreable;
-}
-
-function isIgnorableRequestFailure(request: Request): boolean {
-  const errorText = request.failure()?.errorText ?? "";
-  let isIgnorable = false;
-
-  if (!TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_REQUEST_FAILURES.some((ignored) => errorText.includes(ignored))) {
-    isIgnorable = true;
-  }
-
-  return isIgnorable;
-}
 
 async function logoutSitecoreSessions(context: BrowserContext): Promise<void> {
   const page = context.pages()[0];
@@ -107,29 +55,7 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
     async ({ sharedBrowserContext }, use, testInfo) => {
       await applyDefaultSettingsProfile(sharedBrowserContext);
       await EnableFoblesDeveloperLogging(sharedBrowserContext);
-
-      try {
-        await use();
-      } finally {
-        try {
-          const logs = await GetFoblesPersistedLogs(sharedBrowserContext);
-          const logPath = testInfo.outputPath("fobles-persisted.log");
-
-          fs.writeFileSync(logPath, logs, "utf8");
-
-          console.log(`[fobles] Persisted log saved: ${logPath} (${logs.length} chars)`);
-
-          await testInfo.attach("Fobles persisted log", { path: logPath, contentType: "text/x-fobles-log" });
-
-          console.log("[fobles] Persisted log attached");
-        } catch (error: unknown) {
-          console.error(
-            `[fobles] Failed to capture persisted logs: ${
-              error instanceof Error ? (error.stack ?? error.message) : String(error)
-            }`,
-          );
-        }
-      }
+      await attachPersistedLogs(use, sharedBrowserContext, testInfo);
     },
     { auto: true },
   ],
@@ -143,8 +69,7 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
       logTestDividerStart("Test Start");
 
       if (RECORD_VIDEO) {
-        fs.rmSync(promoVideoDir, { recursive: true, force: true });
-        fs.mkdirSync(promoVideoDir, { recursive: true });
+        cleanPromoVideoFiles();
       }
 
       const userDataDir = createBrowserProfile();
@@ -152,68 +77,17 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
       const context = await chromium.launchPersistentContext(userDataDir, {
         channel: "chromium",
         headless: false,
-        viewport: VIEWPORT_SIZE,
-        ...(RECORD_VIDEO ? { recordVideo: { dir: promoVideoDir, size: VIEWPORT_SIZE } } : {}),
-        args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
+        viewport: TEST_CONSTB.VIEWPORT_SIZE,
+        ...(RECORD_VIDEO ? { recordVideo: { dir: getPromoVideoDir(), size: TEST_CONSTB.VIEWPORT_SIZE } } : {}),
+        args: [
+          `--disable-extensions-except=${TEST_CONSTB.extensionPath}`,
+          `--load-extension=${TEST_CONSTB.extensionPath}`,
+        ],
       });
 
       try {
         await restoreWindowPosition(context);
-
-        const attachPageDiagnostics = (page: import("@playwright/test").Page): void => {
-          page.on("console", (message) => {
-            const location = message.location().url;
-            if (location && isIgnorableDiagnosticUrl(location)) return;
-
-            if (message.type() === "warning") {
-              if (!isIgnorableConsoleWarning(message.text())) {
-                logDiagnostic(
-                  `[browser console:${message.type()}] ${message.text()}${location ? ` (${location})` : ""}`,
-                );
-              }
-            } else if (message.type() === "error") {
-              if (!isIgnorableConsoleError(message.text())) {
-                logDiagnostic(
-                  `[browser console:${message.type()}] ${message.text()}${location ? ` (${location})` : ""}`,
-                );
-              }
-            }
-          });
-
-          page.on("response", (response) => {
-            if (response.status() >= 400 && !isIgnorableDiagnosticUrl(response.url())) {
-              logDiagnostic(`[browser response:${response.status()}] ${response.request().method()} ${response.url()}`);
-            }
-          });
-
-          page.on("pageerror", (error) => {
-            logDiagnostic(`[browser pageerror] ${error.stack ?? error.message}`);
-          });
-
-          page.on("requestfailed", (request) => {
-            if (!isIgnorableRequestFailure(request)) {
-              logDiagnostic(
-                `[browser requestfailed] ${request.method()} ${request.url()} - ${
-                  request.failure()?.errorText ?? "unknown error"
-                }`,
-              );
-            }
-          });
-
-          // Uncomment to diagnose redirects and iframe navigation.
-          page.on("framenavigated", (frame) => {
-            const kind = frame === page.mainFrame() ? "main frame" : "iframe";
-            // logDiagnostic(`[browser framenavigated:${kind}] ${frame.url()}`);
-          });
-
-          page.on("crash", () => {
-            logDiagnostic(`[browser crash] page render process crashed at ${page.url()}`);
-          });
-        };
-
-        context.pages().forEach(attachPageDiagnostics);
-        context.on("page", attachPageDiagnostics);
-
+        attachPageDiagnosticHandlers(context);
         await use(context);
       } finally {
         try {
@@ -256,22 +130,6 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
     await use(sharedPage);
   },
 });
-
-export async function enableFoblesTestLogging(context: BrowserContext): Promise<void> {
-  const serviceWorker = context.serviceWorkers()[0];
-
-  if (!serviceWorker) {
-    throw new Error("Fobles service worker not available");
-  }
-
-  await serviceWorker.evaluate(async () => {
-    await chrome.storage.sync.set({ debugLogging: true, persistDebugLogs: true });
-
-    await chrome.storage.local.remove("persistedLogEntries");
-  });
-
-  console.log("[fobles] Debug + persisted logging enabled for test run");
-}
 
 export { expect } from "@playwright/test";
 export type { Frame, Locator, Page, TestInfo } from "@playwright/test";
