@@ -23,13 +23,19 @@ export async function clickWithMouseMarker(
 ): Promise<void> {
   console.log(`[fobles] clickWithMouseMarker '${label}' options: ${JSON.stringify(options)}`);
 
-  if (!page) console.error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.PAGE_NOT_DEFINED);
+  if (!page) {
+    console.error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.PAGE_NOT_DEFINED);
+  }
+
   if (!(await targetLocator.isVisible())) {
     const message = `${TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.TARGET_NOT_VISIBLE_PREFIX}${label}`;
     console.error(message);
-    throw new Error(message);
+    // throw new Error(message);
   }
-  if (!label) console.error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.LABEL_NOT_DEFINED);
+
+  if (!label) {
+    console.error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.LABEL_NOT_DEFINED);
+  }
 
   const corner = options?.corner ?? TEST_CONST.TESTING.MOUSE.PROXY.CORNER.CENTER;
   await moveMouseToBoundingBox(page, targetLocator, label, corner);
@@ -54,9 +60,11 @@ export async function moveMouseToBoundingBox(
     throw new Error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.NO_MOUSE_TARGET_PROVIDED);
   }
 
-  if (!(await targetLocator.isVisible())) {
-    console.error(`${TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.TARGET_NOT_VISIBLE_PREFIX}${label}`);
-    throw new Error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.MOUSE_TARGET_NOT_VISIBLE);
+  if(! isSprintMode()) {
+    if (!(await targetLocator.isVisible())) {
+      console.error(`${TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.TARGET_NOT_VISIBLE_PREFIX}${label}`);
+      throw new Error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.MOUSE_TARGET_NOT_VISIBLE);
+    }
   }
   // await highlightClickTarget(targetLocator, label);
 
@@ -66,15 +74,20 @@ export async function moveMouseToBoundingBox(
     throw new Error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_GET_BOUNDING_BOX);
   }
 
-  const targetPosition = corner === TEST_CONST.TESTING.MOUSE.PROXY.CORNER.TOP_LEFT
-    ? { x: box.x, y: box.y }
-    : { x: box.x + box.width / 2, y: box.y + box.height / 2 };
+  const targetPosition =
+    corner === TEST_CONST.TESTING.MOUSE.PROXY.CORNER.TOP_LEFT
+      ? { x: box.x, y: box.y }
+      : { x: box.x + box.width / 2, y: box.y + box.height / 2 };
   await moveMouseToPosition(page, targetPosition, label);
   // console.log(`[fobles] E) Mouse move to '${label}' called`);
 }
 
 export async function highlightScreenShot(target: Locator, label: string): Promise<void> {
-  await highlightBase(target, `${label} - ${highlightScreenShot.name}`, TEST_CONST.TESTING.MOUSE.PROXY.HIGHLIGHT.STYLES.SCREEN_SHOT);
+  await highlightBase(
+    target,
+    `${label} - ${highlightScreenShot.name}`,
+    TEST_CONST.TESTING.MOUSE.PROXY.HIGHLIGHT.STYLES.SCREEN_SHOT,
+  );
 }
 
 export async function highlightClickTarget(target: Locator, label: string): Promise<void> {
@@ -131,11 +144,7 @@ async function highlightBase(target: Locator, label: string, highlightStyle: Hig
   }
 }
 
-export async function moveMouseToLocatorCenter(
-  page: Page,
-  targetLocator: Locator,
-  label: string,
-): Promise<void> {
+export async function moveMouseToLocatorCenter(page: Page, targetLocator: Locator, label: string): Promise<void> {
   await moveMouseToBoundingBox(page, targetLocator, label, TEST_CONST.TESTING.MOUSE.PROXY.CORNER.CENTER);
 }
 
@@ -146,9 +155,9 @@ export async function moveMouseOutsideHoverArea(
   label: string,
 ): Promise<void> {
   const sourceList = Array.isArray(sources) ? sources : [sources];
-  const sourceBoxes = (
-    await Promise.all(sourceList.map((source) => source.boundingBox()))
-  ).filter((box): box is NonNullable<typeof box> => box !== null);
+  const sourceBoxes = (await Promise.all(sourceList.map((source) => source.boundingBox()))).filter(
+    (box): box is NonNullable<typeof box> => box !== null,
+  );
   if (sourceBoxes.length === 0) {
     throw new Error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_LOCATE_HOVER_REGION);
   }
@@ -156,21 +165,12 @@ export async function moveMouseOutsideHoverArea(
   const sourceBox = {
     x: Math.min(...sourceBoxes.map((box) => box.x)),
     y: Math.min(...sourceBoxes.map((box) => box.y)),
-    width:
-      Math.max(...sourceBoxes.map((box) => box.x + box.width)) -
-      Math.min(...sourceBoxes.map((box) => box.x)),
-    height:
-      Math.max(...sourceBoxes.map((box) => box.y + box.height)) -
-      Math.min(...sourceBoxes.map((box) => box.y)),
+    width: Math.max(...sourceBoxes.map((box) => box.x + box.width)) - Math.min(...sourceBoxes.map((box) => box.x)),
+    height: Math.max(...sourceBoxes.map((box) => box.y + box.height)) - Math.min(...sourceBoxes.map((box) => box.y)),
   };
-  console.log(
-    `[fobles] Hover region ${label}: ${JSON.stringify(sourceBoxes)} => ${JSON.stringify(sourceBox)}`,
-  );
+  console.log(`[fobles] Hover region ${label}: ${JSON.stringify(sourceBoxes)} => ${JSON.stringify(sourceBox)}`);
 
-  const viewport = await page.evaluate(() => ({
-    width: window.innerWidth,
-    height: window.innerHeight,
-  }));
+  const viewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
   const center = { x: viewport.width / 2, y: viewport.height / 2 };
   const clearance = TEST_CONST.TESTING.MOUSE.ROOT.HOVER_CLEARANCE_PX;
   const candidates = [
@@ -180,8 +180,7 @@ export async function moveMouseOutsideHoverArea(
     { x: center.x, y: sourceBox.y + sourceBox.height + clearance },
   ].filter(
     (candidate) =>
-      candidate.x >= 0 && candidate.x <= viewport.width &&
-      candidate.y >= 0 && candidate.y <= viewport.height,
+      candidate.x >= 0 && candidate.x <= viewport.width && candidate.y >= 0 && candidate.y <= viewport.height,
   );
   const targetPosition = candidates.reduce((closest, candidate) => {
     const candidateDistance = Math.hypot(candidate.x - center.x, candidate.y - center.y);

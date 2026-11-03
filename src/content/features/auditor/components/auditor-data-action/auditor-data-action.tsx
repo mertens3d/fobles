@@ -2,5 +2,18 @@
 export type AuditorDataActionProps = { onClick: () => void };
 
 export function AuditorDataAction({ onClick }: AuditorDataActionProps) {
-  return <button type="button" className="fobles-auditor-data-action" title="View data" aria-label="View data" onClick={(event) => { event.stopPropagation(); onClick(); }}><span aria-hidden="true">▤</span></button>;
+  return (
+    <button
+      type="button"
+      className="fobles-auditor-data-action"
+      title="View data"
+      aria-label="View data"
+      onClick={(event) => {
+        event.stopPropagation();
+        onClick();
+      }}
+    >
+      <span aria-hidden="true">▤</span>
+    </button>
+  );
 }

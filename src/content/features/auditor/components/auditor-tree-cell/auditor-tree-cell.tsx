@@ -14,7 +14,11 @@ const STRUCTURAL_ICON_BY_QUALIFIER: Readonly<Record<string, string>> = {
   datasource: CONST.SITECORE.ICONS.APPLICATIONS.BULLET_BALL_GLASS_YELLOW_32,
   parameter: CONST.SITECORE.ICONS.APPLICATIONS.BULLET_BALL_GLASS_YELLOW_32,
 };
-type AuditorTreeCellProps = { row: AuditorTreeRow; opened: boolean; onToggle: (row: AuditorTreeRow, modifiers?: ToggleModifiers) => void };
+type AuditorTreeCellProps = {
+  row: AuditorTreeRow;
+  opened: boolean;
+  onToggle: (row: AuditorTreeRow, modifiers?: ToggleModifiers) => void;
+};
 type TreeIndentStyle = CSSProperties & { "--fobles-auditor-tree-depth": number };
 
 function splitQualifier(label: string): LabelParts {
@@ -23,7 +27,10 @@ function splitQualifier(label: string): LabelParts {
 }
 
 function resolveFallbackIcon(name: string, qualifier: string | undefined): string | undefined {
-  return STRUCTURAL_ICON_BY_LABEL[name.toLowerCase()] ?? (qualifier ? STRUCTURAL_ICON_BY_QUALIFIER[qualifier.toLowerCase()] : undefined);
+  return (
+    STRUCTURAL_ICON_BY_LABEL[name.toLowerCase()] ??
+    (qualifier ? STRUCTURAL_ICON_BY_QUALIFIER[qualifier.toLowerCase()] : undefined)
+  );
 }
 
 export function AuditorTreeCell({ row, opened, onToggle }: AuditorTreeCellProps) {
@@ -36,5 +43,25 @@ export function AuditorTreeCell({ row, opened, onToggle }: AuditorTreeCellProps)
     onToggle(row, event);
   }
 
-  return <div className={`fobles-auditor-tree-row fobles-auditor-tree-row--${row.kind}`} style={style}>{row.hasChildren ? <button type="button" className="fobles-auditor-tree-toggle" onClick={handleToggle} aria-label={opened ? "Collapse row" : "Expand row"}><img alt="" src={opened ? CONST.SITECORE.ICONS.TREE.EXPANDED : CONST.SITECORE.ICONS.TREE.COLLAPSED} /></button> : <span className="fobles-auditor-tree-spacer" />}{icon ? <img className="fobles-auditor-tree-icon" src={icon} alt="" /> : null}<span className="fobles-auditor-tree-label"><span className="fobles-auditor-tree-label-name">{name}</span>{qualifier ? <span className="fobles-auditor-tree-label-qualifier">{qualifier}</span> : null}</span></div>;
+  return (
+    <div className={`fobles-auditor-tree-row fobles-auditor-tree-row--${row.kind}`} style={style}>
+      {row.hasChildren ? (
+        <button
+          type="button"
+          className="fobles-auditor-tree-toggle"
+          onClick={handleToggle}
+          aria-label={opened ? "Collapse row" : "Expand row"}
+        >
+          <img alt="" src={opened ? CONST.SITECORE.ICONS.TREE.EXPANDED : CONST.SITECORE.ICONS.TREE.COLLAPSED} />
+        </button>
+      ) : (
+        <span className="fobles-auditor-tree-spacer" />
+      )}
+      {icon ? <img className="fobles-auditor-tree-icon" src={icon} alt="" /> : null}
+      <span className="fobles-auditor-tree-label">
+        <span className="fobles-auditor-tree-label-name">{name}</span>
+        {qualifier ? <span className="fobles-auditor-tree-label-qualifier">{qualifier}</span> : null}
+      </span>
+    </div>
+  );
 }

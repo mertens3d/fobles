@@ -1,9 +1,23 @@
 // @source-path [fobles] src/content/foundation/workers/pool/worker-executor.ts
 
 import { extensionLog } from "../../../logger";
-import { closeWorkerTarget, createWorkerTarget, getWorkerTargetKey, markWorkerTargetOwned, navigateWorkerTarget, sendTaskToWorkerTarget } from "../transport/worker-target-service";
+import {
+  closeWorkerTarget,
+  createWorkerTarget,
+  getWorkerTargetKey,
+  markWorkerTargetOwned,
+  navigateWorkerTarget,
+  sendTaskToWorkerTarget,
+} from "../transport/worker-target-service";
 import { resetWorkerReadiness, waitForWorkerReady } from "./worker-readiness";
-import { createCancelledResult, createErrorResult, type PoolWorker, type QueuedTask, type WorkerExecutorContext, type WorkerTaskResult } from "../tasks/worker-task.types";
+import {
+  createCancelledResult,
+  createErrorResult,
+  type PoolWorker,
+  type QueuedTask,
+  type WorkerExecutorContext,
+  type WorkerTaskResult,
+} from "../tasks/worker-task.types";
 import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
 import { DEBUG_WORKER_POOL } from "../worker-protocol.const";
 import { publishActivityToHost } from "../../../shared/activity/activity-events";
@@ -12,8 +26,9 @@ import { getRuntimeSettings } from "../../../runtime-settings/runtime-settings";
 
 const READY_TIMEOUT_MS = 20000;
 const MAX_EDITOR_STATE_CHANGES = 2;
-function remainingJobMs(queued: QueuedTask): number { 
-return Math.max(0, queued.deadlineAt - performance.now()); }
+function remainingJobMs(queued: QueuedTask): number {
+  return Math.max(0, queued.deadlineAt - performance.now());
+}
 
 // A job's time limit covers the time it runs, not the time it waits in the queue behind other jobs. The clock starts the
 // first time the job is handed to a worker. Recovery and document-stale retries come back through the same entry points
@@ -37,14 +52,18 @@ function startJobClock(queued: QueuedTask): void {
 }
 async function withinJobDeadline<T>(queued: QueuedTask, operation: Promise<T>, label: string): Promise<T> {
   const remainingMs = remainingJobMs(queued);
-  if (remainingMs <= 0) 
-throw new Error(`Worker job deadline exhausted before ${label}`);
+  if (remainingMs <= 0) throw new Error(`Worker job deadline exhausted before ${label}`);
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   try {
-    return await Promise.race([operation, new Promise<T>((_resolve, reject) => { 
-timeoutId = setTimeout(() => reject(new Error(`Worker job deadline exhausted during ${label}`)), remainingMs); })]);
-  } finally { if (timeoutId !== undefined) 
-clearTimeout(timeoutId); }
+    return await Promise.race([
+      operation,
+      new Promise<T>((_resolve, reject) => {
+        timeoutId = setTimeout(() => reject(new Error(`Worker job deadline exhausted during ${label}`)), remainingMs);
+      }),
+    ]);
+  } finally {
+    if (timeoutId !== undefined) clearTimeout(timeoutId);
+  }
 }
 
 async function closeWorker(context: WorkerExecutorContext, worker: PoolWorker): Promise<void> {
@@ -52,15 +71,19 @@ async function closeWorker(context: WorkerExecutorContext, worker: PoolWorker): 
   context.retireWorker(worker);
 
   if (target) {
-    if (isWorkerTabTarget(target)) 
-resetWorkerReadiness(target.tabId);
+    if (isWorkerTabTarget(target)) {
+      resetWorkerReadiness(target.tabId);
+    }
 
     try {
       await closeWorkerTarget(target);
     } catch (error) {
       // Closing means "this worker no longer exists". A failed close must not abort the caller's retry or resolve
       // decision, or the task is left unresolved. The Shell's final iframe sweep remains the safety net.
-      extensionLog.warn("Worker pool: worker close failed; continuing", { workerKey: getWorkerTargetKey(target), error });
+      extensionLog.warn("Worker pool: worker close failed; continuing", {
+        workerKey: getWorkerTargetKey(target),
+        error,
+      });
     }
 
     worker.target = undefined;
@@ -74,7 +97,13 @@ function cancelStaleWorker(context: WorkerExecutorContext, worker: PoolWorker, q
   queued.resolve(createCancelledResult(queued.task));
 }
 
-async function cancelAndDestroyNewWorker(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask, target: WorkerTarget, reason: string): Promise<void> {
+async function cancelAndDestroyNewWorker(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+  target: WorkerTarget,
+  reason: string,
+): Promise<void> {
   worker.target = target;
   context.retireWorker(worker);
   queued.resolve(createCancelledResult(queued.task));
@@ -89,12 +118,21 @@ async function cancelAndDestroyNewWorker(context: WorkerExecutorContext, worker:
   await context.destroyRetiredWorker(worker, reason);
 }
 
-async function finishRetiredWorker(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask): Promise<void> {
+async function finishRetiredWorker(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+): Promise<void> {
   queued.resolve(createCancelledResult(queued.task));
   await context.destroyRetiredWorker(worker, "active-task-settled");
 }
 
-async function retryOrResolveError(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask, errorMessage: string): Promise<void> {
+async function retryOrResolveError(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+  errorMessage: string,
+): Promise<void> {
   await closeWorker(context, worker);
 
   const maxRecoveries = getRuntimeSettings().workerPool.workerMaxRecoveriesPerJob;
@@ -102,7 +140,13 @@ async function retryOrResolveError(context: WorkerExecutorContext, worker: PoolW
   if (!context.isCurrentGeneration()) {
     queued.resolve(createCancelledResult(queued.task));
   } else if (remainingJobMs(queued) <= 0) {
-    extensionLog.warn("Worker health: job deadline exhausted; recovery skipped", { taskId: queued.task.taskId, taskType: queued.task.type, recoveryCount: queued.recoveryCount, maxRecoveries, errorMessage });
+    extensionLog.warn("Worker health: job deadline exhausted; recovery skipped", {
+      taskId: queued.task.taskId,
+      taskType: queued.task.type,
+      recoveryCount: queued.recoveryCount,
+      maxRecoveries,
+      errorMessage,
+    });
     queued.resolve(createErrorResult(queued.task, `Worker job exceeded total execution budget: ${errorMessage}`));
     context.scheduleNext();
   } else if (queued.recoveryCount < maxRecoveries) {
@@ -131,18 +175,30 @@ async function retryOrResolveError(context: WorkerExecutorContext, worker: PoolW
   }
 }
 
-async function retryAfterDocumentStale(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask): Promise<void> {
+async function retryAfterDocumentStale(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+): Promise<void> {
   const retiredTarget = worker.target;
 
   if (queued.task.type === "set-raw-values" || queued.task.type === "set-standard-fields") {
     const retiredWorkerCount = context.retireAllWorkers();
-    extensionLog.debug("Worker pool: editor state changed; all current workers retired", { taskId: queued.task.taskId, retiredWorkerCount });
+    extensionLog.debug("Worker pool: editor state changed; all current workers retired", {
+      taskId: queued.task.taskId,
+      retiredWorkerCount,
+    });
   } else {
     context.retireWorker(worker);
   }
 
   if (queued.editorStateChangeCount >= MAX_EDITOR_STATE_CHANGES) {
-    queued.resolve(createErrorResult(queued.task, `Worker document did not stabilize after ${MAX_EDITOR_STATE_CHANGES} state changes`));
+    queued.resolve(
+      createErrorResult(
+        queued.task,
+        `Worker document did not stabilize after ${MAX_EDITOR_STATE_CHANGES} state changes`,
+      ),
+    );
     context.scheduleNext();
   } else {
     queued.editorStateChangeCount += 1;
@@ -161,74 +217,135 @@ async function retryAfterDocumentStale(context: WorkerExecutorContext, worker: P
 
 async function runTaskOnWorker(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask): Promise<void> {
   const target = worker.target;
-  if (!target || isWorkerRetired(worker) || !context.isCurrentGeneration()) { 
-cancelStaleWorker(context, worker, queued); 
-return; }
+  if (!target || isWorkerRetired(worker) || !context.isCurrentGeneration()) {
+    cancelStaleWorker(context, worker, queued);
+    return;
+  }
   worker.state = "busy";
   worker.lastProgressAt = performance.now();
   worker.activeTaskId = queued.task.taskId;
   const workerKey = getWorkerTargetKey(target);
   const taskTimeoutMs = Math.min(getRuntimeSettings().workerPool.taskTimeoutMs, remainingJobMs(queued));
-  context.activeTaskByWorkerKey.set(workerKey, { target, requestId: queued.task.requestId, taskId: queued.task.taskId });
+  context.activeTaskByWorkerKey.set(workerKey, {
+    target,
+    requestId: queued.task.requestId,
+    taskId: queued.task.taskId,
+  });
   let executionResult: Awaited<ReturnType<typeof sendTaskToWorkerTarget>> | undefined;
   let timedOut = false;
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   try {
-    publishActivityToHost(queued.hostTabId, { source: "worker", requestId: queued.task.requestId, activityId: queued.task.taskId, kind: queued.task.type, label: labelForWorkerTask(queued.task), state: "started", detail: workerKey });
-    extensionLog.debug(`Worker pool[${workerKey}]: executing task`, { workerKey, taskId: queued.task.taskId, taskType: queued.task.type, url: queued.task.url, taskTimeoutMs });
-    const timeout = new Promise<undefined>((resolve) => { 
-timeoutId = setTimeout(() => { 
-timedOut = true; 
-resolve(undefined); }, taskTimeoutMs); });
+    publishActivityToHost(queued.hostTabId, {
+      source: "worker",
+      requestId: queued.task.requestId,
+      activityId: queued.task.taskId,
+      kind: queued.task.type,
+      label: labelForWorkerTask(queued.task),
+      state: "started",
+      detail: workerKey,
+    });
+    extensionLog.debug(`Worker pool[${workerKey}]: executing task`, {
+      workerKey,
+      taskId: queued.task.taskId,
+      taskType: queued.task.type,
+      url: queued.task.url,
+      taskTimeoutMs,
+    });
+    const timeout = new Promise<undefined>((resolve) => {
+      timeoutId = setTimeout(() => {
+        timedOut = true;
+        resolve(undefined);
+      }, taskTimeoutMs);
+    });
     executionResult = await Promise.race([sendTaskToWorkerTarget(target, queued.task), timeout]);
   } catch (error) {
     extensionLog.warn("Worker pool: task execution failed", { workerKey, task: queued.task, error });
   } finally {
-    if (timeoutId !== undefined) 
-clearTimeout(timeoutId);
+    if (timeoutId !== undefined) clearTimeout(timeoutId);
     context.activeTaskByWorkerKey.delete(workerKey);
   }
   if (timedOut) {
     const message = `Worker task exceeded ${taskTimeoutMs} ms execution limit`;
-    extensionLog.warn("Worker pool: task execution timed out", { workerKey, taskId: queued.task.taskId, taskType: queued.task.type, url: queued.task.url, taskTimeoutMs });
-    publishActivityToHost(queued.hostTabId, { source: "worker", requestId: queued.task.requestId, activityId: queued.task.taskId, kind: queued.task.type, label: labelForWorkerTask(queued.task), state: "error", detail: message });
+    extensionLog.warn("Worker pool: task execution timed out", {
+      workerKey,
+      taskId: queued.task.taskId,
+      taskType: queued.task.type,
+      url: queued.task.url,
+      taskTimeoutMs,
+    });
+    publishActivityToHost(queued.hostTabId, {
+      source: "worker",
+      requestId: queued.task.requestId,
+      activityId: queued.task.taskId,
+      kind: queued.task.type,
+      label: labelForWorkerTask(queued.task),
+      state: "error",
+      detail: message,
+    });
     await retryOrResolveError(context, worker, queued, message);
     return;
   }
-  extensionLog.debug(`Worker pool[${workerKey}]: task returned` + ` taskId=${queued.task.taskId}` + ` taskType=${queued.task.type}` + ` resultStatus=${String(executionResult?.status)}` + ` resultType=${String(executionResult?.type)}` + ` editorStateChangeCount=${queued.editorStateChangeCount}`);
-  if (isWorkerRetired(worker) || !context.isCurrentGeneration()) { 
-await finishRetiredWorker(context, worker, queued); 
-return; }
-  if (context.cancelledRequestIds.has(queued.task.requestId)) { 
-context.retireWorker(worker); 
-queued.resolve(createCancelledResult(queued.task)); 
-await context.destroyRetiredWorker(worker, "cancelled-task-settled"); 
-context.scheduleNext(); 
-return; }
+  extensionLog.debug(
+    `Worker pool[${workerKey}]: task returned` +
+      ` taskId=${queued.task.taskId}` +
+      ` taskType=${queued.task.type}` +
+      ` resultStatus=${String(executionResult?.status)}` +
+      ` resultType=${String(executionResult?.type)}` +
+      ` editorStateChangeCount=${queued.editorStateChangeCount}`,
+  );
+  if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
+    await finishRetiredWorker(context, worker, queued);
+    return;
+  }
+  if (context.cancelledRequestIds.has(queued.task.requestId)) {
+    context.retireWorker(worker);
+    queued.resolve(createCancelledResult(queued.task));
+    await context.destroyRetiredWorker(worker, "cancelled-task-settled");
+    context.scheduleNext();
+    return;
+  }
   if (executionResult?.status === "document-stale") {
-    extensionLog.debug(`Worker pool: document-stale result intercepted` + ` taskId=${queued.task.taskId}` + ` taskType=${queued.task.type}` + ` editorStateChangeCount=${queued.editorStateChangeCount}`);
+    extensionLog.debug(
+      `Worker pool: document-stale result intercepted` +
+        ` taskId=${queued.task.taskId}` +
+        ` taskType=${queued.task.type}` +
+        ` editorStateChangeCount=${queued.editorStateChangeCount}`,
+    );
     await retryAfterDocumentStale(context, worker, queued);
     return;
   }
   const result: WorkerTaskResult | undefined = executionResult;
-  if (!result) { 
-await retryOrResolveError(context, worker, queued, "Worker task failed with no result"); 
-return; }
+  if (!result) {
+    await retryOrResolveError(context, worker, queued, "Worker task failed with no result");
+    return;
+  }
   worker.state = "idle";
   worker.lastProgressAt = performance.now();
   worker.activeTaskId = undefined;
-  publishActivityToHost(queued.hostTabId, { source: "worker", requestId: queued.task.requestId, activityId: queued.task.taskId, kind: queued.task.type, label: labelForWorkerTask(queued.task), state: result.status === "cancelled" ? "cancelled" : result.status === "error" ? "error" : "completed", detail: result.status });
+  publishActivityToHost(queued.hostTabId, {
+    source: "worker",
+    requestId: queued.task.requestId,
+    activityId: queued.task.taskId,
+    kind: queued.task.type,
+    label: labelForWorkerTask(queued.task),
+    state: result.status === "cancelled" ? "cancelled" : result.status === "error" ? "error" : "completed",
+    detail: result.status,
+  });
   queued.resolve(result);
   context.scheduleNext();
 }
 
-async function prepareCreatedTarget(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask, target: WorkerTarget): Promise<boolean> {
+async function prepareCreatedTarget(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+  target: WorkerTarget,
+): Promise<boolean> {
   worker.target = target;
   worker.currentUrl = queued.task.url;
   worker.lastProgressAt = performance.now();
 
-  if (isWorkerTabTarget(target)) 
-await waitForWorkerReady(target.tabId, READY_TIMEOUT_MS);
+  if (isWorkerTabTarget(target)) await waitForWorkerReady(target.tabId, READY_TIMEOUT_MS);
 
   if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
     await cancelAndDestroyNewWorker(context, worker, queued, target, "new-worker-stale-after-ready");
@@ -256,9 +373,17 @@ async function runOnNewWorker(context: WorkerExecutorContext, worker: PoolWorker
   let target: WorkerTarget | undefined;
 
   try {
-    target = await withinJobDeadline(queued, createWorkerTarget(queued.hostTabId, queued.task.url, DEBUG_WORKER_POOL), "worker creation/readiness");
+    target = await withinJobDeadline(
+      queued,
+      createWorkerTarget(queued.hostTabId, queued.task.url, DEBUG_WORKER_POOL),
+      "worker creation/readiness",
+    );
   } catch (error) {
-    extensionLog.warn("Worker pool: failed to create worker", { hostTabId: queued.hostTabId, task: queued.task, error });
+    extensionLog.warn("Worker pool: failed to create worker", {
+      hostTabId: queued.hostTabId,
+      task: queued.task,
+      error,
+    });
   }
 
   if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
@@ -277,8 +402,7 @@ async function runOnNewWorker(context: WorkerExecutorContext, worker: PoolWorker
 
   try {
     const ready = await prepareCreatedTarget(context, worker, queued, target);
-    if (ready) 
-await runTaskOnWorker(context, worker, queued);
+    if (ready) await runTaskOnWorker(context, worker, queued);
   } catch (error) {
     extensionLog.warn("Worker pool: worker failed to become ready", {
       target,
@@ -288,8 +412,7 @@ await runTaskOnWorker(context, worker, queued);
     });
 
     if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
-      if (!worker.target) 
-worker.target = target;
+      if (!worker.target) worker.target = target;
       context.retireWorker(worker);
       queued.resolve(createCancelledResult(queued.task));
       await context.destroyRetiredWorker(worker, "worker-ready-failed-after-retirement");
@@ -304,16 +427,22 @@ function isWorkerRetired(worker: PoolWorker): boolean {
   return worker.state === "retired";
 }
 
-async function navigateExistingWorker(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask): Promise<boolean> {
+async function navigateExistingWorker(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+): Promise<boolean> {
   const target = worker.target;
 
-  if (!target || isWorkerRetired(worker)) 
-return false;
+  if (!target || isWorkerRetired(worker)) return false;
 
-  if (isWorkerTabTarget(target)) 
-resetWorkerReadiness(target.tabId);
+  if (isWorkerTabTarget(target)) resetWorkerReadiness(target.tabId);
 
-  const updatedTarget = await withinJobDeadline(queued, navigateWorkerTarget(target, queued.task.url), "worker navigation/readiness");
+  const updatedTarget = await withinJobDeadline(
+    queued,
+    navigateWorkerTarget(target, queued.task.url),
+    "worker navigation/readiness",
+  );
 
   if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
     cancelStaleWorker(context, worker, queued);
@@ -322,8 +451,7 @@ resetWorkerReadiness(target.tabId);
 
   worker.target = updatedTarget;
 
-  if (isWorkerTabTarget(updatedTarget)) 
-await waitForWorkerReady(updatedTarget.tabId, READY_TIMEOUT_MS);
+  if (isWorkerTabTarget(updatedTarget)) await waitForWorkerReady(updatedTarget.tabId, READY_TIMEOUT_MS);
 
   if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
     cancelStaleWorker(context, worker, queued);
@@ -342,7 +470,11 @@ await waitForWorkerReady(updatedTarget.tabId, READY_TIMEOUT_MS);
   return true;
 }
 
-export async function runWorkerTask(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask): Promise<void> {
+export async function runWorkerTask(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+): Promise<void> {
   startJobClock(queued);
 
   let canRunTask = context.isCurrentGeneration() && !isWorkerRetired(worker) && worker.target !== undefined;
@@ -373,7 +505,11 @@ export async function runWorkerTask(context: WorkerExecutorContext, worker: Pool
   }
 }
 
-export async function runTaskOnNewWorker(context: WorkerExecutorContext, worker: PoolWorker, queued: QueuedTask): Promise<void> {
+export async function runTaskOnNewWorker(
+  context: WorkerExecutorContext,
+  worker: PoolWorker,
+  queued: QueuedTask,
+): Promise<void> {
   startJobClock(queued);
   await runOnNewWorker(context, worker, queued);
 }

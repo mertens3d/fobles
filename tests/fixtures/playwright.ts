@@ -10,28 +10,19 @@ import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";
 import { EnableFoblesDeveloperLogging, GetFoblesPersistedLogs } from "../macros/fobles-macros";
+import { createBrowserProfile } from "./browser-profile";
+import { restoreWindowPosition, saveWindowPosition } from "./browser-location";
 
 const extensionPath = path.resolve("./dist/unpacked");
 
-// launchPersistentContext (below) bypasses Playwright's own context/page fixtures entirely, so
-// playwright.config.ts's `use.video` setting is never actually consulted - recordVideo has to be
-// requested here directly instead. A separate fixtures module per suite and every dynamic-gating
-// attempt (process.argv, a process.env mutation at playwright.config.ts's own load time, a marker
-// file, a Playwright "option fixture") all turned out to be more trouble than they were worth here
-// - flip the RECORD_VIDEO constant in tests/settings/VideoSwitch.ts by hand instead when you
-// actually want a recording, and flip it back to false afterward. Every other suite shares this same one
-// persistent context/session for its whole run, so a video would cover the entire run, not one
-// clip per test - only turn this on for a deliberate promoVideo recording session.
-const promoVideoDir = path.resolve(
-  "./playwright/test-artifacts/playwright-results/promo-video",
-);
-// The wider 1100 reads better in a recorded promo video; regular suites stay narrower (see the
-// launchPersistentContext call below) so Sitecore's percentage-width panels don't stretch.
-const VIEWPORT_SIZE = RECORD_VIDEO
-  ? { width: 1100, height: 720 }
-  : { width: 800, height: 720 };
+// This fixture launches its own context, so playwright.config.ts's use.video
+// setting is not consulted. RECORD_VIDEO controls recording here directly.
+// The context is shared for the worker's entire run.
+const promoVideoDir = path.resolve("./playwright/test-artifacts/playwright-results/promo-video");
 
-// See tests/README.md's Promo Video section for why this renames files and how it orders them.
+const VIEWPORT_SIZE = RECORD_VIDEO ? { width: 1100, height: 720 } : { width: 800, height: 720 };
+
+// See tests/README.md's Promo Video section for naming and ordering.
 function renamePromoVideoFiles(): void {
   const files = fs
     .readdirSync(promoVideoDir)
@@ -49,84 +40,69 @@ function renamePromoVideoFiles(): void {
   });
 }
 
-// Sitecore's own UI references icons this environment doesn't have (chart.png, database.png,
-// cd.png, etc. under /-/icon/) - these 404 on every navigation and are unrelated to Fobles, so
-// don't clutter the diagnostic log with them.
-
+// Ignore missing Sitecore icons unrelated to Fobles.
 function isIgnorableDiagnosticUrl(url: string): boolean {
   return TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_DIAGNOSTIC_URL_PATTERN.test(url);
 }
 
-// Chromium logs this on every Sitecore iframe navigation regardless of Fobles - always the same
-// text, never actionable, and floods the log enough to bury real warnings.
-
+// Ignore the known Chromium warning repeated on Sitecore iframe navigation.
 function isIgnorableConsoleWarning(text: string): boolean {
   return TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_CONSOLE_WARNING_PATTERN.test(text);
 }
 
 function isIgnorableConsoleError(text: string): boolean {
   let isIgnoreable = false;
+
   if (TEST_CONST.TESTING.DIAGNOSTIC.IGNORABLE_CONSOLE_MESSAGES.some((msg) => text.includes(msg))) {
     isIgnoreable = true;
   }
+
   return isIgnoreable;
 }
 
 function isIgnorableRequestFailure(request: Request): boolean {
-  const errorText = request.failure()?.errorText ?? '';
+  const errorText = request.failure()?.errorText ?? "";
   let isIgnorable = false;
-  if (!TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_REQUEST_FAILURES.some((ignored) =>
-    errorText.includes(ignored),
-  )) {
+
+  if (!TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_REQUEST_FAILURES.some((ignored) => errorText.includes(ignored))) {
     isIgnorable = true;
   }
+
   return isIgnorable;
 }
 
-async function logoutSitecoreSessions(
-  context: import("@playwright/test").BrowserContext,
-): Promise<void> {
+async function logoutSitecoreSessions(context: BrowserContext): Promise<void> {
   const page = context.pages()[0];
   if (!page) return;
 
   try {
-    // The last test may have left the browser on an admin subpage (dbbrowser.aspx, cache.aspx,
-    // Kick User, etc.) without the shell chrome - Content Editor always has the logout link.
+    // The last test may have left the browser on an admin subpage without
+    // shell chrome. Content Editor provides the logout link.
     const { getTestEnvironment } = await import("./environment");
     const { baseUrl } = getTestEnvironment();
-    await page.goto(
-      new URL(TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED, baseUrl).toString(),
-      {
-        waitUntil: "domcontentloaded",
-      },
-    );
+
+    await page.goto(new URL(TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED, baseUrl).toString(), {
+      waitUntil: "domcontentloaded",
+    });
   } catch {
-    // Navigation may fail if the session already expired - fall through to the search below.
+    // The session may already have expired; continue searching open pages.
   }
 
   for (const page of context.pages()) {
     if (await logoutCurrentSitecoreSession(page)) {
-      logDiagnostic(
-        `[test cleanup] Logging out Sitecore session from ${page.url()}`,
-      );
+      logDiagnostic(`[test cleanup] Logging out Sitecore session from ${page.url()}`);
       return;
     }
   }
 }
 
-type WorkerFixtures = {
-  sharedBrowserContext: BrowserContext;
-  sharedPage: import("@playwright/test").Page;
-};
+type WorkerFixtures = { sharedBrowserContext: BrowserContext; sharedPage: import("@playwright/test").Page };
 
-type TestFixtures = {
-  resetTestSettings: void;
-};
+type TestFixtures = { resetTestSettings: void };
 
 export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
-  // Auto-use so every test starts from the same known settings state, regardless of what an
-  // earlier test in this shared persistent profile left behind (see docs/TODO.md's corrupt-data
-  // profile idea for a future, deliberately-different one).
+  // Start every test with the same settings, even when the previous test
+  // changed settings in the shared context.
   resetTestSettings: [
     async ({ sharedBrowserContext }, use, testInfo) => {
       await applyDefaultSettingsProfile(sharedBrowserContext);
@@ -141,19 +117,15 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
 
           fs.writeFileSync(logPath, logs, "utf8");
 
-          console.log(
-            `[fobles] Persisted log saved: ${logPath} (${logs.length} chars)`,
-          );
+          console.log(`[fobles] Persisted log saved: ${logPath} (${logs.length} chars)`);
 
-          await testInfo.attach("Fobles persisted log", {
-            path: logPath,
-            contentType: "text/x-fobles-log",
-          });
+          await testInfo.attach("Fobles persisted log", { path: logPath, contentType: "text/x-fobles-log" });
 
           console.log("[fobles] Persisted log attached");
-        } catch (error) {
+        } catch (error: unknown) {
           console.error(
-            `[fobles] Failed to capture persisted logs: ${error instanceof Error ? error.stack ?? error.message : String(error)
+            `[fobles] Failed to capture persisted logs: ${
+              error instanceof Error ? (error.stack ?? error.message) : String(error)
             }`,
           );
         }
@@ -161,117 +133,125 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
     },
     { auto: true },
   ],
+
   sharedBrowserContext: [
     // eslint-disable-next-line no-empty-pattern
-    async ({ }, use) => {
-      // Installed here (not at module load) since this module gets imported for test discovery
-      // and listing too, which would otherwise wipe the real log right after an actual run.
+    async ({}, use) => {
+      // Install during execution, not discovery/listing, to avoid wiping
+      // the log from an actual run.
       installConsoleLogging();
-
       logTestDividerStart("Test Start");
 
       if (RECORD_VIDEO) {
         fs.rmSync(promoVideoDir, { recursive: true, force: true });
         fs.mkdirSync(promoVideoDir, { recursive: true });
       }
-      const context = await chromium.launchPersistentContext("", {
+
+      const userDataDir = createBrowserProfile();
+
+      const context = await chromium.launchPersistentContext(userDataDir, {
         channel: "chromium",
         headless: false,
-        // Without an explicit viewport, a persistent context defaults to the real OS window size
-        // - on a wide monitor that stretches Sitecore's own percentage-width panels (editor
-        // sections, Quick Info, etc.), making every screenshot unnecessarily wide. 1280 (Playwright's
-        // own standard "Desktop Chrome" default) still left them wider than needed, so use 800 -
-        // except for a promoVideo recording, where the wider, more standard 1280 reads better.
         viewport: VIEWPORT_SIZE,
-        ...(RECORD_VIDEO
-          ? { recordVideo: { dir: promoVideoDir, size: VIEWPORT_SIZE } }
-          : {}),
-        args: [
-          `--disable-extensions-except=${extensionPath}`,
-          `--load-extension=${extensionPath}`,
-        ],
+        ...(RECORD_VIDEO ? { recordVideo: { dir: promoVideoDir, size: VIEWPORT_SIZE } } : {}),
+        args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
       });
-      const attachPageDiagnostics = (
-        page: import("@playwright/test").Page,
-      ): void => {
-        page.on("console", (message) => {
-          const location = message.location().url;
-          if (location && isIgnorableDiagnosticUrl(location)) return;
 
-          if (message.type() === "warning") {
-            if (!isIgnorableConsoleWarning(message.text()))
+      try {
+        await restoreWindowPosition(context);
+
+        const attachPageDiagnostics = (page: import("@playwright/test").Page): void => {
+          page.on("console", (message) => {
+            const location = message.location().url;
+            if (location && isIgnorableDiagnosticUrl(location)) return;
+
+            if (message.type() === "warning") {
+              if (!isIgnorableConsoleWarning(message.text())) {
+                logDiagnostic(
+                  `[browser console:${message.type()}] ${message.text()}${location ? ` (${location})` : ""}`,
+                );
+              }
+            } else if (message.type() === "error") {
+              if (!isIgnorableConsoleError(message.text())) {
+                logDiagnostic(
+                  `[browser console:${message.type()}] ${message.text()}${location ? ` (${location})` : ""}`,
+                );
+              }
+            }
+          });
+
+          page.on("response", (response) => {
+            if (response.status() >= 400 && !isIgnorableDiagnosticUrl(response.url())) {
+              logDiagnostic(`[browser response:${response.status()}] ${response.request().method()} ${response.url()}`);
+            }
+          });
+
+          page.on("pageerror", (error) => {
+            logDiagnostic(`[browser pageerror] ${error.stack ?? error.message}`);
+          });
+
+          page.on("requestfailed", (request) => {
+            if (!isIgnorableRequestFailure(request)) {
               logDiagnostic(
-                `[browser console:${message.type()}] ${message.text()}${location ? ` (${location})` : ""}`,
+                `[browser requestfailed] ${request.method()} ${request.url()} - ${
+                  request.failure()?.errorText ?? "unknown error"
+                }`,
               );
-          }
-          else if (message.type() === "error") {
-            if (!isIgnorableConsoleError(message.text()))
-              logDiagnostic(
-                `[browser console:${message.type()}] ${message.text()}${location ? ` (${location})` : ""}`,
-              );
+            }
+          });
+
+          // Uncomment to diagnose redirects and iframe navigation.
+          page.on("framenavigated", (frame) => {
+            const kind = frame === page.mainFrame() ? "main frame" : "iframe";
+            // logDiagnostic(`[browser framenavigated:${kind}] ${frame.url()}`);
+          });
+
+          page.on("crash", () => {
+            logDiagnostic(`[browser crash] page render process crashed at ${page.url()}`);
+          });
+        };
+
+        context.pages().forEach(attachPageDiagnostics);
+        context.on("page", attachPageDiagnostics);
+
+        await use(context);
+      } finally {
+        try {
+          // Give a human watching the run time to see the final state.
+          if (TEST_CONST.TESTING.SPEED.SELECTED !== "SPRINT") {
+            await new Promise<void>((resolve) => {
+              setTimeout(resolve, 10_000);
+            });
           }
 
-        });
-        page.on("response", (response) => {
-          if (
-            response.status() >= 400 &&
-            !isIgnorableDiagnosticUrl(response.url())
-          ) {
-            logDiagnostic(
-              `[browser response:${response.status()}] ${response.request().method()} ${response.url()}`,
-            );
+          await logoutSitecoreSessions(context);
+        } finally {
+          // Close even when Sitecore logout fails.
+          try {
+            await saveWindowPosition(context);
+          } finally {
+            await context.close();
           }
-        });
-        page.on("pageerror", (error) => {
-          logDiagnostic(`[browser pageerror] ${error.stack ?? error.message}`);
-        });
-        page.on("requestfailed", (request) => {
+        }
 
-          if (!isIgnorableRequestFailure(request)) {
-            logDiagnostic(
-              `[browser requestfailed] ${request.method()} ${request.url()} - ${request.failure()?.errorText ?? "unknown error"}`,
-            );
-          }
-        });
-        // Catches silent redirects (e.g. an IdentityServer renewal) the instant they happen,
-        // regardless of which test step is running when it occurs.
-        page.on("framenavigated", (frame) => {
-          const kind = frame === page.mainFrame() ? "main frame" : "iframe";
-          // logDiagnostic(`[browser framenavigated:${kind}] ${frame.url()}`);
-        });
-        page.on("crash", () => {
-          logDiagnostic(
-            `[browser crash] page render process crashed at ${page.url()}`,
-          );
-        });
-      };
-
-      context.pages().forEach(attachPageDiagnostics);
-      context.on("page", attachPageDiagnostics);
-      await use(context);
-      // Settle time for a human watching the last test's final state - skip it in SPRINT.
-      if (TEST_CONST.TESTING.SPEED.SELECTED !== "SPRINT") {
-        await new Promise((resolve) => setTimeout(resolve, 10_000));
+        if (RECORD_VIDEO) {
+          renamePromoVideoFiles();
+        }
       }
-      await logoutSitecoreSessions(context);
-      await context.close();
-      if (RECORD_VIDEO) renamePromoVideoFiles();
     },
     { scope: "worker" },
   ],
-  // Worker-scoped so the SAME page/tab is reused for every test in this worker - a test-scoped
-  // page fixture would create a brand-new page (and closes it after each test, since
-  // sharedBrowserContext.pages()[0] is undefined right after that close), which meant every test
-  // opened a fresh Sitecore session - and consumed a fresh license slot - instead of reusing one.
+
+  // Reuse the same page throughout the worker to reuse the Sitecore session.
   sharedPage: [
     async ({ sharedBrowserContext }, use) => {
-      const page =
-        sharedBrowserContext.pages()[0] ??
-        (await sharedBrowserContext.newPage());
+      const page = sharedBrowserContext.pages()[0] ?? (await sharedBrowserContext.newPage());
+
       await use(page);
     },
     { scope: "worker" },
   ],
+
   page: async ({ sharedPage }, use) => {
     await use(sharedPage);
   },
@@ -285,10 +265,7 @@ export async function enableFoblesTestLogging(context: BrowserContext): Promise<
   }
 
   await serviceWorker.evaluate(async () => {
-    await chrome.storage.sync.set({
-      debugLogging: true,
-      persistDebugLogs: true,
-    });
+    await chrome.storage.sync.set({ debugLogging: true, persistDebugLogs: true });
 
     await chrome.storage.local.remove("persistedLogEntries");
   });

@@ -18,37 +18,31 @@ const workerIframeById = new Map<string, HTMLIFrameElement>();
 let workerIframeHostRegistered = false;
 
 export function registerWorkerIframeHost(doc: Document): void {
-  if (workerIframeHostRegistered) 
-return;
+  if (workerIframeHostRegistered) return;
   workerIframeHostRegistered = true;
-  chrome.runtime.onMessage.addListener(
-    (message: WorkerIframeHostMessage, _sender, sendResponse) => {
-      if (message.type === WORKER_IFRAME_CREATE_MESSAGE_TYPE) {
-        void createWorkerIframe(doc, message.url)
-          .then((result) => sendResponse(result))
-          .catch((error: unknown) => {
-            extensionLog.error("Worker iframe host: iframe creation failed", { error });
-            sendResponse(undefined);
-          });
-        return true;
-      }
-      if (message.type === WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE) {
-        sendResponse(navigateWorkerIframe(message.workerId, message.url));
-      } else if (message.type === WORKER_IFRAME_REMOVE_MESSAGE_TYPE) {
-        sendResponse(removeWorkerIframe(message.workerId));
-      } else if (message.type === WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE) {
-        removeAllWorkerIframes(doc);
-        sendResponse(true);
-      }
-      return false;
-    },
-  );
+  chrome.runtime.onMessage.addListener((message: WorkerIframeHostMessage, _sender, sendResponse) => {
+    if (message.type === WORKER_IFRAME_CREATE_MESSAGE_TYPE) {
+      void createWorkerIframe(doc, message.url)
+        .then((result) => sendResponse(result))
+        .catch((error: unknown) => {
+          extensionLog.error("Worker iframe host: iframe creation failed", { error });
+          sendResponse(undefined);
+        });
+      return true;
+    }
+    if (message.type === WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE) {
+      sendResponse(navigateWorkerIframe(message.workerId, message.url));
+    } else if (message.type === WORKER_IFRAME_REMOVE_MESSAGE_TYPE) {
+      sendResponse(removeWorkerIframe(message.workerId));
+    } else if (message.type === WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE) {
+      removeAllWorkerIframes(doc);
+      sendResponse(true);
+    }
+    return false;
+  });
 }
 
-export async function createWorkerIframe(
-  doc: Document,
-  url: string,
-): Promise<WorkerIframeCreateResult> {
+export async function createWorkerIframe(doc: Document, url: string): Promise<WorkerIframeCreateResult> {
   await initializeRuntimeSettings();
   const workerId = crypto.randomUUID();
   const iframe = doc.createElement("iframe");
@@ -149,9 +143,7 @@ export type WorkerIframeEmergencyCleanupResult = {
 export function emergencyCleanupWorkerIframes(doc: Document): WorkerIframeEmergencyCleanupResult {
   const containerId = WORKER_POOL.WORKER_IFRAME_CONTAINER_ID;
   const container = doc.getElementById(containerId);
-  const orphanIframes = Array.from(
-    doc.querySelectorAll<HTMLIFrameElement>(WORKER_POOL.WORKER_IFRAME_SELECTOR),
-  );
+  const orphanIframes = Array.from(doc.querySelectorAll<HTMLIFrameElement>(WORKER_POOL.WORKER_IFRAME_SELECTOR));
   const result: WorkerIframeEmergencyCleanupResult = {
     containerFound: Boolean(container),
     trackedCountBefore: workerIframeById.size,
@@ -182,8 +174,7 @@ export function emergencyCleanupWorkerIframes(doc: Document): WorkerIframeEmerge
   });
   container?.remove();
   orphanIframes.forEach((iframe) => {
-    if (iframe.isConnected) 
-iframe.remove();
+    if (iframe.isConnected) iframe.remove();
   });
   workerIframeById.clear();
   result.orphanCountAfter = doc.querySelectorAll(WORKER_POOL.WORKER_IFRAME_SELECTOR).length;
