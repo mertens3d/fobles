@@ -62,17 +62,19 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
 
   sharedBrowserContext: [
     // eslint-disable-next-line no-empty-pattern
-    async ({}, use) => {
+    async ({}, use, workerInfo) => {
+      const workerSlot = workerInfo.parallelIndex + 1;
+
       // Install during execution, not discovery/listing, to avoid wiping
       // the log from an actual run.
-      installConsoleLogging();
+      installConsoleLogging(workerSlot);
       logTestDividerStart("Test Start");
 
       if (RECORD_VIDEO) {
         cleanPromoVideoFiles();
       }
 
-      const userDataDir = createBrowserProfile();
+      const userDataDir = createBrowserProfile(workerSlot);
 
       const context = await chromium.launchPersistentContext(userDataDir, {
         channel: "chromium",
@@ -86,7 +88,7 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
       });
 
       try {
-        await restoreWindowPosition(context);
+        await restoreWindowPosition(context, workerSlot);
         attachPageDiagnosticHandlers(context);
         await use(context);
       } finally {
@@ -102,7 +104,7 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
         } finally {
           // Close even when Sitecore logout fails.
           try {
-            await saveWindowPosition(context);
+            await saveWindowPosition(context, workerSlot);
           } finally {
             await context.close();
           }
@@ -120,7 +122,6 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
   sharedPage: [
     async ({ sharedBrowserContext }, use) => {
       const page = sharedBrowserContext.pages()[0] ?? (await sharedBrowserContext.newPage());
-
       await use(page);
     },
     { scope: "worker" },

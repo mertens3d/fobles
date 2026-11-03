@@ -1,3 +1,5 @@
+// @source-path [Fobles] tests/e2e/extension-ui/persistence/options.spec.ts
+
 import { expect, foblesTest } from "../../../fixtures/playwright";
 import { clickExtensionControl, getExtensionId, openExtensionPage } from "../../../fixtures/extension";
 import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
@@ -16,11 +18,7 @@ import {
 foblesTest.describe("Additional Settings Persistence", () => {
   foblesTest("clears all stored settings", async ({ sharedBrowserContext }, testInfo) => {
     const extensionId = await getExtensionId(sharedBrowserContext);
-    const optionsPage = await openExtensionPage(
-      sharedBrowserContext,
-      extensionId,
-      TESTING.EXTENSION_PAGES.OPTIONS,
-    );
+    const optionsPage = await openExtensionPage(sharedBrowserContext, extensionId, TESTING.EXTENSION_PAGES.OPTIONS);
     let originalSnapshot: StoredSettingsSnapshot | undefined;
 
     try {
@@ -37,16 +35,15 @@ foblesTest.describe("Additional Settings Persistence", () => {
       });
       await clickOptionsButton(optionsPage, TESTING.OPTIONS.STORAGE.CLEAR_BUTTON);
       await confirmation;
-      await expect(
-        optionsPage.locator(TESTING.OPTIONS.STORAGE.CLEAR_STATUS_SELECTOR),
-      ).toHaveText(TESTING.OPTIONS.STORAGE.CLEAR_STATUS);
+      await expect(optionsPage.locator(TESTING.OPTIONS.STORAGE.CLEAR_STATUS_SELECTOR)).toHaveText(
+        TESTING.OPTIONS.STORAGE.CLEAR_STATUS,
+      );
 
       await clickOptionsButton(optionsPage, TESTING.OPTIONS.STORAGE.VIEW_BUTTON);
       await expect(storedSettingsOutput).toBeVisible();
-      const clearedSnapshot = JSON.parse(
-        (await storedSettingsOutput.textContent()) ?? "{}",
-      ) as StoredSettingsSnapshot;
-      expect(clearedSnapshot).toEqual({ sync: {}, local: {} });
+      const clearedSnapshot = JSON.parse((await storedSettingsOutput.textContent()) ?? "{}") as StoredSettingsSnapshot;
+      expect(clearedSnapshot.sync).toEqual({});
+      expect(clearedSnapshot.local).toEqual({});
       await attachPageScreenshot(testInfo, optionsPage, TESTING.REPORT_SCREENSHOTS.STORAGE_CLEARED);
     } finally {
       if (originalSnapshot && !optionsPage.isClosed()) {
@@ -73,11 +70,7 @@ foblesTest.describe("Additional Settings Persistence", () => {
 
   foblesTest("validates, saves, and reloads AI Pages mappings", async ({ sharedBrowserContext }, testInfo) => {
     const extensionId = await getExtensionId(sharedBrowserContext);
-    const optionsPage = await openExtensionPage(
-      sharedBrowserContext,
-      extensionId,
-      TESTING.EXTENSION_PAGES.OPTIONS,
-    );
+    const optionsPage = await openExtensionPage(sharedBrowserContext, extensionId, TESTING.EXTENSION_PAGES.OPTIONS);
     const groupName = `${TESTING.ADDITIONAL_SETTINGS.AI_PAGES.GROUP_NAME_PREFIX}${Date.now()}`;
     let groupAdded = false;
 
@@ -163,11 +156,7 @@ foblesTest.describe("Additional Settings Persistence", () => {
 
   foblesTest("normalizes and persists a User Admin Page", async ({ sharedBrowserContext }, testInfo) => {
     const extensionId = await getExtensionId(sharedBrowserContext);
-    const optionsPage = await openExtensionPage(
-      sharedBrowserContext,
-      extensionId,
-      TESTING.EXTENSION_PAGES.OPTIONS,
-    );
+    const optionsPage = await openExtensionPage(sharedBrowserContext, extensionId, TESTING.EXTENSION_PAGES.OPTIONS);
     const label = `${TESTING.ADDITIONAL_SETTINGS.ADMIN_PAGE.LABEL_PREFIX}${Date.now()}`;
     let rowAdded = false;
 

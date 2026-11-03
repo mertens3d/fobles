@@ -58,7 +58,7 @@ export default defineConfig({
   maxFailures: 1,
   // All specs share one persistent browser profile (playwright/test-artifacts/browser-profile),
   // which only one process can open at a time - force serial execution across files.
-  workers: 1,
+  workers: 2,
   reporter: isListOnly
     ? [["list"]]
     : [

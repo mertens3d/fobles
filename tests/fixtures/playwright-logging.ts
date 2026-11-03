@@ -1,9 +1,10 @@
+// @source-path [Fobles] tests/fixtures/playwright-logging.ts
+
 import fs from "node:fs";
 import path from "node:path";
 
-export const diagnosticLogPath = path.resolve(
-  "./playwright/test-artifacts/logs/test-run.log",
-);
+// Each worker process has its own instance of this module.
+export let diagnosticLogPath: string | undefined;
 
 const timestampFormatter = new Intl.DateTimeFormat("en-CA", {
   timeZone: "America/Chicago",
@@ -17,8 +18,12 @@ const timestampFormatter = new Intl.DateTimeFormat("en-CA", {
 
 function formatCentralTimestamp(date: Date): string {
   const parts = Object.fromEntries(
-    timestampFormatter.formatToParts(date).map((part) => [part.type, part.value]),
+    timestampFormatter.formatToParts(date).map((part) => [
+      part.type,
+      part.value,
+    ]),
   );
+
   return `${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
 }
 
@@ -29,6 +34,12 @@ const originalConsole = {
 };
 
 export function appendLogLine(message: string): void {
+  if (!diagnosticLogPath) {
+    throw new Error(
+      "Call installConsoleLogging(workerSlot) before writing logs.",
+    );
+  }
+
   fs.appendFileSync(
     diagnosticLogPath,
     `[${formatCentralTimestamp(new Date())}] ${message}\n`,
@@ -41,34 +52,40 @@ export function logDiagnostic(message: string): void {
   originalConsole.error(message);
 }
 
-export function installConsoleLogging(): void {
-  fs.mkdirSync(path.dirname(diagnosticLogPath), { recursive: true });
-  // Preserve the previous run's log (e.g. a stalled run you just killed and re-ran) instead of
-  // silently overwriting the only evidence of what happened.
-  if (fs.existsSync(diagnosticLogPath)) {
-    fs.copyFileSync(diagnosticLogPath, `${diagnosticLogPath}.previous`);
+export function installConsoleLogging(workerSlot: number): void {
+  const logPath = path.resolve(
+    "./playwright/test-artifacts/logs",
+    `worker-${workerSlot}`,
+    "test-run.log",
+  );
+
+  fs.mkdirSync(path.dirname(logPath), { recursive: true });
+
+  // Preserve the previous log for this worker slot.
+  if (fs.existsSync(logPath)) {
+    fs.copyFileSync(logPath, `${logPath}.previous`);
   }
+
   fs.writeFileSync(
-    diagnosticLogPath,
+    logPath,
     `Test run started ${formatCentralTimestamp(new Date())}\n`,
     "utf8",
   );
 
-  console.log = (...args: unknown[]) => {
-    const message = args.map(String).join(" ");
-    appendLogLine(message);
+  diagnosticLogPath = logPath;
+
+  console.log = (...args: unknown[]): void => {
+    appendLogLine(args.map(String).join(" "));
     originalConsole.log(...args);
   };
 
-  console.warn = (...args: unknown[]) => {
-    const message = args.map(String).join(" ");
-    appendLogLine(`[warn] ${message}`);
+  console.warn = (...args: unknown[]): void => {
+    appendLogLine(`[warn] ${args.map(String).join(" ")}`);
     originalConsole.warn(...args);
   };
 
-  console.error = (...args: unknown[]) => {
-    const message = args.map(String).join(" ");
-    appendLogLine(`[error] ${message}`);
+  console.error = (...args: unknown[]): void => {
+    appendLogLine(`[error] ${args.map(String).join(" ")}`);
     originalConsole.error(...args);
   };
 }

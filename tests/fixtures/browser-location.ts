@@ -2,9 +2,12 @@ import fs from "node:fs";
 import path from "node:path";
 import type { BrowserContext } from "@playwright/test";
 
-const windowPositionPath = path.resolve(
-  "./playwright/test-artifacts/browser-window-position.json",
-);
+function getWindowPositionPath(workerSlot: number): string {
+  return path.resolve(
+    "./playwright/test-artifacts",
+    `browser-window-position-${workerSlot}.json`,
+  );
+}
 
 type WindowPosition = {
   left: number;
@@ -26,7 +29,9 @@ function isWindowPosition(value: unknown): value is WindowPosition {
 
 export async function restoreWindowPosition(
   context: BrowserContext,
+  workerSlot: number,
 ): Promise<void> {
+  const windowPositionPath = getWindowPositionPath(workerSlot);
   if (!fs.existsSync(windowPositionPath)) return;
 
   const saved: unknown = JSON.parse(
@@ -62,6 +67,7 @@ export async function restoreWindowPosition(
 
 export async function saveWindowPosition(
   context: BrowserContext,
+  workerSlot: number,
 ): Promise<void> {
   const page = context.pages().find((page) => !page.isClosed());
   if (!page) return;
@@ -78,6 +84,7 @@ export async function saveWindowPosition(
       top: bounds.top,
     };
 
+    const windowPositionPath = getWindowPositionPath(workerSlot);
     fs.mkdirSync(path.dirname(windowPositionPath), { recursive: true });
     fs.writeFileSync(
       windowPositionPath,
