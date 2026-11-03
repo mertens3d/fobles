@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/sitecore/data/sitecore-data-identity.ts
 
-import { CONST } from "../../../../constants/const";
+import { SITECORE } from "../../../../constants/sitecore.ts";
 
 // No better stable identifier exists yet (see Phase 3A research) - the page origin is the one
 // value that's genuinely stable per Sitecore instance and isn't a display label.
@@ -14,14 +14,14 @@ function resolveEnvironment(doc: Document): string {
 function resolveDatabase(doc: Document): string {
   const currentUrl = new URL(doc.defaultView?.location.href ?? window.location.href);
 
-  for (const queryKey of CONST.SITECORE.SEARCH_PARAMS.DATABASE_KEYS) {
+  for (const queryKey of SITECORE.SEARCH_PARAMS.DATABASE_KEYS) {
     const database = currentUrl.searchParams.get(queryKey)?.trim();
     if (database) {
       return database;
     }
   }
 
-  const databaseInput = doc.querySelector<HTMLInputElement>(CONST.SITECORE.SELECTORS.DATABASE_INPUT);
+  const databaseInput = doc.querySelector<HTMLInputElement>(SITECORE.SELECTORS.DATABASE_INPUT);
   return databaseInput?.value.trim() || "master";
 }
 

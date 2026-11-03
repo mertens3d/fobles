@@ -56,15 +56,16 @@ After rebuilding, select **Reload** for the extension and refresh affected Sitec
 npm run build:extension
 npm run typecheck:extension
 npm run test:e2e
-npm run test:e2e:debug
 ```
+
+Use VS Code's Playwright test runner to run or debug individual tests and suites.
 
 If a test hits a Sitecore login form, it pauses (Playwright Inspector) so you can log in manually in that same browser window, then resume.
 
 To verify Playwright configuration and test discovery without opening a browser or contacting Sitecore:
 
 ```text
-npm run test:e2e:list
+npm run test:e2e -- --project=edge --list
 ```
 
 This confirms that Playwright can load the configuration and discover the tests. It does not execute the tests or require Sitecore credentials.

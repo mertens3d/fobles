@@ -1,7 +1,7 @@
 import { TEST_CONST } from "../../constants/TEST_CONST";
-import { getLastKnownMousePosition, moveMouseOutsideHoverArea } from "../../helpers/mouse-proxy";
+import { getButtonSize, getLastKnownMousePosition, moveMouseOutsideHoverArea } from "../../helpers/mouse-proxy";
 import { activateFobles } from "../../helpers/fobles-helpers-support/test-setup";
-import { hoverAndGrow, hoverAndSlideOut } from "../../helpers/hover-helpers";
+import { hoverAndSlideOut } from "../../helpers/hover-helpers";
 import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import { expect, foblesTest } from "../../fixtures/playwright";
 
@@ -18,13 +18,17 @@ foblesTest.describe("Fobles Hover", () => {
     const jumpFlyout = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
     const mousePosition = getLastKnownMousePosition();
 
-    await hoverAndGrow(page, {
-      name: "LBolt",
-      hoverTarget: lboltButton,
-      measureTarget: lboltButton,
-      moveAwayTargets: lboltButton,
-      mousePosition,
-    });
+    await moveMouseOutsideHoverArea(page, lboltButton, mousePosition, "LBolt away");
+    const originalSize = await getButtonSize(lboltButton);
+    await lboltButton.hover();
+    await page.waitForTimeout(600);
+    const hoveredSize = await getButtonSize(lboltButton);
+    expect(hoveredSize.width).toBeCloseTo(originalSize.width, 1);
+    expect(hoveredSize.height).toBeCloseTo(originalSize.height, 1);
+    await moveMouseOutsideHoverArea(page, lboltButton, mousePosition, "LBolt away");
+    const restoredSize = await getButtonSize(lboltButton);
+    expect(restoredSize.width).toBeCloseTo(originalSize.width, 1);
+    expect(restoredSize.height).toBeCloseTo(originalSize.height, 1);
 
     await hoverAndSlideOut(page, {
       name: "Menu",

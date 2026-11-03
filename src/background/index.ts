@@ -2,6 +2,7 @@
 
 import { LOGGER, MESSAGE } from "../constants/extension-const";
 import "./fobles-utility-lock-registration";
+import "./item-history-registration.ts";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
 import { extensionLog } from "../content/logger";
 import {

@@ -44,12 +44,16 @@
 - Run `npm run typecheck:extension` after TypeScript changes.
 - Run `npm run build:scss` after stylesheet-only changes.
 - Run `npm run build:extension` after extension changes. It regenerates runtime bundles and copies the extension icon.
-- Run `npm run test:e2e:list` to verify Playwright test discovery.
+- Keep `test:e2e` as the sole E2E npm script; use VS Code's Playwright test runner for individual tests/suites and debugging. Do not add per-suite or per-test npm scripts.
+- Run `npm run test:e2e -- --project=edge --list` to verify Playwright test discovery without executing tests.
 - Generated test output is stored under `playwright/test-artifacts/` and should not be committed.
 - Reload the unpacked extension and hard-refresh (Ctrl+F5) affected Sitecore tabs after manifest or content-script changes. A normal refresh can leave the old content script running against an invalidated extension context, causing `chrome.storage` reads to silently fall back to defaults.
 
 ## Extension Behavior
 
+- Item history: capture/observation lives in `src/content/item-history/`, React UI/navigation and colocated styles in `src/content/toolbar/history/`, and the cross-surface model/repository in `src/shared/item-history/`. Only the background history writer performs mutations; keep capture independent of toolbar visibility and LBolt.
+- History retains at most 20 unique normalized GUIDs per Sitecore origin/database (never language), newest first; categories are Content, Templates, Layouts, and PowerShell. Do not add Site grouping or restore LBolt hover scaling.
+- Replacement ZIPs use verified repository-relative paths and preserve source-path headers; represent deleted files only with `// Delete Me`. Do not run history E2E tests unless explicitly requested.
 - Browser Site Access controls are authoritative; do not add a custom domain allowlist or dynamic content-script registration.
 - Content scripts are registered for HTTP/HTTPS pages and decide eligibility using `src/content/guard.ts`.
 - Sitecore `default.aspx?xmlcontrol=...` pages must be explicitly allowlisted in `FOBLES_PAGES` (`src/content/constants.ts`).

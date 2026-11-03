@@ -21,7 +21,11 @@ The extension requests browser permissions for:
 
 ## Local-only behavior
 
-Preferences and state are stored locally in the browser using Chrome/Edge extension storage APIs. Any data stored is limited to extension preferences needed for features like menu state, AI Pages mappings, and toolbar positioning.
+Preferences and state use Chrome/Edge extension storage APIs for features like menu state, AI Pages mappings, and toolbar positioning.
+
+Item history is retained only in device-local extension storage. It stores up to 20 unique Sitecore items per origin and database: item GUID, name, path, category, and last-visited time. Language is not part of the scope. History is not synced or transmitted to analytics or telemetry services. Item names and paths may contain information entered by Sitecore authors.
+
+Remove individual entries or clear the current history from the History flyout. The Additional Settings storage controls can also clear all extension storage.
 
 ## Changes to this policy
 

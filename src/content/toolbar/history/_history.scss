@@ -1,0 +1,168 @@
+// @source-path [fobles] src/content/toolbar/history/_history.scss
+
+@use "../../styles/tokens" as *;
+@use "../../styles/mixins" as *;
+
+.fobles-history-trigger {
+  position: absolute;
+  top: 100%;
+  left: 18px;
+  cursor: default;
+  touch-action: auto;
+}
+
+.fobles-history-tab {
+  @include fobles-button-base;
+  display: block;
+  padding: 2px 12px 3px;
+  border-top: 0;
+  border-radius: 0 0 12px 12px;
+  font-size: 10px;
+}
+
+.fobles-history-panel {
+  @include fobles-jump-flyout-panel;
+  box-sizing: border-box;
+  width: 300px;
+  min-width: 0;
+  max-width: calc(100vw - 32px);
+  max-height: min(420px, calc(100vh - 100px));
+  overflow: auto;
+  overscroll-behavior: contain;
+  color: $fobles-text;
+  cursor: default;
+  font-size: 12px;
+  opacity: 1;
+  pointer-events: auto;
+  transform: none;
+
+  header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    padding: 4px;
+  }
+
+  button {
+    appearance: none;
+    border: 1px solid $fobles-border;
+    border-radius: 4px;
+    background: $fobles-white;
+    color: $fobles-blue-deep;
+    padding: 3px 6px;
+    font: inherit;
+    cursor: pointer;
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: default;
+    }
+  }
+
+  :is(a, button):focus-visible {
+    outline: 2px solid $fobles-blue;
+    outline-offset: -2px;
+  }
+}
+
+.fobles-history-group {
+  h3 {
+    margin: 8px 4px 3px;
+    color: $fobles-blue-deep;
+    font-size: 11px;
+    text-transform: uppercase;
+  }
+
+  ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+  }
+}
+
+.fobles-history-row {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  border-radius: 4px;
+
+  &:hover,
+  &:focus-within {
+    background: $fobles-surface-hover;
+  }
+}
+
+.fobles-history-link {
+  flex: 1 1 auto;
+  min-width: 0;
+  padding: 6px;
+  overflow: hidden;
+  color: $fobles-blue-deep;
+  text-decoration: none;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.fobles-history-remove {
+  flex: none;
+}
+
+.fobles-history-empty,
+.fobles-history-error {
+  margin: 6px 4px;
+  overflow-wrap: anywhere;
+}
+
+.fobles-history-error {
+  color: #a32121;
+}
+
+.fobles-history-tooltip {
+  max-width: min(480px, calc(100vw - 16px));
+  padding: 8px 10px;
+  border: 1px solid $fobles-border;
+  border-radius: 6px;
+  background: $fobles-white;
+  box-shadow: 0 4px 12px $fobles-shadow-panel;
+  color: $fobles-text;
+  font: 12px/1.5 system-ui, "Segoe UI", Arial, sans-serif;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.fobles-toolbar-container[data-position$="right"] {
+  .fobles-history-trigger {
+    right: 0;
+    left: auto;
+  }
+
+  .fobles-history-panel {
+    right: 0;
+    left: auto;
+    transform-origin: top right;
+  }
+}
+
+.fobles-toolbar-container[data-position^="bottom"] {
+  .fobles-history-trigger {
+    top: auto;
+    bottom: 100%;
+  }
+
+  .fobles-history-tab {
+    border-top: 1px solid rgba($fobles-blue, 0.2);
+    border-bottom: 0;
+    border-radius: 12px 12px 0 0;
+  }
+
+  .fobles-history-panel {
+    top: auto;
+    bottom: calc(100% + 8px);
+    transform-origin: bottom left;
+  }
+}
+
+.fobles-toolbar-container[data-position="bottom-right"] .fobles-history-panel {
+  transform-origin: bottom right;
+}

@@ -4,6 +4,7 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CLASS, SELECTORS } from "../../constants/fobles.constants";
 import type { ToolbarCorner, ToolbarPlacement } from "../toolbar.types";
 import type { ToolbarContext } from "./types";
+import { HISTORY_SELECTOR } from "./history/history.const";
 
 const MIN_EDGE_MARGIN = 4;
 const RESIZE_SETTLE_DELAY_MS = 200;
@@ -26,7 +27,7 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
     target instanceof Element &&
     Boolean(
       target.closest(
-        `button, a, input, select, textarea, [role='button'], ${SELECTORS.JUMP_FLYOUT}, ${SELECTORS.PROXY_BUTTONS}`,
+        `button, a, input, select, textarea, [role='button'], ${SELECTORS.JUMP_FLYOUT}, ${SELECTORS.PROXY_BUTTONS}, ${HISTORY_SELECTOR.PANEL}`,
       ),
     )
   );

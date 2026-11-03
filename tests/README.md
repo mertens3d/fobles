@@ -99,13 +99,14 @@ Playwright end-to-end tests live in `tests/e2e/` and exercise the extension agai
 
 ```text
 npm run test:e2e
-npm run test:e2e:debug
 ```
+
+Use VS Code's Playwright test runner to run or debug individual tests and suites. Keep only the main `test:e2e` npm script; pass extra Playwright options through it when needed.
 
 To verify Playwright configuration and test discovery without opening a browser or contacting Sitecore:
 
 ```text
-npm run test:e2e:list
+npm run test:e2e -- --project=edge --list
 ```
 
 ## Sitecore Test Login Warning
@@ -121,7 +122,7 @@ single browser instance instead of racing to open the same profile from multiple
 
 If a run gets force-killed (crash, closing the terminal, a second Ctrl+C), its browser process can
 be left running and holding that profile lock - every later run then fails immediately with
-"Opening in existing browser session". Run `npm run test:e2e:unlock` to find and kill any leftover
+"Opening in existing browser session". Run `node tests/test-report-generator/unlock-browser-profile.js` to find and kill any leftover
 `msedge.exe` processes locking the profile.
 
 ### Stopping A Run Safely
@@ -136,7 +137,7 @@ teardown can run.
 ## Promo Video (`promo-video/promo-video-demo.spec.ts`)
 
 A short, deliberately un-asserted walkthrough for recording a store-listing promo video - not
-part of the regular regression suite. Run with `npm run test:e2e:promo-video`; recording itself is
+part of the regular regression suite. Select the session-start, promo-video walkthrough, and session-end tests in VS Code's Playwright test runner; recording itself is
 controlled by `RECORD_VIDEO` in `tests/settings/VideoSwitch.ts`. Target runtime: under 1:45 - trim
 clips in an editor afterward rather than padding the script out.
 
@@ -176,8 +177,7 @@ clips in an editor afterward rather than padding the script out.
   `secondary-N.webm`. This keeps the same, predictable filenames run to run instead of piling up
   new hash-named files.
 - `promo-video/` gets wiped at the start of every recording run, so `main.webm` never survives
-  past the next take. Once you're happy with a take, run `npm run test:e2e:promo-video:save`
-  (`tools/scripts/test/save-promo-video.js`) to copy it to
+  past the next take. Once you're happy with a take, run `node tests/test-report-generator/save-promo-video.js` to copy it to
   `playwright-results/videoComposit/FoblesPromoVideoMain.webm` - a separate folder the recording
   itself never touches, so it survives later runs. On-demand only, not run automatically.
 - Toolbar drag is deliberately left out for now - it was hanging live (see

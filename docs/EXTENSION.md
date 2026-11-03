@@ -48,7 +48,7 @@ After changing source files, run `npm run build:extension`, then select **Reload
 npm run test:e2e
 ```
 
-Use `npm run test:e2e:debug` when stepping through a test interactively.
+Use VS Code's Playwright test runner to run or debug individual tests and suites.
 
 See [tests/README.md](../tests/README.md) for setup details and the Sitecore test login troubleshooting note.
 

@@ -5,25 +5,43 @@ export type StorageArea = "sync" | "local";
 export async function getStorageValue<T = unknown>(
   keys: string[] | null,
   area: StorageArea = "sync",
+  throwOnError = false,
 ): Promise<Record<string, T>> {
   try {
     const storage = chrome.storage?.[area];
 
     if (!storage) {
+      if (throwOnError) {
+        throw new Error(`Storage area ${area} is unavailable`);
+      }
       return {};
     }
 
     return await storage.get(keys);
-  } catch {
+  } catch (error) {
+    if (throwOnError) {
+      throw error;
+    }
     // The content script can outlive a reloaded extension context.
     return {};
   }
 }
 
-export async function setStorageValue(values: Record<string, unknown>, area: StorageArea = "sync"): Promise<void> {
+export async function setStorageValue(
+  values: Record<string, unknown>,
+  area: StorageArea = "sync",
+  throwOnError = false,
+): Promise<void> {
   try {
-    await chrome.storage?.[area]?.set(values);
-  } catch {
+    const storage = chrome.storage?.[area];
+    if (!storage && throwOnError) {
+      throw new Error(`Storage area ${area} is unavailable`);
+    }
+    await storage?.set(values);
+  } catch (error) {
+    if (throwOnError) {
+      throw error;
+    }
     // The content script can outlive a reloaded extension context.
   }
 }
@@ -37,12 +55,20 @@ export async function removeStorageValue(keys: string | string[], area: StorageA
 }
 
 // Calls back with a single key's new value whenever it changes in the given storage area.
-export function onStorageChange(key: string, callback: (newValue: unknown) => void, area: StorageArea = "sync"): void {
-  chrome.storage?.onChanged?.addListener((changes, areaName) => {
+export function onStorageChange(
+  key: string,
+  callback: (newValue: unknown) => void,
+  area: StorageArea = "sync",
+): () => void {
+  const listener = (changes: Record<string, chrome.storage.StorageChange>, areaName: string): void => {
     if (areaName === area && key in changes) {
       callback(changes[key].newValue);
     }
-  });
+  };
+  chrome.storage?.onChanged?.addListener(listener);
+  return () => {
+    chrome.storage?.onChanged?.removeListener(listener);
+  };
 }
 
 // Dumps every stored key/value across both areas, for the options page's debug viewer.

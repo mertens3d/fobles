@@ -1,0 +1,11 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "jsx": "react-jsx"
+  },
+  "include": [
+    "unit/item-history/**/*.ts",
+    "e2e/extension-ui/toolbar-integration/item-history*.ts",
+    "e2e/toolbar-ui/hover.spec.ts"
+  ]
+}

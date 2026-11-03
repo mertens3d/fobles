@@ -1,9 +1,9 @@
-import { CONST } from "../../../constants/const.ts";
+import { SITECORE } from "../../../constants/sitecore.ts";
 import type { QuickInfo, QuickInfoTemplate } from "./quick-info.types";
 
 export const getQuickInfo = (doc: Document): QuickInfo => {
-  const labelPrefix = CONST.SITECORE.QUICK_INFO.LABEL_PREFIX;
-  const quickInfoTables = doc.querySelectorAll<HTMLTableElement>(CONST.SITECORE.SELECTORS.QUICK_INFO_CELL);
+  const labelPrefix = SITECORE.QUICK_INFO.LABEL_PREFIX;
+  const quickInfoTables = doc.querySelectorAll<HTMLTableElement>(SITECORE.SELECTORS.QUICK_INFO_TABLE);
   const quickInfo: QuickInfo = {
     itemId: undefined,
     itemPath: undefined,
@@ -39,12 +39,13 @@ export const getQuickInfo = (doc: Document): QuickInfo => {
 // AI NOTE: The item header's own icon - distinct from field icons, tree-node glyphs, layout-device icons,
 // AI NOTE: and the Standard Template "Icon" field. img.src (not getAttribute) resolves to an absolute URL.
 function getItemHeaderIcon(doc: Document): string | undefined {
-  const icon = doc.querySelector<HTMLImageElement>(CONST.SITECORE.SELECTORS.ITEM_HEADER_ICON);
+  const icon = doc.querySelector<HTMLImageElement>(SITECORE.SELECTORS.ITEM_HEADER_ICON);
   return icon?.src || undefined;
 }
 
 function getQuickInfoItemNameFromRow(row: HTMLTableRowElement): string | undefined {
-  const itemName = row.cells.item(1)?.querySelector<HTMLSpanElement>("span")?.textContent?.trim();
+  const cell = row.cells.item(1);
+  const itemName = cell?.querySelector<HTMLSpanElement>("span")?.textContent?.trim() || cell?.textContent?.trim();
   return itemName || undefined;
 }
 

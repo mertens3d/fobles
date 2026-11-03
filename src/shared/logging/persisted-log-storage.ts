@@ -1,9 +1,9 @@
 // @source-path [fobles] src/shared/logging/persisted-log-storage.ts
 
-import { STORAGE } from "../../constants/extension-const";
-import { REFERENCE_GRAPH } from "../../constants/graph.const";
+import { STORAGE } from "../../constants/extension-const.ts";
+import { REFERENCE_GRAPH } from "../../constants/graph.const.ts";
 import type { PersistedLogEntry, PersistedLogMessage } from "../persisted-log.types";
-import { getStorageValue, removeStorageValue, setStorageValue } from "../storage/storage";
+import { getStorageValue, removeStorageValue, setStorageValue } from "../storage/storage.ts";
 
 const MAX_LOG_ENTRIES = 500;
 

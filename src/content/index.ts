@@ -2,6 +2,7 @@
 
 import { CONST } from "../constants/const";
 import { extensionLog } from "./logger";
+import { startItemHistoryManager } from "./item-history/item-history-manager";
 import { receiveActivityMessage } from "./shared/activity/activity-events";
 import { startFoblesShellRuntime } from "./shell/shell-runtime";
 import { buildItemGraphNodeDataFromDoc } from "./foundation/harvesting/enrichment/item-enricher";
@@ -29,6 +30,7 @@ function startNormalRuntime(): void {
     receiveActivityMessage(message);
   });
   registerWorkerTabHandler(executeWorkerTask, isSitecoreItemDocumentReady);
+  startItemHistoryManager(document);
   startFoblesShellRuntime(document, window);
   startToolbarRuntime();
 }
