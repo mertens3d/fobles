@@ -8,7 +8,10 @@ import { cacheValidationCheck } from "../../../src/content/features/auditor/chec
 import { createAuditFindingStore } from "../../../src/content/features/auditor/audit-finding-store.ts";
 import type { AuditCheckContext } from "../../../src/content/features/auditor/audit-check.types";
 import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types";
-import type { ReferenceModelItemNode, ReferenceModelNode } from "../../../src/content/foundation/reference-data/model/reference-model.types";
+import type {
+  ReferenceModelItemNode,
+  ReferenceModelNode,
+} from "../../../src/content/foundation/reference-data/model/reference-model.types";
 import type { ProcessingStatus } from "../../../src/content/foundation/reference-data/processing/processing-state.ts";
 function makeItem(overrides: Partial<ItemGraphNodeData> = {}): ItemGraphNodeData {
   return {
@@ -23,14 +26,12 @@ function makeItem(overrides: Partial<ItemGraphNodeData> = {}): ItemGraphNodeData
     ...overrides,
   };
 }
-function makeItemNode(treeNodeId: string, item: ItemGraphNodeData, children: ReferenceModelNode[] = []): ReferenceModelItemNode {
-  return {
-    treeNodeId,
-    nodeType: "item",
-    scItem: item,
-    provenance: { type: "synthetic", label: treeNodeId },
-    children,
-  };
+function makeItemNode(
+  treeNodeId: string,
+  item: ItemGraphNodeData,
+  children: ReferenceModelNode[] = [],
+): ReferenceModelItemNode {
+  return { treeNodeId, nodeType: "item", scItem: item, provenance: { type: "synthetic", label: treeNodeId }, children };
 }
 function makeContext(overrides: Partial<AuditCheckContext>): AuditCheckContext {
   return {
@@ -40,13 +41,22 @@ function makeContext(overrides: Partial<AuditCheckContext>): AuditCheckContext {
     findingStore: createAuditFindingStore(),
     processingStateByTreeNodeId: new Map(),
     cacheRevalidationResultByTreeNodeId: new Map(),
-    buildSitecoreUrl: (identity) => `https://example.test/sitecore/shell/Applications/Content%20Editor.aspx?fo=${identity}`,
+    buildSitecoreUrl: (identity) =>
+      `https://example.test/sitecore/shell/Applications/Content%20Editor.aspx?fo=${identity}`,
     ...overrides,
   };
 }
 // --- item-resolved-check (check 1) ---
 void test("item-resolved-check: passed when identity + display metadata both resolved", async () => {
-  const root = makeItemNode("root", makeItem({ scItemId: "id-1", scItemPath: "/sitecore/content/home", scItemName: "Home", scTemplate: makeItem({ scItemName: "Sample Item" }) }));
+  const root = makeItemNode(
+    "root",
+    makeItem({
+      scItemId: "id-1",
+      scItemPath: "/sitecore/content/home",
+      scItemName: "Home",
+      scTemplate: makeItem({ scItemName: "Sample Item" }),
+    }),
+  );
   const context = makeContext({ referenceModelRoot: root });
   await itemResolvedCheck.run(context);
   assert.equal(context.findingStore.getSnapshot()[0]?.status, "passed");
@@ -82,7 +92,9 @@ void test("item-navigation-check: warning for an item node with no id or path", 
 function contextWithProcessingState(status: ProcessingStatus | undefined): AuditCheckContext {
   const node = makeItemNode("node-1", makeItem({ scItemId: "id-1" }));
   const processingStateByTreeNodeId = new Map<string, ProcessingStatus>();
-  if (status) processingStateByTreeNodeId.set("node-1", status);
+  if (status) {
+    processingStateByTreeNodeId.set("node-1", status);
+  }
   return makeContext({ referenceModelRoot: node, processingStateByTreeNodeId });
 }
 void test("reference-resolved-check: a node never registered as a candidate produces no finding", async () => {
@@ -139,7 +151,11 @@ void test("cache-validation-check: passed once a revision mismatch's re-harvest 
   const node = makeItemNode("node-1", makeItem({ scItemId: "id-1" }));
   const processingStateByTreeNodeId = new Map<string, ProcessingStatus>([["node-1", "revision-mismatch"]]);
   const cacheRevalidationResultByTreeNodeId = new Map<string, "passed" | "error">([["node-1", "passed"]]);
-  const context = makeContext({ referenceModelRoot: node, processingStateByTreeNodeId, cacheRevalidationResultByTreeNodeId });
+  const context = makeContext({
+    referenceModelRoot: node,
+    processingStateByTreeNodeId,
+    cacheRevalidationResultByTreeNodeId,
+  });
   await cacheValidationCheck.run(context);
   assert.equal(context.findingStore.getSnapshot()[0]?.status, "passed");
 });
@@ -147,7 +163,11 @@ void test("cache-validation-check: error when a revision mismatch's re-harvest f
   const node = makeItemNode("node-1", makeItem({ scItemId: "id-1" }));
   const processingStateByTreeNodeId = new Map<string, ProcessingStatus>([["node-1", "revision-mismatch"]]);
   const cacheRevalidationResultByTreeNodeId = new Map<string, "passed" | "error">([["node-1", "error"]]);
-  const context = makeContext({ referenceModelRoot: node, processingStateByTreeNodeId, cacheRevalidationResultByTreeNodeId });
+  const context = makeContext({
+    referenceModelRoot: node,
+    processingStateByTreeNodeId,
+    cacheRevalidationResultByTreeNodeId,
+  });
   await cacheValidationCheck.run(context);
   assert.equal(context.findingStore.getSnapshot()[0]?.status, "error");
 });

@@ -38,6 +38,7 @@ export const REPORT_CLIENT_SCRIPT = `
 })()
   </script>;
 `;
+
 export const refreshScriptRunning = `
 <script>
 (function () {

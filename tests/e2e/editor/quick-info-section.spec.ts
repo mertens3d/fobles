@@ -26,7 +26,6 @@ const SCENARIO = EDITOR_SCENARIOS.QUICK_INFO_SECTION;
 
 foblesTest.describe("Editor scenario: quick info section", () => {
   foblesTest("toggling Fobles decorates and restores the Quick Info panel", async ({ page }, testInfo) => {
-   
     await openSitecorePage(page, `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`);
 
     const foblesFrame = await findFoblesFrame(page);
@@ -53,7 +52,9 @@ foblesTest.describe("Editor scenario: quick info section", () => {
         SCENARIO.templateIdButton,
       ]) {
         await expect(
-          quickInfoTable.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, { hasText: button.expectedButtonText }),
+          quickInfoTable.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
+            hasText: button.expectedButtonText,
+          }),
         ).toHaveText(button.expectedButtonText);
       }
       await pauseForHuman(page, STEP_WAIT_MS);
@@ -69,7 +70,13 @@ foblesTest.describe("Editor scenario: quick info section", () => {
         const popupPromise = page.context().waitForEvent("page");
         await clickWithMouseMarker(page, itemPathButton, "Fobles item button", { modifiers: ["Control"] });
         const popup = await popupPromise;
-        await expectFoblesButtonNewTabNavigation(testInfo, SCENARIO.itemPathButton.expectedFoValue, fullTitle, popup, page);
+        await expectFoblesButtonNewTabNavigation(
+          testInfo,
+          SCENARIO.itemPathButton.expectedFoValue,
+          fullTitle,
+          popup,
+          page,
+        );
       },
       { screenshot: false },
     );
@@ -77,9 +84,9 @@ foblesTest.describe("Editor scenario: quick info section", () => {
     await step("Toggle Fobles off: the panel returns to its original shape", async () => {
       await clickLbolt(page);
       await expect(quickInfoTable.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-      await expect(quickInfoTable.locator("span.scEditorHeaderQuickInfoPath, input.scEditorHeaderQuickInfoInput").first()).not.toHaveClass(
-        FOBLES_HIDDEN_CLASS_PATTERN,
-      );
+      await expect(
+        quickInfoTable.locator("span.scEditorHeaderQuickInfoPath, input.scEditorHeaderQuickInfoInput").first(),
+      ).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
     });
 
     await clickLbolt(page);
@@ -91,7 +98,13 @@ foblesTest.describe("Editor scenario: quick info section", () => {
     await step(
       `Click navigates to the item: "${SCENARIO.itemIdButton.expectedFoValue}"`,
       async (fullTitle) => {
-        await expectFoblesButtonSameTabNavigation(page, testInfo, itemIdButton, SCENARIO.itemIdButton.expectedFoValue, fullTitle);
+        await expectFoblesButtonSameTabNavigation(
+          page,
+          testInfo,
+          itemIdButton,
+          SCENARIO.itemIdButton.expectedFoValue,
+          fullTitle,
+        );
       },
       { screenshot: false },
     );

@@ -25,14 +25,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
       "text-overflow-wrap": "anywhere",
     },
   },
-  {
-    selector: "node:childless",
-    style: {
-      width: "label",
-      height: "label",
-      padding: "10px",
-    },
-  },
+  { selector: "node:childless", style: { width: "label", height: "label", padding: "10px" } },
   ...Object.entries(NODE_PRESENTATION_BY_KIND).map(([kind, presentation]) => ({
     selector: `.${kindClass(kind)}`,
     style: {
@@ -47,12 +40,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
   })),
   {
     selector: `.${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL)}`,
-    style: {
-      "font-size": 9,
-      shape: "ellipse",
-      width: ELLIPSE_SIZE,
-      height: ELLIPSE_SIZE,
-    },
+    style: { "font-size": 9, shape: "ellipse", width: ELLIPSE_SIZE, height: ELLIPSE_SIZE },
   },
   {
     selector: ":parent",
@@ -81,10 +69,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
   },
   {
     selector: ".fobles-reference-graph-compound-group--invisible",
-    style: {
-      "background-opacity": 0,
-      "border-width": 0,
-    },
+    style: { "background-opacity": 0, "border-width": 0 },
   },
   {
     selector: `.${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.ROOT)}`,
@@ -99,21 +84,10 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
       "background-opacity": 0.35,
     },
   },
-  {
-    selector: "edge",
-    style: {
-      "curve-style": "bezier",
-      "target-arrow-shape": "triangle",
-      width: 1,
-    },
-  },
+  { selector: "edge", style: { "curve-style": "bezier", "target-arrow-shape": "triangle", width: 1 } },
   {
     selector: 'node[enrichmentStatus = "not-found"]',
-    style: {
-      "background-color": "#ffdddd",
-      "border-color": "#d13f3f",
-      "border-style": "dashed",
-    },
+    style: { "background-color": "#ffdddd", "border-color": "#d13f3f", "border-style": "dashed" },
   },
   {
     selector: "node[icon]",

@@ -10,10 +10,15 @@ import { slugify } from "./slugify";
 import type { ItemGraphNodeData, LayoutDevice, LayoutPlacement, LayoutSectionField } from "./sitecore-item.types";
 
 export function createReferenceModelNodeId(...parts: Array<string | undefined>): string {
-  return parts.filter((part): part is string => Boolean(part)).map(slugify).join("-");
+  return parts
+    .filter((part): part is string => Boolean(part))
+    .map(slugify)
+    .join("-");
 }
 
-export function createPageLayoutItemsByDeviceId(layoutSectionFields: readonly LayoutSectionField[]): Map<string, ItemGraphNodeData> {
+export function createPageLayoutItemsByDeviceId(
+  layoutSectionFields: readonly LayoutSectionField[],
+): Map<string, ItemGraphNodeData> {
   const pageLayoutItemsByDeviceId = new Map<string, ItemGraphNodeData>();
 
   layoutSectionFields.forEach((layoutSectionField) => {
@@ -34,7 +39,10 @@ export function createLayoutSectionReferenceModel(
   layout: LayoutSectionField,
   pageLayoutItemsByDeviceId: Map<string, ItemGraphNodeData>,
 ): ReferenceModelNonItemNode {
-  const treeNodeId = createReferenceModelNodeId(CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID, layout.name);
+  const treeNodeId = createReferenceModelNodeId(
+    CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID,
+    layout.name,
+  );
 
   return createReferenceModelNonItemNode({
     treeNodeId,
@@ -46,7 +54,9 @@ export function createLayoutSectionReferenceModel(
     collapseKey: GRAPH_COLLAPSE_KEY.LAYOUT_SECTION,
     branch: "layouts",
     relationshipToParent: "related",
-    children: layout.devices.map((device, deviceIndex) => createDeviceReferenceModelNode(treeNodeId, device, deviceIndex, pageLayoutItemsByDeviceId)),
+    children: layout.devices.map((device, deviceIndex) =>
+      createDeviceReferenceModelNode(treeNodeId, device, deviceIndex, pageLayoutItemsByDeviceId),
+    ),
   });
 }
 
@@ -56,9 +66,14 @@ function createDeviceReferenceModelNode(
   deviceIndex: number,
   pageLayoutItemsByDeviceId: Map<string, ItemGraphNodeData>,
 ): ReferenceModelItemNode {
-  const treeNodeId = createReferenceModelNodeId(layoutTreeNodeId, "device", device.scDeviceItem.scItemId ?? String(deviceIndex));
-  const pageLayoutItem = device.scPageLayoutItem
-    ?? (device.scDeviceItem.scItemId ? pageLayoutItemsByDeviceId.get(device.scDeviceItem.scItemId) : undefined);
+  const treeNodeId = createReferenceModelNodeId(
+    layoutTreeNodeId,
+    "device",
+    device.scDeviceItem.scItemId ?? String(deviceIndex),
+  );
+  const pageLayoutItem =
+    device.scPageLayoutItem ??
+    (device.scDeviceItem.scItemId ? pageLayoutItemsByDeviceId.get(device.scDeviceItem.scItemId) : undefined);
   const pageLayoutNode = pageLayoutItem
     ? createPageLayoutReferenceModelNode(treeNodeId, pageLayoutItem, device.placements)
     : createMissingPageLayoutReferenceModelNode(treeNodeId, device.placements);
@@ -112,7 +127,10 @@ function createPageLayoutReferenceModelNode(
   });
 }
 
-function createPlacementReferenceModelNode(scopeTreeNodeId: string, placement: LayoutPlacement): ReferenceModelNonItemNode {
+function createPlacementReferenceModelNode(
+  scopeTreeNodeId: string,
+  placement: LayoutPlacement,
+): ReferenceModelNonItemNode {
   const treeNodeId = createReferenceModelNodeId(
     scopeTreeNodeId,
     CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
@@ -120,18 +138,16 @@ function createPlacementReferenceModelNode(scopeTreeNodeId: string, placement: L
   );
   const children: ReferenceModelNode[] = [
     ...placement.placements.map((childPlacement) => createPlacementReferenceModelNode(treeNodeId, childPlacement)),
-    ...placement.controls.map((control, controlIndex) => createRenderingReferenceModelNode(treeNodeId, control, controlIndex)),
+    ...placement.controls.map((control, controlIndex) =>
+      createRenderingReferenceModelNode(treeNodeId, control, controlIndex),
+    ),
   ];
 
   return createReferenceModelNonItemNode({
     treeNodeId,
     name: placement.name,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PLACEHOLDER,
-    provenance: {
-      type: "placeholder",
-      placeholderPath: placement.path,
-      displayName: placement.name,
-    },
+    provenance: { type: "placeholder", placeholderPath: placement.path, displayName: placement.name },
     collapseKey: GRAPH_COLLAPSE_KEY.PLACEHOLDER,
     branch: "layouts",
     relationshipToParent: "related",

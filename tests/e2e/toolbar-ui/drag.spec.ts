@@ -15,7 +15,6 @@ const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.
 // unambiguous regardless of exact viewport size.
 foblesTest.describe("positions", () => {
   foblesTest("persisted", async ({ page }, testInfo) => {
-    
     const step = createFoblesStep(page, testInfo, page, "Toolbar Drag");
 
     await step("Setup: initial conditions", async () => {
@@ -26,7 +25,9 @@ foblesTest.describe("positions", () => {
 
     await step("Drag: toolbar to POSITION_1", async () => {
       const viewport = page.viewportSize();
-      if (!viewport) throw new Error("Could not read viewport size");
+      if (!viewport) {
+        throw new Error("Could not read viewport size");
+      }
 
       await moveMouseToDefault(page);
       await dragToolbarToCornerLocation(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR);

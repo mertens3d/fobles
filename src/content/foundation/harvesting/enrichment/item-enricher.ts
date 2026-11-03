@@ -4,19 +4,21 @@ import { factoryItemGraphNodeData, type ItemGraphNodeData } from "../../referenc
 import { getQuickInfo } from "../../sitecore/quick-info.ts";
 
 export function isItemGraphNodeDataResolved(item: ItemGraphNodeData): boolean {
-    return Boolean(item.scItemId && item.scItemName && item.scItemPath && item.scTemplate);
+  return Boolean(item.scItemId && item.scItemName && item.scItemPath && item.scTemplate);
 }
 
 // The item header icon's own `rev=` query param is Sitecore's per-item revision GUID - the
 // cheapest signal available for "has this item changed since it was cached".
 export function extractRevisionFromIconUrl(iconUrl: string | undefined): string | undefined {
-    if (!iconUrl) return undefined;
+  if (!iconUrl) {
+    return undefined;
+  }
 
-    try {
-        return new URL(iconUrl).searchParams.get("rev") ?? undefined;
-    } catch {
-        return undefined;
-    }
+  try {
+    return new URL(iconUrl).searchParams.get("rev") ?? undefined;
+  } catch {
+    return undefined;
+  }
 }
 
 // Pure read of an already-loaded Quick Info document.
@@ -24,19 +26,16 @@ export function extractRevisionFromIconUrl(iconUrl: string | undefined): string 
 // task calls this directly, since its worker tab is already navigated to item.link by the time
 // its task runs (no fetch needed here).
 export function buildItemGraphNodeDataFromDoc(doc: Document): ItemGraphNodeData {
-    const quickInfo = getQuickInfo(doc);
+  const quickInfo = getQuickInfo(doc);
 
-    return factoryItemGraphNodeData({
-        scItemId: quickInfo.itemId,
-        scItemName: quickInfo.itemName,
-        scItemPath: quickInfo.itemPath,
-        scItemIcon: quickInfo.icon,
-        rawMarkup: quickInfo.rawMarkup,
-        scTemplate: quickInfo.template?.id
-            ? factoryItemGraphNodeData({
-                scItemId: quickInfo.template.id,
-                scItemPath: quickInfo.template.path,
-            })
-            : undefined,
-    });
+  return factoryItemGraphNodeData({
+    scItemId: quickInfo.itemId,
+    scItemName: quickInfo.itemName,
+    scItemPath: quickInfo.itemPath,
+    scItemIcon: quickInfo.icon,
+    rawMarkup: quickInfo.rawMarkup,
+    scTemplate: quickInfo.template?.id
+      ? factoryItemGraphNodeData({ scItemId: quickInfo.template.id, scItemPath: quickInfo.template.path })
+      : undefined,
+  });
 }

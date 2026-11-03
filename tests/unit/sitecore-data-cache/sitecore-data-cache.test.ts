@@ -98,9 +98,7 @@ void test("getFact updates lastAccessedAt", async () => {
 });
 void test("cached not-found remains distinguishable from a cache miss", async () => {
   const key = sampleKey();
-  const notFoundPayload: QuickInfoPayload = {
-    result: { requested: key.item, status: "not-found" },
-  };
+  const notFoundPayload: QuickInfoPayload = { result: { requested: key.item, status: "not-found" } };
   await putFact(key, "quickInfo", notFoundPayload);
   const cachedNotFound = await getFact(key, "quickInfo");
   assert.equal(cachedNotFound?.value.result.status, "not-found");
@@ -184,7 +182,20 @@ void test("a missing cache fact differs from a resolved empty fact", async () =>
   const harvestedEmpty = sampleKey({ item: { kind: "id", value: guidFor(2) } });
   const harvestedWithValues = sampleKey({ item: { kind: "id", value: guidFor(3) } });
   await putFact(harvestedEmpty, "children", { childItems: [] });
-  await putFact(harvestedWithValues, "children", { childItems: [{ type: "scItem", scItemId: guidFor(4), scItemName: "Child", scItemPath: undefined, scTemplate: undefined, scItemIcon: undefined, rawMarkup: undefined, link: undefined }] });
+  await putFact(harvestedWithValues, "children", {
+    childItems: [
+      {
+        type: "scItem",
+        scItemId: guidFor(4),
+        scItemName: "Child",
+        scItemPath: undefined,
+        scTemplate: undefined,
+        scItemIcon: undefined,
+        rawMarkup: undefined,
+        link: undefined,
+      },
+    ],
+  });
   const neverHarvestedFact = await getFact(neverHarvested, "children");
   const harvestedEmptyFact = await getFact(harvestedEmpty, "children");
   const harvestedWithValuesFact = await getFact(harvestedWithValues, "children");

@@ -26,7 +26,9 @@ function assertLicenseAvailable(page: Page): void {
     "is taken. Free one up (Kick User) before running more tests; there's no value in continuing " +
     "until a slot is available.";
 
-  if (licenseExhausted) throw new Error(licenseMessage);
+  if (licenseExhausted) {
+    throw new Error(licenseMessage);
+  }
 
   if (normalizePath(page.url()).includes(TEST_CONST.SITECORE.PATHS.LICENSE_STARTPAGE)) {
     licenseExhausted = true;
@@ -37,11 +39,7 @@ function assertLicenseAvailable(page: Page): void {
 // Sitecore Identity Server's login form (identityserver/Account/Login) - a plain HTML form POST,
 // not a SPA, so a fill + click is enough. Absent on any other login variant (e.g. /sitecore/admin/
 // login.aspx), so attemptAutoLogin harmlessly no-ops there and falls back to the manual wait.
-const XP_LOGIN_SELECTORS = {
-  USERNAME: "#Username",
-  PASSWORD: "#Password",
-  SUBMIT: "button[value='login']",
-};
+const XP_LOGIN_SELECTORS = { USERNAME: "#Username", PASSWORD: "#Password", SUBMIT: "button[value='login']" };
 
 // SitecoreAI's Auth0 Universal Login - two separate page navigations (identifier, then password),
 // unlike xp's single-page form. "_button-login-id"/"_button-login-password" are Auth0's stable
@@ -58,10 +56,7 @@ const AI_LOGIN_SELECTORS = {
 // unchanged from the manual-login banner below.
 async function attemptAutoLogin(page: Page): Promise<boolean> {
   const { username, password } = getActiveTestUserCredentials();
-  const autoLoginContext: AutoLoginContext = {
-    username: username?.trim(),
-    password,
-  };
+  const autoLoginContext: AutoLoginContext = { username: username?.trim(), password };
 
   console.log(
     `[sitecore preflight] test user credentials ${autoLoginContext.username && autoLoginContext.password ? "found" : "not found"}`,
@@ -79,18 +74,15 @@ async function attemptAutoLogin(page: Page): Promise<boolean> {
   return true;
 }
 
-async function attemptAiAutoLogin(
-  page: Page,
-  autoLoginContext: AutoLoginContext,
-): Promise<boolean> {
+async function attemptAiAutoLogin(page: Page, autoLoginContext: AutoLoginContext): Promise<boolean> {
   const { username, password } = autoLoginContext;
-  if (!username || !password) return false;
+  if (!username || !password) {
+    return false;
+  }
 
   const usernameField = page.locator(AI_LOGIN_SELECTORS.USERNAME);
   if ((await usernameField.count()) > 0) {
-    console.log(
-      "[sitecore preflight] SitecoreAI identifier screen detected - submitting test username",
-    );
+    console.log("[sitecore preflight] SitecoreAI identifier screen detected - submitting test username");
     await usernameField.fill(username);
     await page.locator(AI_LOGIN_SELECTORS.USERNAME_SUBMIT).click();
     await page
@@ -100,20 +92,17 @@ async function attemptAiAutoLogin(
   }
 
   const passwordField = page.locator(AI_LOGIN_SELECTORS.PASSWORD);
-  if ((await passwordField.count()) === 0) return false;
+  if ((await passwordField.count()) === 0) {
+    return false;
+  }
 
-  console.log(
-    "[sitecore preflight] SitecoreAI password screen detected - submitting test password",
-  );
+  console.log("[sitecore preflight] SitecoreAI password screen detected - submitting test password");
   await passwordField.fill(password.reveal());
   await page.locator(AI_LOGIN_SELECTORS.PASSWORD_SUBMIT).click();
   return true;
 }
 
-async function fillXpPassword(
-  page: Page,
-  autoLoginContext: AutoLoginContext,
-): Promise<void> {
+async function fillXpPassword(page: Page, autoLoginContext: AutoLoginContext): Promise<void> {
   const password = autoLoginContext.password;
   if (password) {
     await page.locator(XP_LOGIN_SELECTORS.PASSWORD).fill(password.reveal());
@@ -121,18 +110,13 @@ async function fillXpPassword(
   }
 }
 
-async function fillXpUsername(
-  page: Page,
-  autoLoginContext: AutoLoginContext,
-): Promise<boolean> {
+async function fillXpUsername(page: Page, autoLoginContext: AutoLoginContext): Promise<boolean> {
   const username = autoLoginContext.username;
   let success = true;
   if (username) {
     const usernameField = page.locator(XP_LOGIN_SELECTORS.USERNAME);
     if ((await usernameField.count()) > 0) {
-      console.log(
-        "[sitecore preflight] Login form detected - submitting test username/password",
-      );
+      console.log("[sitecore preflight] Login form detected - submitting test username/password");
       await usernameField.fill(username);
     } else {
       success = false;
@@ -153,28 +137,21 @@ async function assertLoggedIn(page: Page): Promise<void> {
   // "input[type='password']" covers both xp's single-page form and the SitecoreAI password page;
   // AI_LOGIN_SELECTORS.USERNAME additionally covers the SitecoreAI identifier page, which has no
   // password field at all yet.
-  const loginForm = page
-    .locator(`input[type='password'], ${AI_LOGIN_SELECTORS.USERNAME}`)
-    .first();
+  const loginForm = page.locator(`input[type='password'], ${AI_LOGIN_SELECTORS.USERNAME}`).first();
   const loginFormPresent = await loginForm
-    .waitFor({
-      state: "attached",
-      timeout: TEST_CONST.TESTING.TIMEOUTS.LOGIN_FORM_DETECT_MS,
-    })
+    .waitFor({ state: "attached", timeout: TEST_CONST.TESTING.TIMEOUTS.LOGIN_FORM_DETECT_MS })
     .then(() => true)
     .catch(() => false);
-  if (!loginFormPresent) return;
+  if (!loginFormPresent) {
+    return;
+  }
 
   if (await attemptAutoLogin(page)) {
     try {
-      await expect(loginForm).toHaveCount(0, {
-        timeout: TEST_CONST.TESTING.TIMEOUTS.AUTO_LOGIN_WAIT_MS,
-      });
+      await expect(loginForm).toHaveCount(0, { timeout: TEST_CONST.TESTING.TIMEOUTS.AUTO_LOGIN_WAIT_MS });
       return;
     } catch {
-      console.log(
-        "[sitecore preflight] Automatic login did not complete - falling back to the manual login wait",
-      );
+      console.log("[sitecore preflight] Automatic login did not complete - falling back to the manual login wait");
     }
   }
 
@@ -187,9 +164,7 @@ async function assertLoggedIn(page: Page): Promise<void> {
   // sits open waiting for you - repeat it periodically so it resurfaces.
   const reprintInterval = setInterval(() => printBanner(page), 20_000);
   try {
-    await expect(loginForm).toHaveCount(0, {
-      timeout: TEST_CONST.TESTING.TIMEOUTS.LOGIN_WAIT_MS,
-    });
+    await expect(loginForm).toHaveCount(0, { timeout: TEST_CONST.TESTING.TIMEOUTS.LOGIN_WAIT_MS });
   } finally {
     clearInterval(reprintInterval);
   }
@@ -226,14 +201,10 @@ export async function ensureAuthenticatedUrl(page: Page): Promise<void> {
           const elapsedMs = Date.now() - startedAt;
           const currentUrl = toDisplayUrl(page.url());
           if (currentUrl !== lastLoggedUrl) {
-            console.log(
-              `[sitecore preflight] (${elapsedMs}ms) URL changed to: ${currentUrl}`,
-            );
+            console.log(`[sitecore preflight] (${elapsedMs}ms) URL changed to: ${currentUrl}`);
             lastLoggedUrl = currentUrl;
           } else {
-            console.log(
-              `[sitecore preflight] (${elapsedMs}ms) still waiting at: ${currentUrl}`,
-            );
+            console.log(`[sitecore preflight] (${elapsedMs}ms) still waiting at: ${currentUrl}`);
           }
 
           // for (const frame of page.frames()) {

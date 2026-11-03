@@ -35,18 +35,9 @@ export const EDITOR_SCENARIOS = {
   },
   QUICK_INFO_SECTION: {
     itemId: TARGET_ITEM.id,
-    itemIdButton: {
-      expectedFoValue: toBracedGuid(TARGET_ITEM.id),
-      expectedButtonText: toBracedGuid(TARGET_ITEM.id),
-    },
-    itemPathButton: {
-      expectedFoValue: TARGET_ITEM.path,
-      expectedButtonText: TARGET_ITEM.path,
-    },
-    templatePathButton: {
-      expectedFoValue: REFERRED_TO_ITEM.itemPath,
-      expectedButtonText: REFERRED_TO_ITEM.itemPath,
-    },
+    itemIdButton: { expectedFoValue: toBracedGuid(TARGET_ITEM.id), expectedButtonText: toBracedGuid(TARGET_ITEM.id) },
+    itemPathButton: { expectedFoValue: TARGET_ITEM.path, expectedButtonText: TARGET_ITEM.path },
+    templatePathButton: { expectedFoValue: REFERRED_TO_ITEM.itemPath, expectedButtonText: REFERRED_TO_ITEM.itemPath },
     templateIdButton: {
       expectedFoValue: toBracedGuid(REFERRED_TO_ITEM.itemId),
       expectedButtonText: toBracedGuid(REFERRED_TO_ITEM.itemId),

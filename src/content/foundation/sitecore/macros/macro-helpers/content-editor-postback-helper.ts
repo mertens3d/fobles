@@ -12,9 +12,7 @@ export function waitForSitecoreContentEditorPostbackReplacement(
   triggerPostback: () => void,
 ): Promise<void> {
   const stableRoot = container.querySelector(SITECORE_CONTENT_EDITOR_POSTBACK_STABLE_ROOT_SELECTOR);
-  const replacementSentinel = stableRoot?.querySelector(
-    SITECORE_CONTENT_EDITOR_POSTBACK_REPLACEMENT_SENTINEL_SELECTOR,
-  );
+  const replacementSentinel = stableRoot?.querySelector(SITECORE_CONTENT_EDITOR_POSTBACK_REPLACEMENT_SENTINEL_SELECTOR);
 
   if (!(stableRoot instanceof Element)) {
     return Promise.reject(
@@ -40,13 +38,18 @@ export function waitForSitecoreContentEditorPostbackReplacement(
         settled = true;
         observer.disconnect();
         window.clearTimeout(timeoutId);
-        if (error) reject(error);
-        else resolve();
+        if (error) {
+          reject(error);
+        } else {
+          resolve();
+        }
       }
     };
 
     const observer = new MutationObserver(() => {
-      if (!replacementSentinel.isConnected) settle();
+      if (!replacementSentinel.isConnected) {
+        settle();
+      }
     });
 
     const timeoutId = window.setTimeout(() => {
@@ -61,7 +64,9 @@ export function waitForSitecoreContentEditorPostbackReplacement(
 
     try {
       triggerPostback();
-      if (!replacementSentinel.isConnected) settle();
+      if (!replacementSentinel.isConnected) {
+        settle();
+      }
     } catch (error) {
       settle(error instanceof Error ? error : new Error("Sitecore Content Editor postback trigger failed"));
     }

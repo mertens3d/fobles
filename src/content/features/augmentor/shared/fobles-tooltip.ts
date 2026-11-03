@@ -5,7 +5,9 @@ const tooltipDismissListeners = new WeakSet<Document>();
 
 const getOrCreateTooltip = (doc: Document): HTMLDivElement => {
   const existing = tooltips.get(doc);
-  if (existing?.isConnected) return existing;
+  if (existing?.isConnected) {
+    return existing;
+  }
 
   const tooltip = doc.createElement("div");
   tooltip.className = FOBLES.CLASSES.TOOLTIP.BASE;
@@ -16,25 +18,19 @@ const getOrCreateTooltip = (doc: Document): HTMLDivElement => {
   return tooltip;
 };
 
-const positionTooltip = (
-  button: HTMLElement,
-  tooltip: HTMLDivElement,
-  event?: PointerEvent,
-): void => {
+const positionTooltip = (button: HTMLElement, tooltip: HTMLDivElement, event?: PointerEvent): void => {
   const view = button.ownerDocument.defaultView;
-  if (!view) return;
+  if (!view) {
+    return;
+  }
 
   const buttonRect = button.getBoundingClientRect();
   const preferredLeft = event?.clientX ?? buttonRect.left;
   const preferredTop = event?.clientY ?? buttonRect.bottom;
-  const left = Math.min(
-    Math.max(preferredLeft + 12, 8),
-    view.innerWidth - tooltip.offsetWidth - 8,
-  );
+  const left = Math.min(Math.max(preferredLeft + 12, 8), view.innerWidth - tooltip.offsetWidth - 8);
   const below = preferredTop + 18;
-  const top = below + tooltip.offsetHeight <= view.innerHeight
-    ? below
-    : Math.max(buttonRect.top - tooltip.offsetHeight - 8, 8);
+  const top =
+    below + tooltip.offsetHeight <= view.innerHeight ? below : Math.max(buttonRect.top - tooltip.offsetHeight - 8, 8);
   tooltip.style.left = `${left}px`;
   tooltip.style.top = `${top}px`;
 };
@@ -61,7 +57,9 @@ export function removeFoblesTooltips(doc: Document): void {
 }
 
 const listenForTooltipDismissal = (doc: Document): void => {
-  if (tooltipDismissListeners.has(doc)) return;
+  if (tooltipDismissListeners.has(doc)) {
+    return;
+  }
 
   doc.addEventListener("pointermove", (event) => {
     const target = event.target as Element | null;
@@ -90,7 +88,9 @@ export function attachFoblesTooltip(button: HTMLElement): void {
   button.addEventListener("pointerenter", (event) => show(event));
   button.addEventListener("pointermove", (event) => {
     const tooltip = tooltips.get(button.ownerDocument);
-    if (tooltip && !tooltip.hidden) positionTooltip(button, tooltip, event);
+    if (tooltip && !tooltip.hidden) {
+      positionTooltip(button, tooltip, event);
+    }
   });
   button.addEventListener("pointerleave", hide);
   button.addEventListener("focus", () => show());

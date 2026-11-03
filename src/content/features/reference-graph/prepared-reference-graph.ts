@@ -5,7 +5,10 @@ import type {
   SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../foundation/harvesting/sitecore-harvester.types";
-import { prepareReferenceModel, type PreparedReferenceModel } from "../../foundation/reference-data/acquisition/prepare-reference-model";
+import {
+  prepareReferenceModel,
+  type PreparedReferenceModel,
+} from "../../foundation/reference-data/acquisition/prepare-reference-model";
 import type { ProcessingStatus } from "../../foundation/reference-data/processing/processing-state";
 import { projectReferenceModelToGraphElements } from "./graph-nodes/graph-elements";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";

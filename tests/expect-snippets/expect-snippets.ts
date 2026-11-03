@@ -16,18 +16,17 @@ export async function expectJumpFlyoutFlyoutHidden(foblesFrame: Frame) {
 export function expectFoValue(page: Page, expectedFoValue: string) {
   const scSearchParams = getScSearchParams(new URL(page.url()));
   const actualFoValue = scSearchParams.fo ?? "";
-  expect(normalizeFoValueForCompare(actualFoValue), `Expected fo value to be ${normalizeFoValueForCompare(expectedFoValue)}`)
-    .toBe(normalizeFoValueForCompare(expectedFoValue));
+  expect(
+    normalizeFoValueForCompare(actualFoValue),
+    `Expected fo value to be ${normalizeFoValueForCompare(expectedFoValue)}`,
+  ).toBe(normalizeFoValueForCompare(expectedFoValue));
 }
 
 export function expectCurrentUrlContains(page: Page, path: string) {
   const actualUrl = normalizePath(page.url());
   const normalizedPath = normalizePath(path);
-  expect(actualUrl, `Expected current URL to contain ${normalizedPath}`)
-    .toContain(normalizedPath);
-  console.log(
-    `[fobles] URL assertion: expected to contain ${normalizedPath}; actual ${actualUrl}`
-  );
+  expect(actualUrl, `Expected current URL to contain ${normalizedPath}`).toContain(normalizedPath);
+  console.log(`[fobles] URL assertion: expected to contain ${normalizedPath}; actual ${actualUrl}`);
 }
 
 export async function expectLBoltButton(foblesFrame: Frame) {

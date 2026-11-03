@@ -6,11 +6,15 @@ import { formatFoId } from "../../../foundation/sitecore/guid";
 
 export function applyStyleChecklistStrategy(doc: Document, config: StyleChecklistConfig): void {
   doc.querySelectorAll<HTMLInputElement>(config.FoblesTopSelector).forEach((checkbox) => {
-    if (checkbox.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;
+    if (checkbox.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) {
+      return;
+    }
 
     const styleId = checkbox.getAttribute("styleid");
     const container = checkbox.closest(".style-selector");
-    if (!styleId || !container) return;
+    if (!styleId || !container) {
+      return;
+    }
 
     checkbox.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");
 
@@ -22,7 +26,9 @@ export function applyStyleChecklistStrategy(doc: Document, config: StyleChecklis
     });
     // Appended as the label's sibling, not a descendant of it - a native <label> toggles its
     // checkbox on any click inside it, which would fire on this button too if it lived inside.
-    wrapper.appendChild(createFoblesItemButton(doc, label, formatFoId(styleId), FOBLES.CLASSES.BUTTONS.STYLE_CHECKLIST));
+    wrapper.appendChild(
+      createFoblesItemButton(doc, label, formatFoId(styleId), FOBLES.CLASSES.BUTTONS.STYLE_CHECKLIST),
+    );
     container.appendChild(wrapper);
   });
 }

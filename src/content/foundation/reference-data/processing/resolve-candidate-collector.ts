@@ -46,7 +46,10 @@ function collectRecursive(treeNode: ReferenceModelNode, treeNodeIdsByReference: 
 // a shared ItemGraphNodeData object instance (e.g. a page-layout item reused across devices) can
 // become fully resolved via a DIFFERENT guid's merge before this guid's own turn comes up in a
 // concurrent Resolve batch. Reference Graph and Auditor must both honor this, not just Auditor.
-export function isEligibleForResolve(treeNodeIds: readonly string[], nodesById: ReadonlyMap<string, ReferenceModelNode>): boolean {
+export function isEligibleForResolve(
+  treeNodeIds: readonly string[],
+  nodesById: ReadonlyMap<string, ReferenceModelNode>,
+): boolean {
   return treeNodeIds.some((treeNodeId) => {
     const node = nodesById.get(treeNodeId);
     return node?.nodeType === "item" && !isItemGraphNodeDataResolved(node.scItem);

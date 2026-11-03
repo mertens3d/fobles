@@ -16,10 +16,7 @@ void test("deterministic key generation", () => {
   assert.equal(serializeCacheKey(baseKey()), serializeCacheKey(baseKey()));
 });
 void test("environment is not part of the key", () => {
-  assert.equal(
-    serializeCacheKey(baseKey({ environment: "DEV" })),
-    serializeCacheKey(baseKey({ environment: "QA" })),
-  );
+  assert.equal(serializeCacheKey(baseKey({ environment: "DEV" })), serializeCacheKey(baseKey({ environment: "QA" })));
 });
 void test("key omits the host and starts at the database", () => {
   assert.equal(
@@ -28,24 +25,14 @@ void test("key omits the host and starts at the database", () => {
   );
 });
 void test("database isolation", () => {
-  assert.notEqual(
-    serializeCacheKey(baseKey({ database: "master" })),
-    serializeCacheKey(baseKey({ database: "web" })),
-  );
+  assert.notEqual(serializeCacheKey(baseKey({ database: "master" })), serializeCacheKey(baseKey({ database: "web" })));
 });
 void test("language isolation", () => {
-  assert.notEqual(
-    serializeCacheKey(baseKey({ language: "en" })),
-    serializeCacheKey(baseKey({ language: "da" })),
-  );
+  assert.notEqual(serializeCacheKey(baseKey({ language: "en" })), serializeCacheKey(baseKey({ language: "da" })));
 });
 void test("GUID normalization", () => {
-  const withBracesAndCase = baseKey({
-    item: { kind: "id", value: "{46004574-866D-4702-828E-1C95AD1E03AA}" },
-  });
-  const trimmedLowercase = baseKey({
-    item: { kind: "id", value: " 46004574-866d-4702-828e-1c95ad1e03aa " },
-  });
+  const withBracesAndCase = baseKey({ item: { kind: "id", value: "{46004574-866D-4702-828E-1C95AD1E03AA}" } });
+  const trimmedLowercase = baseKey({ item: { kind: "id", value: " 46004574-866d-4702-828e-1c95ad1e03aa " } });
   assert.equal(serializeCacheKey(withBracesAndCase), serializeCacheKey(trimmedLowercase));
 });
 void test("GUID identity remains distinct from path identity", () => {

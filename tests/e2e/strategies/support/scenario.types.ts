@@ -22,7 +22,7 @@ export type StrategyScenarioData = {
   foblesButtonSelector?: string;
 };
 
-export type StrategyTestContext  = TestContextBase& {
+export type StrategyTestContext = TestContextBase & {
   fieldTable: Locator;
   getFieldTable(): Promise<Locator>;
   getScLocatorFirstResult(): Promise<Locator>;
@@ -30,9 +30,4 @@ export type StrategyTestContext  = TestContextBase& {
   SCENARIO: StrategyScenarioData;
 };
 
-export type TestContextBase ={
-  page: Page;
-  STEP_WAIT_MS: number;
-  step: FoblesStep;
-  testInfo: TestInfo;
-};
+export type TestContextBase = { page: Page; STEP_WAIT_MS: number; step: FoblesStep; testInfo: TestInfo };

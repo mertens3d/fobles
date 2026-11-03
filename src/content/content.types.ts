@@ -1,8 +1,6 @@
 // @source-path [fobles] src/content/content.types.ts
 
-export type MessageRequest = {
-  action?: string;
-};
+export type MessageRequest = { action?: string };
 
 export type Logger = {
   debug: (...args: unknown[]) => void;

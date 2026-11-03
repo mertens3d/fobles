@@ -3,7 +3,9 @@ import { CONST } from "../../../constants/const";
 import { isGuidLike, stripGuidBraces } from "./guid";
 
 export function normalizeFoblesValue(raw: string): string {
-  if (!raw) return raw;
+  if (!raw) {
+    return raw;
+  }
 
   if (isGuidLike(raw)) {
     return stripGuidBraces(raw);

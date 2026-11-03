@@ -36,31 +36,33 @@ export function sanitizeJumpFlyoutPathSuffix(value: string): string {
 // re-typing the base path's final folder (e.g. "Script Library") doesn't repeat it.
 export function joinJumpFlyoutPath(basePath: string, rawSuffix: string): string {
   const suffix = sanitizeJumpFlyoutPathSuffix(rawSuffix);
-  if (!suffix) return basePath;
+  if (!suffix) {
+    return basePath;
+  }
 
   const baseSegments = basePath.split("/").filter(Boolean);
   const suffixSegments = suffix.split("/").filter(Boolean);
   const baseLastSegment = baseSegments[baseSegments.length - 1]?.toLowerCase();
   const dedupedSegments =
-    baseLastSegment && suffixSegments[0]?.toLowerCase() === baseLastSegment
-      ? suffixSegments.slice(1)
-      : suffixSegments;
+    baseLastSegment && suffixSegments[0]?.toLowerCase() === baseLastSegment ? suffixSegments.slice(1) : suffixSegments;
 
   return dedupedSegments.length ? `${basePath}/${dedupedSegments.join("/")}` : basePath;
 }
 
 const isJumpFlyoutButtonSetting = (value: unknown): value is JumpFlyoutButtonSetting => {
-  if (!value || typeof value !== "object") return false;
+  if (!value || typeof value !== "object") {
+    return false;
+  }
   const setting = value as Record<string, unknown>;
   return (
-    typeof setting.label === "string" &&
-    typeof setting.enabled === "boolean" &&
-    typeof setting.pathSuffix === "string"
+    typeof setting.label === "string" && typeof setting.enabled === "boolean" && typeof setting.pathSuffix === "string"
   );
 };
 
 function normalizeJumpFlyoutButtonSettings(value: unknown): JumpFlyoutButtonSettings {
-  if (!value || typeof value !== "object") return {};
+  if (!value || typeof value !== "object") {
+    return {};
+  }
 
   const entries = Object.entries(value as Record<string, unknown>).filter(([, setting]) =>
     isJumpFlyoutButtonSetting(setting),
@@ -73,17 +75,11 @@ export async function getJumpFlyoutButtonSettings(): Promise<JumpFlyoutButtonSet
   return normalizeJumpFlyoutButtonSettings(result[STORAGE.KEY.JUMP_FLYOUT_BUTTON_SETTINGS]);
 }
 
-export async function setJumpFlyoutButtonSettings(
-  settings: JumpFlyoutButtonSettings,
-): Promise<void> {
-  await setStorageValue({
-    [STORAGE.KEY.JUMP_FLYOUT_BUTTON_SETTINGS]: settings,
-  });
+export async function setJumpFlyoutButtonSettings(settings: JumpFlyoutButtonSettings): Promise<void> {
+  await setStorageValue({ [STORAGE.KEY.JUMP_FLYOUT_BUTTON_SETTINGS]: settings });
 }
 
-export function onJumpFlyoutButtonSettingsChanged(
-  callback: (settings: JumpFlyoutButtonSettings) => void,
-): void {
+export function onJumpFlyoutButtonSettingsChanged(callback: (settings: JumpFlyoutButtonSettings) => void): void {
   onStorageChange(STORAGE.KEY.JUMP_FLYOUT_BUTTON_SETTINGS, (newValue) => {
     callback(normalizeJumpFlyoutButtonSettings(newValue));
   });

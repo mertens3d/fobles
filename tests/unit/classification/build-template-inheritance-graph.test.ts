@@ -2,14 +2,20 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { buildTemplateInheritanceGraph, type FetchDirectBaseTemplates } from "../../../src/content/foundation/reference-data/processing/classification/build-template-inheritance-graph.ts";
+import {
+  buildTemplateInheritanceGraph,
+  type FetchDirectBaseTemplates,
+} from "../../../src/content/foundation/reference-data/processing/classification/build-template-inheritance-graph.ts";
 import type { TemplateIdentity } from "../../../src/content/foundation/reference-data/processing/classification/item-classification.types.ts";
 
 function id(n: number): TemplateIdentity {
   return { id: `{t${n}}` };
 }
 
-function makeFetcher(graph: Record<string, readonly TemplateIdentity[] | undefined>): { fetch: FetchDirectBaseTemplates; callCounts: Map<string, number> } {
+function makeFetcher(graph: Record<string, readonly TemplateIdentity[] | undefined>): {
+  fetch: FetchDirectBaseTemplates;
+  callCounts: Map<string, number>;
+} {
   const callCounts = new Map<string, number>();
   const fetch: FetchDirectBaseTemplates = (template) => {
     callCounts.set(template.id, (callCounts.get(template.id) ?? 0) + 1);
@@ -38,7 +44,10 @@ void test("multiple direct bases are preserved as separate branches, not flatten
   const { fetch } = makeFetcher({ [id(1).id]: [id(2), id(3)], [id(2).id]: [], [id(3).id]: [] });
   const graph = await buildTemplateInheritanceGraph(id(1), fetch);
   assert.equal(graph.root.directBases.length, 2);
-  assert.deepEqual(graph.root.directBases.map((node) => node.template.id), [id(2).id, id(3).id]);
+  assert.deepEqual(
+    graph.root.directBases.map((node) => node.template.id),
+    [id(2).id, id(3).id],
+  );
 });
 
 void test("deep multi-level inheritance records increasing depth", async () => {
@@ -52,7 +61,12 @@ void test("deep multi-level inheritance records increasing depth", async () => {
 });
 
 void test("a template reachable via two different branches (diamond) is only fetched once", async () => {
-  const { fetch, callCounts } = makeFetcher({ [id(1).id]: [id(2), id(3)], [id(2).id]: [id(4)], [id(3).id]: [id(4)], [id(4).id]: [] });
+  const { fetch, callCounts } = makeFetcher({
+    [id(1).id]: [id(2), id(3)],
+    [id(2).id]: [id(4)],
+    [id(3).id]: [id(4)],
+    [id(4).id]: [],
+  });
   const graph = await buildTemplateInheritanceGraph(id(1), fetch);
   assert.equal(callCounts.get(id(4).id), 1);
   assert.deepEqual(graph.allTemplateIds, ["t1", "t2", "t4", "t3"]);
@@ -61,22 +75,32 @@ void test("a template reachable via two different branches (diamond) is only fet
 void test("a cycle is detected and recorded as a warning instead of looping forever", async () => {
   const { fetch } = makeFetcher({ [id(1).id]: [id(2)], [id(2).id]: [id(1)] });
   const graph = await buildTemplateInheritanceGraph(id(1), fetch);
-  assert.equal(graph.warnings.some((warning) => warning.kind === "cycle-detected"), true);
+  assert.equal(
+    graph.warnings.some((warning) => warning.kind === "cycle-detected"),
+    true,
+  );
   assert.deepEqual(graph.allTemplateIds, ["t1", "t2"]);
 });
 
 void test("exactly 100 unique templates are included with no limit warning", async () => {
   const graphData: Record<string, readonly TemplateIdentity[] | undefined> = {};
-  for (let i = 1; i <= 100; i += 1) graphData[id(i).id] = i < 100 ? [id(i + 1)] : [];
+  for (let i = 1; i <= 100; i += 1) {
+    graphData[id(i).id] = i < 100 ? [id(i + 1)] : [];
+  }
   const { fetch } = makeFetcher(graphData);
   const graph = await buildTemplateInheritanceGraph(id(1), fetch, 100);
   assert.equal(graph.allTemplateIds.length, 100);
-  assert.equal(graph.warnings.some((warning) => warning.kind === "limit-reached"), false);
+  assert.equal(
+    graph.warnings.some((warning) => warning.kind === "limit-reached"),
+    false,
+  );
 });
 
 void test("a 101st unique template stops safely and records a limit-reached warning", async () => {
   const graphData: Record<string, readonly TemplateIdentity[] | undefined> = {};
-  for (let i = 1; i <= 101; i += 1) graphData[id(i).id] = i < 101 ? [id(i + 1)] : [];
+  for (let i = 1; i <= 101; i += 1) {
+    graphData[id(i).id] = i < 101 ? [id(i + 1)] : [];
+  }
   const { fetch } = makeFetcher(graphData);
   const graph = await buildTemplateInheritanceGraph(id(1), fetch, 100);
   assert.equal(graph.allTemplateIds.length, 100);
@@ -93,8 +117,18 @@ void test("a missing/unresolvable base template is marked unresolved without fai
 });
 
 void test("traversal ordering is deterministic across repeated calls", async () => {
-  const { fetch: fetchA } = makeFetcher({ [id(1).id]: [id(2), id(3)], [id(2).id]: [id(4)], [id(3).id]: [], [id(4).id]: [] });
-  const { fetch: fetchB } = makeFetcher({ [id(1).id]: [id(2), id(3)], [id(2).id]: [id(4)], [id(3).id]: [], [id(4).id]: [] });
+  const { fetch: fetchA } = makeFetcher({
+    [id(1).id]: [id(2), id(3)],
+    [id(2).id]: [id(4)],
+    [id(3).id]: [],
+    [id(4).id]: [],
+  });
+  const { fetch: fetchB } = makeFetcher({
+    [id(1).id]: [id(2), id(3)],
+    [id(2).id]: [id(4)],
+    [id(3).id]: [],
+    [id(4).id]: [],
+  });
   const graphA = await buildTemplateInheritanceGraph(id(1), fetchA);
   const graphB = await buildTemplateInheritanceGraph(id(1), fetchB);
   assert.deepEqual(graphA.allTemplateIds, graphB.allTemplateIds);

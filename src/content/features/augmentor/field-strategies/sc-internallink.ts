@@ -7,18 +7,15 @@ import { extractGuid } from "../../../foundation/sitecore/guid";
 
 const getInternalLinkTarget = (value: string): string | null => {
   const guid = extractGuid(value);
-  if (guid) return guid;
+  if (guid) {
+    return guid;
+  }
 
   const trimmed = value.trim();
-  return /^\/?sitecore\//i.test(trimmed)
-    ? ensurePathShape(trimmed, "content")
-    : null;
+  return /^\/?sitecore\//i.test(trimmed) ? ensurePathShape(trimmed, "content") : null;
 };
 
-export function applyInternalLinkStrategy(
-  doc: Document,
-  config: InternalLinkConfig,
-): void {
+export function applyInternalLinkStrategy(doc: Document, config: InternalLinkConfig): void {
   applySingleInputFieldStrategy(doc, config, {
     actionPrefix: CONST.SITECORE.ACTION_PREFIXES.INTERNAL_LINK,
     buttonClass: FOBLES.CLASSES.BUTTONS.INTERNAL_LINK,

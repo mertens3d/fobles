@@ -8,7 +8,7 @@ import { _FOBLES_OPTIONS } from "./base/_fobles-options";
 import { DIAGNOSTIC } from "./testing/diagnostic";
 
 export const TESTING = {
-  SYNC_MOUSE_MARKERS_ACROSS_FRAMES : false,
+  SYNC_MOUSE_MARKERS_ACROSS_FRAMES: false,
   PAGE_JUMP_TARGETS: TEST_PAGE_JUMP_TARGETS,
   TREE_JUMP_TARGETS: TEST_TREE_JUMP_TARGETS,
   DIAGNOSTIC: DIAGNOSTIC,
@@ -24,8 +24,7 @@ export const TESTING = {
     ADMIN_PAGE: {
       ICON: " /~/icon/applicationsv2/32x32/unicorn.png ",
       INTEGRATION_LABEL_PREFIX: "Fobles E2E Toolbar Admin ",
-      INTEGRATION_URL_ENCODED:
-        "/sitecore/shell/Applications/Content%20Editor.aspx?sc_bw=1",
+      INTEGRATION_URL_ENCODED: "/sitecore/shell/Applications/Content%20Editor.aspx?sc_bw=1",
       LABEL_PREFIX: "Fobles E2E Admin ",
       NORMALIZED_ICON: "/-/icon/applicationsv2/32x32/unicorn.png",
       NORMALIZED_URL: "/unicorn.aspx",
@@ -36,8 +35,7 @@ export const TESTING = {
       pathSuffixRaw: "/content/Home",
       iconRaw: "applicationsv2/32x32/bookmark_green.png",
     },
-    TEST_JUMP_ICON_NORMALIZED:
-      "/-/icon/applicationsv2/32x32/bookmark_green.png",
+    TEST_JUMP_ICON_NORMALIZED: "/-/icon/applicationsv2/32x32/bookmark_green.png",
     TEST_JUMP_PATH: "/sitecore/content/Home",
   },
   BILLBOARD: {
@@ -60,15 +58,8 @@ export const TESTING = {
       }`,
     STYLE_ID: "playwright-billboard-style",
   },
-  CLICK_FLASH: {
-    COLOR: "#840b18",
-    DURATION_MS: 400,
-  },
-  EXTENSION_PAGES: {
-    OPTIONS: "options",
-    OPTIONS_URL_PATTERN: /options\.html$/,
-    POPUP: "popup",
-  },
+  CLICK_FLASH: { COLOR: "#840b18", DURATION_MS: 400 },
+  EXTENSION_PAGES: { OPTIONS: "options", OPTIONS_URL_PATTERN: /options\.html$/, POPUP: "popup" },
   LOG: {
     STEP_DIVIDER: "--------------------------------------------------",
     TEST_DIVIDER: "==================================================",
@@ -76,19 +67,12 @@ export const TESTING = {
 
   HUMAN_PAUSE_MS: 500,
   MOUSE: _TESTING_MOUSE,
-  NAVIGATION: {
-    HOLD_MULTIPLIER: 2,
-    NEW_TAB_HOLD_MULTIPLIER: 2,
-  },
+  NAVIGATION: { HOLD_MULTIPLIER: 2, NEW_TAB_HOLD_MULTIPLIER: 2 },
   OPTIONS: _FOBLES_OPTIONS,
   POPUP: {
     ADDITIONAL_SETTINGS_BUTTON: "Additional Settings",
     HEADING: "Fobles Settings",
-    PREFERENCE_IDS: [
-      "fobles-nav-visible",
-      "fobles-nav-warning-visible",
-      "turn-off-fobles-after-navigation",
-    ],
+    PREFERENCE_IDS: ["fobles-nav-visible", "fobles-nav-warning-visible", "turn-off-fobles-after-navigation"],
     RELOAD_EXTENSION_BUTTON_SELECTOR: "#reload-extension",
     RELOAD_EXTENSION_BUTTON_TEXT: "Reload Extension",
     PREFERENCE_SELECTOR_PREFIX: "#",
@@ -107,10 +91,7 @@ export const TESTING = {
     USER_TREE_JUMP_FLYOUT: "user-tree-jump-flyout.png",
     USER_ADMIN_PAGE_SAVED: "user-admin-page-saved.png",
   },
-  SCREENSHOT: {
-    MASK_COLOR: _SITECORE_COLORS.scLightGray,
-    BLUR_PX: 8,
-  },
+  SCREENSHOT: { MASK_COLOR: _SITECORE_COLORS.scLightGray, BLUR_PX: 8 },
   JUMP_FLYOUT: {
     ADMIN_PAGES_COLUMN_SELECTOR: ".jump-flyout-column",
     ADMIN_PAGES_GROUP_LABEL: "User Admin Pages",
@@ -126,10 +107,7 @@ export const TESTING = {
     AI_MAPPING_SITE_INPUT: "input[name='site']",
     AI_MAPPING_TENANT_NAME_INPUT: "input[name='tenantName']",
   },
-  CONTENT_EDITOR_DEBUG: {
-    LOG_MARKER: "Fobles flyout eligibility decision",
-    OPEN_CONSOLE_SHORTCUT: "Control+Shift+J",
-  },
+  CONTENT_EDITOR_DEBUG: { LOG_MARKER: "Fobles flyout eligibility decision", OPEN_CONSOLE_SHORTCUT: "Control+Shift+J" },
   SPEAK_BUBBLE: {
     DEFAULT_SPEECH_POSITION: { xPercent: 50, yPercent: 90 },
     ID: "playwright-speak-bubble",
@@ -178,10 +156,7 @@ export const TESTING = {
       CRAWL: { STEP_WAIT_MS: 500, MOUSE_PX_PER_SECOND: 3_000 },
       WALK: { STEP_WAIT_MS: 200, MOUSE_PX_PER_SECOND: 4_000 },
       SPRINT: { STEP_WAIT_MS: 0, MOUSE_PX_PER_SECOND: 4_000 },
-    } satisfies Record<
-      TestSpeed,
-      { STEP_WAIT_MS: number; MOUSE_PX_PER_SECOND: number }
-    >,
+    } satisfies Record<TestSpeed, { STEP_WAIT_MS: number; MOUSE_PX_PER_SECOND: number }>,
   },
   TOOLBAR_DRAG_POSITIONS: {
     DEFAULT_UR: { corner: "upper-right", offsetX: 280, offsetY: 80 },
@@ -190,5 +165,5 @@ export const TESTING = {
     POSITION_3_BR: { corner: "bottom-right", offsetX: 200, offsetY: 165 },
   },
   TREE_PANEL_WIDTH_PX: 250,
-  FOBLES_PAGES : FOBLES_PAGES,
+  FOBLES_PAGES: FOBLES_PAGES,
 } as const;

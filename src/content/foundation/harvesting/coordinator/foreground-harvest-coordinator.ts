@@ -5,13 +5,14 @@ import type { HarvestProgressCallback, HarvestRequest, SitecoreHarvestResult } f
 import { cancelWorkerRequest } from "../../workers/pool/worker-pool-client";
 import { isSuccessResult, type WorkerTaskResult } from "../../workers/tasks/worker-task.types";
 import { executeHarvestPlan } from "./harvest-plan-executor";
-import { COLLECTOR_TASK_TYPE_BY_FILTER_KEY, isCollectorFilterKey, isCollectorResultAlreadyPresent } from "../planner/harvest-task-planner";
+import {
+  COLLECTOR_TASK_TYPE_BY_FILTER_KEY,
+  isCollectorFilterKey,
+  isCollectorResultAlreadyPresent,
+} from "../planner/harvest-task-planner";
 import { createBaseResult, extractRootItem, mergeCollectorResult } from "./harvest-result-merger";
 
-type HarvestOptions = {
-  onProgress?: HarvestProgressCallback;
-  signal?: AbortSignal;
-};
+type HarvestOptions = { onProgress?: HarvestProgressCallback; signal?: AbortSignal };
 
 function reportSkippedSteps(request: HarvestRequest, onProgress: HarvestProgressCallback | undefined): void {
   for (const step of HARVEST_STEPS) {
@@ -38,12 +39,16 @@ function createHarvestResult(
 ): SitecoreHarvestResult | undefined {
   const successfulResults = collectorResults.filter(isSuccessResult);
   const rootItem = extractRootItem(request, successfulResults);
-  if (!rootItem) return undefined;
+  if (!rootItem) {
+    return undefined;
+  }
 
   onProgress?.({ stepKey: "root-item", label: "Root Item" }, "complete");
 
   const result = createBaseResult(request, rootItem);
-  for (const collectorResult of successfulResults) mergeCollectorResult(result, collectorResult);
+  for (const collectorResult of successfulResults) {
+    mergeCollectorResult(result, collectorResult);
+  }
   return result;
 }
 
@@ -65,9 +70,7 @@ export async function harvestSitecoreWithWorkers(
     onProgress?.({ stepKey: "fetch-document", label: "Fetching Document" }, "complete");
     onProgress?.({ stepKey: "parse-document", label: "Parsing Document" }, "complete");
 
-    return signal?.aborted
-      ? undefined
-      : createHarvestResult(request, collectorResults, onProgress);
+    return signal?.aborted ? undefined : createHarvestResult(request, collectorResults, onProgress);
   } finally {
     signal?.removeEventListener("abort", abortListener);
   }

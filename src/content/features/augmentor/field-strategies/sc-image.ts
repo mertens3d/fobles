@@ -9,6 +9,6 @@ export function applyImageStrategy(doc: Document, config: ImageConfig): void {
     actionPrefix: CONST.SITECORE.ACTION_PREFIXES.IMAGE,
     buttonClass: FOBLES.CLASSES.BUTTONS.IMAGE,
     wrapperClass: FOBLES.CLASSES.WRAPPERS.IMAGE,
-    getTarget: (value) => value ? ensurePathShape(value, "media") : null,
+    getTarget: (value) => (value ? ensurePathShape(value, "media") : null),
   });
 }

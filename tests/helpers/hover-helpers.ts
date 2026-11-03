@@ -1,15 +1,10 @@
 import { expect, type Locator, type Page } from "../fixtures/playwright";
-import {
-  getButtonSize,
-  moveMouseOutsideHoverArea,
-  moveMouseToLocatorCenter,
-} from "./mouse-proxy";
+import { getButtonSize, moveMouseOutsideHoverArea, moveMouseToLocatorCenter } from "./mouse-proxy";
 import { TEST_CONST } from "../constants/TEST_CONST";
 import type { MouseCoordinates } from "./mouse-proxy.types";
 import { pauseForHuman } from "./wait-helpers";
 
-const STEP_WAIT_MS =
-  TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
+const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
 export type HoverAndGrowOptions = {
   name: string;
@@ -19,17 +14,14 @@ export type HoverAndGrowOptions = {
   mousePosition: MouseCoordinates;
 };
 
-export async function hoverAndGrow(
-  page: Page,
-  options: HoverAndGrowOptions,
-): Promise<void> {
+export async function hoverAndGrow(page: Page, options: HoverAndGrowOptions): Promise<void> {
   for (let cycle = 1; cycle <= 3; cycle += 1) {
     await moveMouseOutsideHoverArea(page, options.moveAwayTargets, options.mousePosition, `${options.name} away`);
     await pauseForHuman(page, STEP_WAIT_MS);
     const originalSize = await getButtonSize(options.measureTarget);
     await moveMouseToLocatorCenter(page, options.hoverTarget, options.name); // options.mousePosition,
     await pauseForHuman(page, STEP_WAIT_MS);
-    await pauseForHuman(page, STEP_WAIT_MS); 
+    await pauseForHuman(page, STEP_WAIT_MS);
     const hoveredSize = await getButtonSize(options.measureTarget);
     expect(hoveredSize.width).toBeGreaterThan(originalSize.width);
     expect(hoveredSize.height).toBeGreaterThan(originalSize.height);
@@ -51,10 +43,7 @@ export type HoverAndSlideOutOptions = {
   mousePosition: MouseCoordinates;
 };
 
-export async function hoverAndSlideOut(
-  page: Page,
-  options: HoverAndSlideOutOptions,
-): Promise<void> {
+export async function hoverAndSlideOut(page: Page, options: HoverAndSlideOutOptions): Promise<void> {
   for (let cycle = 1; cycle <= 3; cycle += 1) {
     await moveMouseOutsideHoverArea(page, options.hoverRegion, options.mousePosition, `${options.name} away`);
     await pauseForHuman(page, STEP_WAIT_MS);

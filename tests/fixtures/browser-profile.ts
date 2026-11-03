@@ -4,10 +4,7 @@ import path from "node:path";
 // Create a fresh profile for each worker, preserving the previous behavior of
 // launchPersistentContext(""). Write preferences before Chromium opens it.
 export function createBrowserProfile(workerSlot: number): string {
- const userDataDir = path.resolve(
-    "./playwright/test-artifacts",
-    `FoblesTestDirectory${workerSlot}`,
-  );
+  const userDataDir = path.resolve("./playwright/test-artifacts", `FoblesTestDirectory${workerSlot}`);
 
   const profileDir = path.join(userDataDir, "Default");
   fs.mkdirSync(profileDir, { recursive: true });

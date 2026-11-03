@@ -2,22 +2,38 @@
 import { extensionLog } from "../../../logger";
 import type { PoolWorker } from "../tasks/worker-task.types";
 import type { WorkerPoolState } from "./worker-pool-state";
+
 export const WORKER_IDLE_DISPOSAL_DELAY_MS = 7000;
+
 export type DestroyIdleWorker = (worker: PoolWorker, reason: string) => Promise<void>;
+
 export function cancelWorkerIdleDisposal(pool: WorkerPoolState): void {
-  if (pool.idleDisposalTimer === undefined) return;
+  if (pool.idleDisposalTimer === undefined) {
+    return;
+  }
   clearTimeout(pool.idleDisposalTimer);
   pool.idleDisposalTimer = undefined;
 }
+
 export function scheduleWorkerIdleDisposal(pool: WorkerPoolState, destroyWorker: DestroyIdleWorker): void {
   cancelWorkerIdleDisposal(pool);
-  if (pool.queue.length > 0 || pool.activeTaskByWorkerKey.size > 0) return;
-  if (!pool.workers.some((worker) => worker.state === "idle")) return;
+  if (pool.queue.length > 0 || pool.activeTaskByWorkerKey.size > 0) {
+    return;
+  }
+  if (!pool.workers.some((worker) => worker.state === "idle")) {
+    return;
+  }
   pool.idleDisposalTimer = setTimeout(() => {
     pool.idleDisposalTimer = undefined;
-    if (pool.queue.length > 0 || pool.activeTaskByWorkerKey.size > 0) return;
+    if (pool.queue.length > 0 || pool.activeTaskByWorkerKey.size > 0) {
+      return;
+    }
     const idleWorkers = pool.workers.filter((worker) => worker.state === "idle");
-    extensionLog.debug("Worker pool: idle grace expired; disposing idle workers", { hostTabId: pool.hostTabId, graceMs: WORKER_IDLE_DISPOSAL_DELAY_MS, idleWorkerCount: idleWorkers.length });
+    extensionLog.debug("Worker pool: idle grace expired; disposing idle workers", {
+      hostTabId: pool.hostTabId,
+      graceMs: WORKER_IDLE_DISPOSAL_DELAY_MS,
+      idleWorkerCount: idleWorkers.length,
+    });
     idleWorkers.forEach((worker) => void destroyWorker(worker, "idle-grace-expired"));
   }, WORKER_IDLE_DISPOSAL_DELAY_MS);
 }

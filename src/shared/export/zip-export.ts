@@ -17,7 +17,13 @@ function addCounts(target: ExportSanitizationCounts, source: ExportSanitizationC
 
 export function downloadSanitizedTextZip(doc: Document, entries: readonly TextZipEntry[], fileName: string): void {
   const files: Record<string, Uint8Array> = {};
-  const counts: ExportSanitizationCounts = { authorizationValues: 0, cookieValues: 0, credentialFields: 0, sensitiveQueryValues: 0, localWindowsPaths: 0 };
+  const counts: ExportSanitizationCounts = {
+    authorizationValues: 0,
+    cookieValues: 0,
+    credentialFields: 0,
+    sensitiveQueryValues: 0,
+    localWindowsPaths: 0,
+  };
 
   entries.forEach((entry) => {
     const sanitized = sanitizeExportText(entry.content);

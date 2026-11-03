@@ -13,12 +13,24 @@ export type RootCacheDecision =
   | { kind: "harvest-required" };
 
 function hasRequiredFacts(record: SitecoreDataCacheRecord, filters: SitecoreHarvestFiltersState): boolean {
-  if (filters.parent && !record.parent) return false;
-  if (filters.children && !record.children) return false;
-  if (filters.referrers && !record.referrers) return false;
-  if (filters.customFields && !record.customSections) return false;
-  if (filters.standardFields && !record.standardSections) return false;
-  if (filters.layouts && !record.layout) return false;
+  if (filters.parent && !record.parent) {
+    return false;
+  }
+  if (filters.children && !record.children) {
+    return false;
+  }
+  if (filters.referrers && !record.referrers) {
+    return false;
+  }
+  if (filters.customFields && !record.customSections) {
+    return false;
+  }
+  if (filters.standardFields && !record.standardSections) {
+    return false;
+  }
+  if (filters.layouts && !record.layout) {
+    return false;
+  }
   return true;
 }
 
@@ -26,12 +38,18 @@ export function assembleHarvestResultFromCacheRecord(
   record: SitecoreDataCacheRecord | undefined,
   filters: SitecoreHarvestFiltersState,
 ): SitecoreHarvestResult | undefined {
-  if (!record?.quickInfo) return undefined;
+  if (!record?.quickInfo) {
+    return undefined;
+  }
 
   const quickInfo = record.quickInfo;
   const scItemId = quickInfo.scItemId;
-  if (typeof scItemId !== "string" || scItemId.length === 0) return undefined;
-  if (!hasRequiredFacts(record, filters)) return undefined;
+  if (typeof scItemId !== "string" || scItemId.length === 0) {
+    return undefined;
+  }
+  if (!hasRequiredFacts(record, filters)) {
+    return undefined;
+  }
 
   const scTemplate = itemFromLocator(quickInfo.scTemplate);
   const rootItem: RootItem = { ...quickInfo, scItemId, scTemplate, rawMarkup: undefined, facts: {} };
@@ -48,7 +66,9 @@ export function assembleHarvestResultFromCacheRecord(
 }
 
 function itemFromLocator(locator: SitecoreItemLocator | undefined): ItemGraphNodeData | undefined {
-  if (!locator) return undefined;
+  if (!locator) {
+    return undefined;
+  }
 
   return {
     type: "scItem",
@@ -69,16 +89,24 @@ export function decideRootCacheUsage(
   liveRevision: string | undefined,
 ): RootCacheDecision {
   const result = assembleHarvestResultFromCacheRecord(record, filters);
-  if (!result) return { kind: "harvest-required" };
-  if (liveRevision === undefined) return { kind: "cache-unverified", result };
+  if (!result) {
+    return { kind: "harvest-required" };
+  }
+  if (liveRevision === undefined) {
+    return { kind: "cache-unverified", result };
+  }
   return record?.revision === liveRevision ? { kind: "cache-only", result } : { kind: "cache-then-reharvest", result };
 }
 
 export function rootProcessingStateForDecision(decisionKind: RootCacheDecision["kind"]): ProcessingStatus {
   switch (decisionKind) {
-    case "cache-only": return "verified";
-    case "cache-then-reharvest": return "revision-mismatch";
-    case "cache-unverified": return "unverified";
-    case "harvest-required": return "enriched";
+    case "cache-only":
+      return "verified";
+    case "cache-then-reharvest":
+      return "revision-mismatch";
+    case "cache-unverified":
+      return "unverified";
+    case "harvest-required":
+      return "enriched";
   }
 }

@@ -14,11 +14,13 @@ const STRUCTURAL_ICON_BY_QUALIFIER: Readonly<Record<string, string>> = {
   datasource: CONST.SITECORE.ICONS.APPLICATIONS.BULLET_BALL_GLASS_YELLOW_32,
   parameter: CONST.SITECORE.ICONS.APPLICATIONS.BULLET_BALL_GLASS_YELLOW_32,
 };
+
 type AuditorTreeCellProps = {
   row: AuditorTreeRow;
   opened: boolean;
   onToggle: (row: AuditorTreeRow, modifiers?: ToggleModifiers) => void;
 };
+
 type TreeIndentStyle = CSSProperties & { "--fobles-auditor-tree-depth": number };
 
 function splitQualifier(label: string): LabelParts {

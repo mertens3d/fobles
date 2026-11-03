@@ -12,7 +12,8 @@ import { handleHarvestProgress } from "./build-progress";
 // case (see reference-graph-app.tsx); a reroot (event-handlers.ts) omits it, since that's a full
 // fresh harvest at the new root item.
 
-export async function harvestGraphForLink(link: string,
+export async function harvestGraphForLink(
+  link: string,
   progressDoc: Document,
   referenceGraphAbortController: AbortController | undefined,
   filters: SitecoreHarvestFiltersState,
@@ -22,24 +23,17 @@ export async function harvestGraphForLink(link: string,
   referenceGraphAbortController = controller;
   let result: SitecoreHarvestResult | undefined = undefined;
   try {
-
     extensionLog.debug(`[${harvestGraphForLink.name}]Reference graph: starting re-harvest for clicked node`, { link });
 
     result = await harvestSitecoreWithWorkers(
-      {
-        requestId: crypto.randomUUID(),
-        url: link,
-        filters,
-        existingResult,
-      },
-      {
-        signal: controller.signal,
-        onProgress: (step, status) => handleHarvestProgress(progressDoc, step, status),
-      },
+      { requestId: crypto.randomUUID(), url: link, filters, existingResult },
+      { signal: controller.signal, onProgress: (step, status) => handleHarvestProgress(progressDoc, step, status) },
     );
 
-    extensionLog.debug(`[${harvestGraphForLink.name}]Reference graph: successfully re-harvested for clicked node`, { link, result });
-
+    extensionLog.debug(`[${harvestGraphForLink.name}]Reference graph: successfully re-harvested for clicked node`, {
+      link,
+      result,
+    });
   } catch (error) {
     extensionLog.warn("Reference graph: failed to re-harvest for clicked node", { link, error });
   }

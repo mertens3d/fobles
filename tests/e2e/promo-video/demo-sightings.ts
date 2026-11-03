@@ -9,10 +9,7 @@ import { FOBLES_YML } from "../strategies/support/yml-fobles.CONST";
 
 const LBOLT_SETTLE_MS = 1_000;
 
-type FoSighting = {
-  itemId: string;
-  title: string;
-};
+type FoSighting = { itemId: string; title: string };
 
 // One sighting per Strategy Scenarios field item - title must match the field section's real
 // Content Editor caption exactly (e.g. "Strategy Droplink"), since it's used to rebuild that

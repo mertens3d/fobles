@@ -3,20 +3,46 @@
 import "fake-indexeddb/auto";
 import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
-import { DATABASE_NAME, FACT_ITEM_KEY_INDEX_NAME, getRequestResult, resetDatabaseConnectionForTests, runCacheTransaction } from "../../../src/content/foundation/cache/sitecore-data/indexed-db.ts";
+import {
+  DATABASE_NAME,
+  FACT_ITEM_KEY_INDEX_NAME,
+  getRequestResult,
+  resetDatabaseConnectionForTests,
+  runCacheTransaction,
+} from "../../../src/content/foundation/cache/sitecore-data/indexed-db.ts";
 import { getFact, putFact } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { serializeCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts";
-import type { SitecoreDataCacheFactRecord, SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types.ts";
+import type {
+  SitecoreDataCacheFactRecord,
+  SitecoreDataCacheKey,
+} from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types.ts";
 import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types.ts";
 
 function key(): SitecoreDataCacheKey {
-  return { environment: "DEV", database: "master", language: "en", item: { kind: "id", value: "abec2184-8e09-447a-becc-956244ed7bf6" } };
+  return {
+    environment: "DEV",
+    database: "master",
+    language: "en",
+    item: { kind: "id", value: "abec2184-8e09-447a-becc-956244ed7bf6" },
+  };
 }
 function item(scItemId: string | undefined, scItemPath: string | undefined): ItemGraphNodeData {
-  return { type: "scItem", scItemName: "Item", scItemId, link: undefined, scItemPath, scTemplate: undefined, scItemIcon: undefined, rawMarkup: undefined, facts: {} };
+  return {
+    type: "scItem",
+    scItemName: "Item",
+    scItemId,
+    link: undefined,
+    scItemPath,
+    scTemplate: undefined,
+    scItemIcon: undefined,
+    rawMarkup: undefined,
+    facts: {},
+  };
 }
 async function storedFacts(): Promise<SitecoreDataCacheFactRecord[]> {
-  return runCacheTransaction("readonly", (_, factStore) => getRequestResult(factStore.index(FACT_ITEM_KEY_INDEX_NAME).getAll(serializeCacheKey(key())))) as Promise<SitecoreDataCacheFactRecord[]>;
+  return runCacheTransaction("readonly", (_, factStore) =>
+    getRequestResult(factStore.index(FACT_ITEM_KEY_INDEX_NAME).getAll(serializeCacheKey(key()))),
+  ) as Promise<SitecoreDataCacheFactRecord[]>;
 }
 
 void beforeEach(async () => {
@@ -41,7 +67,9 @@ void test("parent persists a path locator when no GUID is available", async () =
 });
 
 void test("relationship facts rehydrate locator placeholders for existing runtime callers", async () => {
-  await putFact(key(), "children", { childItems: [item("{B52269FE-554F-4C0F-A0C9-B9ED8D7249F4}", "/ignored"), item("", "/sitecore/content/Home")] });
+  await putFact(key(), "children", {
+    childItems: [item("{B52269FE-554F-4C0F-A0C9-B9ED8D7249F4}", "/ignored"), item("", "/sitecore/content/Home")],
+  });
   const fact = await getFact(key(), "children");
   assert.equal(fact?.value.childItems[0]?.scItemId, "B52269FE-554F-4C0F-A0C9-B9ED8D7249F4");
   assert.equal(fact?.value.childItems[1]?.scItemPath, "/sitecore/content/Home");

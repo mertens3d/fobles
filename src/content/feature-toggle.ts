@@ -1,4 +1,7 @@
-import { clearTreeButtons, toggleTreeButtons as toggleTreeButtonsFeature } from "./features/augmentor/treeNodeFobles/index";
+import {
+  clearTreeButtons,
+  toggleTreeButtons as toggleTreeButtonsFeature,
+} from "./features/augmentor/treeNodeFobles/index";
 import { clearFobles, setFoblesDismissHandler, triggerFobles } from "./features/augmentor";
 import { setAfterFoblesNavigationHandler } from "./features/augmentor/helper";
 
@@ -34,7 +37,9 @@ function turnOffFobles(): void {
 
 setAfterFoblesNavigationHandler(turnOffFobles);
 setFoblesDismissHandler(() => {
-  if (lightningBoltActive) turnOffFobles();
+  if (lightningBoltActive) {
+    turnOffFobles();
+  }
 });
 
 export function toggleLightningBolt(): void {

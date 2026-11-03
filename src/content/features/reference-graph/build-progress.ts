@@ -3,7 +3,11 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { CONST } from "../../../constants/const";
 import { subscribeActivity, type ActivityEvent } from "../../shared/activity/activity-events";
-import type { HarvestProgressStatus, ProgressStep, SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
+import type {
+  HarvestProgressStatus,
+  ProgressStep,
+  SitecoreHarvestFiltersState,
+} from "../../foundation/harvesting/sitecore-harvester.types";
 import { ReferenceGraphProgressDialog } from "./components/reference-graph-progress-dialog";
 
 let progressRoot: Root | undefined;
@@ -13,7 +17,9 @@ let unsubscribeActivity: (() => void) | undefined;
 let activities: ActivityEvent[] = [];
 
 function renderProgressDialog(): void {
-  progressRoot?.render(createElement(ReferenceGraphProgressDialog, { activities, onCancel: () => progressCancelHandler?.() }));
+  progressRoot?.render(
+    createElement(ReferenceGraphProgressDialog, { activities, onCancel: () => progressCancelHandler?.() }),
+  );
 }
 
 function disposeProgressDialog(): void {
@@ -27,15 +33,26 @@ function disposeProgressDialog(): void {
   progressCancelHandler = undefined;
 }
 
-export function initializeReferenceGraphProgressModal(_doc: Document, _steps: readonly ProgressStep[], _filters: SitecoreHarvestFiltersState): void {
+export function initializeReferenceGraphProgressModal(
+  _doc: Document,
+  _steps: readonly ProgressStep[],
+  _filters: SitecoreHarvestFiltersState,
+): void {
   renderProgressDialog();
 }
 
-export function handleHarvestProgress(_doc: Document, _step: Pick<ProgressStep, "stepKey" | "label">, _status: HarvestProgressStatus): void {
+export function handleHarvestProgress(
+  _doc: Document,
+  _step: Pick<ProgressStep, "stepKey" | "label">,
+  _status: HarvestProgressStatus,
+): void {
   // Legacy compatibility; logical worker/cache activity is authoritative.
 }
 
-export function updateReferenceGraphProgressModalSkipped(doc: Document, step: Pick<ProgressStep, "stepKey" | "label">): void {
+export function updateReferenceGraphProgressModalSkipped(
+  doc: Document,
+  step: Pick<ProgressStep, "stepKey" | "label">,
+): void {
   handleHarvestProgress(doc, step, "skipped");
 }
 
@@ -44,8 +61,11 @@ export function updateReferenceGraphProgressModal(doc: Document, step: Pick<Prog
 }
 
 export function closeReferenceGraphProgressModal(_doc: Document): void {
-  if (progressDialog?.open) progressDialog.close();
-  else disposeProgressDialog();
+  if (progressDialog?.open) {
+    progressDialog.close();
+  } else {
+    disposeProgressDialog();
+  }
 }
 
 export function openReferenceGraphProgressModal(doc: Document, onCancel: () => void): void {
@@ -62,7 +82,10 @@ export function openReferenceGraphProgressModal(doc: Document, onCancel: () => v
   activities = [];
   unsubscribeActivity = subscribeActivity((activity) => {
     const existing = activities.findIndex((item) => item.activityId === activity.activityId);
-    activities = existing < 0 ? [...activities, activity] : activities.map((item, index) => index === existing ? activity : item);
+    activities =
+      existing < 0
+        ? [...activities, activity]
+        : activities.map((item, index) => (index === existing ? activity : item));
     renderProgressDialog();
   });
   dialog.addEventListener("close", disposeProgressDialog, { once: true });

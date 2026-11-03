@@ -10,10 +10,7 @@ import { FOBLES_YML } from "../strategies/support/yml-fobles.CONST";
 
 const REFERENCE_GRAPH_ITEM = FOBLES_YML.CONTENT.STRATEGY_DROPLINK;
 
-export type EditorState = {
-  rawValues: boolean;
-  standardFields: boolean;
-};
+export type EditorState = { rawValues: boolean; standardFields: boolean };
 
 export async function setEditorState(page: Page, state: EditorState): Promise<void> {
   await setScRawValuesState(page, state.rawValues);
@@ -24,10 +21,7 @@ export async function setEditorState(page: Page, state: EditorState): Promise<vo
 }
 
 export async function readEditorState(page: Page): Promise<EditorState> {
-  return {
-    rawValues: await getScRawValuesState(page),
-    standardFields: await getScStandardFieldsState(page),
-  };
+  return { rawValues: await getScRawValuesState(page), standardFields: await getScStandardFieldsState(page) };
 }
 
 export async function reloadAndReadEditorState(page: Page): Promise<EditorState> {
@@ -36,13 +30,10 @@ export async function reloadAndReadEditorState(page: Page): Promise<EditorState>
 }
 
 export async function setupReferenceGraphState(page: Page, state: EditorState): Promise<void> {
-  
   await openContentEditor(page, `{${REFERENCE_GRAPH_ITEM.id.toUpperCase()}}`);
   await setEditorState(page, state);
   await page.reload({ waitUntil: "domcontentloaded" });
   await expect.poll(async () => await readEditorState(page)).toEqual(state);
 
-  console.log(
-    `[fobles] Reference Graph fixture: Strategy droplink {${REFERENCE_GRAPH_ITEM.id.toUpperCase()}}`,
-  );
+  console.log(`[fobles] Reference Graph fixture: Strategy droplink {${REFERENCE_GRAPH_ITEM.id.toUpperCase()}}`);
 }

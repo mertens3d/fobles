@@ -24,11 +24,7 @@ foblesTest.describe("User Tree Jumps", () => {
       async ({ sharedBrowserContext, page }, testInfo) => {
         foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
         const extensionId = await getExtensionId(sharedBrowserContext);
-        const optionsPage = await openExtensionPage(
-          sharedBrowserContext,
-          extensionId,
-          "options",
-        );
+        const optionsPage = await openExtensionPage(sharedBrowserContext, extensionId, "options");
         const step = createFoblesStep(page, testInfo, page, "User Tree Jump");
 
         try {
@@ -42,34 +38,23 @@ foblesTest.describe("User Tree Jumps", () => {
           await pauseForHuman(page);
 
           await step("does not render with an empty list", async () => {
-            await expect(foblesFrame.getByText("User Tree Jumps")).toHaveCount(
-              0,
-            );
+            await expect(foblesFrame.getByText("User Tree Jumps")).toHaveCount(0);
           });
 
           let row!: Locator;
-          await step(
-            "appears live after saving, without a page refresh",
-            async () => {
-              row = await addTestRow(optionsPage);
-              await bringPageToFront(page);
-              await expect(
-                foblesFrame.getByText("User Tree Jumps"),
-              ).toBeVisible();
-              await expect(
-                foblesFrame.getByRole("button", {
-                  name: TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label,
-                }),
-              ).toBeVisible();
-            },
-          );
+          await step("appears live after saving, without a page refresh", async () => {
+            row = await addTestRow(optionsPage);
+            await bringPageToFront(page);
+            await expect(foblesFrame.getByText("User Tree Jumps")).toBeVisible();
+            await expect(
+              foblesFrame.getByRole("button", { name: TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label }),
+            ).toBeVisible();
+          });
 
           await step("hides live again once disabled", async () => {
             await setTestRowEnabled(optionsPage, row, false);
             await bringPageToFront(page);
-            await expect(foblesFrame.getByText("User Tree Jumps")).toHaveCount(
-              0,
-            );
+            await expect(foblesFrame.getByText("User Tree Jumps")).toHaveCount(0);
           });
 
           await step(
@@ -92,35 +77,20 @@ foblesTest.describe("User Tree Jumps", () => {
                 foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
                 TEST_CONST.TESTING.REPORT_SCREENSHOTS.USER_TREE_JUMP_FLYOUT,
               );
-              await clickWithMouseMarker(
-                page,
-                jumpButton,
-                TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label,
-              );
+              await clickWithMouseMarker(page, jumpButton, TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label);
 
               const confirmationDialog = foblesFrame.getByRole("dialog");
               await expect(confirmationDialog).toBeVisible();
               await pauseForHuman(page);
               await Promise.all([
                 page.waitForURL(
-                  (url) =>
-                    url
-                      .toString()
-                      .includes(
-                        
-                          TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH,
-                        
-                      ),
-                  {
-                    timeout: TEST_CONST.TESTING.TIMEOUTS.URL_WAIT_MS,
-                  },
+                  (url) => url.toString().includes(TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP_PATH),
+                  { timeout: TEST_CONST.TESTING.TIMEOUTS.URL_WAIT_MS },
                 ),
                 pauseForHuman(page),
                 clickWithMouseMarker(
                   page,
-                  confirmationDialog.getByRole("button", {
-                    name: TEST_CONST.FOBLES.LABELS.CONTINUE_BUTTON,
-                  }),
+                  confirmationDialog.getByRole("button", { name: TEST_CONST.FOBLES.LABELS.CONTINUE_BUTTON }),
                   "Confirm dialog Continue",
                 ),
                 pauseForHuman(page),

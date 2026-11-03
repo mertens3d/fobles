@@ -26,10 +26,7 @@ export function createBaseResult(request: HarvestRequest, rootItem: RootItem): S
 
 // Mirrors harvest-task-planner's filter-key -> task-type mapping, one switch case per collector
 // task type, each assigning only its own field - never touching fields other collectors own.
-export function mergeCollectorResult(
-  target: SitecoreHarvestResult,
-  result: WorkerTaskSuccessResult,
-): void {
+export function mergeCollectorResult(target: SitecoreHarvestResult, result: WorkerTaskSuccessResult): void {
   switch (result.type) {
     case "get-quick-info":
       break;
@@ -71,9 +68,7 @@ export function extractRootItem(
       result.type === "get-quick-info",
   );
 
-  const value = quickInfoResult?.payload.result.status === "found"
-    ? quickInfoResult.payload.result.value
-    : undefined;
+  const value = quickInfoResult?.payload.result.status === "found" ? quickInfoResult.payload.result.value : undefined;
 
   return value?.scItemId ? { ...value, scItemId: value.scItemId } : undefined;
 }

@@ -1,5 +1,5 @@
 import { STORAGE } from "../../../constants/extension-const";
-import { CONST} from "../../../constants/const";
+import { CONST } from "../../../constants/const";
 import { extensionLog } from "../../logger";
 
 const KICK_ALL_USERS_WAIT_MS = 1_000;
@@ -18,11 +18,7 @@ const giveUpKickAllUsers = (message: string): void => {
 
 // Walls off the "count this failure, give up after too many, otherwise reschedule" bookkeeping
 // so the two call sites below only describe *what* failed, not *how* retries are tracked.
-const retryOrGiveUp = (
-  doc: Document,
-  warnMessage: string,
-  giveUpMessage: string,
-): void => {
+const retryOrGiveUp = (doc: Document, warnMessage: string, giveUpMessage: string): void => {
   const retries = Number(localStorage.getItem(KICK_ALL_USERS_BUTTON_RETRY_KEY) ?? "0") + 1;
   localStorage.setItem(KICK_ALL_USERS_BUTTON_RETRY_KEY, String(retries));
   extensionLog.warn(warnMessage, { retries, maxRetries: KICK_ALL_USERS_MAX_BUTTON_RETRIES });
@@ -49,11 +45,7 @@ const findKickButton = (doc: Document): HTMLButtonElement | null =>
 const waitForKickUserRows = (doc: Document): Promise<HTMLTableRowElement[]> =>
   new Promise((resolve) => {
     const readRows = (): HTMLTableRowElement[] =>
-      Array.from(
-        doc.querySelectorAll<HTMLTableRowElement>(
-          ".sc-listcontrol-body tbody tr",
-        ),
-      );
+      Array.from(doc.querySelectorAll<HTMLTableRowElement>(".sc-listcontrol-body tbody tr"));
     const startedAt = Date.now();
     const poll = (): void => {
       const rows = readRows();
@@ -67,7 +59,9 @@ const waitForKickUserRows = (doc: Document): Promise<HTMLTableRowElement[]> =>
   });
 
 const processKickAllUsers = async (doc: Document): Promise<void> => {
-  if (localStorage.getItem(STORAGE.KEY.KICK_ALL_USERS) !== "1") return;
+  if (localStorage.getItem(STORAGE.KEY.KICK_ALL_USERS) !== "1") {
+    return;
+  }
 
   const rows = await waitForKickUserRows(doc);
   extensionLog.info("Kick All Users observed rows", { rowCount: rows.length });
@@ -91,10 +85,7 @@ const processKickAllUsers = async (doc: Document): Promise<void> => {
   extensionLog.info("Kick All Users selecting row", {
     user: row.cells.item(0)?.textContent?.trim() ?? "unknown user",
     className: row.className,
-    attributes: Array.from(row.attributes).map((attribute) => ({
-      name: attribute.name,
-      value: attribute.value,
-    })),
+    attributes: Array.from(row.attributes).map((attribute) => ({ name: attribute.name, value: attribute.value })),
     outerHtml: row.outerHTML.slice(0, 1_000),
   });
 
@@ -105,18 +96,13 @@ const processKickAllUsers = async (doc: Document): Promise<void> => {
   }
   extensionLog.info("Kick All Users user cell object before selection", userCell);
   userCell.click();
-  await new Promise((resolve) =>
-    window.setTimeout(resolve, KICK_ALL_USERS_WAIT_MS),
-  );
+  await new Promise((resolve) => window.setTimeout(resolve, KICK_ALL_USERS_WAIT_MS));
   extensionLog.info("Kick All Users user cell object after selection", userCell);
   extensionLog.info("Kick All Users row object after selection", row);
   extensionLog.info("Kick All Users selected row state", {
     user: row.cells.item(0)?.textContent?.trim() ?? "unknown user",
     className: row.className,
-    attributes: Array.from(row.attributes).map((attribute) => ({
-      name: attribute.name,
-      value: attribute.value,
-    })),
+    attributes: Array.from(row.attributes).map((attribute) => ({ name: attribute.name, value: attribute.value })),
     outerHtml: row.outerHTML.slice(0, 1_000),
   });
 
@@ -150,10 +136,7 @@ const processKickAllUsers = async (doc: Document): Promise<void> => {
 
   clearButtonRetryCount();
   const userName = row.cells.item(0)?.textContent?.trim() ?? "unknown user";
-  extensionLog.info("Kick All Users about to ask for confirmation", {
-    user: userName,
-    remainingRows: rows.length,
-  });
+  extensionLog.info("Kick All Users about to ask for confirmation", { user: userName, remainingRows: rows.length });
   if (!window.confirm(`Kick off Sitecore user "${userName}"?`)) {
     localStorage.removeItem(STORAGE.KEY.KICK_ALL_USERS);
     extensionLog.info("Kick All Users cancelled", { user: userName });
@@ -166,10 +149,7 @@ const processKickAllUsers = async (doc: Document): Promise<void> => {
     disabledAttribute: kickButton.getAttribute("disabled"),
     outerHtml: kickButton.outerHTML.slice(0, 500),
   });
-  extensionLog.info("Kick All Users kicking row", {
-    user: userName,
-    remainingRows: rows.length,
-  });
+  extensionLog.info("Kick All Users kicking row", { user: userName, remainingRows: rows.length });
   kickButton.click();
   window.setTimeout(() => {
     if (localStorage.getItem(STORAGE.KEY.KICK_ALL_USERS) === "1") {
@@ -186,9 +166,7 @@ export const kickAllUsers = (doc: Document): void => {
 };
 
 export function resumeKickAllUsers(doc: Document): void {
-  const path = new URL(
-    doc.defaultView?.location.href ?? window.location.href,
-  ).pathname;
+  const path = new URL(doc.defaultView?.location.href ?? window.location.href).pathname;
   if (path.toLowerCase() === CONST.SITECORE.RELATIVE_PATHS_ENCODED.KICK_USERS.toLowerCase()) {
     void processKickAllUsers(doc);
   }

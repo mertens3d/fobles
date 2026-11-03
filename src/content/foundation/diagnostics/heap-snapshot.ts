@@ -1,9 +1,7 @@
 // @source-path [fobles] src/content/foundation/diagnostics/heap-snapshot.ts
 import { extensionLog } from "../../logger";
 
-type ChromiumPerformance = Performance & {
-  memory?: { usedJSHeapSize: number; totalJSHeapSize: number };
-};
+type ChromiumPerformance = Performance & { memory?: { usedJSHeapSize: number; totalJSHeapSize: number } };
 
 const BYTES_PER_MB = 1024 * 1024;
 

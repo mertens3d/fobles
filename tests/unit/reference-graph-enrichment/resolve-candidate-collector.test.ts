@@ -7,7 +7,10 @@ import {
   isEligibleForResolve,
 } from "../../../src/content/foundation/reference-data/processing/resolve-candidate-collector.ts";
 import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types";
-import type { ReferenceModelItemNode, ReferenceModelNode } from "../../../src/content/foundation/reference-data/model/reference-model.types";
+import type {
+  ReferenceModelItemNode,
+  ReferenceModelNode,
+} from "../../../src/content/foundation/reference-data/model/reference-model.types";
 
 const FIELD_NAMES_GUID = "96E5F4BA-A2CF-4A4C-A4E7-64DA88226362";
 
@@ -25,14 +28,12 @@ function makeItem(overrides: Partial<ItemGraphNodeData> = {}): ItemGraphNodeData
   };
 }
 
-function makeItemNode(treeNodeId: string, item: ItemGraphNodeData, children: ReferenceModelNode[] = []): ReferenceModelItemNode {
-  return {
-    treeNodeId,
-    nodeType: "item",
-    scItem: item,
-    provenance: { type: "synthetic", label: treeNodeId },
-    children,
-  };
+function makeItemNode(
+  treeNodeId: string,
+  item: ItemGraphNodeData,
+  children: ReferenceModelNode[] = [],
+): ReferenceModelItemNode {
+  return { treeNodeId, nodeType: "item", scItem: item, provenance: { type: "synthetic", label: treeNodeId }, children };
 }
 
 function nodesById(nodes: readonly ReferenceModelItemNode[]): Map<string, ReferenceModelNode> {
@@ -40,12 +41,15 @@ function nodesById(nodes: readonly ReferenceModelItemNode[]): Map<string, Refere
 }
 
 void test("a fully resolved Reference Model item is excluded from the guid lookup entirely", () => {
-  const resolved = makeItemNode("resolved-node", makeItem({
-    scItemId: "11111111-1111-1111-1111-111111111111",
-    scItemName: "JSS Layout",
-    scItemPath: "/sitecore/layout/renderings/JSS Layout",
-    scTemplate: makeItem({ scItemName: "Layout" }),
-  }));
+  const resolved = makeItemNode(
+    "resolved-node",
+    makeItem({
+      scItemId: "11111111-1111-1111-1111-111111111111",
+      scItemName: "JSS Layout",
+      scItemPath: "/sitecore/layout/renderings/JSS Layout",
+      scTemplate: makeItem({ scItemName: "Layout" }),
+    }),
+  );
   const root = makeItemNode("root", makeItem(), [resolved]);
 
   assert.equal(collectEnrichmentGuidLookup(root).size, 0);
@@ -83,13 +87,19 @@ void test("isEligibleForResolve is false once every node sharing a guid has beco
 });
 
 void test("isEligibleForResolve stays true while at least one sharing node is still unresolved", () => {
-  const resolvedNode = makeItemNode("resolved-node", makeItem({
-    scItemId: "33333333-3333-3333-3333-333333333333",
-    scItemName: "Default device",
-    scItemPath: "/sitecore/layout/devices/Default",
-    scTemplate: makeItem({ scItemName: "Device" }),
-  }));
-  const unresolvedNode = makeItemNode("unresolved-node", makeItem({ scItemId: "33333333-3333-3333-3333-333333333333" }));
+  const resolvedNode = makeItemNode(
+    "resolved-node",
+    makeItem({
+      scItemId: "33333333-3333-3333-3333-333333333333",
+      scItemName: "Default device",
+      scItemPath: "/sitecore/layout/devices/Default",
+      scTemplate: makeItem({ scItemName: "Device" }),
+    }),
+  );
+  const unresolvedNode = makeItemNode(
+    "unresolved-node",
+    makeItem({ scItemId: "33333333-3333-3333-3333-333333333333" }),
+  );
 
   assert.equal(
     isEligibleForResolve(["resolved-node", "unresolved-node"], nodesById([resolvedNode, unresolvedNode])),

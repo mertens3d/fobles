@@ -4,7 +4,9 @@ import { CLASSIFICATION_LIMITS } from "./classification-limits.const.ts";
 import type { BaseTemplateClassification, ItemClassification } from "./item-classification.types.ts";
 
 export type AncestorWalkItem = { id: string; itemPath: string | undefined };
+
 export type ClassifyAncestor = (item: AncestorWalkItem) => Promise<ItemClassification>;
+
 export type GetParentItem = (item: AncestorWalkItem) => Promise<AncestorWalkItem | undefined>;
 
 export type FindNearestAncestorResult =
@@ -31,12 +33,18 @@ export async function findNearestAncestorByClassification(
 
   while (current) {
     const key = ancestorKey(current);
-    if (visited.has(key)) return { outcome: "cycle-detected" };
-    if (visited.size >= maxVisited) return { outcome: "limit-reached", limit: maxVisited };
+    if (visited.has(key)) {
+      return { outcome: "cycle-detected" };
+    }
+    if (visited.size >= maxVisited) {
+      return { outcome: "limit-reached", limit: maxVisited };
+    }
     visited.add(key);
 
     const classification = await classify(current);
-    if (classification === targetClassification) return { outcome: "found", item: current };
+    if (classification === targetClassification) {
+      return { outcome: "found", item: current };
+    }
 
     current = await getParent(current);
   }

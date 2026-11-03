@@ -6,8 +6,11 @@ import type { NodePresentationByKind } from "./node-presentation.types";
 const NODE_KIND = _REFERENCE_GRAPH_BASE.NODE_KIND;
 
 export const DEFAULT_WIDTH = 110;
+
 export const DEFAULT_HEIGHT = 30;
+
 export const ELLIPSE_SIZE = 55;
+
 // Field nodes show both their name and their value (up to ~4 wrapped lines total), so they need
 // more vertical room than every other node kind's single-line label.
 export const FIELD_HEIGHT = 56;

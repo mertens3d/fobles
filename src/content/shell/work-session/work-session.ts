@@ -25,14 +25,12 @@ function runFinalWorkerIframeCleanup(sessionId: string): void {
   const cleanup = emergencyCleanupWorkerIframes(document);
   const forcedCleanupRequired =
     cleanup.orphanCountBefore > 0 || cleanup.trackedCountBefore > 0 || cleanup.containerFound;
-  const cleanupFailed =
-    cleanup.orphanCountAfter > 0 || cleanup.trackedCountAfter > 0 || cleanup.containerExistsAfter;
+  const cleanupFailed = cleanup.orphanCountAfter > 0 || cleanup.trackedCountAfter > 0 || cleanup.containerExistsAfter;
 
-  if (!forcedCleanupRequired) return;
-  extensionLog.error("Shell work session: worker iframe failsafe cleanup required", {
-    sessionId,
-    ...cleanup,
-  });
+  if (!forcedCleanupRequired) {
+    return;
+  }
+  extensionLog.error("Shell work session: worker iframe failsafe cleanup required", { sessionId, ...cleanup });
   showFoblesErrorDialog(document, {
     title: cleanupFailed ? "Fobles worker cleanup failed" : "Fobles cleanup required",
     messagePublicFacing: cleanupFailed
@@ -44,7 +42,9 @@ function runFinalWorkerIframeCleanup(sessionId: string): void {
 async function releasePoolLease(sessionId: string): Promise<void> {
   activeSessionCount = Math.max(0, activeSessionCount - 1);
   extensionLog.debug("Shell work session: pool lease released", { sessionId, activeSessionCount });
-  if (activeSessionCount !== 0) return;
+  if (activeSessionCount !== 0) {
+    return;
+  }
 
   const initialIframeCount = document.querySelectorAll(WORKER_POOL.WORKER_IFRAME_SELECTOR).length;
   const startedAt = performance.now();
@@ -54,10 +54,7 @@ async function releasePoolLease(sessionId: string): Promise<void> {
     updateFoblesCleanupDialog(document, {
       removed: Math.max(0, initialIframeCount - remaining),
       total: initialIframeCount,
-      remainingSeconds: Math.max(
-        0,
-        Math.ceil((timeoutMs - (performance.now() - startedAt)) / 1000),
-      ),
+      remainingSeconds: Math.max(0, Math.ceil((timeoutMs - (performance.now() - startedAt)) / 1000)),
       phase: "disposing",
     });
   }, WORKER_POOL.POOL_DISPOSAL_PROGRESS_INTERVAL_MS);
@@ -65,15 +62,10 @@ async function releasePoolLease(sessionId: string): Promise<void> {
     poolDisposalPromise = undefined;
   });
   try {
-    await Promise.race([
-      poolDisposalPromise,
-      new Promise<void>((resolve) => setTimeout(resolve, timeoutMs)),
-    ]);
+    await Promise.race([poolDisposalPromise, new Promise<void>((resolve) => setTimeout(resolve, timeoutMs))]);
   } finally {
     clearInterval(progressTimer);
-    const remainingBeforeFailsafe = document.querySelectorAll(
-      WORKER_POOL.WORKER_IFRAME_SELECTOR,
-    ).length;
+    const remainingBeforeFailsafe = document.querySelectorAll(WORKER_POOL.WORKER_IFRAME_SELECTOR).length;
     if (remainingBeforeFailsafe > 0) {
       updateFoblesCleanupDialog(document, {
         removed: Math.max(0, initialIframeCount - remainingBeforeFailsafe),
@@ -90,9 +82,7 @@ async function releasePoolLease(sessionId: string): Promise<void> {
       phase: "complete",
     });
   }
-  extensionLog.debug("Shell work session: final lease released; worker pool disposed", {
-    sessionId,
-  });
+  extensionLog.debug("Shell work session: final lease released; worker pool disposed", { sessionId });
 }
 
 export function createWorkSession(): WorkSession {
@@ -121,9 +111,7 @@ export function createWorkSession(): WorkSession {
 
   function getHealth(): HealthReport {
     const checkedAt = performance.now();
-    const children: HealthReport[] = Array.from(healthProviders, (provider) =>
-      provider.getHealth(),
-    );
+    const children: HealthReport[] = Array.from(healthProviders, (provider) => provider.getHealth());
     const unhealthyChild = children.find((child) => child.state === "unhealthy");
     const noProgressMs = Math.round(checkedAt - lastProgressAt);
     const specialistStalled = activeTasks.size > 0 && noProgressMs >= health.specialistNoProgressMs;
@@ -133,10 +121,7 @@ export function createWorkSession(): WorkSession {
         : children.some((child) => child.state === "degraded")
           ? "degraded"
           : "healthy";
-    const recoveryCount = Array.from(recoveryCountByTaskId.values()).reduce<number>(
-      (sum, value) => sum + value,
-      0,
-    );
+    const recoveryCount = Array.from(recoveryCountByTaskId.values()).reduce<number>((sum, value) => sum + value, 0);
     return {
       owner: `WorkSession:${id}`,
       state: healthState,
@@ -172,16 +157,22 @@ export function createWorkSession(): WorkSession {
   }
 
   async function runTask(task: WorkSessionTask): Promise<WorkerTaskResult | undefined> {
-    if (state !== "open" || controller.signal.aborted) return undefined;
+    if (state !== "open" || controller.signal.aborted) {
+      return undefined;
+    }
     return await track(runWorkerTask({ ...task, requestId: id }), task.taskId);
   }
 
   async function settleActiveTasks(): Promise<void> {
-    if (activeTasks.size > 0) await Promise.allSettled(Array.from(activeTasks));
+    if (activeTasks.size > 0) {
+      await Promise.allSettled(Array.from(activeTasks));
+    }
   }
 
   async function release(): Promise<void> {
-    if (released) return;
+    if (released) {
+      return;
+    }
     released = true;
     if (healthTimer !== undefined) {
       clearInterval(healthTimer);
@@ -192,17 +183,20 @@ export function createWorkSession(): WorkSession {
   }
 
   async function complete(): Promise<void> {
-    if (state === "released" || state === "completed") return;
+    if (state === "released" || state === "completed") {
+      return;
+    }
     await settleActiveTasks();
     state = "completed";
-    extensionLog.debug(
-      "Shell work session: work completed; resources retained until specialist close",
-      { sessionId: id },
-    );
+    extensionLog.debug("Shell work session: work completed; resources retained until specialist close", {
+      sessionId: id,
+    });
   }
 
   async function cancel(): Promise<void> {
-    if (state === "released") return;
+    if (state === "released") {
+      return;
+    }
     if (state !== "cancelling") {
       state = "cancelling";
       controller.abort();

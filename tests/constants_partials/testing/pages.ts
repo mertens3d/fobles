@@ -16,7 +16,7 @@ const GALLERY_QUERY_SUFFIX =
 // expanded by default on a fresh Content Editor load though, so SITECORE.ITEMS.CONTENT_ITEM_ID
 // (Sitecore's own standard "/sitecore/content" root, not Fobles-Testing-specific) is used here
 // instead - no "&fo=" param at all, relying on that default-expanded state.
-export const FOBLES_PAGES : readonly PageCase[] = [
+export const FOBLES_PAGES: readonly PageCase[] = [
   {
     label: "Content Editor",
     encodedPath: _SITECORE_BASE_CONST.PATHS.CONTENT_EDITOR_BW_ENCODED,
@@ -33,7 +33,7 @@ export const FOBLES_PAGES : readonly PageCase[] = [
     foblesEligible: true,
     activationGap:
       "Has a guaranteed template item (FOBLES_YML.TEMPLATES.FOBLES_DATA_ITEM_TEMPLATE), but the " +
-      "Content Editor case above confirmed \"&fo=<item>\" does NOT reveal/expand the tree to an " +
+      'Content Editor case above confirmed "&fo=<item>" does NOT reveal/expand the tree to an ' +
       "arbitrary node - the same is almost certainly true here. Needs either a tree-expand macro " +
       "or a shallower, default-visible template node instead.",
   },
@@ -50,7 +50,8 @@ export const FOBLES_PAGES : readonly PageCase[] = [
   },
   {
     label: "PowerShell ISE",
-    encodedPath: "/sitecore/shell/Applications/PowerShell/PowerShellIse?sc_bw=1&id=A870E3EA-A75E-447C-AC9C-00EB74EA7268&db=master",
+    encodedPath:
+      "/sitecore/shell/Applications/PowerShell/PowerShellIse?sc_bw=1&id=A870E3EA-A75E-447C-AC9C-00EB74EA7268&db=master",
     uiPath: "Jump Menu -> PowerShell ISE",
     foblesEligible: true,
     toolbarType: "full",
@@ -99,7 +100,7 @@ export const FOBLES_PAGES : readonly PageCase[] = [
     foblesEligible: true,
     toolbarType: "full",
     activationGap:
-      "Page itself is now allowlisted (FOBLES_PAGES) and its tree widget's \"TemplateLister_\" id " +
+      'Page itself is now allowlisted (FOBLES_PAGES) and its tree widget\'s "TemplateLister_" id ' +
       "prefix is now supported (src/content/sitecore.ts's TREE_ID_PREFIXES, " +
       "src/content/features/augmentor/treeNodeFobles/index.ts) - only the tree-reveal mechanics " +
       "(same problem as Template Manager/Add From Template above) remain.",
@@ -140,7 +141,7 @@ export const FOBLES_PAGES : readonly PageCase[] = [
     skip: true,
     activationGap:
       "This dialog's internal list widget appears to use yet another id convention (seen " +
-      "elsewhere as \"FIELD<n>_all_<GUID>\", not Tree_Node_/TemplateLister_) - augmentor support " +
+      'elsewhere as "FIELD<n>_all_<GUID>", not Tree_Node_/TemplateLister_) - augmentor support ' +
       "for it is unconfirmed. Needs a live markup check before extending getTreeNodeItemId " +
       "(src/content/features/augmentor/treeNodeFobles/index.ts) for this case.",
   },
@@ -151,7 +152,7 @@ export const FOBLES_PAGES : readonly PageCase[] = [
     // as TreeListEx Editor above.
     encodedPath: "/sitecore/shell/default.aspx?xmlcontrol=DeviceEditor",
     uiPath: "CE -> Presentation -> Details",
-    
+
     toolbarType: "compact",
     // Confirmed live: this xmlcontrol itself returns a server-side 500 on the "ai" environment
     // (unrelated to Fobles, same as TreeListEx Editor) - skip until that's investigated. Also kept
@@ -191,4 +192,4 @@ export const FOBLES_PAGES : readonly PageCase[] = [
       "Field-based dialog (mass field editing), not a tree - Fobles' button mechanism there (if " +
       "any) is a different code path than treeNodeFobles and is unconfirmed/untested.",
   },
-] ;
+];

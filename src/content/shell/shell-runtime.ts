@@ -8,18 +8,21 @@ let shellStarted = false;
 const shellDisposers: Array<() => void> = [];
 
 export function startFoblesShellRuntime(doc: Document, win: Window): void {
-  if (shellStarted) return;
+  if (shellStarted) {
+    return;
+  }
   shellStarted = true;
 
-  if (win.top === win) registerWorkerIframeHost(doc);
+  if (win.top === win) {
+    registerWorkerIframeHost(doc);
+  }
 
-  shellDisposers.push(
-    registerAuditorShellCommands(),
-    registerReferenceGraphShellCommands(),
-  );
+  shellDisposers.push(registerAuditorShellCommands(), registerReferenceGraphShellCommands());
 }
 
 export function stopFoblesShellRuntime(): void {
-  while (shellDisposers.length > 0) shellDisposers.pop()?.();
+  while (shellDisposers.length > 0) {
+    shellDisposers.pop()?.();
+  }
   shellStarted = false;
 }

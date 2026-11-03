@@ -20,11 +20,13 @@ export const applyDefaultSettingsProfile: SettingsProfile = async (context) => {
   const extensionId = await getExtensionId(context);
   const optionsPage = await openExtensionPage(context, extensionId, "options");
   try {
-    const section = optionsPage.locator(TEST_CONST.TESTING.OPTIONS.SECTION_SELECTOR).filter({
-      has: optionsPage.locator(TEST_CONST.TESTING.OPTIONS.SUMMARY_SELECTOR, {
-        hasText: TEST_CONST.TESTING.OPTIONS.STORAGE.SECTION_TITLE,
-      }),
-    });
+    const section = optionsPage
+      .locator(TEST_CONST.TESTING.OPTIONS.SECTION_SELECTOR)
+      .filter({
+        has: optionsPage.locator(TEST_CONST.TESTING.OPTIONS.SUMMARY_SELECTOR, {
+          hasText: TEST_CONST.TESTING.OPTIONS.STORAGE.SECTION_TITLE,
+        }),
+      });
     await expect(section).toHaveCount(1);
     const isOpen = await section.evaluate((element) => (element as HTMLDetailsElement).open);
     if (!isOpen) {
@@ -32,15 +34,13 @@ export const applyDefaultSettingsProfile: SettingsProfile = async (context) => {
       await clickExtensionControl(optionsPage, summary, TEST_CONST.TESTING.OPTIONS.STORAGE.SECTION_TITLE);
     }
 
-    const clearButton = optionsPage.getByRole("button", {
-      name: TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_BUTTON,
-    });
+    const clearButton = optionsPage.getByRole("button", { name: TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_BUTTON });
     const confirmation = optionsPage.waitForEvent("dialog").then((dialog) => dialog.accept());
     await clickExtensionControl(optionsPage, clearButton, TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_BUTTON);
     await confirmation;
-    await expect(
-      optionsPage.locator(TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_STATUS_SELECTOR),
-    ).toHaveText(TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_STATUS);
+    await expect(optionsPage.locator(TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_STATUS_SELECTOR)).toHaveText(
+      TEST_CONST.TESTING.OPTIONS.STORAGE.CLEAR_STATUS,
+    );
   } finally {
     await optionsPage.close();
   }

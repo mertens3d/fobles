@@ -10,7 +10,9 @@ export function ToolbarGrip() {
   const rowSpacing = 24 / (GRIP_ROWS + 1);
   const dots: Array<{ cx: number; cy: number }> = [];
   for (let row = 1; row <= GRIP_ROWS; row += 1) {
-    for (const x of GRIP_COLUMNS) dots.push({ cx: x, cy: rowSpacing * row });
+    for (const x of GRIP_COLUMNS) {
+      dots.push({ cx: x, cy: rowSpacing * row });
+    }
   }
   return (
     <svg className={CLASS.TOOLBAR_GRIP} viewBox="0 0 12 24" aria-hidden="true" focusable="false">

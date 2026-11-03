@@ -6,26 +6,25 @@ import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
 import type { MultilistOptionsFobles as MultilistConfig } from "../fobles.types";
 
-type MultilistOption = {
-  value: string;
-  label: string;
-};
+type MultilistOption = { value: string; label: string };
 
 const findEligibleHosts = (table: Element): HTMLSelectElement[] =>
-  Array.from(table.querySelectorAll<HTMLSelectElement>(CONST.SITECORE.SELECTORS.MULTILIST.BOX))
-    .filter((select) => !select.hasAttribute(FOBLES.ATTRIBUTES.MARKER));
+  Array.from(table.querySelectorAll<HTMLSelectElement>(CONST.SITECORE.SELECTORS.MULTILIST.BOX)).filter(
+    (select) => !select.hasAttribute(FOBLES.ATTRIBUTES.MARKER),
+  );
 
-const getHostContainer = (select: HTMLSelectElement): Element | null =>
-  select.closest("td") ?? select.parentElement;
+const getHostContainer = (select: HTMLSelectElement): Element | null => select.closest("td") ?? select.parentElement;
 
 const collectOptions = (select: HTMLSelectElement): MultilistOption[] => {
   const seen = new Set<string>();
   const entries: MultilistOption[] = [];
 
   Array.from(select.options).forEach((option) => {
-    const value = (option).value?.trim() ?? "";
+    const value = option.value?.trim() ?? "";
     const label = option.textContent?.trim() ?? value;
-    if (!value || seen.has(value)) return;
+    if (!value || seen.has(value)) {
+      return;
+    }
 
     seen.add(value);
     entries.push({ value, label });
@@ -45,23 +44,17 @@ const createMultilistWrapper = (doc: Document, height: number): HTMLElement =>
     height,
   });
 
-const addOptionButtons = (
-  doc: Document,
-  wrapper: HTMLElement,
-  optionValues: MultilistOption[],
-): void => {
+const addOptionButtons = (doc: Document, wrapper: HTMLElement, optionValues: MultilistOption[]): void => {
   optionValues.forEach((option) => {
     const button = createFoblesItemButton(doc, option.label, option.value, FOBLES.CLASSES.BUTTONS.MULTILIST);
     wrapper.appendChild(button);
   });
 };
 
-const hideOriginalControls = (
-  control: Element,
-  select: HTMLSelectElement,
-): void => {
+const hideOriginalControls = (control: Element, select: HTMLSelectElement): void => {
   const row = control.closest("tr");
-  const fieldCell = control.closest(CONST.SITECORE.SELECTORS.FIELD_CELL) ?? select.closest("td") ?? select.parentElement;
+  const fieldCell =
+    control.closest(CONST.SITECORE.SELECTORS.FIELD_CELL) ?? select.closest("td") ?? select.parentElement;
 
   row?.querySelectorAll<HTMLElement>(CONST.SITECORE.SELECTORS.MULTILIST.NAV_BUTTON).forEach((navButton) => {
     navButton.classList.add(FOBLES.CLASSES.HIDDEN);
@@ -75,16 +68,16 @@ const hideOriginalControls = (
   select.classList.add(FOBLES.CLASSES.HIDDEN);
 };
 
-const applyFoblesToHost = (
-  doc: Document,
-  control: Element,
-  select: HTMLSelectElement,
-): void => {
+const applyFoblesToHost = (doc: Document, control: Element, select: HTMLSelectElement): void => {
   const host = getHostContainer(select);
-  if (!host) return;
+  if (!host) {
+    return;
+  }
 
   const optionValues = collectOptions(select);
-  if (optionValues.length === 0) return;
+  if (optionValues.length === 0) {
+    return;
+  }
 
   const height = calculateContainerHeight(select);
   const wrapper = createMultilistWrapper(doc, height);
@@ -93,14 +86,13 @@ const applyFoblesToHost = (
   host.appendChild(wrapper);
 };
 
-export function applyMultilistStrategy(
-  doc: Document,
-  config: MultilistConfig,
-): void {
+export function applyMultilistStrategy(doc: Document, config: MultilistConfig): void {
   const tables = doc.querySelectorAll(config.FoblesTopSelector);
 
   tables.forEach((table) => {
-    if (table.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;
+    if (table.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) {
+      return;
+    }
 
     const hosts = findEligibleHosts(table);
     hosts.forEach((select) => applyFoblesToHost(doc, table, select));

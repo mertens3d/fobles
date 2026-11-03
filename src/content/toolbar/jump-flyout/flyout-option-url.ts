@@ -1,30 +1,27 @@
-import { CONST} from "../../../constants/const";
+import { CONST } from "../../../constants/const";
 import { getCurrentItemId } from "../../foundation/sitecore/current-item";
 import { joinJumpFlyoutPath } from "../../../shared/jump-flyout/button-settings";
 import { getJumpFlyoutButtonSetting } from "./use-jump-flyout-button-settings";
 import type { FlyoutOption } from "../../../shared/jump-flyout/jump-flyout.types";
 
 function getCurrentDatabase(doc: Document): string | null {
-  const currentUrl = new URL(
-    doc.defaultView?.location.href ?? window.location.href,
-  );
+  const currentUrl = new URL(doc.defaultView?.location.href ?? window.location.href);
   for (const queryKey of CONST.SITECORE.SEARCH_PARAMS.DATABASE_KEYS) {
     const database = currentUrl.searchParams.get(queryKey)?.trim();
-    if (database) return database;
+    if (database) {
+      return database;
+    }
   }
 
-  const databaseInput = doc.querySelector<HTMLInputElement>(
-    CONST.SITECORE.SELECTORS.DATABASE_INPUT,
-  );
-  if (databaseInput?.value.trim()) return databaseInput.value.trim();
+  const databaseInput = doc.querySelector<HTMLInputElement>(CONST.SITECORE.SELECTORS.DATABASE_INPUT);
+  if (databaseInput?.value.trim()) {
+    return databaseInput.value.trim();
+  }
 
-  const contextElement = doc.querySelector<HTMLElement>(
-    CONST.SITECORE.SELECTORS.URI_ELEMENT,
+  const contextElement = doc.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.URI_ELEMENT);
+  const sitecoreUri = [contextElement?.getAttribute("onfocus"), contextElement?.getAttribute("onblur")].find((value) =>
+    value?.includes("sitecore://"),
   );
-  const sitecoreUri = [
-    contextElement?.getAttribute("onfocus"),
-    contextElement?.getAttribute("onblur"), 
-  ].find((value) => value?.includes("sitecore://"));
   return sitecoreUri?.match(/sitecore:\/\/([^/]+)/i)?.[1] ?? null;
 }
 

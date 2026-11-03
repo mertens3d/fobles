@@ -65,24 +65,54 @@ export function PopupApp() {
       <ol>
         <li>Set Site access in the browser&apos;s extension controls.</li>
         <li>Open a page on an approved Sitecore domain.</li>
-        <li>In Chrome Extensions Shortcuts, verify or assign <span className="shortcut">Ctrl+Shift+E</span> for Toggle Fobles.</li>
+        <li>
+          In Chrome Extensions Shortcuts, verify or assign <span className="shortcut">Ctrl+Shift+E</span> for Toggle
+          Fobles.
+        </li>
       </ol>
-      <p className="hint">Open <strong>chrome://extensions/shortcuts</strong> to manage shortcuts. On macOS, use Command+Shift+E.</p>
+      <p className="hint">
+        Open <strong>chrome://extensions/shortcuts</strong> to manage shortcuts. On macOS, use Command+Shift+E.
+      </p>
       <label className="visibility-setting">
-        <input id="fobles-nav-visible" type="checkbox" checked={navVisible} onChange={(event) => handleNavVisibleChange(event.target.checked)} />
+        <input
+          id="fobles-nav-visible"
+          type="checkbox"
+          checked={navVisible}
+          onChange={(event) => handleNavVisibleChange(event.target.checked)}
+        />
         <span>Fobles navigation visible</span>
       </label>
       <label className="visibility-setting">
-        <input id="fobles-nav-warning-visible" type="checkbox" checked={navWarningVisible} onChange={(event) => handleNavWarningVisibleChange(event.target.checked)} />
+        <input
+          id="fobles-nav-warning-visible"
+          type="checkbox"
+          checked={navWarningVisible}
+          onChange={(event) => handleNavWarningVisibleChange(event.target.checked)}
+        />
         <span>Warn before same-tab Fobles navigation</span>
       </label>
       <label className="visibility-setting">
-        <input id="turn-off-fobles-after-navigation" type="checkbox" checked={turnOffAfterNavigation} onChange={(event) => handleTurnOffAfterNavigationChange(event.target.checked)} />
+        <input
+          id="turn-off-fobles-after-navigation"
+          type="checkbox"
+          checked={turnOffAfterNavigation}
+          onChange={(event) => handleTurnOffAfterNavigationChange(event.target.checked)}
+        />
         <span>Turn off Fobles after opening an item</span>
       </label>
-      {showReloadExtensionButton && <button id="reload-extension" type="button" onClick={handleReloadExtension}>Reload Extension</button>}
-      {showReloadExtensionButton && <button id="view-persisted-logs" type="button" onClick={handleViewPersistedLogs}>View Logs</button>}
-      <button id="open-options" type="button" onClick={handleOpenOptions}>Additional Settings</button>
+      {showReloadExtensionButton && (
+        <button id="reload-extension" type="button" onClick={handleReloadExtension}>
+          Reload Extension
+        </button>
+      )}
+      {showReloadExtensionButton && (
+        <button id="view-persisted-logs" type="button" onClick={handleViewPersistedLogs}>
+          View Logs
+        </button>
+      )}
+      <button id="open-options" type="button" onClick={handleOpenOptions}>
+        Additional Settings
+      </button>
     </>
   );
 }

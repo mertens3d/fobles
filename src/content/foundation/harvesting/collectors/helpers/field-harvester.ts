@@ -6,7 +6,9 @@ import { CONST } from "../../../../../constants/const";
 
 export function extractFieldLabel(marker: HTMLElement): string {
   const labelElement = marker.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.FIELD_LABEL);
-  if (!labelElement) return "";
+  if (!labelElement) {
+    return "";
+  }
   const clone = labelElement.cloneNode(true) as HTMLElement;
   clone.querySelector(CONST.SITECORE.SELECTORS.FIELD_LABEL_ADMINISTRATOR)?.remove();
   return clone.textContent?.trim() ?? "";
@@ -27,9 +29,11 @@ export function isHandledElsewhere(label: string): boolean {
 
 export function readRawFieldValue(marker: HTMLElement): string | undefined {
   const control = marker.querySelector<HTMLElement>(CONST.SITECORE.SELECTORS.CONTENT_CONTROL);
-  if (!(control instanceof HTMLInputElement) &&
+  if (
+    !(control instanceof HTMLInputElement) &&
     !(control instanceof HTMLSelectElement) &&
-    !(control instanceof HTMLTextAreaElement)) {
+    !(control instanceof HTMLTextAreaElement)
+  ) {
     return undefined;
   }
   return control.value.trim() || undefined;

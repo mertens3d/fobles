@@ -1,11 +1,20 @@
 // @source-path [fobles] src/content/foundation/harvesting/coordinator/harvest-plan-executor.ts
 
 import { extensionLog } from "../../../logger";
-import { initializeRuntimeSettings, isRuntimeFaultEnabled, RUNTIME_FAULT } from "../../../runtime-settings/runtime-settings";
+import {
+  initializeRuntimeSettings,
+  isRuntimeFaultEnabled,
+  RUNTIME_FAULT,
+} from "../../../runtime-settings/runtime-settings";
 import { HARVEST_STEP_BY_TASK_TYPE } from "../planner/harvest-steps";
 import type { HarvestProgressCallback, HarvestRequest, ProgressStep } from "../sitecore-harvester.types";
 import { cancelWorkerTask, runWorkerTask } from "../../workers/pool/worker-pool-client";
-import { createErrorResult, type WorkerTask, type WorkerTaskResult, type WorkerTaskType } from "../../workers/tasks/worker-task.types";
+import {
+  createErrorResult,
+  type WorkerTask,
+  type WorkerTaskResult,
+  type WorkerTaskType,
+} from "../../workers/tasks/worker-task.types";
 import {
   createSetRawValuesTask,
   createSetStandardFieldsTask,
@@ -45,16 +54,23 @@ function buildSuccessResultFromFact(task: WorkerTask, value: unknown): WorkerTas
   } as WorkerTaskResult;
 }
 
-async function runTaskThroughCache(task: WorkerTask, cacheKey: SitecoreDataCacheKey | undefined): Promise<WorkerTaskResult> {
+async function runTaskThroughCache(
+  task: WorkerTask,
+  cacheKey: SitecoreDataCacheKey | undefined,
+): Promise<WorkerTaskResult> {
   const factName = cacheKey ? factNameForTaskType(task.type) : undefined;
-  if (!cacheKey || !factName) return runWorkerTaskWithTimeout(task);
+  if (!cacheKey || !factName) {
+    return runWorkerTaskWithTimeout(task);
+  }
 
   const outcome = await getFact(cacheKey, factName, () => runWorkerTaskWithTimeout(task), {
     activityId: task.taskId,
     requestId: task.requestId,
   });
 
-  return outcome.outcome === "unresolved" ? (outcome.result as WorkerTaskResult) : buildSuccessResultFromFact(task, outcome.fact.value);
+  return outcome.outcome === "unresolved"
+    ? (outcome.result as WorkerTaskResult)
+    : buildSuccessResultFromFact(task, outcome.fact.value);
 }
 
 async function runWorkerTaskWithTimeout(task: WorkerTask): Promise<WorkerTaskResult> {
@@ -115,7 +131,9 @@ async function runWorkerTaskWithTimeout(task: WorkerTask): Promise<WorkerTaskRes
   try {
     return await Promise.race([workerResult, timeoutResult]);
   } finally {
-    if (timeoutId !== undefined) clearTimeout(timeoutId);
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
   }
 }
 
@@ -123,7 +141,10 @@ function throwForCancelledResults(results: readonly WorkerTaskResult[]): void {
   const cancellations = results.filter((result) => result.status === "cancelled");
 
   if (cancellations.length > 0) {
-    throw new DOMException(`Harvest cancelled while executing: ${cancellations.map((result) => result.type).join(", ")}`, "AbortError");
+    throw new DOMException(
+      `Harvest cancelled while executing: ${cancellations.map((result) => result.type).join(", ")}`,
+      "AbortError",
+    );
   }
 }
 
@@ -142,7 +163,9 @@ async function dispatchTasks(
   const results = await Promise.all(
     tasks.map(async (task): Promise<WorkerTaskResult> => {
       const step = stepForTaskType(task.type);
-      if (step) onProgress?.(step, "active");
+      if (step) {
+        onProgress?.(step, "active");
+      }
 
       const result = await runTaskThroughCache(task, cacheKey);
 
@@ -154,7 +177,9 @@ async function dispatchTasks(
         extensionLog.warn("Reference graph: collector task failed", { task, result });
       }
 
-      if (step) onProgress?.(step, result.status === "success" ? "complete" : "skipped");
+      if (step) {
+        onProgress?.(step, result.status === "success" ? "complete" : "skipped");
+      }
       return result;
     }),
   );
@@ -165,7 +190,9 @@ async function dispatchTasks(
 
 async function restoreOriginalState(request: HarvestRequest): Promise<void> {
   const original = request.session?.originalEditorState;
-  if (!original) return;
+  if (!original) {
+    return;
+  }
 
   await initializeRuntimeSettings();
 
@@ -177,10 +204,7 @@ async function restoreOriginalState(request: HarvestRequest): Promise<void> {
   let restorationError: unknown;
 
   for (let attempt = 1; attempt <= maximumAttempts; attempt += 1) {
-    const restorationRequest: HarvestRequest = {
-      ...request,
-      requestId: crypto.randomUUID(),
-    };
+    const restorationRequest: HarvestRequest = { ...request, requestId: crypto.randomUUID() };
 
     extensionLog.debug("Reference graph: restoring editor state with cleanup request", {
       cancelledRequestId: request.requestId,
@@ -192,7 +216,12 @@ async function restoreOriginalState(request: HarvestRequest): Promise<void> {
     });
 
     try {
-      await setAndVerifyEditorState(restorationRequest, original.rawValues, original.standardFields, "restore-original-state");
+      await setAndVerifyEditorState(
+        restorationRequest,
+        original.rawValues,
+        original.standardFields,
+        "restore-original-state",
+      );
 
       extensionLog.debug("Reference graph: original editor state restored", {
         cancelledRequestId: request.requestId,
@@ -209,7 +238,9 @@ async function restoreOriginalState(request: HarvestRequest): Promise<void> {
 
       const cancelled = error instanceof DOMException && error.name === "AbortError";
 
-      if (!cancelled || attempt === maximumAttempts) break;
+      if (!cancelled || attempt === maximumAttempts) {
+        break;
+      }
 
       extensionLog.warn("Reference graph: restoration task was cancelled; retrying with a fresh request", {
         cancelledRequestId: request.requestId,
@@ -225,7 +256,9 @@ async function restoreOriginalState(request: HarvestRequest): Promise<void> {
     }
   }
 
-  if (restorationError !== undefined) throw new Error("Failed to restore the original Sitecore editor state", { cause: restorationError });
+  if (restorationError !== undefined) {
+    throw new Error("Failed to restore the original Sitecore editor state", { cause: restorationError });
+  }
 }
 
 export async function executeHarvestPlan(
@@ -237,7 +270,9 @@ export async function executeHarvestPlan(
   const cacheKey = resolveHarvestCacheKey(request);
 
   const session = request.session;
-  if (!session) return await dispatchTasks(planCollectorTasks(request), onProgress, cacheKey);
+  if (!session) {
+    return await dispatchTasks(planCollectorTasks(request), onProgress, cacheKey);
+  }
 
   const statefulRequest: HarvestRequest & { session: NonNullable<HarvestRequest["session"]> } = { ...request, session };
   return await runWithReferenceHarvestingLease(() => executeStatefulHarvestPlan(statefulRequest, onProgress, cacheKey));
@@ -277,14 +312,21 @@ async function executeStatefulHarvestPlan(
   try {
     await restoreOriginalState(request);
   } catch (restoreError: unknown) {
-    extensionLog.error("Reference graph: restoration verification failed", { requestId: request.requestId, restoreError });
-    throw new Error("Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.", {
-      cause: restoreError,
+    extensionLog.error("Reference graph: restoration verification failed", {
+      requestId: request.requestId,
+      restoreError,
     });
+    throw new Error(
+      "Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.",
+      { cause: restoreError },
+    );
   }
 
-  if (harvestError !== undefined)
-    throw harvestError instanceof Error ? harvestError : new Error("Harvest failed with a non-Error value", { cause: harvestError });
+  if (harvestError !== undefined) {
+    throw harvestError instanceof Error
+      ? harvestError
+      : new Error("Harvest failed with a non-Error value", { cause: harvestError });
+  }
   return harvestResults ?? [];
 }
 
@@ -295,7 +337,13 @@ async function setAndVerifyEditorState(
   phase: string,
 ): Promise<void> {
   if (rawValues !== undefined) {
-    await setAndVerifyOneEditorValue(request, createSetRawValuesTask(request, rawValues), rawValues, "rawValues", phase);
+    await setAndVerifyOneEditorValue(
+      request,
+      createSetRawValuesTask(request, rawValues),
+      rawValues,
+      "rawValues",
+      phase,
+    );
   }
 
   if (standardFields !== undefined) {

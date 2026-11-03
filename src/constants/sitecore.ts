@@ -9,24 +9,11 @@ export const SITECORE = {
     IMAGE: "contentimage",
     INTERNAL_LINK: "contentinternallink",
   },
-  DEVICES: {
-    DEFAULT: "{FE5D7FDF-89C0-4D99-9AA3-B5FBD009C9F3}",
-  },
-  SEARCH_PARAMS: {
-    DATABASE: "db",
-    DATABASE_KEYS: [
-      "db",
-      "sc_content",
-    ],
-    ITEM_ID: "id",
-    XML_CONTROL: "xmlcontrol",
-  },
+  DEVICES: { DEFAULT: "{FE5D7FDF-89C0-4D99-9AA3-B5FBD009C9F3}" },
+  SEARCH_PARAMS: { DATABASE: "db", DATABASE_KEYS: ["db", "sc_content"], ITEM_ID: "id", XML_CONTROL: "xmlcontrol" },
   HARVEST: {
     EXCLUDED_SECTION_NAMES_LC: new Set(["quick info"]),
-    EXCLUDED_FIELD_LABEL_PREFIXES: [
-      "final renderings",
-      "renderings",
-    ],
+    EXCLUDED_FIELD_LABEL_PREFIXES: ["final renderings", "renderings"],
     STANDARD_SECTION_NAMES_LC: new Set([
       "advanced",
       "appearance",
@@ -45,11 +32,7 @@ export const SITECORE = {
       "version",
       "workflow",
     ]),
-    NON_REFERENCE_GUID_FIELD_LABELS_LC: new Set([
-      "revision",
-      "shared revision",
-      "unversioned revision",
-    ]),
+    NON_REFERENCE_GUID_FIELD_LABELS_LC: new Set(["revision", "shared revision", "unversioned revision"]),
   },
   RELATIVE_PATHS_ENCODED: {
     CHANGE_TEMPLATE: "/sitecore/shell/Applications/Templates/Change%20template.aspx",
@@ -66,21 +49,14 @@ export const SITECORE = {
     TEMPLATE_MANAGER: "/sitecore/shell/Applications/Templates/Template-Manager",
   },
   CLASSIFICATION: {
-    PATH_ROOTS: {
-      CONTENT: "/sitecore/content",
-      TEMPLATES: "/sitecore/templates",
-    },
+    PATH_ROOTS: { CONTENT: "/sitecore/content", TEMPLATES: "/sitecore/templates" },
     BASE_TEMPLATE_PATHS: {
       PAGE: ["/sitecore/templates/Foundation/Experience Accelerator/Multisite/Content/Page"],
       SITE: ["/sitecore/templates/Foundation/Experience Accelerator/Multisite/Base/_Base Site Root"],
       TENANT: ["/sitecore/templates/Foundation/Experience Accelerator/Multisite/Base/_Base Tenant"],
     },
-    FIELD_LABELS: {
-      BASE_TEMPLATE: "__Base template",
-    },
-    ITEM_NAMES: {
-      STANDARD_VALUES: "__Standard Values",
-    },
+    FIELD_LABELS: { BASE_TEMPLATE: "__Base template" },
+    ITEM_NAMES: { STANDARD_VALUES: "__Standard Values" },
   },
   RIBBON_CHECKBOXES: {
     RAW_VALUES: "Check_BBDED3F008D144C82A983B54F0424BBC1",
@@ -103,44 +79,28 @@ export const SITECORE = {
       FOLDER_CUBES_48: "/-/icon/Applications/48x48/folder_cubes.png",
       WARNING_32: "/~/icon/applications/32x32/warning.png",
     },
-    BUSINESS: {
-      TABLE_SELECTION_BLOCK_48: "/-/icon/business/48x48/table_selection_block.png",
-    },
-    IMAGING: {
-      MASK_SQUARE_D_32: "/~/icon/imaging/32x32/mask_square_d.png",
-    },
+    BUSINESS: { TABLE_SELECTION_BLOCK_48: "/-/icon/business/48x48/table_selection_block.png" },
+    IMAGING: { MASK_SQUARE_D_32: "/~/icon/imaging/32x32/mask_square_d.png" },
     LAUNCHPAD: {
       CONTENT_EDITOR_48: "/-/icon/launchpadicons/48x48/contenteditor.png",
       CONTROL_PANEL_48: "/-/icon/launchpadicons/48x48/controlpanel.png",
       DESKTOP_48: "/-/icon/launchpadicons/48x48/desktop.png",
       DOTS_GRID: "/sitecore/shell/client/Applications/LaunchPad/Assets/dots-grid.svg",
     },
-    LICENSE_OPTIONS: {
-      USER: "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png",
-    },
+    LICENSE_OPTIONS: { USER: "/sitecore/shell/client/Applications/LicenseOptions/Assets/img/user.png" },
     OFFICE: {
       CHECK_16: "/~/icon/office/16x16/check.png",
       LAYOUT_DETAILS_24: "/~/icon/office/24x24/layout_details.png",
       REFRESH_16: "/~/icon/office/16x16/refresh.png",
     },
-    PEOPLE: {
-      HOURGLASS_16: "/~/icon/people/16x16/hourglass.png",
-      HOURGLASS_32: "/~/icon/people/32x32/hourglass.png",
-    },
-    POWERSHELL: {
-      ISE_48: "/-/icon/powershell/48x48/ise8.png",
-      SCRIPT_LIBRARY_48: "/-/icon//powershell/48x48/spe.png",
-    },
-    SOFTWARE: {
-      ELEMENTS_48: "/-/icon/software/48x48/elements1.png",
-    },
+    PEOPLE: { HOURGLASS_16: "/~/icon/people/16x16/hourglass.png", HOURGLASS_32: "/~/icon/people/32x32/hourglass.png" },
+    POWERSHELL: { ISE_48: "/-/icon/powershell/48x48/ise8.png", SCRIPT_LIBRARY_48: "/-/icon//powershell/48x48/spe.png" },
+    SOFTWARE: { ELEMENTS_48: "/-/icon/software/48x48/elements1.png" },
     TREE: {
       COLLAPSED: "/sitecore/shell/themes/standard/images/treemenu_collapsed.png",
       EXPANDED: "/sitecore/shell/themes/standard/images/treemenu_expanded.png",
     },
-    WORD_PROCESSING: {
-      SEARCH_A_H_32: "/-/icon/wordprocessing/32x32/search_a_h.png",
-    },
+    WORD_PROCESSING: { SEARCH_A_H_32: "/-/icon/wordprocessing/32x32/search_a_h.png" },
     SPINNER_SRC: "/~/icon/people/32x32/hourglass.png",
     PROCESSING_STATE: {
       HOURGLASS: "/~/icon/people/16x16/hourglass.png",
@@ -149,18 +109,9 @@ export const SITECORE = {
       WARNING: "/~/icon/applications/32x32/warning.png",
     },
   },
-  IDS: {
-    CONTENT_EDITOR: {
-      NAVIGATION: {},
-    },
-  },
+  IDS: { CONTENT_EDITOR: { NAVIGATION: {} } },
   QUICK_INFO: {
-    LABEL_PREFIX: {
-      ITEM_ID: "Item ID",
-      ITEM_PATH: "Item Path",
-      TEMPLATE: "Template",
-      ITEM_NAME: "Item Name",
-    },
+    LABEL_PREFIX: { ITEM_ID: "Item ID", ITEM_PATH: "Item Path", TEMPLATE: "Template", ITEM_NAME: "Item Name" },
   },
   SELECTORS: {
     RIBBON_PANEL: "#RibbonPanel",
@@ -173,14 +124,8 @@ export const SITECORE = {
         "a[id$='_Nav_HomeStrip']",
         "a[onclick*=\"'_Strip_HomeStrip'\"]",
       ],
-      NAVIGATION_TAB: [
-        "a[accesskey='N']",
-      ],
-      VIEW_TAB: [
-        "a[accesskey='I']",
-        "a[id$='_Nav_ViewStrip']",
-        "a[onclick*=\"'_Strip_ViewStrip'\"]",
-      ],
+      NAVIGATION_TAB: ["a[accesskey='N']"],
+      VIEW_TAB: ["a[accesskey='I']", "a[id$='_Nav_ViewStrip']", "a[onclick*=\"'_Strip_ViewStrip'\"]"],
     } satisfies Record<string, selectorHints>,
     QUICK_INFO_CELL: "td.scEditorSectionPanelCell > table.scEditorQuickInfo",
     COMBOBOX: ".scCombobox",
@@ -208,9 +153,7 @@ export const SITECORE = {
     SCRIPT_NAME: "#ScriptName",
     SECTION_CAPTION: "[class*='scEditorSectionCaption']",
     TAG_LIST_NAV_ARROWS: "img[id$='_right'], img[id$='_left'], img[id$='_up'], img[id$='_down']",
-    TREELIST_EX: {
-      ROOT: "div.scContentControl.scTreelistEx",
-    },
+    TREELIST_EX: { ROOT: "div.scContentControl.scTreelistEx" },
     TREE: {
       GLYPH: "img[id^='Tree_Glyph_']",
       LIST_ALL_PANE: ".scScrollbox.scContentControlTree",

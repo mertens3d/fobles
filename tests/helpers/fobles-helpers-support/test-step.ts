@@ -10,15 +10,10 @@ import { buildStepMatchKey } from "./step-match-key";
 // screenshotTarget costs a few seconds, not the whole test's 90s timeout.
 const STEP_SCREENSHOT_TIMEOUT_MS = 5_000;
 
-async function withTimeout<T>(
-  promise: Promise<T>,
-  timeoutMs: number,
-): Promise<T> {
+async function withTimeout<T>(promise: Promise<T>, timeoutMs: number): Promise<T> {
   return Promise.race([
     promise,
-    new Promise<T>((_, reject) =>
-      setTimeout(() => reject(new Error("timed out")), timeoutMs),
-    ),
+    new Promise<T>((_, reject) => setTimeout(() => reject(new Error("timed out")), timeoutMs)),
   ]);
 }
 
@@ -80,11 +75,7 @@ export function createFoblesStep(
 
           if (options?.screenshot !== false) {
             await withTimeout(
-              attachPageScreenshot(
-                testInfo,
-                screenshotTarget,
-                `step-${safeName}.png`,
-              ),
+              attachPageScreenshot(testInfo, screenshotTarget, `step-${safeName}.png`),
               STEP_SCREENSHOT_TIMEOUT_MS,
             ).catch(() => {
               // Best-effort - a screenshot failure (e.g. page mid-navigation) must never mask the
@@ -95,9 +86,7 @@ export function createFoblesStep(
       },
       options,
     );
-    console.log(
-      `[fobles] Step finished: ${titlePrefix ? `${titlePrefix}: ${title}` : title}`,
-    );
+    console.log(`[fobles] Step finished: ${titlePrefix ? `${titlePrefix}: ${title}` : title}`);
     console.log(`${TEST_CONST.TESTING.LOG.STEP_DIVIDER}`);
   };
 }

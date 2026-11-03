@@ -1,9 +1,6 @@
 // @source-path [fobles] src/content/shared/ui/reference-controls/view-reference-model-button.tsx
 
-export type ViewReferenceModelButtonProps = {
-  onViewReferenceModel: () => void;
-  className?: string;
-};
+export type ViewReferenceModelButtonProps = { onViewReferenceModel: () => void; className?: string };
 
 const BASE_CLASS = "fobles-view-reference-model-button";
 

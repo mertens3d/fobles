@@ -16,47 +16,42 @@ const startsWithLabel = (value: string, candidate: string): boolean =>
 const getSourceValue = (element: Element, source: QuickInfoSource): string =>
   source.valueSource === "value"
     ? (element as HTMLInputElement).value.trim()
-    : element.textContent?.replace(/\s+/g, " ").trim() ?? "";
+    : (element.textContent?.replace(/\s+/g, " ").trim() ?? "");
 
 const getTarget = (value: string, source: QuickInfoSource): string | null => {
-  if (source.targetKind === "guid") return extractGuid(value);
+  if (source.targetKind === "guid") {
+    return extractGuid(value);
+  }
   return /^\/sitecore\//i.test(value) ? value : null;
 };
 
-const createWrapper = (
-  doc: Document,
-  source: QuickInfoSource,
-): HTMLElement =>
+const createWrapper = (doc: Document, source: QuickInfoSource): HTMLElement =>
   createFoblesWrapper(doc, {
     tag: "span",
     strategy: FOBLES.STRATEGIES.QUICK_INFO_SECTION,
     classNames: [
-      source.wrapperVariant === "quickinfo"
-        ? FOBLES.CLASSES.WRAPPERS.QUICK_INFO
-        : FOBLES.CLASSES.WRAPPERS.ROW,
+      source.wrapperVariant === "quickinfo" ? FOBLES.CLASSES.WRAPPERS.QUICK_INFO : FOBLES.CLASSES.WRAPPERS.ROW,
     ],
     cssHeightProperty: FOBLES.CSS_PROPERTIES.HEIGHT,
     height: 24,
   });
 
-const replaceSource = (
-  doc: Document,
-  element: HTMLElement,
-  source: QuickInfoSource,
-): void => {
-  if (element.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;
+const replaceSource = (doc: Document, element: HTMLElement, source: QuickInfoSource): void => {
+  if (element.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) {
+    return;
+  }
 
   const value = getSourceValue(element, source);
   const target = getTarget(value, source);
-  if (!target) return;
+  if (!target) {
+    return;
+  }
 
   const wrapper = createWrapper(doc, source);
   const button = createFoblesButton(doc, value, buildFoblesUrl(target), {
     classNames: [
       FOBLES.CLASSES.BUTTONS.BASE,
-      source.wrapperVariant === "quickinfo"
-        ? FOBLES.CLASSES.BUTTONS.QUICK_INFO
-        : "",
+      source.wrapperVariant === "quickinfo" ? FOBLES.CLASSES.BUTTONS.QUICK_INFO : "",
     ].filter(Boolean),
   });
   assignFoblesItemId(button, target);
@@ -67,26 +62,25 @@ const replaceSource = (
   element.after(wrapper);
 };
 
-const applyCandidate = (
-  doc: Document,
-  row: HTMLTableRowElement,
-  candidate: QuickInfoCandidate,
-): void => {
+const applyCandidate = (doc: Document, row: HTMLTableRowElement, candidate: QuickInfoCandidate): void => {
   const labelCell = row.cells.item(0);
   const valueCell = row.cells.item(1);
-  if (!labelCell || !valueCell) return;
-  if (!startsWithLabel(labelCell.textContent ?? "", candidate.labelStartsWith)) return;
+  if (!labelCell || !valueCell) {
+    return;
+  }
+  if (!startsWithLabel(labelCell.textContent ?? "", candidate.labelStartsWith)) {
+    return;
+  }
 
   candidate.sources.forEach((source) => {
     const element = valueCell.querySelector<HTMLElement>(source.selector);
-    if (element) replaceSource(doc, element, source);
+    if (element) {
+      replaceSource(doc, element, source);
+    }
   });
 };
 
-export function applyQuickInfoSectionStrategy(
-  doc: Document,
-  config: QuickInfoSectionConfig,
-): void {
+export function applyQuickInfoSectionStrategy(doc: Document, config: QuickInfoSectionConfig): void {
   doc.querySelectorAll<HTMLTableElement>(config.FoblesTopSelector).forEach((table) => {
     Array.from(table.rows).forEach((row) => {
       config.candidates.forEach((candidate) => applyCandidate(doc, row, candidate));

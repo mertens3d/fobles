@@ -1,6 +1,11 @@
 // @source-path [fobles] src/content/foundation/harvesting/sitecore-harvester.types.ts
 
-import type { ItemGraphNodeData, LayoutSectionField, RootItem, SitecoreHarvestSection } from "../reference-data/model/sitecore-item.types";
+import type {
+  ItemGraphNodeData,
+  LayoutSectionField,
+  RootItem,
+  SitecoreHarvestSection,
+} from "../reference-data/model/sitecore-item.types";
 import type { HarvestSession } from "./harvest-session.types";
 
 export type HarvestContext = {
@@ -10,10 +15,7 @@ export type HarvestContext = {
   rootItem: ItemGraphNodeData;
 };
 
-export type ProgressStep = {
-  stepKey: StepKey;
-  label: string;
-};
+export type ProgressStep = { stepKey: StepKey; label: string };
 
 export type HarvestStep = ProgressStep & {
   stepKey: StepKey;
@@ -58,15 +60,9 @@ export type StepKey =
   | "enrichment"
   | "build-graph";
 
-export type HarvestProgressStatus =
-  | "active"
-  | "skipped"
-  | "complete";
+export type HarvestProgressStatus = "active" | "skipped" | "complete";
 
-export type HarvestProgressCallback = (
-  step: ProgressStep,
-  status: HarvestProgressStatus,
-) => void;
+export type HarvestProgressCallback = (step: ProgressStep, status: HarvestProgressStatus) => void;
 
 export type HarvestRequest = {
   requestId: string;

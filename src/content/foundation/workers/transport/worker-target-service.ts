@@ -17,11 +17,7 @@ import {
   sendTaskToWorkerTab,
 } from "./worker-tab-service";
 import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
-import {
-  isWorkerIframeTarget,
-  isWorkerTabTarget,
-  type WorkerTarget,
-} from "../pool/worker-target";
+import { isWorkerIframeTarget, isWorkerTabTarget, type WorkerTarget } from "../pool/worker-target";
 
 export async function createWorkerTarget(
   hostTabId: number | undefined,
@@ -33,15 +29,14 @@ export async function createWorkerTarget(
     target = await createWorkerIframeTarget(hostTabId, url);
   } else {
     const tabId = await createWorkerTab(url, active);
-    if (tabId !== undefined) target = { kind: "tab", tabId };
+    if (tabId !== undefined) {
+      target = { kind: "tab", tabId };
+    }
   }
   return target;
 }
 
-export async function navigateWorkerTarget(
-  target: WorkerTarget,
-  url: string,
-): Promise<WorkerTarget> {
+export async function navigateWorkerTarget(target: WorkerTarget, url: string): Promise<WorkerTarget> {
   let updatedTarget = target;
   if (isWorkerIframeTarget(target)) {
     updatedTarget = await navigateWorkerIframeTarget(target, url);
@@ -80,11 +75,7 @@ export async function sendTaskToWorkerTarget(
   return result;
 }
 
-export function sendCancelToWorkerTarget(
-  target: WorkerTarget,
-  requestId: string,
-  taskId: string,
-): void {
+export function sendCancelToWorkerTarget(target: WorkerTarget, requestId: string, taskId: string): void {
   if (isWorkerIframeTarget(target)) {
     sendCancelToWorkerIframe(target, requestId, taskId);
   } else {

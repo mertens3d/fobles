@@ -25,14 +25,17 @@ function startWorkerRuntime(workerId: string): void {
 
 function startNormalRuntime(): void {
   extensionLog.info("Content script loaded. Press Ctrl+Shift+E to toggle.");
-  chrome.runtime.onMessage.addListener((message: unknown) => { 
-receiveActivityMessage(message); });
+  chrome.runtime.onMessage.addListener((message: unknown) => {
+    receiveActivityMessage(message);
+  });
   registerWorkerTabHandler(executeWorkerTask, isSitecoreItemDocumentReady);
   startFoblesShellRuntime(document, window);
   startToolbarRuntime();
 }
 
 const workerId = getWorkerId();
-if (workerId) 
-startWorkerRuntime(workerId);
-else startNormalRuntime();
+if (workerId) {
+  startWorkerRuntime(workerId);
+} else {
+  startNormalRuntime();
+}

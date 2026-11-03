@@ -8,7 +8,9 @@ export function attachPageDiagnosticHandlers(context: BrowserContext): void {
   const pageDiagnostics = (page: Page): void => {
     page.on("console", (message) => {
       const location = message.location().url;
-      if (location && isIgnorableDiagnosticUrl(location)) return;
+      if (location && isIgnorableDiagnosticUrl(location)) {
+        return;
+      }
 
       if (message.type() === "warning") {
         if (!isIgnorableConsoleWarning(message.text())) {
@@ -41,8 +43,8 @@ export function attachPageDiagnosticHandlers(context: BrowserContext): void {
 
     // Uncomment to diagnose redirects and iframe navigation.
     //page.on("framenavigated", (frame) => {
-      // const kind = frame === page.mainFrame() ? "main frame" : "iframe";
-      // logDiagnostic(`[browser framenavigated:${kind}] ${frame.url()}`);
+    // const kind = frame === page.mainFrame() ? "main frame" : "iframe";
+    // logDiagnostic(`[browser framenavigated:${kind}] ${frame.url()}`);
     //});
 
     page.on("crash", () => {
@@ -65,15 +67,11 @@ function isIgnorableConsoleWarning(text: string): boolean {
 }
 
 function isIgnorableConsoleError(text: string): boolean {
-  return TEST_CONST.TESTING.DIAGNOSTIC.IGNORABLE_CONSOLE_MESSAGES.some(
-    (msg) => text.includes(msg),
-  );
+  return TEST_CONST.TESTING.DIAGNOSTIC.IGNORABLE_CONSOLE_MESSAGES.some((msg) => text.includes(msg));
 }
 
 function isIgnorableRequestFailure(request: Request): boolean {
   const errorText = request.failure()?.errorText ?? "";
 
-  return TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_REQUEST_FAILURES.some(
-    (ignored) => errorText.includes(ignored),
-  );
+  return TEST_CONST.TESTING.DIAGNOSTIC.IGNORED_REQUEST_FAILURES.some((ignored) => errorText.includes(ignored));
 }

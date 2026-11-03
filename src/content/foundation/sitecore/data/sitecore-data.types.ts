@@ -1,9 +1,6 @@
 // @source-path [fobles] src/content/foundation/sitecore/data/sitecore-data.types.ts
 
-import type {
-  SitecoreDataFactMap,
-  SitecoreDataFactName,
-} from "../../cache/sitecore-data/sitecore-data-cache.types";
+import type { SitecoreDataFactMap, SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data-cache.types";
 import type { SitecoreItemLocator, WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
 
 export type SitecoreFactSource = "cache" | "live";
@@ -29,8 +26,8 @@ export type SitecoreDataFactResult<TValue> =
   | { outcome: "unresolved"; result: WorkerTaskExecutionResult };
 
 export type GetFactOptions = {
-    activityId?: string;
-    requestId?: string;
+  activityId?: string;
+  requestId?: string;
   // Discovery metadata only - carried through to a ValidationCandidate for a future Phase 3C
   // scheduler. Never used by Phase 3B's own read-through/write-through decisions.
   itemKind?: ValidationCandidateItemKind;

@@ -1,10 +1,7 @@
 import { STORAGE } from "../constants/extension-const";
 import { getStorageValue, onStorageChange, setStorageValue } from "./storage/storage";
 
-export type AiPagesMapping = {
-  contentRoot: string;
-  site: string;
-};
+export type AiPagesMapping = { contentRoot: string; site: string };
 
 export type AiPagesGroup = {
   mappings: readonly AiPagesMapping[];
@@ -14,16 +11,18 @@ export type AiPagesGroup = {
 };
 
 const isAiPagesMapping = (value: unknown): value is AiPagesMapping => {
-  if (!value || typeof value !== "object") return false;
+  if (!value || typeof value !== "object") {
+    return false;
+  }
 
   const mapping = value as Record<string, unknown>;
-  return ["contentRoot", "site"].every(
-    (key) => typeof mapping[key] === "string" && mapping[key].trim().length > 0,
-  );
+  return ["contentRoot", "site"].every((key) => typeof mapping[key] === "string" && mapping[key].trim().length > 0);
 };
 
 const isAiPagesGroup = (value: unknown): value is AiPagesGroup => {
-  if (!value || typeof value !== "object") return false;
+  if (!value || typeof value !== "object") {
+    return false;
+  }
 
   const group = value as Record<string, unknown>;
   return (
@@ -46,9 +45,7 @@ const normalizeAiPagesGroup = (group: AiPagesGroup): AiPagesGroup => ({
 });
 
 function normalizeAiPagesGroups(value: unknown): readonly AiPagesGroup[] {
-  return Array.isArray(value)
-    ? value.filter(isAiPagesGroup).map(normalizeAiPagesGroup)
-    : [];
+  return Array.isArray(value) ? value.filter(isAiPagesGroup).map(normalizeAiPagesGroup) : [];
 }
 
 export async function getAiPagesMappings(): Promise<readonly AiPagesGroup[]> {
@@ -60,9 +57,7 @@ export async function setAiPagesMappings(groups: readonly AiPagesGroup[]): Promi
   await setStorageValue({ [STORAGE.KEY.AI_PAGES_MAPPINGS]: groups });
 }
 
-export function onAiPagesMappingsChange(
-  callback: (groups: readonly AiPagesGroup[]) => void,
-): void {
+export function onAiPagesMappingsChange(callback: (groups: readonly AiPagesGroup[]) => void): void {
   onStorageChange(STORAGE.KEY.AI_PAGES_MAPPINGS, (newValue) => {
     callback(normalizeAiPagesGroups(newValue));
   });

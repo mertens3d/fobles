@@ -1,8 +1,4 @@
-import {
-  DEFAULT_TOOLBAR_PLACEMENT,
-  SELECTORS,
-  TOOLBAR_CORNERS
-} from "../constants/fobles.constants";
+import { DEFAULT_TOOLBAR_PLACEMENT, SELECTORS, TOOLBAR_CORNERS } from "../constants/fobles.constants";
 import { type AllowedPage } from "../constants/constants.types";
 import { MESSAGE, STORAGE } from "../constants/extension-const";
 import type { ToolbarPlacement } from "./toolbar.types";
@@ -12,17 +8,9 @@ import { getPlacementForPage, setPlacementForPage } from "./toolbar-placement";
 import { getFoblesNavVisible, setFoblesNavVisible } from "../shared/nav-settings";
 import { getFoblesState, setFoblesState as setPersistedFoblesState } from "./state";
 import type { MessageRequest } from "./content.types";
-import {
-  findAllowedPage,
-  isKickUsersPath,
-} from "./guard";
+import { findAllowedPage, isKickUsersPath } from "./guard";
 import { resumeKickAllUsers } from "./features/jump-flyout";
-import {
-  injectToolbar,
-  setToolbarPlacement,
-  setToolbarVisible,
-  type ToolbarContext,
-} from "./toolbar";
+import { injectToolbar, setToolbarPlacement, setToolbarVisible, type ToolbarContext } from "./toolbar";
 import { applyPowerShellIseTabIdentity } from "./ise-tab-title";
 import { toggleLightningBolt } from "./feature-toggle";
 
@@ -40,7 +28,9 @@ function getToolbarContext(): ToolbarContext {
     placement: foblesNavPlacement,
     setPlacement: (placement) => {
       foblesNavPlacement = placement;
-      if (currentAllowedPage) void setPlacementForPage(currentAllowedPage.id, placement);
+      if (currentAllowedPage) {
+        void setPlacementForPage(currentAllowedPage.id, placement);
+      }
     },
     setVisible: (visible) => {
       foblesNavVisible = visible;
@@ -50,7 +40,9 @@ function getToolbarContext(): ToolbarContext {
 }
 
 function showFoblesToolbar(): void {
-  if (foblesUiActive) return;
+  if (foblesUiActive) {
+    return;
+  }
   extensionLog.info("Activating Fobles UI");
   setPersistedFoblesState(true);
   injectToolbar(getToolbarContext());
@@ -58,7 +50,9 @@ function showFoblesToolbar(): void {
 }
 
 function hideFoblesToolbar(): void {
-  if (!foblesUiActive) return;
+  if (!foblesUiActive) {
+    return;
+  }
   extensionLog.info("Deactivating Fobles UI");
   setPersistedFoblesState(false);
   injectToolbar(getToolbarContext());
@@ -66,38 +60,55 @@ function hideFoblesToolbar(): void {
 }
 
 function notifyCurrentPageReady(): void {
-  if (window.top !== window || !chrome.runtime?.sendMessage) return;
+  if (window.top !== window || !chrome.runtime?.sendMessage) {
+    return;
+  }
   void chrome.runtime.sendMessage({ action: MESSAGE.ACTION.PAGE_READY });
 }
 
 function listenForToggleMessages(): void {
-  if (toggleMessagesListening) return;
+  if (toggleMessagesListening) {
+    return;
+  }
   toggleMessagesListening = true;
-  chrome.runtime?.onMessage?.addListener(
-    (request: MessageRequest, _sender: unknown, _sendResponse: unknown) => {
-      if (request.action === MESSAGE.ACTION.TOGGLE_FOBLES) {
-        const nextVisible = !foblesNavVisible;
-        extensionLog.info("Hotkey triggered: toggle-fobles (nav visibility)", { nextVisible });
-        void setFoblesNavVisible(nextVisible);
-      } else if (request.action === MESSAGE.ACTION.TOGGLE_LBOLT) {
-        extensionLog.info("Hotkey triggered: toggle-lbolt");
-        toggleLightningBolt();
-      }
-    },
-  );
+  chrome.runtime?.onMessage?.addListener((request: MessageRequest, _sender: unknown, _sendResponse: unknown) => {
+    if (request.action === MESSAGE.ACTION.TOGGLE_FOBLES) {
+      const nextVisible = !foblesNavVisible;
+      extensionLog.info("Hotkey triggered: toggle-fobles (nav visibility)", { nextVisible });
+      void setFoblesNavVisible(nextVisible);
+    } else if (request.action === MESSAGE.ACTION.TOGGLE_LBOLT) {
+      extensionLog.info("Hotkey triggered: toggle-lbolt");
+      toggleLightningBolt();
+    }
+  });
 }
 
 function listenForStorageChanges(): void {
   chrome.storage?.onChanged?.addListener((changes, areaName) => {
-    if (areaName !== "sync") return;
-    if (changes[STORAGE.KEY.DEBUG_LOGGING] || changes[STORAGE.KEY.SHOW_RELOAD_EXTENSION_BUTTON]) void reconcileCurrentPage();
-    if (!pageEligible) return;
+    if (areaName !== "sync") {
+      return;
+    }
+    if (changes[STORAGE.KEY.DEBUG_LOGGING] || changes[STORAGE.KEY.SHOW_RELOAD_EXTENSION_BUTTON]) {
+      void reconcileCurrentPage();
+    }
+    if (!pageEligible) {
+      return;
+    }
     const change = changes[STORAGE.KEY.FOBLES_NAV_VISIBLE];
-    if (typeof change?.newValue === "boolean") setToolbarVisible(getToolbarContext(), change.newValue);
-    if (!currentAllowedPage) return;
+    if (typeof change?.newValue === "boolean") {
+      setToolbarVisible(getToolbarContext(), change.newValue);
+    }
+    if (!currentAllowedPage) {
+      return;
+    }
     const positionKey = `${STORAGE.KEY.FOBLES_NAV_POSITION}_${currentAllowedPage.id}`;
     const placement = changes[positionKey]?.newValue as ToolbarPlacement | undefined;
-    if (placement && TOOLBAR_CORNERS.includes(placement.corner) && typeof placement.offsetX === "number" && typeof placement.offsetY === "number") {
+    if (
+      placement &&
+      TOOLBAR_CORNERS.includes(placement.corner) &&
+      typeof placement.offsetX === "number" &&
+      typeof placement.offsetY === "number"
+    ) {
       setToolbarPlacement(getToolbarContext(), placement);
     }
   });
@@ -122,8 +133,9 @@ async function reconcileCurrentPage(): Promise<void> {
     getPlacementForPage(allowedPage.id, allowedPage.defaultPlacement),
   ]);
   const shouldInitialize = getFoblesState();
-  if (shouldInitialize || kickUsersPath) showFoblesToolbar();
-  else {
+  if (shouldInitialize || kickUsersPath) {
+    showFoblesToolbar();
+  } else {
     extensionLog.debug("Fobles UI not activated: persisted state is OFF");
     setPersistedFoblesState(false);
     foblesUiActive = false;

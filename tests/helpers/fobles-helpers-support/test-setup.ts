@@ -7,25 +7,17 @@ import { expectLBoltButton } from "../../expect-snippets/expect-snippets";
 import { clickLbolt } from "../../macros/fobles-macros";
 import type { StrategyScenarioData } from "../../e2e/strategies/support/scenario.types";
 
-export async function setupContentEditorForTestingBasic(
-  page: Page
-) {
+export async function setupContentEditorForTestingBasic(page: Page) {
   await openContentEditor(page);
   console.log(`[fobles] Navigation finished at ${page.url()}`);
   await moveMouseToDefault(page);
 }
 
-export async function setupContentEditorForTesting(
-  page: Page,
-  scenario: StrategyScenarioData,
-) {
+export async function setupContentEditorForTesting(page: Page, scenario: StrategyScenarioData) {
   //return { page, fieldTable, locatorFirstResult, STEP_WAIT_MS, step, SCENARIO: scenario , testInfo };
 
   console.log(`[fobles] Opening strategy item ${scenario.itemId}`);
-  await openSitecorePage(
-    page,
-    `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${scenario.itemId}`,
-  );
+  await openSitecorePage(page, `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${scenario.itemId}`);
   // &fo=${scenario.itemId}`);
   console.log(`[fobles] Navigation finished at ${page.url()}`);
   await moveMouseToDefault(page);
@@ -48,34 +40,23 @@ export function getEditorSectionLocator(fieldTable: Locator): Locator {
   return fieldTable;
 }
 
-async function logActivationState(
-  frame: Frame,
-  message: string,
-): Promise<void> {
+async function logActivationState(frame: Frame, message: string): Promise<void> {
   const state = await frame.evaluate(() => ({
     persistedState: localStorage.getItem("fobles_state"),
-    foblesButtons: document.querySelectorAll("[data-is-fobles-button='1']")
-      .length,
+    foblesButtons: document.querySelectorAll("[data-is-fobles-button='1']").length,
     foblesWrappers: document.querySelectorAll("[data-fobles-wrapper]").length,
   }));
   console.log(`${message}: ${JSON.stringify(state)}`);
 }
 
 export async function activateFobles(page: Page): Promise<Frame> {
-  await openContentEditor(
-    page,
-    TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT,
-  );
+  await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
 
   await expect
     .poll(
       async () => {
         for (const frame of page.frames()) {
-          if (
-            (await frame
-              .locator(`#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`)
-              .count()) > 0
-          ) {
+          if ((await frame.locator(`#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`).count()) > 0) {
             return true;
           }
         }
@@ -90,11 +71,7 @@ export async function activateFobles(page: Page): Promise<Frame> {
     `#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
     `tree node #${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
   );
-  await clickWithMouseMarker(
-    page,
-    treeFrame.locator(`#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`),
-    "Tree node",
-  );
+  await clickWithMouseMarker(page, treeFrame.locator(`#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`), "Tree node");
 
   const foblesFrame = await findFoblesFrame(page);
   await logActivationState(foblesFrame, "[fobles] LBolt setup before click");

@@ -18,7 +18,9 @@ const workerIframeById = new Map<string, HTMLIFrameElement>();
 let workerIframeHostRegistered = false;
 
 export function registerWorkerIframeHost(doc: Document): void {
-  if (workerIframeHostRegistered) return;
+  if (workerIframeHostRegistered) {
+    return;
+  }
   workerIframeHostRegistered = true;
   chrome.runtime.onMessage.addListener((message: WorkerIframeHostMessage, _sender, sendResponse) => {
     if (message.type === WORKER_IFRAME_CREATE_MESSAGE_TYPE) {
@@ -174,7 +176,9 @@ export function emergencyCleanupWorkerIframes(doc: Document): WorkerIframeEmerge
   });
   container?.remove();
   orphanIframes.forEach((iframe) => {
-    if (iframe.isConnected) iframe.remove();
+    if (iframe.isConnected) {
+      iframe.remove();
+    }
   });
   workerIframeById.clear();
   result.orphanCountAfter = doc.querySelectorAll(WORKER_POOL.WORKER_IFRAME_SELECTOR).length;

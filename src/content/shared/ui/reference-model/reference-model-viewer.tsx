@@ -4,7 +4,9 @@ import { copySanitizedText, downloadSanitizedText } from "../../../../shared/exp
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import { DialogIconButton } from "../dialog/dialog-icon-button";
 const COPIED_FEEDBACK_DURATION_MS = 1500;
+
 export const AUDITOR_EXPORT_CSV_EVENT = "fobles:auditor-export-csv";
+
 export type ReferenceModelViewerProps = { referenceModel: ReferenceModelNode; onClose: () => void };
 
 export function ReferenceModelViewer({ referenceModel, onClose }: ReferenceModelViewerProps) {
@@ -18,7 +20,12 @@ export function ReferenceModelViewer({ referenceModel, onClose }: ReferenceModel
   }
 
   function handleDownload(): void {
-    downloadSanitizedText(document, formattedJson, `fobles-reference-model-${new Date().toISOString().replace(/[:.]/g, "-")}.json`, "application/json;charset=utf-8");
+    downloadSanitizedText(
+      document,
+      formattedJson,
+      `fobles-reference-model-${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
+      "application/json;charset=utf-8",
+    );
   }
 
   return (
@@ -26,9 +33,15 @@ export function ReferenceModelViewer({ referenceModel, onClose }: ReferenceModel
       <header className="fobles-reference-model-viewer-header">
         <h2>Reference Model</h2>
         <div className="fobles-reference-model-viewer-actions">
-          <button type="button" onClick={() => void handleCopy()}>{copied ? "Copied" : "Copy to Clipboard"}</button>
-          <button type="button" onClick={handleDownload}>Download JSON</button>
-          <button type="button" onClick={() => window.dispatchEvent(new Event(AUDITOR_EXPORT_CSV_EVENT))}>Export CSV</button>
+          <button type="button" onClick={() => void handleCopy()}>
+            {copied ? "Copied" : "Copy to Clipboard"}
+          </button>
+          <button type="button" onClick={handleDownload}>
+            Download JSON
+          </button>
+          <button type="button" onClick={() => window.dispatchEvent(new Event(AUDITOR_EXPORT_CSV_EVENT))}>
+            Export CSV
+          </button>
           <DialogIconButton kind="close" label="Close Reference Model" onClick={onClose} />
         </div>
       </header>

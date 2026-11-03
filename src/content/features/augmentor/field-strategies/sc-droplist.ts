@@ -13,12 +13,11 @@ const isDroplist = (select: HTMLSelectElement): boolean => {
 // navigation target from. Rather than hide the select behind a non-functional button, this leaves
 // genuine Droplist fields completely untouched, only marking them processed so nothing else
 // (including Fobles' own rescans) tries to claim them again.
-export function applyDroplistStrategy(
-  doc: Document,
-  config: DroplistConfig,
-): void {
+export function applyDroplistStrategy(doc: Document, config: DroplistConfig): void {
   doc.querySelectorAll<HTMLSelectElement>(config.FoblesTopSelector).forEach((select) => {
-    if (select.hasAttribute(FOBLES.ATTRIBUTES.MARKER) || !isDroplist(select)) return;
+    if (select.hasAttribute(FOBLES.ATTRIBUTES.MARKER) || !isDroplist(select)) {
+      return;
+    }
 
     select.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");
   });

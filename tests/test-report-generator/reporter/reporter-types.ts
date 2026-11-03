@@ -1,25 +1,14 @@
 import type { FullResult, TestResult } from "@playwright/test/reporter";
 
-export type ReporterOptions = {
-  outputFile?: string;
-};
+export type ReporterOptions = { outputFile?: string };
 
 export type ReportStatus = TestResult["status"] | FullResult["status"] | "running";
 
-export type ScreenshotInfo = {
-  name: string;
-  href: string;
-};
+export type ScreenshotInfo = { name: string; href: string };
 
-export type NoteInfo = {
-  name: string;
-  text: string;
-};
+export type NoteInfo = { name: string; text: string };
 
-export type FoblesLogInfo = {
-  name: string;
-  href: string;
-};
+export type FoblesLogInfo = { name: string; href: string };
 
 export type ReportResult = {
   index: number;

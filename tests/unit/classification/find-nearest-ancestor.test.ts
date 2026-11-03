@@ -2,7 +2,12 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { findNearestAncestorByClassification, type AncestorWalkItem, type ClassifyAncestor, type GetParentItem } from "../../../src/content/foundation/reference-data/processing/classification/find-nearest-ancestor.ts";
+import {
+  findNearestAncestorByClassification,
+  type AncestorWalkItem,
+  type ClassifyAncestor,
+  type GetParentItem,
+} from "../../../src/content/foundation/reference-data/processing/classification/find-nearest-ancestor.ts";
 import type { ItemClassification } from "../../../src/content/foundation/reference-data/processing/classification/item-classification.types.ts";
 
 function item(id: string): AncestorWalkItem {
@@ -22,13 +27,23 @@ function classifyBy(classifications: Record<string, ItemClassification>): Classi
 }
 
 void test("the selected item itself matches and is returned without walking further", async () => {
-  const result = await findNearestAncestorByClassification(item("a"), "site", classifyBy({ a: "site" }), chainOf(["a", "b"]));
+  const result = await findNearestAncestorByClassification(
+    item("a"),
+    "site",
+    classifyBy({ a: "site" }),
+    chainOf(["a", "b"]),
+  );
   assert.deepEqual(result, { outcome: "found", item: item("a") });
 });
 
 void test("the nearest matching ancestor wins, not a further one that also matches", async () => {
   const chain = ["a", "b", "c", "d"];
-  const result = await findNearestAncestorByClassification(item("a"), "tenant", classifyBy({ c: "tenant", d: "tenant" }), chainOf(chain));
+  const result = await findNearestAncestorByClassification(
+    item("a"),
+    "tenant",
+    classifyBy({ c: "tenant", d: "tenant" }),
+    chainOf(chain),
+  );
   assert.equal(result.outcome, "found");
   assert.equal(result.outcome === "found" ? result.item.id : undefined, "c");
 });
@@ -82,8 +97,18 @@ void test("walking stops as soon as a match is found - the parent beyond it is n
 void test("Site and Tenant targets are resolved independently against the same chain", async () => {
   const chain = ["a", "b", "c"];
   const classifications: Record<string, ItemClassification> = { b: "site", c: "tenant" };
-  const siteResult = await findNearestAncestorByClassification(item("a"), "site", classifyBy(classifications), chainOf(chain));
-  const tenantResult = await findNearestAncestorByClassification(item("a"), "tenant", classifyBy(classifications), chainOf(chain));
+  const siteResult = await findNearestAncestorByClassification(
+    item("a"),
+    "site",
+    classifyBy(classifications),
+    chainOf(chain),
+  );
+  const tenantResult = await findNearestAncestorByClassification(
+    item("a"),
+    "tenant",
+    classifyBy(classifications),
+    chainOf(chain),
+  );
   assert.equal(siteResult.outcome === "found" ? siteResult.item.id : undefined, "b");
   assert.equal(tenantResult.outcome === "found" ? tenantResult.item.id : undefined, "c");
 });

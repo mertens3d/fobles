@@ -21,7 +21,9 @@ import { TEST_CONSTB } from "./playwright.const";
 
 async function logoutSitecoreSessions(context: BrowserContext): Promise<void> {
   const page = context.pages()[0];
-  if (!page) return;
+  if (!page) {
+    return;
+  }
 
   try {
     // The last test may have left the browser on an admin subpage without
@@ -133,4 +135,5 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
 });
 
 export { expect } from "@playwright/test";
+
 export type { Frame, Locator, Page, TestInfo } from "@playwright/test";

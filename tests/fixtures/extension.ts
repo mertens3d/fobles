@@ -25,21 +25,12 @@ export async function openExtensionPage(
   return extensionPage;
 }
 
-export async function clickExtensionControl(
-  page: Page,
-  control: Locator,
-  label: string,
-): Promise<void> {
+export async function clickExtensionControl(page: Page, control: Locator, label: string): Promise<void> {
   await bringPageToFront(page);
   await clickWithMouseMarker(page, control, label);
 }
 
-export async function fillExtensionInput(
-  page: Page,
-  input: Locator,
-  value: string,
-  label: string,
-): Promise<void> {
+export async function fillExtensionInput(page: Page, input: Locator, value: string, label: string): Promise<void> {
   await bringPageToFront(page);
   await clickWithMouseMarker(page, input, label);
   await input.fill(value);
@@ -67,9 +58,7 @@ export async function setFoblesNavVisible(
 ): Promise<void> {
   const popupPage = await openExtensionPage(context, extensionId, "popup");
   const preferenceId = TEST_CONST.TESTING.POPUP.PREFERENCE_IDS[0];
-  const checkbox = popupPage.locator(
-    `${TEST_CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${preferenceId}`,
-  );
+  const checkbox = popupPage.locator(`${TEST_CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${preferenceId}`);
   await setExtensionCheckbox(popupPage, checkbox, visible, preferenceId);
   await popupPage.close();
 }
@@ -84,9 +73,7 @@ export async function setFoblesNavWarningVisible(
 ): Promise<void> {
   const popupPage = await openExtensionPage(context, extensionId, "popup");
   const preferenceId = TEST_CONST.TESTING.POPUP.PREFERENCE_IDS[1];
-  const checkbox = popupPage.locator(
-    `${TEST_CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${preferenceId}`,
-  );
+  const checkbox = popupPage.locator(`${TEST_CONST.TESTING.POPUP.PREFERENCE_SELECTOR_PREFIX}${preferenceId}`);
   await setExtensionCheckbox(popupPage, checkbox, visible, preferenceId);
   await popupPage.close();
 }

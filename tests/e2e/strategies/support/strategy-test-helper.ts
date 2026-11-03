@@ -1,5 +1,8 @@
 import { TEST_CONST } from "../../../constants/TEST_CONST";
-import { expectFoblesButtonNewTabNavigationStrategy, expectFoblesButtonSameTabNavigation } from "../../../helpers/fobles-helpers-support/navigation-assertions";
+import {
+  expectFoblesButtonNewTabNavigationStrategy,
+  expectFoblesButtonSameTabNavigation,
+} from "../../../helpers/fobles-helpers-support/navigation-assertions";
 import { clickLbolt } from "../../../macros/fobles-macros";
 import { clickWithMouseMarker, ensureMouseMarkerExists, highlightClickTarget } from "../../../helpers/mouse-proxy";
 import { fieldScreenshotName, FOBLES_HIDDEN_CLASS_PATTERN } from "./CONST";
@@ -23,13 +26,15 @@ export async function stepExpectFoblesInitialConditions(testContext: StrategyTes
 
     const fieldTable = await testContext.getFieldTable();
     await expect(fieldTable).toBeVisible();
-    if (! await fieldTable.isVisible()) {
+    if (!(await fieldTable.isVisible())) {
       console.error(`[fobles] Field table is not visible`);
       throw new Error(`[fobles] Field table is not visible`);
     }
 
     await expect(fieldTable.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
-    await expect(fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"));
+    await expect(fieldTable).toHaveScreenshot(
+      fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"),
+    );
 
     await pauseForHuman(testContext.page, testContext.STEP_WAIT_MS);
 
@@ -38,55 +43,53 @@ export async function stepExpectFoblesInitialConditions(testContext: StrategyTes
 }
 
 export async function stepExpectSitecoreInitialConditions(testContext: StrategyTestContext) {
+  await testContext.step("Initial Sitecore Conditions", async () => {
+    logStepDividerStart(stepExpectSitecoreInitialConditions.name);
 
-  await testContext.step("Initial Sitecore Conditions",
-    async () => {
+    await showBillboard(testContext.page, stepExpectSitecoreInitialConditions.name);
+    const fieldTable = await testContext.getFieldTable();
+    await highlightClickTarget(fieldTable, "fieldTable");
+    await expect(fieldTable).toBeVisible();
+    if (!(await fieldTable.isVisible())) {
+      console.error(`[fobles] Field table is not visible`);
+      throw new Error(`[fobles] Field table is not visible`);
+    }
 
-      logStepDividerStart(stepExpectSitecoreInitialConditions.name);
+    const locatorFirstResult = await testContext.getScLocatorFirstResult();
+    await highlightClickTarget(locatorFirstResult, "locatorFirstResult");
+    await expect(locatorFirstResult).toBeVisible();
+    if (!(await locatorFirstResult.isVisible())) {
+      console.error(`[fobles] Locator first result is not visible`);
+      throw new Error(`[fobles] Locator first result is not visible`);
+    }
 
-      await showBillboard(testContext.page, stepExpectSitecoreInitialConditions.name);
-      const fieldTable = await testContext.getFieldTable();
-      await highlightClickTarget(fieldTable, "fieldTable");
-      await expect(fieldTable).toBeVisible();
-      if (! await fieldTable.isVisible()) {
-        console.error(`[fobles] Field table is not visible`);
-        throw new Error(`[fobles] Field table is not visible`);
-      }
-
-      const locatorFirstResult = await testContext.getScLocatorFirstResult();
-      await highlightClickTarget(locatorFirstResult, "locatorFirstResult");
-      await expect(locatorFirstResult).toBeVisible();
-      if (! await locatorFirstResult.isVisible()) {
-        console.error(`[fobles] Locator first result is not visible`);
-        throw new Error(`[fobles] Locator first result is not visible`);
-      }
-
-      logStepDividerEnd(stepExpectSitecoreInitialConditions.name);
-    });
-
+    logStepDividerEnd(stepExpectSitecoreInitialConditions.name);
+  });
 }
 
 export async function stepExpectFoblesOnConditions(testContext: StrategyTestContext) {
-  await testContext.step("Toggle Fobles on: the field gets a Fobles button",
-    async () => {
-      logStepDividerStart(stepExpectFoblesOnConditions.name);
-      const fieldTable = await testContext.getFieldTable();
-      await highlightClickTarget(fieldTable, "fieldTable");
+  await testContext.step("Toggle Fobles on: the field gets a Fobles button", async () => {
+    logStepDividerStart(stepExpectFoblesOnConditions.name);
+    const fieldTable = await testContext.getFieldTable();
+    await highlightClickTarget(fieldTable, "fieldTable");
 
-      const locatorFirstResult = await testContext.getScLocatorFirstResult();
-      await highlightClickTarget(locatorFirstResult, "locatorFirstResult");
+    const locatorFirstResult = await testContext.getScLocatorFirstResult();
+    await highlightClickTarget(locatorFirstResult, "locatorFirstResult");
 
-      await clickLbolt(testContext.page);
-      await expect(locatorFirstResult).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-      const foblesButton = fieldTable.locator(testContext.SCENARIO.foblesButtonSelector ?? TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
-      await expect(foblesButton).toBeVisible();
-      await expect(foblesButton).toHaveText(testContext.SCENARIO.expectedButtonText);
-      await expect(fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "FOBLES_ON"));
-      await pauseForHuman(testContext.page, testContext.STEP_WAIT_MS);
-      await LogDebugTestContext(testContext);
-      logStepDividerEnd(stepExpectFoblesOnConditions.name);
-    });
-
+    await clickLbolt(testContext.page);
+    await expect(locatorFirstResult).toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
+    const foblesButton = fieldTable
+      .locator(testContext.SCENARIO.foblesButtonSelector ?? TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON)
+      .first();
+    await expect(foblesButton).toBeVisible();
+    await expect(foblesButton).toHaveText(testContext.SCENARIO.expectedButtonText);
+    await expect(fieldTable).toHaveScreenshot(
+      fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "FOBLES_ON"),
+    );
+    await pauseForHuman(testContext.page, testContext.STEP_WAIT_MS);
+    await LogDebugTestContext(testContext);
+    logStepDividerEnd(stepExpectFoblesOnConditions.name);
+  });
 }
 
 export async function stepExpectFoblesCtrlClick(testContext: StrategyTestContext) {
@@ -100,15 +103,12 @@ export async function stepExpectFoblesCtrlClick(testContext: StrategyTestContext
       const popupPromise = testContext.page.context().waitForEvent("page");
 
       const fieldTable = await testContext.getFieldTable();
-      const foblesButton = fieldTable.locator(testContext.SCENARIO.foblesButtonSelector ?? TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
+      const foblesButton = fieldTable
+        .locator(testContext.SCENARIO.foblesButtonSelector ?? TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON)
+        .first();
 
       console.log(`about to ctrl+click`);
-      await clickWithMouseMarker(
-        testContext.page,
-        foblesButton,
-        "Fobles item button",
-        { modifiers: ["Control"] },
-      );
+      await clickWithMouseMarker(testContext.page, foblesButton, "Fobles item button", { modifiers: ["Control"] });
 
       const popup = await popupPromise;
       console.log(`Popup URL: ${popup.url()}`);
@@ -122,7 +122,6 @@ export async function stepExpectFoblesCtrlClick(testContext: StrategyTestContext
 
 export async function stepExpectFoblesOffConditions(testContext: StrategyTestContext) {
   await testContext.step("Toggle Fobles off: the field returns to its original shape", async () => {
-
     logStepDividerStart(stepExpectFoblesOffConditions.name);
 
     await clickLbolt(testContext.page);
@@ -148,8 +147,16 @@ export async function stepExpectFoblesClick(testContext: StrategyTestContext) {
   await testContext.step(
     `Click navigates to the target item: "${testContext.SCENARIO.expectedFoValue}"`,
     async (fullTitle) => {
-      const foblesButton = (await testContext.getFieldTable()).locator(testContext.SCENARIO.foblesButtonSelector ?? TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
-      await expectFoblesButtonSameTabNavigation(testContext.page, testContext.testInfo, foblesButton, testContext.SCENARIO.expectedFoValue, fullTitle);
+      const foblesButton = (await testContext.getFieldTable())
+        .locator(testContext.SCENARIO.foblesButtonSelector ?? TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON)
+        .first();
+      await expectFoblesButtonSameTabNavigation(
+        testContext.page,
+        testContext.testInfo,
+        foblesButton,
+        testContext.SCENARIO.expectedFoValue,
+        fullTitle,
+      );
     },
     { screenshot: false },
   );

@@ -3,7 +3,11 @@
 import { getItem, putFact } from "../../cache/sitecore-data/sitecore-data-cache";
 import type { SitecoreDataCacheKey, QuickInfoPayload } from "../../cache/sitecore-data/sitecore-data-cache.types";
 import { createSitecoreItemLocator } from "../../harvesting/worker-task-executor";
-import type { HarvestProgressCallback, SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type {
+  HarvestProgressCallback,
+  SitecoreHarvestFiltersState,
+  SitecoreHarvestResult,
+} from "../../harvesting/sitecore-harvester.types";
 import { getCurrentItemId } from "../../sitecore/current-item";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
@@ -14,7 +18,12 @@ import { prepareReferenceModel, type PreparedReferenceModel } from "./prepare-re
 import { decideRootCacheUsage, rootProcessingStateForDecision, type RootCacheDecision } from "./root-cache-flow";
 import { readLiveRootRevision } from "./root-revision";
 
-export type AcquireReferenceModelOptions = { signal: AbortSignal; onProgress?: HarvestProgressCallback; onHarvestRequired?: () => void };
+export type AcquireReferenceModelOptions = {
+  signal: AbortSignal;
+  onProgress?: HarvestProgressCallback;
+  onHarvestRequired?: () => void;
+};
+
 export type AcquiredReferenceModel = { itemId: string; prepared: PreparedReferenceModel; decision: RootCacheDecision };
 
 function quickInfoPayload(result: WorkerTaskExecutionResult): QuickInfoPayload | undefined {
@@ -23,8 +32,9 @@ function quickInfoPayload(result: WorkerTaskExecutionResult): QuickInfoPayload |
 
 function harvestResultFromQuickInfo(payload: QuickInfoPayload): SitecoreHarvestResult | undefined {
   const rootItem = payload.result.status === "found" ? payload.result.value : undefined;
-  if (!rootItem?.scItemId) 
-return undefined;
+  if (!rootItem?.scItemId) {
+    return undefined;
+  }
   return {
     rootItem: { ...rootItem, scItemId: rootItem.scItemId },
     parent: undefined,
@@ -54,10 +64,14 @@ export async function acquireReferenceModelForCurrentItem(
   { signal }: AcquireReferenceModelOptions,
 ): Promise<AcquiredReferenceModel | undefined> {
   const itemId = getCurrentItemId(doc);
-  if (!itemId) 
-throw new Error("Something has gone wrong. The current Sitecore item could not be resolved.");
+  if (!itemId) {
+    throw new Error("Something has gone wrong. The current Sitecore item could not be resolved.");
+  }
 
-  const cacheKey: SitecoreDataCacheKey = { ...resolveSitecoreDataIdentity(doc), item: createSitecoreItemLocator(itemId) };
+  const cacheKey: SitecoreDataCacheKey = {
+    ...resolveSitecoreDataIdentity(doc),
+    item: createSitecoreItemLocator(itemId),
+  };
   const cachedRecord = await getItem(cacheKey);
   const liveRevision = readLiveRootRevision(doc);
   const decision = decideRootCacheUsage(cachedRecord, filters, liveRevision);
@@ -73,19 +87,30 @@ throw new Error("Something has gone wrong. The current Sitecore item could not b
 
   if (decision.kind === "harvest-required") {
     const payload = await readRootQuickInfo(workSession, itemId);
-    if (signal.aborted || !payload) 
-return undefined;
+    if (signal.aborted || !payload) {
+      return undefined;
+    }
 
     harvestResult = harvestResultFromQuickInfo(payload);
-    if (!harvestResult) 
-return undefined;
+    if (!harvestResult) {
+      return undefined;
+    }
 
     await putFact(cacheKey, "quickInfo", { result: payload.result }, { revision: payload.revision });
-    preparedFilters = { parent: false, children: false, referrers: false, customFields: false, standardFields: false, layouts: false, template: true };
+    preparedFilters = {
+      parent: false,
+      children: false,
+      referrers: false,
+      customFields: false,
+      standardFields: false,
+      layouts: false,
+      template: true,
+    };
   }
 
-  if (signal.aborted || !harvestResult) 
-return undefined;
+  if (signal.aborted || !harvestResult) {
+    return undefined;
+  }
 
   const prepared = prepareReferenceModel(harvestResult, preparedFilters, {
     signal,

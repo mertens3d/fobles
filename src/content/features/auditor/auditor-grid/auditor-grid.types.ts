@@ -5,7 +5,9 @@ import type { AuditFinding } from "../audit-finding.types";
 import type { AuditReportTreeNode } from "../audit-report-tree";
 
 export type JourneyStage = "referenced" | "cached" | "live" | "tested";
+
 export type ToggleModifiers = { shiftKey?: boolean; ctrlKey?: boolean; metaKey?: boolean };
+
 export type LabelParts = { name: string; qualifier: string | undefined };
 
 export type AuditorTreeRow = AuditReportTreeNode & {
@@ -18,6 +20,11 @@ export type AuditorTreeRow = AuditReportTreeNode & {
   searchText: string;
 };
 
-export type AuditorDescendantFailure = { rowId: string; label: string; hierarchy: readonly string[]; findings: readonly AuditFinding[] };
+export type AuditorDescendantFailure = {
+  rowId: string;
+  label: string;
+  hierarchy: readonly string[];
+  findings: readonly AuditFinding[];
+};
 
 export type AuditorTestDetailsSelection = { row: AuditorTreeRow; ancestors: readonly AuditorTreeRow[] };

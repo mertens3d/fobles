@@ -19,6 +19,14 @@ export function UserAdminPageGroup({ doc, onOptionActivated }: UserAdminPageGrou
   const enabledEntries = entries.filter((entry) => entry.enabled);
   // No group heading at all when nothing is configured (or everything's hidden) - "under Admin
   // Pages" shouldn't show an empty "User Admin Pages" title with nothing beneath it.
-  if (enabledEntries.length === 0) return null;
-  return <JumpFlyoutGroup doc={doc} group={{ title: TEXT.GROUP_NAME.USER_ADMIN_PAGES, groupMembers: enabledEntries.map(toFlyoutOption) }} onOptionActivated={onOptionActivated} />;
+  if (enabledEntries.length === 0) {
+    return null;
+  }
+  return (
+    <JumpFlyoutGroup
+      doc={doc}
+      group={{ title: TEXT.GROUP_NAME.USER_ADMIN_PAGES, groupMembers: enabledEntries.map(toFlyoutOption) }}
+      onOptionActivated={onOptionActivated}
+    />
+  );
 }

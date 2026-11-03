@@ -24,7 +24,9 @@ void test("accepts locator jobs discovered while processing", async () => {
   const queue = createReferenceHarvestingQueue({
     runJob: (job) => {
       runs.push(job.factName);
-      if (job.factName === "children") queue.enqueue({ item: { kind: "path", value: "/sitecore/content/Home" }, factName: "quickInfo" });
+      if (job.factName === "children") {
+        queue.enqueue({ item: { kind: "path", value: "/sitecore/content/Home" }, factName: "quickInfo" });
+      }
       return Promise.resolve();
     },
   });

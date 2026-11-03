@@ -17,7 +17,4 @@ export type FieldReference = {
   sourceValue: string;
 };
 
-export type FieldReferenceResolution = {
-  displayValue: string | undefined;
-  references: readonly FieldReference[];
-};
+export type FieldReferenceResolution = { displayValue: string | undefined; references: readonly FieldReference[] };

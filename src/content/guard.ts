@@ -1,6 +1,6 @@
 import { FOBLES_PAGES } from "../constants/fobles.constants";
 import { type AllowedPage } from "../constants/constants.types";
-import { CONST} from "../constants/const";
+import { CONST } from "../constants/const";
 
 function normalizePath(pathname: string): string {
   const normalizedPath = pathname;
@@ -15,8 +15,12 @@ function normalizePath(pathname: string): string {
 
 function toUrl(value: string | Location | URL, baseUrl?: string): URL | null {
   try {
-    if (value instanceof URL) return value;
-    if (typeof value !== "string") return new URL(value.href);
+    if (value instanceof URL) {
+      return value;
+    }
+    if (typeof value !== "string") {
+      return new URL(value.href);
+    }
     return new URL(value, baseUrl ?? globalThis.location?.href);
   } catch {
     return null;
@@ -28,24 +32,22 @@ function toUrl(value: string | Location | URL, baseUrl?: string): URL | null {
 // they're really a path fragment or an "xmlcontrol=..." query fragment.
 function getNormalizedHref(url: URL): string {
   const raw = `${url.pathname}${url.search}`;
-    return raw.toLowerCase();
+  return raw.toLowerCase();
 }
 
 function getNormalizedPath(path: string): string {
   return path.toLowerCase();
 }
 
-export function findAllowedPage(
-  locationPath: string ,
-  baseUrl?: string,
-): AllowedPage | null {
-
+export function findAllowedPage(locationPath: string, baseUrl?: string): AllowedPage | null {
   const normalizedHref = getNormalizedPath(locationPath);
   // A media request path can appear nested behind another page's path (e.g. Content Editor.aspx)
   // but is always a media resource, never a real shell page eligible for the toolbar.
-  if (normalizedHref.includes(CONST.SITECORE.RELATIVE_PATHS_ENCODED.MEDIA_REQUEST_SEGMENT.toLowerCase())) return null;
+  if (normalizedHref.includes(CONST.SITECORE.RELATIVE_PATHS_ENCODED.MEDIA_REQUEST_SEGMENT.toLowerCase())) {
+    return null;
+  }
 
-  const result = 
+  const result =
     FOBLES_PAGES.find(
       (foblesPage) =>
         foblesPage.isFoblesEligible &&
@@ -55,31 +57,22 @@ export function findAllowedPage(
         }),
     ) ?? null;
 
-    return result;
+  return result;
 }
 
-export function isMenuPathAllowed(
-  locationPath: string ,
-  baseUrl?: string,
-): boolean {
+export function isMenuPathAllowed(locationPath: string, baseUrl?: string): boolean {
   return findAllowedPage(locationPath, baseUrl) !== null;
 }
 
 export function isContentEditorPath(pathname: string): boolean {
-  const normalizedPath = getNormalizedPath(pathname); 
-  const result = 
-   normalizedPath.includes(
-    CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY.toLowerCase(),
-  ) ||
-  normalizedPath.includes(
-    CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_MODERN.toLowerCase(),
-  );
+  const normalizedPath = getNormalizedPath(pathname);
+  const result =
+    normalizedPath.includes(CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_LEGACY.toLowerCase()) ||
+    normalizedPath.includes(CONST.SITECORE.RELATIVE_PATHS_ENCODED.CONTENT_EDITOR_MODERN.toLowerCase());
   return result;
 }
 
-export function isMenuOwnedFrame(
-  frame: HTMLIFrameElement | HTMLFrameElement,
-): boolean {
+export function isMenuOwnedFrame(frame: HTMLIFrameElement | HTMLFrameElement): boolean {
   try {
     if (frame.contentWindow && isMenuPathAllowed(frame.contentWindow.location.pathname)) {
       return true;
@@ -89,26 +82,24 @@ export function isMenuOwnedFrame(
   }
 
   const src = frame.getAttribute("src");
-  if (!src) return false;
+  if (!src) {
+    return false;
+  }
 
   return isMenuPathAllowed(src, frame.ownerDocument.baseURI);
 }
 
 export function isPowerShellIsePath(pathname: string): boolean {
-  return getNormalizedPath(pathname).includes(
-    CONST.SITECORE.RELATIVE_PATHS_ENCODED.POWERSHELL_ISE.toLowerCase(),
-  );
+  return getNormalizedPath(pathname).includes(CONST.SITECORE.RELATIVE_PATHS_ENCODED.POWERSHELL_ISE.toLowerCase());
 }
 
 // Dialog/gallery pages with no room for the full toolbar (see FOBLES_PAGES's toolbarType,
 // src/content/constants.ts) - gates injectToolbar's compact-vs-full layout (src/content/toolbar/
 // index.ts).
-export function isCompactToolbarPage(locationPath: string , baseUrl?: string): boolean {
+export function isCompactToolbarPage(locationPath: string, baseUrl?: string): boolean {
   return findAllowedPage(locationPath, baseUrl)?.toolbarType === "compact";
 }
 
 export function isKickUsersPath(pathname: string): boolean {
-  return getNormalizedPath(pathname).includes(
-    CONST.SITECORE.RELATIVE_PATHS_ENCODED.KICK_USERS.toLowerCase(),
-  );
+  return getNormalizedPath(pathname).includes(CONST.SITECORE.RELATIVE_PATHS_ENCODED.KICK_USERS.toLowerCase());
 }

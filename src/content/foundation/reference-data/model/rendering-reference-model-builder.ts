@@ -9,16 +9,28 @@ import { createReferenceModelNodeId } from "./layout-reference-model-builder";
 import type { ReferenceModelItemNode, ReferenceModelNode, ReferenceModelNonItemNode } from "./reference-model.types";
 import { factoryItemGraphNodeData, type ItemGraphNodeData, type ScControl } from "./sitecore-item.types";
 
-export function createRenderingReferenceModelNode(pageLayoutTreeNodeId: string, control: ScControl, controlIndex: number): ReferenceModelItemNode {
+export function createRenderingReferenceModelNode(
+  pageLayoutTreeNodeId: string,
+  control: ScControl,
+  controlIndex: number,
+): ReferenceModelItemNode {
   const rendering = control.rendering;
-  const renderingTreeNodeId = createReferenceModelNodeId(pageLayoutTreeNodeId, "rendering", control.uid ?? rendering.scItemId ?? String(controlIndex));
+  const renderingTreeNodeId = createReferenceModelNodeId(
+    pageLayoutTreeNodeId,
+    "rendering",
+    control.uid ?? rendering.scItemId ?? String(controlIndex),
+  );
   const children: ReferenceModelNode[] = [];
 
-  if (control.datasource) children.push(createDatasourceReferenceModelNode(renderingTreeNodeId, control.datasource));
+  if (control.datasource) {
+    children.push(createDatasourceReferenceModelNode(renderingTreeNodeId, control.datasource));
+  }
 
   const parameters = Object.entries(control.parameters ?? {}).filter(([, value]) => isReferenceValue(value));
 
-  if (parameters.length > 0) children.push(createRenderingParametersReferenceModelNode(renderingTreeNodeId, parameters));
+  if (parameters.length > 0) {
+    children.push(createRenderingParametersReferenceModelNode(renderingTreeNodeId, parameters));
+  }
 
   return createReferenceModelItemNode({
     treeNodeId: renderingTreeNodeId,
@@ -32,7 +44,10 @@ export function createRenderingReferenceModelNode(pageLayoutTreeNodeId: string, 
   });
 }
 
-function createDatasourceReferenceModelNode(renderingTreeNodeId: string, datasource: ItemGraphNodeData): ReferenceModelItemNode {
+function createDatasourceReferenceModelNode(
+  renderingTreeNodeId: string,
+  datasource: ItemGraphNodeData,
+): ReferenceModelItemNode {
   return createReferenceModelItemNode({
     treeNodeId: createReferenceModelNodeId(renderingTreeNodeId, CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.DATASOURCE),
     scItem: datasource,
@@ -44,8 +59,14 @@ function createDatasourceReferenceModelNode(renderingTreeNodeId: string, datasou
   });
 }
 
-function createRenderingParametersReferenceModelNode(renderingTreeNodeId: string, parameters: Array<[string, string]>): ReferenceModelNonItemNode {
-  const treeNodeId = createReferenceModelNodeId(renderingTreeNodeId, CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETERS);
+function createRenderingParametersReferenceModelNode(
+  renderingTreeNodeId: string,
+  parameters: Array<[string, string]>,
+): ReferenceModelNonItemNode {
+  const treeNodeId = createReferenceModelNodeId(
+    renderingTreeNodeId,
+    CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETERS,
+  );
 
   return createReferenceModelNonItemNode({
     treeNodeId,
@@ -59,17 +80,31 @@ function createRenderingParametersReferenceModelNode(renderingTreeNodeId: string
   });
 }
 
-function createSingleParameterReferenceModelNode(name: string, value: string, parametersTreeNodeId: string): ReferenceModelItemNode {
+function createSingleParameterReferenceModelNode(
+  name: string,
+  value: string,
+  parametersTreeNodeId: string,
+): ReferenceModelItemNode {
   const candidateValue = decodeURIComponent(value).trim();
   const scItem = isGuidLike(candidateValue)
     ? factoryItemGraphNodeData({ scItemId: candidateValue })
     : factoryItemGraphNodeData({ scItemPath: normalizeSitecorePath(candidateValue) });
 
   return createReferenceModelItemNode({
-    treeNodeId: createReferenceModelNodeId(parametersTreeNodeId, CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETER, name),
+    treeNodeId: createReferenceModelNodeId(
+      parametersTreeNodeId,
+      CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PARAMETER,
+      name,
+    ),
     scItem,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.RENDERING_PARAMETER,
-    provenance: { type: "rendering-parameter", parameterName: name, parameterValue: value, decodedValue: candidateValue, isItemReference: true },
+    provenance: {
+      type: "rendering-parameter",
+      parameterName: name,
+      parameterValue: value,
+      decodedValue: candidateValue,
+      isItemReference: true,
+    },
     collapseKey: GRAPH_COLLAPSE_KEY.RENDERING_PARAMETER,
     branch: "layouts",
     relationshipToParent: "related",

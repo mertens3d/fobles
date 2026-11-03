@@ -3,19 +3,18 @@
 import type { AuditSummaryCounts } from "./auditor.types";
 import type { AuditFinding, AuditFindingStatus } from "./audit-finding.types";
 
-const STATUS_ORDER: Readonly<Record<AuditFindingStatus, number>> = {
-  pending: 0,
-  error: 1,
-  warning: 2,
-  passed: 3,
-};
+const STATUS_ORDER: Readonly<Record<AuditFindingStatus, number>> = { pending: 0, error: 1, warning: 2, passed: 3 };
 
 function compareFindings(left: AuditFinding, right: AuditFinding): number {
   const statusDelta = STATUS_ORDER[left.status] - STATUS_ORDER[right.status];
-  if (statusDelta !== 0) return statusDelta;
+  if (statusDelta !== 0) {
+    return statusDelta;
+  }
 
   const checkLabelDelta = left.checkLabel.localeCompare(right.checkLabel);
-  if (checkLabelDelta !== 0) return checkLabelDelta;
+  if (checkLabelDelta !== 0) {
+    return checkLabelDelta;
+  }
 
   const leftPathOrName = left.itemPath ?? left.itemName ?? "";
   const rightPathOrName = right.itemPath ?? right.itemName ?? "";
@@ -107,7 +106,9 @@ export function createAuditFindingStore(): AuditFindingStore {
   }
 
   function upsertMany(findings: readonly AuditFinding[]): void {
-    if (disposed || findings.length === 0) return;
+    if (disposed || findings.length === 0) {
+      return;
+    }
 
     findings.forEach((finding) => findingsById.set(finding.id, finding));
     sortedSnapshot = undefined;
@@ -119,14 +120,18 @@ export function createAuditFindingStore(): AuditFindingStore {
   }
 
   function subscribe(listener: AuditFindingStoreListener): () => void {
-    if (disposed) return () => undefined;
+    if (disposed) {
+      return () => undefined;
+    }
 
     listeners.add(listener);
     return () => listeners.delete(listener);
   }
 
   function clear(): void {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
 
     findingsById.clear();
     sortedSnapshot = undefined;
@@ -134,7 +139,9 @@ export function createAuditFindingStore(): AuditFindingStore {
   }
 
   function dispose(): void {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
 
     disposed = true;
     findingsById.clear();

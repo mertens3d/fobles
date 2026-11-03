@@ -15,17 +15,13 @@ foblesTest.describe("Worker pool", () => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 
       const serviceWorker =
-        sharedBrowserContext.serviceWorkers()[0] ??
-        (await sharedBrowserContext.waitForEvent("serviceworker"));
+        sharedBrowserContext.serviceWorkers()[0] ?? (await sharedBrowserContext.waitForEvent("serviceworker"));
 
       await serviceWorker.evaluate(async () => {
         await chrome.storage.local.remove("persistedLogEntries");
       });
 
-      await setupReferenceGraphState(page, {
-        rawValues: false,
-        standardFields: false,
-      });
+      await setupReferenceGraphState(page, { rawValues: false, standardFields: false });
 
       await ClickFoblesGraphButton(page);
       await WaitForFoblesGraphEnrichmentComplete(page);
@@ -35,9 +31,7 @@ foblesTest.describe("Worker pool", () => {
 
       expect(logs).toContain("resultStatus=document-stale");
       expect(logs).toContain("Worker pool: document-stale result intercepted");
-      expect(logs).toContain(
-        "Worker pool: document stale; worker retired; retrying task on fresh worker",
-      );
+      expect(logs).toContain("Worker pool: document stale; worker retired; retrying task on fresh worker");
       expect(logs).toContain("resultStatus=success");
     },
   );

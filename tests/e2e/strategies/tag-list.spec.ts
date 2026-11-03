@@ -1,8 +1,6 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
-import {
-  setupContentEditorForTesting,
-} from "../../helpers/fobles-helpers-support/test-setup";
+import { setupContentEditorForTesting } from "../../helpers/fobles-helpers-support/test-setup";
 
 import { fieldScreenshotName } from "./support/CONST";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
@@ -10,7 +8,13 @@ import type { StrategyTestContext } from "./support/scenario.types";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
 import { showBillboard } from "../../helpers/billboard";
 import { runClickNavigationSteps } from "./click-navigation-steps";
-import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./support/strategy-test-helper";
+import {
+  stepExpectSitecoreInitialConditions,
+  stepExpectFoblesInitialConditions,
+  stepExpectFoblesOnConditions,
+  stepExpectFoblesCtrlClick,
+  stepExpectFoblesOffConditions,
+} from "./support/strategy-test-helper";
 
 const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -23,11 +27,14 @@ const SCENARIO = STRATEGY_SCENARIOS.TAG_LIST;
 // Skipped - see docs/TODO.md "Strategy Tag List field doesn't render the real Tag List widget".
 foblesTest.describe.skip("Strategy scenario: tag list", () => {
   foblesTest("toggling Fobles decorates and restores the tag list field", async ({ page }, testInfo) => {
-
     await setupContentEditorForTesting(page, STRATEGY_SCENARIOS.DROP_LINK);
 
     await showBillboard(page, STRATEGY_SCENARIOS.DROP_LINK.friendlyName);
-    const testContext: StrategyTestContext = await factoryStrategyTestContext(page, STRATEGY_SCENARIOS.DROP_LINK, testInfo);
+    const testContext: StrategyTestContext = await factoryStrategyTestContext(
+      page,
+      STRATEGY_SCENARIOS.DROP_LINK,
+      testInfo,
+    );
 
     await stepExpectSitecoreInitialConditions(testContext);
     await stepExpectFoblesInitialConditions(testContext);
@@ -35,8 +42,18 @@ foblesTest.describe.skip("Strategy scenario: tag list", () => {
     await stepExpectFoblesCtrlClick(testContext);
     await stepExpectFoblesOffConditions(testContext);
 
-    runClickNavigationSteps(testContext.step, page, testInfo, testContext.fieldTable, testContext.locatorFirstResult, testContext.SCENARIO, async () => {
-      await expect(testContext.fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"));
-    });
+    runClickNavigationSteps(
+      testContext.step,
+      page,
+      testInfo,
+      testContext.fieldTable,
+      testContext.locatorFirstResult,
+      testContext.SCENARIO,
+      async () => {
+        await expect(testContext.fieldTable).toHaveScreenshot(
+          fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"),
+        );
+      },
+    );
   });
 });

@@ -11,11 +11,24 @@ export type JumpFlyoutButtonRowProps = {
   onPathSuffixBlur: () => void;
 };
 
-export function JumpFlyoutButtonRow({ descriptor, enabled, pathSuffix, onToggle, onPathSuffixChange, onPathSuffixBlur }: JumpFlyoutButtonRowProps) {
+export function JumpFlyoutButtonRow({
+  descriptor,
+  enabled,
+  pathSuffix,
+  onToggle,
+  onPathSuffixChange,
+  onPathSuffixBlur,
+}: JumpFlyoutButtonRowProps) {
   if (!descriptor.supportsPathSuffix) {
     return (
       <div className="jump-flyout-button-row jump-flyout-button-row--no-suffix">
-        <input type="checkbox" name="enabled" data-button-id={descriptor.id} checked={enabled} onChange={(event) => onToggle(event.target.checked)} />
+        <input
+          type="checkbox"
+          name="enabled"
+          data-button-id={descriptor.id}
+          checked={enabled}
+          onChange={(event) => onToggle(event.target.checked)}
+        />
         <span className="jump-flyout-button-label">{descriptor.label}</span>
       </div>
     );
@@ -24,9 +37,23 @@ export function JumpFlyoutButtonRow({ descriptor, enabled, pathSuffix, onToggle,
     <div className="jump-flyout-entry">
       <div className="jump-flyout-entry-title">{descriptor.label}</div>
       <div className="jump-flyout-entry-fields">
-        <input type="checkbox" name="enabled" data-button-id={descriptor.id} checked={enabled} onChange={(event) => onToggle(event.target.checked)} />
+        <input
+          type="checkbox"
+          name="enabled"
+          data-button-id={descriptor.id}
+          checked={enabled}
+          onChange={(event) => onToggle(event.target.checked)}
+        />
         <span className="jump-flyout-entry-prefix">{descriptor.basePath ?? ""}</span>
-        <input type="text" name="pathSuffix" data-button-id={descriptor.id} placeholder="optional sub-path" value={pathSuffix} onChange={(event) => onPathSuffixChange(event.target.value)} onBlur={onPathSuffixBlur} />
+        <input
+          type="text"
+          name="pathSuffix"
+          data-button-id={descriptor.id}
+          placeholder="optional sub-path"
+          value={pathSuffix}
+          onChange={(event) => onPathSuffixChange(event.target.value)}
+          onBlur={onPathSuffixBlur}
+        />
       </div>
     </div>
   );

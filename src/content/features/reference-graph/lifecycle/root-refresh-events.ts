@@ -17,7 +17,9 @@ export function subscribeRootRefresh(rootItemId: string, listener: RootRefreshLi
 
   return () => {
     listeners.delete(listener);
-    if (listeners.size === 0) listenersByRootItemId.delete(rootItemId);
+    if (listeners.size === 0) {
+      listenersByRootItemId.delete(rootItemId);
+    }
   };
 }
 

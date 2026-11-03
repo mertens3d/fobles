@@ -3,10 +3,7 @@
 import type cytoscape from "cytoscape";
 import { useCallback, useEffect } from "react";
 import { setReferenceGraphLayout } from "../../../../shared/reference-graph-settings";
-import {
-  getGraphControlsExpanded,
-  setGraphControlsExpanded,
-} from "../graph-controls-settings";
+import { getGraphControlsExpanded, setGraphControlsExpanded } from "../graph-controls-settings";
 import {
   setGraphParameterVisibilitySettings,
   type GraphParameterVisibilitySettings,
@@ -18,10 +15,7 @@ import type { GraphState } from "./use-reference-graph";
 
 type MutableRef<T> = { current: T };
 
-type UseReferenceGraphViewActionsOptions = {
-  cyRef: MutableRef<cytoscape.Core | undefined>;
-  graphState: GraphState;
-};
+type UseReferenceGraphViewActionsOptions = { cyRef: MutableRef<cytoscape.Core | undefined>; graphState: GraphState };
 
 export type ReferenceGraphViewActions = {
   handleControlsExpandedChange: (controlsExpanded: boolean) => void;
@@ -79,11 +73,7 @@ export function useReferenceGraphViewActions({
 
       void setReferenceGraphLayout(value);
     },
-    [
-      cyRef,
-      graphState.layoutPresetNameRef,
-      graphState.setLayoutPresetName,
-    ],
+    [cyRef, graphState.layoutPresetNameRef, graphState.setLayoutPresetName],
   );
 
   const handleControlsExpandedChange = useCallback(
@@ -107,11 +97,7 @@ export function useReferenceGraphViewActions({
         refreshGraphVisibilityAndLayout(cy);
       }
     },
-    [
-      cyRef,
-      graphState.parameterVisibilitySettingsRef,
-      graphState.setParameterVisibilitySettings,
-    ],
+    [cyRef, graphState.parameterVisibilitySettingsRef, graphState.setParameterVisibilitySettings],
   );
 
   return {

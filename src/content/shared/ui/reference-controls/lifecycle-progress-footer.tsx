@@ -10,14 +10,21 @@ export type LifecycleProgressFooterProps = {
   buildingLabel: string;
 };
 
-export function LifecycleProgressFooter({ harvestProgress, resolveProgress, elapsedSeconds, buildingLabel }: LifecycleProgressFooterProps) {
+export function LifecycleProgressFooter({
+  harvestProgress,
+  resolveProgress,
+  elapsedSeconds,
+  buildingLabel,
+}: LifecycleProgressFooterProps) {
   return (
     <div className="fobles-reference-graph-toolbar-footer">
       <div className="fobles-reference-graph-toolbar-footer-phases">
         <PhaseProgressBar label="Reference Harvesting" progress={harvestProgress} />
         <PhaseProgressBar label="Cache Validation" progress={resolveProgress} />
       </div>
-      <div className="fobles-reference-graph-build-time">{elapsedSeconds !== undefined ? `Built in ${elapsedSeconds.toFixed(3)}s` : buildingLabel}</div>
+      <div className="fobles-reference-graph-build-time">
+        {elapsedSeconds !== undefined ? `Built in ${elapsedSeconds.toFixed(3)}s` : buildingLabel}
+      </div>
     </div>
   );
 }

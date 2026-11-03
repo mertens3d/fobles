@@ -21,7 +21,10 @@ function toEditableGroup(group: AiPagesGroup): EditableAiPagesGroup {
     name: group.name,
     organization: group.organization,
     tenantName: group.tenantName,
-    mappings: group.mappings.length > 0 ? group.mappings.map((mapping) => ({ id: crypto.randomUUID(), ...mapping })) : [createEmptyMapping()],
+    mappings:
+      group.mappings.length > 0
+        ? group.mappings.map((mapping) => ({ id: crypto.randomUUID(), ...mapping }))
+        : [createEmptyMapping()],
   };
 }
 
@@ -36,14 +39,19 @@ export function AiPagesMappingsSection() {
   }, []);
 
   function registerInput(key: string, input: HTMLInputElement | null): void {
-    if (input) inputsByKey.current.set(key, input);
-    else inputsByKey.current.delete(key);
+    if (input) {
+      inputsByKey.current.set(key, input);
+    } else {
+      inputsByKey.current.delete(key);
+    }
   }
 
   function clearError(key: string): void {
     setStatus("");
     setErrors((current) => {
-      if (!(key in current)) return current;
+      if (!(key in current)) {
+        return current;
+      }
       const next = { ...current };
       delete next[key];
       return next;
@@ -63,16 +71,35 @@ export function AiPagesMappingsSection() {
   }
 
   function addMapping(groupId: string): void {
-    setGroups((current) => current.map((group) => (group.id === groupId ? { ...group, mappings: [...group.mappings, createEmptyMapping()] } : group)));
+    setGroups((current) =>
+      current.map((group) =>
+        group.id === groupId ? { ...group, mappings: [...group.mappings, createEmptyMapping()] } : group,
+      ),
+    );
   }
 
   function removeMapping(groupId: string, mappingId: string): void {
-    setGroups((current) => current.map((group) => (group.id === groupId ? { ...group, mappings: group.mappings.filter((mapping) => mapping.id !== mappingId) } : group)));
+    setGroups((current) =>
+      current.map((group) =>
+        group.id === groupId
+          ? { ...group, mappings: group.mappings.filter((mapping) => mapping.id !== mappingId) }
+          : group,
+      ),
+    );
   }
 
   function updateMappingField(groupId: string, mappingId: string, field: "contentRoot" | "site", value: string): void {
     setGroups((current) =>
-      current.map((group) => (group.id === groupId ? { ...group, mappings: group.mappings.map((mapping) => (mapping.id === mappingId ? { ...mapping, [field]: value } : mapping)) } : group)),
+      current.map((group) =>
+        group.id === groupId
+          ? {
+              ...group,
+              mappings: group.mappings.map((mapping) =>
+                mapping.id === mappingId ? { ...mapping, [field]: value } : mapping,
+              ),
+            }
+          : group,
+      ),
     );
   }
 
@@ -80,7 +107,9 @@ export function AiPagesMappingsSection() {
     const nextErrors: AiPagesFieldErrors = {};
     let firstInvalidKey: string | undefined;
     function checkRequired(key: string, value: string): void {
-      if (value.trim()) return;
+      if (value.trim()) {
+        return;
+      }
       nextErrors[key] = REQUIRED_FIELD_MESSAGE;
       firstInvalidKey ||= key;
     }
@@ -115,11 +144,17 @@ export function AiPagesMappingsSection() {
   return (
     <details className="settings-section">
       <summary>Additional Settings</summary>
-      <p>Add one group per Sitecore account, then map that group's content roots to AI Pages sites. The most specific matching root is used.</p>
+      <p>
+        Add one group per Sitecore account, then map that group's content roots to AI Pages sites. The most specific
+        matching root is used.
+      </p>
       <details>
         <summary>SitecoreAI settings example</summary>
         <p>
-          <code>Client: MyCloud | Organization: org_Ab12Cd34Ef56 | Tenant name: tenant_Ab12Cd34Ef56 | Root: /sitecore/content/ExampleTenant/example-site-123 | Site: example-site-123</code>
+          <code>
+            Client: MyCloud | Organization: org_Ab12Cd34Ef56 | Tenant name: tenant_Ab12Cd34Ef56 | Root:
+            /sitecore/content/ExampleTenant/example-site-123 | Site: example-site-123
+          </code>
         </p>
       </details>
       <div id="groups">
@@ -138,9 +173,15 @@ export function AiPagesMappingsSection() {
           />
         ))}
       </div>
-      <button id="add-group" type="button" onClick={addGroup}>Add group</button>
-      <button id="save-mappings" type="button" onClick={() => void handleSave()}>Save mappings</button>
-      <p id="status" role="status">{status}</p>
+      <button id="add-group" type="button" onClick={addGroup}>
+        Add group
+      </button>
+      <button id="save-mappings" type="button" onClick={() => void handleSave()}>
+        Save mappings
+      </button>
+      <p id="status" role="status">
+        {status}
+      </p>
     </details>
   );
 }

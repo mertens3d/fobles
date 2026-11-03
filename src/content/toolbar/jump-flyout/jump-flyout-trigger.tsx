@@ -7,7 +7,12 @@ import { ToolbarNavButton } from "../toolbar-buttons";
 import type { FlyoutVisibilityState } from "../shared-flyout/use-flyout-visibility";
 import { JumpFlyout } from "./jump-flyout";
 
-export type JumpFlyoutTriggerProps = { doc: Document; jumpFlyout: FlyoutVisibilityState; onOpen: () => void; onToggle: () => void };
+export type JumpFlyoutTriggerProps = {
+  doc: Document;
+  jumpFlyout: FlyoutVisibilityState;
+  onOpen: () => void;
+  onToggle: () => void;
+};
 
 export function JumpFlyoutTrigger({ doc, jumpFlyout, onOpen, onToggle }: JumpFlyoutTriggerProps) {
   return (
@@ -16,9 +21,23 @@ export function JumpFlyoutTrigger({ doc, jumpFlyout, onOpen, onToggle }: JumpFly
       onHoverOpen={onOpen}
       onHoverScheduleClose={jumpFlyout.scheduleHide}
       onOutsidePointerDown={jumpFlyout.hide}
-      button={<ToolbarNavButton className={CLASS.FOBLES_NAV_BUTTON} role={FOBLES.ATTRIBUTES.DATA.NAV_BUTTON_ROLE.JUMPS_FLYOUT_TRIGGER} text={TEXT.JUMP_FLYOUT} title={TEXT.QUICK_MENU_TITLE} onClick={onToggle} />}
+      button={
+        <ToolbarNavButton
+          className={CLASS.FOBLES_NAV_BUTTON}
+          role={FOBLES.ATTRIBUTES.DATA.NAV_BUTTON_ROLE.JUMPS_FLYOUT_TRIGGER}
+          text={TEXT.JUMP_FLYOUT}
+          title={TEXT.QUICK_MENU_TITLE}
+          onClick={onToggle}
+        />
+      }
     >
-      <JumpFlyout doc={doc} visible={jumpFlyout.visible} onOptionActivated={jumpFlyout.hide} onCancelHide={jumpFlyout.cancelHide} onScheduleHide={jumpFlyout.scheduleHide} />
+      <JumpFlyout
+        doc={doc}
+        visible={jumpFlyout.visible}
+        onOptionActivated={jumpFlyout.hide}
+        onCancelHide={jumpFlyout.cancelHide}
+        onScheduleHide={jumpFlyout.scheduleHide}
+      />
     </FlyoutTrigger>
   );
 }

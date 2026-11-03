@@ -17,14 +17,23 @@ export function labelForFact(factName: SitecoreDataFactName): string {
 
 export function labelForWorkerTask(task: WorkerTask): string {
   switch (task.type) {
-    case "get-quick-info": return READ_LABEL_BY_KIND.quickInfo;
-    case "get-parent": return READ_LABEL_BY_KIND.parent;
-    case "get-children": return READ_LABEL_BY_KIND.children;
-    case "get-referrers": return READ_LABEL_BY_KIND.referrers;
-    case "get-custom-fields": return READ_LABEL_BY_KIND.customSections;
-    case "get-standard-fields": return READ_LABEL_BY_KIND.standardSections;
-    case "get-layout": return READ_LABEL_BY_KIND.layout;
-    case "set-raw-values": return `Turning Raw Values: ${task.value ? "On" : "Off"}`;
-    case "set-standard-fields": return `Turning Standard Fields: ${task.value ? "On" : "Off"}`;
+    case "get-quick-info":
+      return READ_LABEL_BY_KIND.quickInfo;
+    case "get-parent":
+      return READ_LABEL_BY_KIND.parent;
+    case "get-children":
+      return READ_LABEL_BY_KIND.children;
+    case "get-referrers":
+      return READ_LABEL_BY_KIND.referrers;
+    case "get-custom-fields":
+      return READ_LABEL_BY_KIND.customSections;
+    case "get-standard-fields":
+      return READ_LABEL_BY_KIND.standardSections;
+    case "get-layout":
+      return READ_LABEL_BY_KIND.layout;
+    case "set-raw-values":
+      return `Turning Raw Values: ${task.value ? "On" : "Off"}`;
+    case "set-standard-fields":
+      return `Turning Standard Fields: ${task.value ? "On" : "Off"}`;
   }
 }

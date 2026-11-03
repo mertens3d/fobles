@@ -14,12 +14,7 @@ import { getFoblesDataSession } from "../../foundation/reference-data/reference-
 import { subscribeRootRefresh } from "./lifecycle/root-refresh-events";
 import { NodeDetailsPanel } from "../../shared/ui/details/node-details-panel";
 
-export function ReferenceGraphApp({
-  doc,
-  workSession,
-  initialPreparedGraph,
-  harvestForLink,
-}: ReferenceGraphAppProps) {
+export function ReferenceGraphApp({ doc, workSession, initialPreparedGraph, harvestForLink }: ReferenceGraphAppProps) {
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cyRef = useRef<cytoscape.Core | undefined>(undefined);
   const graphState = useReferenceGraph({ initialPreparedGraph });
@@ -62,7 +57,9 @@ export function ReferenceGraphApp({
 
   useEffect(() => {
     const container = containerRef.current;
-    if (!container || typeof ResizeObserver === "undefined") return;
+    if (!container || typeof ResizeObserver === "undefined") {
+      return;
+    }
     const observer = new ResizeObserver(() => cyRef.current?.resize());
     observer.observe(container);
     return () => observer.disconnect();
@@ -87,18 +84,17 @@ export function ReferenceGraphApp({
         extensionLog.debug("Reference graph: compound group diagnostic", {
           groupId: group.id(),
           parentId: parent.nonempty() ? parent.first().id() : undefined,
-          children: group.children().map((child) => ({
-            id: child.id(),
-            collapseKey: child.data("collapseKey") as unknown,
-            compoundGroup: child.data("compoundGroup") as unknown,
-          })),
+          children: group
+            .children()
+            .map((child) => ({
+              id: child.id(),
+              collapseKey: child.data("collapseKey") as unknown,
+              compoundGroup: child.data("compoundGroup") as unknown,
+            })),
         });
       });
       const level = Math.min(cy.maxZoom(), Math.max(cy.minZoom(), cy.zoom() * factor));
-      cy.zoom({
-        level,
-        renderedPosition: renderedPosition ?? { x: cy.width() / 2, y: cy.height() / 2 },
-      });
+      cy.zoom({ level, renderedPosition: renderedPosition ?? { x: cy.width() / 2, y: cy.height() / 2 } });
     }
   };
 
@@ -140,20 +136,17 @@ export function ReferenceGraphApp({
         onClose={() => graphState.setSelectedTreeNodeId(undefined)}
       />
       <div ref={containerRef} className="fobles-reference-graph-canvas" />
-      {graphState.graphBusy && (
-        <div className="fobles-reference-graph-canvas-blocker" aria-hidden="true" />
-      )}
+      {graphState.graphBusy && <div className="fobles-reference-graph-canvas-blocker" aria-hidden="true" />}
       <GraphZoomControls
         onZoomIn={() => handleZoom(GRAPH_VIEWPORT.ZOOM_FACTOR)}
         onZoomOut={() => handleZoom(1 / GRAPH_VIEWPORT.ZOOM_FACTOR)}
         onFitGraph={() => cyRef.current?.fit(undefined, GRAPH_VIEWPORT.PADDING)}
         onCenterRoot={() => {
           const cy = cyRef.current;
-          const rootItem = cy?.getElementById(
-            graphState.currentPreparedGraph.harvestedData.rootItem.scItemId,
-          );
-          if (rootItem?.nonempty()) 
-cy?.fit(rootItem, GRAPH_VIEWPORT.PADDING);
+          const rootItem = cy?.getElementById(graphState.currentPreparedGraph.harvestedData.rootItem.scItemId);
+          if (rootItem?.nonempty()) {
+            cy?.fit(rootItem, GRAPH_VIEWPORT.PADDING);
+          }
         }}
       />
     </div>

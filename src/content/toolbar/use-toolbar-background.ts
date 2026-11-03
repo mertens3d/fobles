@@ -21,7 +21,9 @@ export function useToolbarBackgroundColor(context: ToolbarContext): React.CSSPro
 
     update();
     const header = context.doc.querySelector(CONST.SITECORE.SELECTORS.GLOBAL_HEADER);
-    if (!header) return;
+    if (!header) {
+      return;
+    }
     const observer = new MutationObserver(update);
     observer.observe(header, { childList: true, subtree: true });
     return () => observer.disconnect();

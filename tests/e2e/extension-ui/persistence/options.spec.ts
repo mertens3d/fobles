@@ -64,7 +64,9 @@ foblesTest.describe("Additional Settings Persistence", () => {
           ]);
         }, originalSnapshot);
       }
-      if (!optionsPage.isClosed()) await optionsPage.close();
+      if (!optionsPage.isClosed()) {
+        await optionsPage.close();
+      }
     }
   });
 
@@ -150,7 +152,9 @@ foblesTest.describe("Additional Settings Persistence", () => {
           );
         }
       }
-      if (!optionsPage.isClosed()) await optionsPage.close();
+      if (!optionsPage.isClosed()) {
+        await optionsPage.close();
+      }
     }
   });
 
@@ -211,7 +215,9 @@ foblesTest.describe("Additional Settings Persistence", () => {
         }
         await expect(adminPagesColumn).toBeVisible();
       }
-      if (!optionsPage.isClosed()) await optionsPage.close();
+      if (!optionsPage.isClosed()) {
+        await optionsPage.close();
+      }
     }
   });
 });

@@ -12,6 +12,8 @@ const STATUS_ICON: Readonly<Record<AuditFindingStatus, string>> = {
 export type AuditorStatusIconProps = { status: AuditFindingStatus; className?: string };
 
 export function AuditorStatusIcon({ status, className }: AuditorStatusIconProps) {
-  const classes = ["fobles-auditor-status-icon", `fobles-auditor-status-icon--${status}`, className].filter(Boolean).join(" ");
+  const classes = ["fobles-auditor-status-icon", `fobles-auditor-status-icon--${status}`, className]
+    .filter(Boolean)
+    .join(" ");
   return <img className={classes} src={STATUS_ICON[status]} alt="" aria-hidden="true" />;
 }

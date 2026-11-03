@@ -5,5 +5,5 @@ interface ErrorOptions {
 }
 
 interface ErrorConstructor {
-  new(message?: string, options?: ErrorOptions): Error;
+  new (message?: string, options?: ErrorOptions): Error;
 }

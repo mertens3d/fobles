@@ -25,10 +25,7 @@ export type UseReferenceGraphFilterActionsOptions = {
 
 type ReferenceGraphFilterActions = {
   handleClearFilters: () => void;
-  handleFilterChange: (
-    key: keyof SitecoreHarvestFiltersState,
-    checked: boolean,
-  ) => void;
+  handleFilterChange: (key: keyof SitecoreHarvestFiltersState, checked: boolean) => void;
 };
 
 export function useReferenceGraphFilterActions({
@@ -38,14 +35,11 @@ export function useReferenceGraphFilterActions({
   graphState,
   renderGraph,
 }: UseReferenceGraphFilterActionsOptions): ReferenceGraphFilterActions {
-  const setFilters = useCallback(
-    (filters: SitecoreHarvestFiltersState): void => {
-      graphState.currentFiltersRef.current = filters;
-      graphState.setCurrentFilters(filters);
-      void setReferenceGraphFilters(filters);
-    },
-    [],
-  );
+  const setFilters = useCallback((filters: SitecoreHarvestFiltersState): void => {
+    graphState.currentFiltersRef.current = filters;
+    graphState.setCurrentFilters(filters);
+    void setReferenceGraphFilters(filters);
+  }, []);
 
   const handleClearFilters = useCallback((): void => {
     const filters = createAllFiltersState(false);
@@ -59,35 +53,16 @@ export function useReferenceGraphFilterActions({
   }, [cyRef, setFilters]);
 
   const handleFilterChange = useCallback(
-    (
-      key: keyof SitecoreHarvestFiltersState,
-      checked: boolean,
-    ): void => {
+    (key: keyof SitecoreHarvestFiltersState, checked: boolean): void => {
       void changeReferenceGraphFilter(
         key,
         checked,
-        {
-          doc,
-          harvestForLink,
-          cyRef,
-          graphState,
-          renderGraph,
-        },
+        { doc, harvestForLink, cyRef, graphState, renderGraph },
         setFilters,
       );
     },
-    [
-      doc,
-      harvestForLink,
-      cyRef,
-      graphState,
-      renderGraph,
-      setFilters,
-    ],
+    [doc, harvestForLink, cyRef, graphState, renderGraph, setFilters],
   );
 
-  return {
-    handleClearFilters,
-    handleFilterChange,
-  };
+  return { handleClearFilters, handleFilterChange };
 }

@@ -10,13 +10,8 @@ export async function drawMousePath(
   await page.evaluate(
     ({ startX, startY, endX, endY, config }) => {
       const svg =
-        (document.getElementById(
-          config.DEBUG_LINE_ID,
-        ) as SVGSVGElement | null) ??
-        (document.createElementNS(
-          config.SVG_NAMESPACE,
-          config.TAGS.SVG,
-        ) as SVGSVGElement);
+        (document.getElementById(config.DEBUG_LINE_ID) as SVGSVGElement | null) ??
+        (document.createElementNS(config.SVG_NAMESPACE, config.TAGS.SVG) as SVGSVGElement);
 
       svg.id = config.DEBUG_LINE_ID;
       svg.style.position = config.VIEWPORT_STYLE.POSITION;
@@ -28,39 +23,24 @@ export async function drawMousePath(
       svg.style.zIndex = config.VIEWPORT_STYLE.Z_INDEX;
       svg.style.opacity = String(config.OPACITY);
 
-      const line = document.createElementNS(
-        config.SVG_NAMESPACE,
-        config.TAGS.LINE,
-      ) as SVGLineElement;
+      const line = document.createElementNS(config.SVG_NAMESPACE, config.TAGS.LINE) as SVGLineElement;
 
       line.setAttribute(config.LINE_ATTRIBUTES.X1, String(startX));
       line.setAttribute(config.LINE_ATTRIBUTES.Y1, String(startY));
       line.setAttribute(config.LINE_ATTRIBUTES.X2, String(endX));
       line.setAttribute(config.LINE_ATTRIBUTES.Y2, String(endY));
       line.setAttribute(config.LINE_ATTRIBUTES.STROKE, config.COLOR);
-      line.setAttribute(
-        config.LINE_ATTRIBUTES.STROKE_WIDTH,
-        config.STROKE_WIDTH,
-      );
+      line.setAttribute(config.LINE_ATTRIBUTES.STROKE_WIDTH, config.STROKE_WIDTH);
 
       line.dataset.startX = String(startX);
       line.dataset.startY = String(startY);
 
-      const endCircle = document.createElementNS(
-        config.SVG_NAMESPACE,
-        config.TAGS.CIRCLE,
-      ) as SVGCircleElement;
+      const endCircle = document.createElementNS(config.SVG_NAMESPACE, config.TAGS.CIRCLE) as SVGCircleElement;
 
       endCircle.setAttribute(config.ENDPOINT_ATTRIBUTES.CX, String(endX));
       endCircle.setAttribute(config.ENDPOINT_ATTRIBUTES.CY, String(endY));
-      endCircle.setAttribute(
-        config.ENDPOINT_ATTRIBUTES.RADIUS,
-        config.ENDPOINT_RADIUS,
-      );
-      endCircle.setAttribute(
-        config.ENDPOINT_ATTRIBUTES.FILL,
-        config.ENDPOINT_FILL,
-      );
+      endCircle.setAttribute(config.ENDPOINT_ATTRIBUTES.RADIUS, config.ENDPOINT_RADIUS);
+      endCircle.setAttribute(config.ENDPOINT_ATTRIBUTES.FILL, config.ENDPOINT_FILL);
 
       svg.replaceChildren(line, endCircle);
       document.documentElement.appendChild(svg);
@@ -75,25 +55,26 @@ export async function drawMousePath(
   );
 }
 
-export async function updateMousePath(
-  page: Page,
-  progress: number,
-): Promise<void> {
+export async function updateMousePath(page: Page, progress: number): Promise<void> {
   await page.evaluate(
     ({ progress, config }) => {
-      const svg = document.getElementById(
-        config.DEBUG_LINE_ID,
-      ) as SVGSVGElement | null;
+      const svg = document.getElementById(config.DEBUG_LINE_ID) as SVGSVGElement | null;
 
-      if (!svg) return;
+      if (!svg) {
+        return;
+      }
 
       const line = svg.querySelector("line");
 
-      if (!line) return;
+      if (!line) {
+        return;
+      }
 
       const fadeStart = 0.8;
 
-      if (progress <= fadeStart) return;
+      if (progress <= fadeStart) {
+        return;
+      }
 
       const disappearProgress = (progress - fadeStart) / (1 - fadeStart);
 
@@ -109,17 +90,12 @@ export async function updateMousePath(
       line.setAttribute("x1", String(currentX));
       line.setAttribute("y1", String(currentY));
 
-      svg.style.opacity = String(
-        Number(config.OPACITY) * (1 - disappearProgress),
-      );
+      svg.style.opacity = String(Number(config.OPACITY) * (1 - disappearProgress));
 
       if (progress >= 1) {
         svg.remove();
       }
     },
-    {
-      progress,
-      config: TEST_CONST.TESTING.MOUSE.PATH,
-    },
+    { progress, config: TEST_CONST.TESTING.MOUSE.PATH },
   );
 }

@@ -43,15 +43,19 @@ export type ItemGraphNodeData = {
 };
 
 export type RootItem = ItemGraphNodeData & { scItemId: string };
-export type SitecoreHarvestSection = { name: string; fields: readonly SitecoreHarvestField[] };
-export type SitecoreHarvestField = { label: string; value: string | undefined; links: readonly HarvestFieldLink[]; rawMarkup: string | undefined };
-export type HarvestFieldLink = FieldReference & { valueItem: ItemGraphNodeData };
 
-export type LayoutSectionField = {
-  name: string | undefined;
-  devices: LayoutDevice[];
+export type SitecoreHarvestSection = { name: string; fields: readonly SitecoreHarvestField[] };
+
+export type SitecoreHarvestField = {
+  label: string;
+  value: string | undefined;
+  links: readonly HarvestFieldLink[];
   rawMarkup: string | undefined;
 };
+
+export type HarvestFieldLink = FieldReference & { valueItem: ItemGraphNodeData };
+
+export type LayoutSectionField = { name: string | undefined; devices: LayoutDevice[]; rawMarkup: string | undefined };
 
 export type LayoutPlacement = {
   path: string;

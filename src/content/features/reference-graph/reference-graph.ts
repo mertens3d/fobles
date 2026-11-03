@@ -2,7 +2,10 @@
 import { showFoblesErrorDialog } from "../../../shared/error-dialog";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { PROGRESS_STEPS } from "../../foundation/harvesting/planner/harvest-steps";
-import { openFoblesDataAcquisition, type FoblesDataAcquisition } from "../../foundation/reference-data/reference-data-acquisition";
+import {
+  openFoblesDataAcquisition,
+  type FoblesDataAcquisition,
+} from "../../foundation/reference-data/reference-data-acquisition";
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
 import { extensionLog } from "../../logger";
 import { openReferenceGraphUtility } from "../../shell/utility/fobles-utility-launchers";
@@ -20,6 +23,7 @@ import { startReferenceGraphTimer } from "./reference-graph-timing";
 
 export let referenceGraphAbortController: AbortController | undefined;
 let activeReferenceGraphOperation: ReferenceGraphOperation | undefined;
+
 type ReferenceGraphOperationState = "created" | "running" | "displaying" | "disposing" | "closed";
 
 class ReferenceGraphOperation {
@@ -32,8 +36,13 @@ class ReferenceGraphOperation {
   constructor(private readonly doc: Document) {}
 
   cancel(): void {
-    if (this.state === "closed" || this.state === "disposing") return;
-    extensionLog.debug("Reference graph operation: cancellation requested", { operationId: this.operationId, state: this.state });
+    if (this.state === "closed" || this.state === "disposing") {
+      return;
+    }
+    extensionLog.debug("Reference graph operation: cancellation requested", {
+      operationId: this.operationId,
+      state: this.state,
+    });
     this.controller.abort();
     void this.workOperation.cancel();
     closeReferenceGraphProgressModal(this.doc);
@@ -47,8 +56,9 @@ class ReferenceGraphOperation {
       await this.buildAndDisplayGraph();
     } catch (error) {
       closeReferenceGraphProgressModal(this.doc);
-      if (this.controller.signal.aborted) extensionLog.debug("REFERENCE GRAPH: cancelled", { operationId: this.operationId, error });
-      else {
+      if (this.controller.signal.aborted) {
+        extensionLog.debug("REFERENCE GRAPH: cancelled", { operationId: this.operationId, error });
+      } else {
         extensionLog.error("REFERENCE GRAPH: data request failed", { operationId: this.operationId, error });
         showFoblesErrorDialog(this.doc, {
           title: "Reference Graph",
@@ -80,7 +90,9 @@ class ReferenceGraphOperation {
       },
     });
     this.throwIfCancelled();
-    if (!this.dataAcquisition || !graphHolder.prepared) throw new Error("The requested data was unavailable.");
+    if (!this.dataAcquisition || !graphHolder.prepared) {
+      throw new Error("The requested data was unavailable.");
+    }
     this.transition("displaying");
     closeReferenceGraphProgressModal(this.doc);
     const prepared = graphHolder.prepared;
@@ -94,35 +106,52 @@ class ReferenceGraphOperation {
   }
 
   private throwIfCancelled(): void {
-    if (this.controller.signal.aborted) throw new DOMException("Reference Graph cancelled", "AbortError");
+    if (this.controller.signal.aborted) {
+      throw new DOMException("Reference Graph cancelled", "AbortError");
+    }
   }
 
   private async close(): Promise<void> {
-    if (this.state === "closed" || this.state === "disposing") return;
+    if (this.state === "closed" || this.state === "disposing") {
+      return;
+    }
     this.transition("disposing");
     closeReferenceGraphProgressModal(this.doc);
     this.controller.abort();
     this.dataAcquisition?.dispose();
     await this.workOperation.cancel();
-    if (referenceGraphAbortController === this.controller) referenceGraphAbortController = undefined;
+    if (referenceGraphAbortController === this.controller) {
+      referenceGraphAbortController = undefined;
+    }
     this.transition("closed");
-    extensionLog.debug("Reference graph operation: closed", { operationId: this.operationId, workOperationId: this.workOperation.id });
+    extensionLog.debug("Reference graph operation: closed", {
+      operationId: this.operationId,
+      workOperationId: this.workOperation.id,
+    });
   }
 
   private transition(nextState: ReferenceGraphOperationState): void {
     const previousState = this.state;
     this.state = nextState;
-    extensionLog.debug("Reference graph operation: state changed", { operationId: this.operationId, previousState, nextState });
+    extensionLog.debug("Reference graph operation: state changed", {
+      operationId: this.operationId,
+      previousState,
+      nextState,
+    });
   }
 }
 
 export async function openReferenceGraph(doc: Document): Promise<void> {
-  if (activeReferenceGraphOperation) return;
+  if (activeReferenceGraphOperation) {
+    return;
+  }
   const operation = new ReferenceGraphOperation(doc);
   activeReferenceGraphOperation = operation;
   try {
     await operation.run();
   } finally {
-    if (activeReferenceGraphOperation === operation) activeReferenceGraphOperation = undefined;
+    if (activeReferenceGraphOperation === operation) {
+      activeReferenceGraphOperation = undefined;
+    }
   }
 }

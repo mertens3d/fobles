@@ -16,7 +16,9 @@ export function StorageSection() {
   }
 
   async function handleClear(): Promise<void> {
-    if (!confirm("Clear all stored Fobles settings? This can't be undone.")) return;
+    if (!confirm("Clear all stored Fobles settings? This can't be undone.")) {
+      return;
+    }
     await clearAllStorageValues();
     setClearStatus("All stored settings cleared.");
     setOutput(undefined);
@@ -27,11 +29,29 @@ export function StorageSection() {
       <summary>Storage</summary>
       <p>View or clear everything Fobles has stored for you - not just developer settings.</p>
       <div className="button-row">
-        <button id={CONST.FOBLES.OPTIONS_PAGE.VIEW_STORED_SETTINGS} type="button" className="settings-button" onClick={() => void handleView()}>View Fobles Storage</button>
-        <button id={CONST.FOBLES.OPTIONS_PAGE.CLEAR_STORED_SETTINGS} type="button" className="settings-button" onClick={() => void handleClear()}>Clear all stored settings</button>
+        <button
+          id={CONST.FOBLES.OPTIONS_PAGE.VIEW_STORED_SETTINGS}
+          type="button"
+          className="settings-button"
+          onClick={() => void handleView()}
+        >
+          View Fobles Storage
+        </button>
+        <button
+          id={CONST.FOBLES.OPTIONS_PAGE.CLEAR_STORED_SETTINGS}
+          type="button"
+          className="settings-button"
+          onClick={() => void handleClear()}
+        >
+          Clear all stored settings
+        </button>
       </div>
-      <pre id={CONST.FOBLES.OPTIONS_PAGE.STORED_SETTINGS_OUTPUT} hidden={output === undefined}>{output}</pre>
-      <p id={CONST.FOBLES.OPTIONS_PAGE.CLEAR_STORED_SETTINGS_STATUS} role="status">{clearStatus}</p>
+      <pre id={CONST.FOBLES.OPTIONS_PAGE.STORED_SETTINGS_OUTPUT} hidden={output === undefined}>
+        {output}
+      </pre>
+      <p id={CONST.FOBLES.OPTIONS_PAGE.CLEAR_STORED_SETTINGS_STATUS} role="status">
+        {clearStatus}
+      </p>
     </details>
   );
 }

@@ -1,7 +1,7 @@
 import { foblesTest, type Page } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { openSitecorePage } from "../../fixtures/sitecore";
-import {   clickTreeJump,  scrollTreeContainer } from "../../macros/sitecore-macros";
+import { clickTreeJump, scrollTreeContainer } from "../../macros/sitecore-macros";
 import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import { getExtensionId, setFoblesNavWarningVisible } from "../../fixtures/extension";
 import { playDemoBeat } from "./demo-beat";
@@ -37,8 +37,9 @@ foblesTest.describe("Promo Video", () => {
       await setFoblesNavWarningVisible(sharedBrowserContext, extensionId, true);
     }
 
-    if (RECORD_VIDEO) await page.close();
-
+    if (RECORD_VIDEO) {
+      await page.close();
+    }
   });
 });
 
@@ -58,9 +59,11 @@ async function demoLBoltToggle(page: Page) {
 }
 
 async function demoTreeJumpFlyout(page: Page) {
-
-  await clickLbolt(page)
-  await showSpeakBubble(page, "Click opens the tree jump path in the same tab. <br/>Ctrl + Click opens it in a new tab.");
+  await clickLbolt(page);
+  await showSpeakBubble(
+    page,
+    "Click opens the tree jump path in the same tab. <br/>Ctrl + Click opens it in a new tab.",
+  );
   await clickTreeJump(page, TEST_CONST.SITECORE.TREE_JUMP_PATHS.LAYOUT_RENDERINGS);
   // await playDemoBeat(page, {
   //   name: "DemoTreeJumpFlyout-ClickSameTab",
@@ -69,7 +72,7 @@ async function demoTreeJumpFlyout(page: Page) {
   // });
 
   // await playDemoBeat(page, {
-  //   name: "DemoTreeJumpFlyout-CtrlClickNewTab",   
+  //   name: "DemoTreeJumpFlyout-CtrlClickNewTab",
   //   speechText: "Ctrl + Click opens the tree jump path in a new tab",
   //   action: () => clickTreeJump(page, CONST.SITECORE.TREE_JUMP_PATHS.MEDIA_LIBRARY),
   // });
@@ -78,7 +81,7 @@ async function demoTreeJumpFlyout(page: Page) {
 async function demoTreeFoblesClick(page: Page) {
   // await playDemoBeat(page, {
   //   init: () => scrollTreeContainer(page, 400),
-  //   name: "demoTreeFoblesClick-ClickLBolt",    
+  //   name: "demoTreeFoblesClick-ClickLBolt",
   //   speechText: "Click LBolt to turn Fobles on for this item",
   //   action: () => clickLbolt(page),
   // });
@@ -86,7 +89,10 @@ async function demoTreeFoblesClick(page: Page) {
   await scrollTreeContainer(page, 400);
   await clickLbolt(page);
 
-  await showSpeakBubble(page, "Click opens the tree jump path in the same tab. <br/>Ctrl + Click opens it in a new tab.");
+  await showSpeakBubble(
+    page,
+    "Click opens the tree jump path in the same tab. <br/>Ctrl + Click opens it in a new tab.",
+  );
   await clickFoblesTreeButton(page, "CDD3F21381BB47708FEC4E1DD65EAA66");
   // await playDemoBeat(page, {
   //   name: "demoTreeFoblesClick-ClickFobles",
@@ -106,14 +112,18 @@ async function demoToolbarDrag(page: Page) {
   //   action: () => dragToolbarToCornerLocation  (page, CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2),
   //   highlightResult: false,
   // });
- 
-  await showSpeakBubble(page, "Drag the toolbar anywhere on the page", TEST_CONST.TESTING.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION);
-  await dragToolbarToCornerLocation  (page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL);
+
+  await showSpeakBubble(
+    page,
+    "Drag the toolbar anywhere on the page",
+    TEST_CONST.TESTING.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION,
+  );
+  await dragToolbarToCornerLocation(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL);
 
   await moveMouseTowardCenter(page);
 
-  await dragToolbarToCornerLocation  (page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR);
+  await dragToolbarToCornerLocation(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR);
   await moveMouseTowardCenter(page);
 
-  await dragToolbarToCornerLocation  (page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR);
+  await dragToolbarToCornerLocation(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR);
 }

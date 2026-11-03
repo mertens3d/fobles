@@ -4,7 +4,14 @@ import { CLASS, TEXT } from "../../constants/fobles.constants";
 import { isCompactToolbarPage, isPowerShellIsePath } from "../guard";
 import { useFlyoutVisibility } from "./shared-flyout/use-flyout-visibility";
 import { ToolbarGrip } from "./toolbar-grip";
-import { AuditorButton, DeveloperButton, GraphButton, LboltButton, SetIseTabTitleButton, ToolbarCloseButton } from "./toolbar-buttons";
+import {
+  AuditorButton,
+  DeveloperButton,
+  GraphButton,
+  LboltButton,
+  SetIseTabTitleButton,
+  ToolbarCloseButton,
+} from "./toolbar-buttons";
 import { useToolbarDrag } from "./use-toolbar-drag";
 import { useToolbarBackgroundColor } from "./use-toolbar-background";
 import { useDeveloperButtonVisible } from "./use-developer-button-visible";
@@ -66,8 +73,22 @@ export function ToolbarApp({ context }: ToolbarAppProps) {
       <ToolbarGrip />
       <div className={CLASS.TOOLBAR_BODY}>
         <LboltButton context={context} />
-        {!isCompact && <JumpFlyoutTrigger doc={context.doc} jumpFlyout={jumpFlyout} onOpen={openJumpFlyout} onToggle={toggleJumpFlyout} />}
-        {!isCompact && <ProxyFlyoutTrigger doc={context.doc} proxyFlyout={proxyFlyout} onOpen={openProxyFlyout} onToggle={toggleProxyFlyout} />}
+        {!isCompact && (
+          <JumpFlyoutTrigger
+            doc={context.doc}
+            jumpFlyout={jumpFlyout}
+            onOpen={openJumpFlyout}
+            onToggle={toggleJumpFlyout}
+          />
+        )}
+        {!isCompact && (
+          <ProxyFlyoutTrigger
+            doc={context.doc}
+            proxyFlyout={proxyFlyout}
+            onOpen={openProxyFlyout}
+            onToggle={toggleProxyFlyout}
+          />
+        )}
         {!isCompact && <GraphButton context={context} />}
         {!isCompact && <AuditorButton context={context} />}
         {!isCompact && showDeveloperButton && <DeveloperButton context={context} />}

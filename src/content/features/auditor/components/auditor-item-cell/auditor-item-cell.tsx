@@ -11,7 +11,9 @@ export function AuditorItemCell(props: ICellRendererParams<AuditFinding>) {
     <span className="fobles-auditor-item-cell">
       {finding?.itemIcon ? <img className="fobles-auditor-item-cell-icon" src={finding.itemIcon} alt="" /> : undefined}
       {finding?.sitecoreUrl ? (
-        <a href={finding.sitecoreUrl} target="_blank" rel="noopener noreferrer">{label}</a>
+        <a href={finding.sitecoreUrl} target="_blank" rel="noopener noreferrer">
+          {label}
+        </a>
       ) : (
         <span>{label}</span>
       )}

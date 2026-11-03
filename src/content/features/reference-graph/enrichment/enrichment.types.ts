@@ -10,9 +10,7 @@ export type EnrichmentProgress = {
 
 export type EnrichmentProgressCallback = (progress: EnrichmentProgress) => void;
 
-export type EnrichmentController = {
-  dispose: () => void;
-};
+export type EnrichmentController = { dispose: () => void };
 
 // 0 = Name unknown (highest priority), 1 = Name known but other quick-info metadata (id/template)
 // missing, 2 = Name known and only Path missing (lowest priority).

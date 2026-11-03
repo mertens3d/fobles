@@ -5,13 +5,17 @@ import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-da
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
 
 export type ReferenceHarvestingJob = { item: SitecoreItemLocator; factName: SitecoreDataFactName };
+
 export type ReferenceHarvestingProgress = { completed: number; max: number; status: "running" | "complete" };
+
 export type ReferenceHarvestingQueueOptions = {
   runJob: (job: ReferenceHarvestingJob, signal: AbortSignal) => Promise<void>;
   onProgress?: (progress: ReferenceHarvestingProgress) => void;
   onError?: (job: ReferenceHarvestingJob, error: unknown) => void;
 };
+
 type QueuedReferenceHarvestingJob = ReferenceHarvestingJob & { onSettled?: (succeeded: boolean) => void };
+
 export type ReferenceHarvestingQueue = {
   enqueue: (job: ReferenceHarvestingJob, onSettled?: (succeeded: boolean) => void) => void;
   remove: (predicate: (job: ReferenceHarvestingJob) => boolean) => number;
@@ -24,7 +28,11 @@ export function referenceHarvestingJobKey(job: ReferenceHarvestingJob): string {
   return `${item.kind}:${item.value}:${job.factName}`;
 }
 
-export function createReferenceHarvestingQueue({ runJob, onProgress, onError }: ReferenceHarvestingQueueOptions): ReferenceHarvestingQueue {
+export function createReferenceHarvestingQueue({
+  runJob,
+  onProgress,
+  onError,
+}: ReferenceHarvestingQueueOptions): ReferenceHarvestingQueue {
   const controller = new AbortController();
   const jobs: QueuedReferenceHarvestingJob[] = [];
   const seen = new Set<string>();
@@ -36,22 +44,32 @@ export function createReferenceHarvestingQueue({ runJob, onProgress, onError }: 
     return jobs.length + (processing ? 1 : 0);
   }
   function reportProgress(): void {
-    onProgress?.({ completed, max: seen.size, status: disposed || (!processing && jobs.length === 0) ? "complete" : "running" });
+    onProgress?.({
+      completed,
+      max: seen.size,
+      status: disposed || (!processing && jobs.length === 0) ? "complete" : "running",
+    });
   }
   async function processJobs(): Promise<void> {
-    if (processing || disposed) return;
+    if (processing || disposed) {
+      return;
+    }
     processing = true;
     reportProgress();
     try {
       while (!disposed && jobs.length > 0) {
         const job = jobs.shift();
-        if (!job) continue;
+        if (!job) {
+          continue;
+        }
         let succeeded = false;
         try {
           await runJob(job, controller.signal);
           succeeded = true;
         } catch (error: unknown) {
-          if (!disposed) onError?.(job, error);
+          if (!disposed) {
+            onError?.(job, error);
+          }
         } finally {
           if (!disposed) {
             completed += 1;
@@ -64,34 +82,46 @@ export function createReferenceHarvestingQueue({ runJob, onProgress, onError }: 
       processing = false;
       if (!disposed) {
         reportProgress();
-        if (jobs.length > 0) void processJobs();
+        if (jobs.length > 0) {
+          void processJobs();
+        }
       }
     }
   }
   function enqueue(job: ReferenceHarvestingJob, onSettled?: (succeeded: boolean) => void): void {
     const key = referenceHarvestingJobKey(job);
-    if (disposed || seen.has(key)) return;
+    if (disposed || seen.has(key)) {
+      return;
+    }
     seen.add(key);
     jobs.push({ ...job, onSettled });
     reportProgress();
     void processJobs();
   }
   function remove(predicate: (job: ReferenceHarvestingJob) => boolean): number {
-    if (disposed) return 0;
+    if (disposed) {
+      return 0;
+    }
     let removed = 0;
     for (let index = jobs.length - 1; index >= 0; index -= 1) {
       const job = jobs[index];
-      if (!predicate(job)) continue;
+      if (!predicate(job)) {
+        continue;
+      }
       jobs.splice(index, 1);
       seen.delete(referenceHarvestingJobKey(job));
       job.onSettled?.(false);
       removed += 1;
     }
-    if (removed > 0) reportProgress();
+    if (removed > 0) {
+      reportProgress();
+    }
     return removed;
   }
   function dispose(): void {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
     disposed = true;
     jobs.length = 0;
     controller.abort();

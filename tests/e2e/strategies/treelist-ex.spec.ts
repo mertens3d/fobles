@@ -1,16 +1,20 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { factoryStrategyTestContext } from "../../helpers/strategy-test-context";
-import {
-  setupContentEditorForTesting,
-} from "../../helpers/fobles-helpers-support/test-setup";
+import { setupContentEditorForTesting } from "../../helpers/fobles-helpers-support/test-setup";
 
 import { fieldScreenshotName } from "./support/CONST";
 import { runClickNavigationSteps } from "./click-navigation-steps";
 import { STRATEGY_SCENARIOS } from "./support/strategy-scenarios";
 import type { StrategyTestContext } from "./support/scenario.types";
 import { showBillboard } from "../../helpers/billboard";
-import { stepExpectSitecoreInitialConditions, stepExpectFoblesInitialConditions, stepExpectFoblesOnConditions, stepExpectFoblesCtrlClick, stepExpectFoblesOffConditions } from "./support/strategy-test-helper";
+import {
+  stepExpectSitecoreInitialConditions,
+  stepExpectFoblesInitialConditions,
+  stepExpectFoblesOnConditions,
+  stepExpectFoblesCtrlClick,
+  stepExpectFoblesOffConditions,
+} from "./support/strategy-test-helper";
 
 const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -23,11 +27,14 @@ const SCENARIO = STRATEGY_SCENARIOS.TREELIST_EX;
 
 foblesTest.describe("Strategy scenario: treelist ex", () => {
   foblesTest("toggling Fobles decorates and restores the treelist ex field", async ({ page }, testInfo) => {
-
     await setupContentEditorForTesting(page, STRATEGY_SCENARIOS.TREELIST_EX);
 
     await showBillboard(page, STRATEGY_SCENARIOS.TREELIST_EX.friendlyName);
-    const testContext: StrategyTestContext = await factoryStrategyTestContext(page, STRATEGY_SCENARIOS.TREELIST_EX, testInfo);
+    const testContext: StrategyTestContext = await factoryStrategyTestContext(
+      page,
+      STRATEGY_SCENARIOS.TREELIST_EX,
+      testInfo,
+    );
 
     await stepExpectSitecoreInitialConditions(testContext);
     await stepExpectFoblesInitialConditions(testContext);
@@ -35,9 +42,19 @@ foblesTest.describe("Strategy scenario: treelist ex", () => {
     await stepExpectFoblesCtrlClick(testContext);
     await stepExpectFoblesOffConditions(testContext);
 
-    runClickNavigationSteps(testContext.step, page, testInfo, testContext.fieldTable, testContext.locatorFirstResult, testContext.SCENARIO, async () => {
-      await expect(testContext.fieldTable).toHaveScreenshot(fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"));
-    });
+    runClickNavigationSteps(
+      testContext.step,
+      page,
+      testInfo,
+      testContext.fieldTable,
+      testContext.locatorFirstResult,
+      testContext.SCENARIO,
+      async () => {
+        await expect(testContext.fieldTable).toHaveScreenshot(
+          fieldScreenshotName(testContext.SCENARIO.SCREENSHOT_BASE_NAME, "DEFAULT"),
+        );
+      },
+    );
 
     // const testContext: StrategyTestContext = await factoryStrategyTestContext(
     //   page,

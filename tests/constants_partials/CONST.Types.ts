@@ -8,11 +8,7 @@ export type HighlightStyle = {
   VISIBLE_DELAY_MS: number;
 };
 
-export type JumpDefinition = {
-  label: string;
-  skipTestingAI: boolean;
-  clickNavigationExpect: ClickNavigationExpect;
-};
+export type JumpDefinition = { label: string; skipTestingAI: boolean; clickNavigationExpect: ClickNavigationExpect };
 
 export type PageJumpDefinition = JumpDefinition & {
   // url: string;
@@ -22,10 +18,7 @@ export type TreeJumpDefinition = JumpDefinition & {
   // path: string;
 };
 
-export type ClickNavigationExpect={
-  url?: string;
-  foValue?: string;
-}
+export type ClickNavigationExpect = { url?: string; foValue?: string };
 
 export type ToolbarType = "full" | "compact";
 

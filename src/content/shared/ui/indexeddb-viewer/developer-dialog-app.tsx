@@ -10,10 +10,13 @@ const TABS: readonly { id: DeveloperTabId; label: string }[] = [
   { id: TAB_ID.INDEXEDDB, label: TAB_LABEL.INDEXEDDB },
   { id: TAB_ID.RUNTIME_SETTINGS, label: TAB_LABEL.RUNTIME_SETTINGS },
 ];
-function tabDomId(id: DeveloperTabId): string { 
-return `${ID_PREFIX}-tab-${id}`; }
-function panelDomId(id: DeveloperTabId): string { 
-return `${ID_PREFIX}-panel-${id}`; }
+function tabDomId(id: DeveloperTabId): string {
+  return `${ID_PREFIX}-tab-${id}`;
+}
+function panelDomId(id: DeveloperTabId): string {
+  return `${ID_PREFIX}-panel-${id}`;
+}
+
 // Every tab stays mounted and is only hidden, so the IndexedDB search/selection and unsaved editor text survive tab switches.
 export function DeveloperDialogApp({ doc }: IndexedDbViewerAppProps) {
   const [activeTab, setActiveTab] = useState<DeveloperTabId>(TAB_ID.INDEXEDDB);
@@ -35,10 +38,22 @@ export function DeveloperDialogApp({ doc }: IndexedDbViewerAppProps) {
           </button>
         ))}
       </div>
-      <div className={CLASS.PANEL} role="tabpanel" id={panelDomId(TAB_ID.INDEXEDDB)} aria-labelledby={tabDomId(TAB_ID.INDEXEDDB)} hidden={activeTab !== TAB_ID.INDEXEDDB}>
+      <div
+        className={CLASS.PANEL}
+        role="tabpanel"
+        id={panelDomId(TAB_ID.INDEXEDDB)}
+        aria-labelledby={tabDomId(TAB_ID.INDEXEDDB)}
+        hidden={activeTab !== TAB_ID.INDEXEDDB}
+      >
         <IndexedDbViewerApp doc={doc} />
       </div>
-      <div className={CLASS.PANEL} role="tabpanel" id={panelDomId(TAB_ID.RUNTIME_SETTINGS)} aria-labelledby={tabDomId(TAB_ID.RUNTIME_SETTINGS)} hidden={activeTab !== TAB_ID.RUNTIME_SETTINGS}>
+      <div
+        className={CLASS.PANEL}
+        role="tabpanel"
+        id={panelDomId(TAB_ID.RUNTIME_SETTINGS)}
+        aria-labelledby={tabDomId(TAB_ID.RUNTIME_SETTINGS)}
+        hidden={activeTab !== TAB_ID.RUNTIME_SETTINGS}
+      >
         <RuntimeSettingsEditor />
       </div>
     </div>

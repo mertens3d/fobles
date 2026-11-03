@@ -10,9 +10,7 @@ export async function saveJumpFlyoutButtons(optionsPage: Page): Promise<void> {
     optionsPage.getByRole("button", { name: TEST_CONST.TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON }),
     TEST_CONST.TESTING.OPTIONS.ADMIN_PAGES.SAVE_BUTTON,
   );
-  await expect(optionsPage.locator("#jump-flyout-buttons-status")).toHaveText(
-    "Jump flyout buttons saved.",
-  );
+  await expect(optionsPage.locator("#jump-flyout-buttons-status")).toHaveText("Jump flyout buttons saved.");
 }
 
 // A previous interrupted run may have left our test row behind - remove it (by its own label, not
@@ -25,16 +23,16 @@ export async function removeTestRowIfPresent(optionsPage: Page): Promise<void> {
 
   for (let index = rowCount - 1; index >= 0; index -= 1) {
     const row = rows.nth(index);
-    if ((await row.locator("input[name='label']").inputValue()) === TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label) {
-      await clickExtensionControl(
-        optionsPage,
-        row.locator(".user-tree-jump-remove"),
-        "Remove User Tree Jump",
-      );
+    if (
+      (await row.locator("input[name='label']").inputValue()) === TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label
+    ) {
+      await clickExtensionControl(optionsPage, row.locator(".user-tree-jump-remove"), "Remove User Tree Jump");
       removedAny = true;
     }
   }
-  if (removedAny) await saveJumpFlyoutButtons(optionsPage);
+  if (removedAny) {
+    await saveJumpFlyoutButtons(optionsPage);
+  }
 }
 
 // Adds our test row via the real "+ Add User Tree Jump" button and fields, then saves. Only ever
@@ -80,14 +78,14 @@ export async function setTestRowEnabled(optionsPage: Page, row: Locator, enabled
 }
 
 export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
-  const quickJumpSection = optionsPage.locator(TESTING.OPTIONS.SECTION_SELECTOR).filter({
-    has: optionsPage.locator(TESTING.OPTIONS.SUMMARY_SELECTOR, {
-      hasText: TESTING.OPTIONS.ADMIN_PAGES.JUMP_FLYOUT_SECTION_TITLE,
-    }),
-  });
-  const jumpFlyoutIsOpen = await quickJumpSection.evaluate(
-    (element) => (element as HTMLDetailsElement).open,
-  );
+  const quickJumpSection = optionsPage
+    .locator(TESTING.OPTIONS.SECTION_SELECTOR)
+    .filter({
+      has: optionsPage.locator(TESTING.OPTIONS.SUMMARY_SELECTOR, {
+        hasText: TESTING.OPTIONS.ADMIN_PAGES.JUMP_FLYOUT_SECTION_TITLE,
+      }),
+    });
+  const jumpFlyoutIsOpen = await quickJumpSection.evaluate((element) => (element as HTMLDetailsElement).open);
   if (!jumpFlyoutIsOpen) {
     await clickExtensionControl(
       optionsPage,
@@ -99,13 +97,9 @@ export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
   const treeJumpsColumn = optionsPage
     .locator(TESTING.JUMP_FLYOUT.ADMIN_PAGES_COLUMN_SELECTOR)
     .filter({
-      has: optionsPage.locator(TESTING.OPTIONS.SUMMARY_SELECTOR, {
-        hasText: TESTING.OPTIONS.TREE_JUMPS_COLUMN_TITLE,
-      }),
+      has: optionsPage.locator(TESTING.OPTIONS.SUMMARY_SELECTOR, { hasText: TESTING.OPTIONS.TREE_JUMPS_COLUMN_TITLE }),
     });
-  const treeJumpsAreOpen = await treeJumpsColumn.evaluate(
-    (element) => (element as HTMLDetailsElement).open,
-  );
+  const treeJumpsAreOpen = await treeJumpsColumn.evaluate((element) => (element as HTMLDetailsElement).open);
   if (!treeJumpsAreOpen) {
     await clickExtensionControl(
       optionsPage,
@@ -121,7 +115,7 @@ export async function openTreeJumpsColumn(optionsPage: Page): Promise<Locator> {
 //     const jumpFlyoutButtons = foblesFrame.locator(CONST.FOBLES.LOCATORS.DATA_PAGE_JUMP_URL);
 //     const entryAttribute = CONST.FOBLES.ATTRIBUTES.JUMP_ENTRY_URL;
 //     const targets: PageJumpDefinition[] = await jumpFlyoutButtons.evaluateAll(
-//       (buttons,attribute) => 
+//       (buttons,attribute) =>
 //         buttons.map((button) => ({
 //         label: button.textContent?.trim() ?? "",
 //         url: button.getAttribute(attribute) ?? "",

@@ -51,17 +51,11 @@ export function runVisibilityLayout(
   );
 }
 
-function resolveLayoutRootTreeNodeId(
-  cy: cytoscape.Core,
-  semanticRootTreeNodeId: string,
-): string {
+function resolveLayoutRootTreeNodeId(cy: cytoscape.Core, semanticRootTreeNodeId: string): string {
   let layoutRootTreeNodeId = semanticRootTreeNodeId;
 
   cy.nodes().forEach((node) => {
-    if (
-      node.visible() &&
-      node.data("collapseKey") === GRAPH_COLLAPSE_KEY.PARENT
-    ) {
+    if (node.visible() && node.data("collapseKey") === GRAPH_COLLAPSE_KEY.PARENT) {
       layoutRootTreeNodeId = node.id();
     }
   });

@@ -3,15 +3,25 @@ import { escapeHtml } from "./report-utils";
 
 function aliasScreenshotName(name: string): string {
   const lower = name.toLowerCase();
-  if (lower.startsWith("data-section-")) return "Data section";
-  if (lower.startsWith("item-path-")) return "Item path";
-  if (lower.startsWith("step-")) return "Step screenshot";
-  if (lower === "screenshot" || lower.startsWith("screenshot")) return "Full page";
+  if (lower.startsWith("data-section-")) {
+    return "Data section";
+  }
+  if (lower.startsWith("item-path-")) {
+    return "Item path";
+  }
+  if (lower.startsWith("step-")) {
+    return "Step screenshot";
+  }
+  if (lower === "screenshot" || lower.startsWith("screenshot")) {
+    return "Full page";
+  }
   return "Screenshot";
 }
 
 export function renderScreenshotLinks(screenshots?: ScreenshotInfo[]): string {
-  if (!screenshots?.length) return "";
+  if (!screenshots?.length) {
+    return "";
+  }
 
   const links = screenshots
     .map(
@@ -24,8 +34,8 @@ export function renderScreenshotLinks(screenshots?: ScreenshotInfo[]): string {
 }
 
 export function renderNotes(notes?: NoteInfo[]): string {
-  if (!notes?.length) return "";
-  return notes
-    .map((note) => `<div class="actual-note">${escapeHtml(note.text)}</div>`)
-    .join("");
+  if (!notes?.length) {
+    return "";
+  }
+  return notes.map((note) => `<div class="actual-note">${escapeHtml(note.text)}</div>`).join("");
 }

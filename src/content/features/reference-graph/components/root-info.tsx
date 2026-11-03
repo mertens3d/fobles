@@ -3,6 +3,7 @@
 import type { SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
 
 type RootInfoProps = { graph: SitecoreHarvestResult };
+
 export function RootInfo({ graph }: RootInfoProps) {
   const rows = [
     ["Name", graph.rootItem.scItemName],

@@ -28,7 +28,9 @@ export function indexFindingsByNode(findings: readonly AuditFinding[]): Map<stri
   const findingsByNode = new Map<string, AuditFinding[]>();
 
   findings.forEach((finding) => {
-    if (!finding.referenceModelNodeId) return;
+    if (!finding.referenceModelNodeId) {
+      return;
+    }
 
     const nodeFindings = findingsByNode.get(finding.referenceModelNodeId) ?? [];
     nodeFindings.push(finding);
@@ -51,35 +53,51 @@ export function projectAuditorRows(
 
   buildAuditReportTree(referenceModelRoot, findings, processingStateByTreeNodeId)
     .filter((row) => {
-      if (row.kind === "finding") return false;
+      if (row.kind === "finding") {
+        return false;
+      }
       const node = row.referenceModelNodeId ? nodesById.get(row.referenceModelNodeId) : undefined;
-      if (!node) return true;
+      if (!node) {
+        return true;
+      }
       const branch = getGraphPresentationState(node).branch;
       return !branch || graphFilters[branch];
     })
     .forEach((row) => {
       const node = row.referenceModelNodeId ? nodesById.get(row.referenceModelNodeId) : undefined;
-      const nodeFindings = row.referenceModelNodeId ? findingsByNode.get(row.referenceModelNodeId) ?? [] : [];
-      const processingStatus = row.referenceModelNodeId ? processingStateByTreeNodeId.get(row.referenceModelNodeId) : undefined;
+      const nodeFindings = row.referenceModelNodeId ? (findingsByNode.get(row.referenceModelNodeId) ?? []) : [];
+      const processingStatus = row.referenceModelNodeId
+        ? processingStateByTreeNodeId.get(row.referenceModelNodeId)
+        : undefined;
       const allTerminal = nodeFindings.length > 0 && nodeFindings.every((finding) => finding.status !== "pending");
       const live = Boolean(row.referenceModelNodeId && liveSeen.has(row.referenceModelNodeId));
-      const cached = processingStatus === "cached" || processingStatus === "verified" || processingStatus === "revision-mismatch" || processingStatus === "unverified";
+      const cached =
+        processingStatus === "cached" ||
+        processingStatus === "verified" ||
+        processingStatus === "revision-mismatch" ||
+        processingStatus === "unverified";
       const journeyStage: JourneyStage = allTerminal ? "tested" : live ? "live" : cached ? "cached" : "referenced";
 
       results.push({
         ...row,
         collapseKey: node ? getGraphPresentationState(node).collapseKey : undefined,
         journeyStage,
-        sitecoreUrl: node?.nodeType === "item"
-          ? (() => {
-              const identity = node.scItem.scItemId ?? node.scItem.scItemPath;
-              return identity ? buildFoblesUrl(identity) : undefined;
-            })()
-          : undefined,
+        sitecoreUrl:
+          node?.nodeType === "item"
+            ? (() => {
+                const identity = node.scItem.scItemId ?? node.scItem.scItemPath;
+                return identity ? buildFoblesUrl(identity) : undefined;
+              })()
+            : undefined,
         isSitecoreItem: node?.nodeType === "item",
         findings: nodeFindings,
         descendantFailures: [],
-        searchText: [row.label, node?.nodeType === "item" ? node.scItem.scItemName : undefined, node?.nodeType === "item" ? node.scItem.scItemId : undefined, node?.nodeType === "item" ? node.scItem.scItemPath : undefined]
+        searchText: [
+          row.label,
+          node?.nodeType === "item" ? node.scItem.scItemName : undefined,
+          node?.nodeType === "item" ? node.scItem.scItemId : undefined,
+          node?.nodeType === "item" ? node.scItem.scItemPath : undefined,
+        ]
           .filter((value): value is string => Boolean(value))
           .join(" ")
           .toLowerCase(),
@@ -96,12 +114,16 @@ function populateDescendantFailures(rows: AuditorTreeRow[]): void {
   const rowsById = new Map(rows.map((row) => [row.id, row]));
   rows.forEach((sourceRow) => {
     const findings = sourceRow.findings.filter((finding) => finding.status === "error" || finding.status === "warning");
-    if (findings.length === 0) return;
+    if (findings.length === 0) {
+      return;
+    }
     const hierarchy = [sourceRow.label];
     let parentId = sourceRow.parentId;
     while (parentId) {
       const parent = rowsById.get(parentId);
-      if (!parent) break;
+      if (!parent) {
+        break;
+      }
       hierarchy.unshift(parent.label);
       parentId = parent.parentId;
     }
@@ -109,7 +131,9 @@ function populateDescendantFailures(rows: AuditorTreeRow[]): void {
     let ancestorId = sourceRow.parentId;
     while (ancestorId) {
       const ancestor = rowsById.get(ancestorId);
-      if (!ancestor) break;
+      if (!ancestor) {
+        break;
+      }
       ancestor.descendantFailures = [...ancestor.descendantFailures, failure];
       ancestorId = ancestor.parentId;
     }
@@ -120,7 +144,9 @@ function setVisibleChildren(rows: AuditorTreeRow[]): void {
   const childCountByParent = new Map<string, number>();
 
   rows.forEach((row) => {
-    if (row.parentId) childCountByParent.set(row.parentId, (childCountByParent.get(row.parentId) ?? 0) + 1);
+    if (row.parentId) {
+      childCountByParent.set(row.parentId, (childCountByParent.get(row.parentId) ?? 0) + 1);
+    }
   });
 
   rows.forEach((row) => {
@@ -132,7 +158,9 @@ function rollupJourney(rows: AuditorTreeRow[]): void {
   const childrenByParent = new Map<string, AuditorTreeRow[]>();
 
   rows.forEach((row) => {
-    if (!row.parentId) return;
+    if (!row.parentId) {
+      return;
+    }
 
     const children = childrenByParent.get(row.parentId) ?? [];
     children.push(row);
@@ -145,7 +173,9 @@ function rollupJourney(rows: AuditorTreeRow[]): void {
     const ranks = [ownRank, ...childRanks].filter((rank): rank is number => rank !== undefined);
     const rank = ranks.length > 0 ? Math.min(...ranks) : undefined;
 
-    if (rank !== undefined) row.journeyStage = JOURNEY_BY_RANK[rank];
+    if (rank !== undefined) {
+      row.journeyStage = JOURNEY_BY_RANK[rank];
+    }
     return rank;
   }
 

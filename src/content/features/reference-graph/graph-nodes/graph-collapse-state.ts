@@ -17,30 +17,22 @@ export function initializeCollapsedTreeNodeIds(
   cy.nodes().forEach((node) => {
     const collapseKey = readCollapseKey(node);
 
-    if (
-      node.data("expandable") === true &&
-      collapseKey &&
-      !expandedByCollapseKey[collapseKey]
-    ) {
+    if (node.data("expandable") === true && collapseKey && !expandedByCollapseKey[collapseKey]) {
       collapsedTreeNodeIds.add(node.id());
     }
   });
 }
-function readChildTreeNodeIds(
-  node: cytoscape.NodeSingular,
-): string[] {
+function readChildTreeNodeIds(node: cytoscape.NodeSingular): string[] {
   const value: unknown = node.data("childTreeNodeIds");
   let childTreeNodeIds: string[] = [];
 
   if (Array.isArray(value)) {
-    childTreeNodeIds = value.filter(
-      (entry): entry is string =>
-        typeof entry === "string",
-    );
+    childTreeNodeIds = value.filter((entry): entry is string => typeof entry === "string");
   }
 
   return childTreeNodeIds;
 }
+
 export function collapseExpandableChildren(
   cy: cytoscape.Core,
   treeNodeId: string,
@@ -59,11 +51,7 @@ export function collapseExpandableChildren(
   }
 }
 
-export function collapseDescendants(
-  cy: cytoscape.Core,
-  treeNodeId: string,
-  collapsedTreeNodeIds: Set<string>,
-): void {
+export function collapseDescendants(cy: cytoscape.Core, treeNodeId: string, collapsedTreeNodeIds: Set<string>): void {
   const node = cy.getElementById(treeNodeId);
 
   if (!node.empty()) {
@@ -75,21 +63,13 @@ export function collapseDescendants(
           collapsedTreeNodeIds.add(childTreeNodeId);
         }
 
-        collapseDescendants(
-          cy,
-          childTreeNodeId,
-          collapsedTreeNodeIds,
-        );
+        collapseDescendants(cy, childTreeNodeId, collapsedTreeNodeIds);
       }
     });
   }
 }
 
-export function collapseSameTypeNodes(
-  cy: cytoscape.Core,
-  treeNodeId: string,
-  collapsedTreeNodeIds: Set<string>,
-): void {
+export function collapseSameTypeNodes(cy: cytoscape.Core, treeNodeId: string, collapsedTreeNodeIds: Set<string>): void {
   const node = cy.getElementById(treeNodeId);
 
   if (!node.empty()) {
@@ -97,10 +77,7 @@ export function collapseSameTypeNodes(
 
     if (collapseKey) {
       cy.nodes().forEach((candidate) => {
-        if (
-          candidate.data("expandable") === true &&
-          readCollapseKey(candidate) === collapseKey
-        ) {
+        if (candidate.data("expandable") === true && readCollapseKey(candidate) === collapseKey) {
           collapsedTreeNodeIds.add(candidate.id());
         }
       });
@@ -108,31 +85,19 @@ export function collapseSameTypeNodes(
   }
 }
 
-export function expandDescendants(
-  cy: cytoscape.Core,
-  treeNodeId: string,
-  collapsedTreeNodeIds: Set<string>,
-): void {
+export function expandDescendants(cy: cytoscape.Core, treeNodeId: string, collapsedTreeNodeIds: Set<string>): void {
   const node = cy.getElementById(treeNodeId);
 
   if (!node.empty()) {
     readChildTreeNodeIds(node).forEach((childTreeNodeId: string) => {
       collapsedTreeNodeIds.delete(childTreeNodeId);
 
-      expandDescendants(
-        cy,
-        childTreeNodeId,
-        collapsedTreeNodeIds,
-      );
+      expandDescendants(cy, childTreeNodeId, collapsedTreeNodeIds);
     });
   }
 }
 
-export function expandSameTypeNodes(
-  cy: cytoscape.Core,
-  treeNodeId: string,
-  collapsedTreeNodeIds: Set<string>,
-): void {
+export function expandSameTypeNodes(cy: cytoscape.Core, treeNodeId: string, collapsedTreeNodeIds: Set<string>): void {
   const node = cy.getElementById(treeNodeId);
 
   if (!node.empty()) {
@@ -140,26 +105,17 @@ export function expandSameTypeNodes(
 
     if (collapseKey) {
       cy.nodes().forEach((candidate) => {
-        if (
-          candidate.data("expandable") === true &&
-          readCollapseKey(candidate) === collapseKey
-        ) {
+        if (candidate.data("expandable") === true && readCollapseKey(candidate) === collapseKey) {
           collapsedTreeNodeIds.delete(candidate.id());
 
-          collapseExpandableChildren(
-            cy,
-            candidate.id(),
-            collapsedTreeNodeIds,
-          );
+          collapseExpandableChildren(cy, candidate.id(), collapsedTreeNodeIds);
         }
       });
     }
   }
 }
 
-export function readCollapseKey(
-  node: cytoscape.NodeSingular,
-): GraphCollapseKey | undefined {
+export function readCollapseKey(node: cytoscape.NodeSingular): GraphCollapseKey | undefined {
   const value: unknown = node.data("collapseKey");
   let collapseKey: GraphCollapseKey | undefined;
 

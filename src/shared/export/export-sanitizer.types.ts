@@ -8,7 +8,4 @@ export type ExportSanitizationCounts = {
   localWindowsPaths: number;
 };
 
-export type SanitizedExport = {
-  readonly value: string;
-  readonly counts: ExportSanitizationCounts;
-};
+export type SanitizedExport = { readonly value: string; readonly counts: ExportSanitizationCounts };

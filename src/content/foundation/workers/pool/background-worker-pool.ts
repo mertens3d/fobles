@@ -89,7 +89,9 @@ function startPoolHealthSupervisor(pool: WorkerPoolState): void {
       workers,
       unhealthyWorkers,
     });
-    if (unhealthyWorkers.length === 0 && !poolUnhealthy) return;
+    if (unhealthyWorkers.length === 0 && !poolUnhealthy) {
+      return;
+    }
     if (pool.recoveryCount >= settings.poolMaxWorkerRecoveries) {
       extensionLog.error("Worker pool health: recovery limit exhausted", {
         hostTabId: pool.hostTabId,
@@ -123,7 +125,9 @@ function startPoolHealthSupervisor(pool: WorkerPoolState): void {
 }
 function getPool(hostTabId: number | undefined, create = true): WorkerPoolState | undefined {
   if (hostTabId === undefined) {
-    if (!fallbackPool && create) fallbackPool = createPool(undefined);
+    if (!fallbackPool && create) {
+      fallbackPool = createPool(undefined);
+    }
     return fallbackPool;
   }
   let pool = poolsByHostTabId.get(hostTabId);
@@ -136,13 +140,18 @@ function getPool(hostTabId: number | undefined, create = true): WorkerPoolState 
 }
 
 function deletePool(pool: WorkerPoolState): void {
-  if (pool.hostTabId === undefined) fallbackPool = undefined;
-  else if (poolsByHostTabId.get(pool.hostTabId) === pool) poolsByHostTabId.delete(pool.hostTabId);
+  if (pool.hostTabId === undefined) {
+    fallbackPool = undefined;
+  } else if (poolsByHostTabId.get(pool.hostTabId) === pool) {
+    poolsByHostTabId.delete(pool.hostTabId);
+  }
 }
 
 function forEachPool(callback: (pool: WorkerPoolState) => void): void {
   poolsByHostTabId.forEach(callback);
-  if (fallbackPool) callback(fallbackPool);
+  if (fallbackPool) {
+    callback(fallbackPool);
+  }
 }
 
 void initializeWorkerPoolSettings();
@@ -187,7 +196,9 @@ function createPendingWorker(pool: WorkerPoolState): PoolWorker {
 }
 
 function retireWorker(pool: WorkerPoolState, worker: PoolWorker): void {
-  if (worker.state === "retired") return;
+  if (worker.state === "retired") {
+    return;
+  }
   const target = worker.target;
   worker.state = "retired";
   worker.retirementTimer = setTimeout(
@@ -203,7 +214,9 @@ function retireWorker(pool: WorkerPoolState, worker: PoolWorker): void {
 }
 
 async function destroyRetiredWorker(pool: WorkerPoolState, worker: PoolWorker, reason: string): Promise<void> {
-  if (worker.state !== "retired") return;
+  if (worker.state !== "retired") {
+    return;
+  }
   if (worker.retirementTimer) {
     clearTimeout(worker.retirementTimer);
     worker.retirementTimer = undefined;
@@ -212,7 +225,9 @@ async function destroyRetiredWorker(pool: WorkerPoolState, worker: PoolWorker, r
   pool.workers = pool.workers.filter((x) => x !== worker);
   if (target) {
     pool.activeTaskByWorkerKey.delete(getWorkerTargetKey(target));
-    if (isWorkerTabTarget(target)) resetWorkerReadiness(target.tabId);
+    if (isWorkerTabTarget(target)) {
+      resetWorkerReadiness(target.tabId);
+    }
     await closeWorkerTarget(target);
     worker.target = undefined;
   }
@@ -298,7 +313,9 @@ function scheduleNext(pool: WorkerPoolState): void {
     }
   }
   scheduleWorkerIdleDisposal(pool, async (worker, reason) => {
-    if (worker.state !== "idle") return;
+    if (worker.state !== "idle") {
+      return;
+    }
     retireWorker(pool, worker);
     await destroyRetiredWorker(pool, worker, reason);
   });
@@ -306,7 +323,9 @@ function scheduleNext(pool: WorkerPoolState): void {
 
 export async function runPoolTask(task: WorkerTask, hostTabId: number | undefined): Promise<WorkerTaskResult> {
   maxWorkers = await getWorkerPoolMaxWorkers();
-  if (hostTabId !== undefined && disposingHostTabIds.has(hostTabId)) return createCancelledResult(task);
+  if (hostTabId !== undefined && disposingHostTabIds.has(hostTabId)) {
+    return createCancelledResult(task);
+  }
   const pool = getPool(hostTabId)!;
   return await new Promise((resolve) => {
     if (pool.cancelledRequestIds.has(task.requestId)) {
@@ -363,11 +382,15 @@ export async function runPoolTask(task: WorkerTask, hostTabId: number | undefine
 
 export function cancelPoolRequest(requestId: string, hostTabId: number | undefined): void {
   const pool = getPool(hostTabId, false);
-  if (!pool) return;
+  if (!pool) {
+    return;
+  }
   pool.cancelledRequestIds.add(requestId);
   pool.queue = pool.queue.filter((queued) => {
     const matches = queued.task.requestId === requestId;
-    if (matches) queued.resolve(createCancelledResult(queued.task));
+    if (matches) {
+      queued.resolve(createCancelledResult(queued.task));
+    }
     return !matches;
   });
   const active = Array.from(pool.activeTaskByWorkerKey.values()).filter((task) => task.requestId === requestId);
@@ -377,7 +400,9 @@ export function cancelPoolRequest(requestId: string, hostTabId: number | undefin
       (candidate) =>
         candidate.target !== undefined && getWorkerTargetKey(candidate.target) === getWorkerTargetKey(task.target),
     );
-    if (worker) retireWorker(pool, worker);
+    if (worker) {
+      retireWorker(pool, worker);
+    }
   });
   extensionLog.debug("Worker pool: request cancelled; matching workers retired", {
     hostTabId,
@@ -390,10 +415,14 @@ export function cancelPoolRequest(requestId: string, hostTabId: number | undefin
 
 export function cancelPoolTask(requestId: string, taskId: string, hostTabId: number | undefined): void {
   const pool = getPool(hostTabId, false);
-  if (!pool) return;
+  if (!pool) {
+    return;
+  }
   pool.queue = pool.queue.filter((queued) => {
     const matches = queued.task.requestId === requestId && queued.task.taskId === taskId;
-    if (matches) queued.resolve(createCancelledResult(queued.task));
+    if (matches) {
+      queued.resolve(createCancelledResult(queued.task));
+    }
     return !matches;
   });
   const active = Array.from(pool.activeTaskByWorkerKey.values()).filter(
@@ -405,7 +434,9 @@ export function cancelPoolTask(requestId: string, taskId: string, hostTabId: num
       (candidate) =>
         candidate.target !== undefined && getWorkerTargetKey(candidate.target) === getWorkerTargetKey(task.target),
     );
-    if (worker) retireWorker(pool, worker);
+    if (worker) {
+      retireWorker(pool, worker);
+    }
   });
   extensionLog.debug("Worker pool: task cancelled; matching workers retired", {
     hostTabId,
@@ -418,7 +449,9 @@ export function cancelPoolTask(requestId: string, taskId: string, hostTabId: num
 }
 
 export function adoptWorkerTab(tabId: number | undefined): void {
-  if (tabId === undefined) return;
+  if (tabId === undefined) {
+    return;
+  }
   forEachPool((pool) => {
     const worker = pool.workers.find(
       (candidate) =>
@@ -441,7 +474,9 @@ export async function disposeWorkerPool(hostTabId?: number): Promise<void> {
     return;
   }
   const pool = getPool(hostTabId, false);
-  if (pool) await disposeOnePool(pool);
+  if (pool) {
+    await disposeOnePool(pool);
+  }
 }
 
 async function disposeOnePool(pool: WorkerPoolState): Promise<void> {
@@ -450,7 +485,9 @@ async function disposeOnePool(pool: WorkerPoolState): Promise<void> {
     clearInterval(pool.healthTimer);
     pool.healthTimer = undefined;
   }
-  if (pool.hostTabId !== undefined) disposingHostTabIds.add(pool.hostTabId);
+  if (pool.hostTabId !== undefined) {
+    disposingHostTabIds.add(pool.hostTabId);
+  }
   const workers = [...pool.workers];
   const queue = [...pool.queue];
   pool.workers = [];
@@ -474,11 +511,15 @@ async function disposeOnePool(pool: WorkerPoolState): Promise<void> {
     });
     extensionLog.debug("Worker pool: host pool disposed", { hostTabId: pool.hostTabId, generation: pool.generation });
   } finally {
-    if (pool.hostTabId !== undefined) disposingHostTabIds.delete(pool.hostTabId);
+    if (pool.hostTabId !== undefined) {
+      disposingHostTabIds.delete(pool.hostTabId);
+    }
   }
 }
 
 export function clearWorkerPoolForHost(hostTabId: number): void {
   const pool = getPool(hostTabId, false);
-  if (pool) void disposeOnePool(pool);
+  if (pool) {
+    void disposeOnePool(pool);
+  }
 }

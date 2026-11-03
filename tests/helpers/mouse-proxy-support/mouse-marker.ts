@@ -2,21 +2,14 @@ import { expect, type Frame, type Page } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { hasLastKnownMousePosition, isSprintMode, setLastKnownMousePosition } from "./mouse-proxy-state";
 
-type LocalMousePosition = {
-  x: number;
-  y: number;
-  OPEN_DIALOG_SELECTOR: string;
-};
+type LocalMousePosition = { x: number; y: number; OPEN_DIALOG_SELECTOR: string };
 
 export async function ensureMouseMarkerExists(page: Page | Frame): Promise<void> {
   const isHtmlPage = await page.evaluate(() => document.contentType.startsWith("text/html"));
 
   if (!isSprintMode() && isHtmlPage) {
     if (!hasLastKnownMousePosition()) {
-      const viewport = await page.evaluate(() => ({
-        width: window.innerWidth,
-        height: window.innerHeight,
-      }));
+      const viewport = await page.evaluate(() => ({ width: window.innerWidth, height: window.innerHeight }));
 
       setLastKnownMousePosition({ x: viewport.width / 2, y: viewport.height / 2 });
     }
@@ -43,10 +36,9 @@ async function forEachFrameForMouseMarker(
   callback: (frame: Frame, localX: number, localY: number) => Promise<void>,
 ): Promise<void> {
   for (const frame of page.frames()) {
-    if (
-      frame.isDetached() ||
-      frame.url().includes(TEST_CONST.TESTING.MOUSE.PROXY.EXCLUDED_FRAME_URL_FRAGMENT)
-    ) continue;
+    if (frame.isDetached() || frame.url().includes(TEST_CONST.TESTING.MOUSE.PROXY.EXCLUDED_FRAME_URL_FRAGMENT)) {
+      continue;
+    }
 
     let localX = x;
     let localY = y;
@@ -54,35 +46,36 @@ async function forEachFrameForMouseMarker(
     try {
       if (frame !== page.mainFrame()) {
         const frameBox = await frame.locator(TEST_CONST.TESTING.MOUSE.PROXY.HTML_TAG).boundingBox();
-        if (!frameBox || frame.isDetached()) continue;
+        if (!frameBox || frame.isDetached()) {
+          continue;
+        }
         localX -= frameBox.x;
         localY -= frameBox.y;
       }
 
       await callback(frame, localX, localY);
     } catch (error) {
-      if (frame.isDetached() || isDetachedMouseMarkerFrameError(error)) continue;
+      if (frame.isDetached() || isDetachedMouseMarkerFrameError(error)) {
+        continue;
+      }
 
-      console.error(
-        `[${forEachFrameForMouseMarker.name}] Error processing mouse-marker frame: ${frame.url()}`,
-        error,
-      );
+      console.error(`[${forEachFrameForMouseMarker.name}] Error processing mouse-marker frame: ${frame.url()}`, error);
     }
   }
 }
 
-async function updateMouseMarkerInFrame(
-  frame: Frame,
-  x: number,
-  y: number,
-): Promise<void> {
-  if (frame.isDetached()) return;
+async function updateMouseMarkerInFrame(frame: Frame, x: number, y: number): Promise<void> {
+  if (frame.isDetached()) {
+    return;
+  }
 
   const marker = frame.locator(
     `${TEST_CONST.TESTING.MOUSE.PROXY.SELECTOR_PREFIX}${TEST_CONST.TESTING.MOUSE.MARKER.ID}`,
   );
 
-  if ((await marker.count()) === 0) return;
+  if ((await marker.count()) === 0) {
+    return;
+  }
 
   const coordinates: LocalMousePosition = {
     x,
@@ -105,14 +98,9 @@ async function updateMouseMarkerInFrame(
 }
 
 async function updateMouseMarkersAcrossFrames(page: Page, x: number, y: number): Promise<void> {
-  await forEachFrameForMouseMarker(
-    page,
-    x,
-    y,
-    async (frame, localX, localY) => {
-      await updateMouseMarkerInFrame(frame, localX, localY);
-    },
-  );
+  await forEachFrameForMouseMarker(page, x, y, async (frame, localX, localY) => {
+    await updateMouseMarkerInFrame(frame, localX, localY);
+  });
 }
 
 export async function updateMouseMarkers(page: Page, x: number, y: number): Promise<void> {
@@ -124,47 +112,51 @@ export async function updateMouseMarkers(page: Page, x: number, y: number): Prom
 }
 
 async function pulseMouseMarkerInFrame(frame: Frame): Promise<void> {
-  if (frame.isDetached()) return;
+  if (frame.isDetached()) {
+    return;
+  }
 
   const marker = frame.locator(
     `${TEST_CONST.TESTING.MOUSE.PROXY.SELECTOR_PREFIX}${TEST_CONST.TESTING.MOUSE.MARKER.ID}`,
   );
 
-  if ((await marker.count()) === 0) return;
+  if ((await marker.count()) === 0) {
+    return;
+  }
 
-  await marker.evaluate((element, config) => {
-    const el = element as HTMLElement;
-    const openDialog = document.querySelector(config.OPEN_DIALOG_SELECTOR);
+  await marker.evaluate(
+    (element, config) => {
+      const el = element as HTMLElement;
+      const openDialog = document.querySelector(config.OPEN_DIALOG_SELECTOR);
 
-    if (openDialog && el.parentElement !== openDialog) openDialog.appendChild(el);
+      if (openDialog && el.parentElement !== openDialog) {
+        openDialog.appendChild(el);
+      }
 
-    const originalBackground = el.style.background;
-    el.style.background = config.COLOR;
+      const originalBackground = el.style.background;
+      el.style.background = config.COLOR;
 
-    setTimeout(() => {
-      el.style.background = originalBackground;
-    }, config.DURATION_MS);
-  }, {
-    ...TEST_CONST.TESTING.CLICK_FLASH,
-    OPEN_DIALOG_SELECTOR: TEST_CONST.TESTING.MOUSE.PROXY.OPEN_DIALOG_SELECTOR,
-  });
+      setTimeout(() => {
+        el.style.background = originalBackground;
+      }, config.DURATION_MS);
+    },
+    { ...TEST_CONST.TESTING.CLICK_FLASH, OPEN_DIALOG_SELECTOR: TEST_CONST.TESTING.MOUSE.PROXY.OPEN_DIALOG_SELECTOR },
+  );
 }
 
 export async function pulseMouseMarkerClick(page: Page): Promise<void> {
-  if (isSprintMode()) return;
+  if (isSprintMode()) {
+    return;
+  }
 
-  const frames = TEST_CONST.TESTING.SYNC_MOUSE_MARKERS_ACROSS_FRAMES
-    ? page.frames()
-    : [page.mainFrame()];
+  const frames = TEST_CONST.TESTING.SYNC_MOUSE_MARKERS_ACROSS_FRAMES ? page.frames() : [page.mainFrame()];
 
   await Promise.all(
     frames.map(async (frame) => {
       try {
         await Promise.race([
           pulseMouseMarkerInFrame(frame),
-          new Promise((resolve) =>
-            setTimeout(resolve, TEST_CONST.TESTING.MOUSE.PROXY.RACE_TIMEOUT_MS),
-          ),
+          new Promise((resolve) => setTimeout(resolve, TEST_CONST.TESTING.MOUSE.PROXY.RACE_TIMEOUT_MS)),
         ]);
       } catch {
         // Cosmetic marker behavior must never fail a test when Sitecore detaches a frame.
@@ -179,8 +171,7 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
     return;
   }
 
-  const markerSelector =
-    `${TEST_CONST.TESTING.MOUSE.PROXY.SELECTOR_PREFIX}${TEST_CONST.TESTING.MOUSE.MARKER.ID}`;
+  const markerSelector = `${TEST_CONST.TESTING.MOUSE.PROXY.SELECTOR_PREFIX}${TEST_CONST.TESTING.MOUSE.MARKER.ID}`;
 
   const markerState = await page.locator(markerSelector).evaluate((marker) => {
     const style = getComputedStyle(marker);
@@ -204,15 +195,18 @@ export async function verifyMouseMarker(page: Page): Promise<void> {
     TEST_CONST.TESTING.MOUSE.PROXY.PREFLIGHT_POSITION_PX,
   );
 
-  await page.locator(markerSelector).evaluate((marker, position) => {
-    const element = marker as HTMLElement;
-    element.style.transition = position.TRANSITION;
-    element.style.left = position.POSITION;
-    element.style.top = position.POSITION;
-  }, {
-    POSITION: TEST_CONST.TESTING.MOUSE.PROXY.PREFLIGHT_POSITION,
-    TRANSITION: TEST_CONST.TESTING.MOUSE.PROXY.PREFLIGHT_TRANSITION,
-  });
+  await page.locator(markerSelector).evaluate(
+    (marker, position) => {
+      const element = marker as HTMLElement;
+      element.style.transition = position.TRANSITION;
+      element.style.left = position.POSITION;
+      element.style.top = position.POSITION;
+    },
+    {
+      POSITION: TEST_CONST.TESTING.MOUSE.PROXY.PREFLIGHT_POSITION,
+      TRANSITION: TEST_CONST.TESTING.MOUSE.PROXY.PREFLIGHT_TRANSITION,
+    },
+  );
 
   const movedState = await page.locator(markerSelector).evaluate((marker) => {
     const box = marker.getBoundingClientRect();

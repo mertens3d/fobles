@@ -6,9 +6,7 @@ export type BaseTemplateClassification = Exclude<ItemClassification, "template" 
 
 // Every base-template classification that matched, even though only the highest-precedence one
 // becomes `classification` - callers can log this when more than one entry is present.
-export type ClassificationDiagnostics = {
-  matchedBaseTemplateClassifications: readonly BaseTemplateClassification[];
-};
+export type ClassificationDiagnostics = { matchedBaseTemplateClassifications: readonly BaseTemplateClassification[] };
 
 export type TemplateIdentity = { id: string; path?: string };
 
@@ -21,8 +19,7 @@ export type TemplateInheritanceNode = {
 };
 
 export type TemplateInheritanceWarning =
-  | { kind: "cycle-detected"; template: TemplateIdentity }
-  | { kind: "limit-reached"; limit: number };
+  { kind: "cycle-detected"; template: TemplateIdentity } | { kind: "limit-reached"; limit: number };
 
 export type TemplateInheritanceGraph = {
   root: TemplateInheritanceNode;
@@ -31,10 +28,6 @@ export type TemplateInheritanceGraph = {
   warnings: readonly TemplateInheritanceWarning[];
 };
 
-export type BaseTemplateIdSets = {
-  page: ReadonlySet<string>;
-  site: ReadonlySet<string>;
-  tenant: ReadonlySet<string>;
-};
+export type BaseTemplateIdSets = { page: ReadonlySet<string>; site: ReadonlySet<string>; tenant: ReadonlySet<string> };
 
 export type ClassificationPathRoots = { content: string; templates: string };

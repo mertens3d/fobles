@@ -71,13 +71,13 @@
 //   return paths;
 // }
 
-// async function testOneClick(paths: string[], 
-//           index: number, 
-//           step: (title: string, 
-//                   body: (fullTitle: string) => Promise<void>, 
-//                   options?: { timeout?: number; screenshot?: boolean; }) => Promise<void>, 
-//                   foblesFrame: Frame, 
-//                   page: Page, 
+// async function testOneClick(paths: string[],
+//           index: number,
+//           step: (title: string,
+//                   body: (fullTitle: string) => Promise<void>,
+//                   options?: { timeout?: number; screenshot?: boolean; }) => Promise<void>,
+//                   foblesFrame: Frame,
+//                   page: Page,
 //                   testInfo: TestInfo) {
 //   const path = paths[index];
 //   await step(`Click: navigates to "${path}"`, async () => {

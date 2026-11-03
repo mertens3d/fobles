@@ -2,7 +2,12 @@
 
 import { stripGuidBraces } from "../../../sitecore/guid.ts";
 import { CLASSIFICATION_LIMITS } from "./classification-limits.const.ts";
-import type { TemplateIdentity, TemplateInheritanceGraph, TemplateInheritanceNode, TemplateInheritanceWarning } from "./item-classification.types.ts";
+import type {
+  TemplateIdentity,
+  TemplateInheritanceGraph,
+  TemplateInheritanceNode,
+  TemplateInheritanceWarning,
+} from "./item-classification.types.ts";
 
 // Returns undefined when the template itself could not be resolved/fetched at all (missing or
 // unresolvable), as opposed to an empty array (a template with no base templates).
@@ -26,7 +31,9 @@ export async function buildTemplateInheritanceGraph(
   let limitWarningRecorded = false;
 
   function recordLimitReached(): void {
-    if (limitWarningRecorded) return;
+    if (limitWarningRecorded) {
+      return;
+    }
     limitWarningRecorded = true;
     warnings.push({ kind: "limit-reached", limit: maxUniqueTemplates });
   }
@@ -34,7 +41,9 @@ export async function buildTemplateInheritanceGraph(
   async function build(template: TemplateIdentity, depth: number): Promise<TemplateInheritanceNode> {
     const normalizedId = normalizeId(template.id);
     const existing = builtByNormalizedId.get(normalizedId);
-    if (existing) return existing;
+    if (existing) {
+      return existing;
+    }
 
     if (inProgress.has(normalizedId)) {
       warnings.push({ kind: "cycle-detected", template });

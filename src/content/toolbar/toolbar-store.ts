@@ -4,6 +4,7 @@ import { useSyncExternalStore } from "react";
 import type { ToolbarContext } from "./types";
 
 type ToolbarState = { context: ToolbarContext; visible: boolean };
+
 type StoreEntry = { state: ToolbarState; listeners: Set<() => void> };
 
 const stores = new WeakMap<Document, StoreEntry>();
@@ -28,7 +29,9 @@ export function setToolbarContext(doc: Document, context: ToolbarContext): void 
 
 export function setToolbarStoreVisible(doc: Document, visible: boolean): void {
   const entry = stores.get(doc);
-  if (!entry) return;
+  if (!entry) {
+    return;
+  }
   entry.state = { ...entry.state, visible };
   notify(entry);
 }
@@ -37,7 +40,9 @@ export function useToolbarState(doc: Document): ToolbarState {
   return useSyncExternalStore(
     (listener) => {
       const entry = stores.get(doc);
-      if (!entry) return () => undefined;
+      if (!entry) {
+        return () => undefined;
+      }
       entry.listeners.add(listener);
       return () => {
         entry.listeners.delete(listener);
@@ -45,7 +50,9 @@ export function useToolbarState(doc: Document): ToolbarState {
     },
     () => {
       const entry = stores.get(doc);
-      if (!entry) throw new Error("Toolbar store not initialized for this document");
+      if (!entry) {
+        throw new Error("Toolbar store not initialized for this document");
+      }
       return entry.state;
     },
   );

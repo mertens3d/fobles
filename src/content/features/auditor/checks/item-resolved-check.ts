@@ -5,6 +5,7 @@ import type { AuditCheck, AuditCheckContext } from "../audit-check.types";
 import type { AuditFindingStatus } from "../audit-finding.types";
 
 export const ITEM_RESOLVED_CHECK_KEY = "item-resolved";
+
 export const ITEM_RESOLVED_CHECK_LABEL = "Current item resolved";
 
 // Phase-1 check 1 of 4: the current Sitecore item (the Reference Model root) resolved with
@@ -15,7 +16,9 @@ export const itemResolvedCheck: AuditCheck = {
   run(context: AuditCheckContext): Promise<void> {
     const root = context.referenceModelRoot;
 
-    if (root.nodeType !== "item") return Promise.resolve();
+    if (root.nodeType !== "item") {
+      return Promise.resolve();
+    }
 
     const item = root.scItem;
     const hasRequiredIdentity = Boolean(item.scItemId && item.scItemPath);
@@ -35,15 +38,17 @@ export const itemResolvedCheck: AuditCheck = {
       summary = "The current item resolved successfully.";
     }
 
-    context.findingStore.upsert(buildAuditFinding({
-      checkKey: ITEM_RESOLVED_CHECK_KEY,
-      checkLabel: ITEM_RESOLVED_CHECK_LABEL,
-      status,
-      referenceModelNodeId: root.treeNodeId,
-      item,
-      summary,
-      buildSitecoreUrl: context.buildSitecoreUrl,
-    }));
+    context.findingStore.upsert(
+      buildAuditFinding({
+        checkKey: ITEM_RESOLVED_CHECK_KEY,
+        checkLabel: ITEM_RESOLVED_CHECK_LABEL,
+        status,
+        referenceModelNodeId: root.treeNodeId,
+        item,
+        summary,
+        buildSitecoreUrl: context.buildSitecoreUrl,
+      }),
+    );
 
     return Promise.resolve();
   },

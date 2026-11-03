@@ -7,7 +7,9 @@ import { isSprintMode } from "./mouse-proxy-state";
 
 export async function getButtonSize(button: Locator): Promise<{ width: number; height: number }> {
   const box = await button.boundingBox();
-  if (!box) throw new Error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_MEASURE_BUTTON);
+  if (!box) {
+    throw new Error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.COULD_NOT_MEASURE_BUTTON);
+  }
   return { width: box.width, height: box.height };
 }
 
@@ -60,7 +62,7 @@ export async function moveMouseToBoundingBox(
     throw new Error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.NO_MOUSE_TARGET_PROVIDED);
   }
 
-  if(! isSprintMode()) {
+  if (!isSprintMode()) {
     if (!(await targetLocator.isVisible())) {
       console.error(`${TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.TARGET_NOT_VISIBLE_PREFIX}${label}`);
       throw new Error(TEST_CONST.TESTING.MOUSE.PROXY.ERROR_MESSAGES.MOUSE_TARGET_NOT_VISIBLE);

@@ -19,6 +19,14 @@ export function UserTreeJumpGroup({ doc, onOptionActivated }: UserTreeJumpGroupP
   const enabledEntries = entries.filter((entry) => entry.enabled);
   // No group heading at all when nothing is configured (or everything's hidden) - "under Tree
   // Jumps" shouldn't show an empty "User Tree Jumps" title with nothing beneath it.
-  if (enabledEntries.length === 0) return null;
-  return <JumpFlyoutGroup doc={doc} group={{ title: TEXT.GROUP_NAME.USER_TREE_JUMPS, groupMembers: enabledEntries.map(toFlyoutOption) }} onOptionActivated={onOptionActivated} />;
+  if (enabledEntries.length === 0) {
+    return null;
+  }
+  return (
+    <JumpFlyoutGroup
+      doc={doc}
+      group={{ title: TEXT.GROUP_NAME.USER_TREE_JUMPS, groupMembers: enabledEntries.map(toFlyoutOption) }}
+      onOptionActivated={onOptionActivated}
+    />
+  );
 }

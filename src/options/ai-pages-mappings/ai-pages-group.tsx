@@ -15,7 +15,17 @@ export type AiPagesGroupProps = {
   onRemoveMapping: (mappingId: string) => void;
 };
 
-export function AiPagesGroup({ group, errors, registerInput, onFieldChange, onClearError, onRemoveGroup, onAddMapping, onMappingChange, onRemoveMapping }: AiPagesGroupProps) {
+export function AiPagesGroup({
+  group,
+  errors,
+  registerInput,
+  onFieldChange,
+  onClearError,
+  onRemoveGroup,
+  onAddMapping,
+  onMappingChange,
+  onRemoveMapping,
+}: AiPagesGroupProps) {
   const nameKey = `${group.id}.name`;
   const organizationKey = `${group.id}.organization`;
   const tenantNameKey = `${group.id}.tenantName`;
@@ -31,19 +41,42 @@ export function AiPagesGroup({ group, errors, registerInput, onFieldChange, onCl
         <label>
           Group
           {errors[nameKey] && <span className="field-error">{errors[nameKey]}</span>}
-          <input ref={(input) => registerInput(nameKey, input)} name="name" value={group.name} required aria-invalid={errors[nameKey] ? "true" : undefined} onChange={(event) => handleFieldChange("name", nameKey, event.target.value)} />
+          <input
+            ref={(input) => registerInput(nameKey, input)}
+            name="name"
+            value={group.name}
+            required
+            aria-invalid={errors[nameKey] ? "true" : undefined}
+            onChange={(event) => handleFieldChange("name", nameKey, event.target.value)}
+          />
         </label>
         <label>
           Organization
           {errors[organizationKey] && <span className="field-error">{errors[organizationKey]}</span>}
-          <input ref={(input) => registerInput(organizationKey, input)} name="organization" value={group.organization} required aria-invalid={errors[organizationKey] ? "true" : undefined} onChange={(event) => handleFieldChange("organization", organizationKey, event.target.value)} />
+          <input
+            ref={(input) => registerInput(organizationKey, input)}
+            name="organization"
+            value={group.organization}
+            required
+            aria-invalid={errors[organizationKey] ? "true" : undefined}
+            onChange={(event) => handleFieldChange("organization", organizationKey, event.target.value)}
+          />
         </label>
         <label>
           Tenant name
           {errors[tenantNameKey] && <span className="field-error">{errors[tenantNameKey]}</span>}
-          <input ref={(input) => registerInput(tenantNameKey, input)} name="tenantName" value={group.tenantName} required aria-invalid={errors[tenantNameKey] ? "true" : undefined} onChange={(event) => handleFieldChange("tenantName", tenantNameKey, event.target.value)} />
+          <input
+            ref={(input) => registerInput(tenantNameKey, input)}
+            name="tenantName"
+            value={group.tenantName}
+            required
+            aria-invalid={errors[tenantNameKey] ? "true" : undefined}
+            onChange={(event) => handleFieldChange("tenantName", tenantNameKey, event.target.value)}
+          />
         </label>
-        <button type="button" className="remove" onClick={onRemoveGroup}>Remove group</button>
+        <button type="button" className="remove" onClick={onRemoveGroup}>
+          Remove group
+        </button>
       </div>
       <div className="group-mappings">
         {group.mappings.map((mapping) => (
@@ -60,7 +93,9 @@ export function AiPagesGroup({ group, errors, registerInput, onFieldChange, onCl
         ))}
       </div>
       <div className="group-actions">
-        <button type="button" onClick={onAddMapping}>Add site root</button>
+        <button type="button" onClick={onAddMapping}>
+          Add site root
+        </button>
       </div>
     </section>
   );

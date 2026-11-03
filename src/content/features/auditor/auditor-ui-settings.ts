@@ -14,7 +14,9 @@ async function readStringArray(key: string): Promise<string[] | undefined> {
   const values = await chrome.storage.local.get(key);
   const stored: unknown = values[key];
   let result: string[] | undefined;
-  if (Array.isArray(stored) && stored.every((value) => typeof value === "string")) result = stored;
+  if (Array.isArray(stored) && stored.every((value) => typeof value === "string")) {
+    result = stored;
+  }
   return result;
 }
 
@@ -48,7 +50,9 @@ export async function getAuditorGraphFilters(): Promise<Partial<SitecoreHarvestF
   const values = await chrome.storage.local.get(AUDITOR_UI_KEY.GRAPH_FILTERS);
   const stored: unknown = values[AUDITOR_UI_KEY.GRAPH_FILTERS];
   let result: Partial<SitecoreHarvestFiltersState> | undefined;
-  if (stored && typeof stored === "object" && !Array.isArray(stored)) result = stored;
+  if (stored && typeof stored === "object" && !Array.isArray(stored)) {
+    result = stored;
+  }
   return result;
 }
 

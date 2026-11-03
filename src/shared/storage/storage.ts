@@ -20,10 +20,7 @@ export async function getStorageValue<T = unknown>(
   }
 }
 
-export async function setStorageValue(
-  values: Record<string, unknown>,
-  area: StorageArea = "sync",
-): Promise<void> {
+export async function setStorageValue(values: Record<string, unknown>, area: StorageArea = "sync"): Promise<void> {
   try {
     await chrome.storage?.[area]?.set(values);
   } catch {
@@ -31,10 +28,7 @@ export async function setStorageValue(
   }
 }
 
-export async function removeStorageValue(
-  keys: string | string[],
-  area: StorageArea = "sync",
-): Promise<void> {
+export async function removeStorageValue(keys: string | string[], area: StorageArea = "sync"): Promise<void> {
   try {
     await chrome.storage?.[area]?.remove(keys);
   } catch {
@@ -43,21 +37,12 @@ export async function removeStorageValue(
 }
 
 // Calls back with a single key's new value whenever it changes in the given storage area.
-export function onStorageChange(
-  key: string,
-  callback: (newValue: unknown) => void,
-  area: StorageArea = "sync",
-): void {
-  chrome.storage?.onChanged?.addListener(
-    (changes, areaName) => {
-      if (
-        areaName === area &&
-        key in changes
-      ) {
-        callback(changes[key].newValue);
-      }
-    },
-  );
+export function onStorageChange(key: string, callback: (newValue: unknown) => void, area: StorageArea = "sync"): void {
+  chrome.storage?.onChanged?.addListener((changes, areaName) => {
+    if (areaName === area && key in changes) {
+      callback(changes[key].newValue);
+    }
+  });
 }
 
 // Dumps every stored key/value across both areas, for the options page's debug viewer.
@@ -65,24 +50,15 @@ export async function getAllStorageValues(): Promise<{
   sync: Record<string, unknown>;
   local: Record<string, unknown>;
 }> {
-  const [sync, local] = await Promise.all([
-    getStorageValue(null, "sync"),
-    getStorageValue(null, "local"),
-  ]);
+  const [sync, local] = await Promise.all([getStorageValue(null, "sync"), getStorageValue(null, "local")]);
 
-  return {
-    sync,
-    local,
-  };
+  return { sync, local };
 }
 
 // Wipes every Fobles setting across both storage areas.
 export async function clearAllStorageValues(): Promise<void> {
   try {
-    await Promise.all([
-      chrome.storage?.sync?.clear(),
-      chrome.storage?.local?.clear(),
-    ]);
+    await Promise.all([chrome.storage?.sync?.clear(), chrome.storage?.local?.clear()]);
   } catch {
     // The content script can outlive a reloaded extension context.
   }

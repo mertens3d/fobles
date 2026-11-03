@@ -1,6 +1,7 @@
 import fs from "node:fs";
 import type { BrowserContext, TestInfo } from "@playwright/test";
 import { GetFoblesPersistedLogs } from "../macros/fobles-macros";
+
 export async function attachPersistedLogs(
   use: (r: void) => Promise<void>,
   sharedBrowserContext: BrowserContext,

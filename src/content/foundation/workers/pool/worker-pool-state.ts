@@ -1,5 +1,6 @@
 // @source-path [fobles] src/content/foundation/workers/pool/worker-pool-state.ts
 import type { ActiveWorkerTask, PoolWorker, QueuedTask } from "../tasks/worker-task.types";
+
 export type WorkerPoolState = {
   hostTabId: number | undefined;
   generation: number;

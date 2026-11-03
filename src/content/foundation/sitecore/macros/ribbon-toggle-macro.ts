@@ -38,7 +38,9 @@ export async function getScRawValuesState(container: ParentNode): Promise<Boolea
 
   if (selectViewTabSuccess) {
     const checkbox = container.querySelector(CONST.SITECORE.SELECTORS.RAW_VALUES_CHECKBOX);
-    if (checkbox instanceof HTMLInputElement) checkBoxSuccess = checkbox.checked;
+    if (checkbox instanceof HTMLInputElement) {
+      checkBoxSuccess = checkbox.checked;
+    }
   }
 
   extensionLog.debug(`[getScRawValuesState] - Retrieved raw values state: ${checkBoxSuccess}`);
@@ -51,7 +53,9 @@ export async function getScStandardFieldsState(container: ParentNode): Promise<B
 
   if (selectViewTabSuccess) {
     const checkbox = container.querySelector(CONST.SITECORE.SELECTORS.STANDARD_FIELDS_CHECKBOX);
-    if (checkbox instanceof HTMLInputElement) checkBoxSuccess = checkbox.checked;
+    if (checkbox instanceof HTMLInputElement) {
+      checkBoxSuccess = checkbox.checked;
+    }
   }
 
   extensionLog.debug(`[getScStandardFieldsState] - Retrieved standard fields state: ${checkBoxSuccess}`);

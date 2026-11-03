@@ -9,11 +9,7 @@ import {
   SetFoblesGraphFilter,
   WaitForFoblesGraphEnrichmentComplete,
 } from "../../macros/fobles-macros";
-import {
-  reloadAndReadEditorState,
-  setupReferenceGraphState,
-  type EditorState,
-} from "../harvest/harvest-test-helpers";
+import { reloadAndReadEditorState, setupReferenceGraphState, type EditorState } from "../harvest/harvest-test-helpers";
 
 foblesTest.describe("Reference Graph: Custom Fields / Standard Fields crops", () => {
   foblesTest("Custom Fields and Standard Fields are independent filters", async ({ page }) => {
@@ -38,49 +34,51 @@ foblesTest.describe("Reference Graph: Custom Fields / Standard Fields crops", ()
     await CloseFoblesGraph(page);
   });
 
-  foblesTest("enabling Standard Fields after the graph is drawn toggles Sitecore only when needed, then restores state", async ({ page }) => {
-    foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+  foblesTest(
+    "enabling Standard Fields after the graph is drawn toggles Sitecore only when needed, then restores state",
+    async ({ page }) => {
+      foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 
-    const initial: EditorState = { rawValues: false, standardFields: false };
+      const initial: EditorState = { rawValues: false, standardFields: false };
 
-    await setupReferenceGraphState(page, initial);
-    await ClickFoblesGraphButton(page);
-    await WaitForFoblesGraphEnrichmentComplete(page);
-    await ExpandFoblesGraphControls(page);
+      await setupReferenceGraphState(page, initial);
+      await ClickFoblesGraphButton(page);
+      await WaitForFoblesGraphEnrichmentComplete(page);
+      await ExpandFoblesGraphControls(page);
 
-    await SetFoblesGraphFilter(page, "Standard Fields", true);
+      await SetFoblesGraphFilter(page, "Standard Fields", true);
 
-    const blocker = page.locator(
-      `#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID} .fobles-reference-graph-canvas-blocker`,
-    );
-    await expect(blocker).toHaveCount(0, { timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS });
+      const blocker = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID} .fobles-reference-graph-canvas-blocker`);
+      await expect(blocker).toHaveCount(0, { timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS });
 
-    await CloseFoblesGraph(page);
+      await CloseFoblesGraph(page);
 
-    const restored = await reloadAndReadEditorState(page);
-    expect(restored).toEqual(initial);
-  });
+      const restored = await reloadAndReadEditorState(page);
+      expect(restored).toEqual(initial);
+    },
+  );
 
-  foblesTest("Standard Fields already enabled in Sitecore: enabling the Fobles filter does not re-toggle it", async ({ page }) => {
-    foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+  foblesTest(
+    "Standard Fields already enabled in Sitecore: enabling the Fobles filter does not re-toggle it",
+    async ({ page }) => {
+      foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 
-    const initial: EditorState = { rawValues: false, standardFields: true };
+      const initial: EditorState = { rawValues: false, standardFields: true };
 
-    await setupReferenceGraphState(page, initial);
-    await ClickFoblesGraphButton(page);
-    await WaitForFoblesGraphEnrichmentComplete(page);
-    await ExpandFoblesGraphControls(page);
+      await setupReferenceGraphState(page, initial);
+      await ClickFoblesGraphButton(page);
+      await WaitForFoblesGraphEnrichmentComplete(page);
+      await ExpandFoblesGraphControls(page);
 
-    await SetFoblesGraphFilter(page, "Standard Fields", true);
+      await SetFoblesGraphFilter(page, "Standard Fields", true);
 
-    const blocker = page.locator(
-      `#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID} .fobles-reference-graph-canvas-blocker`,
-    );
-    await expect(blocker).toHaveCount(0, { timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS });
+      const blocker = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID} .fobles-reference-graph-canvas-blocker`);
+      await expect(blocker).toHaveCount(0, { timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS });
 
-    await CloseFoblesGraph(page);
+      await CloseFoblesGraph(page);
 
-    const restored = await reloadAndReadEditorState(page);
-    expect(restored).toEqual(initial);
-  });
+      const restored = await reloadAndReadEditorState(page);
+      expect(restored).toEqual(initial);
+    },
+  );
 });

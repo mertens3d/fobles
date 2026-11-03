@@ -21,8 +21,9 @@ const MAX_STEP_SCREENSHOT_NAME_LENGTH = 40;
 // in sync with this.
 export function buildStepMatchKey(matchKey: string): string {
   const quoted = matchKey.match(/"([^"]+)"/);
-  if (!quoted)
+  if (!quoted) {
     return toSafeFileName(matchKey).slice(0, MAX_STEP_SCREENSHOT_NAME_LENGTH);
+  }
 
   const action = toSafeFileName(matchKey.slice(0, quoted.index)).slice(-15);
   const value = toSafeFileName(quoted[1]);

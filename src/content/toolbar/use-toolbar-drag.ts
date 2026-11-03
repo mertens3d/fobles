@@ -22,7 +22,14 @@ export type ToolbarDragResult = {
 };
 
 function isInteractiveTarget(target: EventTarget | null): boolean {
-  return target instanceof Element && Boolean(target.closest(`button, a, input, select, textarea, [role='button'], ${SELECTORS.JUMP_FLYOUT}, ${SELECTORS.PROXY_BUTTONS}`));
+  return (
+    target instanceof Element &&
+    Boolean(
+      target.closest(
+        `button, a, input, select, textarea, [role='button'], ${SELECTORS.JUMP_FLYOUT}, ${SELECTORS.PROXY_BUTTONS}`,
+      ),
+    )
+  );
 }
 
 function clampOffset(value: number, maxOffset: number): number {
@@ -86,7 +93,14 @@ export function useToolbarDrag(context: ToolbarContext): ToolbarDragResult {
   const [dragging, setDragging] = useState(false);
   const [resizing, setResizing] = useState(false);
   const draggingRef = useRef(false);
-  const dragStartRef = useRef<{ clientX: number; clientY: number; left: number; top: number; width: number; height: number } | null>(null);
+  const dragStartRef = useRef<{
+    clientX: number;
+    clientY: number;
+    left: number;
+    top: number;
+    width: number;
+    height: number;
+  } | null>(null);
   const resizeSettleTimerRef = useRef<number | null>(null);
 
   useEffect(() => {
@@ -94,7 +108,9 @@ export function useToolbarDrag(context: ToolbarContext): ToolbarDragResult {
   }, [dragging]);
 
   useEffect(() => {
-    if (draggingRef.current) return;
+    if (draggingRef.current) {
+      return;
+    }
     setPlacement(context.placement);
     // Only resyncs from the externally-owned placement (e.g. a storage-change push from
     // toolbar-runtime.ts); an in-progress drag is the local, more current source of truth.
@@ -102,7 +118,9 @@ export function useToolbarDrag(context: ToolbarContext): ToolbarDragResult {
 
   useLayoutEffect(() => {
     const container = containerRef.current;
-    if (!container) return;
+    if (!container) {
+      return;
+    }
     const rect = container.getBoundingClientRect();
     setPlacement((current) => clampPlacement(context.win, current, rect.width, rect.height));
     // Clamps the initial placement against the container's just-measured size, once on mount.
@@ -111,7 +129,9 @@ export function useToolbarDrag(context: ToolbarContext): ToolbarDragResult {
   useEffect(() => {
     function onResize(): void {
       const container = containerRef.current;
-      if (!container || draggingRef.current) return;
+      if (!container || draggingRef.current) {
+        return;
+      }
       if (resizeSettleTimerRef.current === null) {
         setResizing(true);
       } else {
@@ -127,15 +147,26 @@ export function useToolbarDrag(context: ToolbarContext): ToolbarDragResult {
     context.win.addEventListener("resize", onResize);
     return () => {
       context.win.removeEventListener("resize", onResize);
-      if (resizeSettleTimerRef.current !== null) context.win.clearTimeout(resizeSettleTimerRef.current);
+      if (resizeSettleTimerRef.current !== null) {
+        context.win.clearTimeout(resizeSettleTimerRef.current);
+      }
     };
   }, [context.win]);
 
   function onPointerDown(event: React.PointerEvent<HTMLDivElement>): void {
-    if (event.button !== 0 || isInteractiveTarget(event.target)) return;
+    if (event.button !== 0 || isInteractiveTarget(event.target)) {
+      return;
+    }
     event.preventDefault();
     const rect = event.currentTarget.getBoundingClientRect();
-    dragStartRef.current = { clientX: event.clientX, clientY: event.clientY, left: rect.left, top: rect.top, width: rect.width, height: rect.height };
+    dragStartRef.current = {
+      clientX: event.clientX,
+      clientY: event.clientY,
+      left: rect.left,
+      top: rect.top,
+      width: rect.width,
+      height: rect.height,
+    };
     event.currentTarget.setPointerCapture(event.pointerId);
     setDragging(true);
     setDragPosition({ left: rect.left, top: rect.top });
@@ -143,7 +174,9 @@ export function useToolbarDrag(context: ToolbarContext): ToolbarDragResult {
 
   function onPointerMove(event: React.PointerEvent<HTMLDivElement>): void {
     const start = dragStartRef.current;
-    if (!dragging || !start) return;
+    if (!dragging || !start) {
+      return;
+    }
     const maxLeft = context.win.innerWidth - start.width - MIN_EDGE_MARGIN;
     const maxTop = context.win.innerHeight - start.height - MIN_EDGE_MARGIN;
     setDragPosition({
@@ -153,7 +186,9 @@ export function useToolbarDrag(context: ToolbarContext): ToolbarDragResult {
   }
 
   function endDrag(event: React.PointerEvent<HTMLDivElement>): void {
-    if (!dragging) return;
+    if (!dragging) {
+      return;
+    }
     event.currentTarget.releasePointerCapture(event.pointerId);
     setDragging(false);
     setDragPosition(null);
@@ -165,11 +200,28 @@ export function useToolbarDrag(context: ToolbarContext): ToolbarDragResult {
   }
 
   const style = useMemo<React.CSSProperties>(() => {
-    if (dragPosition) return { left: `${dragPosition.left}px`, top: `${dragPosition.top}px`, right: "auto", bottom: "auto" };
+    if (dragPosition) {
+      return { left: `${dragPosition.left}px`, top: `${dragPosition.top}px`, right: "auto", bottom: "auto" };
+    }
     return placementToStyle(placement);
   }, [dragPosition, placement]);
 
-  const className = [CLASS.TOOLBAR_CONTAINER, dragging ? CLASS.TOOLBAR_DRAGGING : "", resizing ? CLASS.TOOLBAR_RESIZING : ""].filter(Boolean).join(" ");
+  const className = [
+    CLASS.TOOLBAR_CONTAINER,
+    dragging ? CLASS.TOOLBAR_DRAGGING : "",
+    resizing ? CLASS.TOOLBAR_RESIZING : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  return { containerRef, className, dataPosition: placement.corner, style, onPointerDown, onPointerMove, onPointerUp: endDrag, onPointerCancel: endDrag };
+  return {
+    containerRef,
+    className,
+    dataPosition: placement.corner,
+    style,
+    onPointerDown,
+    onPointerMove,
+    onPointerUp: endDrag,
+    onPointerCancel: endDrag,
+  };
 }

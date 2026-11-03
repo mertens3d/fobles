@@ -55,7 +55,11 @@ function patchCytoscapeNode(
   if (treeNode && element.nonempty() && element.isNode()) {
     const node = element.nodes().first();
 
-    const projectedNode = projectGraphNode(treeNode, readParentTreeNodeId(node, treeNode), processingStateByTreeNodeId.get(treeNodeId));
+    const projectedNode = projectGraphNode(
+      treeNode,
+      readParentTreeNodeId(node, treeNode),
+      processingStateByTreeNodeId.get(treeNodeId),
+    );
 
     replaceGraphOwnedClasses(node, graphOwnedClasses, projectedNode.classes);
 

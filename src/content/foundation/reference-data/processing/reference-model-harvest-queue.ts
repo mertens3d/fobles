@@ -41,7 +41,9 @@ export function createReferenceModelHarvestQueue({
   }
 
   async function processJobs(): Promise<void> {
-    if (processing || disposed) return;
+    if (processing || disposed) {
+      return;
+    }
 
     processing = true;
     reportProgress();
@@ -49,7 +51,9 @@ export function createReferenceModelHarvestQueue({
     try {
       while (!disposed && jobs.length > 0) {
         const job = jobs.shift();
-        if (!job) continue;
+        if (!job) {
+          continue;
+        }
 
         let succeeded = false;
 
@@ -57,7 +61,9 @@ export function createReferenceModelHarvestQueue({
           await runHarvest(job.reference, controller.signal);
           succeeded = true;
         } catch (error: unknown) {
-          if (!disposed) onError?.(job.reference, error);
+          if (!disposed) {
+            onError?.(job.reference, error);
+          }
         } finally {
           if (!disposed) {
             completed += 1;
@@ -71,13 +77,17 @@ export function createReferenceModelHarvestQueue({
 
       if (!disposed) {
         reportProgress();
-        if (jobs.length > 0) void processJobs();
+        if (jobs.length > 0) {
+          void processJobs();
+        }
       }
     }
   }
 
   function enqueue(reference: string, onSettled?: (succeeded: boolean) => void): void {
-    if (disposed || seen.has(reference)) return;
+    if (disposed || seen.has(reference)) {
+      return;
+    }
 
     seen.add(reference);
     jobs.push({ reference, onSettled });
@@ -86,7 +96,9 @@ export function createReferenceModelHarvestQueue({
   }
 
   function dispose(): void {
-    if (disposed) return;
+    if (disposed) {
+      return;
+    }
 
     disposed = true;
     jobs.length = 0;

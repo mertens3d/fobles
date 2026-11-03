@@ -17,12 +17,7 @@ const timestampFormatter = new Intl.DateTimeFormat("en-CA", {
 });
 
 function formatCentralTimestamp(date: Date): string {
-  const parts = Object.fromEntries(
-    timestampFormatter.formatToParts(date).map((part) => [
-      part.type,
-      part.value,
-    ]),
-  );
+  const parts = Object.fromEntries(timestampFormatter.formatToParts(date).map((part) => [part.type, part.value]));
 
   return `${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second}`;
 }
@@ -35,16 +30,10 @@ const originalConsole = {
 
 export function appendLogLine(message: string): void {
   if (!diagnosticLogPath) {
-    throw new Error(
-      "Call installConsoleLogging(workerSlot) before writing logs.",
-    );
+    throw new Error("Call installConsoleLogging(workerSlot) before writing logs.");
   }
 
-  fs.appendFileSync(
-    diagnosticLogPath,
-    `[${formatCentralTimestamp(new Date())}] ${message}\n`,
-    "utf8",
-  );
+  fs.appendFileSync(diagnosticLogPath, `[${formatCentralTimestamp(new Date())}] ${message}\n`, "utf8");
 }
 
 export function logDiagnostic(message: string): void {
@@ -53,11 +42,7 @@ export function logDiagnostic(message: string): void {
 }
 
 export function installConsoleLogging(workerSlot: number): void {
-  const logPath = path.resolve(
-    "./playwright/test-artifacts/logs",
-    `worker-${workerSlot}`,
-    "test-run.log",
-  );
+  const logPath = path.resolve("./playwright/test-artifacts/logs", `worker-${workerSlot}`, "test-run.log");
 
   fs.mkdirSync(path.dirname(logPath), { recursive: true });
 
@@ -66,11 +51,7 @@ export function installConsoleLogging(workerSlot: number): void {
     fs.copyFileSync(logPath, `${logPath}.previous`);
   }
 
-  fs.writeFileSync(
-    logPath,
-    `Test run started ${formatCentralTimestamp(new Date())}\n`,
-    "utf8",
-  );
+  fs.writeFileSync(logPath, `Test run started ${formatCentralTimestamp(new Date())}\n`, "utf8");
 
   diagnosticLogPath = logPath;
 

@@ -13,10 +13,14 @@ export type ResolveOutcome =
   | { kind: "not-found" }
   | { kind: "failed" };
 
-export type CachedItemFact = { value: ItemGraphNodeData | undefined; revision: string | undefined; hadStructuralCache: boolean };
+export type CachedItemFact = {
+  value: ItemGraphNodeData | undefined;
+  revision: string | undefined;
+  hadStructuralCache: boolean;
+};
 
 function restoreQuickInfo(quickInfo: StoredQuickInfo): ItemGraphNodeData {
- const scTemplate = itemFromLocator(quickInfo.scTemplate);
+  const scTemplate = itemFromLocator(quickInfo.scTemplate);
   return { ...quickInfo, scTemplate, rawMarkup: undefined, facts: {} };
 }
 
@@ -27,7 +31,12 @@ export async function readCachedItemFact(key: SitecoreDataCacheKey): Promise<Cac
 
   if (record && quickInfo) {
     const hadStructuralCache = Boolean(
-      record.parent || record.children || record.referrers || record.customSections || record.standardSections || record.layout,
+      record.parent ||
+      record.children ||
+      record.referrers ||
+      record.customSections ||
+      record.standardSections ||
+      record.layout,
     );
     fact = { value: restoreQuickInfo(quickInfo), revision: record.revision, hadStructuralCache };
   }
@@ -51,10 +60,15 @@ export async function verifyItemFact(
     } else {
       const value = resolved.value;
       await cache.putFact(key, "quickInfo", { result: resolved }, { revision });
-      if (revision === undefined) outcome = { kind: "unverified", value };
-      else if (!prior) outcome = { kind: "enriched", value };
-      else if (prior.revision !== undefined && prior.revision === revision) outcome = { kind: "verified", value };
-      else outcome = { kind: "revision-mismatch", value, hadStructuralCache: prior.hadStructuralCache };
+      if (revision === undefined) {
+        outcome = { kind: "unverified", value };
+      } else if (!prior) {
+        outcome = { kind: "enriched", value };
+      } else if (prior.revision !== undefined && prior.revision === revision) {
+        outcome = { kind: "verified", value };
+      } else {
+        outcome = { kind: "revision-mismatch", value, hadStructuralCache: prior.hadStructuralCache };
+      }
     }
   }
 
@@ -62,7 +76,9 @@ export async function verifyItemFact(
 }
 
 function itemFromLocator(locator: SitecoreItemLocator | undefined): ItemGraphNodeData | undefined {
-  if (!locator) return undefined;
+  if (!locator) {
+    return undefined;
+  }
 
   return {
     type: "scItem",

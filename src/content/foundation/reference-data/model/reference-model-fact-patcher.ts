@@ -1,6 +1,9 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/reference-model-fact-patcher.ts
 
-import type { SitecoreDataFactName, SitecoreDataFactValueByName } from "../../cache/sitecore-data/sitecore-data-cache.types";
+import type {
+  SitecoreDataFactName,
+  SitecoreDataFactValueByName,
+} from "../../cache/sitecore-data/sitecore-data-cache.types";
 import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
@@ -25,20 +28,40 @@ function itemMatches(item: ItemGraphNodeData, locator: SitecoreItemLocator): boo
   return candidate !== undefined && normalize(candidate) === normalize(locator.value);
 }
 
-function collectMatchingItems(node: ReferenceModelNode, locator: SitecoreItemLocator, result: ReferenceModelItemNode[]): void {
-  if (node.nodeType === "item" && itemMatches(node.scItem, locator)) result.push(node);
+function collectMatchingItems(
+  node: ReferenceModelNode,
+  locator: SitecoreItemLocator,
+  result: ReferenceModelItemNode[],
+): void {
+  if (node.nodeType === "item" && itemMatches(node.scItem, locator)) {
+    result.push(node);
+  }
   node.children.forEach((child) => collectMatchingItems(child, locator, result));
 }
 
 function rootItemFromQuickInfo(value: SitecoreDataFactValueByName["quickInfo"]): RootItem | undefined {
-  return value.result.status === "found" && value.result.value?.scItemId ? { ...value.result.value, scItemId: value.result.value.scItemId } : undefined;
+  return value.result.status === "found" && value.result.value?.scItemId
+    ? { ...value.result.value, scItemId: value.result.value.scItemId }
+    : undefined;
 }
 
 function emptyHarvest(item: RootItem): SitecoreHarvestResult {
-  return { rootItem: item, parent: undefined, childItems: undefined, referrers: undefined, customFieldSections: undefined, standardFieldSections: undefined, layoutSectionFields: undefined };
+  return {
+    rootItem: item,
+    parent: undefined,
+    childItems: undefined,
+    referrers: undefined,
+    customFieldSections: undefined,
+    standardFieldSections: undefined,
+    layoutSectionFields: undefined,
+  };
 }
 
-function applyFact(result: SitecoreHarvestResult, factName: SitecoreDataFactName, value: SitecoreDataFactValueByName[SitecoreDataFactName]): void {
+function applyFact(
+  result: SitecoreHarvestResult,
+  factName: SitecoreDataFactName,
+  value: SitecoreDataFactValueByName[SitecoreDataFactName],
+): void {
   switch (factName) {
     case "quickInfo":
       break;
@@ -79,18 +102,30 @@ function rebuildLookup(prepared: PreparedReferenceModel): void {
   buildReferenceModelNodeLookup(prepared.referenceModel).forEach((node, id) => prepared.nodesById.set(id, node));
 }
 
-export function patchReferenceModelFact<K extends SitecoreDataFactName>(prepared: PreparedReferenceModel, locator: SitecoreItemLocator, factName: K, value: SitecoreDataFactValueByName[K], filters: SitecoreHarvestFiltersState): readonly string[] {
+export function patchReferenceModelFact<K extends SitecoreDataFactName>(
+  prepared: PreparedReferenceModel,
+  locator: SitecoreItemLocator,
+  factName: K,
+  value: SitecoreDataFactValueByName[K],
+  filters: SitecoreHarvestFiltersState,
+): readonly string[] {
   const matches: ReferenceModelItemNode[] = [];
   collectMatchingItems(prepared.referenceModel, locator, matches);
 
   if (factName === "quickInfo") {
     const item = rootItemFromQuickInfo(value as SitecoreDataFactValueByName["quickInfo"]);
-    if (!item) return [];
+    if (!item) {
+      return [];
+    }
     matches.forEach((node) => mergeQuickInfo(node.scItem, item));
-    if (itemMatches(prepared.harvestedData.rootItem, locator)) mergeQuickInfo(prepared.harvestedData.rootItem, item);
+    if (itemMatches(prepared.harvestedData.rootItem, locator)) {
+      mergeQuickInfo(prepared.harvestedData.rootItem, item);
+    }
   } else {
     for (const node of matches) {
-      if (!node.scItem.scItemId) continue;
+      if (!node.scItem.scItemId) {
+        continue;
+      }
       let result: SitecoreHarvestResult;
 
       if (itemMatches(prepared.harvestedData.rootItem, locator)) {

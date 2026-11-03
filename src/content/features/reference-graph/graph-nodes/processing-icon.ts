@@ -1,5 +1,6 @@
-import { CONST} from "../../../../constants/const.ts";
+import { CONST } from "../../../../constants/const.ts";
 import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing-state.ts";
+
 export function iconForProcessingState(
   status: ProcessingStatus | undefined,
   itemIcon: string | undefined,

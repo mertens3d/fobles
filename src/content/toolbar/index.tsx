@@ -12,7 +12,9 @@ const mountedRoots = new WeakMap<Document, Root>();
 
 function getOrCreateMount(doc: Document): Root {
   const existing = mountedRoots.get(doc);
-  if (existing) return existing;
+  if (existing) {
+    return existing;
+  }
   const host = doc.createElement("div");
   // A stable, otherwise-untouched React mount point; the toolbar container itself (with its
   // real class/id) is rendered as React-owned content inside it, not this host.
@@ -26,7 +28,9 @@ function getOrCreateMount(doc: Document): Root {
 export function injectToolbar(context: ToolbarContext): void {
   const firstMount = !hasToolbarStore(context.doc);
   setToolbarContext(context.doc, context);
-  if (firstMount) getOrCreateMount(context.doc).render(<ToolbarRoot doc={context.doc} />);
+  if (firstMount) {
+    getOrCreateMount(context.doc).render(<ToolbarRoot doc={context.doc} />);
+  }
 }
 
 export function setToolbarVisible(context: ToolbarContext, visible: boolean): void {

@@ -27,21 +27,18 @@ const createDropTreeWrapper = (doc: Document): HTMLSpanElement => {
   return wrapper;
 };
 
-const createDropTreeButton = (
-  doc: Document,
-  value: string,
-): HTMLButtonElement => {
+const createDropTreeButton = (doc: Document, value: string): HTMLButtonElement => {
   const normalizedValue = normalizeFoblesValue(value);
   const foblesUrl = buildFoblesUrl(normalizedValue);
-  const button = createFoblesButton(doc, value, foblesUrl, {
-    classNames: [FOBLES.CLASSES.BUTTONS.BASE],
-  });
+  const button = createFoblesButton(doc, value, foblesUrl, { classNames: [FOBLES.CLASSES.BUTTONS.BASE] });
   applyButtonClasses(button);
   return button;
 };
 
 const hideAdditionalElements = (host: HTMLInputElement, selectors?: string[]): void => {
-  if (!selectors?.length) return;
+  if (!selectors?.length) {
+    return;
+  }
 
   const scope = host.closest("table") ?? host.parentElement;
   scope?.querySelectorAll<HTMLElement>(selectors.join(", ")).forEach((el) => {
@@ -49,13 +46,11 @@ const hideAdditionalElements = (host: HTMLInputElement, selectors?: string[]): v
   });
 };
 
-const replaceHostWithFobles = (
-  doc: Document,
-  host: HTMLInputElement,
-  config: DropTreeConfig,
-): void => {
+const replaceHostWithFobles = (doc: Document, host: HTMLInputElement, config: DropTreeConfig): void => {
   const value = getFoblesValue(host);
-  if (!value) return;
+  if (!value) {
+    return;
+  }
 
   const wrapper = createDropTreeWrapper(doc);
   const button = createDropTreeButton(doc, value);
@@ -67,10 +62,7 @@ const replaceHostWithFobles = (
   host.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");
 };
 
-export function applyDropTreeStrategy(
-  doc: Document,
-  config: DropTreeConfig,
-): void {
+export function applyDropTreeStrategy(doc: Document, config: DropTreeConfig): void {
   const hosts = findEligibleHosts(doc, config);
   extensionLog.debug("Found", hosts.length, "eligible DropTree fields");
 

@@ -13,9 +13,7 @@ export function PhaseProgressBar({ label, progress }: PhaseProgressBarProps) {
   return (
     <div className="fobles-reference-graph-enrichment-progress">
       <div className="fobles-reference-graph-enrichment-progress-content">
-        <div className="fobles-reference-graph-enrichment-progress-label">
-          {`${label} ${completed} / ${max}`}
-        </div>
+        <div className="fobles-reference-graph-enrichment-progress-label">{`${label} ${completed} / ${max}`}</div>
 
         <div className="fobles-reference-graph-enrichment-progress-track">
           <div className="fobles-reference-graph-enrichment-progress-value" style={{ width: `${percent}%` }} />

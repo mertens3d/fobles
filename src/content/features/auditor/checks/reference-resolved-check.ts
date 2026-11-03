@@ -6,14 +6,10 @@ import type { ProcessingStatus } from "../../../foundation/reference-data/proces
 import { buildAuditFinding } from "../audit-finding-factory.ts";
 import type { AuditCheck, AuditCheckContext } from "../audit-check.types";
 import type { AuditFinding } from "../audit-finding.types";
-import type {
-  ReferenceResolvedDiagnostic,
-  ResolveStateInterpretation,
-} from "./reference-resolved-check.types";
+import type { ReferenceResolvedDiagnostic, ResolveStateInterpretation } from "./reference-resolved-check.types";
 const CHECK = AUDIT_CHECK.REFERENCE_RESOLVED;
-export function interpretResolveState(
-  status: ProcessingStatus | undefined,
-): ResolveStateInterpretation {
+
+export function interpretResolveState(status: ProcessingStatus | undefined): ResolveStateInterpretation {
   switch (status) {
     case "not-found":
       return { status: "error", summary: CHECK.SUMMARY.NOT_FOUND };
@@ -29,6 +25,7 @@ export function interpretResolveState(
       return { status: "pending", summary: CHECK.SUMMARY.PENDING };
   }
 }
+
 export const referenceResolvedCheck: AuditCheck = {
   key: CHECK.KEY,
   label: CHECK.LABEL,
@@ -53,12 +50,14 @@ export const referenceResolvedCheck: AuditCheck = {
             status: interpreted.status,
             referenceModelNodeId: node.treeNodeId,
             item: node.scItem,
-            summary: processingStatus === "not-found"
-              ? `Referenced item ${node.scItem.scItemId ?? node.scItem.scItemPath ?? "(unknown)"} could not be found.`
-              : interpreted.summary,
-            context: node.provenance.type === "rendering-parameter"
-              ? `Rendering parameter ${node.provenance.parameterName} references ${node.provenance.decodedValue || node.provenance.parameterValue}.`
-              : undefined,
+            summary:
+              processingStatus === "not-found"
+                ? `Referenced item ${node.scItem.scItemId ?? node.scItem.scItemPath ?? "(unknown)"} could not be found.`
+                : interpreted.summary,
+            context:
+              node.provenance.type === "rendering-parameter"
+                ? `Rendering parameter ${node.provenance.parameterName} references ${node.provenance.decodedValue || node.provenance.parameterValue}.`
+                : undefined,
             buildSitecoreUrl: context.buildSitecoreUrl,
           }),
         );

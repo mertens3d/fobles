@@ -8,11 +8,7 @@ export type AuditorSummaryProps = {
   onToggleStatus: (status: AuditFindingStatus) => void;
 };
 
-const ITEMS: readonly {
-  status: AuditFindingStatus;
-  label: string;
-  key: keyof AuditSummaryCounts;
-}[] = [
+const ITEMS: readonly { status: AuditFindingStatus; label: string; key: keyof AuditSummaryCounts }[] = [
   { status: "pending", label: "Pending", key: "pending" },
   { status: "passed", label: "Passed", key: "passed" },
   { status: "warning", label: "Warning", key: "warning" },
@@ -22,9 +18,7 @@ const ITEMS: readonly {
 export function AuditorSummary({ counts, selectedStatuses, onToggleStatus }: AuditorSummaryProps) {
   return (
     <div className="fobles-auditor-summary">
-      <span className="fobles-auditor-summary-item fobles-auditor-summary-item--total">
-        Total: {counts.total}
-      </span>
+      <span className="fobles-auditor-summary-item fobles-auditor-summary-item--total">Total: {counts.total}</span>
 
       {ITEMS.map(({ status, label, key }) => (
         <label
@@ -32,11 +26,7 @@ export function AuditorSummary({ counts, selectedStatuses, onToggleStatus }: Aud
           className={`fobles-auditor-summary-filter fobles-auditor-summary-item--${status}`}
           title={`Toggle ${label} rows`}
         >
-          <input
-            type="checkbox"
-            checked={selectedStatuses.has(status)}
-            onChange={() => onToggleStatus(status)}
-          />
+          <input type="checkbox" checked={selectedStatuses.has(status)} onChange={() => onToggleStatus(status)} />
           {label}: {counts[key]}
         </label>
       ))}

@@ -11,11 +11,7 @@ import type { QuickInfo } from "../../../sitecore/quick-info.types";
 
 export function getTemplateGuid(doc: Document): string | undefined {
   return (
-    doc
-      .querySelector<HTMLInputElement>(
-        "input.scEditorHeaderQuickInfoInputID[readonly]",
-      )
-      ?.value.trim() || undefined
+    doc.querySelector<HTMLInputElement>("input.scEditorHeaderQuickInfoInputID[readonly]")?.value.trim() || undefined
   );
 }
 
@@ -24,47 +20,31 @@ export async function resolveQuickInfoForRenderingId(
   signal: AbortSignal,
 ): Promise<QuickInfo | undefined> {
   try {
-    const response = await fetch(buildFoblesUrl(renderingId), {
-      credentials: "same-origin",
-      signal,
-    });
-    if (!response.ok) return undefined;
-    const fetchedDoc = new DOMParser().parseFromString(
-      await response.text(),
-      "text/html",
-    );
+    const response = await fetch(buildFoblesUrl(renderingId), { credentials: "same-origin", signal });
+    if (!response.ok) {
+      return undefined;
+    }
+    const fetchedDoc = new DOMParser().parseFromString(await response.text(), "text/html");
     const fetchDocQuickInfo = getQuickInfo(fetchedDoc);
     return fetchDocQuickInfo;
   } catch (error) {
-    extensionLog.warn("Reference graph: failed to resolve rendering details", {
-      renderingId,
-      error,
-    });
+    extensionLog.warn("Reference graph: failed to resolve rendering details", { renderingId, error });
     return undefined;
   }
 }
-export function findFieldInput(
-  doc: Document,
-  labelPrefix: string,
-): HTMLInputElement | undefined {
-  const label = Array.from(
-    doc.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.FIELD_LABEL),
-  ).find((element) =>
-    element.textContent
-      ?.trim()
-      .toLowerCase()
-      .startsWith(labelPrefix.toLowerCase()),
+
+export function findFieldInput(doc: Document, labelPrefix: string): HTMLInputElement | undefined {
+  const label = Array.from(doc.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.FIELD_LABEL)).find((element) =>
+    element.textContent?.trim().toLowerCase().startsWith(labelPrefix.toLowerCase()),
   );
   return (
     label
       ?.closest(SITECORE.SELECTORS.FIELD_CELL)
-      ?.querySelector<HTMLInputElement>(SITECORE.SELECTORS.CONTENT_CONTROL) ??
-    undefined
+      ?.querySelector<HTMLInputElement>(SITECORE.SELECTORS.CONTENT_CONTROL) ?? undefined
   );
 }
-export function buildGalleryLinksUrl(
-  itemId: string | undefined,
-): string | undefined {
+
+export function buildGalleryLinksUrl(itemId: string | undefined): string | undefined {
   let result: string | undefined;
   if (itemId) {
     const origin = `${window.location.protocol}//${window.location.hostname}`;

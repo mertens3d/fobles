@@ -2,15 +2,9 @@
 
 import type { REFERENCE_GRAPH } from "../constants/graph.const";
 
-export type PersistedLogLevel =
-  | "debug"
-  | "info"
-  | "warn"
-  | "error";
+export type PersistedLogLevel = "debug" | "info" | "warn" | "error";
 
-export type PersistedLogContext =
-  | "content"
-  | "background";
+export type PersistedLogContext = "content" | "background";
 
 export type PersistedLogEntry = {
   id: string;
@@ -20,7 +14,4 @@ export type PersistedLogEntry = {
   args: unknown[];
 };
 
-export type PersistedLogMessage = {
-  type: typeof REFERENCE_GRAPH.FOBLES_PERSIST_LOG;
-  entry: PersistedLogEntry;
-};
+export type PersistedLogMessage = { type: typeof REFERENCE_GRAPH.FOBLES_PERSIST_LOG; entry: PersistedLogEntry };

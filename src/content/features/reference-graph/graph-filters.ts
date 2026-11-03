@@ -12,17 +12,13 @@ export const DEFAULT_RENDERING_GRAPH_FILTERS_STATE: SitecoreHarvestFiltersState 
   template: false,
 };
 
-export function createAllFiltersState(
-    enabled: boolean,
-): SitecoreHarvestFiltersState {
-    return Object.fromEntries(
-        Object.keys(DEFAULT_RENDERING_GRAPH_FILTERS_STATE).map(
-            (key) => [key, enabled],
-        ),
-    ) as SitecoreHarvestFiltersState;
+export function createAllFiltersState(enabled: boolean): SitecoreHarvestFiltersState {
+  return Object.fromEntries(
+    Object.keys(DEFAULT_RENDERING_GRAPH_FILTERS_STATE).map((key) => [key, enabled]),
+  ) as SitecoreHarvestFiltersState;
 }
 
-export function createSingleFilterState(enabledKey: keyof SitecoreHarvestFiltersState,): SitecoreHarvestFiltersState {
+export function createSingleFilterState(enabledKey: keyof SitecoreHarvestFiltersState): SitecoreHarvestFiltersState {
   return {
     parent: enabledKey === "parent",
     children: enabledKey === "children",
@@ -34,9 +30,10 @@ export function createSingleFilterState(enabledKey: keyof SitecoreHarvestFilters
   };
 }
 
-export function getEnabledFilterKeys(filters: SitecoreHarvestFiltersState,): Set<keyof SitecoreHarvestFiltersState> {
-  return new Set(Object.entries(filters)
-    .filter(([, enabled]) => enabled)
-    .map(([key]) => key as keyof SitecoreHarvestFiltersState,),
+export function getEnabledFilterKeys(filters: SitecoreHarvestFiltersState): Set<keyof SitecoreHarvestFiltersState> {
+  return new Set(
+    Object.entries(filters)
+      .filter(([, enabled]) => enabled)
+      .map(([key]) => key as keyof SitecoreHarvestFiltersState),
   );
 }

@@ -4,17 +4,35 @@ import { DialogIconButton } from "../dialog/dialog-icon-button";
 import { DETAILS_PANEL } from "./details-panel.const";
 import type { DetailsPanelProps } from "./details-panel.types";
 
-export function DetailsPanel({ title, closeLabel, onClose, getCopyText, actions, closeOnOutsidePointer = true, children }: DetailsPanelProps) {
+export function DetailsPanel({
+  title,
+  closeLabel,
+  onClose,
+  getCopyText,
+  actions,
+  closeOnOutsidePointer = true,
+  children,
+}: DetailsPanelProps) {
   const panelRef = useRef<HTMLDivElement>(null);
   const [copied, setCopied] = useState(false);
 
   useEffect(() => {
-    if (!onClose) return;
+    if (!onClose) {
+      return;
+    }
     const ownerDocument = panelRef.current?.ownerDocument;
-    if (!ownerDocument) return;
+    if (!ownerDocument) {
+      return;
+    }
     const handlePointerDown = (event: PointerEvent): void => {
       const target = event.target;
-      if (closeOnOutsidePointer && target instanceof ownerDocument.defaultView!.Node && !panelRef.current?.contains(target)) onClose();
+      if (
+        closeOnOutsidePointer &&
+        target instanceof ownerDocument.defaultView!.Node &&
+        !panelRef.current?.contains(target)
+      ) {
+        onClose();
+      }
     };
     const handleKeyDown = (event: KeyboardEvent): void => {
       if (event.key === "Escape") {
@@ -31,7 +49,9 @@ export function DetailsPanel({ title, closeLabel, onClose, getCopyText, actions,
   }, [onClose, closeOnOutsidePointer]);
 
   const handleCopy = (): void => {
-    if (!getCopyText) return;
+    if (!getCopyText) {
+      return;
+    }
     void navigator.clipboard.writeText(getCopyText()).then(() => {
       setCopied(true);
       window.setTimeout(() => {

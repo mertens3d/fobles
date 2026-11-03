@@ -1,7 +1,14 @@
 import { PROGRESS_STEPS } from "../../../foundation/harvesting/planner/harvest-steps";
-import { type SitecoreHarvestFiltersState, isHarvestStep } from "../../../foundation/harvesting/sitecore-harvester.types";
+import {
+  type SitecoreHarvestFiltersState,
+  isHarvestStep,
+} from "../../../foundation/harvesting/sitecore-harvester.types";
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
-import { openReferenceGraphProgressModal, closeReferenceGraphProgressModal, initializeReferenceGraphProgressModal } from "../build-progress";
+import {
+  openReferenceGraphProgressModal,
+  closeReferenceGraphProgressModal,
+  initializeReferenceGraphProgressModal,
+} from "../build-progress";
 import { createSingleFilterState } from "../graph-filters";
 import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
 import type { UseReferenceGraphFilterActionsOptions } from "./use-reference-graph-filter-actions";
@@ -14,28 +21,19 @@ export async function changeReferenceGraphFilter(
 ): Promise<void> {
   const { doc, harvestForLink, cyRef, graphState, renderGraph } = options;
 
-  const updatedFilters = {
-    ...graphState.currentFiltersRef.current,
-    [key]: checked,
-  };
+  const updatedFilters = { ...graphState.currentFiltersRef.current, [key]: checked };
 
   setFilters(updatedFilters);
 
-  const currentHarvestedData =
-    graphState.currentPreparedGraphRef.current.harvestedData;
+  const currentHarvestedData = graphState.currentPreparedGraphRef.current.harvestedData;
 
   const loadedFilters =
-    graphState.loadedFiltersByItemIdRef.current.get(
-      currentHarvestedData.rootItem.scItemId,
-    ) ?? new Set<keyof SitecoreHarvestFiltersState>();
+    graphState.loadedFiltersByItemIdRef.current.get(currentHarvestedData.rootItem.scItemId) ??
+    new Set<keyof SitecoreHarvestFiltersState>();
 
-  graphState.loadedFiltersByItemIdRef.current.set(
-    currentHarvestedData.rootItem.scItemId,
-    loadedFilters,
-  );
+  graphState.loadedFiltersByItemIdRef.current.set(currentHarvestedData.rootItem.scItemId, loadedFilters);
 
-  const alreadyLoaded =
-    key === "template" || loadedFilters.has(key);
+  const alreadyLoaded = key === "template" || loadedFilters.has(key);
 
   if (!checked || alreadyLoaded) {
     const cy = cyRef.current;
@@ -44,9 +42,7 @@ export async function changeReferenceGraphFilter(
       refreshGraphVisibilityAndLayout(cy);
     }
   } else {
-    const link =
-      currentHarvestedData.rootItem.link ??
-      buildFoblesUrl(currentHarvestedData.rootItem.scItemId);
+    const link = currentHarvestedData.rootItem.link ?? buildFoblesUrl(currentHarvestedData.rootItem.scItemId);
 
     const requestedFilters = createSingleFilterState(key);
     let cancelled = false;
@@ -58,34 +54,18 @@ export async function changeReferenceGraphFilter(
 
     initializeReferenceGraphProgressModal(
       doc,
-      PROGRESS_STEPS.filter(
-        (step) =>
-          isHarvestStep(step) &&
-          step.filterKeys.includes(key),
-      ),
+      PROGRESS_STEPS.filter((step) => isHarvestStep(step) && step.filterKeys.includes(key)),
       requestedFilters,
     );
 
-    const mergedGraph = await harvestForLink(
-      link,
-      requestedFilters,
-      currentHarvestedData,
-    );
+    const mergedGraph = await harvestForLink(link, requestedFilters, currentHarvestedData);
 
     const graphChanged =
-      graphState.currentPreparedGraphRef.current
-        .harvestedData.rootItem.scItemId !==
+      graphState.currentPreparedGraphRef.current.harvestedData.rootItem.scItemId !==
       currentHarvestedData.rootItem.scItemId;
 
-    if (
-      cancelled ||
-      !mergedGraph ||
-      graphChanged
-    ) {
-      setFilters({
-        ...graphState.currentFiltersRef.current,
-        [key]: false,
-      });
+    if (cancelled || !mergedGraph || graphChanged) {
+      setFilters({ ...graphState.currentFiltersRef.current, [key]: false });
     } else {
       loadedFilters.add(key);
       await renderGraph(mergedGraph);

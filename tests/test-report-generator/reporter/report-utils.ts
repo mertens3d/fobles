@@ -2,13 +2,13 @@ import path from "node:path";
 import stripAnsi from "strip-ansi";
 
 export function formatStatus(status: string): string {
-  return status === "timedOut"
-    ? "Timed out"
-    : status.charAt(0).toUpperCase() + status.slice(1);
+  return status === "timedOut" ? "Timed out" : status.charAt(0).toUpperCase() + status.slice(1);
 }
 
 export function formatDuration(milliseconds: number): string {
-  if (milliseconds < 1000) return `${milliseconds} ms`;
+  if (milliseconds < 1000) {
+    return `${milliseconds} ms`;
+  }
   return `${(milliseconds / 1000).toFixed(1)} s`;
 }
 
@@ -25,10 +25,7 @@ export function stripAnsiSafe(value: unknown): string {
   return stripAnsi(String(value));
 }
 
-export function toReportRelativeHref(
-  attachmentPath: string,
-  reportFile: string,
-): string {
+export function toReportRelativeHref(attachmentPath: string, reportFile: string): string {
   const relative = path.relative(path.dirname(reportFile), attachmentPath);
   return relative.replace(/\\/g, "/");
 }

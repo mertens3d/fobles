@@ -1,8 +1,5 @@
 // @source-path [fobles] src/content/foundation/sitecore/quick-info.types.ts
-export type QuickInfoTemplate = {
-  path: string | undefined;
-  id: string | undefined;
-};
+export type QuickInfoTemplate = { path: string | undefined; id: string | undefined };
 
 export type QuickInfo = {
   itemId: string | undefined;

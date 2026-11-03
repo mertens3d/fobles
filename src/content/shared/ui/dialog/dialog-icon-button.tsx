@@ -1,5 +1,6 @@
 // @source-path [fobles] src/content/shared/ui/dialog/dialog-icon-button.tsx
 export type DialogIconButtonSurface = "light" | "dark";
+
 export type DialogIconButtonProps = {
   kind: "close" | "help";
   label: string;
@@ -7,8 +8,14 @@ export type DialogIconButtonProps = {
   surface?: DialogIconButtonSurface;
   className?: string;
 };
+
 export function DialogIconButton({ kind, label, onClick, surface = "light", className }: DialogIconButtonProps) {
-  const classes = ["fobles-dialog-icon-button", `fobles-dialog-icon-button--${kind}`, `fobles-dialog-icon-button--on-${surface}`, className]
+  const classes = [
+    "fobles-dialog-icon-button",
+    `fobles-dialog-icon-button--${kind}`,
+    `fobles-dialog-icon-button--on-${surface}`,
+    className,
+  ]
     .filter(Boolean)
     .join(" ");
   return (

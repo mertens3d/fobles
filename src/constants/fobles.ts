@@ -20,20 +20,18 @@ export const FOBLES = {
         PROXY_BUTTONS: "data-proxy-buttons",
         JUMP_FLYOUT: "data-jump-flyout",
         TEMPLATE_BUTTON: "data-template-button",
-        VISIBLE: "data-visible"
+        VISIBLE: "data-visible",
       },
-      VALUE: {
-        PERSISTENT: "persistent"
-      },
+      VALUE: { PERSISTENT: "persistent" },
       NAV_BUTTON_ROLE: {
         LBOLT: "lbolt",
         GRAPH: "graph-trigger",
         AUDITOR: "auditor-trigger",
         DEVELOPER: "developer-trigger",
         PROXY_FLYOUT_TRIGGER: "proxy-buttons-trigger",
-        JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger"
-      }
-    }
+        JUMPS_FLYOUT_TRIGGER: "jump-flyout-trigger",
+      },
+    },
   },
   OPTIONS_PAGE: {
     DEBUG_LOGGING: "debug-logging",
@@ -50,7 +48,7 @@ export const FOBLES = {
     CLEAR_PERSISTED_LOGS: "clear-persisted-logs",
     PERSIST_DEBUG_LOGS: "persist-debug-logs",
     SCROLL_PERSISTED_LOGS_BOTTOM: "scroll-persisted-logs-bottom",
-    COPY_PERSISTED_LOGS: "copy-persisted-logs"
+    COPY_PERSISTED_LOGS: "copy-persisted-logs",
   },
   WORKER_POOL,
   REFERENCE_GRAPH,
@@ -58,10 +56,7 @@ export const FOBLES = {
   MESSAGE,
   STORAGE,
   WORKER: {
-    DEBUG: {
-      MEMORY: false,
-      POOL: false
-    },
+    DEBUG: { MEMORY: false, POOL: false },
     MESSAGE_TYPE: {
       POOL_CANCEL_REQUEST: "POOL_CANCEL_REQUEST",
       POOL_CANCEL_TASK: "POOL_CANCEL_TASK",
@@ -77,8 +72,8 @@ export const FOBLES = {
         CREATE: "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_CREATE",
         NAVIGATE: "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_NAVIGATE",
         REMOVE: "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_REMOVE",
-        REMOVE_ALL: "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_REMOVE_ALL"
-      }
+        REMOVE_ALL: "FOBLES_REFERENCE_GRAPH_WORKER_IFRAME_REMOVE_ALL",
+      },
     },
     TAB: {
       BANNER_ID: "fobles-background-worker-banner",
@@ -86,15 +81,9 @@ export const FOBLES = {
       READY_TIMEOUT_MS: 20_000,
       READY_POLL_INTERVAL_MS: 100,
       MAX_SEND_ATTEMPTS: 50,
-      SEND_RETRY_DELAY_MS: 50
+      SEND_RETRY_DELAY_MS: 50,
     },
-    MEMORY: {
-      MB: 1024 * 1024,
-      SAMPLE_DELAY_MS: [
-        1_000,
-        5_000
-      ]
-    }
+    MEMORY: { MB: 1024 * 1024, SAMPLE_DELAY_MS: [1_000, 5_000] },
   },
   CLASSES: {
     BUTTONS: {
@@ -114,27 +103,23 @@ export const FOBLES = {
       TAG_LIST: "fobles-button--tag-list",
       TEMPLATE_PATH: "fobles-button--template-path",
       TREE_LIST: "fobles-button--tree-list",
-      TREELIST_EX: "fobles-button--treelist-ex"
+      TREELIST_EX: "fobles-button--treelist-ex",
     },
     DIALOG: {
       ACTIONS: "fobles-confirm-dialog-actions",
       BASE: "fobles-confirm-dialog",
       CANCEL: "fobles-confirm-dialog-cancel",
       CONTINUE: "fobles-confirm-dialog-continue",
-      SETTING: "fobles-confirm-dialog-setting"
+      SETTING: "fobles-confirm-dialog-setting",
     },
     FIELD_SPACER: "fobles-field-spacer",
     HIDDEN: "fobles-hidden",
-    TOOLTIP: {
-      BASE: "fobles-tooltip",
-      PRIMARY: "fobles-tooltip-primary",
-      SECONDARY: "fobles-tooltip-secondary"
-    },
+    TOOLTIP: { BASE: "fobles-tooltip", PRIMARY: "fobles-tooltip-primary", SECONDARY: "fobles-tooltip-secondary" },
     TREE: {
       BUTTON: "tree-fobles-button",
       GLYPH_HIDDEN: "fobles-hidden",
       SPACER: "tree-fobles-spacer",
-      WRAPPER: "tree-fobles-wrapper"
+      WRAPPER: "tree-fobles-wrapper",
     },
     WRAPPERS: {
       BASE: "fobles-wrapper",
@@ -153,25 +138,22 @@ export const FOBLES = {
       TAG_LIST: "fobles-wrapper--tag-list",
       TEMPLATE_PATH: "fobles-wrapper--template-path",
       TREE_LIST: "fobles-wrapper--tree-list",
-      TREELIST_EX: "fobles-wrapper--treelist-ex"
-    }
+      TREELIST_EX: "fobles-wrapper--treelist-ex",
+    },
   },
   CSS_PROPERTIES: {
     HEIGHT: "--fobles-height",
     LIST_HEIGHT: "--fobles-list-height",
-    TREE_HEIGHT: "--tree-fobles-height"
+    TREE_HEIGHT: "--tree-fobles-height",
   },
-  PANES: {
-    ALL: "all",
-    SELECTED: "selected"
-  },
+  PANES: { ALL: "all", SELECTED: "selected" },
   SELECTORS: {
     BUTTON: "[data-is-fobles-button='1']",
     FRAMES: "iframe,frame",
     HIDDEN_PROCESSED: ".fobles-hidden[data-fobles-processed]",
     PROCESSED: "[data-fobles-processed]",
     TEMPLATE_BUTTON: "[data-template-button='1']",
-    WRAPPER: "[data-fobles-wrapper]"
+    WRAPPER: "[data-fobles-wrapper]",
   },
   STRATEGIES: {
     DROP_LINK: "drop-link",
@@ -190,30 +172,19 @@ export const FOBLES = {
     TAG_LIST: "tag-list",
     TEMPLATE_PATH: "template-path",
     TREE_LIST: "tree-list",
-    TREELIST_EX: "treelist-ex"
+    TREELIST_EX: "treelist-ex",
   },
-  SYMBOLS: {
-    TREE_BUTTON: "\u2022"
-  },
-  TOOLBAR: {
-    JUMP_FLYOUT: {
-      BUTTON_IDS: FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS
-    },
-    GROUPS: {
-
-    }
-  },
+  SYMBOLS: { TREE_BUTTON: "\u2022" },
+  TOOLBAR: { JUMP_FLYOUT: { BUTTON_IDS: FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS }, GROUPS: {} },
   TEXT: {
     CONFIRM: {
       CANCEL: "Cancel",
       CONTINUE: "Continue",
-      MESSAGE: "Sitecore will reload Content Editor with a different item query. This clears the Back and Forward navigation history for this tab.",
+      MESSAGE:
+        "Sitecore will reload Content Editor with a different item query. This clears the Back and Forward navigation history for this tab.",
       SETTING: "Warn before same-tab Fobles navigation",
-      TITLE: "Open this item in the current tab?"
+      TITLE: "Open this item in the current tab?",
     },
-    TOOLTIP: {
-      PRIMARY: "Open in this tab",
-      SECONDARY: "Ctrl/Cmd+Click opens a new tab"
-    }
-  }
+    TOOLTIP: { PRIMARY: "Open in this tab", SECONDARY: "Ctrl/Cmd+Click opens a new tab" },
+  },
 } as const;

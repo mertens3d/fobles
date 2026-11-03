@@ -1,6 +1,6 @@
 import { SELECTORS } from "../../../constants/fobles.constants";
 import { FOBLES } from "../../../constants/fobles";
-import { CONST} from "../../../constants/const";
+import { CONST } from "../../../constants/const";
 import { extensionLog } from "../../logger";
 import { fieldConfigs } from "../../../constants/_config";
 import { walkFrameDocuments } from "./shared/frame-documents";
@@ -33,15 +33,17 @@ export function setFoblesDismissHandler(handler: (() => void) | null): void {
 }
 
 function listenForFoblesDismissal(doc: Document): void {
-  if (foblesDismissListeners.has(doc)) return;
+  if (foblesDismissListeners.has(doc)) {
+    return;
+  }
 
   doc.addEventListener("click", (event) => {
     const target = event.target as Node | null;
-    if (!target) return;
+    if (!target) {
+      return;
+    }
 
-    const targetElement = target.nodeType === Node.ELEMENT_NODE
-      ? target as Element
-      : target.parentElement;
+    const targetElement = target.nodeType === Node.ELEMENT_NODE ? (target as Element) : target.parentElement;
     if (
       targetElement?.closest(FOBLES.SELECTORS.BUTTON) ||
       targetElement?.closest(`.${FOBLES.CLASSES.DIALOG.BASE}`) ||
@@ -55,78 +57,108 @@ function listenForFoblesDismissal(doc: Document): void {
   foblesDismissListeners.add(doc);
 }
 
-function applyStrategy(
-  doc: Document,
-  strategy: FoblesStrategy,
-  config: FoblesConfig,
-): void {
+function applyStrategy(doc: Document, strategy: FoblesStrategy, config: FoblesConfig): void {
   switch (strategy) {
     case "drop-link":
-      if (config.strategy !== "drop-link") return;
+      if (config.strategy !== "drop-link") {
+        return;
+      }
       applyDroplinkStrategy(doc, config);
       return;
     case "drop-tree":
-      if (config.strategy !== "drop-tree") return;
+      if (config.strategy !== "drop-tree") {
+        return;
+      }
       applyDropTreeStrategy(doc, config);
       return;
     case "droplist":
-      if (config.strategy !== "droplist") return;
+      if (config.strategy !== "droplist") {
+        return;
+      }
       applyDroplistStrategy(doc, config);
       return;
     case "file":
-      if (config.strategy !== "file") return;
+      if (config.strategy !== "file") {
+        return;
+      }
       applyFileStrategy(doc, config);
       return;
     case "general-link":
-      if (config.strategy !== "general-link") return;
+      if (config.strategy !== "general-link") {
+        return;
+      }
       applyGeneralLinkStrategy(doc, config);
       return;
     case "icon":
-      if (config.strategy !== "icon") return;
+      if (config.strategy !== "icon") {
+        return;
+      }
       applyIconStrategy(doc, config);
       return;
     case "image":
-      if (config.strategy !== "image") return;
+      if (config.strategy !== "image") {
+        return;
+      }
       applyImageStrategy(doc, config);
       return;
     case "internal-link":
-      if (config.strategy !== "internal-link") return;
+      if (config.strategy !== "internal-link") {
+        return;
+      }
       applyInternalLinkStrategy(doc, config);
       return;
     case "multilist-options":
-      if (config.strategy !== "multilist-options") return;
+      if (config.strategy !== "multilist-options") {
+        return;
+      }
       applyMultilistStrategy(doc, config);
       return;
     case "multilist-with-search":
-      if (config.strategy !== "multilist-with-search") return;
+      if (config.strategy !== "multilist-with-search") {
+        return;
+      }
       applyMultilistWithSearchStrategy(doc, config);
       return;
     case "quick-info-section":
-      if (config.strategy !== "quick-info-section") return;
+      if (config.strategy !== "quick-info-section") {
+        return;
+      }
       applyQuickInfoSectionStrategy(doc, config);
       return;
     case "reference-links":
-      if (config.strategy !== "reference-links") return;
+      if (config.strategy !== "reference-links") {
+        return;
+      }
       applyReferenceLinksStrategy(doc, config);
       return;
     case "style-checklist":
-      if (config.strategy !== "style-checklist") return;
+      if (config.strategy !== "style-checklist") {
+        return;
+      }
       applyStyleChecklistStrategy(doc, config);
       return;
     case "tag-list":
-      if (config.strategy !== "tag-list") return;
+      if (config.strategy !== "tag-list") {
+        return;
+      }
       applyTagListStrategy(doc, config);
       return;
     case "template-path":
-      if (config.strategy !== "template-path") return;
+      if (config.strategy !== "template-path") {
+        return;
+      }
       applyTemplatePathStrategy(doc, config);
       return;
     case "tree-list":
-      if (config.strategy !== "tree-list") return;
+      if (config.strategy !== "tree-list") {
+        return;
+      }
       applyTreeListStrategy(doc, config);
       return;
     case "treelist-ex":
-      if (config.strategy !== "treelist-ex") return;
+      if (config.strategy !== "treelist-ex") {
+        return;
+      }
       applyTreelistExStrategy(doc, config);
       return;
     default: {
@@ -180,7 +212,9 @@ export function clearFobles(doc: Document): void {
     };
 
     const restoreOriginal = (original: HTMLElement | null): void => {
-      if (!original) return;
+      if (!original) {
+        return;
+      }
       resetElement(original);
     };
 
@@ -189,10 +223,11 @@ export function clearFobles(doc: Document): void {
       const original =
         (wrapper.previousElementSibling as HTMLElement | null) ??
         (wrapper.parentElement?.querySelector(FOBLES.SELECTORS.HIDDEN_PROCESSED) as HTMLElement | null) ??
-        (wrapper.querySelector(FOBLES.SELECTORS.HIDDEN_PROCESSED)) ??
-        (wrapper.querySelector(FOBLES.SELECTORS.PROCESSED));
+        wrapper.querySelector(FOBLES.SELECTORS.HIDDEN_PROCESSED) ??
+        wrapper.querySelector(FOBLES.SELECTORS.PROCESSED);
 
-      const button = wrapper.querySelector(FOBLES.SELECTORS.BUTTON) ?? wrapper.querySelector(FOBLES.SELECTORS.TEMPLATE_BUTTON);
+      const button =
+        wrapper.querySelector(FOBLES.SELECTORS.BUTTON) ?? wrapper.querySelector(FOBLES.SELECTORS.TEMPLATE_BUTTON);
       if (button) {
         button.remove();
       }
@@ -210,17 +245,23 @@ export function clearFobles(doc: Document): void {
     });
 
     currentDoc.querySelectorAll(FOBLES.SELECTORS.BUTTON).forEach((button) => {
-      if (button.hasAttribute(FOBLES.ATTRIBUTES.DATA.KEY.FOBLES_NAV_OWNER)) return;
+      if (button.hasAttribute(FOBLES.ATTRIBUTES.DATA.KEY.FOBLES_NAV_OWNER)) {
+        return;
+      }
       button.remove();
     });
 
-    currentDoc.querySelectorAll(`${CONST.SITECORE.SELECTORS.MULTILIST.BOX}${FOBLES.SELECTORS.PROCESSED}`).forEach((el) => {
-      resetElement(el as HTMLElement);
-    });
+    currentDoc
+      .querySelectorAll(`${CONST.SITECORE.SELECTORS.MULTILIST.BOX}${FOBLES.SELECTORS.PROCESSED}`)
+      .forEach((el) => {
+        resetElement(el as HTMLElement);
+      });
 
-    currentDoc.querySelectorAll(`${CONST.SITECORE.SELECTORS.MULTILIST.ROOT}${FOBLES.SELECTORS.PROCESSED}`).forEach((el) => {
-      resetElement(el as HTMLElement);
-    });
+    currentDoc
+      .querySelectorAll(`${CONST.SITECORE.SELECTORS.MULTILIST.ROOT}${FOBLES.SELECTORS.PROCESSED}`)
+      .forEach((el) => {
+        resetElement(el as HTMLElement);
+      });
 
     currentDoc.querySelectorAll(FOBLES.SELECTORS.TEMPLATE_BUTTON).forEach((button) => {
       const prev = button.previousElementSibling;
@@ -246,10 +287,14 @@ export function clearFobles(doc: Document): void {
       spacer.remove();
     });
 
-    currentDoc.querySelectorAll(`${CONST.SITECORE.SELECTORS.MULTILIST.NAV_BUTTON}, ${CONST.SITECORE.SELECTORS.MULTILIST.FIELD_BUTTONS}`).forEach((el) => {
-      const htmlEl = el as HTMLElement;
-      htmlEl.classList.remove(FOBLES.CLASSES.HIDDEN);
-      htmlEl.style.display = "";
-    });
+    currentDoc
+      .querySelectorAll(
+        `${CONST.SITECORE.SELECTORS.MULTILIST.NAV_BUTTON}, ${CONST.SITECORE.SELECTORS.MULTILIST.FIELD_BUTTONS}`,
+      )
+      .forEach((el) => {
+        const htmlEl = el as HTMLElement;
+        htmlEl.classList.remove(FOBLES.CLASSES.HIDDEN);
+        htmlEl.style.display = "";
+      });
   });
 }

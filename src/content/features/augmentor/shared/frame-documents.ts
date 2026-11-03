@@ -15,10 +15,7 @@ const getFrameDocument = (frame: Element): Document | null => {
 
 // Every frame this extension walks (Content Editor, tree, ribbon) resolves its document through
 // this one accessor, so cross-origin/inaccessible frames are swallowed in exactly one place.
-export const getChildFrameDocuments = (
-  root: ParentNode,
-  options: FrameDocumentOptions = {},
-): Document[] =>
+export const getChildFrameDocuments = (root: ParentNode, options: FrameDocumentOptions = {}): Document[] =>
   Array.from(root.querySelectorAll(FOBLES.SELECTORS.FRAMES))
     .filter((frame) => !(options.skipMenuOwned && isMenuOwnedFrame(frame as HTMLIFrameElement | HTMLFrameElement)))
     .map((frame) => getFrameDocument(frame))

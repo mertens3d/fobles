@@ -26,15 +26,9 @@ type ReferenceModelNodeOptions = {
   children?: ReferenceModelNode[];
 };
 
-type ReferenceModelItemNodeOptions =
-  ReferenceModelNodeOptions & {
-    scItem: ItemGraphNodeData;
-  };
+type ReferenceModelItemNodeOptions = ReferenceModelNodeOptions & { scItem: ItemGraphNodeData };
 
-type ReferenceModelNonItemNodeOptions =
-  ReferenceModelNodeOptions & {
-    name: string;
-  };
+type ReferenceModelNonItemNodeOptions = ReferenceModelNodeOptions & { name: string };
 
 export function createReferenceModelItemNode({
   treeNodeId,

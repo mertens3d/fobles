@@ -93,8 +93,11 @@ foblesTest.describe("Extension UI Integration", () => {
 
         popupPage = await openExtensionPage(sharedBrowserContext, extensionId, TESTING.EXTENSION_PAGES.POPUP);
         const reloadButton = popupPage.locator(TESTING.POPUP.RELOAD_EXTENSION_BUTTON_SELECTOR);
-        if (!originalReloadButtonSetting) await expect(reloadButton).toBeVisible();
-        else await expect(reloadButton).toBeHidden();
+        if (!originalReloadButtonSetting) {
+          await expect(reloadButton).toBeVisible();
+        } else {
+          await expect(reloadButton).toBeHidden();
+        }
         await attachPageScreenshot(testInfo, popupPage, TESTING.REPORT_SCREENSHOTS.DEVELOPER_SETTINGS);
       } finally {
         page.off("console", captureDebugMessage);
@@ -121,8 +124,12 @@ foblesTest.describe("Extension UI Integration", () => {
             TESTING.OPTIONS.DEVELOPER.SAVE_STATUS,
           );
         }
-        if (popupPage && !popupPage.isClosed()) await popupPage.close();
-        if (!optionsPage.isClosed()) await optionsPage.close();
+        if (popupPage && !popupPage.isClosed()) {
+          await popupPage.close();
+        }
+        if (!optionsPage.isClosed()) {
+          await optionsPage.close();
+        }
       }
     },
   );

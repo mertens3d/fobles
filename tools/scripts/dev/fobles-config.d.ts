@@ -27,7 +27,11 @@ export type FoblesConfig = {
 };
 
 export function loadFoblesConfig(): FoblesConfig;
+
 export function getTestEnvironments(): FoblesTestEnvironment[];
+
 export function getActiveTestEnvironment(): FoblesTestEnvironment;
+
 export function getCliLoginTargets(): FoblesCliLoginTarget[];
+
 export function getCliLoginTarget(endpointName: string): FoblesCliLoginTarget | undefined;

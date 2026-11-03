@@ -12,13 +12,10 @@ export const STORAGE = {
     REFERENCE_GRAPH: {
       FILTERS: "fobles_reference_graph_filters",
       LAYOUT: "fobles_reference_graph_layout",
-      EXPANDED_BY_COLLAPSE_KEY:
-        "fobles-reference-graph-expanded-by-collapse-key",
-      CONTROLS_EXPANDED:
-        "fobles-reference-graph-controls-expanded",
-      WORKER_POOL_MAX_WORKERS:
-        "fobles-reference-graph-worker-pool-max-workers",
-      PENDING: "fobles_reference_graph_pending"
+      EXPANDED_BY_COLLAPSE_KEY: "fobles-reference-graph-expanded-by-collapse-key",
+      CONTROLS_EXPANDED: "fobles-reference-graph-controls-expanded",
+      WORKER_POOL_MAX_WORKERS: "fobles-reference-graph-worker-pool-max-workers",
+      PENDING: "fobles_reference_graph_pending",
     },
     PERSIST_DEBUG_LOGS: "persistDebugLogs",
     PERSISTED_LOG_ENTRIES: "persistedLogEntries",
@@ -29,6 +26,7 @@ export const STORAGE = {
     USER_TREE_JUMPS: "userTreeJumps",
   },
 } as const;
+
 export const MESSAGE = {
   ACTION: {
     PAGE_READY: "page-ready",
@@ -37,6 +35,7 @@ export const MESSAGE = {
     TOGGLE_LBOLT: "toggle-lbolt",
   },
 } as const;
+
 export const LOGGER = {
   NAMESPACE: "[Fobles]",
   PERSIST_DEBUG_LOGS: "persistDebugLogs",

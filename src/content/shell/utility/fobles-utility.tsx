@@ -31,8 +31,20 @@ function createUtilityContainer(doc: Document): HTMLDivElement {
 }
 
 export async function openFoblesUtility(options: FoblesUtilityOptions): Promise<boolean> {
-  const { doc, id, className, title, storageKey, defaultWidth, defaultHeight, minWidth, minHeight, createChildren, onClose, onHelp } =
-    options;
+  const {
+    doc,
+    id,
+    className,
+    title,
+    storageKey,
+    defaultWidth,
+    defaultHeight,
+    minWidth,
+    minHeight,
+    createChildren,
+    onClose,
+    onHelp,
+  } = options;
   const container = createUtilityContainer(doc);
   let children: ReactNode;
   try {
@@ -49,7 +61,9 @@ export async function openFoblesUtility(options: FoblesUtilityOptions): Promise<
   replaceFoblesWindowHost(doc, id, container, root);
   let closing = false;
   function handleClose(): void {
-    if (closing) return;
+    if (closing) {
+      return;
+    }
     closing = true;
     void Promise.resolve(onClose?.()).finally(() => {
       clearFoblesWindowHost(doc, id);

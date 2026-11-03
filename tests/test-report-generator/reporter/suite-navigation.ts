@@ -18,8 +18,7 @@ export function renderSuiteNav(outputFile: string): string {
 
   const links = siblingFiles
     .map((file) => {
-      const label =
-        file.replace(/^test-report-?/, "").replace(/\.html$/, "") || "current";
+      const label = file.replace(/^test-report-?/, "").replace(/\.html$/, "") || "current";
       return file === currentFile
         ? `<span class="current">${escapeHtml(label)}</span>`
         : `<a href="${escapeHtml(file)}">${escapeHtml(label)}</a>`;

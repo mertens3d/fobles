@@ -31,102 +31,78 @@ function expectedReferenceNotFoundMessage(expectedButtonText: string): string {
 }
 
 foblesTest.describe("Editor scenario: reference links", () => {
-  foblesTest(
-    "toggling Fobles decorates and restores the Links gallery",
-    async ({ page }, testInfo) => {
-      await openSitecorePage(
-        page,
-        `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`,
-      );
+  foblesTest("toggling Fobles decorates and restores the Links gallery", async ({ page }, testInfo) => {
+    await openSitecorePage(page, `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`);
 
-      const foblesFrame = await findFoblesFrame(page);
-      await ensureMouseMarkerExists(foblesFrame);
+    const foblesFrame = await findFoblesFrame(page);
+    await ensureMouseMarkerExists(foblesFrame);
 
-      const linksPanel = await openScLinksGallery(page, foblesFrame);
-      const knownLabels = [
-        ...SCENARIO.referringItems.map((item) => item.expectedButtonText),
-        SCENARIO.referredToItem.expectedButtonText,
-      ];
+    const linksPanel = await openScLinksGallery(page, foblesFrame);
+    const knownLabels = [
+      ...SCENARIO.referringItems.map((item) => item.expectedButtonText),
+      SCENARIO.referredToItem.expectedButtonText,
+    ];
 
-      const step = createFoblesStep(
-        page,
-        testInfo,
-        linksPanel,
-        "Reference Links",
-      );
+    const step = createFoblesStep(page, testInfo, linksPanel, "Reference Links");
 
-      await step(
-        "Default stage: gallery renders as plain Sitecore links",
-        async () => {
-          await expect(
-            linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER),
-          ).toHaveCount(0);
+    await step("Default stage: gallery renders as plain Sitecore links", async () => {
+      await expect(linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
 
-          for (const expectedButtonText of knownLabels) {
-            await expect(
-              linksPanel.locator("a.scLink", { hasText: expectedButtonText }),
-              expectedReferenceNotFoundMessage(expectedButtonText),
-            ).toBeVisible();
-          }
+      for (const expectedButtonText of knownLabels) {
+        await expect(
+          linksPanel.locator("a.scLink", { hasText: expectedButtonText }),
+          expectedReferenceNotFoundMessage(expectedButtonText),
+        ).toBeVisible();
+      }
 
-          await pauseForHuman(page, STEP_WAIT_MS);
-        },
-      );
+      await pauseForHuman(page, STEP_WAIT_MS);
+    });
 
-      await step(
-        "Toggle Fobles on: every referenced/referring link gets a Fobles button",
-        async () => {
-          await clickLbolt(page);
-
-          for (const expectedButtonText of knownLabels) {
-            await expect(
-              linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, { hasText: expectedButtonText }),
-              expectedReferenceNotFoundMessage(expectedButtonText),
-            ).toBeVisible();
-          }
-
-          await pauseForHuman(page, STEP_WAIT_MS);
-        },
-      );
-
-      const [firstReferringItem] = SCENARIO.referringItems;
-
-      const firstButton = linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
-        hasText: firstReferringItem.expectedButtonText,
-      });
-
-      await step(
-        "Toggle Fobles off: the gallery returns to its original shape",
-        async () => {
-          await clickLbolt(page);
-
-          await expect(
-            linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER),
-          ).toHaveCount(0);
-
-          for (const expectedButtonText of knownLabels) {
-            const originalLink = linksPanel.locator("a.scLink", { hasText: expectedButtonText });
-            await expect(originalLink, expectedReferenceNotFoundMessage(expectedButtonText)).toBeVisible();
-            await expect(originalLink).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
-          }
-        },
-      );
-
+    await step("Toggle Fobles on: every referenced/referring link gets a Fobles button", async () => {
       await clickLbolt(page);
 
-      await step(
-        `Click navigates to the referring item: "${firstReferringItem.expectedFoValue}"`,
-        async (fullTitle) => {
-          await expectFoblesButtonSameTabNavigation(
-            page,
-            testInfo,
-            firstButton,
-            firstReferringItem.expectedFoValue,
-            fullTitle,
-          );
-        },
-        { screenshot: false },
-      );
-    },
-  );
+      for (const expectedButtonText of knownLabels) {
+        await expect(
+          linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, { hasText: expectedButtonText }),
+          expectedReferenceNotFoundMessage(expectedButtonText),
+        ).toBeVisible();
+      }
+
+      await pauseForHuman(page, STEP_WAIT_MS);
+    });
+
+    const [firstReferringItem] = SCENARIO.referringItems;
+
+    const firstButton = linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON, {
+      hasText: firstReferringItem.expectedButtonText,
+    });
+
+    await step("Toggle Fobles off: the gallery returns to its original shape", async () => {
+      await clickLbolt(page);
+
+      await expect(linksPanel.locator(TEST_CONST.FOBLES.SELECTORS.WRAPPER)).toHaveCount(0);
+
+      for (const expectedButtonText of knownLabels) {
+        const originalLink = linksPanel.locator("a.scLink", { hasText: expectedButtonText });
+        await expect(originalLink, expectedReferenceNotFoundMessage(expectedButtonText)).toBeVisible();
+        await expect(originalLink).not.toHaveClass(FOBLES_HIDDEN_CLASS_PATTERN);
+      }
+    });
+
+    await clickLbolt(page);
+
+    await step(
+      `Click navigates to the referring item: "${firstReferringItem.expectedFoValue}"`,
+      async (fullTitle) => {
+        await expectFoblesButtonSameTabNavigation(
+          page,
+          testInfo,
+          firstButton,
+          firstReferringItem.expectedFoValue,
+          fullTitle,
+        );
+      },
+      { screenshot: false },
+    );
+  });
 });

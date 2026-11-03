@@ -7,7 +7,9 @@ export async function showSpeakBubble(
   html: string,
   position: { xPercent: number; yPercent: number } = TEST_CONST.TESTING.SPEAK_BUBBLE.DEFAULT_SPEECH_POSITION,
 ): Promise<void> {
-  if (isSprintMode()) return;
+  if (isSprintMode()) {
+    return;
+  }
   const { xPercent, yPercent } = position;
   console.log(`[fobles] Speak bubble: "${html}" at (${xPercent}%, ${yPercent}%)`);
   await page.evaluate(
@@ -39,6 +41,8 @@ export async function showSpeakBubble(
 export async function hideSpeakBubble(page: Page): Promise<void> {
   await page.evaluate((id) => {
     const bubble = document.getElementById(id);
-    if (bubble) bubble.style.display = "none";
+    if (bubble) {
+      bubble.style.display = "none";
+    }
   }, TEST_CONST.TESTING.SPEAK_BUBBLE.ID);
 }

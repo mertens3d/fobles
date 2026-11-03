@@ -7,14 +7,12 @@ import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
 import type { TreelistExFobles as TreelistExConfig } from "../fobles.types";
 
-type TreelistExItem = {
-  label: string;
-  value: string;
-};
+type TreelistExItem = { label: string; value: string };
 
 const findEligibleHosts = (doc: Document, config: TreelistExConfig): HTMLElement[] =>
-  Array.from(doc.querySelectorAll<HTMLElement>(config.FoblesTopSelector))
-    .filter((host) => !host.hasAttribute(FOBLES.ATTRIBUTES.MARKER));
+  Array.from(doc.querySelectorAll<HTMLElement>(config.FoblesTopSelector)).filter(
+    (host) => !host.hasAttribute(FOBLES.ATTRIBUTES.MARKER),
+  );
 
 // Each selected item renders as a direct child div carrying the Sitecore path in its title
 // attribute - but relative to the content root, omitting even "/sitecore/content" itself (e.g.
@@ -45,15 +43,17 @@ const createItemButton = (doc: Document, item: TreelistExItem): HTMLButtonElemen
 
 const hideEditButton = (host: HTMLElement): void => {
   const fieldCell = host.closest(CONST.SITECORE.SELECTORS.FIELD_CELL);
-  const editButton = fieldCell?.querySelector<HTMLAnchorElement>(
-    CONST.SITECORE.SELECTORS.FIELD_ACTION_LINKS,
-  );
-  if (editButton) hideWithStyledSpacer(editButton);
+  const editButton = fieldCell?.querySelector<HTMLAnchorElement>(CONST.SITECORE.SELECTORS.FIELD_ACTION_LINKS);
+  if (editButton) {
+    hideWithStyledSpacer(editButton);
+  }
 };
 
 const replaceHostWithFobles = (doc: Document, host: HTMLElement): void => {
   const items = getItems(host);
-  if (items.length === 0) return;
+  if (items.length === 0) {
+    return;
+  }
 
   const wrapper = createWrapper(doc, measureFoblesPaneHeight(host, { shrinkBy: 8 }));
   items.forEach((item) => wrapper.appendChild(createItemButton(doc, item)));
@@ -64,10 +64,7 @@ const replaceHostWithFobles = (doc: Document, host: HTMLElement): void => {
   host.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");
 };
 
-export function applyTreelistExStrategy(
-  doc: Document,
-  config: TreelistExConfig,
-): void {
+export function applyTreelistExStrategy(doc: Document, config: TreelistExConfig): void {
   const hosts = findEligibleHosts(doc, config);
   extensionLog.debug("Found", hosts.length, "eligible TreelistEx fields");
 

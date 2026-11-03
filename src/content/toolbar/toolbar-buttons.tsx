@@ -26,7 +26,13 @@ export function ToolbarNavButton({
   children,
 }: ToolbarNavButtonProps) {
   return (
-    <button className={className} title={title} onClick={onClick} data-fobles-nav-button-role={role} aria-label={ariaLabel}>
+    <button
+      className={className}
+      title={title}
+      onClick={onClick}
+      data-fobles-nav-button-role={role}
+      aria-label={ariaLabel}
+    >
       {children ?? text}
     </button>
   );

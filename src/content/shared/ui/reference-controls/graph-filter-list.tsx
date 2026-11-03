@@ -13,10 +13,16 @@ type GraphFilterListProps = {
 export function GraphFilterList({ filters, onChange, onClearFilters, clearLabel = "Clear" }: GraphFilterListProps) {
   return (
     <div className="fobles-filter-list">
-      <button type="button" className="fobles-filter-reset" onClick={onClearFilters}>{clearLabel}</button>
+      <button type="button" className="fobles-filter-reset" onClick={onClearFilters}>
+        {clearLabel}
+      </button>
       {CONST.FOBLES.REFERENCE_GRAPH.FILTER_DEFS.map((filter) => (
         <label key={filter.key}>
-          <input type="checkbox" checked={filters[filter.key]} onChange={(event) => onChange(filter.key, event.currentTarget.checked)} />
+          <input
+            type="checkbox"
+            checked={filters[filter.key]}
+            onChange={(event) => onChange(filter.key, event.currentTarget.checked)}
+          />
           {filter.label}
         </label>
       ))}

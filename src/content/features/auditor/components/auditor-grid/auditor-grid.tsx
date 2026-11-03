@@ -55,7 +55,9 @@ export type AuditorGridProps = {
 };
 
 function blockDoubleClickTextSelection(event: ReactMouseEvent<HTMLDivElement>): void {
-  if (event.detail > 1) event.preventDefault();
+  if (event.detail > 1) {
+    event.preventDefault();
+  }
 }
 
 function clearTextSelection(source: Event | null | undefined): void {
@@ -75,7 +77,9 @@ export function AuditorGrid({
 }: AuditorGridProps) {
   const liveSeen = useRef(new Set<string>());
   processingStateByTreeNodeId.forEach((status, treeNodeId) => {
-    if (status === "enriched" || status === "not-found" || status === "failed") liveSeen.current.add(treeNodeId);
+    if (status === "enriched" || status === "not-found" || status === "failed") {
+      liveSeen.current.add(treeNodeId);
+    }
   });
   const allRows = useMemo(
     () => projectAuditorRows(referenceModelRoot, findings, processingStateByTreeNodeId, liveSeen.current, graphFilters),
@@ -103,7 +107,9 @@ export function AuditorGrid({
   useEffect(() => {
     const handleGraphFilterChange = (event: Event): void => {
       const detail = (event as CustomEvent<{ key: string; checked: boolean }>).detail;
-      if (detail.key === "template") setTemplateVisible(detail.checked);
+      if (detail.key === "template") {
+        setTemplateVisible(detail.checked);
+      }
     };
     window.addEventListener("fobles:auditor-graph-filter-change", handleGraphFilterChange);
     return () => window.removeEventListener("fobles:auditor-graph-filter-change", handleGraphFilterChange);
@@ -146,7 +152,9 @@ export function AuditorGrid({
   }, [explicitlyCollapsed, projectedRows, rowsById]);
   const searchedRowIds = useMemo(() => {
     const normalizedQuery = query.trim().toLowerCase();
-    if (!normalizedQuery) return undefined;
+    if (!normalizedQuery) {
+      return undefined;
+    }
     const matchingIds = new Set<string>();
     allRows.forEach((row) => {
       if (row.searchText.includes(normalizedQuery)) {
@@ -194,12 +202,16 @@ export function AuditorGrid({
         });
         return next;
       });
-      if (row.collapseKey) void setExpandedStateForCollapseKey(row.collapseKey, opening);
+      if (row.collapseKey) {
+        void setExpandedStateForCollapseKey(row.collapseKey, opening);
+      }
     }
   }
 
   function navigate(row: AuditorTreeRow): void {
-    if (row.sitecoreUrl) window.open(row.sitecoreUrl, "_blank", "noopener,noreferrer");
+    if (row.sitecoreUrl) {
+      window.open(row.sitecoreUrl, "_blank", "noopener,noreferrer");
+    }
   }
 
   function viewTestDetails(row: AuditorTreeRow): void {
@@ -207,7 +219,9 @@ export function AuditorGrid({
     let parentId = row.parentId;
     while (parentId) {
       const parent = rowsById.get(parentId);
-      if (!parent) break;
+      if (!parent) {
+        break;
+      }
       ancestors.unshift(parent);
       parentId = parent.parentId;
     }

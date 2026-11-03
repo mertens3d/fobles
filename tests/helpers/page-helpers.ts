@@ -3,8 +3,7 @@ import { normalizePath } from "./path-helpers";
 
 export function isFoblesPage(url: string): boolean {
   const normalizedUrl = normalizePath(url);
-  return TEST_CONST.TESTING.FOBLES_PAGES.some(
-    pageCase => 
-      normalizedUrl.includes(normalizePath(pageCase.encodedPath))
+  return TEST_CONST.TESTING.FOBLES_PAGES.some((pageCase) =>
+    normalizedUrl.includes(normalizePath(pageCase.encodedPath)),
   );
 }

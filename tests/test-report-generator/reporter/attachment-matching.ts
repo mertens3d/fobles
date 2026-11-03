@@ -3,6 +3,7 @@ import type { NoteInfo, ReportStep, ScreenshotInfo } from "./reporter-types";
 const STEP_SCREENSHOT_NAME_MATCH_LENGTH = 40;
 
 type MatchableAttachment = ScreenshotInfo | NoteInfo;
+
 type AttachmentField = "screenshots" | "notes";
 
 function sanitizeForMatch(value: string): string {
@@ -42,7 +43,9 @@ export function matchAttachmentsToSteps<T extends MatchableAttachment>(
       const extensionIndex = itemKey.lastIndexOf(".");
       const extension = extensionIndex >= 0 ? itemKey.slice(extensionIndex) : "";
 
-      if (!keys.some((key) => itemKey.endsWith(`${key}${extension}`))) continue;
+      if (!keys.some((key) => itemKey.endsWith(`${key}${extension}`))) {
+        continue;
+      }
 
       matched.unshift(remaining[index]);
       remaining.splice(index, 1);

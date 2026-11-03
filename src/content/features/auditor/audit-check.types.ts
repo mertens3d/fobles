@@ -19,7 +19,7 @@ export type AuditCheckContext = {
 // facts arrive over time) - a run() call re-scans currently known state and upserts findings for
 // whatever it can already determine, relying on AuditFindingStore's id-keyed upsert for dedup.
 export type AuditCheck = {
-    readonly key: string;
-    readonly label: string;
-    run(context: AuditCheckContext): Promise<void>;
+  readonly key: string;
+  readonly label: string;
+  run(context: AuditCheckContext): Promise<void>;
 };

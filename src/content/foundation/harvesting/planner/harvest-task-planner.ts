@@ -5,19 +5,15 @@ import type { HarvestRequest, SitecoreHarvestFiltersState, SitecoreHarvestResult
 import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../workers/tasks/worker-task.types";
 
 export type CollectorFilterKey = Exclude<keyof SitecoreHarvestFiltersState, "template">;
+
 export type CollectorTaskType = Exclude<WorkerTaskType, "get-quick-info" | "set-raw-values" | "set-standard-fields">;
 
-export type CollectorTaskPlan = {
-  normalTasks: WorkerTask[];
-  layoutTasks: WorkerTask[];
-};
+export type CollectorTaskPlan = { normalTasks: WorkerTask[]; layoutTasks: WorkerTask[] };
 
 // "template" is a HarvestRequest filter, but it's not a collector task of its own - it only
 // narrows the sections a get-custom-fields/get-standard-fields task returns, so it has no entry
 // in COLLECTOR_TASK_TYPE_BY_FILTER_KEY.
-export function isCollectorFilterKey(
-  filterKey: keyof SitecoreHarvestFiltersState,
-): filterKey is CollectorFilterKey {
+export function isCollectorFilterKey(filterKey: keyof SitecoreHarvestFiltersState): filterKey is CollectorFilterKey {
   return filterKey !== "template";
 }
 
@@ -43,12 +39,7 @@ export const FILTER_KEYS_BY_COLLECTOR_TASK_TYPE: ReadonlyMap<WorkerTaskType, Col
 }, new Map<WorkerTaskType, CollectorFilterKey[]>());
 
 function createTask(request: HarvestRequest, type: CollectorTaskType): WorkerTask {
-  return {
-    requestId: request.requestId,
-    taskId: crypto.randomUUID(),
-    type,
-    url: request.url,
-  };
+  return { requestId: request.requestId, taskId: crypto.randomUUID(), type, url: request.url };
 }
 
 // The item reference the harvest's own url was built from (see buildFoblesUrl) - used as the
@@ -60,14 +51,13 @@ export function requestedLocatorFromUrl(url: string): SitecoreItemLocator | unde
   const reference = new URL(url).searchParams.get("fo") ?? undefined;
 
   return reference
-    ? (isGuidLike(reference) ? { kind: "id", value: reference } : { kind: "path", value: reference })
+    ? isGuidLike(reference)
+      ? { kind: "id", value: reference }
+      : { kind: "path", value: reference }
     : undefined;
 }
 
-export function createGetQuickInfoTask(
-  request: HarvestRequest,
-  requested: SitecoreItemLocator,
-): WorkerTask {
+export function createGetQuickInfoTask(request: HarvestRequest, requested: SitecoreItemLocator): WorkerTask {
   return {
     requestId: request.requestId,
     taskId: crypto.randomUUID(),
@@ -85,13 +75,7 @@ function createEditorStateTask(
   const url = new URL(request.url);
   url.searchParams.set("foblesEditorState", crypto.randomUUID());
 
-  return {
-    requestId: request.requestId,
-    taskId: crypto.randomUUID(),
-    type,
-    url: url.toString(),
-    value,
-  };
+  return { requestId: request.requestId, taskId: crypto.randomUUID(), type, url: url.toString(), value };
 }
 
 export function createSetRawValuesTask(request: HarvestRequest, value: boolean): WorkerTask {
@@ -108,7 +92,9 @@ export function planCollectorTasks(request: HarvestRequest): WorkerTask[] {
   if (!request.existingResult) {
     const requested = requestedLocatorFromUrl(request.url);
 
-    if (requested) tasks.push(createGetQuickInfoTask(request, requested));
+    if (requested) {
+      tasks.push(createGetQuickInfoTask(request, requested));
+    }
   }
 
   for (const [taskType, filterKeys] of FILTER_KEYS_BY_COLLECTOR_TASK_TYPE) {
@@ -128,8 +114,12 @@ export function isCollectorResultAlreadyPresent(
   taskType: WorkerTaskType,
   existingResult: SitecoreHarvestResult | undefined,
 ): boolean {
-  if (taskType === "get-custom-fields") return existingResult?.customFieldSections !== undefined;
-  if (taskType === "get-standard-fields") return existingResult?.standardFieldSections !== undefined;
+  if (taskType === "get-custom-fields") {
+    return existingResult?.customFieldSections !== undefined;
+  }
+  if (taskType === "get-standard-fields") {
+    return existingResult?.standardFieldSections !== undefined;
+  }
 
   return false;
 }
@@ -139,8 +129,11 @@ export function planCollectorTaskGroups(request: HarvestRequest): CollectorTaskP
   const layoutTasks: WorkerTask[] = [];
 
   for (const task of planCollectorTasks(request)) {
-    if (task.type === "get-layout") layoutTasks.push(task);
-    else normalTasks.push(task);
+    if (task.type === "get-layout") {
+      layoutTasks.push(task);
+    } else {
+      normalTasks.push(task);
+    }
   }
 
   return { normalTasks, layoutTasks };

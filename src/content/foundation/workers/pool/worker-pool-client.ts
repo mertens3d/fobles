@@ -2,18 +2,41 @@
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import type { WorkerTask, WorkerTaskResult } from "../tasks/worker-task.types";
-import type { PoolCancelRequestMessage, PoolCancelTaskMessage, PoolDisposeMessage, PoolRunTaskMessage } from "../transport/worker.messages";
+import type {
+  PoolCancelRequestMessage,
+  PoolCancelTaskMessage,
+  PoolDisposeMessage,
+  PoolRunTaskMessage,
+} from "../transport/worker.messages";
 
 export async function runWorkerTask(task: WorkerTask): Promise<WorkerTaskResult | undefined> {
   const message: PoolRunTaskMessage = { type: CONST.FOBLES.WORKER.MESSAGE_TYPE.POOL_RUN_TASK, task };
   const startedAt = performance.now();
-  extensionLog.debug("Worker pool client: task send started", { requestId: task.requestId, taskId: task.taskId, taskType: task.type, url: task.url });
+  extensionLog.debug("Worker pool client: task send started", {
+    requestId: task.requestId,
+    taskId: task.taskId,
+    taskType: task.type,
+    url: task.url,
+  });
   try {
     const result = await chrome.runtime.sendMessage<PoolRunTaskMessage, WorkerTaskResult | undefined>(message);
-    extensionLog.debug("Worker pool client: task send settled", { requestId: task.requestId, taskId: task.taskId, taskType: task.type, elapsedMs: Math.round(performance.now() - startedAt), resultStatus: result?.status, resultType: result?.type });
+    extensionLog.debug("Worker pool client: task send settled", {
+      requestId: task.requestId,
+      taskId: task.taskId,
+      taskType: task.type,
+      elapsedMs: Math.round(performance.now() - startedAt),
+      resultStatus: result?.status,
+      resultType: result?.type,
+    });
     return result;
   } catch (error) {
-    extensionLog.error("Worker pool client: task send rejected", { requestId: task.requestId, taskId: task.taskId, taskType: task.type, elapsedMs: Math.round(performance.now() - startedAt), error });
+    extensionLog.error("Worker pool client: task send rejected", {
+      requestId: task.requestId,
+      taskId: task.taskId,
+      taskType: task.type,
+      elapsedMs: Math.round(performance.now() - startedAt),
+      error,
+    });
     throw error;
   }
 }

@@ -8,51 +8,116 @@ import { getGraphPresentationState } from "../../../foundation/reference-data/mo
 import { DetailsPanel } from "./details-panel";
 import { DETAILS_PANEL } from "./details-panel.const";
 
-type NodeDetailsPanelProps = { selectedTreeNodeId: string | undefined; nodesById: Map<string, ReferenceModelNode>; processingStateByTreeNodeId: ProcessingStateByTreeNodeId; onClose?: () => void; };
+type NodeDetailsPanelProps = {
+  selectedTreeNodeId: string | undefined;
+  nodesById: Map<string, ReferenceModelNode>;
+  processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
+  onClose?: () => void;
+};
+
 type DetailRow = [string, string];
-type DiagnosticReferenceModelNode = Omit<ReferenceModelNode, "children" | "provenance" | "scItem"> & { scItem?: object; children: string; provenance: string; childCount: number; };
+
+type DiagnosticReferenceModelNode = Omit<ReferenceModelNode, "children" | "provenance" | "scItem"> & {
+  scItem?: object;
+  children: string;
+  provenance: string;
+  childCount: number;
+};
 
 function itemDetailRows(treeNode: Extract<ReferenceModelNode, { nodeType: "item" }>): DetailRow[] {
   const rows: DetailRow[] = [["Kind", getGraphPresentationState(treeNode).kind]];
-  if (treeNode.scItem.scItemName) rows.push(["Name", treeNode.scItem.scItemName]);
-  if (treeNode.scItem.scItemId) rows.push(["Item ID", treeNode.scItem.scItemId]);
-  if (treeNode.scItem.scItemPath) rows.push(["Path", treeNode.scItem.scItemPath]);
-  if (treeNode.scItem.scTemplate?.scItemName) rows.push(["Template", treeNode.scItem.scTemplate.scItemName]);
+  if (treeNode.scItem.scItemName) {
+    rows.push(["Name", treeNode.scItem.scItemName]);
+  }
+  if (treeNode.scItem.scItemId) {
+    rows.push(["Item ID", treeNode.scItem.scItemId]);
+  }
+  if (treeNode.scItem.scItemPath) {
+    rows.push(["Path", treeNode.scItem.scItemPath]);
+  }
+  if (treeNode.scItem.scTemplate?.scItemName) {
+    rows.push(["Template", treeNode.scItem.scTemplate.scItemName]);
+  }
   return rows;
 }
 
 function provenanceDetailRows(treeNode: ReferenceModelNode): DetailRow[] {
   const provenance = treeNode.provenance;
   let rows: DetailRow[] = [];
-  if (provenance.type === "section") rows = [["Section", provenance.section.name]];
-  else if (provenance.type === "section-field") rows = [["Field Name", provenance.fieldName], ["Field Value", provenance.fieldValue]];
-  else if (provenance.type === "field-reference") rows = [["Section", provenance.sectionName], ["Field Name", provenance.fieldName], ["Confidence", provenance.confidence], ["Strategy", provenance.strategy ?? ""], ["Source Value", provenance.sourceValue]];
-  else if (provenance.type === "layout-device") rows = [["Device", provenance.device.scDeviceItem.scItemName ?? provenance.device.scDeviceItem.scItemId ?? ""]];
-  else if (provenance.type === "rendering-control") rows = [["Rendering UID", provenance.control.uid ?? ""]];
-  else if (provenance.type === "rendering-parameter") rows = [["Parameter Name", provenance.parameterName], ["Parameter Value", provenance.parameterValue], ["Decoded Value", provenance.decodedValue]];
-  else if (provenance.type === "placeholder") rows = [["Placeholder Path", provenance.placeholderPath]];
-  else if (provenance.type === "layout-xml") rows = [["Layout", provenance.label]];
-  else if (provenance.type === "synthetic") rows = [["Synthetic", provenance.label]];
+  if (provenance.type === "section") {
+    rows = [["Section", provenance.section.name]];
+  } else if (provenance.type === "section-field") {
+    rows = [
+      ["Field Name", provenance.fieldName],
+      ["Field Value", provenance.fieldValue],
+    ];
+  } else if (provenance.type === "field-reference") {
+    rows = [
+      ["Section", provenance.sectionName],
+      ["Field Name", provenance.fieldName],
+      ["Confidence", provenance.confidence],
+      ["Strategy", provenance.strategy ?? ""],
+      ["Source Value", provenance.sourceValue],
+    ];
+  } else if (provenance.type === "layout-device") {
+    rows = [["Device", provenance.device.scDeviceItem.scItemName ?? provenance.device.scDeviceItem.scItemId ?? ""]];
+  } else if (provenance.type === "rendering-control") {
+    rows = [["Rendering UID", provenance.control.uid ?? ""]];
+  } else if (provenance.type === "rendering-parameter") {
+    rows = [
+      ["Parameter Name", provenance.parameterName],
+      ["Parameter Value", provenance.parameterValue],
+      ["Decoded Value", provenance.decodedValue],
+    ];
+  } else if (provenance.type === "placeholder") {
+    rows = [["Placeholder Path", provenance.placeholderPath]];
+  } else if (provenance.type === "layout-xml") {
+    rows = [["Layout", provenance.label]];
+  } else if (provenance.type === "synthetic") {
+    rows = [["Synthetic", provenance.label]];
+  }
   return rows.filter(([, value]) => Boolean(value));
 }
 
 function resolveRawSource(treeNode: ReferenceModelNode): string | undefined {
   const provenance = treeNode.provenance;
   let rawSource: string | undefined;
-  if (provenance.type === "sitecore-item") rawSource = provenance.rawData ? JSON.stringify(provenance.rawData, null, 2) : provenance.item.scItemId ?? provenance.item.scItemPath;
-  else if (provenance.type === "section-field") rawSource = provenance.field.rawMarkup ?? provenance.fieldValue;
-  else if (provenance.type === "field-reference") rawSource = provenance.sourceValue;
-  else if (provenance.type === "layout-device") rawSource = JSON.stringify(provenance.device.rawData, null, 2);
-  else if (provenance.type === "rendering-control") rawSource = JSON.stringify(provenance.control.rawData, null, 2);
-  else if (provenance.type === "rendering-parameter") rawSource = JSON.stringify({ parameterName: provenance.parameterName, parameterValue: provenance.parameterValue, decodedValue: provenance.decodedValue, isItemReference: provenance.isItemReference }, null, 2);
-  else if (provenance.type === "placeholder") rawSource = JSON.stringify(provenance.rawData, null, 2);
-  else if (provenance.type === "layout-xml") rawSource = provenance.rawMarkup;
+  if (provenance.type === "sitecore-item") {
+    rawSource = provenance.rawData
+      ? JSON.stringify(provenance.rawData, null, 2)
+      : (provenance.item.scItemId ?? provenance.item.scItemPath);
+  } else if (provenance.type === "section-field") {
+    rawSource = provenance.field.rawMarkup ?? provenance.fieldValue;
+  } else if (provenance.type === "field-reference") {
+    rawSource = provenance.sourceValue;
+  } else if (provenance.type === "layout-device") {
+    rawSource = JSON.stringify(provenance.device.rawData, null, 2);
+  } else if (provenance.type === "rendering-control") {
+    rawSource = JSON.stringify(provenance.control.rawData, null, 2);
+  } else if (provenance.type === "rendering-parameter") {
+    rawSource = JSON.stringify(
+      {
+        parameterName: provenance.parameterName,
+        parameterValue: provenance.parameterValue,
+        decodedValue: provenance.decodedValue,
+        isItemReference: provenance.isItemReference,
+      },
+      null,
+      2,
+    );
+  } else if (provenance.type === "placeholder") {
+    rawSource = JSON.stringify(provenance.rawData, null, 2);
+  } else if (provenance.type === "layout-xml") {
+    rawSource = provenance.rawMarkup;
+  }
   return rawSource;
 }
 
 function resolveItemRawMarkup(treeNode: ReferenceModelNode): string | undefined {
   let rawMarkup: string | undefined;
-  if (treeNode.nodeType === "item") rawMarkup = treeNode.scItem.rawMarkup;
+  if (treeNode.nodeType === "item") {
+    rawMarkup = treeNode.scItem.rawMarkup;
+  }
   return rawMarkup;
 }
 
@@ -63,7 +128,9 @@ async function prettifyHtml(source: string): Promise<string> {
 
 async function prettifyRawSource(source: string): Promise<string> {
   let formatted = source;
-  if (source.trimStart().startsWith("<")) formatted = await prettifyHtml(source);
+  if (source.trimStart().startsWith("<")) {
+    formatted = await prettifyHtml(source);
+  }
   return formatted;
 }
 
@@ -72,18 +139,50 @@ function buildDiagnosticTreeNode(treeNode: ReferenceModelNode): DiagnosticRefere
   let diagnosticNode: DiagnosticReferenceModelNode;
   if (treeNode.nodeType === "item") {
     const { rawMarkup, ...scItem } = treeNode.scItem;
-    diagnosticNode = { ...node, scItem: { ...scItem, rawMarkup: rawMarkup ? "[omitted from diagnostic view; see Item Raw Markup below]" : undefined }, children: `[omitted from diagnostic view; ${children.length} child node(s)]`, provenance: "[omitted from diagnostic view; see Raw Source below]", childCount: children.length };
+    diagnosticNode = {
+      ...node,
+      scItem: {
+        ...scItem,
+        rawMarkup: rawMarkup ? "[omitted from diagnostic view; see Item Raw Markup below]" : undefined,
+      },
+      children: `[omitted from diagnostic view; ${children.length} child node(s)]`,
+      provenance: "[omitted from diagnostic view; see Raw Source below]",
+      childCount: children.length,
+    };
   } else {
-    diagnosticNode = { ...node, children: `[omitted from diagnostic view; ${children.length} child node(s)]`, provenance: "[omitted from diagnostic view; see Raw Source below]", childCount: children.length };
+    diagnosticNode = {
+      ...node,
+      children: `[omitted from diagnostic view; ${children.length} child node(s)]`,
+      provenance: "[omitted from diagnostic view; see Raw Source below]",
+      childCount: children.length,
+    };
   }
   return diagnosticNode;
 }
 
-function buildClipboardText(treeNode: DiagnosticReferenceModelNode, rawSource: string | undefined, itemRawMarkup: string | undefined): string {
-  return ["Reference Model Node", JSON.stringify(treeNode, null, 2), "", "Raw Source", rawSource ?? "", "", "Item Raw Markup", itemRawMarkup ?? ""].join("\n");
+function buildClipboardText(
+  treeNode: DiagnosticReferenceModelNode,
+  rawSource: string | undefined,
+  itemRawMarkup: string | undefined,
+): string {
+  return [
+    "Reference Model Node",
+    JSON.stringify(treeNode, null, 2),
+    "",
+    "Raw Source",
+    rawSource ?? "",
+    "",
+    "Item Raw Markup",
+    itemRawMarkup ?? "",
+  ].join("\n");
 }
 
-export function NodeDetailsPanel({ selectedTreeNodeId, nodesById, processingStateByTreeNodeId, onClose }: NodeDetailsPanelProps) {
+export function NodeDetailsPanel({
+  selectedTreeNodeId,
+  nodesById,
+  processingStateByTreeNodeId,
+  onClose,
+}: NodeDetailsPanelProps) {
   const treeNode = selectedTreeNodeId ? nodesById.get(selectedTreeNodeId) : undefined;
   const [formattedRawSource, setFormattedRawSource] = useState<string | undefined>(undefined);
   const [formattedItemRawMarkup, setFormattedItemRawMarkup] = useState<string | undefined>(undefined);
@@ -93,19 +192,84 @@ export function NodeDetailsPanel({ selectedTreeNodeId, nodesById, processingStat
     let disposed = false;
     setFormattedRawSource(rawSource);
     setFormattedItemRawMarkup(itemRawMarkup);
-    if (rawSource) void prettifyRawSource(rawSource).then((formatted): void => { if (!disposed) setFormattedRawSource(formatted); }).catch((): void => { if (!disposed) setFormattedRawSource(rawSource); });
-    if (itemRawMarkup) void prettifyHtml(itemRawMarkup).then((formatted): void => { if (!disposed) setFormattedItemRawMarkup(formatted); }).catch((): void => { if (!disposed) setFormattedItemRawMarkup(itemRawMarkup); });
-    return (): void => { disposed = true; };
+    if (rawSource) {
+      void prettifyRawSource(rawSource)
+        .then((formatted): void => {
+          if (!disposed) {
+            setFormattedRawSource(formatted);
+          }
+        })
+        .catch((): void => {
+          if (!disposed) {
+            setFormattedRawSource(rawSource);
+          }
+        });
+    }
+    if (itemRawMarkup) {
+      void prettifyHtml(itemRawMarkup)
+        .then((formatted): void => {
+          if (!disposed) {
+            setFormattedItemRawMarkup(formatted);
+          }
+        })
+        .catch((): void => {
+          if (!disposed) {
+            setFormattedItemRawMarkup(itemRawMarkup);
+          }
+        });
+    }
+    return (): void => {
+      disposed = true;
+    };
   }, [rawSource, itemRawMarkup]);
-  if (!treeNode) return null;
-  const rows: DetailRow[] = treeNode.nodeType === "item" ? [...itemDetailRows(treeNode), ...(processingStateByTreeNodeId.get(treeNode.treeNodeId) ? [["Processing Status", processingStateByTreeNodeId.get(treeNode.treeNodeId)!] as DetailRow] : []), ...provenanceDetailRows(treeNode)] : [["Kind", getGraphPresentationState(treeNode).kind], ["Name", treeNode.name], ...provenanceDetailRows(treeNode)];
+  if (!treeNode) {
+    return null;
+  }
+  const rows: DetailRow[] =
+    treeNode.nodeType === "item"
+      ? [
+          ...itemDetailRows(treeNode),
+          ...(processingStateByTreeNodeId.get(treeNode.treeNodeId)
+            ? [["Processing Status", processingStateByTreeNodeId.get(treeNode.treeNodeId)!] as DetailRow]
+            : []),
+          ...provenanceDetailRows(treeNode),
+        ]
+      : [
+          ["Kind", getGraphPresentationState(treeNode).kind],
+          ["Name", treeNode.name],
+          ...provenanceDetailRows(treeNode),
+        ];
   const diagnosticTreeNode = buildDiagnosticTreeNode(treeNode);
   return (
-    <DetailsPanel title="Node Details" closeLabel="Close node details" onClose={onClose} closeOnOutsidePointer getCopyText={() => buildClipboardText(diagnosticTreeNode, formattedRawSource, formattedItemRawMarkup)}>
-      {rows.map(([label, value]) => <div key={label} className={DETAILS_PANEL.CLASS.ROW}><strong>{label}: </strong><span>{value}</span></div>)}
-      <details open><summary>Reference Model Node</summary><pre>{JSON.stringify(diagnosticTreeNode, null, 2)}</pre></details>
-      {formattedRawSource && <details open><summary>Raw Source</summary><pre>{formattedRawSource}</pre></details>}
-      {formattedItemRawMarkup && <details open><summary>Item Raw Markup</summary><pre>{formattedItemRawMarkup}</pre></details>}
+    <DetailsPanel
+      title="Node Details"
+      closeLabel="Close node details"
+      onClose={onClose}
+      closeOnOutsidePointer
+      getCopyText={() => buildClipboardText(diagnosticTreeNode, formattedRawSource, formattedItemRawMarkup)}
+    >
+      {rows.map(([label, value]) => (
+        <div key={label} className={DETAILS_PANEL.CLASS.ROW}>
+          <strong>{label}: </strong>
+          <span>{value}</span>
+        </div>
+      ))}
+      <details open>
+        <summary>Reference Model Node</summary>
+        <pre>{JSON.stringify(diagnosticTreeNode, null, 2)}</pre>
+      </details>
+      {formattedRawSource && (
+        <details open>
+          <summary>Raw Source</summary>
+          <pre>{formattedRawSource}</pre>
+        </details>
+      )}
+      {formattedItemRawMarkup && (
+        <details open>
+          <summary>Item Raw Markup</summary>
+          <pre>{formattedItemRawMarkup}</pre>
+        </details>
+      )}
     </DetailsPanel>
   );
 }

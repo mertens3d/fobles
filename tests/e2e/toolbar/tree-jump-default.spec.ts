@@ -1,10 +1,4 @@
-import {
-  expect,
-  foblesTest,
-  type Frame,
-  type Page,
-  type TestInfo,
-} from "../../fixtures/playwright";
+import { expect, foblesTest, type Frame, type Page, type TestInfo } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { clickWithMouseMarker } from "../../helpers/mouse-proxy";
 import { bringPageToFront } from "../../helpers/page-switch";
@@ -12,42 +6,27 @@ import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step
 import { attachItemPathScreenshot } from "../../helpers/fobles-helpers-support/navigation-assertions";
 import { openContentEditor } from "../../fixtures/sitecore";
 import { findFoblesFrame } from "../../helpers/frame-finder";
-import {
-  ClickFoblesJumpButton,
-} from "../../macros/fobles-macros";
-import { expectFoValue, } from "../../expect-snippets/expect-snippets";
+import { ClickFoblesJumpButton } from "../../macros/fobles-macros";
+import { expectFoValue } from "../../expect-snippets/expect-snippets";
 import type { BrowserContext, Locator } from "@playwright/test";
 import { clickFoblesNavigationButtonStep } from "../../helpers/click-navigate-helpers";
 import type { TreeJumpDefinition } from "../../constants_partials/CONST.Types";
 import { getTreeJumpFlyoutButton } from "../../helpers/element-finders";
 
 foblesTest.describe("PageNavigation", () => {
-
   for (const treeJumpTarget of TEST_CONST.TESTING.TREE_JUMP_TARGETS) {
-
-    foblesTest(`${treeJumpTarget.label}-Click`, async ({
-      page, sharedBrowserContext
-    }, testInfo) => {
+    foblesTest(`${treeJumpTarget.label}-Click`, async ({ page, sharedBrowserContext }, testInfo) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
       await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
 
       const step = createFoblesStep(page, testInfo, page, "Tree Jump Click");
 
-      await testOneClick(
-        treeJumpTarget,
-        step,
-        page,
-        testInfo,
-        sharedBrowserContext,
-      );
+      await testOneClick(treeJumpTarget, step, page, testInfo, sharedBrowserContext);
       // }
     });
   }
   for (const treeJumpTarget of TEST_CONST.TESTING.TREE_JUMP_TARGETS) {
-    foblesTest(`${treeJumpTarget.label}-CtrlClick`, async ({
-      sharedBrowserContext,
-      page,
-    }, testInfo) => {
+    foblesTest(`${treeJumpTarget.label}-CtrlClick`, async ({ sharedBrowserContext, page }, testInfo) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
       await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
       const foblesFrame = await findFoblesFrame(page);
@@ -58,37 +37,20 @@ foblesTest.describe("PageNavigation", () => {
 
       const step = createFoblesStep(page, testInfo, page, "Ctrl+Click Jump");
 
-      await TestOneCtrlClick(
-        treeJumpTarget,
-        step,
-        sharedBrowserContext,
-        page,
-        testInfo);
+      await TestOneCtrlClick(treeJumpTarget, step, sharedBrowserContext, page, testInfo);
     });
   }
 });
 
 async function getExpectedButtonPaths(foblesFrame: Frame): Promise<string[]> {
-  console.log(
-    "[fobles] About to look for tree-jump buttons in the open Menu flyout",
-  );
-  const treeJumpButtons = foblesFrame.locator(
-    TEST_CONST.FOBLES.SELECTORS.DATA.FOBLES_TREE_JUMP_PATH,
-  );
-  console.log(
-    "Looking for tree jump path attribute:",
-    TEST_CONST.FOBLES.ATTRIBUTES.TREE_JUMP_PATH,
-  );
+  console.log("[fobles] About to look for tree-jump buttons in the open Menu flyout");
+  const treeJumpButtons = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.DATA.FOBLES_TREE_JUMP_PATH);
+  console.log("Looking for tree jump path attribute:", TEST_CONST.FOBLES.ATTRIBUTES.TREE_JUMP_PATH);
   const attr = TEST_CONST.FOBLES.ATTRIBUTES.TREE_JUMP_PATH;
 
-  const paths = await treeJumpButtons.evaluateAll(
-    (buttons, attr) => {
-      return buttons
-        .map((button) => button.getAttribute(attr))
-        .filter((path): path is string => path !== null);
-    },
-    attr
-  );
+  const paths = await treeJumpButtons.evaluateAll((buttons, attr) => {
+    return buttons.map((button) => button.getAttribute(attr)).filter((path): path is string => path !== null);
+  }, attr);
 
   expect(paths.length).toBeGreaterThan(0);
   return paths;
@@ -105,17 +67,21 @@ async function testOneClick(
   testInfo: TestInfo,
   sharedBrowserContext: BrowserContext,
 ) {
-  
   await step(
     `Click: navigates to "${treeJumpTarget.clickNavigationExpect.foValue}"`,
     async () => {
-
       await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
       await ClickFoblesJumpButton(page);
       let foblesTreeButton: Locator | undefined;
       if (treeJumpTarget.clickNavigationExpect?.foValue) {
         foblesTreeButton = await getTreeJumpFlyoutButton(page, treeJumpTarget.clickNavigationExpect.foValue);
-        await clickFoblesNavigationButtonStep(page, foblesTreeButton, testInfo, treeJumpTarget.clickNavigationExpect, "TODOAAA");
+        await clickFoblesNavigationButtonStep(
+          page,
+          foblesTreeButton,
+          testInfo,
+          treeJumpTarget.clickNavigationExpect,
+          "TODOAAA",
+        );
       } else {
         throw new Error(`Expected foValue not found for tree jump target: ${treeJumpTarget.label}`);
       }
@@ -147,14 +113,9 @@ async function TestOneCtrlClick(
         foblesTreeButton = await getTreeJumpFlyoutButton(page, treeJumpTarget.clickNavigationExpect.foValue);
 
         const newTabPromise = sharedBrowserContext.waitForEvent("page");
-        await clickWithMouseMarker(
-          page,
-          foblesTreeButton,
-          `Ctrl-click jump ${treeJumpTarget.label}`,
-          {
-            modifiers: ["Control"],
-          },
-        );
+        await clickWithMouseMarker(page, foblesTreeButton, `Ctrl-click jump ${treeJumpTarget.label}`, {
+          modifiers: ["Control"],
+        });
         const newTab = await newTabPromise;
         await newTab.waitForLoadState("domcontentloaded").catch(() => undefined);
 

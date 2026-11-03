@@ -5,6 +5,8 @@ import { useToolbarState } from "./toolbar-store";
 
 export function ToolbarRoot({ doc }: { doc: Document }) {
   const state = useToolbarState(doc);
-  if (!state.visible) return null;
+  if (!state.visible) {
+    return null;
+  }
   return <ToolbarApp context={state.context} />;
 }

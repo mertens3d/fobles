@@ -35,9 +35,21 @@ void test("buildAuditFindingsCsv: emits a header row even with zero findings", (
 });
 
 void test("buildAuditFindingsCsv: has exactly 10 columns in the specified order", () => {
-  assert.deepEqual(AUDIT_EXPORT_COLUMNS.map((column) => column.header), [
-    "Status", "Severity", "Check", "Item Name", "Item Path", "Item Id", "Context", "Summary", "Details", "Sitecore URL",
-  ]);
+  assert.deepEqual(
+    AUDIT_EXPORT_COLUMNS.map((column) => column.header),
+    [
+      "Status",
+      "Severity",
+      "Check",
+      "Item Name",
+      "Item Path",
+      "Item Id",
+      "Context",
+      "Summary",
+      "Details",
+      "Sitecore URL",
+    ],
+  );
 });
 
 void test("buildAuditFindingsCsv: one data row per finding, in the order given", () => {

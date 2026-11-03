@@ -7,8 +7,20 @@ import type { SitecoreRenderingXml } from "../../../src/content/foundation/harve
 const RENDERING_ID = "{493B3A83-0FA7-4484-8FC9-4680991CF743}";
 
 // AI NOTE: This is the exact shape the shared "Renderings" field parses to (copied from a real Reference Model dump).
-const plainRendering: SitecoreRenderingXml = { ds: "", id: RENDERING_ID, par: "", ph: "content", uid: "{A08C9132-DBD1-474F-A2CA-6CA26A4AA650}" };
-const prefixedRendering: SitecoreRenderingXml = { uid: "{A08C9132-DBD1-474F-A2CA-6CA26A4AA650}", "s:ds": "local:/Data/Hero", "s:id": RENDERING_ID, "s:par": "FieldNames=Hero", "s:ph": "/main/centercolumn" };
+const plainRendering: SitecoreRenderingXml = {
+  ds: "",
+  id: RENDERING_ID,
+  par: "",
+  ph: "content",
+  uid: "{A08C9132-DBD1-474F-A2CA-6CA26A4AA650}",
+};
+const prefixedRendering: SitecoreRenderingXml = {
+  uid: "{A08C9132-DBD1-474F-A2CA-6CA26A4AA650}",
+  "s:ds": "local:/Data/Hero",
+  "s:id": RENDERING_ID,
+  "s:par": "FieldNames=Hero",
+  "s:ph": "/main/centercolumn",
+};
 
 void test("reads the plain attributes of the shared Renderings field", () => {
   assert.equal(readRenderingAttribute(plainRendering, "id"), RENDERING_ID);

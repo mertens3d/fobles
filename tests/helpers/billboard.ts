@@ -5,9 +5,11 @@ import { isSprintMode } from "./mouse-proxy";
 export async function showBillboard(
   page: Page,
   text: string,
-  position: { xPercent: number; yPercent: number } =  { xPercent: 50, yPercent: 80 }
+  position: { xPercent: number; yPercent: number } = { xPercent: 50, yPercent: 80 },
 ): Promise<void> {
-  if (isSprintMode()) return;
+  if (isSprintMode()) {
+    return;
+  }
   const { xPercent, yPercent } = position;
   console.log(`[fobles] Billboard: "${text}" at (${xPercent}%, ${yPercent}%)`);
   await page.evaluate(
@@ -36,13 +38,9 @@ export async function showBillboard(
         document.documentElement.appendChild(billboard);
       }
 
-      const win = window as Window & {
-        __foblesBillboardGeneration?: number;
-        __foblesBillboardTimeout?: number;
-      };
+      const win = window as Window & { __foblesBillboardGeneration?: number; __foblesBillboardTimeout?: number };
 
-      win.__foblesBillboardGeneration =
-        (win.__foblesBillboardGeneration ?? 0) + 1;
+      win.__foblesBillboardGeneration = (win.__foblesBillboardGeneration ?? 0) + 1;
 
       const generation = win.__foblesBillboardGeneration;
 

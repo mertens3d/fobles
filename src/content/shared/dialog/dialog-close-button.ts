@@ -2,10 +2,7 @@
 
 import { ICONS } from "../../../constants/fobles.constants";
 
-export type DialogCloseButtonOptions = {
-  readonly className?: string;
-  readonly iconClassName?: string;
-};
+export type DialogCloseButtonOptions = { readonly className?: string; readonly iconClassName?: string };
 
 export function createDialogCloseButton(
   doc: Document,

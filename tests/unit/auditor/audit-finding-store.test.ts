@@ -69,7 +69,10 @@ void test("getSnapshot orders by status (pending, error, warning, passed)", () =
     makeFinding({ id: "f-error", status: "error", checkLabel: "A" }),
   ]);
 
-  assert.deepEqual(store.getSnapshot().map((finding) => finding.status), ["pending", "error", "warning", "passed"]);
+  assert.deepEqual(
+    store.getSnapshot().map((finding) => finding.status),
+    ["pending", "error", "warning", "passed"],
+  );
 });
 
 void test("getSnapshot orders by check label, then item path/name, then id within the same status", () => {
@@ -80,7 +83,10 @@ void test("getSnapshot orders by check label, then item path/name, then id withi
     makeFinding({ id: "f2", status: "passed", checkLabel: "A", itemPath: "/sitecore/content/a" }),
   ]);
 
-  assert.deepEqual(store.getSnapshot().map((finding) => finding.id), ["f2", "f1", "f3"]);
+  assert.deepEqual(
+    store.getSnapshot().map((finding) => finding.id),
+    ["f2", "f1", "f3"],
+  );
 });
 
 void test("subscribe returns an unsubscribe function that stops further notifications", () => {
@@ -103,8 +109,14 @@ void test("searchAuditFindings matches across item/check/summary/details fields,
     makeFinding({ id: "f2", itemName: "About", summary: "A reference MISMATCH occurred" }),
   ];
 
-  assert.deepEqual(searchAuditFindings(findings, "mismatch").map((finding) => finding.id), ["f2"]);
-  assert.deepEqual(searchAuditFindings(findings, "home").map((finding) => finding.id), ["f1"]);
+  assert.deepEqual(
+    searchAuditFindings(findings, "mismatch").map((finding) => finding.id),
+    ["f2"],
+  );
+  assert.deepEqual(
+    searchAuditFindings(findings, "home").map((finding) => finding.id),
+    ["f1"],
+  );
 });
 
 void test("searchAuditFindings with an empty/whitespace query returns everything unfiltered", () => {
@@ -113,22 +125,22 @@ void test("searchAuditFindings with an empty/whitespace query returns everything
 });
 
 void test("filterAuditFindingsByStatus narrows to the selected statuses, empty set means no filtering", () => {
-  const findings = [
-    makeFinding({ id: "f1", status: "passed" }),
-    makeFinding({ id: "f2", status: "error" }),
-  ];
+  const findings = [makeFinding({ id: "f1", status: "passed" }), makeFinding({ id: "f2", status: "error" })];
 
-  assert.deepEqual(filterAuditFindingsByStatus(findings, new Set(["error"])).map((finding) => finding.id), ["f2"]);
+  assert.deepEqual(
+    filterAuditFindingsByStatus(findings, new Set(["error"])).map((finding) => finding.id),
+    ["f2"],
+  );
   assert.equal(filterAuditFindingsByStatus(findings, new Set()).length, 2);
 });
 
 void test("filterAuditFindingsByCheck narrows to the selected check keys, empty set means no filtering", () => {
-  const findings = [
-    makeFinding({ id: "f1", checkKey: "check-a" }),
-    makeFinding({ id: "f2", checkKey: "check-b" }),
-  ];
+  const findings = [makeFinding({ id: "f1", checkKey: "check-a" }), makeFinding({ id: "f2", checkKey: "check-b" })];
 
-  assert.deepEqual(filterAuditFindingsByCheck(findings, new Set(["check-b"])).map((finding) => finding.id), ["f2"]);
+  assert.deepEqual(
+    filterAuditFindingsByCheck(findings, new Set(["check-b"])).map((finding) => finding.id),
+    ["f2"],
+  );
   assert.equal(filterAuditFindingsByCheck(findings, new Set()).length, 2);
 });
 

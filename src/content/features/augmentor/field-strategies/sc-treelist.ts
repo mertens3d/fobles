@@ -7,10 +7,7 @@ import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
 import { collectGuidOptionItems } from "../shared/collect-select-options";
 import type { TreeListFobles as TreeListConfig } from "../fobles.types";
 
-type TreeListItem = {
-  label: string;
-  value: string;
-};
+type TreeListItem = { label: string; value: string };
 
 const getTreeNodeValue = (node: Element): string | null => {
   const match = node.id.match(/([0-9a-f]{32})$/i);
@@ -40,16 +37,15 @@ const createPaneWrapper = (doc: Document, height: number, pane: string): HTMLEle
     pane,
   });
 
-const replacePaneWithFobles = (
-  doc: Document,
-  pane: Element,
-  items: TreeListItem[],
-  paneRole: string,
-): boolean => {
-  if (items.length === 0) return false;
+const replacePaneWithFobles = (doc: Document, pane: Element, items: TreeListItem[], paneRole: string): boolean => {
+  if (items.length === 0) {
+    return false;
+  }
 
   const wrapper = createPaneWrapper(doc, measureFoblesPaneHeight(pane), paneRole);
-  items.forEach((item) => wrapper.appendChild(createFoblesItemButton(doc, item.label, item.value, FOBLES.CLASSES.BUTTONS.TREE_LIST)));
+  items.forEach((item) =>
+    wrapper.appendChild(createFoblesItemButton(doc, item.label, item.value, FOBLES.CLASSES.BUTTONS.TREE_LIST)),
+  );
   pane.classList.add(FOBLES.CLASSES.HIDDEN);
   pane.after(wrapper);
   return true;
@@ -61,12 +57,11 @@ const hideTreeListNavigation = (control: Element): void => {
   });
 };
 
-export function applyTreeListStrategy(
-  doc: Document,
-  config: TreeListConfig,
-): void {
+export function applyTreeListStrategy(doc: Document, config: TreeListConfig): void {
   doc.querySelectorAll(config.FoblesTopSelector).forEach((control) => {
-    if (control.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) return;
+    if (control.hasAttribute(FOBLES.ATTRIBUTES.MARKER)) {
+      return;
+    }
 
     const allTreePane = control.querySelector(CONST.SITECORE.SELECTORS.TREE.LIST_ALL_PANE);
     const selectedPane = control.querySelector(CONST.SITECORE.SELECTORS.TREE.LIST_SELECTED_PANE);
@@ -77,7 +72,9 @@ export function applyTreeListStrategy(
       ? replacePaneWithFobles(doc, selectedPane, getSelectedItems(selectedPane), FOBLES.PANES.SELECTED)
       : false;
 
-    if (!replacedAllPane && !replacedSelectedPane) return;
+    if (!replacedAllPane && !replacedSelectedPane) {
+      return;
+    }
 
     hideTreeListNavigation(control);
     control.setAttribute(FOBLES.ATTRIBUTES.MARKER, "1");

@@ -12,16 +12,7 @@ export function projectReferenceModelToGraphElements(
   const cytoNodes: cytoscape.ElementDefinition[] = [];
   const cytoEdges: cytoscape.ElementDefinition[] = [];
 
-  appendGraphNode(
-    referenceModel,
-    cytoNodes,
-    cytoEdges,
-    undefined,
-    processingStateByTreeNodeId,
-  );
+  appendGraphNode(referenceModel, cytoNodes, cytoEdges, undefined, processingStateByTreeNodeId);
 
-  return [
-    ...cytoNodes,
-    ...cytoEdges,
-  ];
+  return [...cytoNodes, ...cytoEdges];
 }

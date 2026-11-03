@@ -7,7 +7,12 @@ import { ToolbarNavButton } from "../toolbar-buttons";
 import type { FlyoutVisibilityState } from "../shared-flyout/use-flyout-visibility";
 import { ProxyFlyout } from "./proxy-flyout";
 
-export type ProxyFlyoutTriggerProps = { doc: Document; proxyFlyout: FlyoutVisibilityState; onOpen: () => void; onToggle: () => void };
+export type ProxyFlyoutTriggerProps = {
+  doc: Document;
+  proxyFlyout: FlyoutVisibilityState;
+  onOpen: () => void;
+  onToggle: () => void;
+};
 
 export function ProxyFlyoutTrigger({ doc, proxyFlyout, onOpen, onToggle }: ProxyFlyoutTriggerProps) {
   return (
@@ -16,9 +21,22 @@ export function ProxyFlyoutTrigger({ doc, proxyFlyout, onOpen, onToggle }: Proxy
       onHoverOpen={onOpen}
       onHoverScheduleClose={proxyFlyout.scheduleHide}
       onOutsidePointerDown={proxyFlyout.hide}
-      button={<ToolbarNavButton className={CLASS.FOBLES_NAV_BUTTON} role={FOBLES.ATTRIBUTES.DATA.NAV_BUTTON_ROLE.PROXY_FLYOUT_TRIGGER} text={TEXT.VIEW} title={TEXT.VIEW_TITLE} onClick={onToggle} />}
+      button={
+        <ToolbarNavButton
+          className={CLASS.FOBLES_NAV_BUTTON}
+          role={FOBLES.ATTRIBUTES.DATA.NAV_BUTTON_ROLE.PROXY_FLYOUT_TRIGGER}
+          text={TEXT.VIEW}
+          title={TEXT.VIEW_TITLE}
+          onClick={onToggle}
+        />
+      }
     >
-      <ProxyFlyout doc={doc} visible={proxyFlyout.visible} onCancelHide={proxyFlyout.cancelHide} onScheduleHide={proxyFlyout.scheduleHide} />
+      <ProxyFlyout
+        doc={doc}
+        visible={proxyFlyout.visible}
+        onCancelHide={proxyFlyout.cancelHide}
+        onScheduleHide={proxyFlyout.scheduleHide}
+      />
     </FlyoutTrigger>
   );
 }

@@ -1,15 +1,15 @@
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
-import {
-  ensurePathShape,
-} from "../helper";
+import { ensurePathShape } from "../helper";
 import type { GeneralLinkFobles as GeneralLinkConfig } from "../fobles.types";
 import { applySingleInputFieldStrategy } from "../shared/apply-single-input-field";
 import { extractGuid } from "../../../foundation/sitecore/guid";
 
 const getInternalTarget = (value: string): string | null => {
   const guid = extractGuid(value);
-  if (guid) return guid;
+  if (guid) {
+    return guid;
+  }
 
   const trimmed = value.trim();
   if (/^\/?sitecore\//i.test(trimmed)) {
@@ -27,10 +27,7 @@ const getInternalTarget = (value: string): string | null => {
   return null;
 };
 
-export function applyGeneralLinkStrategy(
-  doc: Document,
-  config: GeneralLinkConfig,
-): void {
+export function applyGeneralLinkStrategy(doc: Document, config: GeneralLinkConfig): void {
   applySingleInputFieldStrategy(doc, config, {
     actionPrefix: CONST.SITECORE.ACTION_PREFIXES.GENERAL_LINK,
     buttonClass: FOBLES.CLASSES.BUTTONS.GENERAL_LINK,

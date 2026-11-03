@@ -21,7 +21,9 @@ export function useFlyoutVisibility(win: Window): FlyoutVisibilityState {
   const closeTimerRef = useRef<number | null>(null);
 
   const cancelHide = useCallback(() => {
-    if (closeTimerRef.current === null) return;
+    if (closeTimerRef.current === null) {
+      return;
+    }
     win.clearTimeout(closeTimerRef.current);
     closeTimerRef.current = null;
   }, [win]);
@@ -39,7 +41,9 @@ export function useFlyoutVisibility(win: Window): FlyoutVisibilityState {
   }, [cancelHide]);
 
   const scheduleHide = useCallback(() => {
-    if (pinnedRef.current) return;
+    if (pinnedRef.current) {
+      return;
+    }
     cancelHide();
     closeTimerRef.current = win.setTimeout(() => {
       closeTimerRef.current = null;
@@ -51,7 +55,9 @@ export function useFlyoutVisibility(win: Window): FlyoutVisibilityState {
     (next: boolean) => {
       pinnedRef.current = next;
       setPinnedState(next);
-      if (next) show();
+      if (next) {
+        show();
+      }
     },
     [show],
   );

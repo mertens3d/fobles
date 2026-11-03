@@ -4,7 +4,9 @@ import { getStorageValue, setStorageValue } from "../shared/storage/storage";
 import type { ToolbarPlacement } from "./toolbar.types";
 
 function isValidPlacement(value: unknown): value is ToolbarPlacement {
-  if (!value || typeof value !== "object") return false;
+  if (!value || typeof value !== "object") {
+    return false;
+  }
   const candidate = value as Partial<ToolbarPlacement>;
   return (
     TOOLBAR_CORNERS.includes(candidate.corner as ToolbarPlacement["corner"]) &&
@@ -34,10 +36,7 @@ export function setPlacementForPage(pageId: string, placement: ToolbarPlacement)
   return setPlacement(storageKeyForPage(pageId), placement);
 }
 
-async function getPlacement(
-  storageKey: string,
-  fallback: ToolbarPlacement,
-): Promise<ToolbarPlacement> {
+async function getPlacement(storageKey: string, fallback: ToolbarPlacement): Promise<ToolbarPlacement> {
   const result = await getStorageValue([storageKey]);
   const value = result[storageKey];
   return isValidPlacement(value) ? value : fallback;

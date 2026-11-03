@@ -14,24 +14,16 @@ const getFrameDocument = (frame: Element): Document | null => {
   return frameDoc;
 };
 
-const getChildFrameDocuments = (
-  root: ParentNode,
-): Document[] =>
+const getChildFrameDocuments = (root: ParentNode): Document[] =>
   Array.from(root.querySelectorAll(TEST_CONST.DOM.SELECTORS.FRAMES))
     .map((frame) => getFrameDocument(frame))
     .filter((frameDoc): frameDoc is Document => frameDoc !== null);
 
-const forEachFrameDocument = (
-  root: ParentNode,
-  callback: (frameDoc: Document) => void,
-): void => {
+const forEachFrameDocument = (root: ParentNode, callback: (frameDoc: Document) => void): void => {
   getChildFrameDocuments(root).forEach(callback);
 };
 
-export const walkFrameDocuments = async (
-  page: Page,
-  callback: (frame: Frame) => Promise<void>,
-): Promise<void> => {
+export const walkFrameDocuments = async (page: Page, callback: (frame: Frame) => Promise<void>): Promise<void> => {
   for (const frame of page.frames()) {
     await callback(frame);
   }

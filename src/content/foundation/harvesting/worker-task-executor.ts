@@ -30,16 +30,10 @@ import {
 import type { ItemGraphNodeData } from "../reference-data/model/sitecore-item.types";
 
 function normalizeSitecoreItemId(value: string | undefined): string | undefined {
-  return value
-    ?.replace(/[{}]/g, "")
-    .trim()
-    .toLowerCase();
+  return value?.replace(/[{}]/g, "").trim().toLowerCase();
 }
 
-function buildHarvestContext(
-  doc: Document,
-  signal: AbortSignal,
-): HarvestContext | undefined {
+function buildHarvestContext(doc: Document, signal: AbortSignal): HarvestContext | undefined {
   const rootItem = harvestStepRootItem(doc);
   let harvestContext: HarvestContext | undefined;
 
@@ -54,23 +48,14 @@ function buildHarvestContext(
       referrers: undefined,
     };
 
-    harvestContext = {
-      doc,
-      result,
-      signal,
-      rootItem,
-    };
+    harvestContext = { doc, result, signal, rootItem };
   }
 
   return harvestContext;
 }
 
 function successResult<TType extends WorkerTaskType>(
-  task: {
-    requestId: string;
-    taskId: string;
-    type: TType;
-  },
+  task: { requestId: string; taskId: string; type: TType },
   payload: WorkerTaskPayloadByType[TType],
 ): WorkerTaskResult {
   return {
@@ -82,10 +67,7 @@ function successResult<TType extends WorkerTaskType>(
   } as WorkerTaskResult;
 }
 
-function cancelledResultIfAborted(
-  task: WorkerTask,
-  signal: AbortSignal,
-): WorkerTaskResult | undefined {
+function cancelledResultIfAborted(task: WorkerTask, signal: AbortSignal): WorkerTaskResult | undefined {
   let result: WorkerTaskResult | undefined;
 
   if (signal.aborted) {
@@ -101,14 +83,9 @@ function cancelledResultIfAborted(
 // whether those agree, instead of ever handing back the fallback item as though it matched.
 // Path-based requests are trusted as-is (no equality check - Sitecore's own path resolution is
 // the source of truth there); only "id" requests are compared against the resolved Item ID.
-function executeGetQuickInfo(
-  doc: Document,
-  requested: SitecoreItemLocator,
-): SitecoreResolvedResult<ItemGraphNodeData> {
+function executeGetQuickInfo(doc: Document, requested: SitecoreItemLocator): SitecoreResolvedResult<ItemGraphNodeData> {
   const item = buildItemGraphNodeDataFromDoc(doc);
-  const resolved = item.scItemId
-    ? { itemId: item.scItemId, path: item.scItemPath }
-    : undefined;
+  const resolved = item.scItemId ? { itemId: item.scItemId, path: item.scItemPath } : undefined;
 
   if (!item.scItemId && !item.scItemPath) {
     return { requested, resolved, status: "not-found" };
@@ -159,8 +136,7 @@ export async function executeWorkerTask(
   task: WorkerTask,
   signal: AbortSignal,
 ): Promise<WorkerTaskExecutionResult> {
-  let result: WorkerTaskExecutionResult | undefined =
-    cancelledResultIfAborted(task, signal);
+  let result: WorkerTaskExecutionResult | undefined = cancelledResultIfAborted(task, signal);
 
   if (!result) {
     if (task.type === "get-quick-info") {
@@ -175,98 +151,62 @@ export async function executeWorkerTask(
     } else if (task.type === "set-standard-fields") {
       result = await executeSetStandardFields(doc, task);
     } else {
-      const harvestContext =
-        buildHarvestContext(doc, signal);
+      const harvestContext = buildHarvestContext(doc, signal);
 
       if (!harvestContext) {
-        result = createErrorResult(
-          task,
-          "Could not resolve current item id",
-        );
+        result = createErrorResult(task, "Could not resolve current item id");
       } else {
         switch (task.type) {
           case "get-parent":
             await collectParent(harvestContext);
             result =
-              cancelledResultIfAborted(task, signal) ??
-              successResult(task, {
-                parent:
-                  harvestContext.result.parent,
-              });
+              cancelledResultIfAborted(task, signal) ?? successResult(task, { parent: harvestContext.result.parent });
             break;
 
           case "get-children":
             await collectChildren(harvestContext);
             result =
               cancelledResultIfAborted(task, signal) ??
-              successResult(task, {
-                childItems:
-                  harvestContext.result.childItems ??
-                  [],
-              });
+              successResult(task, { childItems: harvestContext.result.childItems ?? [] });
             break;
 
           case "get-referrers":
             await collectReferrers(harvestContext);
             result =
               cancelledResultIfAborted(task, signal) ??
-              successResult(task, {
-                referrers:
-                  harvestContext.result.referrers ??
-                  [],
-              });
+              successResult(task, { referrers: harvestContext.result.referrers ?? [] });
             break;
 
           case "get-custom-fields":
             await collectSections(harvestContext);
             result =
               cancelledResultIfAborted(task, signal) ??
-              successResult(task, {
-                sections:
-                  harvestContext.result
-                    .customFieldSections ?? [],
-              });
+              successResult(task, { sections: harvestContext.result.customFieldSections ?? [] });
             break;
 
           case "get-standard-fields":
             await collectSections(harvestContext);
             result =
               cancelledResultIfAborted(task, signal) ??
-              successResult(task, {
-                sections:
-                  harvestContext.result
-                    .standardFieldSections ?? [],
-              });
+              successResult(task, { sections: harvestContext.result.standardFieldSections ?? [] });
             break;
 
           case "get-layout":
             await collectLayouts(harvestContext);
             result =
               cancelledResultIfAborted(task, signal) ??
-              successResult(task, {
-                layoutSectionFields:
-                  harvestContext.result
-                    .layoutSectionFields ?? [],
-              });
+              successResult(task, { layoutSectionFields: harvestContext.result.layoutSectionFields ?? [] });
             break;
         }
       }
     }
   }
 
-  return (
-    result ??
-    createErrorResult(
-      task,
-      "Worker task produced no result",
-    )
-  );
+  return result ?? createErrorResult(task, "Worker task produced no result");
 }
 
 // Reference locators are built from either a GUID or a path (never both) - kept here since both
 // the harvester's own task-planning and the enrichment caller need the same classification.
 export function createSitecoreItemLocator(reference: string): SitecoreItemLocator {
-  return isGuidLike(reference)
-    ? { kind: "id", value: reference }
-    : { kind: "path", value: reference };
+  return isGuidLike(reference) ? { kind: "id", value: reference } : { kind: "path", value: reference };
 }

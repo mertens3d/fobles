@@ -17,12 +17,11 @@ import { GraphViewControls } from "./graph-view-controls";
 import { ParameterVisibilityControls } from "./parameter-visibility-controls";
 import { ViewReferenceModelButton } from "../../../shared/ui/reference-controls/view-reference-model-button";
 import { GraphHelpDialog, useGraphHelpDialog } from "./graph-help-dialog";
+
 export type GraphToolbarHandle = {
-  showGraph: (
-    graph: SitecoreHarvestResult,
-    addCurrentGraphToHistory: boolean,
-  ) => void;
+  showGraph: (graph: SitecoreHarvestResult, addCurrentGraphToHistory: boolean) => void;
 };
+
 type ToolbarProps = {
   rootItemId: string;
   layoutPresetName: LayoutGraphPresetName;
@@ -31,14 +30,9 @@ type ToolbarProps = {
   canGoBack: boolean;
   onBack: () => void;
   filters: SitecoreHarvestFiltersState;
-  onFilterChange: (
-    key: keyof SitecoreHarvestFiltersState,
-    checked: boolean,
-  ) => void;
+  onFilterChange: (key: keyof SitecoreHarvestFiltersState, checked: boolean) => void;
   parameterVisibilitySettings: GraphParameterVisibilitySettings;
-  onParameterVisibilityChange: (
-    settings: GraphParameterVisibilitySettings,
-  ) => void;
+  onParameterVisibilityChange: (settings: GraphParameterVisibilitySettings) => void;
   cy: cytoscape.Core | undefined;
   onClearFilters: () => void;
   controlsExpanded: boolean;
@@ -48,6 +42,7 @@ type ToolbarProps = {
   enrichmentProgress: EnrichmentProgressData | undefined;
   onViewReferenceModel: () => void;
 };
+
 export function GraphToolbar({
   rootItemId,
   layoutPresetName,
@@ -85,28 +80,11 @@ export function GraphToolbar({
       />
       {controlsExpanded && (
         <div className="fobles-reference-graph-controls-content">
-          <GraphTypeSelect
-            value={layoutPresetName}
-            onChange={onLayoutChange}
-          />
-          <GraphViewControls
-            cy={cy}
-            rootItemId={rootItemId}
-            onRelayout={onRelayout}
-          />
-          <BackButton
-            disabled={!canGoBack}
-            onBack={onBack}
-          />
-          <GraphFilterList
-            filters={filters}
-            onChange={onFilterChange}
-            onClearFilters={onClearFilters}
-          />
-          <ParameterVisibilityControls
-            settings={parameterVisibilitySettings}
-            onChange={onParameterVisibilityChange}
-          />
+          <GraphTypeSelect value={layoutPresetName} onChange={onLayoutChange} />
+          <GraphViewControls cy={cy} rootItemId={rootItemId} onRelayout={onRelayout} />
+          <BackButton disabled={!canGoBack} onBack={onBack} />
+          <GraphFilterList filters={filters} onChange={onFilterChange} onClearFilters={onClearFilters} />
+          <ParameterVisibilityControls settings={parameterVisibilitySettings} onChange={onParameterVisibilityChange} />
           <ViewReferenceModelButton
             onViewReferenceModel={onViewReferenceModel}
             className="fobles-reference-graph-button fobles-reference-graph-view-reference-model"
@@ -114,7 +92,12 @@ export function GraphToolbar({
         </div>
       )}
       <GraphHelpDialog dialogRef={dialogRef} />
-      <LifecycleProgressFooter harvestProgress={harvestProgress} resolveProgress={resolveProgress} elapsedSeconds={buildElapsedSeconds} buildingLabel="Building graph" />
+      <LifecycleProgressFooter
+        harvestProgress={harvestProgress}
+        resolveProgress={resolveProgress}
+        elapsedSeconds={buildElapsedSeconds}
+        buildingLabel="Building graph"
+      />
     </div>
   );
 }

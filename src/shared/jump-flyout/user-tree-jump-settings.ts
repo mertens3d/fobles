@@ -22,7 +22,9 @@ export function buildUserTreeJumpPath(pathSuffix: string): string {
 }
 
 const isUserTreeJump = (value: unknown): value is UserTreeJump => {
-  if (!value || typeof value !== "object") return false;
+  if (!value || typeof value !== "object") {
+    return false;
+  }
   const entry = value as Record<string, unknown>;
   return (
     typeof entry.id === "string" &&
@@ -34,7 +36,9 @@ const isUserTreeJump = (value: unknown): value is UserTreeJump => {
 };
 
 function normalizeUserTreeJumps(value: unknown): UserTreeJump[] {
-  if (!Array.isArray(value)) return [];
+  if (!Array.isArray(value)) {
+    return [];
+  }
 
   return value
     .filter(isUserTreeJump)
@@ -52,14 +56,10 @@ export async function getUserTreeJumps(): Promise<UserTreeJump[]> {
 }
 
 export async function setUserTreeJumps(entries: UserTreeJump[]): Promise<void> {
-  await setStorageValue({
-    [STORAGE.KEY.USER_TREE_JUMPS]: normalizeUserTreeJumps(entries),
-  });
+  await setStorageValue({ [STORAGE.KEY.USER_TREE_JUMPS]: normalizeUserTreeJumps(entries) });
 }
 
-export function onUserTreeJumpsChanged(
-  callback: (entries: UserTreeJump[]) => void,
-): void {
+export function onUserTreeJumpsChanged(callback: (entries: UserTreeJump[]) => void): void {
   onStorageChange(STORAGE.KEY.USER_TREE_JUMPS, (newValue) => {
     callback(normalizeUserTreeJumps(newValue));
   });

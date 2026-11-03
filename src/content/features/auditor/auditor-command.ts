@@ -5,14 +5,18 @@ import { openAuditorUtility } from "../../shell/utility/fobles-utility-launchers
 let activeAuditOperation: AuditOperation | undefined;
 
 export async function openAuditor(doc: Document): Promise<void> {
-  if (activeAuditOperation) return;
+  if (activeAuditOperation) {
+    return;
+  }
   const operation = new AuditOperation(doc);
   activeAuditOperation = operation;
   try {
     await operation.run();
     await openAuditorUtility(doc, operation.findings, operation.workOperationId, () => operation.cancel());
   } finally {
-    if (activeAuditOperation === operation) activeAuditOperation = undefined;
+    if (activeAuditOperation === operation) {
+      activeAuditOperation = undefined;
+    }
     await operation.cancel();
   }
 }

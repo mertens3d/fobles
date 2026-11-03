@@ -3,6 +3,7 @@
 import { CONST } from "../../../../constants/const";
 import type { TreeChildNode } from "../../reference-data/model/tree-child-node.types";
 import { formatFoId, stripGuidBraces } from "../guid";
+
 export type GlyphState = "expanded" | "collapsed" | "leaf";
 
 export function getGlyphId(itemId: string): string {
@@ -14,8 +15,12 @@ export function getGlyphId(itemId: string): string {
 // gets misread as collapsed and clicked (a no-op at best; see collectTreeChildren below).
 export function getGlyphState(glyph: HTMLImageElement): GlyphState {
   const src = glyph.src.toLowerCase();
-  if (src.includes("treemenu_expanded")) return "expanded";
-  if (src.includes("treemenu_collapsed")) return "collapsed";
+  if (src.includes("treemenu_expanded")) {
+    return "expanded";
+  }
+  if (src.includes("treemenu_collapsed")) {
+    return "collapsed";
+  }
   return "leaf";
 }
 
@@ -25,7 +30,9 @@ export function getGlyphState(glyph: HTMLImageElement): GlyphState {
 export function readChildNodes(glyph: HTMLImageElement): TreeChildNode[] {
   const anchor = glyph.parentElement?.querySelector<HTMLAnchorElement>(CONST.SITECORE.SELECTORS.TREE.NODE_LINK);
   const childrenContainer = anchor?.nextElementSibling;
-  if (!childrenContainer) return [];
+  if (!childrenContainer) {
+    return [];
+  }
 
   return Array.from(childrenContainer.querySelectorAll<HTMLElement>(`:scope > ${CONST.SITECORE.SELECTORS.TREE.NODE}`))
     .map((childNode): TreeChildNode | undefined => {
@@ -33,7 +40,9 @@ export function readChildNodes(glyph: HTMLImageElement): TreeChildNode[] {
       const childAnchor = childNode.querySelector<HTMLAnchorElement>(CONST.SITECORE.SELECTORS.TREE.NODE_LINK);
       const rawId = childGlyph?.id.replace(CONST.SITECORE.TREE_ID_PREFIXES.GLYPH, "");
       const name = childAnchor?.textContent?.trim() ?? undefined;
-      if (!rawId) return undefined;
+      if (!rawId) {
+        return undefined;
+      }
       return { name, itemId: formatFoId(rawId), rawMarkup: childNode.outerHTML };
     })
     .filter((child): child is TreeChildNode => child !== undefined);
@@ -46,7 +55,11 @@ export function readChildNodes(glyph: HTMLImageElement): TreeChildNode[] {
 // reference detached and permanently stuck in its old state. Returns undefined on a detached/static
 // document (e.g. one built from fetch() + DOMParser, not the live page) - clicking there doesn't
 // trigger any real postback, so this just times out harmlessly.
-export function waitForExpansion(doc: Document, glyphId: string, timeoutMs = 3_000): Promise<HTMLImageElement | undefined> {
+export function waitForExpansion(
+  doc: Document,
+  glyphId: string,
+  timeoutMs = 3_000,
+): Promise<HTMLImageElement | undefined> {
   return new Promise((resolve) => {
     const startedAt = Date.now();
     const poll = (): void => {

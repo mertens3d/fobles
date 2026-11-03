@@ -7,16 +7,9 @@ import {
 } from "../../tools/scripts/dev/fobles-config.js";
 import { getSecureSecret } from "../../tools/scripts/dev/secure-secret-store.js";
 import { Secret } from "./secret";
-import type {
-  SitecoreEnvironment,
-  TestEnvironment,
-} from "./sitecore-environment.types";
+import type { SitecoreEnvironment, TestEnvironment } from "./sitecore-environment.types";
 
-function toSitecoreEnvironment(entry: {
-  endpoint: string;
-  name: string;
-  version: string;
-}): SitecoreEnvironment {
+function toSitecoreEnvironment(entry: { endpoint: string; name: string; version: string }): SitecoreEnvironment {
   return {
     endpoint: entry.endpoint,
     friendlyName: entry.name,
@@ -44,7 +37,9 @@ export type TestUserCredentials = { username?: string; password?: Secret };
 // never stored in fobles.environments.json itself - only referenced there by secret name.
 export function getActiveTestUserCredentials(): TestUserCredentials {
   const testUser = getActiveConfigEnvironment().testUser;
-  if (!testUser) return {};
+  if (!testUser) {
+    return {};
+  }
 
   const rawPassword = testUser.passwordSecretName ? getSecureSecret(testUser.passwordSecretName) : undefined;
   return {
@@ -54,9 +49,7 @@ export function getActiveTestUserCredentials(): TestUserCredentials {
 }
 
 export function ensureAuthDir(): string {
-  const authDir =
-    process.env[TEST_CONST.ENVIRONMENT.AUTH_DIR_ENV_VAR] ??
-    TEST_CONST.ENVIRONMENT.AUTH_DIR;
+  const authDir = process.env[TEST_CONST.ENVIRONMENT.AUTH_DIR_ENV_VAR] ?? TEST_CONST.ENVIRONMENT.AUTH_DIR;
   const resolved = path.resolve(authDir);
   fs.mkdirSync(resolved, { recursive: true });
   return resolved;

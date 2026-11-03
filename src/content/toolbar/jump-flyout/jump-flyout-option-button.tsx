@@ -17,7 +17,9 @@ export function JumpFlyoutOptionButton({ doc, option, onOptionActivated }: JumpF
   const enabled = useJumpFlyoutButtonVisibility(option.id);
 
   useEffect(() => {
-    if (buttonRef.current) attachFoblesTooltip(buttonRef.current);
+    if (buttonRef.current) {
+      attachFoblesTooltip(buttonRef.current);
+    }
   }, []);
 
   function handleClick(event: React.MouseEvent<HTMLButtonElement>): void {
@@ -34,8 +36,12 @@ export function JumpFlyoutOptionButton({ doc, option, onOptionActivated }: JumpF
     [FOBLES.ATTRIBUTES.BUTTON]: "1",
     [FOBLES.ATTRIBUTES.DATA.KEY.FOBLES_NAV_OWNER]: "1",
   };
-  if (option.path !== undefined) attributes[JUMP_FLYOUT_OPTION_ATTRIBUTE.TREE_JUMP_PATH] = option.path;
-  if (option.url !== undefined) attributes[JUMP_FLYOUT_OPTION_ATTRIBUTE.PAGE_JUMP_URL] = option.url;
+  if (option.path !== undefined) {
+    attributes[JUMP_FLYOUT_OPTION_ATTRIBUTE.TREE_JUMP_PATH] = option.path;
+  }
+  if (option.url !== undefined) {
+    attributes[JUMP_FLYOUT_OPTION_ATTRIBUTE.PAGE_JUMP_URL] = option.url;
+  }
 
   return (
     <div className={CLASS.JUMP_FLYOUT.ACTION}>
@@ -48,10 +54,16 @@ export function JumpFlyoutOptionButton({ doc, option, onOptionActivated }: JumpF
         onClick={handleClick}
       >
         <span className={CLASS.JUMP_FLYOUT.OPTION_ICON_BOX}>
-          {option.icon ? <img className={CLASS.JUMP_FLYOUT.OPTION_ICON} src={option.icon} alt="" /> : <span className={CLASS.JUMP_FLYOUT.OPTION_ICON} />}
+          {option.icon ? (
+            <img className={CLASS.JUMP_FLYOUT.OPTION_ICON} src={option.icon} alt="" />
+          ) : (
+            <span className={CLASS.JUMP_FLYOUT.OPTION_ICON} />
+          )}
         </span>
         <span className={CLASS.JUMP_FLYOUT.OPTION_LABEL}>{option.label}</span>
-        {(option.isXPOnly || option.isAIOnly) && <span className={CLASS.JUMP_FLYOUT.OPTION_BADGE}>{option.isXPOnly ? "XP" : "AI"}</span>}
+        {(option.isXPOnly || option.isAIOnly) && (
+          <span className={CLASS.JUMP_FLYOUT.OPTION_BADGE}>{option.isXPOnly ? "XP" : "AI"}</span>
+        )}
       </button>
     </div>
   );

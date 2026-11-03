@@ -2,6 +2,7 @@ import fs from "node:fs";
 import path from "node:path";
 
 const promoVideoDir = path.resolve("./playwright/test-artifacts/playwright-results/promo-video");
+
 // See tests/README.md's Promo Video section for naming and ordering.
 export function renamePromoVideoFiles(): void {
   const files = fs

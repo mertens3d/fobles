@@ -1,14 +1,13 @@
 // @source-path [fobles] src/content/foundation/harvesting/harvest-sitecore.ts
 
-import { type ItemGraphNodeData, factoryItemGraphNodeData, type RootItem } from "../reference-data/model/sitecore-item.types";
+import {
+  type ItemGraphNodeData,
+  factoryItemGraphNodeData,
+  type RootItem,
+} from "../reference-data/model/sitecore-item.types";
 import type { TreeChildNode } from "../reference-data/model/tree-child-node.types";
 import { extensionLog } from "../../logger";
-import {
-  getGlyphId,
-  getGlyphState,
-  waitForExpansion,
-  readChildNodes,
-} from "../sitecore/macros/tree-expand-macro";
+import { getGlyphId, getGlyphState, waitForExpansion, readChildNodes } from "../sitecore/macros/tree-expand-macro";
 import { getQuickInfo } from "../sitecore/quick-info";
 
 // Finds itemId's own tree node, expanding it first (and restoring it back to collapsed
@@ -16,18 +15,19 @@ import { getQuickInfo } from "../sitecore/quick-info";
 // expand anything - see waitForExpansion's note - so a fetched/static document just reports
 // whatever children happen to already be rendered (usually none).
 
-export async function collectTreeChildren(
-  doc: Document,
-  itemId: string | undefined,
-): Promise<ItemGraphNodeData[]> {
+export async function collectTreeChildren(doc: Document, itemId: string | undefined): Promise<ItemGraphNodeData[]> {
   let result: ItemGraphNodeData[] = [];
   if (itemId) {
     const glyphId = getGlyphId(itemId);
     const glyph = doc.getElementById(glyphId) as HTMLImageElement | undefined;
-    if (!glyph) return [];
+    if (!glyph) {
+      return [];
+    }
 
     const initialState = getGlyphState(glyph);
-    if (initialState === "leaf") return [];
+    if (initialState === "leaf") {
+      return [];
+    }
 
     let currentGlyph = glyph;
     if (initialState === "collapsed") {
@@ -37,20 +37,12 @@ export async function collectTreeChildren(
 
     const children = readChildNodes(currentGlyph);
 
-    if (
-      initialState === "collapsed" &&
-      getGlyphState(currentGlyph) === "expanded"
-    ) {
+    if (initialState === "collapsed" && getGlyphState(currentGlyph) === "expanded") {
       currentGlyph.click();
     }
 
-    result = children.map(
-      (child: TreeChildNode): ItemGraphNodeData =>
-        factoryItemGraphNodeData({
-          scItemName: child.name,
-          scItemId: child.itemId,
-          rawMarkup: child.rawMarkup,
-        }),
+    result = children.map((child: TreeChildNode): ItemGraphNodeData =>
+      factoryItemGraphNodeData({ scItemName: child.name, scItemId: child.itemId, rawMarkup: child.rawMarkup }),
     );
   }
   return result;

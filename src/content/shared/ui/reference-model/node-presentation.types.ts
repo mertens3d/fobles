@@ -1,9 +1,7 @@
 // @source-path [fobles] src/content/shared/ui/reference-model/node-presentation.types.ts
 
 import type cytoscape from "cytoscape";
-import type {
-  NodeKind,
-} from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 
 // name           - plain item/non-item name.
 // nameAndKind    - "name\n[kind]" (e.g. a Device).
@@ -11,12 +9,7 @@ import type {
 // kindOnly       - "[kind]", ignoring the resolved name entirely (e.g. a Rendering).
 // fieldName      - a section field's own label (falls back to name if provenance isn't a field).
 // parameterName  - a rendering parameter's own name (falls back to name otherwise).
-export type NodeLabelMode =
-  | "name"
-  | "datasourceName"
-  | "kindOnly"
-  | "fieldName"
-  | "parameterName";
+export type NodeLabelMode = "name" | "datasourceName" | "kindOnly" | "fieldName" | "parameterName";
 
 export type NodePresentation = {
   labelMode: NodeLabelMode;
@@ -28,5 +21,4 @@ export type NodePresentation = {
   height: number;
 };
 
-export type NodePresentationByKind =
-  Record<NodeKind, NodePresentation>;
+export type NodePresentationByKind = Record<NodeKind, NodePresentation>;

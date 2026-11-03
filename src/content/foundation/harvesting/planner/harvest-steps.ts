@@ -6,38 +6,20 @@ import { collectParent } from "../collectors/parent-collector";
 import { collectChildren } from "../collectors/child-collector";
 import { collectLayouts } from "../collectors/section-collector/layout-collector/layout-collector";
 import type { WorkerTaskType } from "../../workers/tasks/worker-task.types";
+
 export const HARVEST_STEPS: readonly HarvestStep[] = [
-  {
-    stepKey: "children",
-    filterKeys: ["children"],
-    label: "Children",
-    build: collectChildren,
-  },
+  { stepKey: "children", filterKeys: ["children"], label: "Children", build: collectChildren },
   {
     stepKey: "sections",
     filterKeys: ["customFields", "standardFields"],
     label: "Custom Fields",
     build: collectSections,
   },
-  {
-    stepKey: "layouts",
-    filterKeys: ["layouts"],
-    label: "Layout Fields",
-    build: collectLayouts,
-  },
-  {
-    stepKey: "referrers",
-    filterKeys: ["referrers"],
-    label: "Referrers",
-    build: collectReferrers,
-  },
-  {
-    stepKey: "parent",
-    filterKeys: ["parent"],
-    label: "Parent",
-    build: collectParent,
-  }
+  { stepKey: "layouts", filterKeys: ["layouts"], label: "Layout Fields", build: collectLayouts },
+  { stepKey: "referrers", filterKeys: ["referrers"], label: "Referrers", build: collectReferrers },
+  { stepKey: "parent", filterKeys: ["parent"], label: "Parent", build: collectParent },
 ];
+
 // One entry per collector task type, used to find the matching progress step directly -
 // get-custom-fields and get-standard-fields both map to the "Custom Fields" progress step.
 export const HARVEST_STEP_BY_TASK_TYPE: ReadonlyMap<WorkerTaskType, HarvestStep> = new Map([
@@ -48,26 +30,12 @@ export const HARVEST_STEP_BY_TASK_TYPE: ReadonlyMap<WorkerTaskType, HarvestStep>
   ["get-referrers", HARVEST_STEPS[3]],
   ["get-parent", HARVEST_STEPS[4]],
 ]);
+
 export const PROGRESS_STEPS: readonly ProgressStep[] = [
-  {
-    stepKey: "fetch-document",
-    label: "Fetching Document",
-  },
-  {
-    stepKey: "parse-document",
-    label: "Parsing Document",
-  },
-  {
-    stepKey: "root-item",
-    label: "Root Item",
-  },
+  { stepKey: "fetch-document", label: "Fetching Document" },
+  { stepKey: "parse-document", label: "Parsing Document" },
+  { stepKey: "root-item", label: "Root Item" },
   ...HARVEST_STEPS,
-  {
-    stepKey: "enrichment",
-    label: "Enriching Items",
-  },
-  {
-    stepKey: "build-graph",
-    label: "Building Graph",
-  },
+  { stepKey: "enrichment", label: "Enriching Items" },
+  { stepKey: "build-graph", label: "Building Graph" },
 ];

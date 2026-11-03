@@ -9,20 +9,9 @@ export const fieldConfigs: FoblesConfig[] = [
     FoblesTopSelector: "input.scComboboxEdit[readonly]",
     additionalElementsToHide: ["img.scComboboxDropDown"],
   },
-  {
-    strategy: "drop-link",
-    FoblesTopSelector: "select.scContentControl.scCombobox",
-    sitecoreFieldTypes: ["Drop Link"],
-  },
-  {
-    strategy: "droplist",
-    FoblesTopSelector: "select.scContentControl.scCombobox",
-    sitecoreFieldTypes: ["Droplist"],
-  },
-  {
-    strategy: "multilist-options",
-    FoblesTopSelector: "table.scContentControlMultilist",
-  },
+  { strategy: "drop-link", FoblesTopSelector: "select.scContentControl.scCombobox", sitecoreFieldTypes: ["Drop Link"] },
+  { strategy: "droplist", FoblesTopSelector: "select.scContentControl.scCombobox", sitecoreFieldTypes: ["Droplist"] },
+  { strategy: "multilist-options", FoblesTopSelector: "table.scContentControlMultilist" },
   {
     strategy: "multilist-with-search",
     FoblesTopSelector: ".scContentControlSearchListContainer > table.scContentControlMultilist",
@@ -32,37 +21,17 @@ export const fieldConfigs: FoblesConfig[] = [
     FoblesTopSelector: "table.scContentControl.scContentControlTreelist",
     sitecoreFieldTypes: ["Tag List"],
   },
-  {
-    strategy: "tree-list",
-    FoblesTopSelector: "div.scContentControl.scContentControlTreelist",
-  },
-  {
-    strategy: "treelist-ex",
-    FoblesTopSelector: "div.scContentControl.scTreelistEx",
-  },
-  {
-    strategy: "file",
-    FoblesTopSelector: "input.scContentControl",
-  },
+  { strategy: "tree-list", FoblesTopSelector: "div.scContentControl.scContentControlTreelist" },
+  { strategy: "treelist-ex", FoblesTopSelector: "div.scContentControl.scTreelistEx" },
+  { strategy: "file", FoblesTopSelector: "input.scContentControl" },
   {
     strategy: "general-link",
     FoblesTopSelector: "input.scContentControl",
     sitecoreFieldTypes: ["General Link", "General Link with Search"],
   },
-  {
-    strategy: "icon",
-    FoblesTopSelector: "input.scContentControl",
-    sitecoreFieldTypes: ["Icon"],
-  },
-  {
-    strategy: "image",
-    FoblesTopSelector: "input.scContentControlImage",
-  },
-  {
-    strategy: "internal-link",
-    FoblesTopSelector: "input.scContentControl",
-    sitecoreFieldTypes: ["Internal Link"],
-  },
+  { strategy: "icon", FoblesTopSelector: "input.scContentControl", sitecoreFieldTypes: ["Icon"] },
+  { strategy: "image", FoblesTopSelector: "input.scContentControlImage" },
+  { strategy: "internal-link", FoblesTopSelector: "input.scContentControl", sitecoreFieldTypes: ["Internal Link"] },
   {
     strategy: "quick-info-section",
     FoblesTopSelector: "td.scEditorSectionPanelCell > table.scEditorQuickInfo",
@@ -108,10 +77,7 @@ export const fieldConfigs: FoblesConfig[] = [
       },
     ],
   },
-  {
-    strategy: "reference-links",
-    FoblesTopSelector: "#Links a.scLink[onclick*='item:load']",
-  },
+  { strategy: "reference-links", FoblesTopSelector: "#Links a.scLink[onclick*='item:load']" },
   {
     // Presentation Details -> Controls -> Edit's "Styles" checklist - each checkbox references
     // a real Sitecore style item via its own styleid attribute. Unlike every other strategy, the
@@ -120,8 +86,5 @@ export const fieldConfigs: FoblesConfig[] = [
     strategy: "style-checklist",
     FoblesTopSelector: ".style-field .style-selector input[type='checkbox'][styleid]",
   },
-  {
-    strategy: "template-path",
-    FoblesTopSelector: "a.scTemplate span.scTemplatePath",
-  },
+  { strategy: "template-path", FoblesTopSelector: "a.scTemplate span.scTemplatePath" },
 ];

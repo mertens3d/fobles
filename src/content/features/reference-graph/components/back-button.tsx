@@ -1,9 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/components/back-button.tsx
 
-type BackButtonProps = {
-  disabled: boolean;
-  onBack: () => void;
-};
+type BackButtonProps = { disabled: boolean; onBack: () => void };
 
 export function BackButton({ disabled, onBack }: BackButtonProps) {
   return (

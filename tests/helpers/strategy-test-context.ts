@@ -20,8 +20,7 @@ export async function factoryStrategyTestContext(
     locatorFirstResult: undefined as unknown as Locator,
     getScLocatorFirstResult: getScLocatorFirstResult,
     STEP_WAIT_MS: TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS,
-    step: () =>
-      Promise.reject(new Error("step not initialized")),
+    step: () => Promise.reject(new Error("step not initialized")),
     SCENARIO: scenario,
     testInfo,
   };
@@ -35,20 +34,13 @@ export async function factoryStrategyTestContext(
   console.log(`[fobles] Strategy field activation setup complete`);
 
   return testContext;
-
 }
 
-async function getScLocatorFirstResult(
-  this: StrategyTestContext,
-): Promise<Locator> {
-  return (await this.getFieldTable())
-    .locator(this.SCENARIO.scElemLocator)
-    .first();
+async function getScLocatorFirstResult(this: StrategyTestContext): Promise<Locator> {
+  return (await this.getFieldTable()).locator(this.SCENARIO.scElemLocator).first();
 }
 
-async function getFieldTable(
-  this: StrategyTestContext,
-): Promise<Locator> {
+async function getFieldTable(this: StrategyTestContext): Promise<Locator> {
   const foblesFrame = await findFoblesFrame(this.page);
 
   return foblesFrame

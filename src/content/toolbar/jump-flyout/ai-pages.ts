@@ -11,8 +11,7 @@ type ResolvedAiPagesMapping = AiPagesMapping & Omit<AiPagesGroup, "mappings">;
 
 let aiPagesGroups: readonly AiPagesGroup[] = [];
 
-const normalizeContentPath = (value: string): string =>
-  value.trim().replace(/\/+$/, "").toLowerCase();
+const normalizeContentPath = (value: string): string => value.trim().replace(/\/+$/, "").toLowerCase();
 
 void getAiPagesMappings().then((groups) => {
   aiPagesGroups = groups;
@@ -38,9 +37,7 @@ const getAiPagesMapping = (itemPath: string): ResolvedAiPagesMapping | null => {
         const root = normalizeContentPath(mapping.contentRoot);
         return normalizedPath === root || normalizedPath.startsWith(`${root}/`);
       })
-      .sort(
-        (left, right) => right.contentRoot.length - left.contentRoot.length,
-      )[0] ?? null
+      .sort((left, right) => right.contentRoot.length - left.contentRoot.length)[0] ?? null
   );
 };
 
@@ -55,8 +52,12 @@ const buildAiPagesUrl = (
   url.searchParams.set("sc_site", mapping.site);
   url.searchParams.set("organization", mapping.organization);
   url.searchParams.set("tenantName", mapping.tenantName);
-  if (language) url.searchParams.set("sc_lang", language);
-  if (version) url.searchParams.set("sc_version", version);
+  if (language) {
+    url.searchParams.set("sc_lang", language);
+  }
+  if (version) {
+    url.searchParams.set("sc_version", version);
+  }
   return url.toString();
 };
 
@@ -71,8 +72,6 @@ export const openAiPages = (doc: Document): void => {
     const url = buildAiPagesUrl(itemId, mapping, language, version);
     window.open(url, "_blank", "noopener,noreferrer");
   } else {
-    window.alert(
-      "No AI Pages mapping matches the active item. Configure AI Pages mappings in the extension options.",
-    );
+    window.alert("No AI Pages mapping matches the active item. Configure AI Pages mappings in the extension options.");
   }
 };

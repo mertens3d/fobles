@@ -24,9 +24,7 @@ export function sortGuidsByEnrichmentPriority(
   guidLookup: Map<string, string[]>,
   nodesById: Map<string, ReferenceModelNode>,
 ): string[] {
-  const rankByGuid = new Map(
-    guids.map((guid) => [guid, rankOfGuid(guid, guidLookup, nodesById)] as const),
-  );
+  const rankByGuid = new Map(guids.map((guid) => [guid, rankOfGuid(guid, guidLookup, nodesById)] as const));
 
   return [...guids].sort((a, b) => (rankByGuid.get(a) ?? 0) - (rankByGuid.get(b) ?? 0));
 }

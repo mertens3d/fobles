@@ -10,7 +10,9 @@ export function openInBrowser(filePath: string): void {
         : `xdg-open "${url}"`;
 
   exec(command, (error) => {
-    if (error) console.warn(`Could not auto-open test report: ${error.message}`);
+    if (error) {
+      console.warn(`Could not auto-open test report: ${error.message}`);
+    }
   });
 }
 

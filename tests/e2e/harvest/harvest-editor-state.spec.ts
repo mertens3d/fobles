@@ -1,9 +1,5 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
-import {
-  reloadAndReadEditorState,
-  setupReferenceGraphState,
-  type EditorState,
-} from "./harvest-test-helpers";
+import { reloadAndReadEditorState, setupReferenceGraphState, type EditorState } from "./harvest-test-helpers";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import {
   ClickFoblesGraphButton,

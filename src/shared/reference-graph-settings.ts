@@ -3,16 +3,16 @@
 import { STORAGE } from "../constants/extension-const";
 import { CONST } from "../constants/const";
 import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../content/features/reference-graph/graph-filters";
-import type {  LayoutGraphPresetName } from "../content/features/reference-graph/graph.types";
+import type { LayoutGraphPresetName } from "../content/features/reference-graph/graph.types";
 import type { SitecoreHarvestFiltersState } from "../content/foundation/harvesting/sitecore-harvester.types";
 import { getStorageValue, setStorageValue } from "./storage/storage";
 
-export async function getReferenceGraphLayoutName(): Promise<LayoutGraphPresetName > {
+export async function getReferenceGraphLayoutName(): Promise<LayoutGraphPresetName> {
   const result = await getStorageValue<LayoutGraphPresetName>([STORAGE.KEY.REFERENCE_GRAPH.LAYOUT]);
   return result[STORAGE.KEY.REFERENCE_GRAPH.LAYOUT] ?? result[CONST.FOBLES.REFERENCE_GRAPH.DEFAULT_LAYOUT_PRESET_NAME];
 }
 
-export async function setReferenceGraphLayout(layout: LayoutGraphPresetName ): Promise<void> {
+export async function setReferenceGraphLayout(layout: LayoutGraphPresetName): Promise<void> {
   await setStorageValue({ [STORAGE.KEY.REFERENCE_GRAPH.LAYOUT]: layout });
 }
 

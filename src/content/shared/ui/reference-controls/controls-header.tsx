@@ -9,11 +9,35 @@ export type ControlsHeaderProps = {
   disabled?: boolean;
 };
 
-export function ControlsHeader({ title, expanded, onExpandedChange, onHelp, helpLabel = "Help", disabled }: ControlsHeaderProps) {
+export function ControlsHeader({
+  title,
+  expanded,
+  onExpandedChange,
+  onHelp,
+  helpLabel = "Help",
+  disabled,
+}: ControlsHeaderProps) {
   return (
     <div className="fobles-reference-graph-controls-heading-row">
-      <button type="button" className="fobles-reference-graph-controls-expander" disabled={disabled} onClick={() => onExpandedChange(!expanded)}>{title}</button>
-      {onHelp ? <button type="button" className="fobles-reference-graph-help-button" aria-label={helpLabel} title={helpLabel} onClick={onHelp}>?</button> : null}
+      <button
+        type="button"
+        className="fobles-reference-graph-controls-expander"
+        disabled={disabled}
+        onClick={() => onExpandedChange(!expanded)}
+      >
+        {title}
+      </button>
+      {onHelp ? (
+        <button
+          type="button"
+          className="fobles-reference-graph-help-button"
+          aria-label={helpLabel}
+          title={helpLabel}
+          onClick={onHelp}
+        >
+          ?
+        </button>
+      ) : null}
     </div>
   );
 }

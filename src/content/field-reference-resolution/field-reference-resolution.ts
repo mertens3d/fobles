@@ -12,19 +12,12 @@ export function resolveFieldReferences(
   fieldLabel: string,
 ): FieldReferenceResolution {
   const strategyReferences = resolveKnownStrategyReferences(marker);
-  const references =
-    strategyReferences ??
-    resolveInferredReferences(rawValue, fieldLabel);
+  const references = strategyReferences ?? resolveInferredReferences(rawValue, fieldLabel);
 
-  return {
-    displayValue: resolveFriendlyDisplayValue(references) ?? rawValue,
-    references,
-  };
+  return { displayValue: resolveFriendlyDisplayValue(references) ?? rawValue, references };
 }
 
-function resolveKnownStrategyReferences(
-  marker: HTMLElement,
-): FieldReference[] | undefined {
+function resolveKnownStrategyReferences(marker: HTMLElement): FieldReference[] | undefined {
   let references: FieldReference[] | undefined;
 
   for (const resolver of KNOWN_FIELD_REFERENCE_RESOLVERS) {
@@ -38,9 +31,7 @@ function resolveKnownStrategyReferences(
   return references;
 }
 
-function resolveFriendlyDisplayValue(
-  references: readonly FieldReference[],
-): string | undefined {
+function resolveFriendlyDisplayValue(references: readonly FieldReference[]): string | undefined {
   const labels = references
     .map((reference) => reference.label?.trim())
     .filter((label): label is string => Boolean(label));
@@ -48,20 +39,13 @@ function resolveFriendlyDisplayValue(
   return labels.length > 0 ? labels.join(", ") : undefined;
 }
 
-function resolveInferredReferences(
-  rawValue: string | undefined,
-  fieldLabel: string,
-): FieldReference[] {
+function resolveInferredReferences(rawValue: string | undefined, fieldLabel: string): FieldReference[] {
   let references: FieldReference[] = [];
 
   if (rawValue) {
     const normalizedFieldLabel = normalizeFieldLabel(fieldLabel);
 
-    if (
-      !CONST.SITECORE.HARVEST.NON_REFERENCE_GUID_FIELD_LABELS_LC.has(
-        normalizedFieldLabel,
-      )
-    ) {
+    if (!CONST.SITECORE.HARVEST.NON_REFERENCE_GUID_FIELD_LABELS_LC.has(normalizedFieldLabel)) {
       references = extractAllGuids(rawValue).map((guid) => ({
         target: guid,
         confidence: "inferred",
@@ -74,9 +58,5 @@ function resolveInferredReferences(
 }
 
 function normalizeFieldLabel(fieldLabel: string): string {
-  return fieldLabel
-    .trim()
-    .replace(/:+$/, "")
-    .trim()
-    .toLowerCase();
+  return fieldLabel.trim().replace(/:+$/, "").trim().toLowerCase();
 }

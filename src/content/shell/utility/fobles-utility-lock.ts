@@ -25,14 +25,29 @@ export async function releaseFoblesUtilityLock(ownershipId: string): Promise<voi
 export function subscribeFoblesUtilityLockLost(ownershipId: string, onLost: OwnershipLostHandler): () => void {
   registerOwnershipLostListener();
   lostHandlersByOwnershipId.set(ownershipId, onLost);
-  return () => { if (lostHandlersByOwnershipId.get(ownershipId) === onLost) lostHandlersByOwnershipId.delete(ownershipId); };
+  return () => {
+    if (lostHandlersByOwnershipId.get(ownershipId) === onLost) {
+      lostHandlersByOwnershipId.delete(ownershipId);
+    }
+  };
 }
 
 function registerOwnershipLostListener(): void {
-  if (listenerRegistered) return;
+  if (listenerRegistered) {
+    return;
+  }
   listenerRegistered = true;
   chrome.runtime.onMessage.addListener((message: unknown) => {
-    if (!message || typeof message !== "object" || !("type" in message) || message.type !== UTILITY_LOCK_MESSAGE.OWNERSHIP_LOST || !("ownershipId" in message) || typeof message.ownershipId !== "string") return;
+    if (
+      !message ||
+      typeof message !== "object" ||
+      !("type" in message) ||
+      message.type !== UTILITY_LOCK_MESSAGE.OWNERSHIP_LOST ||
+      !("ownershipId" in message) ||
+      typeof message.ownershipId !== "string"
+    ) {
+      return;
+    }
     const handler = lostHandlersByOwnershipId.get(message.ownershipId);
     lostHandlersByOwnershipId.delete(message.ownershipId);
     handler?.();
@@ -40,5 +55,5 @@ function registerOwnershipLostListener(): void {
 }
 
 async function send(message: { type: string; ownershipId: string; origin: string }): Promise<UtilityLockResponse> {
-  return await chrome.runtime.sendMessage(message) as UtilityLockResponse;
+  return await chrome.runtime.sendMessage(message);
 }

@@ -9,6 +9,6 @@ export function applyFileStrategy(doc: Document, config: FileConfig): void {
     actionPrefix: CONST.SITECORE.ACTION_PREFIXES.FILE,
     buttonClass: FOBLES.CLASSES.BUTTONS.FILE,
     wrapperClass: FOBLES.CLASSES.WRAPPERS.FILE,
-    getTarget: (value) => value ? ensurePathShape(value, "media") : null,
+    getTarget: (value) => (value ? ensurePathShape(value, "media") : null),
   });
 }

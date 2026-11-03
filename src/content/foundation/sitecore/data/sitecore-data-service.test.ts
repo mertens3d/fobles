@@ -11,7 +11,10 @@ import {
 } from "../../cache/sitecore-data/indexed-db.ts";
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import { serializeCacheKey } from "../../cache/sitecore-data/sitecore-data-cache-key.ts";
-import type { SitecoreDataCacheKey, SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data-cache.types";
+import type {
+  SitecoreDataCacheKey,
+  SitecoreDataCacheRecord,
+} from "../../cache/sitecore-data/sitecore-data-cache.types";
 import { factNameForTaskType, getFact } from "./sitecore-data-service.ts";
 import type {
   WorkerTaskCancelledResult,
@@ -47,7 +50,10 @@ function documentStaleResult(type: WorkerTaskDocumentStaleResult["type"]): Worke
   return { requestId: "r1", taskId: crypto.randomUUID(), type, status: "document-stale" };
 }
 
-function countingFetchLive(result: WorkerTaskExecutionResult): { fetchLive: () => Promise<WorkerTaskExecutionResult>; callCount: () => number } {
+function countingFetchLive(result: WorkerTaskExecutionResult): {
+  fetchLive: () => Promise<WorkerTaskExecutionResult>;
+  callCount: () => number;
+} {
   let calls = 0;
 
   return {
@@ -259,8 +265,16 @@ void test("requested/resolved GUID validation still prevents a Sitecore fallback
 void test("listItems returns cache records through the public API", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
 
-  await getFact(sampleKey({ item: { kind: "id", value: "11111111-1111-1111-1111-111111111111" } }), "parent", live.fetchLive);
-  await getFact(sampleKey({ item: { kind: "id", value: "22222222-2222-2222-2222-222222222222" } }), "parent", live.fetchLive);
+  await getFact(
+    sampleKey({ item: { kind: "id", value: "11111111-1111-1111-1111-111111111111" } }),
+    "parent",
+    live.fetchLive,
+  );
+  await getFact(
+    sampleKey({ item: { kind: "id", value: "22222222-2222-2222-2222-222222222222" } }),
+    "parent",
+    live.fetchLive,
+  );
 
   const records = await cache.listItems();
   assert.equal(records.length, 2);
@@ -271,10 +285,7 @@ void test("concurrent requests do not corrupt item records", async () => {
   const parentLive = countingFetchLive(successResult("get-parent", { parent: undefined }));
   const childrenLive = countingFetchLive(successResult("get-children", { childItems: [] }));
 
-  await Promise.all([
-    getFact(key, "parent", parentLive.fetchLive),
-    getFact(key, "children", childrenLive.fetchLive),
-  ]);
+  await Promise.all([getFact(key, "parent", parentLive.fetchLive), getFact(key, "children", childrenLive.fetchLive)]);
 
   const record = await peekRecord(key);
   assert.ok(record?.parent);

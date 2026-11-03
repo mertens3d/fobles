@@ -18,13 +18,20 @@ function toMediaPath(value: string): string {
   return value.startsWith("/") ? `/sitecore/media library${value}` : `/sitecore/media library/${value}`;
 }
 
-function strategyReference(target: string, strategy: FieldReference["strategy"], sourceValue: string, label?: string): FieldReference {
+function strategyReference(
+  target: string,
+  strategy: FieldReference["strategy"],
+  sourceValue: string,
+  label?: string,
+): FieldReference {
   return { target, label: label?.trim() || undefined, confidence: "strategy", strategy, sourceValue };
 }
 
 export function resolveDropLinkReferences(marker: HTMLElement): FieldReference[] | undefined {
   const select = marker.querySelector<HTMLSelectElement>("select.scContentControl.scCombobox");
-  if (!select || !hasAnyGuidLikeOption(select)) return undefined;
+  if (!select || !hasAnyGuidLikeOption(select)) {
+    return undefined;
+  }
 
   const option = select.options[select.selectedIndex];
   const sourceValue = option?.value ?? "";
@@ -35,10 +42,12 @@ export function resolveDropLinkReferences(marker: HTMLElement): FieldReference[]
 
 export function resolveDropTreeReferences(marker: HTMLElement): FieldReference[] | undefined {
   const input = marker.querySelector<HTMLInputElement>("input.scComboboxEdit[readonly]");
-  if (!input) return undefined;
+  if (!input) {
+    return undefined;
+  }
 
   const value = input.value.trim();
-  const target = value ? extractGuid(value) ?? toSitecorePath(value) : undefined;
+  const target = value ? (extractGuid(value) ?? toSitecorePath(value)) : undefined;
   return target ? [strategyReference(target, "drop-tree", value, input.getAttribute("title") ?? undefined)] : [];
 }
 
@@ -50,12 +59,16 @@ function resolveSingleInputReference(
   resolveTarget: (value: string) => string | undefined,
 ): FieldReference[] | undefined {
   const input = marker.querySelector<HTMLInputElement>(inputSelector);
-  if (!input) return undefined;
+  if (!input) {
+    return undefined;
+  }
 
   const hasAction = Array.from(marker.querySelectorAll<HTMLElement>(SITECORE.SELECTORS.FIELD_ACTION)).some((button) =>
     (button.getAttribute("onclick") ?? "").toLowerCase().includes(`${actionPrefix.toLowerCase()}:`),
   );
-  if (!hasAction) return undefined;
+  if (!hasAction) {
+    return undefined;
+  }
 
   const value = input.value.trim();
   const target = value ? resolveTarget(value) : undefined;
@@ -72,10 +85,14 @@ export function resolveGeneralLinkReferences(marker: HTMLElement): FieldReferenc
     "general-link",
     (value) => {
       const guid = extractGuid(value);
-      if (guid) return guid;
+      if (guid) {
+        return guid;
+      }
 
       const path = toSitecorePath(value);
-      if (path) return path;
+      if (path) {
+        return path;
+      }
 
       return /^\//.test(value) ? toMediaPath(value) : undefined;
     },
@@ -117,19 +134,23 @@ function resolveSelectedListReferences(
   strategy: FieldReference["strategy"],
   selectSelector: string,
 ): FieldReference[] | undefined {
-  if (!host) return undefined;
+  if (!host) {
+    return undefined;
+  }
 
   const select = host.querySelector<HTMLSelectElement>(selectSelector);
-  if (!select) return undefined;
+  if (!select) {
+    return undefined;
+  }
 
-  return collectGuidOptionItems(select).map((item) =>
-    strategyReference(item.value, strategy, item.value, item.label),
-  );
+  return collectGuidOptionItems(select).map((item) => strategyReference(item.value, strategy, item.value, item.label));
 }
 
 export function resolveMultilistOptionsReferences(marker: HTMLElement): FieldReference[] | undefined {
   const host = marker.querySelector("table.scContentControlMultilist");
-  if (host?.closest(".scContentControlSearchListContainer")) return undefined;
+  if (host?.closest(".scContentControlSearchListContainer")) {
+    return undefined;
+  }
 
   return resolveSelectedListReferences(
     host,
@@ -150,7 +171,9 @@ export function resolveMultilistWithSearchReferences(marker: HTMLElement): Field
 
 export function resolveTreeListReferences(marker: HTMLElement): FieldReference[] | undefined {
   const host = marker.querySelector("div.scContentControl.scContentControlTreelist");
-  if (!host) return undefined;
+  if (!host) {
+    return undefined;
+  }
 
   const selectedPane = host.querySelector(SITECORE.SELECTORS.TREE.LIST_SELECTED_PANE);
   return resolveSelectedListReferences(selectedPane, "tree-list", SITECORE.SELECTORS.MULTILIST.BOX);
@@ -165,17 +188,19 @@ export function resolveStyleChecklistReferences(marker: HTMLElement): FieldRefer
   const checkboxes = Array.from(
     marker.querySelectorAll<HTMLInputElement>(".style-field .style-selector input[type='checkbox'][styleid]"),
   );
-  if (checkboxes.length === 0) return undefined;
+  if (checkboxes.length === 0) {
+    return undefined;
+  }
 
   return checkboxes
     .filter((checkbox) => checkbox.checked)
     .map((checkbox): FieldReference | undefined => {
       const styleId = checkbox.getAttribute("styleid");
-      if (!styleId) return undefined;
+      if (!styleId) {
+        return undefined;
+      }
 
-      const label =
-        checkbox.closest("label")?.textContent?.trim() ??
-        checkbox.parentElement?.textContent?.trim();
+      const label = checkbox.closest("label")?.textContent?.trim() ?? checkbox.parentElement?.textContent?.trim();
 
       return strategyReference(formatFoId(styleId), "style-checklist", styleId, label);
     })
@@ -184,17 +209,19 @@ export function resolveStyleChecklistReferences(marker: HTMLElement): FieldRefer
 
 export function resolveTreelistExReferences(marker: HTMLElement): FieldReference[] | undefined {
   const host = marker.querySelector<HTMLElement>(SITECORE.SELECTORS.TREELIST_EX.ROOT);
-  if (!host) return undefined;
+  if (!host) {
+    return undefined;
+  }
 
   return Array.from(host.children)
     .filter((child): child is HTMLElement => child.tagName === "DIV" && child.hasAttribute("title"))
     .map((child): FieldReference | undefined => {
       const title = child.getAttribute("title")?.trim();
-      if (!title) return undefined;
+      if (!title) {
+        return undefined;
+      }
 
-      const path = title.startsWith(SITECORE.RELATIVE_PATHS_ENCODED.ROOT)
-        ? title
-        : `/sitecore/content${title}`;
+      const path = title.startsWith(SITECORE.RELATIVE_PATHS_ENCODED.ROOT) ? title : `/sitecore/content${title}`;
       const label = child.textContent?.trim() || title.split("/").filter(Boolean).pop();
 
       return strategyReference(path, "treelist-ex", title, label);

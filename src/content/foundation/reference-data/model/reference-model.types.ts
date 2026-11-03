@@ -3,7 +3,8 @@ import type { ReferenceModelProvenance } from "./reference-model-provenance.type
 
 export type RelationshipToParent = "contained" | "related";
 
-export type ReferenceModelBranch = "parent" | "children" | "layouts" | "referrers" | "customFields" | "standardFields" | "template";
+export type ReferenceModelBranch =
+  "parent" | "children" | "layouts" | "referrers" | "customFields" | "standardFields" | "template";
 
 // Fan-out truncation metadata for a wrapper node (e.g. Children/Referrers) whose underlying
 // relationship may be larger than what the ReferenceModel actually includes as children.
@@ -16,12 +17,10 @@ type ReferenceModelNodeBase = {
   children: ReferenceModelNode[];
 };
 
-export type ReferenceModelItemNode = ReferenceModelNodeBase & {
-  nodeType: "item";
-  scItem: ItemGraphNodeData;
-};
+export type ReferenceModelItemNode = ReferenceModelNodeBase & { nodeType: "item"; scItem: ItemGraphNodeData };
 
 export type ReferenceModelNonItemNode = ReferenceModelNodeBase & { nodeType: "nonItem"; name: string };
 
 export type ReferenceModelNode = ReferenceModelItemNode | ReferenceModelNonItemNode;
+
 export type PlaceholderTreeNode = { path: string; placeholders: PlaceholderTreeNode[]; controls: ScControl[] };

@@ -3,7 +3,7 @@ import { type Locator, type Page, type TestInfo } from "../../fixtures/playwrigh
 
 import type { FoblesStep } from "../../helpers/fobles-test-step.types";
 
-import type {  StrategyScenarioData } from "./support/scenario.types";
+import type { StrategyScenarioData } from "./support/scenario.types";
 
 // Every field-strategy spec runs this exact same 4-step tail after decorating its field: Ctrl+
 // click (new tab), toggle off (restores), a bare re-toggle back on (no step/screenshot - the
@@ -27,6 +27,6 @@ export function runClickNavigationSteps(
   onToggledOff?: () => Promise<void>,
   navigationButton?: Locator,
 ): void {
-  const foblesButton = navigationButton ?? fieldTable.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
- 
+  const foblesButton =
+    navigationButton ?? fieldTable.locator(TEST_CONST.FOBLES.SELECTORS.DATA_IS_FOBLES_BUTTON).first();
 }

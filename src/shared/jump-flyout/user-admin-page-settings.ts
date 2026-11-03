@@ -23,7 +23,9 @@ export function normalizeUserAdminPageUrl(rawUrl: string): string {
 }
 
 const isUserAdminPage = (value: unknown): value is UserAdminPage => {
-  if (!value || typeof value !== "object") return false;
+  if (!value || typeof value !== "object") {
+    return false;
+  }
   const entry = value as Record<string, unknown>;
   return (
     typeof entry.id === "string" &&
@@ -35,7 +37,9 @@ const isUserAdminPage = (value: unknown): value is UserAdminPage => {
 };
 
 function normalizeUserAdminPages(value: unknown): UserAdminPage[] {
-  if (!Array.isArray(value)) return [];
+  if (!Array.isArray(value)) {
+    return [];
+  }
 
   return value
     .filter(isUserAdminPage)
@@ -53,14 +57,10 @@ export async function getUserAdminPages(): Promise<UserAdminPage[]> {
 }
 
 export async function setUserAdminPages(entries: UserAdminPage[]): Promise<void> {
-  await setStorageValue({
-    [STORAGE.KEY.USER_ADMIN_PAGES]: normalizeUserAdminPages(entries),
-  });
+  await setStorageValue({ [STORAGE.KEY.USER_ADMIN_PAGES]: normalizeUserAdminPages(entries) });
 }
 
-export function onUserAdminPagesChanged(
-  callback: (entries: UserAdminPage[]) => void,
-): void {
+export function onUserAdminPagesChanged(callback: (entries: UserAdminPage[]) => void): void {
   onStorageChange(STORAGE.KEY.USER_ADMIN_PAGES, (newValue) => {
     callback(normalizeUserAdminPages(newValue));
   });

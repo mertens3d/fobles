@@ -44,11 +44,9 @@ const DEFAULT_GRAPH_FILTERS: SitecoreHarvestFiltersState = {
   standardFields: false,
   template: false,
 };
-export type AuditorAppProps = {
-  doc: Document;
-  findingStore: AuditFindingStore;
-  workOperationId: string;
-};
+
+export type AuditorAppProps = { doc: Document; findingStore: AuditFindingStore; workOperationId: string };
+
 type FoblesDataOperationHandle = ReturnType<typeof getFoblesDataOperation>;
 // AI NOTE: The Auditor dialog opens while the audit run is still acquiring the Reference Model, so the Data
 // AI NOTE: Service operation does not exist yet at mount. Wait for it instead of subscribing once and giving up.
@@ -59,7 +57,9 @@ function useFoblesDataOperationWhenReady(workOperationId: string): FoblesDataOpe
     const startedAt = performance.now();
     function attach(): boolean {
       const found = getFoblesDataOperation(workOperationId);
-      if (!found || !active) return false;
+      if (!found || !active) {
+        return false;
+      }
       extensionLog.debug("Auditor dialog: data operation attached", {
         workOperationId,
         waitedMs: Math.round(performance.now() - startedAt),
@@ -73,7 +73,9 @@ function useFoblesDataOperationWhenReady(workOperationId: string): FoblesDataOpe
       };
     }
     const timer = window.setInterval(() => {
-      if (attach()) window.clearInterval(timer);
+      if (attach()) {
+        window.clearInterval(timer);
+      }
     }, DATA_OPERATION_POLL_INTERVAL_MS);
     return () => {
       active = false;
@@ -82,6 +84,7 @@ function useFoblesDataOperationWhenReady(workOperationId: string): FoblesDataOpe
   }, [workOperationId]);
   return operation;
 }
+
 export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppProps) {
   const [snapshot, setSnapshot] = useState<readonly AuditFinding[]>(() => findingStore.getSnapshot());
   const [query, setQuery] = useState("");
@@ -89,7 +92,9 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   const [harvestProgress, setHarvestProgress] = useState<PhaseProgress>();
   const [acquisitionProgress, setAcquisitionProgress] = useState<FoblesAcquisitionProgress>();
   const [liveResolveProgress, setLiveResolveProgress] = useState<PhaseProgress>();
-  const [selectedStatuses, setSelectedStatuses] = useState<ReadonlySet<AuditFindingStatus>>(() => new Set(ALL_STATUSES));
+  const [selectedStatuses, setSelectedStatuses] = useState<ReadonlySet<AuditFindingStatus>>(
+    () => new Set(ALL_STATUSES),
+  );
   const [selectedChecks, setSelectedChecks] = useState<ReadonlySet<string>>(() => new Set());
   const [graphFilters, setGraphFilters] = useState<SitecoreHarvestFiltersState>(DEFAULT_GRAPH_FILTERS);
   const [filtersLoaded, setFiltersLoaded] = useState(false);
@@ -102,47 +107,67 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   const dataOperation = useFoblesDataOperationWhenReady(workOperationId);
   const data = dataOperation?.data;
   useEffect(() => {
-    if (filtersLoaded) dataOperation?.updateFilters(graphFilters);
+    if (filtersLoaded) {
+      dataOperation?.updateFilters(graphFilters);
+    }
   }, [dataOperation, filtersLoaded, graphFilters]);
   const model = data?.model;
   useEffect(() => findingStore.subscribe(setSnapshot), [findingStore]);
   // AI NOTE: A cold item runs a live harvest before any data operation exists. Subscribe by work-operation id up front so
   // AI NOTE: that harvest's progress is visible instead of an empty dialog.
   useEffect(
-    () => subscribeFoblesAcquisitionProgress(workOperationId, (progress) => {
-      extensionLog.debug("Auditor dialog: acquisition progress received", { workOperationId, progress });
-      setAcquisitionProgress(progress);
-    }),
+    () =>
+      subscribeFoblesAcquisitionProgress(workOperationId, (progress) => {
+        extensionLog.debug("Auditor dialog: acquisition progress received", { workOperationId, progress });
+        setAcquisitionProgress(progress);
+      }),
     [workOperationId],
   );
   // AI NOTE: Persisting is gated on filtersLoaded so the initial defaults never overwrite the stored values.
   // AI NOTE: Graph filters fall back to the Graph's stored filters until the Auditor has its own stored set.
   useEffect(() => {
     let active = true;
-    void Promise.all([getAuditorStatusFilter(), getAuditorCheckFilter(), getAuditorGraphFilters(), getReferenceGraphFilters()]).then(
-      ([storedStatuses, storedChecks, storedGraphFilters, referenceGraphFilters]) => {
-        if (!active) return;
-        if (storedStatuses) setSelectedStatuses(new Set(ALL_STATUSES.filter((status) => storedStatuses.includes(status))));
-        if (storedChecks) setSelectedChecks(new Set(storedChecks));
-        setGraphFilters({ ...referenceGraphFilters, ...storedGraphFilters });
-        setFiltersLoaded(true);
-      },
-    );
+    void Promise.all([
+      getAuditorStatusFilter(),
+      getAuditorCheckFilter(),
+      getAuditorGraphFilters(),
+      getReferenceGraphFilters(),
+    ]).then(([storedStatuses, storedChecks, storedGraphFilters, referenceGraphFilters]) => {
+      if (!active) {
+        return;
+      }
+      if (storedStatuses) {
+        setSelectedStatuses(new Set(ALL_STATUSES.filter((status) => storedStatuses.includes(status))));
+      }
+      if (storedChecks) {
+        setSelectedChecks(new Set(storedChecks));
+      }
+      setGraphFilters({ ...referenceGraphFilters, ...storedGraphFilters });
+      setFiltersLoaded(true);
+    });
     return () => {
       active = false;
     };
   }, []);
   useEffect(() => {
-    if (filtersLoaded) void setAuditorStatusFilter(Array.from(selectedStatuses));
+    if (filtersLoaded) {
+      void setAuditorStatusFilter(Array.from(selectedStatuses));
+    }
   }, [filtersLoaded, selectedStatuses]);
   useEffect(() => {
-    if (filtersLoaded) void setAuditorCheckFilter(Array.from(selectedChecks));
+    if (filtersLoaded) {
+      void setAuditorCheckFilter(Array.from(selectedChecks));
+    }
   }, [filtersLoaded, selectedChecks]);
   useEffect(() => {
-    if (filtersLoaded) void setAuditorGraphFilters(graphFilters);
+    if (filtersLoaded) {
+      void setAuditorGraphFilters(graphFilters);
+    }
   }, [filtersLoaded, graphFilters]);
   useEffect(() => {
-    if (!dataOperation) return;
+    if (!dataOperation) {
+      return;
+    }
     const unsubscribeChange = dataOperation.subscribeChange(() => {
       setModelRevision((current) => current + 1);
     });
@@ -172,7 +197,9 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   // AI NOTE: Fallback that needs no event replay: count unique item GUIDs whose every Resolve candidate node
   // AI NOTE: has reached a terminal processing state, the same unit Graph's Resolving bar counts.
   const derivedResolveProgress = useMemo<PhaseProgress | undefined>(() => {
-    if (!data || !model) return undefined;
+    if (!data || !model) {
+      return undefined;
+    }
     const treeNodeIdsByGuid = new Map<string, string[]>();
     data.resolveCandidateTreeNodeIds.forEach((treeNodeId) => {
       const node = model.nodesById.get(treeNodeId);
@@ -187,7 +214,9 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
         const status = model.processingStateByTreeNodeId.get(treeNodeId);
         return status !== undefined && status !== "pending" && status !== "enriching";
       });
-      if (terminal) completed += 1;
+      if (terminal) {
+        completed += 1;
+      }
     });
     const max = treeNodeIdsByGuid.size;
     return { completed, max, status: completed >= max ? "complete" : "running" };
@@ -206,18 +235,21 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
     logHeapSnapshot("auditor-opened", { workOperationId });
   }, [workOperationId]);
   useEffect(() => {
-    if (resolveComplete) logHeapSnapshot("auditor-resolve-complete", { workOperationId });
+    if (resolveComplete) {
+      logHeapSnapshot("auditor-resolve-complete", { workOperationId });
+    }
   }, [resolveComplete, workOperationId]);
   const projectedFindings = useMemo(() => {
     const nodesById = model?.nodesById;
     return snapshot.map((finding) => {
       const node = finding.referenceModelNodeId ? nodesById?.get(finding.referenceModelNodeId) : undefined;
-      if (!node) return finding;
+      if (!node) {
+        return finding;
+      }
       const presentation = getGraphPresentationState(node);
       const processingStatus = model?.processingStateByTreeNodeId.get(node.treeNodeId);
-      const liveResolve = finding.checkKey === AUDIT_CHECK.REFERENCE_RESOLVED.KEY
-        ? interpretResolveState(processingStatus)
-        : undefined;
+      const liveResolve =
+        finding.checkKey === AUDIT_CHECK.REFERENCE_RESOLVED.KEY ? interpretResolveState(processingStatus) : undefined;
       return {
         ...finding,
         dataType: presentation.kind,
@@ -230,11 +262,17 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
     const nodesById = model?.nodesById;
     const normalizedQuery = query.trim().toLowerCase();
     return projectedFindings.filter((finding) => {
-      if (selectedChecks.size > 0 && !selectedChecks.has(finding.checkKey)) return false;
+      if (selectedChecks.size > 0 && !selectedChecks.has(finding.checkKey)) {
+        return false;
+      }
       const node = finding.referenceModelNodeId ? nodesById?.get(finding.referenceModelNodeId) : undefined;
       const branch = node ? getGraphPresentationState(node).branch : undefined;
-      if (branch && !graphFilters[branch]) return false;
-      if (!normalizedQuery) return true;
+      if (branch && !graphFilters[branch]) {
+        return false;
+      }
+      if (!normalizedQuery) {
+        return true;
+      }
       const searchable = [
         finding.dataType,
         finding.itemId,
@@ -265,16 +303,22 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   function toggleStatus(status: AuditFindingStatus): void {
     setSelectedStatuses((current) => {
       const next = new Set(current);
-      if (next.has(status)) next.delete(status);
-      else next.add(status);
+      if (next.has(status)) {
+        next.delete(status);
+      } else {
+        next.add(status);
+      }
       return next;
     });
   }
   function toggleCheck(checkKey: string): void {
     setSelectedChecks((current) => {
       const next = new Set(current);
-      if (next.has(checkKey)) next.delete(checkKey);
-      else next.add(checkKey);
+      if (next.has(checkKey)) {
+        next.delete(checkKey);
+      } else {
+        next.add(checkKey);
+      }
       return next;
     });
   }
@@ -288,11 +332,7 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   }
   return (
     <div className="fobles-auditor-app">
-      <AuditorSummary
-        counts={summary}
-        selectedStatuses={selectedStatuses}
-        onToggleStatus={toggleStatus}
-      />
+      <AuditorSummary counts={summary} selectedStatuses={selectedStatuses} onToggleStatus={toggleStatus} />
       <AuditorToolbar
         selectedChecks={selectedChecks}
         onToggleCheck={toggleCheck}
@@ -313,7 +353,9 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
         onViewReferenceModel={() => setViewReferenceModel(true)}
         footer={
           <LifecycleProgressFooter
-            harvestProgress={harvestProgress ?? (acquisitionProgress?.harvestRequired ? acquisitionProgress.progress : undefined)}
+            harvestProgress={
+              harvestProgress ?? (acquisitionProgress?.harvestRequired ? acquisitionProgress.progress : undefined)
+            }
             resolveProgress={resolveProgress}
             elapsedSeconds={completedElapsedSeconds.current}
             buildingLabel="Building audit"
@@ -321,10 +363,7 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
         }
       />
       {viewReferenceModel && model ? (
-        <ReferenceModelViewer
-          referenceModel={model.referenceModel}
-          onClose={() => setViewReferenceModel(false)}
-        />
+        <ReferenceModelViewer referenceModel={model.referenceModel} onClose={() => setViewReferenceModel(false)} />
       ) : null}
       <div className="fobles-auditor-search-row">
         <input

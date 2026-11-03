@@ -1,12 +1,8 @@
 import { extensionLog } from "../../../logger";
 import { CONST } from "../../../../constants/const";
 import { FOBLES } from "../../../../constants/fobles";
-import {
-  openFoblesUrl,
-} from "../helper";
-import {
-  buildFoblesUrl,
-} from "../../../foundation/sitecore/fobles-url";
+import { openFoblesUrl } from "../helper";
+import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import { attachFoblesTooltip } from "../shared/fobles-tooltip";
 import { assignFoblesItemId } from "../shared/fobles-item-id";
 import { formatFoId } from "../../../foundation/sitecore/guid";
@@ -17,10 +13,12 @@ export function clearTreeButtons(root: ParentNode = document): void {
   root.querySelectorAll(`.${FOBLES.CLASSES.TREE.WRAPPER}`).forEach((wrapper) => wrapper.remove());
   root.querySelectorAll(`.${FOBLES.CLASSES.TREE.SPACER}`).forEach((spacer) => spacer.remove());
 
-  root.querySelectorAll(`${CONST.SITECORE.SELECTORS.TREE.GLYPH}.${FOBLES.CLASSES.TREE.GLYPH_HIDDEN}`).forEach((glyph) => {
-    const icon = glyph as HTMLImageElement;
-    icon.classList.remove(FOBLES.CLASSES.TREE.GLYPH_HIDDEN);
-  });
+  root
+    .querySelectorAll(`${CONST.SITECORE.SELECTORS.TREE.GLYPH}.${FOBLES.CLASSES.TREE.GLYPH_HIDDEN}`)
+    .forEach((glyph) => {
+      const icon = glyph as HTMLImageElement;
+      icon.classList.remove(FOBLES.CLASSES.TREE.GLYPH_HIDDEN);
+    });
 
   forEachFrameDocument(root, (frameDoc) => clearTreeButtons(frameDoc), { skipMenuOwned: true });
 }
@@ -41,12 +39,16 @@ function getTreeNodeItemId(node: Element): string | null {
 
   if (glyph?.id) {
     const raw = glyph.id.replace(CONST.SITECORE.TREE_ID_PREFIXES.GLYPH, "");
-    if (raw) return raw;
+    if (raw) {
+      return raw;
+    }
   }
 
   if (anchor?.id) {
     const raw = anchor.id.replace(CONST.SITECORE.TREE_ID_PREFIXES.NODE, "");
-    if (raw) return raw;
+    if (raw) {
+      return raw;
+    }
   }
 
   const directId = node.getAttribute("id") ?? "";
@@ -59,10 +61,7 @@ function getTreeNodeItemId(node: Element): string | null {
   }
 
   if (directId.startsWith(CONST.SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING)) {
-    return directId.replace(
-      CONST.SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING,
-      "",
-    );
+    return directId.replace(CONST.SITECORE.TREE_ID_PREFIXES.SELECT_RENDERING, "");
   }
 
   if (directId.startsWith(CONST.SITECORE.TREE_ID_PREFIXES.TEMPLATE_LISTER)) {

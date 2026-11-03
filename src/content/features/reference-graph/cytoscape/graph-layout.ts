@@ -3,10 +3,7 @@
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
-import {
-  COMPOUND_GROUP_CLASS,
-  INVISIBLE_COMPOUND_GROUP_CLASS,
-} from "../graph-nodes/graph-node-builder";
+import { COMPOUND_GROUP_CLASS, INVISIBLE_COMPOUND_GROUP_CLASS } from "../graph-nodes/graph-node-builder";
 import type { LayoutGraphPresetName } from "../graph.types";
 
 export function runGraphLayout(
@@ -27,15 +24,9 @@ export function runGraphLayout(
   const edges = cy.edges();
 
   if (preset.edgeStyle === "taxi") {
-    edges.style({
-      "curve-style": "taxi",
-      "taxi-direction": "downward",
-    });
+    edges.style({ "curve-style": "taxi", "taxi-direction": "downward" });
   } else {
-    edges.style({
-      "curve-style": "bezier",
-      "taxi-direction": "auto",
-    });
+    edges.style({ "curve-style": "bezier", "taxi-direction": "auto" });
   }
 
   const visibleElements = cy.elements().filter((element) => element.visible());
@@ -80,11 +71,7 @@ export function runGraphLayout(
       });
     }
   } catch (error) {
-    extensionLog.error("Reference graph layout: failed", {
-      presetName,
-      rootTreeNodeId,
-      error,
-    });
+    extensionLog.error("Reference graph layout: failed", { presetName, rootTreeNodeId, error });
     complete();
   }
 }

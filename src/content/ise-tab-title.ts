@@ -1,11 +1,8 @@
-import { CONST} from "../constants/const";
+import { CONST } from "../constants/const";
 import { isPowerShellIsePath } from "./guard";
 
 export function getPowerShellIseScriptTitle(doc: Document): string | null {
-  const scriptName = doc
-    .querySelector(CONST.SITECORE.SELECTORS.SCRIPT_NAME)
-    ?.textContent
-    ?.trim();
+  const scriptName = doc.querySelector(CONST.SITECORE.SELECTORS.SCRIPT_NAME)?.textContent?.trim();
   return scriptName?.split(/[\\/]/).filter(Boolean).pop() ?? null;
 }
 
@@ -15,5 +12,7 @@ export function applyPowerShellIseTabIdentity(): void {
   }
 
   const scriptTitle = getPowerShellIseScriptTitle(document);
-  if (scriptTitle) document.title = scriptTitle;
+  if (scriptTitle) {
+    document.title = scriptTitle;
+  }
 }

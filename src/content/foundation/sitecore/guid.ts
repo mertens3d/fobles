@@ -9,17 +9,19 @@ export function stripGuidBraces(value: string | null | undefined): string {
 }
 
 export function extractGuid(value: string | null | undefined): string | null {
-let match = null;
+  let match = null;
   if (value) {
     const candidate = value.match(GUID_PATTERN);
     match = candidate ? stripGuidBraces(candidate[1]) : null;
-  } 
-  return match
+  }
+  return match;
 }
 
 export function formatFoId(itemId: string): string {
   const compact = stripGuidBraces(itemId).replace(/-/g, "");
-  if (!/^[0-9a-f]{32}$/i.test(compact)) return itemId;
+  if (!/^[0-9a-f]{32}$/i.test(compact)) {
+    return itemId;
+  }
 
   return `{${compact.substring(0, 8)}-${compact.substring(8, 12)}-${compact.substring(12, 16)}-${compact.substring(16, 20)}-${compact.substring(20)}}`;
 }

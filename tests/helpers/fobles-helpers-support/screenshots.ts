@@ -39,7 +39,7 @@ export async function attachLocatorScreenshot(
       await removeBlur(blurTargets);
     }
     await testInfo.attach(name, { path: filePath, contentType: "image/png" });
-  };
+  }
 }
 
 export async function attachPageScreenshot(
@@ -111,24 +111,19 @@ async function blurTreeExcept(
         const matchesAny = (element: Element, selectors: string[]): boolean =>
           selectors.some((selector) => element.matches(selector));
         const containsKeptElement = (element: Element): boolean =>
-          [...keepSelectors, ...keepSubtreeSelectors].some(
-            (selector) => element.querySelector(selector) !== null,
-          );
+          [...keepSelectors, ...keepSubtreeSelectors].some((selector) => element.querySelector(selector) !== null);
 
         const markBranches = (node: Element, insideKeptSubtree: boolean): void => {
           const children = Array.from(node.children);
           const hasKeptSibling = children.some((child) => matchesAny(child, keepSelectors));
-          const hasKeptSubtreeSibling = children.some((child) =>
-            matchesAny(child, keepSubtreeSelectors),
-          );
+          const hasKeptSubtreeSibling = children.some((child) => matchesAny(child, keepSubtreeSelectors));
 
           for (const child of children) {
             child.removeAttribute(marker);
-            if (matchesAny(child, keepSelectors) || matchesAny(child, keepSubtreeSelectors)) continue;
-            if (
-              (hasKeptSibling || hasKeptSubtreeSibling) &&
-              matchesAny(child, furnitureSelectors)
-            ) {
+            if (matchesAny(child, keepSelectors) || matchesAny(child, keepSubtreeSelectors)) {
+              continue;
+            }
+            if ((hasKeptSibling || hasKeptSubtreeSibling) && matchesAny(child, furnitureSelectors)) {
               continue;
             }
             if (insideKeptSubtree || hasKeptSubtreeSibling) {
@@ -141,13 +136,13 @@ async function blurTreeExcept(
           }
         };
 
-        for (const container of containers) markBranches(container, false);
+        for (const container of containers) {
+          markBranches(container, false);
+        }
       },
       { keepSelectors, furnitureSelectors, keepSubtreeSelectors, marker: BLUR_BRANCH_MARKER },
     );
-    blurTargets.push(
-      frame.locator(`${containerSelector} [${BLUR_BRANCH_MARKER}]`),
-    );
+    blurTargets.push(frame.locator(`${containerSelector} [${BLUR_BRANCH_MARKER}]`));
   }
 
   return blurTargets;
@@ -191,18 +186,13 @@ async function removeBlur(locators: Locator[]): Promise<void> {
 // be either (a field's own table, a Quick Info row, or the whole page), but the locators below
 // always live on the top-level page regardless of which frame/element is being screenshotted.
 function getOwningPage(target: Screenshottable): Page {
-  return typeof (target as Locator).page === "function"
-    ? (target as Locator).page()
-    : (target as Page);
+  return typeof (target as Locator).page === "function" ? (target as Locator).page() : (target as Page);
 }
 
 // page.locator() only searches the main frame - some jump-flyout targets (e.g. the Installation
 // Wizard shell application) render inside a nested iframe instead, so a selector's presence has to
 // be checked frame-by-frame rather than assumed to be in the top-level document.
-async function framesWithSelector(
-  page: Page,
-  selector: string,
-): Promise<Frame[]> {
+async function framesWithSelector(page: Page, selector: string): Promise<Frame[]> {
   const matches: Frame[] = [];
   for (const frame of page.frames()) {
     if (
@@ -210,8 +200,9 @@ async function framesWithSelector(
         .locator(selector)
         .count()
         .catch(() => 0)) > 0
-    )
+    ) {
       matches.push(frame);
+    }
   }
   return matches;
 }
@@ -249,12 +240,7 @@ async function getSensitiveAutoMasks(
   // instead, so only that value is masked.
   const itemOwnerRow = "tr:has(td:text-is('Item owner:'))";
   for (const frame of await framesWithSelector(page, itemOwnerRow)) {
-    blurTargets.push(
-      frame
-        .locator(itemOwnerRow)
-        .locator('td:text-is("Item owner:") + td')
-        .locator("input"),
-    );
+    blurTargets.push(frame.locator(itemOwnerRow).locator('td:text-is("Item owner:") + td').locator("input"));
   }
 
   // The browser's built-in XML viewer (e.g. /sitecore/admin/showconfig.aspx, reached via the
@@ -276,9 +262,7 @@ async function getSensitiveAutoMasks(
   // has no id/class of its own) and blur it rather than the whole page. Blurred, not masked -
   // cache names/sizes are operational metadata, not a secret.
   for (const frame of await framesWithSelector(page, "#c_cacheTitle")) {
-    blurTargets.push(
-      frame.locator("#c_cacheTitle").locator("xpath=ancestor::tr[1]//table"),
-    );
+    blurTargets.push(frame.locator("#c_cacheTitle").locator("xpath=ancestor::tr[1]//table"));
   }
 
   // jobs.aspx ("Jobs" jump-flyout button) lists Running/Queued/Finished jobs, each rendered as
@@ -286,8 +270,7 @@ async function getSensitiveAutoMasks(
   // so blur both possible shapes directly rather than trying to select "the section". Blurred
   // (not hard-masked) as this POC's one converted example - job names/status/times are
   // operational metadata, not a secret.
-  const jobsSelector =
-    '.wf-content table.jobs-table, .wf-content b:has-text("No jobs")';
+  const jobsSelector = '.wf-content table.jobs-table, .wf-content b:has-text("No jobs")';
   for (const frame of await framesWithSelector(page, jobsSelector)) {
     blurTargets.push(frame.locator(jobsSelector));
   }
@@ -309,10 +292,7 @@ async function getSensitiveAutoMasks(
   // to a .content that actually contains the tree browser (#tree), since ".content" alone is too
   // generic to safely mask on every page. #dataBases (the master/web/filesystem/core database
   // tabs above the tree) is a sibling, not a descendant, so it needs its own entry.
-  for (const frame of await framesWithSelector(
-    page,
-    "div.content:has(#tree)",
-  )) {
+  for (const frame of await framesWithSelector(page, "div.content:has(#tree)")) {
     blurTargets.push(frame.locator("div.content:has(#tree)"));
   }
   for (const frame of await framesWithSelector(page, "#dataBases")) {
@@ -330,10 +310,7 @@ async function getSensitiveAutoMasks(
   // region class, regardless of which application it is. Stays hard-masked (not blurred) - Kick
   // User's own content lists real logged-in usernames, same sensitivity as the account info
   // portrait/Item owner above, and this one selector covers all three pages at once.
-  for (const frame of await framesWithSelector(
-    page,
-    ".sc-applicationContent-main",
-  )) {
+  for (const frame of await framesWithSelector(page, ".sc-applicationContent-main")) {
     blurTargets.push(frame.locator(".sc-applicationContent-main"));
   }
 
@@ -341,8 +318,7 @@ async function getSensitiveAutoMasks(
   // its own on the layout table holding the actual folder/file listing - find it relative to
   // #FoldersAction (unique to this page) instead, and blur just its third row (the listing
   // itself, not the toolbar rows above it).
-  const fileExplorerRow =
-    "#FoldersAction ~ table[width='100%'][height='100%'] tr:nth-child(3)";
+  const fileExplorerRow = "#FoldersAction ~ table[width='100%'][height='100%'] tr:nth-child(3)";
   for (const frame of await framesWithSelector(page, fileExplorerRow)) {
     blurTargets.push(frame.locator(fileExplorerRow));
   }
@@ -355,7 +331,7 @@ async function getSensitiveAutoMasks(
   // selectors there, never inline them here.
   for (const frame of await framesWithSelector(page, TEST_CONST.BLUR_KEEP.CONTENT_TREE.CE_CONTAINER_SELECTOR)) {
     blurTargets.push(
-      ...await blurTreeExcept(
+      ...(await blurTreeExcept(
         frame,
         [
           TEST_CONST.BLUR_KEEP.CONTENT_TREE.CE_CONTAINER_SELECTOR,
@@ -365,7 +341,7 @@ async function getSensitiveAutoMasks(
         [...TEST_CONST.BLUR_KEEP.CONTENT_TREE.KEEP_SELECTORS],
         [...TEST_CONST.BLUR_KEEP.CONTENT_TREE.FURNITURE_SELECTORS],
         [...TEST_CONST.BLUR_KEEP.CONTENT_TREE.KEEP_SUBTREE_SELECTORS],
-      ),
+      )),
     );
   }
 
@@ -373,11 +349,11 @@ async function getSensitiveAutoMasks(
   // strip sharp and blurring any other (e.g. My Toolbar, Developer).
   for (const frame of await framesWithSelector(page, TEST_CONST.BLUR_KEEP.RIBBON_BUTTONS.CONTAINER_SELECTOR)) {
     blurTargets.push(
-      ...await blurTreeExcept(
+      ...(await blurTreeExcept(
         frame,
         [TEST_CONST.BLUR_KEEP.RIBBON_BUTTONS.CONTAINER_SELECTOR],
         [...TEST_CONST.BLUR_KEEP.RIBBON_BUTTONS.KEEP_SELECTORS],
-      ),
+      )),
     );
   }
 

@@ -13,7 +13,9 @@ export async function setFoblesNavVisible(visible: boolean): Promise<void> {
 
 export function onFoblesNavVisibleChange(callback: (visible: boolean) => void): void {
   onStorageChange(STORAGE.KEY.FOBLES_NAV_VISIBLE, (newValue) => {
-    if (typeof newValue === "boolean") callback(newValue);
+    if (typeof newValue === "boolean") {
+      callback(newValue);
+    }
   });
 }
 
@@ -29,14 +31,14 @@ export async function setFoblesNavWarningVisible(visible: boolean): Promise<void
 
 export function onFoblesNavWarningVisibleChange(callback: (visible: boolean) => void): void {
   onStorageChange(STORAGE.KEY.FOBLES_NAV_WARNING_VISIBLE, (newValue) => {
-    if (typeof newValue === "boolean") callback(newValue);
+    if (typeof newValue === "boolean") {
+      callback(newValue);
+    }
   });
 }
 
 export async function getTurnOffFoblesAfterNavigation(): Promise<boolean> {
-  const result = await getStorageValue<boolean>([
-    STORAGE.KEY.TURN_OFF_FOBLES_AFTER_NAVIGATION,
-  ]);
+  const result = await getStorageValue<boolean>([STORAGE.KEY.TURN_OFF_FOBLES_AFTER_NAVIGATION]);
   return result[STORAGE.KEY.TURN_OFF_FOBLES_AFTER_NAVIGATION] === true;
 }
 
@@ -44,10 +46,10 @@ export async function setTurnOffFoblesAfterNavigation(enabled: boolean): Promise
   await setStorageValue({ [STORAGE.KEY.TURN_OFF_FOBLES_AFTER_NAVIGATION]: enabled });
 }
 
-export function onTurnOffFoblesAfterNavigationChange(
-  callback: (enabled: boolean) => void,
-): void {
+export function onTurnOffFoblesAfterNavigationChange(callback: (enabled: boolean) => void): void {
   onStorageChange(STORAGE.KEY.TURN_OFF_FOBLES_AFTER_NAVIGATION, (newValue) => {
-    if (typeof newValue === "boolean") callback(newValue);
+    if (typeof newValue === "boolean") {
+      callback(newValue);
+    }
   });
 }

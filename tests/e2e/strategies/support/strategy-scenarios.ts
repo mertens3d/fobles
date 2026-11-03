@@ -1,8 +1,6 @@
 import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { MODULE_ROOT_YML_REF, STRATEGY_YML_REFS } from "./yml-strategy-refs.CONST";
-import type {
-  StrategyScenarioData,
-} from "./scenario.types";
+import type { StrategyScenarioData } from "./scenario.types";
 
 // The last path segment is an item's own name - mechanical string parsing of an already-raw
 // Path, not inference.
@@ -28,10 +26,7 @@ function searchResultLabel(itemPath: string, templatePath: string): string {
 // of its real item name - only "Fobles Testing" itself has one set in this test data, so swap
 // just that one segment.
 function displayResolvedFoValue(targetItemPath: string): string {
-  return targetItemPath.replace(
-    MODULE_ROOT_YML_REF.path,
-    `/sitecore/${MODULE_ROOT_YML_REF.displayName}`,
-  );
+  return targetItemPath.replace(MODULE_ROOT_YML_REF.path, `/sitecore/${MODULE_ROOT_YML_REF.displayName}`);
 }
 
 // The real combobox-edit value Sitecore renders keeps the "sitecore/" prefix (never stripped)
@@ -57,7 +52,7 @@ export const STRATEGY_SCENARIOS = {
     friendlyName: "Drop Link",
     visibleToFobles: true,
     scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.DROP_LINK,
-    SCREENSHOT_BASE_NAME : "droplink-1x"
+    SCREENSHOT_BASE_NAME: "droplink-1x",
   },
   DROP_TREE: {
     itemId: STRATEGY_YML_REFS.DROP_TREE.scenarioItemId,
@@ -69,8 +64,8 @@ export const STRATEGY_SCENARIOS = {
     expectedFoValue: displayResolvedFoValue(STRATEGY_YML_REFS.DROP_TREE.targetItemPath),
     friendlyName: "Drop Tree",
     visibleToFobles: true,
-    scElemLocator:TEST_CONST.SITECORE.SELECTORS.STRATEGIES.DROP_TREE,
-    SCREENSHOT_BASE_NAME : "drop-tree-1x" 
+    scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.DROP_TREE,
+    SCREENSHOT_BASE_NAME: "drop-tree-1x",
   },
   DROP_LIST: {
     itemId: STRATEGY_YML_REFS.DROPLIST.scenarioItemId,
@@ -80,7 +75,7 @@ export const STRATEGY_SCENARIOS = {
     friendlyName: "Drop List",
     visibleToFobles: false,
     scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.DROP_LIST,
-    SCREENSHOT_BASE_NAME : "drop-list-1x"
+    SCREENSHOT_BASE_NAME: "drop-list-1x",
   },
   GENERAL_LINK: {
     itemId: STRATEGY_YML_REFS.GENERAL_LINK.scenarioItemId,
@@ -94,8 +89,7 @@ export const STRATEGY_SCENARIOS = {
     friendlyName: "General Link",
     visibleToFobles: true,
     scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.GENERAL_LINK,
-    SCREENSHOT_BASE_NAME : "general-link-1x"
-
+    SCREENSHOT_BASE_NAME: "general-link-1x",
   },
   INTERNAL_LINK: {
     itemId: STRATEGY_YML_REFS.INTERNAL_LINK.scenarioItemId,
@@ -107,7 +101,7 @@ export const STRATEGY_SCENARIOS = {
     friendlyName: "Internal Link",
     visibleToFobles: true,
     scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.INTERNAL_LINK,
-    SCREENSHOT_BASE_NAME : "internal-link-1x"
+    SCREENSHOT_BASE_NAME: "internal-link-1x",
   },
   MULTILIST_OPTIONS: {
     itemId: STRATEGY_YML_REFS.MULTILIST_OPTIONS.scenarioItemId,
@@ -117,7 +111,7 @@ export const STRATEGY_SCENARIOS = {
     friendlyName: "Multilist Options",
     visibleToFobles: true,
     scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.MULTILIST,
-    SCREENSHOT_BASE_NAME : "multilist-1x"
+    SCREENSHOT_BASE_NAME: "multilist-1x",
   },
   MULTILIST_WITH_SEARCH: {
     itemId: STRATEGY_YML_REFS.MULTILIST_WITH_SEARCH.scenarioItemId,
@@ -131,7 +125,7 @@ export const STRATEGY_SCENARIOS = {
     visibleToFobles: true,
     scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.MULTILIST_WITH_SEARCH,
     foblesButtonSelector: TEST_CONST.FOBLES.SELECTORS.SELECTED_PANE_BUTTON,
-    SCREENSHOT_BASE_NAME : "multilist-with-search-1x"     
+    SCREENSHOT_BASE_NAME: "multilist-with-search-1x",
   },
   TAG_LIST: {
     // NOTE, this is not currently resolved
@@ -142,7 +136,7 @@ export const STRATEGY_SCENARIOS = {
     visibleToFobles: false,
     expectedFoValue: "NOT IMPLEMENTED",
     scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.TAG_LIST,
-    SCREENSHOT_BASE_NAME : "tag-list-1x"
+    SCREENSHOT_BASE_NAME: "tag-list-1x",
   },
   TREE_LIST: {
     itemId: STRATEGY_YML_REFS.TREE_LIST.scenarioItemId,
@@ -153,7 +147,7 @@ export const STRATEGY_SCENARIOS = {
     visibleToFobles: true,
     scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.TREE_LIST,
     foblesButtonSelector: TEST_CONST.FOBLES.SELECTORS.SELECTED_PANE_BUTTON,
-    SCREENSHOT_BASE_NAME : "tree-list-1x"
+    SCREENSHOT_BASE_NAME: "tree-list-1x",
   },
   TREELIST_EX: {
     itemId: STRATEGY_YML_REFS.TREELIST_EX.scenarioItemId,
@@ -165,7 +159,6 @@ export const STRATEGY_SCENARIOS = {
     friendlyName: "Treelist Ex",
     visibleToFobles: true,
     scElemLocator: TEST_CONST.SITECORE.SELECTORS.STRATEGIES.TREELISTEX,
-    SCREENSHOT_BASE_NAME : "treelist-ex-1x"
+    SCREENSHOT_BASE_NAME: "treelist-ex-1x",
   },
-} satisfies Record<string, StrategyScenarioData >
-;
+} satisfies Record<string, StrategyScenarioData>;

@@ -29,9 +29,11 @@ foblesTest.describe("Session", () => {
     // Sitecore's own login page container, or - on the "ai" environment - Auth0's hosted
     // Universal Login form it redirects to instead; either one unambiguously identifies the
     // logged-out end state.
-    const loginPage = page.locator(
-      version === "ai" ? TEST_CONST.SITECORE.SELECTORS.AI_LOGIN_FORM : TEST_CONST.SITECORE.SELECTORS.LOGIN_PAGE,
-    ).first();
+    const loginPage = page
+      .locator(
+        version === "ai" ? TEST_CONST.SITECORE.SELECTORS.AI_LOGIN_FORM : TEST_CONST.SITECORE.SELECTORS.LOGIN_PAGE,
+      )
+      .first();
     await expect(loginPage).toBeVisible();
     // Skipped during a promoVideo recording session - see 00-session-start.spec.ts's own check.
     if (!RECORD_VIDEO) {

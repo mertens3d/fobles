@@ -1,13 +1,6 @@
 import fs from "node:fs";
 import path from "node:path";
-import type {
-  FullConfig,
-  FullResult,
-  Reporter,
-  Suite,
-  TestCase,
-  TestResult,
-} from "@playwright/test/reporter";
+import type { FullConfig, FullResult, Reporter, Suite, TestCase, TestResult } from "@playwright/test/reporter";
 import { matchAttachmentsToSteps } from "./reporter/attachment-matching";
 import { printStopSafelyWarning } from "./reporter/browser-utils";
 import { renderReport } from "./reporter/report-renderer";
@@ -24,7 +17,9 @@ import { stripAnsiSafe, toReportRelativeHref } from "./reporter/report-utils";
 function flattenSteps(steps: TestResult["steps"]): ReportStep[] {
   return steps.flatMap((step) => {
     const nested = flattenSteps(step.steps ?? []);
-    if (step.category !== "test.step") return nested;
+    if (step.category !== "test.step") {
+      return nested;
+    }
 
     return [
       {
@@ -49,14 +44,7 @@ export default class StaticTestReporter implements Reporter {
 
   constructor(options: ReporterOptions = {}) {
     this.outputFile = path.resolve(
-      options.outputFile ??
-      path.resolve(
-        process.cwd(),
-        "playwright",
-        "test-artifacts",
-        "reports",
-        "test-report.html",
-      ),
+      options.outputFile ?? path.resolve(process.cwd(), "playwright", "test-artifacts", "reports", "test-report.html"),
     );
     this.startedAt = new Date();
     this.resultsByFolder = new Map();
@@ -81,10 +69,7 @@ export default class StaticTestReporter implements Reporter {
     if (loginMatch) {
       this.loginAlertUrl = loginMatch[1];
       this.writeReport(this.lastFullResult);
-    } else if (
-      this.loginAlertUrl &&
-      text.includes("[sitecore preflight] Looking for Fobles flyout")
-    ) {
+    } else if (this.loginAlertUrl && text.includes("[sitecore preflight] Looking for Fobles flyout")) {
       this.loginAlertUrl = null;
       this.writeReport(this.lastFullResult);
     }
@@ -96,41 +81,19 @@ export default class StaticTestReporter implements Reporter {
     console.log(getFolderName(test));
 
     const screenshots: ScreenshotInfo[] = (result.attachments ?? [])
-      .filter(
-        (attachment) =>
-          attachment.path &&
-          attachment.contentType?.startsWith("image/"),
-      )
-      .map((attachment) => ({
-        name: attachment.name,
-        href: toReportRelativeHref(attachment.path!, this.outputFile),
-      }));
+      .filter((attachment) => attachment.path && attachment.contentType?.startsWith("image/"))
+      .map((attachment) => ({ name: attachment.name, href: toReportRelativeHref(attachment.path!, this.outputFile) }));
 
     const notes: NoteInfo[] = (result.attachments ?? [])
-      .filter(
-        (attachment) =>
-          attachment.contentType === "text/plain" &&
-          attachment.body,
-      )
-      .map((attachment) => ({
-        name: attachment.name,
-        text: attachment.body!.toString("utf8"),
-      }));
+      .filter((attachment) => attachment.contentType === "text/plain" && attachment.body)
+      .map((attachment) => ({ name: attachment.name, text: attachment.body!.toString("utf8") }));
 
     const foblesLogAttachment = (result.attachments ?? []).find(
-      (attachment) =>
-        attachment.contentType === "text/x-fobles-log" &&
-        attachment.path,
+      (attachment) => attachment.contentType === "text/x-fobles-log" && attachment.path,
     );
 
     const foblesLog = foblesLogAttachment?.path
-      ? {
-        name: foblesLogAttachment.name,
-        href: toReportRelativeHref(
-          foblesLogAttachment.path,
-          this.outputFile,
-        ),
-      }
+      ? { name: foblesLogAttachment.name, href: toReportRelativeHref(foblesLogAttachment.path, this.outputFile) }
       : undefined;
 
     console.log("**** Test Ended: ");
@@ -139,31 +102,19 @@ export default class StaticTestReporter implements Reporter {
       console.log(`step: ${step.title}`);
 
       for (const attachment of step.attachments ?? []) {
-        console.log(
-          `\t attachment: ${attachment.name} - ${attachment.path}`,
-        );
+        console.log(`\t attachment: ${attachment.name} - ${attachment.path}`);
       }
     }
 
     if (foblesLog) {
-      console.log(
-        `[reporter] Fobles log: ${foblesLog.href}`,
-      );
+      console.log(`[reporter] Fobles log: ${foblesLog.href}`);
     }
 
     const steps = flattenSteps(result.steps ?? []);
 
-    const remainingScreenshots = matchAttachmentsToSteps(
-      screenshots,
-      steps,
-      "screenshots",
-    );
+    const remainingScreenshots = matchAttachmentsToSteps(screenshots, steps, "screenshots");
 
-    const remainingNotes = matchAttachmentsToSteps(
-      notes,
-      steps,
-      "notes",
-    );
+    const remainingNotes = matchAttachmentsToSteps(notes, steps, "notes");
 
     const folderName = getFolderName(test);
 
@@ -171,8 +122,7 @@ export default class StaticTestReporter implements Reporter {
       this.resultsByFolder.set(folderName, []);
     }
 
-    const folderResults =
-      this.resultsByFolder.get(folderName)!;
+    const folderResults = this.resultsByFolder.get(folderName)!;
 
     const reportResult: ReportResult = {
       index: folderResults.length + 1,
@@ -188,9 +138,7 @@ export default class StaticTestReporter implements Reporter {
 
     folderResults.push(reportResult);
 
-    this.writeReport({
-      status: "running",
-    });
+    this.writeReport({ status: "running" });
   }
 
   onEnd(fullResult: FullResult): void {
@@ -200,14 +148,10 @@ export default class StaticTestReporter implements Reporter {
   private writeReport(fullResult: CurrentFullResult): void {
     this.lastFullResult = fullResult;
 
-    const allResults = Array.from(
-      this.resultsByFolder.values(),
-    ).flat();
+    const allResults = Array.from(this.resultsByFolder.values()).flat();
 
     console.log("-----------------Current results by folder:------------");
-    console.log(
-      [...this.resultsByFolder.keys()]
-    );
+    console.log([...this.resultsByFolder.keys()]);
 
     const liveHtml = renderReport({
       outputFile: this.outputFile,
@@ -220,17 +164,10 @@ export default class StaticTestReporter implements Reporter {
 
     copyAssets(this.outputFile);
 
-    fs.writeFileSync(
-      this.outputFile,
-      liveHtml,
-      "utf8",
-    );
+    fs.writeFileSync(this.outputFile, liveHtml, "utf8");
 
     for (const [folderName, results] of this.resultsByFolder) {
-      const folderOutputFile = path.join(
-        path.dirname(this.outputFile),
-        `test-report-${folderName}.html`,
-      );
+      const folderOutputFile = path.join(path.dirname(this.outputFile), `test-report-${folderName}.html`);
 
       const html = renderReport({
         outputFile: folderOutputFile,
@@ -240,9 +177,7 @@ export default class StaticTestReporter implements Reporter {
         totalTests: results.length,
         loginAlertUrl: this.loginAlertUrl,
       });
-      fs.mkdirSync(path.dirname(folderOutputFile), {
-        recursive: true,
-      });
+      fs.mkdirSync(path.dirname(folderOutputFile), { recursive: true });
       fs.writeFileSync(folderOutputFile, html, "utf8");
     }
     console.log("WRITE REPORT V4");
@@ -261,12 +196,7 @@ function getFolderName(test: TestCase): string {
 function copyAssets(outputPath: string): void {
   const reportDir = path.dirname(outputPath);
 
-  const srcDir = path.resolve(
-    process.cwd(),
-    "tests",
-    "test-report-generator",
-    "assets",
-  );
+  const srcDir = path.resolve(process.cwd(), "tests", "test-report-generator", "assets");
   const destDir = path.join(reportDir, "assets");
 
   fs.cpSync(srcDir, destDir, { recursive: true });

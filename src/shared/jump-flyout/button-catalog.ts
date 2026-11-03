@@ -4,7 +4,7 @@ import {
   AI_GROUP,
   APPLICATION_PAGE_GROUP,
   THIRD_PARTY_GROUP,
-  TREE_JUMP_GROUP
+  TREE_JUMP_GROUP,
 } from "../../constants/flyout-groups";
 import type { FlyoutGroup } from "./jump-flyout.types";
 import type { JumpFlyoutButtonDescriptor } from "./jump-flyout.types";

@@ -2,11 +2,7 @@
 
 import type { AuditFinding } from "../audit-finding.types";
 
-export type AuditExportColumn = {
-  key: string;
-  header: string;
-  getValue: (finding: AuditFinding) => string;
-};
+export type AuditExportColumn = { key: string; header: string; getValue: (finding: AuditFinding) => string };
 
 function orEmpty(value: string | undefined): string {
   return value ?? "";

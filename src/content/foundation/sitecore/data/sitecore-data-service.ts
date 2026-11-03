@@ -35,8 +35,12 @@ export function factNameForTaskType(taskType: WorkerTaskType): SitecoreDataFactN
 // cancelled, and transient worker/navigation/timeout errors - all of those should be retried
 // live next time, never frozen into the cache.
 function isCacheableResult(result: WorkerTaskExecutionResult): result is WorkerTaskSuccessResult {
-  if (result.status !== "success") return false;
-  if (result.type === "get-quick-info") return result.payload.result.status !== "error";
+  if (result.status !== "success") {
+    return false;
+  }
+  if (result.type === "get-quick-info") {
+    return result.payload.result.status !== "error";
+  }
 
   return true;
 }
@@ -85,12 +89,7 @@ export async function getFact<TName extends SitecoreDataFactName>(
 
     return {
       outcome: "resolved",
-      fact: {
-        value: cached.value,
-        source: "cache",
-        cachedAt: cached.cachedAt,
-        lastVerifiedAt: cached.lastVerifiedAt,
-      },
+      fact: { value: cached.value, source: "cache", cachedAt: cached.cachedAt, lastVerifiedAt: cached.lastVerifiedAt },
     };
   }
 

@@ -1,6 +1,11 @@
 import { expect, foblesTest } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
-import { ClickFoblesGraphButton, CloseFoblesGraph, ToggleFoblesWindowCollapse, ToggleFoblesWindowMaximize } from "../../macros/fobles-macros";
+import {
+  ClickFoblesGraphButton,
+  CloseFoblesGraph,
+  ToggleFoblesWindowCollapse,
+  ToggleFoblesWindowMaximize,
+} from "../../macros/fobles-macros";
 import { setupReferenceGraphState } from "../harvest/harvest-test-helpers";
 import { expectBoxClose, getRequiredBoundingBox } from "../../helpers/shared-window-geometry-helpers";
 
@@ -12,33 +17,38 @@ const MAXIMIZE_MARGIN_TOLERANCE_PX = 20;
 // the window to the bottom of the viewport, maximizing fills it, and restoring from either
 // returns the window to its exact pre-toggle rect (the "restoreRect" persistence behavior).
 foblesTest.describe("Shared specialist window collapse and maximize lifecycle", () => {
-  foblesTest("minimizing docks the window to the bottom of the viewport, and restoring returns its previous rect", async ({ page }) => {
-    foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
+  foblesTest(
+    "minimizing docks the window to the bottom of the viewport, and restoring returns its previous rect",
+    async ({ page }) => {
+      foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 
-    await setupReferenceGraphState(page, { rawValues: false, standardFields: false });
-    await ClickFoblesGraphButton(page);
+      await setupReferenceGraphState(page, { rawValues: false, standardFields: false });
+      await ClickFoblesGraphButton(page);
 
-    const dialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
-    await expect(dialog).toBeVisible();
-    const viewport = page.viewportSize();
-    if (!viewport) throw new Error("Expected the page to have a viewport size.");
-    const beforeCollapse = await getRequiredBoundingBox(dialog, "the graph window before collapse");
+      const dialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
+      await expect(dialog).toBeVisible();
+      const viewport = page.viewportSize();
+      if (!viewport) {
+        throw new Error("Expected the page to have a viewport size.");
+      }
+      const beforeCollapse = await getRequiredBoundingBox(dialog, "the graph window before collapse");
 
-    await ToggleFoblesWindowCollapse(page, dialog);
-    await expect(dialog).toHaveClass(/is-collapsed/);
-    const collapsed = await getRequiredBoundingBox(dialog, "the graph window while collapsed");
+      await ToggleFoblesWindowCollapse(page, dialog);
+      await expect(dialog).toHaveClass(/is-collapsed/);
+      const collapsed = await getRequiredBoundingBox(dialog, "the graph window while collapsed");
 
-    expect(collapsed.height).toBeLessThan(COLLAPSED_HEIGHT_CEILING_PX);
-    expect(collapsed.y + collapsed.height).toBeGreaterThan(viewport.height - DOCK_BOTTOM_TOLERANCE_PX);
-    expectBoxClose(collapsed, beforeCollapse, ["x", "width"]);
+      expect(collapsed.height).toBeLessThan(COLLAPSED_HEIGHT_CEILING_PX);
+      expect(collapsed.y + collapsed.height).toBeGreaterThan(viewport.height - DOCK_BOTTOM_TOLERANCE_PX);
+      expectBoxClose(collapsed, beforeCollapse, ["x", "width"]);
 
-    await ToggleFoblesWindowCollapse(page, dialog);
-    await expect(dialog).not.toHaveClass(/is-collapsed/);
-    const restored = await getRequiredBoundingBox(dialog, "the graph window after restoring from collapse");
-    expectBoxClose(restored, beforeCollapse);
+      await ToggleFoblesWindowCollapse(page, dialog);
+      await expect(dialog).not.toHaveClass(/is-collapsed/);
+      const restored = await getRequiredBoundingBox(dialog, "the graph window after restoring from collapse");
+      expectBoxClose(restored, beforeCollapse);
 
-    await CloseFoblesGraph(page);
-  });
+      await CloseFoblesGraph(page);
+    },
+  );
 
   foblesTest("maximizing fills the viewport, and restoring returns its previous rect", async ({ page }) => {
     foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
@@ -49,7 +59,9 @@ foblesTest.describe("Shared specialist window collapse and maximize lifecycle", 
     const dialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
     await expect(dialog).toBeVisible();
     const viewport = page.viewportSize();
-    if (!viewport) throw new Error("Expected the page to have a viewport size.");
+    if (!viewport) {
+      throw new Error("Expected the page to have a viewport size.");
+    }
     const beforeMaximize = await getRequiredBoundingBox(dialog, "the graph window before maximize");
 
     await ToggleFoblesWindowMaximize(page, dialog);

@@ -9,12 +9,8 @@ export type CreateFoblesWrapperOptions = {
   pane?: string;
 };
 
-export type FrameDocumentOptions = {
-  skipMenuOwned?: boolean;
-};
+export type FrameDocumentOptions = { skipMenuOwned?: boolean };
 
-export type MeasureFoblesPaneHeightOptions = {
-  shrinkBy?: number;
-};
+export type MeasureFoblesPaneHeightOptions = { shrinkBy?: number };
 
 export type { SingleInputFieldOptions } from "../fobles.types";

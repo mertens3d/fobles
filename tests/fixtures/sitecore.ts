@@ -18,7 +18,9 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
     const wasDisabled = await frame
       .evaluate((checkboxId) => {
         const checkbox = document.getElementById(checkboxId) as HTMLInputElement | null;
-        if (!checkbox?.checked) return null;
+        if (!checkbox?.checked) {
+          return null;
+        }
         checkbox.click();
         return true;
       }, RAW_VALUES_CHECKBOX_ID)
@@ -33,7 +35,7 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
   }
 }
 
-export async function openContentEditor(page: Page, foValue:string = ""): Promise<void> {
+export async function openContentEditor(page: Page, foValue: string = ""): Promise<void> {
   const path = TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED + (foValue ? `&fo=${foValue}` : "");
   await openSitecorePage(page, path);
 }
@@ -53,9 +55,9 @@ export async function openSitecorePage(page: Page, path = ""): Promise<void> {
   // lets waitForLoadState resolve instantly against the pre-navigation document (e.g. about:blank,
   // which is already "domcontentloaded"), so downstream login/menu checks run too early and never
   // see the real page.
-  
+
   console.log(`[fobles] ${openSitecorePage.name} Page ${url}`);
-  
+
   await page
     .evaluate((targetUrl) => {
       window.location.assign(targetUrl);
@@ -100,21 +102,15 @@ export async function logoutCurrentSitecoreSession(page: Page): Promise<boolean>
 }
 
 export async function enableFobles(page: Page): Promise<void> {
-  const jumpFlyoutTrigger = page
-    .locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER)
-    .first();
-  await expect(jumpFlyoutTrigger).toBeVisible({
-    timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS,
-  });
+  const jumpFlyoutTrigger = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
+  await expect(jumpFlyoutTrigger).toBeVisible({ timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS });
 
   await openFoblesJumpFlyout(page);
 
   const jumpFlyout = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
   await expect(jumpFlyout).toBeVisible({ timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
 
-  const toggle = page
-    .getByRole("button", { name: TEST_CONST.FOBLES.LABELS.TOGGLE_FOBLES })
-    .first();
+  const toggle = page.getByRole("button", { name: TEST_CONST.FOBLES.LABELS.TOGGLE_FOBLES }).first();
   if (await toggle.isVisible().catch(() => false)) {
     await toggle.click();
   }
@@ -125,9 +121,7 @@ export async function openFoblesJumpFlyout(page: Page): Promise<void> {
 
   await page.waitForLoadState("domcontentloaded");
   await expect
-    .poll(async () => await trigger.count(), {
-      timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS,
-    })
+    .poll(async () => await trigger.count(), { timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS })
     .toBeGreaterThan(0);
 
   await trigger.scrollIntoViewIfNeeded();

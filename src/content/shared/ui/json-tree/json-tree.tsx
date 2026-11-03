@@ -11,7 +11,9 @@ function JsonPrimitive({ value }: JsonPrimitiveProps) {
     const truncated = !showAll && value.length > JSON_TREE.MAX_INLINE_STRING_CHARS;
     content = (
       <>
-        <span className={JSON_TREE.CLASS.STRING}>{`"${truncated ? value.slice(0, JSON_TREE.MAX_INLINE_STRING_CHARS) : value}"`}</span>
+        <span
+          className={JSON_TREE.CLASS.STRING}
+        >{`"${truncated ? value.slice(0, JSON_TREE.MAX_INLINE_STRING_CHARS) : value}"`}</span>
         {truncated ? (
           <button type="button" className={JSON_TREE.CLASS.MORE} onClick={() => setShowAll(true)}>
             {`\u2026 ${value.length - JSON_TREE.MAX_INLINE_STRING_CHARS} more chars, ${JSON_TREE.TEXT.SHOW_ALL}`}
@@ -30,7 +32,13 @@ function JsonPrimitive({ value }: JsonPrimitiveProps) {
 function JsonTreeNode({ name, value, depth, defaultOpenDepth }: JsonTreeNodeProps) {
   const entries = getJsonEntries(value);
   const [open, setOpen] = useState(depth < defaultOpenDepth);
-  const nameElement = name === undefined ? null : <><span className={JSON_TREE.CLASS.KEY}>{name}</span>{":"}</>;
+  const nameElement =
+    name === undefined ? null : (
+      <>
+        <span className={JSON_TREE.CLASS.KEY}>{name}</span>
+        {":"}
+      </>
+    );
   let node;
   if (!entries) {
     node = (
@@ -45,7 +53,9 @@ function JsonTreeNode({ name, value, depth, defaultOpenDepth }: JsonTreeNodeProp
       <div className={JSON_TREE.CLASS.LINE}>
         <span className={JSON_TREE.CLASS.SPACER} />
         {nameElement}
-        <span className={JSON_TREE.CLASS.LITERAL}>{Array.isArray(value) ? JSON_TREE.TEXT.EMPTY_ARRAY : JSON_TREE.TEXT.EMPTY_OBJECT}</span>
+        <span className={JSON_TREE.CLASS.LITERAL}>
+          {Array.isArray(value) ? JSON_TREE.TEXT.EMPTY_ARRAY : JSON_TREE.TEXT.EMPTY_OBJECT}
+        </span>
       </div>
     );
   } else {
@@ -70,7 +80,13 @@ function JsonTreeNode({ name, value, depth, defaultOpenDepth }: JsonTreeNodeProp
         {open ? (
           <div className={JSON_TREE.CLASS.CHILDREN}>
             {entries.map(([childName, childValue]) => (
-              <JsonTreeNode key={childName} name={childName} value={childValue} depth={depth + 1} defaultOpenDepth={defaultOpenDepth} />
+              <JsonTreeNode
+                key={childName}
+                name={childName}
+                value={childValue}
+                depth={depth + 1}
+                defaultOpenDepth={defaultOpenDepth}
+              />
             ))}
           </div>
         ) : null}

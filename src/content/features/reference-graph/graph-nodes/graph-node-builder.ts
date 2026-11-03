@@ -3,15 +3,23 @@
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
-import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../../../foundation/reference-data/processing/processing-state";
-import { GRAPH_COLLAPSE_KEY, type GraphCollapseKey } from "../../../foundation/reference-data/model/graph-collapse.types";
+import type {
+  ProcessingStateByTreeNodeId,
+  ProcessingStatus,
+} from "../../../foundation/reference-data/processing/processing-state";
+import {
+  GRAPH_COLLAPSE_KEY,
+  type GraphCollapseKey,
+} from "../../../foundation/reference-data/model/graph-collapse.types";
 import { kindClass } from "./graph-helpers";
 import { resolveNodeLabel } from "../../../shared/ui/reference-model/node-label-resolver";
 import { NODE_PRESENTATION_BY_KIND } from "../../../shared/ui/reference-model/node-presentation";
 import type { GraphNodeData } from "./graph-node.types";
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import { iconForProcessingState } from "./processing-icon";
+
 export const COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group";
+
 export const INVISIBLE_COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group--invisible";
 
 type CompoundGroupDefinition = {
@@ -28,59 +36,39 @@ type AppendGraphNodeOptions = {
 };
 
 const COMPOUND_GROUP_DEFINITIONS: readonly CompoundGroupDefinition[] = [
-  {
-    idSuffix: "group",
-    rootCollapseKey: GRAPH_COLLAPSE_KEY.CHILDREN,
-    memberCollapseKeys: [
-      GRAPH_COLLAPSE_KEY.CHILD,
-    ],
-  },
+  { idSuffix: "group", rootCollapseKey: GRAPH_COLLAPSE_KEY.CHILDREN, memberCollapseKeys: [GRAPH_COLLAPSE_KEY.CHILD] },
   {
     idSuffix: "group",
     rootCollapseKey: GRAPH_COLLAPSE_KEY.RENDERING,
-    memberCollapseKeys: [
-      GRAPH_COLLAPSE_KEY.DATASOURCE,
-      GRAPH_COLLAPSE_KEY.RENDERING_PARAMETERS,
-    ],
+    memberCollapseKeys: [GRAPH_COLLAPSE_KEY.DATASOURCE, GRAPH_COLLAPSE_KEY.RENDERING_PARAMETERS],
     includeMemberDescendants: true,
   },
   {
     idSuffix: "group",
     rootCollapseKey: GRAPH_COLLAPSE_KEY.PLACEHOLDER,
-    memberCollapseKeys: [
-      GRAPH_COLLAPSE_KEY.PLACEHOLDER,
-      GRAPH_COLLAPSE_KEY.RENDERING,
-    ],
+    memberCollapseKeys: [GRAPH_COLLAPSE_KEY.PLACEHOLDER, GRAPH_COLLAPSE_KEY.RENDERING],
     includeMemberDescendants: true,
   },
   {
     idSuffix: "group",
     rootCollapseKey: GRAPH_COLLAPSE_KEY.LAYOUTS,
-    memberCollapseKeys: [
-      GRAPH_COLLAPSE_KEY.LAYOUT_SECTION,
-    ],
+    memberCollapseKeys: [GRAPH_COLLAPSE_KEY.LAYOUT_SECTION],
     includeMemberDescendants: true,
   },
   {
     idSuffix: "group",
     rootCollapseKey: GRAPH_COLLAPSE_KEY.CUSTOM_FIELDS,
-    memberCollapseKeys: [
-      GRAPH_COLLAPSE_KEY.SECTION,
-    ],
+    memberCollapseKeys: [GRAPH_COLLAPSE_KEY.SECTION],
   },
   {
     idSuffix: "group",
     rootCollapseKey: GRAPH_COLLAPSE_KEY.STANDARD_FIELDS,
-    memberCollapseKeys: [
-      GRAPH_COLLAPSE_KEY.SECTION,
-    ],
+    memberCollapseKeys: [GRAPH_COLLAPSE_KEY.SECTION],
   },
   {
     idSuffix: "group",
     rootCollapseKey: GRAPH_COLLAPSE_KEY.SECTION,
-    memberCollapseKeys: [
-      GRAPH_COLLAPSE_KEY.FIELD,
-    ],
+    memberCollapseKeys: [GRAPH_COLLAPSE_KEY.FIELD],
     includeMemberDescendants: true,
   },
 ];
@@ -120,7 +108,11 @@ function appendGraphNodeInternal(
     cytoNodes.push(createCompoundGroupElement(treeNode, groupId, compoundParentNodeId));
   }
 
-  const projectedNode = projectGraphNode(treeNode, semanticParentTreeNodeId, processingStateByTreeNodeId.get(treeNode.treeNodeId));
+  const projectedNode = projectGraphNode(
+    treeNode,
+    semanticParentTreeNodeId,
+    processingStateByTreeNodeId.get(treeNode.treeNodeId),
+  );
 
   if (groupId) {
     projectedNode.data.parent = groupId;
@@ -149,11 +141,17 @@ function appendGraphNodeInternal(
       childPropagateCompoundParent = true;
     }
 
-    appendGraphNodeInternal(childTreeNode, cytoNodes, cytoEdges, {
-      semanticParentTreeNodeId: treeNode.treeNodeId,
-      compoundParentNodeId: childCompoundParentNodeId,
-      propagateCompoundParent: childPropagateCompoundParent,
-    }, processingStateByTreeNodeId);
+    appendGraphNodeInternal(
+      childTreeNode,
+      cytoNodes,
+      cytoEdges,
+      {
+        semanticParentTreeNodeId: treeNode.treeNodeId,
+        compoundParentNodeId: childCompoundParentNodeId,
+        propagateCompoundParent: childPropagateCompoundParent,
+      },
+      processingStateByTreeNodeId,
+    );
   });
 }
 
@@ -168,15 +166,15 @@ function appendRelationshipEdge(
     cytoEdges.push({
       data: reverse
         ? {
-          id: `edge-${treeNode.treeNodeId}-${semanticParentTreeNodeId}`,
-          source: treeNode.treeNodeId,
-          target: semanticParentTreeNodeId,
-        }
+            id: `edge-${treeNode.treeNodeId}-${semanticParentTreeNodeId}`,
+            source: treeNode.treeNodeId,
+            target: semanticParentTreeNodeId,
+          }
         : {
-          id: `edge-${semanticParentTreeNodeId}-${treeNode.treeNodeId}`,
-          source: semanticParentTreeNodeId,
-          target: treeNode.treeNodeId,
-        },
+            id: `edge-${semanticParentTreeNodeId}-${treeNode.treeNodeId}`,
+            source: semanticParentTreeNodeId,
+            target: treeNode.treeNodeId,
+          },
     });
   }
 }
@@ -185,7 +183,9 @@ function findCompoundGroupDefinition(treeNode: ReferenceModelNode): CompoundGrou
   return COMPOUND_GROUP_DEFINITIONS.find(
     (definition) =>
       definition.rootCollapseKey === getGraphPresentationState(treeNode).collapseKey &&
-      treeNode.children.some((childTreeNode) => definition.memberCollapseKeys.includes(getGraphPresentationState(childTreeNode).collapseKey)),
+      treeNode.children.some((childTreeNode) =>
+        definition.memberCollapseKeys.includes(getGraphPresentationState(childTreeNode).collapseKey),
+      ),
   );
 }
 
@@ -213,7 +213,12 @@ function createCompoundGroupElement(
     pannable: true,
   };
 }
-export function projectGraphNode(treeNode: ReferenceModelNode, parentTreeNodeId?: string, processingStatus?: ProcessingStatus): ProjectedGraphNode {
+
+export function projectGraphNode(
+  treeNode: ReferenceModelNode,
+  parentTreeNodeId?: string,
+  processingStatus?: ProcessingStatus,
+): ProjectedGraphNode {
   const { kind, relationshipToParent = "contained", reverse = false } = getGraphPresentationState(treeNode);
   const renderingParameter = treeNode.provenance.type === "rendering-parameter" ? treeNode.provenance : undefined;
   const itemIcon = treeNode.nodeType === "item" ? treeNode.scItem.scItemIcon : undefined;
@@ -236,8 +241,8 @@ export function projectGraphNode(treeNode: ReferenceModelNode, parentTreeNodeId?
     enrichmentStatus: treeNode.nodeType === "item" ? processingStatus : undefined,
   };
 
-  const classes = [kindClass(kind), getFilterClass(treeNode)].filter(
-    (className): className is string => Boolean(className),
+  const classes = [kindClass(kind), getFilterClass(treeNode)].filter((className): className is string =>
+    Boolean(className),
   );
 
   return { data: graphNodeData, classes };
@@ -247,7 +252,9 @@ function getFilterClass(treeNode: ReferenceModelNode): string | undefined {
   let filterClass: string | undefined;
 
   const { branch } = getGraphPresentationState(treeNode);
-  if (branch) filterClass = CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS[branch];
+  if (branch) {
+    filterClass = CONST.FOBLES.REFERENCE_GRAPH.FILTER_CLASS[branch];
+  }
 
   return filterClass;
 }

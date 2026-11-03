@@ -6,11 +6,21 @@ import { findFieldInput } from "../../helpers/harvest-helpers";
 import { isGuidLike } from "../../../../sitecore/guid";
 import { readRenderingAttribute } from "./rendering-xml-attributes";
 import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
-import { factoryItemGraphNodeData, type ItemGraphNodeData, type LayoutDevice, type LayoutPlacement, type LayoutSectionField, type ScControl } from "../../../../reference-data/model/sitecore-item.types";
+import {
+  factoryItemGraphNodeData,
+  type ItemGraphNodeData,
+  type LayoutDevice,
+  type LayoutPlacement,
+  type LayoutSectionField,
+  type ScControl,
+} from "../../../../reference-data/model/sitecore-item.types";
 import type { HarvestContext } from "../../../sitecore-harvester.types";
 
 export const collectLayouts = (harvestContext: HarvestContext): Promise<void> => {
-  harvestContext.result.layoutSectionFields = [processLayoutFieldValue(harvestContext, "Renderings"), processLayoutFieldValue(harvestContext, "Final renderings")];
+  harvestContext.result.layoutSectionFields = [
+    processLayoutFieldValue(harvestContext, "Renderings"),
+    processLayoutFieldValue(harvestContext, "Final renderings"),
+  ];
   return Promise.resolve();
 };
 
@@ -19,12 +29,16 @@ const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: str
   const layoutSectionField: LayoutSectionField = { name: layoutName, devices: [], rawMarkup: sectionFieldHtml?.value };
   const xml = sectionFieldHtml?.value;
 
-  if (!xml) return layoutSectionField;
+  if (!xml) {
+    return layoutSectionField;
+  }
 
   const rawProcessedXml = processLayoutXml(xml);
   extensionLog.debug("Processed layout XML:", rawProcessedXml);
 
-  if (!rawProcessedXml) return layoutSectionField;
+  if (!rawProcessedXml) {
+    return layoutSectionField;
+  }
 
   for (const device of rawProcessedXml.r.d) {
     const controls = (device.r ?? []).map((rendering): { placeholderPath: string; control: ScControl } => ({
@@ -51,7 +65,9 @@ const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: str
   return layoutSectionField;
 };
 
-export function createLayoutPlacements(controls: ReadonlyArray<{ placeholderPath: string; control: ScControl }>): LayoutPlacement[] {
+export function createLayoutPlacements(
+  controls: ReadonlyArray<{ placeholderPath: string; control: ScControl }>,
+): LayoutPlacement[] {
   const roots: LayoutPlacement[] = [];
   const placementsByPath = new Map<string, LayoutPlacement>();
 
@@ -72,7 +88,9 @@ export function createLayoutPlacements(controls: ReadonlyArray<{ placeholderPath
         children.push(placement);
       }
 
-      if (!placement.sourcePaths.includes(rawPath)) placement.sourcePaths.push(rawPath);
+      if (!placement.sourcePaths.includes(rawPath)) {
+        placement.sourcePaths.push(rawPath);
+      }
       children = placement.placements;
     }
 
@@ -91,13 +109,20 @@ function stripDynamicPlaceholderSuffix(segment: string): string {
   return segment.replace(/-\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\}-\d+$/i, "");
 }
 
-function createDatasourceItem(datasource: string | undefined, currentItemPath: string | undefined): ItemGraphNodeData | undefined {
-  if (!datasource) return undefined;
+function createDatasourceItem(
+  datasource: string | undefined,
+  currentItemPath: string | undefined,
+): ItemGraphNodeData | undefined {
+  if (!datasource) {
+    return undefined;
+  }
 
   const item = factoryItemGraphNodeData();
 
   if (datasource.toLowerCase().startsWith("local:")) {
-    if (currentItemPath) item.scItemPath = currentItemPath + datasource.slice("local:".length);
+    if (currentItemPath) {
+      item.scItemPath = currentItemPath + datasource.slice("local:".length);
+    }
   } else if (datasource.startsWith("/")) {
     item.scItemPath = datasource;
   } else {
@@ -122,7 +147,11 @@ function parseReferenceParameters(raw?: string): Record<string, string> {
 }
 
 function processLayoutXml(xml: string): SitecoreLayoutXml | undefined {
-  const parser = new XMLParser({ ignoreAttributes: false, attributeNamePrefix: "", isArray: (_name, jPath) => jPath === "r.d" || jPath === "r.d.r" });
+  const parser = new XMLParser({
+    ignoreAttributes: false,
+    attributeNamePrefix: "",
+    isArray: (_name, jPath) => jPath === "r.d" || jPath === "r.d.r",
+  });
 
   try {
     return parser.parse(xml) as SitecoreLayoutXml;

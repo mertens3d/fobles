@@ -15,9 +15,7 @@ type ConfirmationState = {
 const confirmationStates = new WeakMap<Document, ConfirmationState>();
 let afterNavigationHandler: (() => void) | null = null;
 
-export function setAfterFoblesNavigationHandler(
-  handler: (() => void) | null,
-): void {
+export function setAfterFoblesNavigationHandler(handler: (() => void) | null): void {
   afterNavigationHandler = handler;
 }
 
@@ -29,7 +27,9 @@ const turnOffFoblesAfterNavigation = async (): Promise<void> => {
 
 const getOrCreateConfirmation = (doc: Document): ConfirmationState => {
   const existing = confirmationStates.get(doc);
-  if (existing?.dialog.isConnected) return existing;
+  if (existing?.dialog.isConnected) {
+    return existing;
+  }
 
   const dialog = doc.createElement("dialog");
   dialog.className = FOBLES.CLASSES.DIALOG.BASE;
@@ -62,7 +62,9 @@ const getOrCreateConfirmation = (doc: Document): ConfirmationState => {
 
   const state: ConfirmationState = { dialog, setting };
   const finish = (confirmed: boolean): void => {
-    if (!state.resolve) return;
+    if (!state.resolve) {
+      return;
+    }
     const resolve = state.resolve;
     state.resolve = undefined;
     dialog.close();
@@ -83,7 +85,9 @@ const getOrCreateConfirmation = (doc: Document): ConfirmationState => {
 
 const confirmSameTabNavigation = async (doc: Document): Promise<boolean> => {
   const warningVisible = await getFoblesNavWarningVisible();
-  if (!warningVisible) return true;
+  if (!warningVisible) {
+    return true;
+  }
 
   const state = getOrCreateConfirmation(doc);
   if (state.dialog.open) {
@@ -119,10 +123,7 @@ export function ensurePathShape(
   const lowered = withoutLeadingSlash.toLowerCase();
 
   if (kind === "media") {
-    if (
-      lowered.startsWith("sitecore/media%20library/") ||
-      lowered.startsWith("media%20library/")
-    ) {
+    if (lowered.startsWith("sitecore/media%20library/") || lowered.startsWith("media%20library/")) {
       return `/${withoutLeadingSlash}`;
     }
 
@@ -209,7 +210,6 @@ export async function openFoblesUrl(url: string, event?: MouseEvent): Promise<vo
       } catch {
         view.location.assign(url);
       }
-
     }
   }
 }

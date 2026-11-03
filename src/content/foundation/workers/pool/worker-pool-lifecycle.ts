@@ -4,6 +4,7 @@ import { closeWorkerTarget, sendCancelToWorkerTarget } from "../transport/worker
 import type { ActiveWorkerTask, PoolWorker, QueuedTask } from "../tasks/worker-task.types";
 import { clearWorkerReadiness } from "./worker-readiness";
 import { createCancelledResult } from "../tasks/worker-task.types";
+
 type DisposeWorkerPoolOptions = {
   workers: PoolWorker[];
   queue: QueuedTask[];
@@ -11,8 +12,16 @@ type DisposeWorkerPoolOptions = {
   cancelledRequestIds: Set<string>;
   generation: number;
 };
-export type WorkerPoolDisposalResult = { generation: number; };
-export async function disposeWorkerPoolLifecycle({ workers, queue, activeTaskByWorkerKey, cancelledRequestIds, generation }: DisposeWorkerPoolOptions): Promise<WorkerPoolDisposalResult> {
+
+export type WorkerPoolDisposalResult = { generation: number };
+
+export async function disposeWorkerPoolLifecycle({
+  workers,
+  queue,
+  activeTaskByWorkerKey,
+  cancelledRequestIds,
+  generation,
+}: DisposeWorkerPoolOptions): Promise<WorkerPoolDisposalResult> {
   const nextGeneration = generation + 1;
   queue.forEach((queued) => queued.resolve(createCancelledResult(queued.task)));
   const active = Array.from(activeTaskByWorkerKey.values());
@@ -23,7 +32,14 @@ export async function disposeWorkerPoolLifecycle({ workers, queue, activeTaskByW
   activeTaskByWorkerKey.clear();
   clearWorkerReadiness();
   const targets = collectWorkerTargets(workers);
-  extensionLog.debug("Worker pool: immediate disposal started", { previousGeneration: generation, nextGeneration, workerCount: workers.length, queuedTaskCount: queue.length, activeTaskCount: active.length, targetCount: targets.length });
+  extensionLog.debug("Worker pool: immediate disposal started", {
+    previousGeneration: generation,
+    nextGeneration,
+    workerCount: workers.length,
+    queuedTaskCount: queue.length,
+    activeTaskCount: active.length,
+    targetCount: targets.length,
+  });
   const closeResults = await Promise.allSettled(targets.map((target) => closeWorkerTarget(target)));
   closeResults.forEach((result, index) => {
     if (result.status === "rejected") {
@@ -32,14 +48,20 @@ export async function disposeWorkerPoolLifecycle({ workers, queue, activeTaskByW
     }
   });
   cancelledRequestIds.clear();
-  extensionLog.debug("Worker pool: disposed", { generation: nextGeneration, closedTargets: targets, failedTargetCount: closeResults.filter((result) => result.status === "rejected").length });
+  extensionLog.debug("Worker pool: disposed", {
+    generation: nextGeneration,
+    closedTargets: targets,
+    failedTargetCount: closeResults.filter((result) => result.status === "rejected").length,
+  });
   return { generation: nextGeneration };
 }
 function collectWorkerTargets(workers: readonly PoolWorker[]): NonNullable<PoolWorker["target"]>[] {
   const targetsByKey = new Map<string, NonNullable<PoolWorker["target"]>>();
   workers.forEach((worker) => {
     const target = worker.target;
-    if (target) targetsByKey.set(target.kind === "tab" ? `tab:${target.tabId}` : `iframe:${target.workerId}`, target);
+    if (target) {
+      targetsByKey.set(target.kind === "tab" ? `tab:${target.tabId}` : `iframe:${target.workerId}`, target);
+    }
   });
   return Array.from(targetsByKey.values());
 }

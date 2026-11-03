@@ -1,13 +1,15 @@
 // @source-path [fobles] src/content/foundation/workers/tasks/worker-task.types.ts
 
-import type { ItemGraphNodeData, SitecoreHarvestSection, LayoutSectionField } from "../../reference-data/model/sitecore-item.types";
+import type {
+  ItemGraphNodeData,
+  SitecoreHarvestSection,
+  LayoutSectionField,
+} from "../../reference-data/model/sitecore-item.types";
 import type { WorkerTarget } from "../pool/worker-target";
 
 // An item reference as actually requested of Sitecore - as opposed to an ambiguous
 // itemIdOrPath string, every item-oriented operation says explicitly which kind it means.
-export type SitecoreItemLocator =
-  | { kind: "id"; value: string }
-  | { kind: "path"; value: string };
+export type SitecoreItemLocator = { kind: "id"; value: string } | { kind: "path"; value: string };
 
 // Carries both what was asked for and what Sitecore actually resolved, so a caller can tell
 // "found the right item" apart from "Sitecore silently fell back to a different item" (e.g. an
@@ -40,16 +42,22 @@ type WorkerTaskBase<TType extends WorkerTaskType> = {
   url: string;
 };
 
-export type GetQuickInfoTask = WorkerTaskBase<"get-quick-info"> & {
-  requested: SitecoreItemLocator;
-};
+export type GetQuickInfoTask = WorkerTaskBase<"get-quick-info"> & { requested: SitecoreItemLocator };
+
 export type GetParentTask = WorkerTaskBase<"get-parent">;
+
 export type GetChildrenTask = WorkerTaskBase<"get-children">;
+
 export type GetReferrersTask = WorkerTaskBase<"get-referrers">;
+
 export type GetCustomFieldsTask = WorkerTaskBase<"get-custom-fields">;
+
 export type GetStandardFieldsTask = WorkerTaskBase<"get-standard-fields">;
+
 export type GetLayoutTask = WorkerTaskBase<"get-layout">;
+
 export type SetRawValuesTask = WorkerTaskBase<"set-raw-values"> & { value: boolean };
+
 export type SetStandardFieldsTask = WorkerTaskBase<"set-standard-fields"> & { value: boolean };
 
 export type WorkerTask =
@@ -75,85 +83,52 @@ export type WorkerTaskPayloadByType = {
   "set-standard-fields": { value: boolean };
 };
 
-type WorkerTaskResultBase<TType extends WorkerTaskType> = {
-  requestId: string;
-  taskId: string;
-  type: TType;
+type WorkerTaskResultBase<TType extends WorkerTaskType> = { requestId: string; taskId: string; type: TType };
+
+type WorkerTaskSuccessResultFor<TType extends WorkerTaskType> = WorkerTaskResultBase<TType> & {
+  status: "success";
+  payload: WorkerTaskPayloadByType[TType];
 };
 
-type WorkerTaskSuccessResultFor<TType extends WorkerTaskType> =
-  WorkerTaskResultBase<TType> & {
-    status: "success";
-    payload: WorkerTaskPayloadByType[TType];
-  };
-
 // Distributing the mapped type over WorkerTaskType builds a true discriminated union.
-export type WorkerTaskSuccessResult =
-  { [TType in WorkerTaskType]: WorkerTaskSuccessResultFor<TType> }[WorkerTaskType];
+export type WorkerTaskSuccessResult = { [TType in WorkerTaskType]: WorkerTaskSuccessResultFor<TType> }[WorkerTaskType];
 
-export type WorkerTaskErrorResult =
-  { [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & {
-      status: "error";
-      errorMessage: string;
-    } }[WorkerTaskType];
+export type WorkerTaskErrorResult = {
+  [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & { status: "error"; errorMessage: string };
+}[WorkerTaskType];
 
-export type WorkerTaskCancelledResult =
-  { [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & {
-      status: "cancelled";
-    } }[WorkerTaskType];
+export type WorkerTaskCancelledResult = {
+  [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & { status: "cancelled" };
+}[WorkerTaskType];
 
-export type WorkerTaskResult =
-  | WorkerTaskSuccessResult
-  | WorkerTaskErrorResult
-  | WorkerTaskCancelledResult;
+export type WorkerTaskResult = WorkerTaskSuccessResult | WorkerTaskErrorResult | WorkerTaskCancelledResult;
 
 // @keep A Sitecore editor-state callback replaced the DOM generation used by this worker.
 // @keep The pool must retire this worker and retry the task on a fresh document.
-export type WorkerTaskDocumentStaleResult =
-  { [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & {
-      status: "document-stale";
-    } }[WorkerTaskType];
+export type WorkerTaskDocumentStaleResult = {
+  [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & { status: "document-stale" };
+}[WorkerTaskType];
 
-export type WorkerTaskExecutionResult =
-  | WorkerTaskResult
-  | WorkerTaskDocumentStaleResult;
+export type WorkerTaskExecutionResult = WorkerTaskResult | WorkerTaskDocumentStaleResult;
 
 export function isSuccessResult(result: WorkerTaskResult): result is WorkerTaskSuccessResult {
   return result.status === "success";
 }
 
-export function isDocumentStaleResult(
-  result: WorkerTaskExecutionResult,
-): result is WorkerTaskDocumentStaleResult {
+export function isDocumentStaleResult(result: WorkerTaskExecutionResult): result is WorkerTaskDocumentStaleResult {
   return result.status === "document-stale";
 }
 
 export function createDocumentStaleResult(task: WorkerTask): WorkerTaskDocumentStaleResult {
-  return {
-    requestId: task.requestId,
-    taskId: task.taskId,
-    type: task.type,
-    status: "document-stale",
-  };
+  return { requestId: task.requestId, taskId: task.taskId, type: task.type, status: "document-stale" };
 }
 
 export function createErrorResult(task: WorkerTask, errorMessage: string): WorkerTaskErrorResult {
-  return {
-    requestId: task.requestId,
-    taskId: task.taskId,
-    type: task.type,
-    status: "error",
-    errorMessage,
-  };
+  return { requestId: task.requestId, taskId: task.taskId, type: task.type, status: "error", errorMessage };
 }
 
 export function createCancelledResult(task: WorkerTask): WorkerTaskCancelledResult {
-  return {
-    requestId: task.requestId,
-    taskId: task.taskId,
-    type: task.type,
-    status: "cancelled",
-  };
+  return { requestId: task.requestId, taskId: task.taskId, type: task.type, status: "cancelled" };
 }
 
 export type PoolWorkerState = "starting" | "idle" | "busy" | "retired";
@@ -180,11 +155,7 @@ export type QueuedTask = {
   resolve: (result: WorkerTaskResult) => void;
 };
 
-export type ActiveWorkerTask = {
-  target: WorkerTarget;
-  requestId: string;
-  taskId: string;
-};
+export type ActiveWorkerTask = { target: WorkerTarget; requestId: string; taskId: string };
 
 export type WorkerExecutorContext = {
   activeTaskByWorkerKey: Map<string, ActiveWorkerTask>;

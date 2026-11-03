@@ -25,7 +25,9 @@ const renderSelectedFobles = (
 
   const option = select.options[select.selectedIndex];
   const value = extractGuid(option?.value);
-  if (!value) return;
+  if (!value) {
+    return;
+  }
 
   const label = option?.textContent?.trim() || value;
   const buttonText = config.getButtonText?.(select, label) ?? label;
@@ -33,14 +35,9 @@ const renderSelectedFobles = (
   wrapper.appendChild(button);
 };
 
-export function applyDroplinkStrategy(
-  doc: Document,
-  config: DroplinkConfig,
-): void {
+export function applyDroplinkStrategy(doc: Document, config: DroplinkConfig): void {
   doc.querySelectorAll<HTMLSelectElement>(config.FoblesTopSelector).forEach((select) => {
-    const shouldProcess =
-      !select.hasAttribute(FOBLES.ATTRIBUTES.MARKER) &&
-      isDroplink(select);
+    const shouldProcess = !select.hasAttribute(FOBLES.ATTRIBUTES.MARKER) && isDroplink(select);
 
     if (shouldProcess) {
       const wrapper = createWrapper(doc);

@@ -5,9 +5,7 @@ let lastKnownMousePosition: MouseCoordinates | null = null;
 
 export function getLastKnownMousePosition(): MouseCoordinates {
   if (lastKnownMousePosition === null) {
-    console.error(
-      "[getLastKnownMousePosition] No last known mouse position, using fallback { x: 0, y: 0 }",
-    );
+    console.error("[getLastKnownMousePosition] No last known mouse position, using fallback { x: 0, y: 0 }");
 
     return { x: 0, y: 0 };
   }

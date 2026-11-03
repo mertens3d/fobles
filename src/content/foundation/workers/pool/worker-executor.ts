@@ -52,7 +52,9 @@ function startJobClock(queued: QueuedTask): void {
 }
 async function withinJobDeadline<T>(queued: QueuedTask, operation: Promise<T>, label: string): Promise<T> {
   const remainingMs = remainingJobMs(queued);
-  if (remainingMs <= 0) throw new Error(`Worker job deadline exhausted before ${label}`);
+  if (remainingMs <= 0) {
+    throw new Error(`Worker job deadline exhausted before ${label}`);
+  }
   let timeoutId: ReturnType<typeof setTimeout> | undefined;
   try {
     return await Promise.race([
@@ -62,7 +64,9 @@ async function withinJobDeadline<T>(queued: QueuedTask, operation: Promise<T>, l
       }),
     ]);
   } finally {
-    if (timeoutId !== undefined) clearTimeout(timeoutId);
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
   }
 }
 
@@ -261,7 +265,9 @@ async function runTaskOnWorker(context: WorkerExecutorContext, worker: PoolWorke
   } catch (error) {
     extensionLog.warn("Worker pool: task execution failed", { workerKey, task: queued.task, error });
   } finally {
-    if (timeoutId !== undefined) clearTimeout(timeoutId);
+    if (timeoutId !== undefined) {
+      clearTimeout(timeoutId);
+    }
     context.activeTaskByWorkerKey.delete(workerKey);
   }
   if (timedOut) {
@@ -345,7 +351,9 @@ async function prepareCreatedTarget(
   worker.currentUrl = queued.task.url;
   worker.lastProgressAt = performance.now();
 
-  if (isWorkerTabTarget(target)) await waitForWorkerReady(target.tabId, READY_TIMEOUT_MS);
+  if (isWorkerTabTarget(target)) {
+    await waitForWorkerReady(target.tabId, READY_TIMEOUT_MS);
+  }
 
   if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
     await cancelAndDestroyNewWorker(context, worker, queued, target, "new-worker-stale-after-ready");
@@ -402,7 +410,9 @@ async function runOnNewWorker(context: WorkerExecutorContext, worker: PoolWorker
 
   try {
     const ready = await prepareCreatedTarget(context, worker, queued, target);
-    if (ready) await runTaskOnWorker(context, worker, queued);
+    if (ready) {
+      await runTaskOnWorker(context, worker, queued);
+    }
   } catch (error) {
     extensionLog.warn("Worker pool: worker failed to become ready", {
       target,
@@ -412,7 +422,9 @@ async function runOnNewWorker(context: WorkerExecutorContext, worker: PoolWorker
     });
 
     if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
-      if (!worker.target) worker.target = target;
+      if (!worker.target) {
+        worker.target = target;
+      }
       context.retireWorker(worker);
       queued.resolve(createCancelledResult(queued.task));
       await context.destroyRetiredWorker(worker, "worker-ready-failed-after-retirement");
@@ -434,9 +446,13 @@ async function navigateExistingWorker(
 ): Promise<boolean> {
   const target = worker.target;
 
-  if (!target || isWorkerRetired(worker)) return false;
+  if (!target || isWorkerRetired(worker)) {
+    return false;
+  }
 
-  if (isWorkerTabTarget(target)) resetWorkerReadiness(target.tabId);
+  if (isWorkerTabTarget(target)) {
+    resetWorkerReadiness(target.tabId);
+  }
 
   const updatedTarget = await withinJobDeadline(
     queued,
@@ -451,7 +467,9 @@ async function navigateExistingWorker(
 
   worker.target = updatedTarget;
 
-  if (isWorkerTabTarget(updatedTarget)) await waitForWorkerReady(updatedTarget.tabId, READY_TIMEOUT_MS);
+  if (isWorkerTabTarget(updatedTarget)) {
+    await waitForWorkerReady(updatedTarget.tabId, READY_TIMEOUT_MS);
+  }
 
   if (isWorkerRetired(worker) || !context.isCurrentGeneration()) {
     cancelStaleWorker(context, worker, queued);

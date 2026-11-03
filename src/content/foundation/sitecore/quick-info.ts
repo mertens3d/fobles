@@ -3,16 +3,17 @@ import type { QuickInfo, QuickInfoTemplate } from "./quick-info.types";
 
 export const getQuickInfo = (doc: Document): QuickInfo => {
   const labelPrefix = CONST.SITECORE.QUICK_INFO.LABEL_PREFIX;
-  const quickInfoTables = doc.querySelectorAll<HTMLTableElement>(
-    CONST.SITECORE.SELECTORS.QUICK_INFO_CELL,
-  );
+  const quickInfoTables = doc.querySelectorAll<HTMLTableElement>(CONST.SITECORE.SELECTORS.QUICK_INFO_CELL);
   const quickInfo: QuickInfo = {
     itemId: undefined,
     itemPath: undefined,
     template: undefined,
     itemName: undefined,
     icon: getItemHeaderIcon(doc),
-    rawMarkup: Array.from(quickInfoTables).map((table) => table.outerHTML).join("\n") || undefined,
+    rawMarkup:
+      Array.from(quickInfoTables)
+        .map((table) => table.outerHTML)
+        .join("\n") || undefined,
   };
 
   for (const table of quickInfoTables) {
@@ -50,11 +51,11 @@ function getQuickInfoItemNameFromRow(row: HTMLTableRowElement): string | undefin
 function getQuickInfoTemplateFromRow(row: HTMLTableRowElement): QuickInfoTemplate | undefined {
   const cell = row.cells.item(1);
   const path = cell?.querySelector<HTMLAnchorElement>("a")?.textContent?.trim();
-  const id = cell
-    ?.querySelector<HTMLInputElement>("input.scEditorHeaderQuickInfoInputID[readonly]")
-    ?.value.trim();
+  const id = cell?.querySelector<HTMLInputElement>("input.scEditorHeaderQuickInfoInputID[readonly]")?.value.trim();
   let template: QuickInfoTemplate | undefined;
-  if (path || id) template = { path, id };
+  if (path || id) {
+    template = { path, id };
+  }
   return template;
 }
 
@@ -63,5 +64,7 @@ function getQuickInfoFromRow(row: HTMLTableRowElement) {
     .item(1)
     ?.querySelector<HTMLInputElement>("input.scEditorHeaderQuickInfoInput[readonly]");
   const value = valueElement?.value.trim() ?? row.cells.item(1)?.textContent?.trim();
-  if (value) return value;
+  if (value) {
+    return value;
+  }
 }

@@ -2,7 +2,11 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { centeredRect, clampRect, parsePersistedFoblesWindowState } from "../../../src/content/shared/dialog/fobles-window-geometry-math.ts";
+import {
+  centeredRect,
+  clampRect,
+  parsePersistedFoblesWindowState,
+} from "../../../src/content/shared/dialog/fobles-window-geometry-math.ts";
 
 function fakeWindow(innerWidth: number, innerHeight: number): Window {
   return { innerWidth, innerHeight } as unknown as Window;
@@ -40,7 +44,15 @@ void test("centeredRect centers within the viewport", () => {
 });
 
 void test("parsePersistedFoblesWindowState accepts the current typed record", () => {
-  const stored = { type: "foblesWindowState", left: 50, top: 50, width: 400, height: 300, collapsed: false, maximized: false };
+  const stored = {
+    type: "foblesWindowState",
+    left: 50,
+    top: 50,
+    width: 400,
+    height: 300,
+    collapsed: false,
+    maximized: false,
+  };
   const result = parsePersistedFoblesWindowState(stored, WIN, 100, 100);
   assert.deepEqual(result, { left: 50, top: 50, width: 400, height: 300, collapsed: false, maximized: false });
 });
@@ -58,12 +70,22 @@ void test("parsePersistedFoblesWindowState defaults missing collapsed/maximized 
 });
 
 void test("parsePersistedFoblesWindowState ignores unknown extra fields", () => {
-  const result = parsePersistedFoblesWindowState({ left: 0, top: 0, width: 400, height: 300, somethingUnknown: "x" }, WIN, 100, 100);
+  const result = parsePersistedFoblesWindowState(
+    { left: 0, top: 0, width: 400, height: 300, somethingUnknown: "x" },
+    WIN,
+    100,
+    100,
+  );
   assert.deepEqual(Object.keys(result ?? {}).sort(), ["collapsed", "height", "left", "maximized", "top", "width"]);
 });
 
 void test("parsePersistedFoblesWindowState rejects an unknown discriminator", () => {
-  const result = parsePersistedFoblesWindowState({ type: "somethingElse", left: 0, top: 0, width: 400, height: 300 }, WIN, 100, 100);
+  const result = parsePersistedFoblesWindowState(
+    { type: "somethingElse", left: 0, top: 0, width: 400, height: 300 },
+    WIN,
+    100,
+    100,
+  );
   assert.equal(result, undefined);
 });
 
@@ -79,7 +101,12 @@ void test("parsePersistedFoblesWindowState rejects NaN dimensions", () => {
 });
 
 void test("parsePersistedFoblesWindowState rejects Infinity dimensions", () => {
-  const result = parsePersistedFoblesWindowState({ left: 0, top: 0, width: Number.POSITIVE_INFINITY, height: 300 }, WIN, 100, 100);
+  const result = parsePersistedFoblesWindowState(
+    { left: 0, top: 0, width: Number.POSITIVE_INFINITY, height: 300 },
+    WIN,
+    100,
+    100,
+  );
   assert.equal(result, undefined);
 });
 

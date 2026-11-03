@@ -5,7 +5,7 @@ import { CONST } from "../../../../constants/const";
 // No better stable identifier exists yet (see Phase 3A research) - the page origin is the one
 // value that's genuinely stable per Sitecore instance and isn't a display label.
 function resolveEnvironment(doc: Document): string {
-  return (doc.defaultView?.location.origin ?? window.location.origin);
+  return doc.defaultView?.location.origin ?? window.location.origin;
 }
 
 // Mirrors flyout-option-url.ts's getCurrentDatabase read order (query param, then the ribbon's
@@ -16,7 +16,9 @@ function resolveDatabase(doc: Document): string {
 
   for (const queryKey of CONST.SITECORE.SEARCH_PARAMS.DATABASE_KEYS) {
     const database = currentUrl.searchParams.get(queryKey)?.trim();
-    if (database) return database;
+    if (database) {
+      return database;
+    }
   }
 
   const databaseInput = doc.querySelector<HTMLInputElement>(CONST.SITECORE.SELECTORS.DATABASE_INPUT);
@@ -30,16 +32,8 @@ function resolveLanguage(doc: Document): string {
   return currentUrl.searchParams.get("sc_lang")?.trim() || "en";
 }
 
-export type SitecoreDataIdentity = {
-  environment: string;
-  database: string;
-  language: string;
-};
+export type SitecoreDataIdentity = { environment: string; database: string; language: string };
 
 export function resolveSitecoreDataIdentity(doc: Document = document): SitecoreDataIdentity {
-  return {
-    environment: resolveEnvironment(doc),
-    database: resolveDatabase(doc),
-    language: resolveLanguage(doc),
-  };
+  return { environment: resolveEnvironment(doc), database: resolveDatabase(doc), language: resolveLanguage(doc) };
 }

@@ -14,14 +14,14 @@ import type { REFERENCE_GRAPH } from "./graph.const";
 export type ToolbarPageKind = "full" | "compact";
 
 export type AllowedPage = {
-    id: string;
-    friendlyName: string;
-    matchStrings: readonly string[];
-    toolbarType: ToolbarPageKind;
-    defaultPlacement?: ToolbarPlacement;
-    // Kept in the list for reference/tracking even though Fobles shouldn't currently activate on
-    // it - findAllowedPage (src/content/guard.ts) skips these. Omit to mean true.
-    isFoblesEligible: boolean;
+  id: string;
+  friendlyName: string;
+  matchStrings: readonly string[];
+  toolbarType: ToolbarPageKind;
+  defaultPlacement?: ToolbarPlacement;
+  // Kept in the list for reference/tracking even though Fobles shouldn't currently activate on
+  // it - findAllowedPage (src/content/guard.ts) skips these. Omit to mean true.
+  isFoblesEligible: boolean;
 };
 
 export type LayoutScope = (typeof REFERENCE_GRAPH.LAYOUT_SCOPE)[keyof typeof REFERENCE_GRAPH.LAYOUT_SCOPE];

@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/features/auditor/audit-finding.types.ts
 
 export type AuditFindingStatus = "pending" | "passed" | "warning" | "error";
+
 export type AuditFindingSeverity = "info" | "warning" | "error";
 
 // Immutable by convention - every mutation goes through AuditFindingStore.upsert/upsertMany with

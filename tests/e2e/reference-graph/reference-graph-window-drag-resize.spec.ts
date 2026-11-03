@@ -65,7 +65,12 @@ foblesTest.describe("Shared specialist window drag and resize", () => {
 
     const midResize = await getRequiredBoundingBox(dialog, "the graph window mid-resize");
     // Resizing from the southeast corner must not relocate the window.
-    expectBoxClose(midResize, { x: before.x, y: before.y, width: before.width + deltaX, height: before.height + deltaY });
+    expectBoxClose(midResize, {
+      x: before.x,
+      y: before.y,
+      width: before.width + deltaX,
+      height: before.height + deltaY,
+    });
 
     await page.mouse.up();
     const afterRelease = await getRequiredBoundingBox(dialog, "the graph window after release");

@@ -84,9 +84,7 @@ export function synchronizeExpandCollapseControls(
     //     controller.overlay.appendChild(spinner);
     //   }
     // }
-  }
-
-);
+  });
 
   for (const [treeNodeId, button] of controller.buttonsByTreeNodeId) {
     if (!expandableTreeNodeIds.has(treeNodeId)) {
@@ -230,9 +228,7 @@ export function applyGraphVisibility(
 
     edge.style(
       "display",
-      hiddenTreeNodeIds.has(sourceTreeNodeId) || hiddenTreeNodeIds.has(targetTreeNodeId)
-        ? "none"
-        : "element",
+      hiddenTreeNodeIds.has(sourceTreeNodeId) || hiddenTreeNodeIds.has(targetTreeNodeId) ? "none" : "element",
     );
   });
 }

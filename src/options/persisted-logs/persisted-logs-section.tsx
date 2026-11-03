@@ -22,12 +22,19 @@ function splitEntryArgs(args: readonly unknown[]): { primitives: string[]; objec
 }
 
 function formatPersistedLogs(entries: readonly PersistedLogEntry[]): string {
-  if (entries.length === 0) return "No persisted logs.";
+  if (entries.length === 0) {
+    return "No persisted logs.";
+  }
   return entries
     .map((entry) => {
       const { primitives, objects } = splitEntryArgs(entry.args);
       const line = `${logTimeStamp(new Date(entry.timestamp))} [${entry.level}] [${entry.context}] ${LOGGER.NAMESPACE}${primitives.length > 0 ? ` ${primitives.join(" ")}` : ""}`;
-      const details = objects.map((value) => JSON.stringify(value, null, 2).split("\n").map((detailLine) => `  ${detailLine}`).join("\n"));
+      const details = objects.map((value) =>
+        JSON.stringify(value, null, 2)
+          .split("\n")
+          .map((detailLine) => `  ${detailLine}`)
+          .join("\n"),
+      );
       return [line, ...details].join("\n");
     })
     .join("\n");
@@ -50,7 +57,9 @@ function PersistedLogRow({ entry }: { entry: PersistedLogEntry }) {
         <span className="persisted-log-prefix">{`${logTimeStamp(new Date(entry.timestamp))} [${entry.level}] [${entry.context}] ${LOGGER.NAMESPACE}`}</span>
         <span className="persisted-log-message">{primitives.length > 0 ? ` ${primitives.join(" ")}` : ""}</span>
       </div>
-      {objects.map((value, index) => <PersistedLogObject key={index} value={value} />)}
+      {objects.map((value, index) => (
+        <PersistedLogObject key={index} value={value} />
+      ))}
     </div>
   );
 }
@@ -76,7 +85,9 @@ export function PersistedLogsSection() {
   function handleToggle(event: React.SyntheticEvent<HTMLDetailsElement>): void {
     const isOpen = event.currentTarget.open;
     setOpen(isOpen);
-    if (isOpen) void refresh();
+    if (isOpen) {
+      void refresh();
+    }
   }
 
   async function handleCopy(): Promise<void> {
@@ -93,7 +104,11 @@ export function PersistedLogsSection() {
 
   function handleDownloadZip(): void {
     const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-    downloadSanitizedTextZip(document, [{ path: "logs/persisted-logs.txt", content: formatPersistedLogs(entries ?? []) }], `fobles-logs-for-ai-${timestamp}.zip.txt`);
+    downloadSanitizedTextZip(
+      document,
+      [{ path: "logs/persisted-logs.txt", content: formatPersistedLogs(entries ?? []) }],
+      `fobles-logs-for-ai-${timestamp}.zip.txt`,
+    );
   }
 
   function handleScrollToBottom(): void {
@@ -106,18 +121,67 @@ export function PersistedLogsSection() {
   }
 
   return (
-    <details id={CONST.FOBLES.OPTIONS_PAGE.PERSISTED_LOGS_SECTION} className="settings-section" open={open} onToggle={handleToggle}>
+    <details
+      id={CONST.FOBLES.OPTIONS_PAGE.PERSISTED_LOGS_SECTION}
+      className="settings-section"
+      open={open}
+      onToggle={handleToggle}
+    >
       <summary>Persisted Logs</summary>
       <div className="settings-actions">
-        <button id={CONST.FOBLES.OPTIONS_PAGE.REFRESH_PERSISTED_LOGS} type="button" className="settings-button" onClick={() => void refresh()}>Refresh</button>
-        <button id={CONST.FOBLES.OPTIONS_PAGE.CLEAR_PERSISTED_LOGS} type="button" className="settings-button" onClick={() => void handleClear()}>Clear Logs</button>
-        <button id={CONST.FOBLES.OPTIONS_PAGE.COPY_PERSISTED_LOGS} type="button" className="settings-button" onClick={() => void handleCopy()}>{copyLabel}</button>
-        <button type="button" className="settings-button" title="Copies logs after redacting credentials and environment-sensitive values." onClick={() => void handleCopySanitized()}>{copySanitizedLabel}</button>
-        <button type="button" className="settings-button" title="Downloads sanitized logs as a ZIP with a .txt suffix for easier AI attachment." onClick={handleDownloadZip}>Download Logs for AI</button>
-        <button id={CONST.FOBLES.OPTIONS_PAGE.SCROLL_PERSISTED_LOGS_BOTTOM} type="button" className="settings-button" onClick={handleScrollToBottom}>Scroll to Bottom</button>
+        <button
+          id={CONST.FOBLES.OPTIONS_PAGE.REFRESH_PERSISTED_LOGS}
+          type="button"
+          className="settings-button"
+          onClick={() => void refresh()}
+        >
+          Refresh
+        </button>
+        <button
+          id={CONST.FOBLES.OPTIONS_PAGE.CLEAR_PERSISTED_LOGS}
+          type="button"
+          className="settings-button"
+          onClick={() => void handleClear()}
+        >
+          Clear Logs
+        </button>
+        <button
+          id={CONST.FOBLES.OPTIONS_PAGE.COPY_PERSISTED_LOGS}
+          type="button"
+          className="settings-button"
+          onClick={() => void handleCopy()}
+        >
+          {copyLabel}
+        </button>
+        <button
+          type="button"
+          className="settings-button"
+          title="Copies logs after redacting credentials and environment-sensitive values."
+          onClick={() => void handleCopySanitized()}
+        >
+          {copySanitizedLabel}
+        </button>
+        <button
+          type="button"
+          className="settings-button"
+          title="Downloads sanitized logs as a ZIP with a .txt suffix for easier AI attachment."
+          onClick={handleDownloadZip}
+        >
+          Download Logs for AI
+        </button>
+        <button
+          id={CONST.FOBLES.OPTIONS_PAGE.SCROLL_PERSISTED_LOGS_BOTTOM}
+          type="button"
+          className="settings-button"
+          onClick={handleScrollToBottom}
+        >
+          Scroll to Bottom
+        </button>
       </div>
       <div id={CONST.FOBLES.OPTIONS_PAGE.PERSISTED_LOGS_OUTPUT} ref={outputRef}>
-        {!entries || entries.length === 0 ? "No persisted logs." : entries.map((entry) => <PersistedLogRow key={entry.id} entry={entry} />)}
+        {!entries || entries.length === 0
+          ? "No persisted logs."
+          : entries.map((entry) => <PersistedLogRow key={entry.id} entry={entry} />)}
       </div>
     </details>
   );

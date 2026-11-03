@@ -16,20 +16,15 @@ import { getScSearchParams, normalizeFoValueForCompare, normalizePath } from "..
 // it's usually written in test constants), so strip braces unconditionally; a plain path is
 // unaffected since it never contains any.
 
-function assertFoblesTargetUrl(
-  actualUrl: string,
-  expectedFoValue: string,
-): void {
+function assertFoblesTargetUrl(actualUrl: string, expectedFoValue: string): void {
   const url = new URL(actualUrl);
   expect(normalizePath(url.pathname)).toBe(
     normalizePath(TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED.split("?")[0]),
   );
-  const scSearchParams =  getScSearchParams(url);
-  expect(
-    scSearchParams.fo
-      ? normalizeFoValueForCompare(scSearchParams.fo)
-      : null,
-  ).toBe(normalizeFoValueForCompare(expectedFoValue));
+  const scSearchParams = getScSearchParams(url);
+  expect(scSearchParams.fo ? normalizeFoValueForCompare(scSearchParams.fo) : null).toBe(
+    normalizeFoValueForCompare(expectedFoValue),
+  );
 }
 
 // Named after matchKey - the enclosing step's own full title - rather than expectedFoValue,
@@ -57,11 +52,7 @@ async function attachActualFoValueNote(
 // -> Links") - a bare relative URL alone doesn't say how you'd actually get there through the UI,
 // especially for tests that navigate straight to a URL instead of clicking through it. matchKey -
 // see attachActualFoValueNote.
-export async function attachUiPathNote(
-  testInfo: TestInfo,
-  uiPath: string,
-  matchKey: string,
-): Promise<void> {
+export async function attachUiPathNote(testInfo: TestInfo, uiPath: string, matchKey: string): Promise<void> {
   const safeName = buildStepMatchKey(matchKey);
   await testInfo.attach(`ui-path-${safeName}.txt`, {
     body: Buffer.from(`ui path: ${uiPath}`),
@@ -90,17 +81,12 @@ export async function expectFoblesButtonSameTabNavigation(
 
   await dismissFoblesConfirmDialogIfPresent(page, { turnOffWarning: true });
 
-  await page.waitForURL((url:URL) => {
+  await page.waitForURL((url: URL) => {
     const scSearchParams = getScSearchParams(url);
     return scSearchParams.fo !== null;
   });
-  
-  await attachActualFoValueNote(
-    testInfo,
-    expectedFoValue,
-    page.url(),
-    stepTitle,
-  );
+
+  await attachActualFoValueNote(testInfo, expectedFoValue, page.url(), stepTitle);
   assertFoblesTargetUrl(page.url(), expectedFoValue);
   await attachItemPathScreenshot(page, testInfo, stepTitle);
 }
@@ -136,14 +122,13 @@ export async function expectFoblesButtonNewTabNavigationStrategy(
 
   // await popup.close();
 
-await expectFoblesButtonNewTabNavigation(
-  testContext.testInfo,
-  testContext.SCENARIO.expectedFoValue,
-  stepTitle,
-  popup,
-  testContext.page,
-);
-
+  await expectFoblesButtonNewTabNavigation(
+    testContext.testInfo,
+    testContext.SCENARIO.expectedFoValue,
+    stepTitle,
+    popup,
+    testContext.page,
+  );
 }
 
 export async function expectFoblesButtonNewTabNavigation(
@@ -161,12 +146,7 @@ export async function expectFoblesButtonNewTabNavigation(
   await bringPageToFront(popup, newTabHoldMs);
 
   await popup.waitForLoadState("domcontentloaded");
-  await attachActualFoValueNote(
-    testInfo,
-    expectedFoValue,
-    popup.url(),
-    stepTitle,
-  );
+  await attachActualFoValueNote(testInfo, expectedFoValue, popup.url(), stepTitle);
   assertFoblesTargetUrl(popup.url(), expectedFoValue);
   await attachItemPathScreenshot(popup, testInfo, stepTitle);
 
@@ -180,11 +160,7 @@ export async function expectFoblesButtonNewTabNavigation(
 // and without the Item owner row a whole-quick-info screenshot would also expose. matchKey should
 // be the enclosing step's own full title (see attachActualFoValueNote) so this screenshot attaches
 // to the right step even when another step in the same test targets the same item/value.
-export async function attachItemPathScreenshot(
-  page: Page,
-  testInfo: TestInfo,
-  matchKey: string,
-): Promise<void> {
+export async function attachItemPathScreenshot(page: Page, testInfo: TestInfo, matchKey: string): Promise<void> {
   await clickContentTabIfPresent(page);
 
   const frame = await findFrameWithSelector(
@@ -192,12 +168,10 @@ export async function attachItemPathScreenshot(
     TEST_CONST.SITECORE.SELECTORS.CONTENT_TAB,
     "Content Editor tab header",
   );
-  const itemPathRow :Locator = frame
-    .locator(`${TEST_CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, {
-      hasText: TEST_CONST.SITECORE.LABELS.ITEM_PATH,
-    })
+  const itemPathRow: Locator = frame
+    .locator(`${TEST_CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, { hasText: TEST_CONST.SITECORE.LABELS.ITEM_PATH })
     .first();
-  
+
   await highlightClickTarget(itemPathRow, "Item path row");
   await expect(itemPathRow).toBeVisible();
   const safeName = buildStepMatchKey(matchKey);
@@ -220,7 +194,7 @@ export async function attachItemPathScreenshot(
 //       hasText: CONST.SITECORE.LABELS.ITEM_PATH,
 //     })
 //     .first();
-  
+
 //   await highlightClickTarget(itemPathRow, "Item path row");
 //   await expect(itemPathRow).toBeVisible();
 //   const safeName = buildStepMatchKey(matchKey);

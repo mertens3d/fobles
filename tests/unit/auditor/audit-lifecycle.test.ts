@@ -43,7 +43,13 @@ void test("buildAuditFinding: pending findings have no completedAt; settled find
 });
 
 void test("buildAuditFinding: derives severity from status (warning->warning, error->error, else info)", () => {
-  const options = { checkKey: "check-a", checkLabel: "Check A", referenceModelNodeId: "node-1", item: undefined, summary: "s" };
+  const options = {
+    checkKey: "check-a",
+    checkLabel: "Check A",
+    referenceModelNodeId: "node-1",
+    item: undefined,
+    summary: "s",
+  };
   assert.equal(buildAuditFinding({ ...options, status: "warning" }).severity, "warning");
   assert.equal(buildAuditFinding({ ...options, status: "error" }).severity, "error");
   assert.equal(buildAuditFinding({ ...options, status: "passed" }).severity, "info");
@@ -58,14 +64,16 @@ void test("a disposed AuditFindingStore used by the Auditor session rejects furt
   // tears down the store unconditionally even if a resolve callback fires late.
   assert.doesNotThrow(() => {
     store.dispose();
-    store.upsert(buildAuditFinding({
-      checkKey: "check-a",
-      checkLabel: "Check A",
-      status: "passed",
-      referenceModelNodeId: "node-1",
-      item: undefined,
-      summary: "late write",
-    }));
+    store.upsert(
+      buildAuditFinding({
+        checkKey: "check-a",
+        checkLabel: "Check A",
+        status: "passed",
+        referenceModelNodeId: "node-1",
+        item: undefined,
+        summary: "late write",
+      }),
+    );
   });
   assert.equal(store.getSnapshot().length, 0);
 });

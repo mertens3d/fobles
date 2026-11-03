@@ -30,7 +30,9 @@ function makeFinding(overrides: Partial<AuditFinding> = {}): AuditFinding {
 
 function getColumn(key: string) {
   const column = AUDIT_EXPORT_COLUMNS.find((candidate) => candidate.key === key);
-  if (!column) throw new Error(`Expected a column with key "${key}"`);
+  if (!column) {
+    throw new Error(`Expected a column with key "${key}"`);
+  }
   return column;
 }
 
@@ -73,7 +75,10 @@ void test("itemName column falls back to an empty string when undefined", () => 
 });
 
 void test("itemPath column returns the value when present", () => {
-  assert.equal(getColumn("itemPath").getValue(makeFinding({ itemPath: "/sitecore/content/Home" })), "/sitecore/content/Home");
+  assert.equal(
+    getColumn("itemPath").getValue(makeFinding({ itemPath: "/sitecore/content/Home" })),
+    "/sitecore/content/Home",
+  );
 });
 
 void test("itemPath column falls back to an empty string when undefined", () => {
@@ -105,7 +110,10 @@ void test("details column falls back to an empty string when undefined", () => {
 });
 
 void test("sitecoreUrl column returns the value when present", () => {
-  assert.equal(getColumn("sitecoreUrl").getValue(makeFinding({ sitecoreUrl: "https://example.com/item" })), "https://example.com/item");
+  assert.equal(
+    getColumn("sitecoreUrl").getValue(makeFinding({ sitecoreUrl: "https://example.com/item" })),
+    "https://example.com/item",
+  );
 });
 
 void test("sitecoreUrl column falls back to an empty string when undefined", () => {

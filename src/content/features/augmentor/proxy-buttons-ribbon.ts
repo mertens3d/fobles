@@ -3,22 +3,21 @@
 // header) since the editor header gets redrawn every time a tree item is picked.
 import { getChildFrameDocuments } from "./shared/frame-documents";
 
-export const findRibbonCheckbox = (
-  doc: Document,
-  checkboxId: string,
-): HTMLInputElement | null => {
+export const findRibbonCheckbox = (doc: Document, checkboxId: string): HTMLInputElement | null => {
   const ownCheckbox = doc.getElementById(checkboxId) as HTMLInputElement | null;
   const frameCheckbox = ownCheckbox
     ? null
-    : getChildFrameDocuments(doc)
+    : (getChildFrameDocuments(doc)
         .map((frameDoc) => findRibbonCheckbox(frameDoc, checkboxId))
-        .find((result): result is HTMLInputElement => result !== null) ?? null;
+        .find((result): result is HTMLInputElement => result !== null) ?? null);
   return ownCheckbox ?? frameCheckbox;
 };
 
 export const postSitecoreEvent = (doc: Document, eventName: string): boolean => {
   const host = doc.body;
-  if (!host) return false;
+  if (!host) {
+    return false;
+  }
 
   const trigger = doc.createElement("button");
   trigger.type = "button";

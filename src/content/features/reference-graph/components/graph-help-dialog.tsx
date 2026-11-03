@@ -16,18 +16,34 @@ const GRAPH_HELP = {
 } as const;
 
 type GraphHelpDialogProps = { dialogRef: React.RefObject<HTMLDialogElement | null> };
+
 type HelpRowProps = { control: ReactNode; action: string };
 
 function HelpRow({ control, action }: HelpRowProps) {
-  return <div className="fobles-reference-graph-help-row"><div className="fobles-reference-graph-help-control">{control}</div><span>{action}</span></div>;
+  return (
+    <div className="fobles-reference-graph-help-row">
+      <div className="fobles-reference-graph-help-control">{control}</div>
+      <span>{action}</span>
+    </div>
+  );
 }
 
 function ZoomControlExample() {
-  return <span className="fobles-reference-graph-help-zoom-control" aria-hidden="true"><span>+</span><span>−</span></span>;
+  return (
+    <span className="fobles-reference-graph-help-zoom-control" aria-hidden="true">
+      <span>+</span>
+      <span>−</span>
+    </span>
+  );
 }
 
 function NodeControlExample() {
-  return <span className="fobles-reference-graph-help-node-controls" aria-hidden="true"><span>+</span><span>−</span></span>;
+  return (
+    <span className="fobles-reference-graph-help-node-controls" aria-hidden="true">
+      <span>+</span>
+      <span>−</span>
+    </span>
+  );
 }
 
 export function GraphHelpDialog({ dialogRef }: GraphHelpDialogProps) {
@@ -40,7 +56,9 @@ export function GraphHelpDialog({ dialogRef }: GraphHelpDialogProps) {
       event.clientY < bounds.top ||
       event.clientY > bounds.bottom;
 
-    if (outside) dialog.close();
+    if (outside) {
+      dialog.close();
+    }
   };
 
   return (
@@ -74,10 +92,7 @@ export function GraphHelpDialog({ dialogRef }: GraphHelpDialogProps) {
         <section className="fobles-reference-graph-help-section">
           <h3>View</h3>
           <div className="fobles-reference-graph-help-rows">
-            <HelpRow
-              control={<ZoomControlExample />}
-              action="Bottom-right graph controls: zoom in / zoom out"
-            />
+            <HelpRow control={<ZoomControlExample />} action="Bottom-right graph controls: zoom in / zoom out" />
 
             {GRAPH_HELP.POINTER_VIEW.map((row) => (
               <HelpRow key={row.gesture} control={<kbd>{row.gesture}</kbd>} action={row.action} />
@@ -88,10 +103,7 @@ export function GraphHelpDialog({ dialogRef }: GraphHelpDialogProps) {
         <section className="fobles-reference-graph-help-section">
           <h3>Node Expansion</h3>
           <div className="fobles-reference-graph-help-rows">
-            <HelpRow
-              control={<NodeControlExample />}
-              action="Expand / collapse node"
-            />
+            <HelpRow control={<NodeControlExample />} action="Expand / collapse node" />
 
             <HelpRow
               control={

@@ -8,14 +8,8 @@ export const FOBLES_HIDDEN_CLASS_PATTERN = new RegExp(TEST_CONST.FOBLES.CLASSES.
 
 // Per-field screenshot names built from a test's own base name plus its stage. Restored reuses the
 // default-stage suffix, since it should look identical to default.
-const FIELD_SCREENSHOT_STAGE_SUFFIX = {
-  DEFAULT: "",
-  FOBLES_ON: "-fobles-on",
-} as const;
+const FIELD_SCREENSHOT_STAGE_SUFFIX = { DEFAULT: "", FOBLES_ON: "-fobles-on" } as const;
 
-export function fieldScreenshotName(
-  baseName: string,
-  stage: keyof typeof FIELD_SCREENSHOT_STAGE_SUFFIX,
-): string {
+export function fieldScreenshotName(baseName: string, stage: keyof typeof FIELD_SCREENSHOT_STAGE_SUFFIX): string {
   return `${baseName}${FIELD_SCREENSHOT_STAGE_SUFFIX[stage]}.png`;
 }

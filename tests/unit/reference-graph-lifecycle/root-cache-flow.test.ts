@@ -1,7 +1,10 @@
 // @source-path [fobles] tests/unit/reference-graph-lifecycle/root-cache-flow.test.ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { decideRootCacheUsage, rootProcessingStateForDecision } from "../../../src/content/foundation/reference-data/acquisition/root-cache-flow.ts";
+import {
+  decideRootCacheUsage,
+  rootProcessingStateForDecision,
+} from "../../../src/content/foundation/reference-data/acquisition/root-cache-flow.ts";
 import type { SitecoreDataCacheRecord } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types";
 import type { SitecoreHarvestFiltersState } from "../../../src/content/foundation/harvesting/sitecore-harvester.types";
 const FILTERS: SitecoreHarvestFiltersState = {
@@ -43,18 +46,17 @@ function baseRecord(overrides: Partial<SitecoreDataCacheRecord> = {}): SitecoreD
       cachedAt: 1,
       lastVerifiedAt: 1,
     },
-    layout: {
-      value: { layoutSectionFields: [] },
-      cachedAt: 1,
-      lastVerifiedAt: 1,
-    },
+    layout: { value: { layoutSectionFields: [] }, cachedAt: 1, lastVerifiedAt: 1 },
     ...overrides,
   };
 }
 void test("root cache hit + revision match uses cache only", () => {
   const decision = decideRootCacheUsage(baseRecord(), FILTERS, "rev-1");
   assert.equal(decision.kind, "cache-only");
-  assert.equal(decision.kind === "cache-only" ? decision.result.rootItem.scItemId : undefined, "46004574-866d-4702-828e-1c95ad1e03aa");
+  assert.equal(
+    decision.kind === "cache-only" ? decision.result.rootItem.scItemId : undefined,
+    "46004574-866d-4702-828e-1c95ad1e03aa",
+  );
 });
 void test("root cache hit + revision mismatch uses cache then re-harvests", () => {
   const decision = decideRootCacheUsage(baseRecord(), FILTERS, "rev-2");
@@ -73,7 +75,10 @@ void test("insufficient cached facts for enabled filters requires a harvest", ()
 void test("unreadable live revision produces cache-unverified, not a reharvest requirement", () => {
   const decision = decideRootCacheUsage(baseRecord(), FILTERS, undefined);
   assert.equal(decision.kind, "cache-unverified");
-  assert.equal(decision.kind === "cache-unverified" ? decision.result.rootItem.scItemId : undefined, "46004574-866d-4702-828e-1c95ad1e03aa");
+  assert.equal(
+    decision.kind === "cache-unverified" ? decision.result.rootItem.scItemId : undefined,
+    "46004574-866d-4702-828e-1c95ad1e03aa",
+  );
   // "cache-unverified" must never be the trigger for an automatic re-harvest - only
   // "cache-then-reharvest" (a genuine revision mismatch) is.
   assert.notEqual(decision.kind, "cache-then-reharvest");

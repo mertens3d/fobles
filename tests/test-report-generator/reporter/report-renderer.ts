@@ -17,13 +17,13 @@ function renderDetails(error: string, screenshots: ScreenshotInfo[] = []): strin
   const parts: string[] = [];
 
   if (error) {
-    parts.push(
-      `<details><summary>View failure</summary><pre>${escapeHtml(error)}</pre></details>`,
-    );
+    parts.push(`<details><summary>View failure</summary><pre>${escapeHtml(error)}</pre></details>`);
   }
 
   const screenshotLinks = renderScreenshotLinks(screenshots);
-  if (screenshotLinks) parts.push(screenshotLinks);
+  if (screenshotLinks) {
+    parts.push(screenshotLinks);
+  }
 
   return parts.length ? parts.join("") : "-";
 }
@@ -32,7 +32,9 @@ function renderStepTitle(step: ReportStep): string {
   const { title, notes } = step;
   const separatorIndex = title.indexOf(": ");
   const notesHtml = renderNotes(notes);
-  if (separatorIndex === -1) return escapeHtml(title) + notesHtml;
+  if (separatorIndex === -1) {
+    return escapeHtml(title) + notesHtml;
+  }
 
   const prefix = title.slice(0, separatorIndex);
   const afterPrefix = title.slice(separatorIndex + 2);
@@ -63,13 +65,13 @@ function renderTestDetails(result: ReportResult): string {
 
     details.push(
       `Test timed out before the next step completed.` +
-      (lastStep
-        ? ` Last completed step: ${lastStep}.`
-        : " No test step completed."),
+        (lastStep ? ` Last completed step: ${lastStep}.` : " No test step completed."),
     );
   }
 
-  if (result.error) details.push(result.error);
+  if (result.error) {
+    details.push(result.error);
+  }
 
   const parts: string[] = [];
 
@@ -83,24 +85,19 @@ function renderTestDetails(result: ReportResult): string {
 
   if (result.foblesLog) {
     parts.push(
-      `<a class="fobles-log-link" href="${escapeHtml(
-        result.foblesLog.href,
-      )}" target="_blank">View Fobles Log</a>`,
+      `<a class="fobles-log-link" href="${escapeHtml(result.foblesLog.href)}" target="_blank">View Fobles Log</a>`,
     );
   }
 
-  const screenshotLinks = renderScreenshotLinks(
-    result.screenshots,
-  );
+  const screenshotLinks = renderScreenshotLinks(result.screenshots);
 
   if (screenshotLinks) {
     parts.push(screenshotLinks);
   }
 
-  return parts.length
-    ? parts.join("")
-    : "-";
+  return parts.length ? parts.join("") : "-";
 }
+
 export function renderReport(input: RenderReportInput): string {
   const finishedAt = new Date();
   const timestamp = finishedAt.toLocaleString();
@@ -143,9 +140,7 @@ export function renderReport(input: RenderReportInput): string {
   const loginAlertHtml = input.loginAlertUrl
     ? `<div class="login-alert">Login needed - switch to the browser window and log in, then click "Resume" in the Playwright Inspector. (<a href="${escapeHtml(input.loginAlertUrl)}" target="_blank">${escapeHtml(toDisplayUrl(input.loginAlertUrl))}</a>)</div>`
     : "";
-  const statusText = !running && !passed
-    ? ` · ${escapeHtml(formatStatus(input.fullResult.status))}`
-    : "";
+  const statusText = !running && !passed ? ` · ${escapeHtml(formatStatus(input.fullResult.status))}` : "";
   const runningText = running ? "Run in progress · " : "";
   const refreshText = running
     ? ` ·

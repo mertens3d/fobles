@@ -36,7 +36,10 @@ export class AuditOperation {
 
   async run(): Promise<void> {
     this.state = "running";
-    const [referenceGraphFilters, auditorGraphFilters] = await Promise.all([getReferenceGraphFilters(), getAuditorGraphFilters()]);
+    const [referenceGraphFilters, auditorGraphFilters] = await Promise.all([
+      getReferenceGraphFilters(),
+      getAuditorGraphFilters(),
+    ]);
     const filters = { ...referenceGraphFilters, ...auditorGraphFilters };
     this.runner = createAuditRunner({
       doc: this.doc,
@@ -45,30 +48,45 @@ export class AuditOperation {
       filters,
       onError: (error) => this.handleRunError(error),
     });
-    extensionLog.debug("Auditor operation: started", { operationId: this.operationId, workOperationId: this.workOperation.id, filters });
+    extensionLog.debug("Auditor operation: started", {
+      operationId: this.operationId,
+      workOperationId: this.workOperation.id,
+      filters,
+    });
     this.runnerPromise = this.runner.run();
   }
 
   private handleRunError(error: unknown): void {
-    if (this.state === "closed") return;
+    if (this.state === "closed") {
+      return;
+    }
     extensionLog.error("AUDITOR: audit run failed", { operationId: this.operationId, error });
     showFoblesErrorDialog(this.doc, {
       title: "Fobles Auditor",
-      messagePublicFacing: error instanceof Error ? error.message : "Something has gone wrong while auditing the Reference Model.",
+      messagePublicFacing:
+        error instanceof Error ? error.message : "Something has gone wrong while auditing the Reference Model.",
     });
   }
 
   private async close(): Promise<void> {
-    if (this.state === "closed") return;
+    if (this.state === "closed") {
+      return;
+    }
     this.state = "closing";
     extensionLog.debug("Auditor operation: cancellation requested", { operationId: this.operationId });
     this.runner?.dispose();
     await this.workOperation.cancel();
     await this.runnerPromise?.catch((error: unknown) => {
-      extensionLog.debug("Auditor operation: cancelled runner settled with error", { operationId: this.operationId, error });
+      extensionLog.debug("Auditor operation: cancelled runner settled with error", {
+        operationId: this.operationId,
+        error,
+      });
     });
     this.findingStore.dispose();
     this.state = "closed";
-    extensionLog.debug("Auditor operation: closed", { operationId: this.operationId, workOperationId: this.workOperation.id });
+    extensionLog.debug("Auditor operation: closed", {
+      operationId: this.operationId,
+      workOperationId: this.workOperation.id,
+    });
   }
 }

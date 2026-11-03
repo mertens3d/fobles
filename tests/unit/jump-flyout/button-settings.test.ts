@@ -54,7 +54,10 @@ void test("normalizeJumpFlyoutIconPath does not strip a prefix that isn't anchor
 });
 
 void test("normalizeJumpFlyoutIconPath keeps a plain relative path with no recognized prefix", () => {
-  assert.equal(normalizeJumpFlyoutIconPath("subfolder/nested/icon.png", DEFAULT_ICON), "/-/icon/subfolder/nested/icon.png");
+  assert.equal(
+    normalizeJumpFlyoutIconPath("subfolder/nested/icon.png", DEFAULT_ICON),
+    "/-/icon/subfolder/nested/icon.png",
+  );
 });
 
 void test("normalizeJumpFlyoutIconPath strips unrecognized leading slashes with no known prefix", () => {

@@ -6,17 +6,15 @@ export const getLastTwoPathItems = (path?: string): string =>
 
 export const isContentEditor = (page: Page): boolean => {
   //return encodeURI(page.url())
-  return normalizePath(page.url())
-    .includes(normalizePath(TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_ENCODED));
-}
+  return normalizePath(page.url()).includes(normalizePath(TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_ENCODED));
+};
 
 export function normalizeFoValueForCompare(value: string): string {
   return value.replace(/[{}]/g, "").toUpperCase();
 }
 
 export const isAIPage = (page: Page): boolean => {
-  return new URL(page.url()).origin
-    .includes(TEST_CONST.SITECORE.PATHS.SC_AI_DOMAIN);
+  return new URL(page.url()).origin.includes(TEST_CONST.SITECORE.PATHS.SC_AI_DOMAIN);
 };
 
 export function sanitizeFileName(value: string): string {
@@ -27,14 +25,10 @@ export function normalizePath(encodedUrl: string): string {
   return new URL(encodedUrl, "https://dummy").pathname.toLowerCase();
 }
 
-export type SitecoreSearchParams = {
-  fo: string | null;
-};
+export type SitecoreSearchParams = { fo: string | null };
 
 export function getScSearchParams(url: URL): SitecoreSearchParams {
-  const result: SitecoreSearchParams = {
-    fo: url.searchParams.get(TEST_CONST.SITECORE.SEARCH_PARAMS.FO),
-  };
+  const result: SitecoreSearchParams = { fo: url.searchParams.get(TEST_CONST.SITECORE.SEARCH_PARAMS.FO) };
 
   return result;
 }

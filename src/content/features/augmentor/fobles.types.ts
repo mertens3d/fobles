@@ -1,21 +1,37 @@
 import type { FoblesStrategy } from "../../foundation/sitecore/fobles-strategy.types";
 
 export type DroplinkFoblesStrategy = Extract<FoblesStrategy, "drop-link">;
+
 export type DropTreeFoblesStrategy = Extract<FoblesStrategy, "drop-tree">;
+
 export type DroplistFoblesStrategy = Extract<FoblesStrategy, "droplist">;
+
 export type FileFoblesStrategy = Extract<FoblesStrategy, "file">;
+
 export type GeneralLinkFoblesStrategy = Extract<FoblesStrategy, "general-link">;
+
 export type IconFoblesStrategy = Extract<FoblesStrategy, "icon">;
+
 export type ImageFoblesStrategy = Extract<FoblesStrategy, "image">;
+
 export type InternalLinkFoblesStrategy = Extract<FoblesStrategy, "internal-link">;
+
 export type MultilistOptionsFoblesStrategy = Extract<FoblesStrategy, "multilist-options">;
+
 export type MultilistWithSearchFoblesStrategy = Extract<FoblesStrategy, "multilist-with-search">;
+
 export type QuickInfoSectionFoblesStrategy = Extract<FoblesStrategy, "quick-info-section">;
+
 export type ReferenceLinksFoblesStrategy = Extract<FoblesStrategy, "reference-links">;
+
 export type StyleChecklistFoblesStrategy = Extract<FoblesStrategy, "style-checklist">;
+
 export type TagListFoblesStrategy = Extract<FoblesStrategy, "tag-list">;
+
 export type TemplatePathFoblesStrategy = Extract<FoblesStrategy, "template-path">;
+
 export type TreeListFoblesStrategy = Extract<FoblesStrategy, "tree-list">;
+
 export type TreelistExFoblesStrategy = Extract<FoblesStrategy, "treelist-ex">;
 
 export type FoblesConfigBase<TStrategy extends FoblesStrategy> = {
@@ -28,17 +44,13 @@ export type FoblesConfigBase<TStrategy extends FoblesStrategy> = {
 
 export type DroplinkFobles = FoblesConfigBase<DroplinkFoblesStrategy>;
 
-export type DropTreeFobles = FoblesConfigBase<DropTreeFoblesStrategy> & {
-  additionalElementsToHide?: string[];
-};
+export type DropTreeFobles = FoblesConfigBase<DropTreeFoblesStrategy> & { additionalElementsToHide?: string[] };
 
 export type DroplistFobles = FoblesConfigBase<DroplistFoblesStrategy>;
 
 export type FileFobles = FoblesConfigBase<FileFoblesStrategy>;
 
-export type SitecoreGeneralLinkFieldType =
-  | "General Link"
-  | "General Link with Search";
+export type SitecoreGeneralLinkFieldType = "General Link" | "General Link with Search";
 
 export type GeneralLinkFobles = FoblesConfigBase<GeneralLinkFoblesStrategy> & {
   sitecoreFieldTypes: readonly SitecoreGeneralLinkFieldType[];
@@ -61,10 +73,7 @@ export type QuickInfoSource = {
   wrapperVariant: "quickinfo" | "row";
 };
 
-export type QuickInfoCandidate = {
-  labelStartsWith: string;
-  sources: readonly QuickInfoSource[];
-};
+export type QuickInfoCandidate = { labelStartsWith: string; sources: readonly QuickInfoSource[] };
 
 export type QuickInfoSectionFobles = FoblesConfigBase<QuickInfoSectionFoblesStrategy> & {
   candidates: readonly QuickInfoCandidate[];
@@ -108,7 +117,4 @@ export type SingleInputFieldOptions = {
   getTarget: (value: string) => string | null;
 };
 
-export type FoblesListItem = {
-  label: string;
-  value: string;
-};
+export type FoblesListItem = { label: string; value: string };

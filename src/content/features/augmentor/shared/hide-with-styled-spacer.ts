@@ -21,8 +21,7 @@ export const createStyledSpacer = (element: HTMLElement): HTMLElement => {
   const computedStyle = element.ownerDocument.defaultView?.getComputedStyle(element);
   const spacer = element.cloneNode(true) as HTMLElement;
   spacer.classList.add(FOBLES.CLASSES.FIELD_SPACER);
-  [spacer, ...Array.from(spacer.querySelectorAll<HTMLElement>("*"))]
-    .forEach(removeInteractiveAttributes);
+  [spacer, ...Array.from(spacer.querySelectorAll<HTMLElement>("*"))].forEach(removeInteractiveAttributes);
   spacer.setAttribute("aria-hidden", "true");
   spacer.style.display = computedStyle?.display ?? "block";
   spacer.style.flex = computedStyle?.flex ?? "0 1 auto";
@@ -33,7 +32,9 @@ export const createStyledSpacer = (element: HTMLElement): HTMLElement => {
 };
 
 export const hideWithStyledSpacer = (element: HTMLElement): void => {
-  if (element.classList.contains(FOBLES.CLASSES.HIDDEN)) return;
+  if (element.classList.contains(FOBLES.CLASSES.HIDDEN)) {
+    return;
+  }
 
   element.after(createStyledSpacer(element));
   element.classList.add(FOBLES.CLASSES.HIDDEN);

@@ -8,7 +8,11 @@ import { createLayoutReferenceModel } from "./reference-model-node-id";
 import { REFERENCE_MODEL_FAN_OUT_LIMITS } from "./reference-model-fan-out-limits";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
 import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance.types";
-import type { ReferenceModelItemNode, ReferenceModelNonItemNode, ReferenceModelTruncation } from "./reference-model.types";
+import type {
+  ReferenceModelItemNode,
+  ReferenceModelNonItemNode,
+  ReferenceModelTruncation,
+} from "./reference-model.types";
 import { createCustomFieldsTreeNode, createStandardFieldsTreeNode } from "./sections-reference-model-builder";
 
 export function createReferenceModel(

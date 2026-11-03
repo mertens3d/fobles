@@ -1,10 +1,15 @@
 // @source-path [fobles] src/content/foundation/cache/sitecore-data/indexed-db.ts
 
 export const DATABASE_NAME = "fobles-sitecore-data-cache";
+
 export const DATABASE_VERSION = 5;
+
 export const ITEM_STORE_NAME = "sitecoreItems";
+
 export const FACT_STORE_NAME = "sitecoreFacts";
+
 export const LAST_ACCESSED_INDEX_NAME = "lastAccessedAt";
+
 export const FACT_ITEM_KEY_INDEX_NAME = "itemKey";
 
 let openDatabasePromise: Promise<IDBDatabase> | undefined;
@@ -31,12 +36,16 @@ function openDatabase(): Promise<IDBDatabase> {
     request.onupgradeneeded = () => {
       const db = request.result;
 
-      if (db.objectStoreNames.contains(ITEM_STORE_NAME)) db.deleteObjectStore(ITEM_STORE_NAME);
+      if (db.objectStoreNames.contains(ITEM_STORE_NAME)) {
+        db.deleteObjectStore(ITEM_STORE_NAME);
+      }
 
       const itemStore = db.createObjectStore(ITEM_STORE_NAME, { keyPath: "key" });
       itemStore.createIndex(LAST_ACCESSED_INDEX_NAME, "lastAccessedAt");
 
-      if (db.objectStoreNames.contains(FACT_STORE_NAME)) db.deleteObjectStore(FACT_STORE_NAME);
+      if (db.objectStoreNames.contains(FACT_STORE_NAME)) {
+        db.deleteObjectStore(FACT_STORE_NAME);
+      }
 
       const factStore = db.createObjectStore(FACT_STORE_NAME, { keyPath: "key" });
       factStore.createIndex(FACT_ITEM_KEY_INDEX_NAME, "itemKey");
@@ -55,7 +64,9 @@ export async function runCacheTransaction<T>(
 ): Promise<T> {
   const db = await openDatabase();
   const transaction = db.transaction([ITEM_STORE_NAME, FACT_STORE_NAME], mode);
-  const result = await Promise.resolve(run(transaction.objectStore(ITEM_STORE_NAME), transaction.objectStore(FACT_STORE_NAME)));
+  const result = await Promise.resolve(
+    run(transaction.objectStore(ITEM_STORE_NAME), transaction.objectStore(FACT_STORE_NAME)),
+  );
 
   await waitForTransaction(transaction);
 
@@ -79,5 +90,7 @@ export function resetDatabaseConnectionForTests(): void {
   const pending = openDatabasePromise;
   openDatabasePromise = undefined;
 
-  if (pending) void pending.then((db) => db.close()).catch(() => undefined);
+  if (pending) {
+    void pending.then((db) => db.close()).catch(() => undefined);
+  }
 }
