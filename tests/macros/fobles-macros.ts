@@ -166,46 +166,6 @@ export async function ClickFoblesJumpButton(page: Page, expectFlyoutVisible = tr
   }
 }
 
-export async function enableFoblesDeveloperLogging(context: BrowserContext): Promise<void> {
-  console.log(`[Macro: ${enableFoblesDeveloperLogging.name}] - Start`);
-
-  const extensionId = await getExtensionId(context);
-  const optionsPage = await openExtensionPage(context, extensionId, "options");
-
-  try {
-    const developerSettings = optionsPage
-      .locator("details")
-      .filter({ has: optionsPage.locator("summary", { hasText: "Developer Settings" }) });
-
-    await expect(developerSettings).toHaveCount(1);
-
-    const isOpen = await developerSettings.evaluate((element) => (element as HTMLDetailsElement).open);
-
-    if (!isOpen) {
-      await clickExtensionControl(optionsPage, developerSettings.locator(":scope > summary"), "Developer Settings");
-    }
-
-    await setExtensionCheckbox(optionsPage, developerSettings.locator("#debug-logging"), true, "Enable debug logging");
-
-    await setExtensionCheckbox(
-      optionsPage,
-      developerSettings.locator("#persist-debug-logs"),
-      true,
-      "Persist debug logs",
-    );
-
-    await clickExtensionControl(
-      optionsPage,
-      developerSettings.locator("#save-debug-settings"),
-      "Save developer settings",
-    );
-
-    await expect(developerSettings.locator("#debug-status")).toHaveText("Developer settings saved.");
-  } finally {
-    await optionsPage.close();
-  }
-}
-
 // Idempotent - only clicks the trigger if the flyout isn't already visible, since it's a toggle
 // button (clicking it while already open would close it instead).
 export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<void> {
@@ -283,8 +243,8 @@ export async function clickFoblesTreeButton(
   }
 }
 
-export async function EnableFoblesDeveloperLogging(context: BrowserContext): Promise<void> {
-  console.log(`[fobles Macro] ${EnableFoblesDeveloperLogging.name}`);
+export async function enableFoblesDeveloperLogging(context: BrowserContext): Promise<void> {
+  console.log(`[Macro: ${enableFoblesDeveloperLogging.name}] - Start`);
 
   const extensionId = await getExtensionId(context);
   const page = await openExtensionPage(context, extensionId, "options");

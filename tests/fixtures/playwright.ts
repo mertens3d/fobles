@@ -7,7 +7,7 @@ import { TEST_CONST } from "../constants/TEST_CONST";
 import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
 import { applyDefaultSettingsProfile } from "./settings-profiles";
-import { EnableFoblesDeveloperLogging } from "../macros/fobles-macros";
+import { enableFoblesDeveloperLogging } from "../macros/fobles-macros";
 import { createBrowserProfile } from "./browser-profile";
 import { restoreWindowPosition, saveWindowPosition } from "./browser-location";
 import { attachPageDiagnosticHandlers } from "./playwright-page-diagnostic-handlers";
@@ -56,7 +56,7 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
   resetTestSettings: [
     async ({ sharedBrowserContext }, use, testInfo) => {
       await applyDefaultSettingsProfile(sharedBrowserContext);
-      await EnableFoblesDeveloperLogging(sharedBrowserContext);
+      await enableFoblesDeveloperLogging(sharedBrowserContext);
       await attachPersistedLogs(use, sharedBrowserContext, testInfo);
     },
     { auto: true },

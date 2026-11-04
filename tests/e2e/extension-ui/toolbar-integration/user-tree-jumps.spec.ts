@@ -28,7 +28,6 @@ foblesTest.describe("User Tree Jumps", () => {
         const step = createFoblesStep(page, testInfo, page, "User Tree Jump");
 
         try {
-          // Other suites sharing this persistent browser profile may have left the warning off.
           await setFoblesNavWarningVisible(sharedBrowserContext, extensionId, true);
           await removeTestRowIfPresent(optionsPage);
           await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
