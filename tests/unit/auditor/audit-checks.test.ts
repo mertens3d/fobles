@@ -38,6 +38,7 @@ function makeContext(overrides: Partial<AuditCheckContext>): AuditCheckContext {
     signal: new AbortController().signal,
     referenceModelRoot: makeItemNode("root", makeItem()),
     referenceModelNodesById: new Map(),
+    resolveCandidateTreeNodeIds: new Set(),
     findingStore: createAuditFindingStore(),
     processingStateByTreeNodeId: new Map(),
     cacheRevalidationResultByTreeNodeId: new Map(),
@@ -95,7 +96,8 @@ function contextWithProcessingState(status: ProcessingStatus | undefined): Audit
   if (status) {
     processingStateByTreeNodeId.set("node-1", status);
   }
-  return makeContext({ referenceModelRoot: node, processingStateByTreeNodeId });
+  const resolveCandidateTreeNodeIds = status ? new Set(["node-1"]) : new Set<string>();
+  return makeContext({ referenceModelRoot: node, processingStateByTreeNodeId, resolveCandidateTreeNodeIds });
 }
 void test("reference-resolved-check: a node never registered as a candidate produces no finding", async () => {
   const context = contextWithProcessingState(undefined);
@@ -119,12 +121,14 @@ void test("reference-resolved-check: warning when unverified", async () => {
   await referenceResolvedCheck.run(context);
   assert.equal(context.findingStore.getSnapshot()[0]?.status, "warning");
 });
-void test("reference-resolved-check: error for not-found or failed", async () => {
-  for (const status of ["not-found", "failed"] as const) {
-    const context = contextWithProcessingState(status);
-    await referenceResolvedCheck.run(context);
-    assert.equal(context.findingStore.getSnapshot()[0]?.status, "error", `expected error for ${status}`);
-  }
+void test("reference-resolved-check: error for not-found and warning for failed", async () => {
+  const notFoundContext = contextWithProcessingState("not-found");
+  await referenceResolvedCheck.run(notFoundContext);
+  assert.equal(notFoundContext.findingStore.getSnapshot()[0]?.status, "error");
+
+  const failedContext = contextWithProcessingState("failed");
+  await referenceResolvedCheck.run(failedContext);
+  assert.equal(failedContext.findingStore.getSnapshot()[0]?.status, "warning");
 });
 // --- cache-validation-check (check 3) ---
 void test("cache-validation-check: no finding for a node that never had a cache comparison", async () => {

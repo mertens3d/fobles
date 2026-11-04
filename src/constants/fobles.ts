@@ -1,6 +1,6 @@
 // @source-path [fobles] src/constants/fobles.ts
 import { FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS } from "./button-ids.ts";
-import { LOGGER, MESSAGE, STORAGE } from "./extension-const";
+import { LOGGER, MESSAGE, STORAGE } from "./extension-const.ts";
 import { REFERENCE_GRAPH } from "./graph.const.ts";
 import { WORKER_POOL } from "./partials/fobles-workers.const.ts";
 

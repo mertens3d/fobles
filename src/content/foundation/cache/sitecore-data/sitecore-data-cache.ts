@@ -93,8 +93,10 @@ function storeFactValue<K extends SitecoreStoredFactName>(
   value: SitecoreDataFactMap[K],
 ): StoredSitecoreDataFactMap[K] {
   if (factName === "parent") {
+    const parent = toLocator((value as SitecoreDataFactMap["parent"]).parent);
     return {
-      parent: toLocator((value as SitecoreDataFactMap["parent"]).parent),
+      parent,
+      hasParent: parent !== undefined,
     } as unknown as StoredSitecoreDataFactMap[K];
   }
   if (factName === "children") {
@@ -117,7 +119,8 @@ function restoreFactValue<K extends SitecoreStoredFactName>(
   value: StoredSitecoreDataFactMap[K],
 ): SitecoreDataFactMap[K] {
   if (factName === "parent") {
-    const parent = (value as StoredSitecoreDataFactMap["parent"]).parent;
+    const stored = value as StoredSitecoreDataFactMap["parent"] | undefined;
+    const parent = stored?.parent;
     return { parent: parent ? fromLocator(parent) : undefined } as unknown as SitecoreDataFactMap[K];
   }
   if (factName === "children") {
@@ -157,10 +160,16 @@ export async function putFact<K extends SitecoreDataFactName>(
     }
     if (factName === "quickInfo") {
       const quickInfo = value as SitecoreDataFactMap["quickInfo"];
-      itemRecord.quickInfo =
-        quickInfo.result.status === "found"
-          ? toPersistedValue(stripQuickInfo(quickInfo.result.value), key.environment)
-          : undefined;
+      if (quickInfo.result.status === "found" && quickInfo.result.value) {
+        itemRecord.quickInfo = toPersistedValue(stripQuickInfo(quickInfo.result.value), key.environment);
+        delete itemRecord.quickInfoNotFound;
+      } else if (quickInfo.result.status === "not-found") {
+        delete itemRecord.quickInfo;
+        itemRecord.quickInfoNotFound = true;
+      } else {
+        delete itemRecord.quickInfo;
+        delete itemRecord.quickInfoNotFound;
+      }
       await getRequestResult(itemStore.put(itemRecord));
       return;
     }
@@ -191,6 +200,12 @@ export async function getFact<K extends SitecoreDataFactName>(
     item.lastAccessedAt = Date.now();
     await getRequestResult(itemStore.put(item));
     if (factName === "quickInfo") {
+      if (item.quickInfoNotFound) {
+        return {
+          value: { result: { requested: key.item, status: "not-found" } },
+          cachedAt: item.lastAccessedAt,
+        } as SitecoreDataFact<SitecoreDataFactValueByName[K]>;
+      }
       if (!item.quickInfo) {
         return undefined;
       }

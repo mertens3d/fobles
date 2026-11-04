@@ -2,7 +2,7 @@
 import {
   UTILITY_LOCK_MESSAGE,
   type UtilityLockResponse,
-} from "../../../../shared/utility/fobles-utility-lock.messages";
+} from "../../../../shared/utility/fobles-utility-lock.messages.ts";
 const RETRY_INTERVAL_MS = 250;
 
 export async function runWithReferenceHarvestingLease<T>(run: () => Promise<T>): Promise<T> {

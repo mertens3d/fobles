@@ -1,4 +1,4 @@
-import { downloadSanitizedText } from "../../../../shared/export/text-export";
+import { downloadSanitizedText } from "../../../../shared/export/text-export.ts";
 import type { AuditFinding } from "../audit-finding.types";
 import { AUDIT_EXPORT_COLUMNS, type AuditExportColumn } from "./audit-export-columns.ts";
 

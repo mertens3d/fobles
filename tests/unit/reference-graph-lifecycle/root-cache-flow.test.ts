@@ -19,33 +19,17 @@ const FILTERS: SitecoreHarvestFiltersState = {
 function baseRecord(overrides: Partial<SitecoreDataCacheRecord> = {}): SitecoreDataCacheRecord {
   return {
     key: "dev::master::en::id::46004574-866d-4702-828e-1c95ad1e03aa",
-    environment: "dev",
-    database: "master",
-    language: "en",
-    itemKind: "id",
-    itemValue: "46004574-866d-4702-828e-1c95ad1e03aa",
     lastAccessedAt: 1,
     quickInfo: {
-      value: {
-        result: {
-          requested: { kind: "id", value: "46004574-866d-4702-828e-1c95ad1e03aa" },
-          status: "found",
-          value: {
-            type: "scItem",
-            scItemId: "46004574-866d-4702-828e-1c95ad1e03aa",
-            scItemName: "Home",
-            scItemPath: "/sitecore/content/Home",
-            scTemplate: undefined,
-            scItemIcon: undefined,
-            rawMarkup: undefined,
-            link: undefined,
-          },
-        },
-        revision: "rev-1",
-      },
-      cachedAt: 1,
-      lastVerifiedAt: 1,
+      type: "scItem",
+      scItemId: "46004574-866d-4702-828e-1c95ad1e03aa",
+      scItemName: "Home",
+      scItemPath: "/sitecore/content/Home",
+      scTemplate: undefined,
+      scItemIcon: undefined,
+      link: undefined,
     },
+    revision: "rev-1",
     layout: { value: { layoutSectionFields: [] }, cachedAt: 1, lastVerifiedAt: 1 },
     ...overrides,
   };

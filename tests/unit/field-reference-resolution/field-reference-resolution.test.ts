@@ -46,7 +46,8 @@ void test("explicit reference-field strategies (e.g. droplink) are unaffected by
   const selectedOption = { value: REVISION_GUID, textContent: "Home" };
   const fakeSelect = { options: [selectedOption], selectedIndex: 0 };
   const marker = {
-    querySelector: (selector: string) => (selector.includes("scCombobox") ? fakeSelect : null),
+    querySelector: (selector: string) => (selector === "select.scContentControl.scCombobox" ? fakeSelect : null),
+    querySelectorAll: () => [],
   } as unknown as HTMLElement;
 
   // Even with the "Revision" label, a real droplink strategy match must still win and resolve.
@@ -61,7 +62,8 @@ void test("resolveFieldReferences prefers a known strategy over the revision-lab
   const selectedOption = { value: REVISION_GUID, textContent: "Home" };
   const fakeSelect = { options: [selectedOption], selectedIndex: 0 };
   const marker = {
-    querySelector: (selector: string) => (selector.includes("scCombobox") ? fakeSelect : null),
+    querySelector: (selector: string) => (selector === "select.scContentControl.scCombobox" ? fakeSelect : null),
+    querySelectorAll: () => [],
   } as unknown as HTMLElement;
 
   const resolution = resolveFieldReferences(marker, REVISION_GUID, "Revision");

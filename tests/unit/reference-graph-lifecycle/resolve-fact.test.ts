@@ -65,31 +65,29 @@ void test("enrichment-only referenced item (no prior cache) resolves as enriched
   const key = sampleKey();
   const outcome = await resolveItemFact(key, fetchLiveOnce(quickInfoResult("rev-1")));
   assert.equal(outcome.kind, "enriched");
-  const cached = await cache.getFact(key, "quickInfo");
-  assert.equal(cached?.value.revision, "rev-1");
+  const cached = await cache.getItem(key);
+  assert.equal(cached?.revision, "rev-1");
 });
-void test("cached referenced item revision match is verified and bumps lastVerifiedAt", async () => {
+void test("cached referenced item revision match is verified and retains the current revision", async () => {
   const key = sampleKey();
-  await cache.putFact(key, "quickInfo", quickInfoPayload("rev-1"));
-  const before = await cache.getFact(key, "quickInfo");
+  await cache.putFact(key, "quickInfo", { result: quickInfoPayload("rev-1").result }, { revision: "rev-1" });
   const outcome = await resolveItemFact(key, fetchLiveOnce(quickInfoResult("rev-1")));
   assert.equal(outcome.kind, "verified");
-  const after = await cache.getFact(key, "quickInfo");
-  assert.ok(after && before);
-  assert.ok(after.lastVerifiedAt >= before.lastVerifiedAt);
+  const after = await cache.getItem(key);
+  assert.equal(after?.revision, "rev-1");
 });
 void test("cached referenced item revision mismatch is reported as revision-mismatch", async () => {
   const key = sampleKey();
-  await cache.putFact(key, "quickInfo", quickInfoPayload("rev-1"));
+  await cache.putFact(key, "quickInfo", { result: quickInfoPayload("rev-1").result }, { revision: "rev-1" });
   const outcome = await resolveItemFact(key, fetchLiveOnce(quickInfoResult("rev-2", "Home Renamed")));
   assert.equal(outcome.kind, "revision-mismatch");
   assert.equal(outcome.kind === "revision-mismatch" ? outcome.hadStructuralCache : undefined, false);
-  const after = await cache.getFact(key, "quickInfo");
-  assert.equal(after?.value.revision, "rev-2");
+  const after = await cache.getItem(key);
+  assert.equal(after?.revision, "rev-2");
 });
 void test("a revision-mismatch item with cached structural facts reports hadStructuralCache", async () => {
   const key = sampleKey();
-  await cache.putFact(key, "quickInfo", quickInfoPayload("rev-1"));
+  await cache.putFact(key, "quickInfo", { result: quickInfoPayload("rev-1").result }, { revision: "rev-1" });
   await cache.putFact(key, "parent", { parent: undefined });
   const outcome = await resolveItemFact(key, fetchLiveOnce(quickInfoResult("rev-2")));
   assert.equal(outcome.kind, "revision-mismatch");
@@ -97,7 +95,7 @@ void test("a revision-mismatch item with cached structural facts reports hadStru
 });
 void test("an unreadable live revision is reported as unverified, never revision-mismatch", async () => {
   const key = sampleKey();
-  await cache.putFact(key, "quickInfo", quickInfoPayload("rev-1"));
+  await cache.putFact(key, "quickInfo", { result: quickInfoPayload("rev-1").result }, { revision: "rev-1" });
   const unreadableRevisionResult: WorkerTaskSuccessResult = {
     requestId: "r1",
     taskId: crypto.randomUUID(),

@@ -57,13 +57,16 @@ void beforeEach(async () => {
 void test("parent persists only an ID locator when a GUID is available", async () => {
   await putFact(key(), "parent", { parent: item("{B52269FE-554F-4C0F-A0C9-B9ED8D7249F4}", "/sitecore/content/Home") });
   const [record] = await storedFacts();
-  assert.deepEqual(record.fact.value, { parent: { kind: "id", value: "B52269FE-554F-4C0F-A0C9-B9ED8D7249F4" } });
+  assert.deepEqual(record.fact.value, {
+    parent: { kind: "id", value: "B52269FE-554F-4C0F-A0C9-B9ED8D7249F4" },
+    hasParent: true,
+  });
 });
 
 void test("parent persists a path locator when no GUID is available", async () => {
   await putFact(key(), "parent", { parent: item("", "/sitecore/content/Home") });
   const [record] = await storedFacts();
-  assert.deepEqual(record.fact.value, { parent: { kind: "path", value: "/sitecore/content/Home" } });
+  assert.deepEqual(record.fact.value, { parent: { kind: "path", value: "/sitecore/content/Home" }, hasParent: true });
 });
 
 void test("relationship facts rehydrate locator placeholders for existing runtime callers", async () => {

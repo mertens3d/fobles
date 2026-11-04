@@ -163,10 +163,6 @@ void test("IndexedDB failure rejects instead of silently succeeding", async () =
   const duplicateKey = serializeCacheKey(sampleKey());
   const minimalRecord: SitecoreDataCacheRecord = {
     key: duplicateKey,
-    database: "master",
-    language: "en",
-    itemKind: "id",
-    itemValue: "aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa",
     lastAccessedAt: 1,
   };
   await assert.rejects(() =>

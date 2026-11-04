@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/harvesting/planner/harvest-task-planner.ts
 
-import { isGuidLike } from "../../sitecore/guid";
+import { isGuidLike } from "../../sitecore/guid.ts";
 import type { HarvestRequest, SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../sitecore-harvester.types";
 import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../workers/tasks/worker-task.types";
 

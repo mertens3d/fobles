@@ -15,20 +15,22 @@ type FoblesGlobal = typeof globalThis & { __sitecoreFoblesDebug?: boolean; __sit
 
 const foblesGlobal = globalThis as FoblesGlobal;
 
-void chrome.storage?.sync
-  ?.get(STORAGE.KEY.PERSIST_DEBUG_LOGS)
-  .then((result) => {
-    setPersistedLoggingEnabled(result[STORAGE.KEY.PERSIST_DEBUG_LOGS] === true);
-  })
-  .catch(() => {
-    setPersistedLoggingEnabled(false);
-  });
+if (typeof chrome !== "undefined") {
+  void chrome.storage?.sync
+    ?.get(STORAGE.KEY.PERSIST_DEBUG_LOGS)
+    .then((result) => {
+      setPersistedLoggingEnabled(result[STORAGE.KEY.PERSIST_DEBUG_LOGS] === true);
+    })
+    .catch(() => {
+      setPersistedLoggingEnabled(false);
+    });
 
-chrome.storage?.onChanged?.addListener((changes, areaName) => {
-  if (areaName === "sync" && STORAGE.KEY.PERSIST_DEBUG_LOGS in changes) {
-    setPersistedLoggingEnabled(changes[STORAGE.KEY.PERSIST_DEBUG_LOGS].newValue === true);
-  }
-});
+  chrome.storage?.onChanged?.addListener((changes, areaName) => {
+    if (areaName === "sync" && STORAGE.KEY.PERSIST_DEBUG_LOGS in changes) {
+      setPersistedLoggingEnabled(changes[STORAGE.KEY.PERSIST_DEBUG_LOGS].newValue === true);
+    }
+  });
+}
 
 const isDebugEnabled = (): boolean => Boolean(foblesGlobal.__sitecoreFoblesDebug);
 
@@ -114,10 +116,12 @@ function persistLog(level: PersistedLogLevel, args: unknown[]): void {
     } else {
       const message: PersistedLogMessage = { type: REFERENCE_GRAPH.FOBLES_PERSIST_LOG, entry };
 
-      void chrome.runtime?.sendMessage(message).catch(() => {
-        // The extension context may
-        // have been reloaded.
-      });
+      if (typeof chrome !== "undefined") {
+        void chrome.runtime?.sendMessage(message).catch(() => {
+          // The extension context may
+          // have been reloaded.
+        });
+      }
     }
   }
 }

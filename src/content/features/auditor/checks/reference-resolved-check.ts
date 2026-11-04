@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/auditor/checks/reference-resolved-check.ts
-import { AUDIT_CHECK } from "../../../../constants/audit-checks.const";
-import { extensionLog } from "../../../logger";
+import { AUDIT_CHECK } from "../../../../constants/audit-checks.const.ts";
+import { extensionLog } from "../../../logger.ts";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing-state";
 import { buildAuditFinding } from "../audit-finding-factory.ts";

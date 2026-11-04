@@ -17,6 +17,7 @@ function makeFinding(overrides: Partial<AuditFinding> & { id: string }): AuditFi
     severity: "info",
     checkKey: "check-a",
     checkLabel: "Check A",
+    dataType: "text",
     referenceModelNodeId: undefined,
     itemId: undefined,
     itemName: undefined,

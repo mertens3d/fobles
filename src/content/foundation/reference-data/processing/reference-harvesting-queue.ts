@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-harvesting-queue.ts
 
-import { normalizeItemLocator } from "../../cache/sitecore-data/sitecore-data-cache-key";
+import { normalizeItemLocator } from "../../cache/sitecore-data/sitecore-data-cache-key.ts";
 import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data-cache.types";
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
 

@@ -33,7 +33,7 @@ export type SitecoreDataFactName = keyof SitecoreDataFactMap;
 export type SitecoreStoredFactName = Exclude<SitecoreDataFactName, "quickInfo">;
 
 export type StoredSitecoreDataFactMap = {
-  parent: { parent: SitecoreItemLocator | undefined };
+  parent: { parent: SitecoreItemLocator | undefined; hasParent: boolean };
   children: { childItems: readonly SitecoreItemLocator[] };
   referrers: { referrers: readonly SitecoreItemLocator[] };
   customSections: SitecoreDataFactMap["customSections"];
@@ -47,6 +47,7 @@ export type SitecoreDataCacheItemRecord = {
   key: string;
   revision?: string;
   quickInfo?: StoredQuickInfo;
+  quickInfoNotFound?: boolean;
   lastAccessedAt: number;
 };
 

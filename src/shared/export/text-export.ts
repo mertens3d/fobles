@@ -1,7 +1,7 @@
 // @source-path [fobles] src/shared/export/text-export.ts
 
-import { downloadBlob } from "./download-export";
-import { sanitizeExportText } from "./export-sanitizer";
+import { downloadBlob } from "./download-export.ts";
+import { sanitizeExportText } from "./export-sanitizer.ts";
 
 export const UTF8_BOM = "\uFEFF";
 
