@@ -83,9 +83,15 @@ function renderTestDetails(result: ReportResult): string {
     );
   }
 
+  if (result.runtimeLog) {
+    parts.push(
+      `<a class="fobles-log-link" href="${escapeHtml(result.runtimeLog.href)}" data-modal-src="${escapeHtml(result.runtimeLog.href)}">View Test Runtime Log</a><br/>`,
+    );
+  }
+
   if (result.foblesLog) {
     parts.push(
-      `<a class="fobles-log-link" href="${escapeHtml(result.foblesLog.href)}" target="_blank">View Fobles Log</a>`,
+      `<a class="fobles-log-link" href="${escapeHtml(result.foblesLog.href)}" data-modal-src="${escapeHtml(result.foblesLog.href)}">View Fobles Extension Log</a><br/>`,
     );
   }
 
@@ -189,7 +195,8 @@ export function renderReport(input: RenderReportInput): string {
   </main>
   <div class="screenshot-modal-backdrop" id="screenshot-modal-backdrop">
     <button type="button" class="screenshot-modal-close" id="screenshot-modal-close" aria-label="Close">&times;</button>
-    <img id="screenshot-modal-img" alt="">
+    <img id="screenshot-modal-img" class="screenshot-modal-content" alt="">
+    <iframe id="screenshot-modal-frame" class="screenshot-modal-content" title="Log viewer"></iframe>
   </div>
   <script src="assets/scripts.js"></script>
   ${refreshScript}

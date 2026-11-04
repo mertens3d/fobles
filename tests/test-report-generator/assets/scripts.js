@@ -2,24 +2,45 @@
 (function () {
   var backdrop = document.getElementById("screenshot-modal-backdrop");
   var modalImg = document.getElementById("screenshot-modal-img");
+  var modalFrame = document.getElementById("screenshot-modal-frame");
 
-  if (backdrop && modalImg) {
-    function openModal(src, alt) {
-      modalImg.src = src;
-      modalImg.alt = alt || "";
+  if (backdrop && modalImg && modalFrame) {
+    function openModal(kind, src, alt) {
+      if (kind === "frame") {
+        modalFrame.src = src;
+        modalFrame.classList.add("active");
+      } else {
+        modalImg.src = src;
+        modalImg.alt = alt || "";
+        modalImg.classList.add("active");
+      }
       backdrop.classList.add("open");
     }
 
     function closeModal() {
       backdrop.classList.remove("open");
-      modalImg.src = "";
+      modalImg.classList.remove("active");
+      modalFrame.classList.remove("active");
+      modalImg.removeAttribute("src");
+      modalFrame.removeAttribute("src");
     }
 
     document.addEventListener("click", function (event) {
       var thumb = event.target.closest(".screenshot-thumb");
+      var modalLink = event.target.closest("[data-modal-src]");
 
       if (thumb) {
-        openModal(thumb.src, thumb.alt);
+        openModal("image", thumb.src, thumb.alt);
+        return;
+      }
+
+      if (modalLink) {
+        event.preventDefault();
+        openModal("frame", modalLink.getAttribute("data-modal-src"));
+        return;
+      }
+
+      if (event.target.closest(".screenshot-modal-content")) {
         return;
       }
 

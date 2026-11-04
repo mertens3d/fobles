@@ -1,6 +1,6 @@
 // @source-path [Fobles] tests/fixtures/playwright-page-diagnostic-handlers.ts
 
-import type { Page, BrowserContext, Request } from "@playwright/test";
+import type { Page, BrowserContext, Request, Worker } from "@playwright/test";
 import { logDiagnostic } from "./playwright-logging";
 import { TEST_CONST } from "../constants/TEST_CONST";
 
@@ -54,6 +54,19 @@ export function attachPageDiagnosticHandlers(context: BrowserContext): void {
 
   context.pages().forEach(pageDiagnostics);
   context.on("page", pageDiagnostics);
+
+  // Service worker lifecycle: a worker that is stopped/restarted mid-load can drop runtime messages.
+  const workerDiagnostics = (worker: Worker): void => {
+    logDiagnostic(`[extension service worker] started ${worker.url()}`);
+    worker.on("console", (message) => {
+      logDiagnostic(`[extension service worker console:${message.type()}] ${message.text()}`);
+    });
+    worker.on("close", () => {
+      logDiagnostic(`[extension service worker] closed ${worker.url()}`);
+    });
+  };
+  context.serviceWorkers().forEach(workerDiagnostics);
+  context.on("serviceworker", workerDiagnostics);
 }
 
 // Ignore missing Sitecore icons unrelated to Fobles.

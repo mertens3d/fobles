@@ -78,6 +78,7 @@ th {
   width: 500px;
 }
 tr.failed,
+tr.interrupted,
 tr.timedOut {
   background: #fff5f5;
 }
@@ -164,11 +165,23 @@ tr.skipped {
 .screenshot-modal-backdrop.open {
   display: flex;
 }
-.screenshot-modal-backdrop img {
+.screenshot-modal-content {
   border-radius: 6px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.5);
+  display: none;
+}
+.screenshot-modal-content.active {
+  display: block;
+}
+.screenshot-modal-backdrop img {
   max-height: 90vh;
   max-width: 95vw;
+}
+.screenshot-modal-backdrop iframe {
+  background: #fff;
+  border: none;
+  height: 90vh;
+  width: 90vw;
 }
 .screenshot-modal-close {
   background: #fff;
@@ -196,6 +209,7 @@ tr.skipped {
   color: #087f5b;
 }
 .badge-failed,
+.badge-interrupted,
 .badge-timedOut {
   background: #ffe3e3;
   color: #c92a2a;

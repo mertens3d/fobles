@@ -1,4 +1,5 @@
 import fs from "node:fs";
+import { randomUUID } from "node:crypto";
 import path from "node:path";
 import type { FullConfig, FullResult, Reporter, Suite, TestCase, TestResult } from "@playwright/test/reporter";
 import { matchAttachmentsToSteps } from "./reporter/attachment-matching";
@@ -41,6 +42,7 @@ export default class StaticTestReporter implements Reporter {
   private loginAlertUrl: string | null;
   private lastFullResult: CurrentFullResult;
   private totalTests: number;
+  private readonly runtimeOutput = new WeakMap<TestResult, string[]>();
 
   constructor(options: ReporterOptions = {}) {
     this.outputFile = path.resolve(
@@ -62,7 +64,8 @@ export default class StaticTestReporter implements Reporter {
     this.writeReport({ status: "running" });
   }
 
-  onStdOut(chunk: string | Buffer): void {
+  onStdOut(chunk: string | Buffer, _test?: TestCase, result?: TestResult): void {
+    this.captureRuntimeOutput(chunk, result);
     const text = chunk.toString();
     const loginMatch = text.match(/LOGIN NEEDED at (\S+)/);
 
@@ -73,6 +76,53 @@ export default class StaticTestReporter implements Reporter {
       this.loginAlertUrl = null;
       this.writeReport(this.lastFullResult);
     }
+  }
+
+  onStdErr(chunk: string | Buffer, _test?: TestCase, result?: TestResult): void {
+    this.captureRuntimeOutput(chunk, result);
+  }
+
+  private captureRuntimeOutput(chunk: string | Buffer, result?: TestResult): void {
+    if (!result) {
+      return;
+    }
+
+    const chunks = this.runtimeOutput.get(result) ?? [];
+    chunks.push(chunk.toString());
+    this.runtimeOutput.set(result, chunks);
+  }
+
+  private saveRuntimeLog(test: TestCase, result: TestResult): { name: string; href: string } {
+    const chunks = this.runtimeOutput.get(result);
+    const output = chunks?.join("") ?? [
+      "[stdout]\n" + result.stdout.map(String).join(""),
+      "[stderr]\n" + result.stderr.map(String).join(""),
+    ].join("\n");
+    const errors = result.errors.map((error, index) => {
+      const message = error.message ?? error.value ?? "Unknown error";
+      const stack = error.stack ?? "";
+      const detail = stack.includes(message) ? stack : [message, stack].filter(Boolean).join("\n");
+      return `Error ${index + 1}:\n${detail}`;
+    }).join("\n\n");
+    const logDir = path.join(path.dirname(this.outputFile), "runtime-logs");
+    const logPath = path.join(logDir, `${randomUUID()}.log`);
+    const contents = [
+      test.titlePath().join(" > "),
+      `Status: ${result.status}`,
+      `Worker: ${result.parallelIndex + 1}; attempt: ${result.retry + 1}`,
+      `Duration: ${result.duration} ms`,
+      "",
+      "=== Test runtime output (stdout/stderr) ===",
+      output || "(No test runtime output)",
+      "",
+      "=== Test errors ===",
+      errors || "(No test errors)",
+    ].join("\n");
+
+    fs.mkdirSync(logDir, { recursive: true });
+    fs.writeFileSync(logPath, stripAnsiSafe(contents), "utf8");
+    this.runtimeOutput.delete(result);
+    return { name: "Test runtime log", href: toReportRelativeHref(logPath, this.outputFile) };
   }
 
   onTestEnd(test: TestCase, result: TestResult): void {
@@ -129,11 +179,12 @@ export default class StaticTestReporter implements Reporter {
       titlePath: test.titlePath(),
       status: result.status,
       duration: result.duration,
-      error: stripAnsiSafe(result.error?.message ?? ""),
+      error: stripAnsiSafe(result.errors.map((error) => error.stack ?? error.message ?? error.value ?? "").join("\n\n")),
       steps,
       screenshots: remainingScreenshots,
       notes: remainingNotes,
       foblesLog,
+      runtimeLog: this.saveRuntimeLog(test, result),
     };
 
     folderResults.push(reportResult);

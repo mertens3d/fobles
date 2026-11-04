@@ -8,6 +8,8 @@ import type { ToolbarContext } from "./types";
 
 export type { ToolbarContext } from "./types";
 
+const REACT_MOUNT_NOTE = "react mount";
+
 const mountedRoots = new WeakMap<Document, Root>();
 
 function getOrCreateMount(doc: Document): Root {
@@ -19,6 +21,7 @@ function getOrCreateMount(doc: Document): Root {
   // A stable, otherwise-untouched React mount point; the toolbar container itself (with its
   // real class/id) is rendered as React-owned content inside it, not this host.
   host.style.display = "contents";
+  host.dataset.foblesNote = REACT_MOUNT_NOTE;
   doc.body.appendChild(host);
   const root = createRoot(host);
   mountedRoots.set(doc, root);
@@ -35,11 +38,8 @@ export function injectToolbar(context: ToolbarContext): void {
 
 export function setToolbarVisible(context: ToolbarContext, visible: boolean): void {
   context.setVisible(visible);
-  if (visible) {
-    injectToolbar(context);
-    return;
-  }
-  setToolbarStoreVisible(context.doc, false);
+  injectToolbar(context);
+  setToolbarStoreVisible(context.doc, visible);
 }
 
 export function setToolbarPlacement(context: ToolbarContext, placement: ToolbarPlacement): void {

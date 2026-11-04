@@ -4,6 +4,8 @@ import { FOBLES } from "../../constants/fobles";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import { publishFoblesShellCommand } from "../shell/shell-events";
 import { openDeveloperUtility } from "../shell/utility/fobles-utility-launchers";
+import { setFoblesNavVisible } from "../../shared/nav-settings";
+import { setToolbarStoreVisible } from "./toolbar-store";
 import type { ToolbarContext } from "./types";
 
 export type ToolbarNavButtonProps = {
@@ -115,7 +117,11 @@ export function ToolbarCloseButton({ context }: { context: ToolbarContext }) {
       className={CLASS.TOOLBAR_CLOSE_BUTTON}
       ariaLabel={TEXT.HIDE_NAV}
       title={TEXT.HIDE_NAV}
-      onClick={() => context.setVisible(false)}
+      onClick={() => {
+        context.setVisible(false);
+        setToolbarStoreVisible(context.doc, false);
+        void setFoblesNavVisible(false);
+      }}
     >
       <img className={CLASS.TOOLBAR_CLOSE_ICON} src={ICONS.CLOSE} alt="" />
     </ToolbarNavButton>

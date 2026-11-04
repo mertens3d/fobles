@@ -65,6 +65,20 @@ export async function pinHistory(frame: Frame): Promise<void> {
   await expect(historyPanel(frame)).toBeVisible();
 }
 
+// Temporary: shows whether the worker is alive/listening and what storage and the panel hold.
+async function logHistoryDiagnostics(page: Page, frame: Frame): Promise<void> {
+  const worker = page.context().serviceWorkers()[0];
+  const workerState = worker
+    ? await worker.evaluate(async () => ({
+        hasListeners: chrome.runtime.onMessage.hasListeners(),
+        trace: (globalThis as Record<string, unknown>).__historyTrace ?? "no trace (handler never ran or old build)",
+        keys: Object.keys(await chrome.storage.local.get(null)),
+      })).catch((error: unknown) => `evaluate failed: ${String(error)}`)
+    : "no service worker";
+  const panelText = await historyPanel(frame).innerText().catch(() => "panel missing");
+  console.log("[history diagnostics]", JSON.stringify({ workerState, panelText }));
+}
+
 export async function openHistoryEditor(page: Page): Promise<{ frame: Frame; initial: HistoryVisit }> {
   await openContentEditor(page, SCENARIO.itemId);
   const frame = await findFoblesFrame(page);
@@ -73,6 +87,7 @@ export async function openHistoryEditor(page: Page): Promise<{ frame: Frame; ini
   expect(initial.name).not.toBe("");
   expect(initial.path).toMatch(/^\/sitecore\//i);
   await pinHistory(frame);
+  await logHistoryDiagnostics(page, frame);
   await expect(historyLink(frame, initial.name)).toBeVisible();
   return { frame, initial };
 }

@@ -20,6 +20,7 @@ export type ReportResult = {
   screenshots: ScreenshotInfo[];
   notes: NoteInfo[];
   foblesLog?: FoblesLogInfo;
+  runtimeLog?: FoblesLogInfo;
 };
 
 export type ReportStep = {

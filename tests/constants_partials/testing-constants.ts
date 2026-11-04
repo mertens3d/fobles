@@ -107,7 +107,7 @@ export const TESTING = {
     AI_MAPPING_SITE_INPUT: "input[name='site']",
     AI_MAPPING_TENANT_NAME_INPUT: "input[name='tenantName']",
   },
-  CONTENT_EDITOR_DEBUG: { LOG_MARKER: "Fobles flyout eligibility decision", OPEN_CONSOLE_SHORTCUT: "Control+Shift+J" },
+  CONTENT_EDITOR_DEBUG: { LOG_MARKER: "Activating Fobles UI", OPEN_CONSOLE_SHORTCUT: "Control+Shift+J" },
   SPEAK_BUBBLE: {
     DEFAULT_SPEECH_POSITION: { xPercent: 50, yPercent: 90 },
     ID: "playwright-speak-bubble",
