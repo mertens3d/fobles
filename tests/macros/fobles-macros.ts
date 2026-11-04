@@ -20,7 +20,7 @@ export async function CloseFoblesGraph(page: Page): Promise<void> {
   console.log(`[fobles Macro] ${CloseFoblesGraph.name}`);
 
   const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
-  const closeButton = graphDialog.locator(`#${TEST_CONST.FOBLES.DOM.IDS.GRAPH_CLOSE_BUTTON_ID}`);
+  const closeButton = graphDialog.getByRole("button", { name: "Close", exact: true });
 
   await expect(graphDialog).toBeVisible();
   await expect(closeButton).toBeVisible();
@@ -63,13 +63,15 @@ export async function ExpandFoblesGraphControls(page: Page): Promise<void> {
   console.log(`[fobles Macro] ${ExpandFoblesGraphControls.name}`);
 
   const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
-  const headerButton = graphDialog.locator(".fobles-reference-graph-controls-header");
+  const headerButton = graphDialog.locator(".fobles-reference-graph-controls-expander");
+  const controls = graphDialog.locator(".fobles-reference-graph-controls-content");
 
-  if ((await headerButton.getAttribute("aria-expanded")) !== "true") {
+  await expect(headerButton).toBeVisible();
+  if ((await controls.count()) === 0) {
     await clickWithMouseMarker(page, headerButton, "Fobles Graph Controls");
   }
 
-  await expect(headerButton).toHaveAttribute("aria-expanded", "true");
+  await expect(controls).toBeVisible({ timeout: 5_000 });
 }
 
 // label is the filter's visible text (e.g. "Custom Fields", "Standard Fields") - the graph
@@ -78,8 +80,7 @@ export async function SetFoblesGraphFilter(page: Page, label: string, desiredSta
   console.log(`[fobles Macro] ${SetFoblesGraphFilter.name} - ${label}=${desiredState}`);
 
   const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
-  const filterRow = graphDialog.locator(".fobles-reference-graph-filter", { hasText: label });
-  const checkbox = filterRow.locator("input[type='checkbox']");
+  const checkbox = graphDialog.locator(".fobles-filter-list").getByLabel(label, { exact: true });
 
   await expect(checkbox).toBeVisible();
 

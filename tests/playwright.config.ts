@@ -23,6 +23,9 @@ const argsText = process.argv.join(" ").replace(/\\/g, "/");
 // itself) or an absolute path (e.g. the VS Code Test Explorer's "Run Test" button) changes
 // whatever comes before "e2e/", but never that segment itself.
 function getReportSuiteName(args: string): string | null {
+  if (args.includes("e2e/harvest")) {
+    return "harvest";
+  }
   if (args.includes("e2e/toolbar")) {
     return "toolbar";
   }
@@ -70,9 +73,7 @@ export default defineConfig({
   // each additional test still opens/reauthenticates a Sitecore session, burning more license
   // slots for no benefit once something is already known to be broken.
   maxFailures: 1,
-  // All specs share one persistent browser profile (playwright/test-artifacts/browser-profile),
-  // which only one process can open at a time - force serial execution across files.
-  workers: 2,
+  workers: 4,
   reporter: isListOnly
     ? [["list"]]
     : [
@@ -94,7 +95,22 @@ export default defineConfig({
     // context/page fixtures this setting normally configures. That fixture's own RECORD_VIDEO
     // constant controls recording instead (see its own comment for why).
   },
-  projects: [{ name: "edge", use: { browserName: "chromium", channel: "msedge", ...devices["Desktop Chrome"] } }],
+  // Sitecore editor-state tests are explicitly tagged and isolated in a one-worker project.
+  // The general project waits for that project to finish, then uses the global four-worker cap.
+  projects: [
+    {
+      name: "edge-sitecore-state",
+      grep: /@sitecore-state/,
+      workers: 1,
+      use: { browserName: "chromium", channel: "msedge", ...devices["Desktop Chrome"] },
+    },
+    {
+      name: "edge",
+      grepInvert: /@sitecore-state/,
+      dependencies: ["edge-sitecore-state"],
+      use: { browserName: "chromium", channel: "msedge", ...devices["Desktop Chrome"] },
+    },
+  ],
   webServer: undefined,
   outputDir: path.join(testArtifactsDir, "playwright-results"),
   snapshotDir: path.join(testArtifactsDir, "snapshots"),

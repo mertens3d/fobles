@@ -1,5 +1,10 @@
 import { TEST_CONST } from "../../constants/TEST_CONST";
-import { expect, foblesTest } from "../../fixtures/playwright";
+import {
+  DATABASE_NAME,
+  FACT_STORE_NAME,
+  ITEM_STORE_NAME,
+} from "../../../src/content/foundation/cache/sitecore-data/indexed-db";
+import { expect, foblesTest, type Page } from "../../fixtures/playwright";
 import {
   ClickFoblesGraphButton,
   CloseFoblesGraph,
@@ -8,7 +13,30 @@ import {
 } from "../../macros/fobles-macros";
 import { setupReferenceGraphState } from "../harvest/harvest-test-helpers";
 
-foblesTest.describe("Worker pool", () => {
+async function clearSitecoreDataCache(page: Page): Promise<void> {
+  await page.evaluate(async ({ databaseName, storeNames }) => {
+    const database = await new Promise<IDBDatabase>((resolve, reject) => {
+      const request = indexedDB.open(databaseName);
+      request.onsuccess = () => resolve(request.result);
+      request.onerror = () => reject(request.error ?? new Error("Could not open Sitecore data cache"));
+    });
+    const existingStores = storeNames.filter((name) => database.objectStoreNames.contains(name));
+    if (existingStores.length > 0) {
+      await new Promise<void>((resolve, reject) => {
+        const transaction = database.transaction(existingStores, "readwrite");
+        for (const name of existingStores) {
+          transaction.objectStore(name).clear();
+        }
+        transaction.oncomplete = () => resolve();
+        transaction.onerror = () => reject(transaction.error ?? new Error("Could not clear Sitecore data cache"));
+        transaction.onabort = () => reject(transaction.error ?? new Error("Sitecore data cache clear was aborted"));
+      });
+    }
+    database.close();
+  }, { databaseName: DATABASE_NAME, storeNames: [FACT_STORE_NAME, ITEM_STORE_NAME] });
+}
+
+foblesTest.describe("Worker pool", { tag: "@sitecore-state" }, () => {
   foblesTest(
     "retries editor-state tasks after the worker document becomes stale",
     async ({ page, sharedBrowserContext }) => {
@@ -21,7 +49,8 @@ foblesTest.describe("Worker pool", () => {
         await chrome.storage.local.remove("persistedLogEntries");
       });
 
-      await setupReferenceGraphState(page, { rawValues: false, standardFields: false });
+      await setupReferenceGraphState(page, { rawValues: true, standardFields: false });
+      await clearSitecoreDataCache(page);
 
       await ClickFoblesGraphButton(page);
       await WaitForFoblesGraphEnrichmentComplete(page);

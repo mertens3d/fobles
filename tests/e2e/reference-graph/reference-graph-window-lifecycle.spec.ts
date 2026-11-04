@@ -16,7 +16,7 @@ const MAXIMIZE_MARGIN_TOLERANCE_PX = 20;
 // Regression coverage for the shared FoblesWindow minimize/maximize lifecycle: minimizing docks
 // the window to the bottom of the viewport, maximizing fills it, and restoring from either
 // returns the window to its exact pre-toggle rect (the "restoreRect" persistence behavior).
-foblesTest.describe("Shared specialist window collapse and maximize lifecycle", () => {
+foblesTest.describe("Shared specialist window collapse and maximize lifecycle", { tag: "@sitecore-state" }, () => {
   foblesTest(
     "minimizing docks the window to the bottom of the viewport, and restoring returns its previous rect",
     async ({ page }) => {

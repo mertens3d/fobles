@@ -12,6 +12,7 @@ export const _SITECORE_BASE_CONST = {
     CONTENT_EDITOR_BW_ENCODED: "/sitecore/shell/Applications/Content%20Editor.aspx?sc_bw=1",
     IDENTITY_AUTHORIZE: "/connect/authorize",
     LICENSE_STARTPAGE: "/sitecore/client/Applications/LicenseOptions/StartPage",
+    POWERSHELL_ISE: "/sitecore/shell/Applications/PowerShell/PowerShellIse",
   },
   SELECTORS: {
     ACCOUNT_INFO: "ul.sc-accountInformation",

@@ -99,7 +99,25 @@ async function attemptAiAutoLogin(page: Page, autoLoginContext: AutoLoginContext
   console.log("[sitecore preflight] SitecoreAI password screen detected - submitting test password");
   await passwordField.fill(password.reveal());
   await page.locator(AI_LOGIN_SELECTORS.PASSWORD_SUBMIT).click();
-  return true;
+  const sitecoreOrigin = new URL(getTestEnvironment().baseUrl).origin;
+  const redirectedToSitecore = await page
+    .waitForURL((url) => url.origin === sitecoreOrigin, {
+      timeout: TEST_CONST.TESTING.TIMEOUTS.AUTO_LOGIN_WAIT_MS,
+    })
+    .then(() => true)
+    .catch(() => false);
+  let loginCompleted = redirectedToSitecore;
+  if (!loginCompleted) {
+    const currentUrl = new URL(page.url());
+    const loginControls = page.locator(`input[type='password'], ${AI_LOGIN_SELECTORS.USERNAME}`).first();
+    loginCompleted = currentUrl.origin === sitecoreOrigin && (await loginControls.count()) === 0;
+  }
+  if (loginCompleted) {
+    await page.waitForLoadState("domcontentloaded");
+    const loginForm = page.locator(`input[type='password'], ${AI_LOGIN_SELECTORS.USERNAME}`).first();
+    loginCompleted = (await loginForm.count()) === 0;
+  }
+  return loginCompleted;
 }
 
 async function fillXpPassword(page: Page, autoLoginContext: AutoLoginContext): Promise<void> {

@@ -17,7 +17,7 @@ async function completeHarvest(page: Parameters<typeof ClickFoblesGraphButton>[0
   await CloseFoblesGraph(page);
 }
 
-foblesTest.describe("Harvest session isolation", () => {
+foblesTest.describe("Harvest session isolation", { tag: "@sitecore-state" }, () => {
   foblesTest("back-to-back harvests restore their own caller editor states", async ({ page }) => {
     foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 

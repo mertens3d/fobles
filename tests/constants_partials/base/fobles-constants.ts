@@ -13,7 +13,6 @@ export const _FOBLES_BASE_CONST = {
     IDS: {
       DIALOG_ID: "fobles-reference-graph-dialog",
       PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
-      GRAPH_CLOSE_BUTTON_ID: "fobles-reference-graph-close",
     },
   },
   // Must match src/shared/constants.ts's MESSAGE.ACTION / src/public/manifest.json's "commands"

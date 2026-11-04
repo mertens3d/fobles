@@ -7,7 +7,7 @@ import {
 } from "../../macros/fobles-macros";
 import { setupReferenceGraphState } from "../harvest/harvest-test-helpers";
 
-foblesTest.describe("Reference Graph", () => {
+foblesTest.describe("Reference Graph", { tag: "@sitecore-state" }, () => {
   foblesTest("opens, completes enrichment, and closes", async ({ page }) => {
     foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 

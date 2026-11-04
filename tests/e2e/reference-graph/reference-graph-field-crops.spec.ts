@@ -11,7 +11,9 @@ import {
 } from "../../macros/fobles-macros";
 import { reloadAndReadEditorState, setupReferenceGraphState, type EditorState } from "../harvest/harvest-test-helpers";
 
-foblesTest.describe("Reference Graph: Custom Fields / Standard Fields crops", () => {
+const FILTER_RERENDER_TIMEOUT_MS = 30_000;
+
+foblesTest.describe("Reference Graph: Custom Fields / Standard Fields crops", { tag: "@sitecore-state" }, () => {
   foblesTest("Custom Fields and Standard Fields are independent filters", async ({ page }) => {
     foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 
@@ -25,9 +27,8 @@ foblesTest.describe("Reference Graph: Custom Fields / Standard Fields crops", ()
     await SetFoblesGraphFilter(page, "Custom Fields", false);
 
     const standardFieldsCheckbox = page
-      .locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`)
-      .locator(".fobles-reference-graph-filter", { hasText: "Standard Fields" })
-      .locator("input[type='checkbox']");
+      .locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID} .fobles-filter-list`)
+      .getByLabel("Standard Fields", { exact: true });
 
     await expect(standardFieldsCheckbox).toBeChecked();
 
@@ -49,7 +50,9 @@ foblesTest.describe("Reference Graph: Custom Fields / Standard Fields crops", ()
       await SetFoblesGraphFilter(page, "Standard Fields", true);
 
       const blocker = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID} .fobles-reference-graph-canvas-blocker`);
-      await expect(blocker).toHaveCount(0, { timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS });
+      await expect(blocker, "Graph should finish rendering after enabling Standard Fields").toHaveCount(0, {
+        timeout: FILTER_RERENDER_TIMEOUT_MS,
+      });
 
       await CloseFoblesGraph(page);
 
@@ -73,7 +76,9 @@ foblesTest.describe("Reference Graph: Custom Fields / Standard Fields crops", ()
       await SetFoblesGraphFilter(page, "Standard Fields", true);
 
       const blocker = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID} .fobles-reference-graph-canvas-blocker`);
-      await expect(blocker).toHaveCount(0, { timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS });
+      await expect(blocker, "Graph should finish rendering when Standard Fields are already enabled").toHaveCount(0, {
+        timeout: FILTER_RERENDER_TIMEOUT_MS,
+      });
 
       await CloseFoblesGraph(page);
 

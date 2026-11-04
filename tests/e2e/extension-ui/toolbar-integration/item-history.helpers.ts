@@ -1,7 +1,11 @@
 // @source-path [fobles] tests/e2e/extension-ui/toolbar-integration/item-history.helpers.ts
 
 import type { BrowserContext } from "@playwright/test";
+import { readFile } from "node:fs/promises";
+import path from "node:path";
 import { SITECORE } from "../../../../src/constants/sitecore";
+import { ITEM_HISTORY_CAPTURE } from "../../../../src/content/item-history/item-history.const";
+import { TEST_CONSTB } from "../../../fixtures/playwright.const";
 import { HISTORY_CLASS } from "../../../../src/content/toolbar/history/history.const";
 import { ITEM_HISTORY } from "../../../../src/shared/item-history/item-history.const";
 import { historyStorageKey } from "../../../../src/shared/item-history/item-history-model";
@@ -65,18 +69,28 @@ export async function pinHistory(frame: Frame): Promise<void> {
   await expect(historyPanel(frame)).toBeVisible();
 }
 
-// Temporary: shows whether the worker is alive/listening and what storage and the panel hold.
 async function logHistoryDiagnostics(page: Page, frame: Frame): Promise<void> {
   const worker = page.context().serviceWorkers()[0];
+  const bundlePath = path.join(TEST_CONSTB.extensionPath, "background.js");
+  const diskSource = await readFile(bundlePath, "utf8");
   const workerState = worker
-    ? await worker.evaluate(async () => ({
-        hasListeners: chrome.runtime.onMessage.hasListeners(),
-        trace: (globalThis as Record<string, unknown>).__historyTrace ?? "no trace (handler never ran or old build)",
-        keys: Object.keys(await chrome.storage.local.get(null)),
-      })).catch((error: unknown) => `evaluate failed: ${String(error)}`)
+    ? await worker.evaluate(async () => {
+        const source = await (await fetch(chrome.runtime.getURL("background.js"))).text();
+        return {
+          extensionId: chrome.runtime.id,
+          manifestVersion: chrome.runtime.getManifest().version,
+          servedHasTemporaryWriterLogs: source.includes("[Fobles][history-writer]"),
+          storedKeys: Object.keys(await chrome.storage.local.get(null)),
+        };
+      }).catch((error: unknown) => `worker evaluation failed: ${String(error)}`)
     : "no service worker";
-  const panelText = await historyPanel(frame).innerText().catch(() => "panel missing");
-  console.log("[history diagnostics]", JSON.stringify({ workerState, panelText }));
+  console.log("[history build diagnostics]", JSON.stringify({
+    extensionPath: TEST_CONSTB.extensionPath,
+    diskHasTemporaryWriterLogs: diskSource.includes("[Fobles][history-writer]"),
+    workerUrl: worker?.url(),
+    workerState,
+    frameUrl: frame.url(),
+  }));
 }
 
 export async function openHistoryEditor(page: Page): Promise<{ frame: Frame; initial: HistoryVisit }> {
@@ -144,15 +158,26 @@ export async function readHistoryScope(frame: Frame): Promise<HistoryScope> {
 }
 
 export async function mutateHistoryDatabase(frame: Frame, database: string, placement: "outside" | "inside"): Promise<void> {
-  await frame.evaluate(({ databaseSelector, databaseKeys, editorsSelector, database, placement }) => {
+  const existingInput = await frame.locator(SITECORE.SELECTORS.DATABASE_INPUT).count();
+  if (existingInput === 0) {
+    await frame.evaluate(({ editorsSelector, placement }) => {
+      const editors = document.querySelector(editorsSelector);
+      if (!editors) {
+        throw new Error("The Content Editor Editors container is missing");
+      }
+      const input = document.createElement("input");
+      input.id = "FoblesHistory_Database";
+      input.value = "master";
+      input.setAttribute("value", "master");
+      (placement === "inside" ? editors : document.body).appendChild(input);
+    }, { editorsSelector: SITECORE.SELECTORS.EDITORS, placement });
+    await frame.page().waitForTimeout(ITEM_HISTORY_CAPTURE.ATTACHMENT_CHECK_MS + ITEM_HISTORY_CAPTURE.DEBOUNCE_MS + 100);
+  }
+
+  await frame.evaluate(({ databaseSelector, databaseKeys, database }) => {
     const input = document.querySelector<HTMLInputElement>(databaseSelector);
-    const editors = document.querySelector(editorsSelector);
-    if (!input || !editors) {
-      throw new Error("The real Content Editor database input or Editors container is missing");
-    }
-    const parent = placement === "inside" ? editors : document.body;
-    if ((placement === "inside") !== editors.contains(input)) {
-      parent.appendChild(input);
+    if (!input) {
+      throw new Error("The Content Editor database input fixture is missing");
     }
     const url = new URL(location.href);
     if (databaseKeys.some((key) => url.searchParams.get(key)?.trim())) {
@@ -163,12 +188,11 @@ export async function mutateHistoryDatabase(frame: Frame, database: string, plac
     }
     input.value = database;
     input.setAttribute("value", database);
+    input.dispatchEvent(new Event("change", { bubbles: true }));
   }, {
     databaseSelector: SITECORE.SELECTORS.DATABASE_INPUT,
     databaseKeys: SITECORE.SEARCH_PARAMS.DATABASE_KEYS,
-    editorsSelector: SITECORE.SELECTORS.EDITORS,
     database,
-    placement,
   });
 }
 

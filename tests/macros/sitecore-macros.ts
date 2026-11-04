@@ -171,6 +171,7 @@ export async function setScRawValuesState(page: Page, desiredState: boolean): Pr
   if ((await checkbox.isChecked()) !== desiredState) {
     await clickWithMouseMarker(page, checkbox, `Raw Values ${desiredState ? "ON" : "OFF"}`);
   }
+  await expect(checkbox).toBeChecked({ checked: desiredState, timeout: TEST_CONST.TESTING.TIMEOUTS.EDITOR_STATE_MS });
 }
 
 export async function setScStandardFieldsState(page: Page, desiredState: boolean): Promise<void> {
@@ -181,6 +182,7 @@ export async function setScStandardFieldsState(page: Page, desiredState: boolean
   if ((await checkbox.isChecked()) !== desiredState) {
     await clickWithMouseMarker(page, checkbox, `Standard Fields ${desiredState ? "ON" : "OFF"}`);
   }
+  await expect(checkbox).toBeChecked({ checked: desiredState, timeout: TEST_CONST.TESTING.TIMEOUTS.EDITOR_STATE_MS });
 }
 
 async function findRibbonElementFromHints(frame: Frame, selectorHints: readonly string[]): Promise<Locator> {
@@ -219,7 +221,12 @@ export async function ceRibbonOpenView(page: Page): Promise<Frame> {
 
   const viewTab = await findRibbonElementFromHints(frame, TEST_CONST.SITECORE.SELECTORS.RIBBON.VIEW_TAB);
 
-  await clickWithMouseMarker(page, viewTab, "View ribbon tab");
+  const isViewActive = ((await viewTab.getAttribute("class")) ?? "")
+    .split(/\s+/)
+    .some((className) => className.toLowerCase().includes("active"));
+  if (!isViewActive) {
+    await clickWithMouseMarker(page, viewTab, "View ribbon tab");
+  }
   await waitForRibbonTabActive(viewTab);
 
   return frame;

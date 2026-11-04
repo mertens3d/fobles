@@ -74,8 +74,12 @@ export async function openSitecorePage(page: Page, path = ""): Promise<void> {
 }
 
 async function ensureDefaultEditorState(page: Page): Promise<void> {
-  await setScRawValuesState(page, false);
-  await setScStandardFieldsState(page, false);
+  const pathname = new URL(page.url()).pathname.toLowerCase();
+  const isPowerShellIse = pathname.includes(TEST_CONST.SITECORE.PATHS.POWERSHELL_ISE.toLowerCase());
+  if (!isPowerShellIse) {
+    await setScRawValuesState(page, false);
+    await setScStandardFieldsState(page, false);
+  }
 }
 
 // Used both by the worker-teardown cleanup and the final "IsLoggedOut" test - returns whether a

@@ -14,10 +14,8 @@ export type EditorState = { rawValues: boolean; standardFields: boolean };
 
 export async function setEditorState(page: Page, state: EditorState): Promise<void> {
   await setScRawValuesState(page, state.rawValues);
-  await expect.poll(async () => await getScRawValuesState(page)).toBe(state.rawValues);
-
   await setScStandardFieldsState(page, state.standardFields);
-  await expect.poll(async () => await getScStandardFieldsState(page)).toBe(state.standardFields);
+  expect(await readEditorState(page)).toEqual(state);
 }
 
 export async function readEditorState(page: Page): Promise<EditorState> {

@@ -50,9 +50,6 @@ function handleHistoryMessage(
   sender: chrome.runtime.MessageSender,
   sendResponse: (response: HistoryChangeResponse) => void,
 ): boolean {
-  console.warn("[Fobles][history-writer] message received", JSON.stringify(message)?.slice(0, 200), sender.url);
-  const trace = ((globalThis as Record<string, unknown>).__historyTrace ??= []) as string[];
-  trace.push(`received ${JSON.stringify(message)?.slice(0, 120)} from ${sender.url}`);
   let keepChannelOpen = false;
   if (typeof message === "object" && message !== null && "type" in message &&
     message.type === FOBLES_ITEM_HISTORY_CHANGE) {
@@ -61,21 +58,13 @@ function handleHistoryMessage(
       const change = normalizeHistoryChange("change" in message ? message.change : undefined);
       validateSender(scope, sender);
       void enqueueHistoryChange(scope, change).then(
-        (history) => {
-          console.warn("[Fobles][history-writer] write ok", history.length);
-          trace.push(`write ok ${history.length}`);
-          sendResponse({ ok: true, history });
-        },
+        (history) => sendResponse({ ok: true, history }),
         (error: unknown) => {
-          console.warn("[Fobles][history-writer] write failed", error);
-          trace.push(`write failed: ${String(error)}`);
           sendResponse({ ok: false, error: error instanceof Error ? error.message : "History write failed" });
         },
       );
       keepChannelOpen = true;
     } catch (error) {
-      console.warn("[Fobles][history-writer] invalid request", error);
-      trace.push(`invalid request: ${String(error)}`);
       sendResponse({ ok: false, error: error instanceof Error ? error.message : "Invalid history request" });
     }
   }

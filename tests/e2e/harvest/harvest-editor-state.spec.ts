@@ -14,7 +14,7 @@ const STATES: readonly { label: string; initial: EditorState }[] = [
   { label: "Raw ON / Standard ON", initial: { rawValues: true, standardFields: true } },
 ];
 
-foblesTest.describe("Harvest editor state", () => {
+foblesTest.describe("Harvest editor state", { tag: "@sitecore-state" }, () => {
   for (const { label, initial } of STATES) {
     foblesTest(`${label}: restores caller editor state`, async ({ page }) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);

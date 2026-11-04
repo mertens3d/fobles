@@ -132,6 +132,7 @@ export const TESTING = {
   },
   TIMEOUTS: {
     DISCOVERY_MS: 30_000,
+    EDITOR_STATE_MS: 5_000,
     AUTO_LOGIN_WAIT_MS: 20_000,
     // Redirect to the login page after openSitecorePage's navigate is asynchronous (observed
     // ~1-2s) - a plain instant count() check for the login form races that redirect and wrongly

@@ -115,10 +115,13 @@ If you're prompted to log in on every run even within the same test session, or 
 doesn't load after logging in, the Sitecore active-user limit may be full. Use Sitecore's Kick
 User tool to free an existing session, then try again.
 
-All tests share one persistent browser profile (`playwright/test-artifacts/browser-profile`), which
-only one process can open at a time - `playwright.config.ts` forces `workers: 1` and the
-`browserContext` fixture is worker-scoped (`fixtures/playwright.ts`) so the whole run shares a
-single browser instance instead of racing to open the same profile from multiple processes.
+Tests that change shared Sitecore Raw Values/Standard Fields state, plus the worker-tab test that
+uses that state, carry the `@sitecore-state` tag. They run in the dedicated `edge-sitecore-state`
+project with one worker. The general `edge` project allows four workers, excludes tagged tests,
+and depends on the stateful project so the two groups do not overlap in a full run. When running a
+general test, expect the stateful project to run first; in VS Code's Playwright test runner, the
+tagged tests appear under `edge-sitecore-state`. Each worker uses a persistent browser profile and
+its own shared browser context (`fixtures/playwright.ts`).
 
 If a run gets force-killed (crash, closing the terminal, a second Ctrl+C), its browser process can
 be left running and holding that profile lock - every later run then fails immediately with
