@@ -73,7 +73,7 @@ export default defineConfig({
   // each additional test still opens/reauthenticates a Sitecore session, burning more license
   // slots for no benefit once something is already known to be broken.
   maxFailures: 1,
-  workers: 4,
+  workers: 8,
   reporter: isListOnly
     ? [["list"]]
     : [
@@ -107,7 +107,7 @@ export default defineConfig({
     {
       name: "edge",
       grepInvert: /@sitecore-state/,
-      dependencies: ["edge-sitecore-state"],
+      // dependencies: ["edge-sitecore-state"],
       use: { browserName: "chromium", channel: "msedge", ...devices["Desktop Chrome"] },
     },
   ],

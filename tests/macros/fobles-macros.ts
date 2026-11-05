@@ -15,6 +15,7 @@ import { expectJumpFlyoutFlyoutHidden, expectJumpFlyoutFlyoutVisible } from "../
 import { pauseForBrowser } from "../helpers/wait-helpers";
 import { isFoblesPage } from "../helpers/page-helpers";
 import { clickExtensionControl, getExtensionId, openExtensionPage, setExtensionCheckbox } from "../fixtures/extension";
+import { locateJumpFlyoutTrigger } from "../helpers/locator-helpers";
 
 export async function CloseFoblesGraph(page: Page): Promise<void> {
   console.log(`[fobles Macro] ${CloseFoblesGraph.name}`);
@@ -154,15 +155,16 @@ export async function ClickFoblesGraphButton(page: Page, options?: { expectError
   }
 }
 
-export async function ClickFoblesJumpButton(page: Page, expectFlyoutVisible = true) {
+export async function ClickFoblesJumpButton(page: Page, expectFlyoutPanelVisible = true) {
   const foblesFrame = await findFoblesFrame(page);
   console.log(`[fobles Macro] ClickFoblesJumpButton`);
-  const jumpFlyoutButton = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
+  // const jumpFlyoutButton = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
+  const jumpFlyoutButton = await locateJumpFlyoutTrigger(page);
   await clickWithMouseMarker(page, jumpFlyoutButton, "Fobles Jump Button");
-  if (expectFlyoutVisible) {
-    await expectJumpFlyoutFlyoutVisible(foblesFrame);
+  if (expectFlyoutPanelVisible) {
+    await expectJumpFlyoutFlyoutVisible(page);
   } else {
-    await expectJumpFlyoutFlyoutHidden(foblesFrame);
+    await expectJumpFlyoutFlyoutHidden(page);
   }
 }
 

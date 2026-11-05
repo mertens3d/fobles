@@ -1,3 +1,5 @@
+// @source-path [Fobles] tests/e2e/fobles-pages/pages-with-toolbar-visible.spec.ts
+
 import { expect, foblesTest, type Page, type TestInfo } from "../../fixtures/playwright";
 import { openSitecorePage } from "../../fixtures/sitecore";
 import { TEST_CONST } from "../../constants/TEST_CONST";
@@ -14,11 +16,14 @@ import { clickLbolt } from "../../macros/fobles-macros";
 import type { PageCase, ToolbarType } from "../../constants_partials/CONST.Types";
 import { toBracedGuid } from "../../helpers/guid-helpers";
 import type { FoblesStep } from "../../helpers/fobles-test-step.types";
+import { locateJumpFlyoutTrigger } from "../../helpers/locator-helpers";
 
 const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
-function assertToolbarFlavor(foblesFrame: Awaited<ReturnType<typeof findFrameWithSelector>>, toolbarType: ToolbarType) {
-  const jumpFlyoutTrigger = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER);
+async function assertToolbarFlavor(foblesFrame: Awaited<ReturnType<typeof findFrameWithSelector>>, toolbarType: ToolbarType, page: Page) {
+  // const jumpFlyoutTrigger = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER);
+
+  const jumpFlyoutTrigger = await locateJumpFlyoutTrigger(page);
   const proxyButtonsTrigger = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.PROXY_BUTTONS_TRIGGER);
   const closeButton = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CLOSE_BUTTON);
 
@@ -173,9 +178,10 @@ async function stepVisibility(page: Page, testInfo: TestInfo, pageCase: PageCase
 
         await expect(foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER)).toBeVisible();
         await expect(foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON)).toBeVisible();
-        await assertToolbarFlavor(foblesFrame, pageCase.toolbarType);
+        await assertToolbarFlavor(foblesFrame, pageCase.toolbarType, page);
       }
     },
   );
   return step;
 }
+

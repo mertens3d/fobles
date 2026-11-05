@@ -3,6 +3,7 @@ export const _FOBLES_BASE_CONST = {
     BUTTON: "data-is-fobles-button",
     JUMP_ENTRY_URL: "data-fobles-page-jump-url",
     DATA_VISIBLE: "data-visible",
+    DATA_POSITION: "data-position",
     PANE: "data-fobles-pane",
     PROCESSED: "data-fobles-processed",
     TREE_JUMP_PATH: "data-fobles-tree-jump-path",
@@ -10,10 +11,7 @@ export const _FOBLES_BASE_CONST = {
   },
   CLASSES: { HIDDEN: "fobles-hidden" },
   DOM: {
-    IDS: {
-      DIALOG_ID: "fobles-reference-graph-dialog",
-      PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog",
-    },
+    IDS: { DIALOG_ID: "fobles-reference-graph-dialog", PROGRESS_DIALOG_ID: "fobles-reference-graph-progress-dialog" },
   },
   // Must match src/shared/constants.ts's MESSAGE.ACTION / src/public/manifest.json's "commands"
   // keys - page.keyboard.press(...) can't simulate these (CDP key events never reach Chrome's own
@@ -36,7 +34,7 @@ export const _FOBLES_BASE_CONST = {
     JUMP_FLYOUT_TRIGGER: "[data-fobles-nav-button-role='jump-flyout-trigger']",
     GRAPH_TRIGGER: "[data-fobles-nav-button-role='graph-trigger']",
     PROXY_BUTTONS_TRIGGER: "[data-fobles-nav-button-role='proxy-buttons-trigger']",
-    JUMP_FLYOUT: ".fobles-jump-flyout-flyout",
+    JUMP_FLYOUT: ".fobles-jump-flyout",
     TOOLBAR_CLOSE_BUTTON: ".fobles-toolbar-close-button",
     TOOLBAR_CONTAINER: ".fobles-toolbar-container",
     TOOLBAR_GRIP: ".fobles-toolbar-grip",

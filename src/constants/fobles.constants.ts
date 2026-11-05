@@ -1,3 +1,5 @@
+// @source-path [Fobles] src/constants/fobles.constants.ts
+
 import type { ToolbarPlacement } from "../content/toolbar.types";
 import { CONST } from "./const";
 import type { AllowedPage } from "./constants.types";
@@ -49,18 +51,18 @@ export const CLASS = {
   PROXY_BUTTONS_ACTIONS: "fobles-proxy-buttons-actions",
   PROXY_BUTTONS_TRIGGER: "fobles-proxy-buttons-trigger",
   JUMP_FLYOUT: {
-    FLYOUT: "fobles-jump-flyout-flyout",
-    ACTION: "fobles-jump-flyout-flyout-action",
-    ACTIONS: "fobles-jump-flyout-flyout-actions",
-    COLUMN: "fobles-jump-flyout-flyout-column",
-    COLUMN_TITLE: "fobles-jump-flyout-flyout-column-title",
-    COLUMNS: "fobles-jump-flyout-flyout-columns",
-    GROUP: "fobles-jump-flyout-flyout-group",
-    GROUP_TITLE: "fobles-jump-flyout-flyout-group-title",
-    OPTION_BADGE: "fobles-jump-flyout-flyout-option-badge",
-    OPTION_ICON: "fobles-jump-flyout-flyout-option-icon",
-    OPTION_ICON_BOX: "fobles-jump-flyout-flyout-option-icon-box",
-    OPTION_LABEL: "fobles-jump-flyout-flyout-option-label",
+    FLYOUT: "fobles-jump-flyout",
+    ACTION: "fobles-jump-flyout-action",
+    ACTIONS: "fobles-jump-flyout-actions",
+    COLUMN: "fobles-jump-flyout-column",
+    COLUMN_TITLE: "fobles-jump-flyout-column-title",
+    COLUMNS: "fobles-jump-flyout-columns",
+    GROUP: "fobles-jump-flyout-group",
+    GROUP_TITLE: "fobles-jump-flyout-group-title",
+    OPTION_BADGE: "fobles-jump-flyout-option-badge",
+    OPTION_ICON: "fobles-jump-flyout-option-icon",
+    OPTION_ICON_BOX: "fobles-jump-flyout-option-icon-box",
+    OPTION_LABEL: "fobles-jump-flyout-option-label",
     TRIGGER: "fobles-jump-flyout-trigger",
   },
   TOOLBAR_BODY: "fobles-toolbar-body",
@@ -84,7 +86,7 @@ export const SELECTORS = {
   FOBLES_WRAPPER: "[data-fobles-wrapper]",
   PROXY_BUTTONS: ".fobles-proxy-buttons",
   PROXY_BUTTONS_TRIGGER: ".fobles-proxy-buttons-trigger",
-  JUMP_FLYOUT: ".fobles-jump-flyout-flyout",
+  JUMP_FLYOUT: ".fobles-jump-flyout",
   JUMP_FLYOUT_TRIGGER: ".fobles-jump-flyout-trigger",
   TEMPLATE_BUTTON: "[data-template-button='1']",
   TOOLBAR_AUDITOR_BUTTON: ".fobles-nav-auditor-button",
