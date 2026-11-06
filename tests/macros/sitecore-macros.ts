@@ -5,6 +5,7 @@ import { clickWithMouseMarker, ensureMouseMarkerExists } from "../helpers/mouse-
 import { findFoblesFrame, findFrameWithSelector } from "../helpers/frame-finder";
 import { dismissFoblesConfirmDialogIfPresent, openJumpFlyout } from "./fobles-macros";
 import { pauseForHuman } from "../helpers/wait-helpers";
+import { locateQuickInfoTable } from "../helpers/locator-helpers";
 
 // Reusable stock Sitecore Content Editor UI interactions (ribbon tabs, galleries), plus Fobles'
 // own toolbar toggle since it's just as much a canned click sequence any spec reuses - kept
@@ -82,13 +83,12 @@ export async function highlightQuickInfoPath(page: Page): Promise<void> {
   await ensureMouseMarkerExists(foblesFrame);
   await clickContentTabIfPresent(page);
 
-  const itemPathRow = foblesFrame
-    .locator(`${TEST_CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, { hasText: TEST_CONST.SITECORE.LABELS.ITEM_PATH })
+  const quickInfoTable = await locateQuickInfoTable(page);
+  const itemPathRow = quickInfoTable
+    .locator(` tr`, { hasText: TEST_CONST.SITECORE.LABELS.ITEM_PATH })
     .first();
   const itemPathValue = itemPathRow.locator("input").first();
-  console.log(
-    `[fobles] Waiting for the Item path value (selector: ${TEST_CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr input, text: "${TEST_CONST.SITECORE.LABELS.ITEM_PATH}")`,
-  );
+  console.log(`[fobles] Waiting for the Item path value (text: "${TEST_CONST.SITECORE.LABELS.ITEM_PATH}")`);
   await itemPathValue.waitFor({ state: "visible", timeout: TEST_CONST.TESTING.TIMEOUTS.QUICK_INFO_VISIBLE_MS });
   await clickWithMouseMarker(page, itemPathValue, "Item path", { clickCount: 3, corner: "top-left" });
 }

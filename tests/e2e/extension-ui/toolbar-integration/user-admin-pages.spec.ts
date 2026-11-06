@@ -19,6 +19,7 @@ import {
   openAdminPagesColumn,
   TESTING,
 } from "../options-test-helpers";
+import { locateJumpFlyout } from "../../../helpers/locator-helpers";
 
 foblesTest.describe("User Admin Pages Toolbar Integration", () => {
   foblesTest(
@@ -47,14 +48,16 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
         );
 
         await bringPageToFront(page);
-        await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+        await openContentEditor(page);
         const foblesFrame = await findFoblesFrame(page);
         await ClickFoblesJumpButton(page);
         await expect(foblesFrame.getByRole("button", { name: label, exact: true })).toBeVisible();
         await expect(foblesFrame.getByText(TESTING.JUMP_FLYOUT.ADMIN_PAGES_GROUP_LABEL)).toBeVisible();
+
+        let jumpFlyout = await locateJumpFlyout(page);
         await attachLocatorScreenshot(
           testInfo,
-          foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
+          jumpFlyout,
           TESTING.REPORT_SCREENSHOTS.ADMIN_PAGE_ENABLED,
         );
 
@@ -70,9 +73,11 @@ foblesTest.describe("User Admin Pages Toolbar Integration", () => {
         );
         await expect(foblesFrame.getByRole("button", { name: label, exact: true })).toHaveCount(0);
         await expect(foblesFrame.getByText(TESTING.JUMP_FLYOUT.ADMIN_PAGES_GROUP_LABEL)).toHaveCount(0);
+
+        jumpFlyout = await locateJumpFlyout(page);
         await attachLocatorScreenshot(
           testInfo,
-          foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
+          jumpFlyout,
           TESTING.REPORT_SCREENSHOTS.ADMIN_PAGE_DISABLED,
         );
 

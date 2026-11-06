@@ -1,12 +1,13 @@
 // @source-path [fobles] tests/e2e/extension-ui/toolbar-integration/item-history.spec.ts
 
-import { ITEM_HISTORY_CAPTURE } from "../../../../src/content/item-history/item-history.const";
-import { HISTORY_CLASS, HISTORY_TEXT, HISTORY_UI } from "../../../../src/content/toolbar/history/history.const";
-import { historyStorageKey } from "../../../../src/shared/item-history/item-history-model";
-import { TEST_CONST } from "../../../constants/TEST_CONST";
-import { expect, foblesTest } from "../../../fixtures/playwright";
-import { findFoblesFrame } from "../../../helpers/frame-finder";
-import { STRATEGY_SCENARIOS } from "../../strategies/support/strategy-scenarios";
+import { ITEM_HISTORY_CAPTURE } from "../../../src/content/item-history/item-history.const";
+import { HISTORY_CLASS, HISTORY_TEXT, HISTORY_UI } from "../../../src/content/toolbar/history/history.const";
+import { historyStorageKey } from "../../../src/shared/item-history/item-history-model";
+import { TEST_CONST } from "../../constants/TEST_CONST";
+import { expect, foblesTest } from "../../fixtures/playwright";
+import { findFoblesFrame } from "../../helpers/frame-finder";
+import { locateLBoltButton } from "../../helpers/locator-helpers";
+import { STRATEGY_SCENARIOS } from "../strategies/support/strategy-scenarios";
 import {
   canonicalGuid,
   expectHistoryDestination,
@@ -20,7 +21,7 @@ import {
   readStoredHistory,
   readStoredHistoryScopes,
   SCENARIO,
-} from "./item-history.helpers";
+} from "../extension-ui/toolbar-integration/item-history.helpers";
 
 foblesTest.describe("Toolbar item history", () => {
   foblesTest("captures the initially selected real Sitecore item without a DOM mutation", async ({ page, sharedBrowserContext }) => {
@@ -127,7 +128,7 @@ foblesTest.describe("Toolbar item history", () => {
   foblesTest("hover opens and closes History; clicking pins and unpins it without changing LBolt size", async ({ page }) => {
     const { frame } = await openHistoryEditor(page);
     const tab = frame.locator(`.${HISTORY_CLASS.TAB}`);
-    const lbolt = frame.locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON).first();
+    const lbolt = await locateLBoltButton(page);
     const originalSize = await lbolt.boundingBox();
     expect(originalSize).not.toBeNull();
     await tab.click();

@@ -35,6 +35,6 @@ export async function findFrameWithSelector(
 
 // A freshly navigated page's toolbar takes a moment for the content script to inject - unlike
 // findFrameWithSelector's own zero-timeout default, this always needs to actually wait for it.
-export async function findFoblesFrame(page: Page): Promise<Frame> {
-  return findFrameWithSelector(page, TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar", 10_000);
+export async function findFoblesFrame(page: Page, timeoutMs = 10_000): Promise<Frame> {
+  return findFrameWithSelector(page, TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER, "Fobles toolbar", timeoutMs);
 }

@@ -13,6 +13,7 @@ import { EDITOR_SCENARIOS } from "./editor-scenarios";
 import { clickLbolt } from "../../macros/fobles-macros";
 import { pauseForHuman } from "../../helpers/wait-helpers";
 import { FOBLES_HIDDEN_CLASS_PATTERN } from "../strategies/support/CONST";
+import { locateQuickInfoTable } from "../../helpers/locator-helpers";
 
 const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -31,8 +32,8 @@ foblesTest.describe("Editor scenario: quick info section", () => {
     const foblesFrame = await findFoblesFrame(page);
     await ensureMouseMarkerExists(foblesFrame);
 
-    const quickInfoTable = foblesFrame.locator(TEST_CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE).first();
-    const lboltButton = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON).first();
+    const quickInfoTable = await locateQuickInfoTable(page);
+    
     const step = createFoblesStep(page, testInfo, quickInfoTable, "Quick Info");
 
     await step("Default stage: Quick Info renders as plain Sitecore text", async () => {

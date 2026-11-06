@@ -1,3 +1,5 @@
+// @source-path [fobles] tests/fixtures/sitecore.ts
+
 import { expect, type Page } from "@playwright/test";
 import { TEST_CONST } from "../constants/TEST_CONST";
 import { getTestEnvironment } from "./environment";
@@ -5,6 +7,8 @@ import { ensureAuthenticatedUrl } from "./auto-login";
 import { bringPageToFront } from "../helpers/page-switch";
 import { ensureMouseMarkerExists } from "../helpers/mouse-proxy";
 import { setScRawValuesState, setScStandardFieldsState, setTreePanelWidth } from "../macros/sitecore-macros";
+import { locateJumpFlyout } from "../helpers/locator-helpers";
+import { openFoblesJumpFlyout } from "./fobles-needs-home";
 
 // Sitecore's Content Editor "View > Raw Values" ribbon toggle is a persisted per-session setting,
 // not something tied to the current page - if a prior manual session left it on, every field
@@ -35,7 +39,7 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
   }
 }
 
-export async function openContentEditor(page: Page, foValue: string = ""): Promise<void> {
+export async function openContentEditor(page: Page, foValue: string = TEST_CONST.SITECORE.ITEMS.CONTENT_ITEM_ID): Promise<void> {
   const path = TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED + (foValue ? `&fo=${foValue}` : "");
   await openSitecorePage(page, path);
 }
@@ -105,33 +109,6 @@ export async function logoutCurrentSitecoreSession(page: Page): Promise<boolean>
   return false;
 }
 
-export async function enableFobles(page: Page): Promise<void> {
-  const jumpFlyoutTrigger = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
-  await expect(jumpFlyoutTrigger).toBeVisible({ timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS });
 
-  await openFoblesJumpFlyout(page);
 
-  const jumpFlyout = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
-  await expect(jumpFlyout).toBeVisible({ timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
 
-  const toggle = page.getByRole("button", { name: TEST_CONST.FOBLES.LABELS.TOGGLE_FOBLES }).first();
-  if (await toggle.isVisible().catch(() => false)) {
-    await toggle.click();
-  }
-}
-
-export async function openFoblesJumpFlyout(page: Page): Promise<void> {
-  const trigger = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
-
-  await page.waitForLoadState("domcontentloaded");
-  await expect
-    .poll(async () => await trigger.count(), { timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_TRIGGER_VISIBLE_MS })
-    .toBeGreaterThan(0);
-
-  await trigger.scrollIntoViewIfNeeded();
-  await trigger.hover();
-  await trigger.click();
-
-  const jumpFlyout = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
-  await expect(jumpFlyout).toBeVisible({ timeout: TEST_CONST.TESTING.TIMEOUTS.MENU_VISIBLE_MS });
-}

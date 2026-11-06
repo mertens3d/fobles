@@ -4,18 +4,19 @@ import { activateFobles } from "../../helpers/fobles-helpers-support/test-setup"
 import { hoverAndSlideOut } from "../../helpers/hover-helpers";
 import { ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
 import { expect, foblesTest } from "../../fixtures/playwright";
+import { locateJumpFlyout, locateLBoltButton, locateJumpFlyoutTrigger, locateEditorTabs } from "../../helpers/locator-helpers";
 
 foblesTest.describe("Fobles Hover", () => {
   foblesTest(`'content-editor-root-item-lbolt' creates expected Fobles`, async ({ page }) => {
     await activateFobles(page);
-    const lboltButton = page.locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON).first();
-    const editorTabs = page.locator("#EditorTabs");
+    const lboltButton = await locateLBoltButton(page);
+    const editorTabs = await locateEditorTabs(page);
     await expect(editorTabs).toBeVisible();
     await ensureMouseMarkerExists(page);
 
-    const jumpFlyoutButton = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
+    const jumpFlyoutButton = await locateJumpFlyoutTrigger(page);
     await expect(jumpFlyoutButton).toBeVisible();
-    const jumpFlyout = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT).first();
+    const jumpFlyout = await locateJumpFlyout(page);
     const mousePosition = getLastKnownMousePosition();
 
     await moveMouseOutsideHoverArea(page, lboltButton, mousePosition, "LBolt away");

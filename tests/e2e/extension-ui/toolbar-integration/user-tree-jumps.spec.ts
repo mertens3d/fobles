@@ -16,6 +16,7 @@ import {
   setTestRowEnabled,
 } from "../../toolbar/support/extension-options-settings-helpers";
 import { expectFoValue } from "../../../expect-snippets/expect-snippets";
+import { locateJumpFlyout } from "../../../helpers/locator-helpers";
 
 foblesTest.describe("User Tree Jumps", () => {
   foblesTest.describe("Toolbar Integration", () => {
@@ -30,7 +31,7 @@ foblesTest.describe("User Tree Jumps", () => {
         try {
           await setFoblesNavWarningVisible(sharedBrowserContext, extensionId, true);
           await removeTestRowIfPresent(optionsPage);
-          await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+          await openContentEditor(page);
           const foblesFrame = await findFoblesFrame(page);
 
           await ClickFoblesJumpButton(page);
@@ -71,9 +72,11 @@ foblesTest.describe("User Tree Jumps", () => {
               );
               await pauseForHuman(page);
               await jumpButton.scrollIntoViewIfNeeded();
+
+              const jumpFlyout = await locateJumpFlyout(page);
               await attachLocatorScreenshot(
                 testInfo,
-                foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT),
+                jumpFlyout,
                 TEST_CONST.TESTING.REPORT_SCREENSHOTS.USER_TREE_JUMP_FLYOUT,
               );
               await clickWithMouseMarker(page, jumpButton, TEST_CONST.TESTING.ADDITIONAL_SETTINGS.TEST_JUMP.label);

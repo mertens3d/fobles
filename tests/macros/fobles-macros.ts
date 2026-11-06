@@ -11,11 +11,11 @@ import {
 import type { CornerPosition, MouseCoordinates } from "../helpers/mouse-proxy.types";
 import { findFoblesFrame, findFrameWithSelector } from "../helpers/frame-finder";
 import { walkFrameDocuments } from "../helpers/frame-helpers";
-import { expectJumpFlyoutFlyoutHidden, expectJumpFlyoutFlyoutVisible } from "../expect-snippets/expect-snippets";
+import { expectJumpFlyoutFlyoutHidden, expectJumpFlyoutFlyoutVisible, expectLBoltButtonVisible } from "../expect-snippets/expect-snippets";
 import { pauseForBrowser } from "../helpers/wait-helpers";
 import { isFoblesPage } from "../helpers/page-helpers";
 import { clickExtensionControl, getExtensionId, openExtensionPage, setExtensionCheckbox } from "../fixtures/extension";
-import { locateJumpFlyoutTrigger } from "../helpers/locator-helpers";
+import { locateJumpFlyout, locateJumpFlyoutTrigger, locateLBoltButton } from "../helpers/locator-helpers";
 
 export async function CloseFoblesGraph(page: Page): Promise<void> {
   console.log(`[fobles Macro] ${CloseFoblesGraph.name}`);
@@ -173,7 +173,7 @@ export async function ClickFoblesJumpButton(page: Page, expectFlyoutPanelVisible
 export async function openJumpFlyout(page: Page, foblesFrame: Frame): Promise<void> {
   console.log("[Macro: openJumpFlyout] - Start");
   console.log("[fobles] Checking whether the Jump flyout is already visible");
-  const jumpFlyout = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT);
+  const jumpFlyout = await locateJumpFlyout(page);
   const isOpen =
     (await jumpFlyout.getAttribute(TEST_CONST.FOBLES.ATTRIBUTES.DATA_VISIBLE).catch(() => null)) === "true";
   if (isOpen) {
@@ -205,13 +205,7 @@ export async function dragToolbarTo(page: Page, gripLocator: Locator, targetPosi
 export async function dragToolbarToCornerLocation(page: Page, cornerPosition: CornerPosition) {
   console.log(`[macro] dragToolbarToCornerLocation ${cornerPosition.corner}`);
 
-  // await showBillboard(page, `Find Fobles toolbar`);
-  const foblesFrame = await findFrameWithSelector(
-    page,
-    TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER,
-    "Fobles toolbar",
-  );
-
+  const foblesFrame = await findFoblesFrame(page);
   // await showBillboard(page, `Find Toolbar grip`);
   const toolbarGrip = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.TOOLBAR_GRIP).first();
   //await highlightClickTarget(toolbarGrip, "Toolbar grip");
@@ -329,8 +323,10 @@ export async function clickLbolt(page: Page): Promise<void> {
   const foblesFrame = await findFoblesFrame(page);
   await ensureMouseMarkerExists(page);
   await ensureMouseMarkerExists(foblesFrame);
-  const lboltButton = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON);
+  await expectLBoltButtonVisible(page);
+  const lboltButton = await locateLBoltButton(page);
   await clickWithMouseMarker(page, lboltButton, "LBolt button");
+  console.log(`[fobles] LBolt clicked`);
 }
 
 // Triggers a chrome.commands shortcut's relay logic directly from the background service worker,

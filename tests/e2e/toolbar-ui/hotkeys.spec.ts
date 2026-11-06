@@ -3,8 +3,9 @@ import { TEST_CONST } from "../../constants/TEST_CONST";
 import { getExtensionId, setFoblesNavVisible } from "../../fixtures/extension";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import { openContentEditor } from "../../fixtures/sitecore";
-import { findFoblesFrame, findFrameWithSelector } from "../../helpers/frame-finder";
+import { findFrameWithSelector } from "../../helpers/frame-finder";
 import { pressToggleFoblesToolbarHotkey, pressToggleLboltHotkey } from "../../macros/fobles-macros";
+import { locateToolbarContainer } from "../../helpers/locator-helpers";
 
 const CONTENT_TREE_PANEL_SELECTOR = "#ContentTreeInnerPanel";
 
@@ -15,9 +16,8 @@ foblesTest.describe("Fobles keyboard shortcuts", () => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
       const extensionId = await getExtensionId(sharedBrowserContext);
       const step = createFoblesStep(page, testInfo, page, "Hotkeys");
-      await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-      const foblesFrame = await findFoblesFrame(page);
-      const toolbarContainer = foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER);
+      await openContentEditor(page);
+      const toolbarContainer = await locateToolbarContainer(page);
 
       try {
         await step("starts visible", async () => {
@@ -46,8 +46,7 @@ foblesTest.describe("Fobles keyboard shortcuts", () => {
     async ({ page, sharedBrowserContext }, testInfo) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
       const step = createFoblesStep(page, testInfo, page, "Hotkeys");
-      await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-      await findFoblesFrame(page);
+      await openContentEditor(page);
       const treeFrame = await findFrameWithSelector(page, CONTENT_TREE_PANEL_SELECTOR, "content tree panel", 10_000);
       const treeFoblesButtons = treeFrame.locator(TEST_CONST.FOBLES.SELECTORS.TREE_FOBLES_BUTTON);
 

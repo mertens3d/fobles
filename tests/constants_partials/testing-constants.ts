@@ -162,7 +162,7 @@ export const TESTING = {
   TOOLBAR_DRAG_POSITIONS: {
     DEFAULT_UR: { corner: "upper-right", offsetX: 280, offsetY: 80 },
     POSITION_1_UR: { corner: "upper-right", offsetX: 200, offsetY: 160 },
-    POSITION_2_BL: { corner: "bottom-left", offsetX: 300, offsetY: 265 },
+    POSITION_2_BL: { corner: "bottom-left", offsetX: 100, offsetY: 165 },
     POSITION_3_BR: { corner: "bottom-right", offsetX: 200, offsetY: 165 },
   },
   TREE_PANEL_WIDTH_PX: 250,

@@ -5,7 +5,6 @@ import { bringPageToFront } from "../../helpers/page-switch";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
 import { attachItemPathScreenshot } from "../../helpers/fobles-helpers-support/navigation-assertions";
 import { openContentEditor } from "../../fixtures/sitecore";
-import { findFoblesFrame } from "../../helpers/frame-finder";
 import { ClickFoblesJumpButton } from "../../macros/fobles-macros";
 import { expectFoValue } from "../../expect-snippets/expect-snippets";
 import type { BrowserContext, Locator } from "@playwright/test";
@@ -13,7 +12,7 @@ import { clickFoblesNavigationButtonStep } from "../../helpers/click-navigate-he
 import type { TreeJumpDefinition } from "../../constants_partials/CONST.Types";
 import { getTreeJumpFlyoutButton } from "../../helpers/element-finders";
 
-foblesTest.describe("PageNavigation", () => {
+foblesTest.describe("TreeJumpNavigation", () => {
   for (const treeJumpTarget of TEST_CONST.TESTING.TREE_JUMP_TARGETS) {
     foblesTest(`${treeJumpTarget.label}-Click`, async ({ page, sharedBrowserContext }, testInfo) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
@@ -28,13 +27,9 @@ foblesTest.describe("PageNavigation", () => {
   for (const treeJumpTarget of TEST_CONST.TESTING.TREE_JUMP_TARGETS) {
     foblesTest(`${treeJumpTarget.label}-CtrlClick`, async ({ sharedBrowserContext, page }, testInfo) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
-      await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-      const foblesFrame = await findFoblesFrame(page);
-
+      await openContentEditor(page);
       await ClickFoblesJumpButton(page);
-      const paths = await getExpectedButtonPaths(foblesFrame);
       await ClickFoblesJumpButton(page, false);
-
       const step = createFoblesStep(page, testInfo, page, "Ctrl+Click Jump");
 
       await TestOneCtrlClick(treeJumpTarget, step, sharedBrowserContext, page, testInfo);

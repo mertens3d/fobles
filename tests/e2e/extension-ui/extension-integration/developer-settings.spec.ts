@@ -49,8 +49,8 @@ foblesTest.describe("Extension UI Integration", () => {
         );
 
         await bringPageToFront(page);
-        await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-        await findFoblesFrame(page);
+        await openContentEditor(page);
+        // await findFoblesFrame(page);
         debugMessages.length = 0;
         await setExtensionCheckbox(optionsPage, debugLogging, true, TESTING.OPTIONS.DEVELOPER.DEBUG_LOGGING_SELECTOR);
         await clickOptionsButton(optionsPage, TESTING.OPTIONS.DEVELOPER.SAVE_BUTTON);
@@ -59,8 +59,8 @@ foblesTest.describe("Extension UI Integration", () => {
         );
 
         await bringPageToFront(page);
-        await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-        await findFoblesFrame(page);
+        await openContentEditor(page);
+        // await findFoblesFrame(page);
 
         await expect
           .poll(() => debugMessages.some((message) => message.includes(TESTING.CONTENT_EDITOR_DEBUG.LOG_MARKER)), {
@@ -77,8 +77,8 @@ foblesTest.describe("Extension UI Integration", () => {
         );
         debugMessages.length = 0;
         await bringPageToFront(page);
-        await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
-        await findFoblesFrame(page);
+        await openContentEditor(page);
+        // await findFoblesFrame(page);
         expect(debugMessages.some((message) => message.includes(TESTING.CONTENT_EDITOR_DEBUG.LOG_MARKER))).toBe(false);
         await attachPageScreenshot(testInfo, page, TESTING.REPORT_SCREENSHOTS.DEBUG_LOGGING_DISABLED);
 

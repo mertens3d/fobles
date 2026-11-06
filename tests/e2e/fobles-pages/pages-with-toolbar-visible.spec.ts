@@ -10,13 +10,14 @@ import {
   expectFoblesButtonSameTabNavigation,
 } from "../../helpers/fobles-helpers-support/navigation-assertions";
 import { clickWithMouseMarker, ensureMouseMarkerExists } from "../../helpers/mouse-proxy";
-import { findFrameWithSelector } from "../../helpers/frame-finder";
+import { findFoblesFrame, findFrameWithSelector } from "../../helpers/frame-finder";
 import { expectNeverAppears, pauseForHuman } from "../../helpers/wait-helpers";
 import { clickLbolt } from "../../macros/fobles-macros";
 import type { PageCase, ToolbarType } from "../../constants_partials/CONST.Types";
 import { toBracedGuid } from "../../helpers/guid-helpers";
 import type { FoblesStep } from "../../helpers/fobles-test-step.types";
-import { locateJumpFlyoutTrigger } from "../../helpers/locator-helpers";
+import { locateJumpFlyoutTrigger, locateLBoltButton } from "../../helpers/locator-helpers";
+import { expectFoblesContainerVisible } from "../../expect-snippets/expect-snippets";
 
 const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -49,107 +50,14 @@ foblesTest.describe("Pages: toolbar visibility, Fobles activation, and button na
     //   : foblesTest.bind(foblesTest);
 
     if (pageCase.skip) {
-      foblesTest.skip(`${pageCase.label} is skipped`, () => {});
+      foblesTest.skip(`${pageCase.label} is skipped`, () => { });
     } else {
       foblesTest(pageCase.label, async ({ page, sharedBrowserContext }, testInfo) => {
-        // runTest(`${pageCase.label}: Fobles nav ${pageCase.foblesEligible ? "appears" : "does not appear"}`, async ({ page }, testInfo) => {
         await stepVisibility(page, testInfo, pageCase);
-
-        // if (!pageCase.foblesEligible) return;
-
-        // createStep auto-attaches a screenshot per step (pass or fail) - the step above captured
-        // the default Sitecore view (toolbar present, Fobles not yet activated); this one captures
-        // the same page with Fobles enabled, for every eligible page regardless of whether a
-        // guaranteed item exists for deeper activation/navigation checks below.
-        // await stepLBolt(step, pageCase, page);
-
-        // if (!pageCase.knownItemId) {
-        //   if (pageCase.activationGap) {
-        //     console.log(
-        //       `[fobles] ${pageCase.label}: activation/navigation not yet tested - ${pageCase.activationGap}`,
-        //     );
-        //   }
-        //   return;
-        // }
-
-        // const knownItemId = pageCase.knownItemId;
-        // const treeButtonSelector = `${CONST.FOBLES.SELECTORS.TREE_FOBLES_BUTTON}[data-fobles-item-id="${knownItemId.replace(/-/g, "")}" i]`;
-
-        // await stepKnownItemId(step, pageCase, page, treeButtonSelector);
-
-        // await stepClickNav(
-        //   step,
-        //   pageCase,
-        //   page,
-        //   treeButtonSelector,
-        //   testInfo,
-        //   knownItemId,
-        // );
-        // });
       });
     }
   }
 });
-async function stepLBolt(step: FoblesStep, pageCase: PageCase, page: Page) {
-  await step(`${pageCase.label}: Fobles enabled`, async () => {
-    await clickLbolt(page);
-    await pauseForHuman(page, STEP_WAIT_MS);
-  });
-}
-
-async function stepKnownItemId(step: FoblesStep, pageCase: PageCase, page: Page, treeButtonSelector: string) {
-  await step(`${pageCase.label}: activating Fobles decorates the known item with a button`, async () => {
-    const treeFrame = await findFrameWithSelector(
-      page,
-      treeButtonSelector,
-      `Fobles tree button on ${pageCase.label}`,
-      10000,
-    );
-    await expect(treeFrame.locator(treeButtonSelector)).toBeVisible();
-  });
-}
-
-async function stepClickNav(
-  step: FoblesStep,
-  pageCase: PageCase,
-  page: Page,
-  treeButtonSelector: string,
-  testInfo: TestInfo,
-  knownItemId: string,
-) {
-  await step(
-    `${pageCase.label}: Ctrl+click opens the known item in a new tab`,
-    async (fullTitle) => {
-      const treeFrame = await findFrameWithSelector(
-        page,
-        treeButtonSelector,
-        `Fobles tree button on ${pageCase.label}`,
-        10000,
-      );
-      const button = treeFrame.locator(treeButtonSelector);
-      const popupPromise = page.context().waitForEvent("page");
-      await clickWithMouseMarker(page, button, "Fobles item button", { modifiers: ["Control"] });
-      const popup = await popupPromise;
-      await expectFoblesButtonNewTabNavigation(testInfo, toBracedGuid(knownItemId), fullTitle, popup, page);
-    },
-    { screenshot: false },
-  );
-
-  await step(
-    `${pageCase.label}: click navigates to the known item in the same tab`,
-    async (fullTitle) => {
-      const treeFrame = await findFrameWithSelector(
-        page,
-        treeButtonSelector,
-        `Fobles tree button on ${pageCase.label}`,
-        10000,
-      );
-      const button = treeFrame.locator(treeButtonSelector);
-      await expectFoblesButtonSameTabNavigation(page, testInfo, button, toBracedGuid(knownItemId), fullTitle);
-    },
-    { screenshot: false },
-  );
-}
 
 async function stepVisibility(page: Page, testInfo: TestInfo, pageCase: PageCase) {
   const step = createFoblesStep(page, testInfo, page, "Pages");
@@ -168,16 +76,12 @@ async function stepVisibility(page: Page, testInfo: TestInfo, pageCase: PageCase
         );
         return;
       } else {
-        const foblesFrame = await findFrameWithSelector(
-          page,
-          TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER,
-          `Fobles toolbar on ${pageCase.label}`,
-          10000,
-        );
+        await expectFoblesContainerVisible(page);
+        const foblesFrame = await findFoblesFrame(page);
         await ensureMouseMarkerExists(foblesFrame);
-
-        await expect(foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.TOOLBAR_CONTAINER)).toBeVisible();
-        await expect(foblesFrame.locator(TEST_CONST.FOBLES.SELECTORS.LBOLT_BUTTON)).toBeVisible();
+        await expectFoblesContainerVisible(page);
+        const lboltButton = await locateLBoltButton(page);
+        await expect(lboltButton).toBeVisible();
         await assertToolbarFlavor(foblesFrame, pageCase.toolbarType, page);
       }
     },

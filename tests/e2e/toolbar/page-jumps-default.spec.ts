@@ -8,7 +8,7 @@ import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step
 import { setupContentEditorForTestingBasic } from "../../helpers/fobles-helpers-support/test-setup";
 import { attachLocatorScreenshot } from "../../helpers/fobles-helpers-support/screenshots";
 
-foblesTest.describe("Tree Navigation", () => {
+foblesTest.describe("PageJumpNavigation", () => {
   for (const pageJumpTarget of TEST_CONST.TESTING.PAGE_JUMP_TARGETS) {
     foblesTest(pageJumpTarget.label, async ({ page, sharedBrowserContext }, testInfo) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
@@ -27,7 +27,7 @@ foblesTest.describe("Tree Navigation", () => {
 
         async (fullTitle) => {
           if (pageJumpTarget.clickNavigationExpect?.url) {
-            await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+            await openContentEditor(page);
             jumpFlyoutButton = await getPageJumpFlyoutButton(page, pageJumpTarget.clickNavigationExpect.url);
             await attachLocatorScreenshot(
               testInfo,
@@ -55,7 +55,7 @@ foblesTest.describe("Tree Navigation", () => {
         `Click"${pageJumpTarget.clickNavigationExpect.url}"`,
         async () => {
           if (pageJumpTarget.clickNavigationExpect.url) {
-            await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+            await openContentEditor(page);
             jumpFlyoutButton = await getPageJumpFlyoutButton(page, pageJumpTarget.clickNavigationExpect.url);
             await attachLocatorScreenshot(
               testInfo,

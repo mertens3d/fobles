@@ -1,4 +1,4 @@
-import { foblesTest } from "../../fixtures/playwright";
+import { foblesTest, type Page } from "../../fixtures/playwright";
 import { expectStaticToolbarPosition, expectFoblesContainerVisible } from "../../expect-snippets/expect-snippets";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { createFoblesStep } from "../../helpers/fobles-helpers-support/test-step";
@@ -7,6 +7,7 @@ import { moveMouseToDefault as moveMouseToDefault } from "../../helpers/mouse-pr
 import { dragToolbarToCornerLocation } from "../../macros/fobles-macros";
 import { pauseForBrowser, pauseForHuman } from "../../helpers/wait-helpers";
 import { moveMouseTowardCenter } from "../../helpers/mouse-proxy-support/mouse-movement";
+import type { CornerPosition } from "../../helpers/mouse-proxy.types";
 
 const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 
@@ -21,34 +22,33 @@ foblesTest.describe("positions", () => {
       await pauseForBrowser(page, STEP_WAIT_MS);
       await setupContentEditorForTestingBasic(page);
       await expectFoblesContainerVisible(page);
+      await moveMouseToDefault(page);
     });
 
     await step(`Drag: toolbar to '${TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR.corner}'`, async () => {
-      await moveMouseToDefault(page);
-      await dragToolbarToCornerLocation(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR);
-      await expectStaticToolbarPosition(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR.corner);
-      await pauseForHuman(page, STEP_WAIT_MS);
+      await positionTestCommon(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_1_UR);
     });
 
     await step(`Drag: toolbar to '${TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL.corner}'`, async () => {
-      await moveMouseTowardCenter(page);
-      await dragToolbarToCornerLocation(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL);
-      await expectStaticToolbarPosition(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL.corner);
-      await pauseForHuman(page, STEP_WAIT_MS);
+      await positionTestCommon(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_2_BL);
+
     });
 
     await step(`Drag: toolbar to '${TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR.corner}'`, async () => {
-      await moveMouseTowardCenter(page);
-      await dragToolbarToCornerLocation(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR);
-      await expectStaticToolbarPosition(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR.corner);
-      await pauseForHuman(page, STEP_WAIT_MS);
+      await positionTestCommon(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.POSITION_3_BR);
     });
 
     await step(`Drag: toolbar to '${TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR.corner}'`, async () => {
-      await moveMouseTowardCenter(page);
-      await dragToolbarToCornerLocation(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR);
-      await expectStaticToolbarPosition(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR.corner);
-      await pauseForHuman(page, STEP_WAIT_MS);
+      await positionTestCommon(page, TEST_CONST.TESTING.TOOLBAR_DRAG_POSITIONS.DEFAULT_UR);
     });
   });
 });
+
+
+async function positionTestCommon(page: Page, cornerPosition: CornerPosition) {
+  await moveMouseTowardCenter(page);
+  await dragToolbarToCornerLocation(page, cornerPosition);
+  await expectFoblesContainerVisible(page);
+  await expectStaticToolbarPosition(page, cornerPosition.corner);
+  await pauseForHuman(page, STEP_WAIT_MS);
+}

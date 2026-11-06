@@ -9,6 +9,7 @@ import type { StrategyTestContext } from "../../e2e/strategies/support/scenario.
 import { attachLocatorScreenshot } from "./screenshots";
 import { buildStepMatchKey } from "./step-match-key";
 import { getScSearchParams, normalizeFoValueForCompare, normalizePath } from "../path-helpers";
+import { locateQuickInfoTable } from "../locator-helpers";
 
 // Sitecore's own "fo" query param is either a bare GUID (braces stripped by Fobles'
 // normalizeFoblesValue before building the URL) or a content path (e.g.
@@ -163,13 +164,9 @@ export async function expectFoblesButtonNewTabNavigation(
 export async function attachItemPathScreenshot(page: Page, testInfo: TestInfo, matchKey: string): Promise<void> {
   await clickContentTabIfPresent(page);
 
-  const frame = await findFrameWithSelector(
-    page,
-    TEST_CONST.SITECORE.SELECTORS.CONTENT_TAB,
-    "Content Editor tab header",
-  );
-  const itemPathRow: Locator = frame
-    .locator(`${TEST_CONST.SITECORE.SELECTORS.QUICK_INFO_TABLE} tr`, { hasText: TEST_CONST.SITECORE.LABELS.ITEM_PATH })
+  const quickInfoTable = await locateQuickInfoTable(page);
+  const itemPathRow: Locator = quickInfoTable
+    .locator(` tr`, { hasText: TEST_CONST.SITECORE.LABELS.ITEM_PATH })
     .first();
 
   await highlightClickTarget(itemPathRow, "Item path row");

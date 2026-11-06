@@ -3,7 +3,7 @@ import { TEST_CONST } from "../../constants/TEST_CONST";
 import { openContentEditor, openSitecorePage } from "../../fixtures/sitecore";
 import { clickWithMouseMarker, ensureMouseMarkerExists, moveMouseToDefault } from "../mouse-proxy";
 import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
-import { expectLBoltButton } from "../../expect-snippets/expect-snippets";
+import { expectLBoltButtonVisible } from "../../expect-snippets/expect-snippets";
 import { clickLbolt } from "../../macros/fobles-macros";
 import type { StrategyScenarioData } from "../../e2e/strategies/support/scenario.types";
 
@@ -50,38 +50,39 @@ async function logActivationState(frame: Frame, message: string): Promise<void> 
 }
 
 export async function activateFobles(page: Page): Promise<Frame> {
-  await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+  await openContentEditor(page);
 
-  await expect
-    .poll(
-      async () => {
-        for (const frame of page.frames()) {
-          if ((await frame.locator(`#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`).count()) > 0) {
-            return true;
-          }
-        }
-        return false;
-      },
-      { timeout: 30_000 },
-    )
-    .toBe(true);
 
-  const treeFrame = await findFrameWithSelector(
-    page,
-    `#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
-    `tree node #${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
-  );
+  const treeFrame = await findFrameWithSelector(page, `#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`, activateFobles.name, 30_000);
+
+  // await expect
+  //   .poll(
+  //     async () => {
+
+
+
+  //       for (const frame of page.frames()) {
+  //         if ((await frame.locator(`#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`).count()) > 0) {
+  //           return true;
+  //         }
+  //       }
+  //       return false;
+  //     },
+  //     { timeout: 30_000 },
+  //   )
+  //   .toBe(true);
+
+  // const treeFrame = await findFrameWithSelector(
+  //   page,
+  //   `#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
+  //   `tree node #${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`,
+  // );
   await clickWithMouseMarker(page, treeFrame.locator(`#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`), "Tree node");
 
   const foblesFrame = await findFoblesFrame(page);
   await logActivationState(foblesFrame, "[fobles] LBolt setup before click");
   await ensureMouseMarkerExists(foblesFrame);
-
-  await expectLBoltButton(foblesFrame);
   await clickLbolt(page);
-
-  console.log(
-    `[fobles] LBolt clicked; persisted state now ${await foblesFrame.evaluate(() => localStorage.getItem("fobles_state"))}`,
-  );
+  console.log(`[fobles] persisted state now ${await foblesFrame.evaluate(() => localStorage.getItem("fobles_state"))}`);
   return foblesFrame;
 }
