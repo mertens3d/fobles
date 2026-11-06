@@ -9,11 +9,9 @@ $fobles-tree-button-size: 18px;
 $fobles-jump-flyout-width: 560px;
 $fobles-radius-small: 3px;
 
-// Fobles UI stacking order, low to high: toolbar, then worker iframes, then specialist windows.
-// Sitecore's own Template Manager dialog renders at z-index 10001 - the toolbar stays below that
-// so it can still appear on top of our toolbar instead of being hidden behind it.
+// Agents: Worker iframes < toolbar < Sitecore Template Manager (10001) < utility windows.
 $fobles-toolbar-z-index: 9999;
-$fobles-worker-iframe-z-index: 10000;
+$fobles-worker-iframe-z-index: 9998;
 $fobles-specialist-window-z-index: 10100;
 
 $fobles-white: #ffffff;

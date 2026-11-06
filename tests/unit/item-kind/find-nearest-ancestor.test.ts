@@ -1,4 +1,4 @@
-// @source-path [fobles] tests/unit/classification/find-nearest-ancestor.test.ts
+// @source-path [fobles] tests/unit/item-kind/find-nearest-ancestor.test.ts
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
@@ -7,8 +7,8 @@ import {
   type AncestorWalkItem,
   type ClassifyAncestor,
   type GetParentItem,
-} from "../../../src/content/foundation/reference-data/processing/classification/find-nearest-ancestor.ts";
-import type { ItemClassification } from "../../../src/content/foundation/reference-data/processing/classification/item-classification.types.ts";
+} from "../../../src/content/foundation/reference-data/processing/item-kind/find-nearest-ancestor.ts";
+import type { ItemKind } from "../../../src/content/foundation/reference-data/processing/item-kind/item-kind.types.ts";
 
 function item(id: string): AncestorWalkItem {
   return { id, itemPath: `/sitecore/content/${id}` };
@@ -22,8 +22,8 @@ function chainOf(ids: readonly string[]): GetParentItem {
   };
 }
 
-function classifyBy(classifications: Record<string, ItemClassification>): ClassifyAncestor {
-  return (current) => Promise.resolve(classifications[current.id] ?? "other");
+function classifyBy(classifications: Record<string, ItemKind>): ClassifyAncestor {
+  return (current) => Promise.resolve(classifications[current.id] ?? "unknown");
 }
 
 void test("the selected item itself matches and is returned without walking further", async () => {
@@ -64,7 +64,7 @@ void test("exactly 100 visited items are checked when no match exists", async ()
   let classifyCalls = 0;
   const classify: ClassifyAncestor = () => {
     classifyCalls += 1;
-    return Promise.resolve("other");
+    return Promise.resolve("unknown");
   };
   const result = await findNearestAncestorByClassification(item(ids[0]), "site", classify, chainOf(ids), 100);
   assert.equal(result.outcome, "not-found");
@@ -76,7 +76,7 @@ void test("a 101st visited item stops safely with a limit-reached outcome", asyn
   let classifyCalls = 0;
   const classify: ClassifyAncestor = () => {
     classifyCalls += 1;
-    return Promise.resolve("other");
+    return Promise.resolve("unknown");
   };
   const result = await findNearestAncestorByClassification(item(ids[0]), "site", classify, chainOf(ids), 100);
   assert.deepEqual(result, { outcome: "limit-reached", limit: 100 });
@@ -96,7 +96,7 @@ void test("walking stops as soon as a match is found - the parent beyond it is n
 
 void test("Site and Tenant targets are resolved independently against the same chain", async () => {
   const chain = ["a", "b", "c"];
-  const classifications: Record<string, ItemClassification> = { b: "site", c: "tenant" };
+  const classifications: Record<string, ItemKind> = { b: "site", c: "tenant" };
   const siteResult = await findNearestAncestorByClassification(
     item("a"),
     "site",

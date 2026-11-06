@@ -6,6 +6,7 @@ import type {
   SitecoreHarvestSection,
 } from "../../reference-data/model/sitecore-item.types";
 import type { SitecoreItemLocator, WorkerTaskPayloadByType } from "../../workers/tasks/worker-task.types";
+import type { TemplateDerivedRecord } from "./template-derived.types.ts";
 
 export type SitecoreDataCacheKey = {
   environment: string;
@@ -19,6 +20,8 @@ export type StoredQuickInfo = Omit<ItemGraphNodeData, "facts" | "rawMarkup" | "s
 };
 
 export type SitecoreDataFactMap = {
+  templateBases: WorkerTaskPayloadByType["get-template-bases"];
+  templateDerived: TemplateDerivedRecord;
   quickInfo: { result: WorkerTaskPayloadByType["get-quick-info"]["result"] };
   parent: { parent: ItemGraphNodeData | undefined };
   children: { childItems: readonly ItemGraphNodeData[] };
@@ -33,6 +36,8 @@ export type SitecoreDataFactName = keyof SitecoreDataFactMap;
 export type SitecoreStoredFactName = Exclude<SitecoreDataFactName, "quickInfo">;
 
 export type StoredSitecoreDataFactMap = {
+  templateBases: SitecoreDataFactMap["templateBases"];
+  templateDerived: SitecoreDataFactMap["templateDerived"];
   parent: { parent: SitecoreItemLocator | undefined; hasParent: boolean };
   children: { childItems: readonly SitecoreItemLocator[] };
   referrers: { referrers: readonly SitecoreItemLocator[] };
@@ -48,6 +53,7 @@ export type SitecoreDataCacheItemRecord = {
   revision?: string;
   quickInfo?: StoredQuickInfo;
   quickInfoNotFound?: boolean;
+  quickInfoCachedAt?: number;
   lastAccessedAt: number;
 };
 

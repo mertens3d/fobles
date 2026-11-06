@@ -144,7 +144,9 @@ export const TESTING = {
     MENU_TRIGGER_VISIBLE_MS: 30_000,
     QUICK_INFO_VISIBLE_MS: 15_000,
     URL_WAIT_MS: 30_000,
-    TEST_SUITE_MS: 10 * 60 * 1_000,
+    TEST_SUITE_MS: 3 * 60 * 1_000,
+    GRAPH_ENRICHMENT_MS: 90_000,
+    UTILITY_CLOSE_MS: 30_000,
     // Was 25_000 - shorter than URL_WAIT_MS itself, so a slow-to-render page (e.g. showconfig.aspx,
     // which dumps the whole live web.config and can take a while to build the XML viewer tree)
     // could exceed the step's own budget before its URL wait even finished.

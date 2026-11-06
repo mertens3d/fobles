@@ -492,7 +492,52 @@ code {
   }
 }
 
+.structural-fields {
+  display: grid;
+  min-width: 0;
+  gap: 12px;
+  margin: 0 0 12px;
+  padding: 0;
+  border: none;
+
+  textarea {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid $border;
+    border-radius: $radius-small;
+    color: $text;
+    font: 13px $monospace-font;
+    resize: vertical;
+  }
+}
+
+.structural-scope-fields {
+  display: grid;
+  grid-template-columns: 2fr 1fr auto;
+  align-items: end;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.known-site-row {
+  @include card(12px);
+
+  margin-bottom: 12px;
+  overflow-wrap: anywhere;
+
+  > summary {
+    color: $text;
+    cursor: pointer;
+  }
+}
+
+button:disabled {
+  opacity: 0.55;
+  cursor: not-allowed;
+}
+
 @media (max-width: $mobile-breakpoint) {
+  .structural-scope-fields,
   .group-details,
   .mapping,
   .tab-group-rule {

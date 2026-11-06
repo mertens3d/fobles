@@ -1,23 +1,11 @@
-export const ACTIVITY_MESSAGE_TYPE = "FOBLES_ACTIVITY_EVENT" as const;
+import { ACTIVITY } from "./activity.const";
+import { matchesActivityFilter } from "./activity-filter";
+import type { ActivityEvent, ActivityFilter, ActivityListener, ActivityMessage } from "./activity.types";
 
-export type ActivityState = "queued" | "started" | "completed" | "error" | "cancelled";
+export type { ActivityEvent, ActivityFilter, ActivityMessage, ActivityState } from "./activity.types";
 
-export type ActivityEvent = {
-  source: "worker" | "harvest" | "graph" | "enrichment" | "cache";
-  requestId?: string;
-  activityId: string;
-  kind: string;
-  label: string;
-  state: ActivityState;
-  current?: number;
-  total?: number;
-  detail?: string;
-  timestamp: number;
-};
+export const ACTIVITY_MESSAGE_TYPE = ACTIVITY.MESSAGE_TYPE;
 
-export type ActivityMessage = { type: typeof ACTIVITY_MESSAGE_TYPE; activity: ActivityEvent };
-
-type ActivityListener = (event: ActivityEvent) => void;
 const listeners = new Set<ActivityListener>();
 
 export function emitActivity(event: Omit<ActivityEvent, "timestamp">): void {
@@ -38,14 +26,20 @@ export function receiveActivityMessage(message: unknown): boolean {
     return false;
   }
   const candidate = message as Partial<ActivityMessage>;
-  if (candidate.type !== ACTIVITY_MESSAGE_TYPE || !candidate.activity) {
+  const activity = candidate.activity;
+  if (candidate.type !== ACTIVITY_MESSAGE_TYPE || !activity) {
     return false;
   }
-  listeners.forEach((listener) => listener(candidate.activity!));
+  listeners.forEach((listener) => listener(activity));
   return true;
 }
 
-export function subscribeActivity(listener: ActivityListener): () => void {
-  listeners.add(listener);
-  return () => listeners.delete(listener);
+export function subscribeActivity(listener: ActivityListener, filter: ActivityFilter = {}): () => void {
+  const filteredListener: ActivityListener = (activity) => {
+    if (matchesActivityFilter(activity, filter)) {
+      listener(activity);
+    }
+  };
+  listeners.add(filteredListener);
+  return () => listeners.delete(filteredListener);
 }

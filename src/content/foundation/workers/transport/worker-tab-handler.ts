@@ -159,6 +159,8 @@ function addWorkerBanner(doc: Document): void {
 
 function workerTaskLabel(task: WorkerTask): string {
   switch (task.type) {
+    case "get-template-bases":
+      return "Reading direct base templates";
     case "get-quick-info":
       return "Reading Quick Info";
     case "get-parent":

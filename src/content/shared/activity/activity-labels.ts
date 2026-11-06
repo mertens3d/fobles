@@ -8,6 +8,8 @@ const READ_LABEL_BY_KIND: Readonly<Record<SitecoreDataFactName, string>> = {
   referrers: "Reading Referrers",
   customSections: "Reading Custom Fields",
   standardSections: "Reading Standard Fields",
+  templateBases: "Reading Direct Base Templates",
+  templateDerived: "Reading Template ItemKind",
   layout: "Reading Layout",
 };
 
@@ -17,6 +19,8 @@ export function labelForFact(factName: SitecoreDataFactName): string {
 
 export function labelForWorkerTask(task: WorkerTask): string {
   switch (task.type) {
+    case "get-template-bases":
+      return READ_LABEL_BY_KIND.templateBases;
     case "get-quick-info":
       return READ_LABEL_BY_KIND.quickInfo;
     case "get-parent":

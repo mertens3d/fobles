@@ -1,45 +1,11 @@
 // @source-path [fobles] src/content/runtime-settings/runtime-settings.ts
-import { getStorageValue, onStorageChange, setStorageValue } from "../../shared/storage/storage";
-
-export const RUNTIME_SETTINGS_STORAGE_KEY = "fobles-runtime-settings";
-
-export const RUNTIME_FAULT = { REFERENCE_GRAPH_RESTORE_EDITOR_STATE: "referenceGraph.restoreEditorState" } as const;
-
-export type RuntimeFault = (typeof RUNTIME_FAULT)[keyof typeof RUNTIME_FAULT];
-
-export type RuntimeSettings = {
-  workerPool: {
-    maxWorkers: number;
-    hideWorkerIframes: boolean;
-    taskTimeoutMs: number;
-    healthPollIntervalMs: number;
-    workerNoProgressMs: number;
-    workerMaxRecoveriesPerJob: number;
-    poolNoProgressMs: number;
-    poolMaxWorkerRecoveries: number;
-    specialistNoProgressMs: number;
-  };
-  testing: { enabled: boolean; faults: Record<RuntimeFault, boolean>; showJourneyStepLive: boolean };
-};
-
-export const DEFAULT_RUNTIME_SETTINGS: RuntimeSettings = {
-  workerPool: {
-    maxWorkers: 3,
-    hideWorkerIframes: true,
-    taskTimeoutMs: 20000,
-    healthPollIntervalMs: 1000,
-    workerNoProgressMs: 20000,
-    workerMaxRecoveriesPerJob: 1,
-    poolNoProgressMs: 30000,
-    poolMaxWorkerRecoveries: 3,
-    specialistNoProgressMs: 45000,
-  },
-  testing: {
-    enabled: false,
-    faults: { [RUNTIME_FAULT.REFERENCE_GRAPH_RESTORE_EDITOR_STATE]: false },
-    showJourneyStepLive: true,
-  },
-};
+import { getStorageValue, onStorageChange, setStorageValue } from "../../shared/storage/storage.ts";
+import { DEFAULT_RUNTIME_SETTINGS, RUNTIME_FAULT, RUNTIME_SETTINGS_LIMITS, RUNTIME_SETTINGS_STORAGE_KEY } from "./runtime-settings.const.ts";
+import type { RuntimeFault, RuntimeSettings } from "./runtime-settings.types.ts";
+function boundedInteger(value: unknown, fallback: number, minimum: number, maximum: number): number {
+  return typeof value === "number" && Number.isSafeInteger(value) && value >= minimum && value <= maximum
+    ? value : fallback;
+}
 function positiveInteger(value: unknown, fallback: number): number {
   return typeof value === "number" && Number.isInteger(value) && value > 0 ? value : fallback;
 }
@@ -54,7 +20,21 @@ export function normalizeRuntimeSettings(value: unknown): RuntimeSettings {
   const workerPool = stored?.workerPool;
   const testing = stored?.testing;
   return {
+    structuralCache: {
+      maxUnvalidatedAgeMs: boundedInteger(
+        stored?.structuralCache?.maxUnvalidatedAgeMs,
+        DEFAULT_RUNTIME_SETTINGS.structuralCache.maxUnvalidatedAgeMs,
+        1,
+        RUNTIME_SETTINGS_LIMITS.MAX_UNVALIDATED_AGE_MS,
+      ),
+    },
     workerPool: {
+      backgroundIntertaskCooldownMs: boundedInteger(
+        workerPool?.backgroundIntertaskCooldownMs,
+        DEFAULT_RUNTIME_SETTINGS.workerPool.backgroundIntertaskCooldownMs,
+        0,
+        RUNTIME_SETTINGS_LIMITS.MAX_BACKGROUND_INTERTASK_COOLDOWN_MS,
+      ),
       maxWorkers:
         typeof workerPool?.maxWorkers === "number" &&
         Number.isInteger(workerPool.maxWorkers) &&
@@ -102,7 +82,7 @@ export function normalizeRuntimeSettings(value: unknown): RuntimeSettings {
 }
 
 export async function initializeRuntimeSettings(): Promise<RuntimeSettings> {
-  if (!initialized) {
+  if (!initialized && typeof chrome !== "undefined") {
     const stored = await getStorageValue<unknown>([RUNTIME_SETTINGS_STORAGE_KEY], "local");
     const persisted = stored[RUNTIME_SETTINGS_STORAGE_KEY];
     runtimeSettings = normalizeRuntimeSettings(persisted);

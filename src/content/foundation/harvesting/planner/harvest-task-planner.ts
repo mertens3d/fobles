@@ -6,7 +6,7 @@ import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../work
 
 export type CollectorFilterKey = Exclude<keyof SitecoreHarvestFiltersState, "template">;
 
-export type CollectorTaskType = Exclude<WorkerTaskType, "get-quick-info" | "set-raw-values" | "set-standard-fields">;
+export type CollectorTaskType = Exclude<WorkerTaskType, "get-template-bases" | "get-quick-info" | "set-raw-values" | "set-standard-fields">;
 
 export type CollectorTaskPlan = { normalTasks: WorkerTask[]; layoutTasks: WorkerTask[] };
 

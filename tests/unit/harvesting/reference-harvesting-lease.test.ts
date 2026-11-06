@@ -9,6 +9,33 @@ type LockMessage = { type: string; ownershipId: string; origin: string };
 
 type RuntimeResponse = { acquired: boolean } | null;
 
+void test("lease contention times out without running work or releasing another owner", async () => {
+  const runtime = installRuntime(Array.from({ length: 20 }, () => ({ acquired: false })));
+  let ran = false;
+  try {
+    await assert.rejects(runWithReferenceHarvestingLease(() => {
+      ran = true;
+      return Promise.resolve();
+    }, { timeoutMs: 1 }), /Timed out waiting for the Fobles harvesting lease/);
+    assert.equal(ran, false);
+    assert.ok(runtime.messages.every((message) => message.type === UTILITY_LOCK_MESSAGE.ACQUIRE));
+  } finally {
+    runtime.restore();
+  }
+});
+
+void test("a cancelled lease wait never acquires or runs work", async () => {
+  const runtime = installRuntime([]);
+  const controller = new AbortController();
+  controller.abort();
+  try {
+    await assert.rejects(runWithReferenceHarvestingLease(() => Promise.resolve(), { signal: controller.signal }), { name: "AbortError" });
+    assert.equal(runtime.messages.length, 0);
+  } finally {
+    runtime.restore();
+  }
+});
+
 function installRuntime(responses: RuntimeResponse[]): { messages: LockMessage[]; restore: () => void } {
   const messages: LockMessage[] = [];
   const previousChrome = Object.getOwnPropertyDescriptor(globalThis, "chrome");

@@ -7,6 +7,14 @@ Playwright end-to-end tests live in `tests/e2e/` and exercise the extension agai
 - Preserve feature subfolders within each group. Shared fixtures, macros, and helpers remain outside the groups; existing feature support is reused rather than duplicated.
 - The folder determines scheduling; do not add `@sitecore-state` tags. Parallel Sitecore tests must verify Raw Values and Standard Fields are off and must not change either setting. They must establish Fobles' activation state explicitly when their assertions depend on it. Do not run stateful and parallel projects simultaneously.
 
+## Agents: Structural Validation And Browser Profiles
+
+- `npm run validate` runs extension/test typechecks, lint, unit tests, extension build, and E2E discovery in order; it does not execute browser tests.
+- Shared test budgets are three minutes; graph enrichment is bounded at 90 seconds and utility close at 30 seconds. Manual login retains its separate allowance. Already-running Playwright tests keep their original budgets; changed timeout constants apply on the next run.
+- Structural coverage lives in `unit/item-kind/`, `unit/structural/`, `unit/workers/`, `unit/item-history/`, `unit/options/`, and `unit/toolbar-diagnostics/`. The Options browser regression is `e2e/parallel/options/structural-settings.spec.ts` and follows `createFoblesStep`.
+- History tooltip lifecycle coverage: `unit/item-history/history-tooltip-lifecycle.test.ts` bundles the actual trigger, tooltip/Tippy and flyout visibility with browser module resolution; only history/Known Sites, navigation and logging services are mocked. Keep tooltip lifecycle coverage separate from `history-sites-harness.ts`, which intentionally stubs the tooltip. History-local render/effect failures must log the original error/component stack and preserve sibling toolbar controls; this fault injection is not a reproduction of the reported disappearing toolbar. The flyout close timer must be cancelled on unmount.
+- `fixtures/browser-profile.ts` creates a unique generated profile per worker launch. Reusing numbered profiles can run an old Chromium extension service worker even after rebuilding the bundles, making new message handlers appear absent. Keep the context shared within a worker, not profiles across launches.
+
 ### Utility Windows And Harvest Screenshots
 
 - Shared utility window drag/resize and collapse/maximize coverage belongs in `e2e/stateful/utility-window/`, not the graph feature folder. Use utility terminology to match the extension's `openFoblesUtility` API.

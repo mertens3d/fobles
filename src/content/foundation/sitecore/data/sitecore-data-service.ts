@@ -18,6 +18,7 @@ import type { FetchLiveFact, GetFactOptions, SitecoreDataFactResult } from "./si
 // Only these 7 atomic reads have a cacheable fact - set-raw-values/set-standard-fields are
 // mutations and are never routed through this service at all.
 const FACT_NAME_BY_TASK_TYPE: ReadonlyMap<WorkerTaskType, SitecoreDataFactName> = new Map([
+  ["get-template-bases", "templateBases"],
   ["get-quick-info", "quickInfo"],
   ["get-parent", "parent"],
   ["get-children", "children"],
@@ -40,6 +41,9 @@ function isCacheableResult(result: WorkerTaskExecutionResult): result is WorkerT
   }
   if (result.type === "get-quick-info") {
     return result.payload.result.status !== "error";
+  }
+  if (result.type === "get-template-bases") {
+    return result.payload.directBaseIds !== undefined;
   }
 
   return true;

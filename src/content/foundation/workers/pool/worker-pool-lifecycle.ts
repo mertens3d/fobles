@@ -2,7 +2,7 @@
 import { extensionLog } from "../../../logger";
 import { closeWorkerTarget, sendCancelToWorkerTarget } from "../transport/worker-target-service";
 import type { ActiveWorkerTask, PoolWorker, QueuedTask } from "../tasks/worker-task.types";
-import { clearWorkerReadiness } from "./worker-readiness";
+import { resetWorkerReadiness } from "./worker-readiness";
 import { createCancelledResult } from "../tasks/worker-task.types";
 
 type DisposeWorkerPoolOptions = {
@@ -30,8 +30,12 @@ export async function disposeWorkerPoolLifecycle({
     sendCancelToWorkerTarget(task.target, task.requestId, task.taskId);
   });
   activeTaskByWorkerKey.clear();
-  clearWorkerReadiness();
   const targets = collectWorkerTargets(workers);
+  targets.forEach((target) => {
+    if (target.kind === "tab") {
+      resetWorkerReadiness(target.tabId);
+    }
+  });
   extensionLog.debug("Worker pool: immediate disposal started", {
     previousGeneration: generation,
     nextGeneration,

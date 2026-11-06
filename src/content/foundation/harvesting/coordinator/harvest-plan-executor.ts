@@ -4,8 +4,8 @@ import { extensionLog } from "../../../logger";
 import {
   initializeRuntimeSettings,
   isRuntimeFaultEnabled,
-  RUNTIME_FAULT,
 } from "../../../runtime-settings/runtime-settings";
+import { RUNTIME_FAULT } from "../../../runtime-settings/runtime-settings.const";
 import { HARVEST_STEP_BY_TASK_TYPE } from "../planner/harvest-steps";
 import type { HarvestProgressCallback, HarvestRequest, ProgressStep } from "../sitecore-harvester.types";
 import { cancelWorkerTask, runWorkerTask } from "../../workers/pool/worker-pool-client";
@@ -257,7 +257,7 @@ async function restoreOriginalState(request: HarvestRequest): Promise<void> {
   }
 
   if (restorationError !== undefined) {
-    throw new Error("Failed to restore the original Sitecore editor state", { cause: restorationError });
+    throw Object.assign(new Error("Failed to restore the original Sitecore editor state"), { cause: restorationError });
   }
 }
 
@@ -316,16 +316,15 @@ async function executeStatefulHarvestPlan(
       requestId: request.requestId,
       restoreError,
     });
-    throw new Error(
+    throw Object.assign(new Error(
       "Something has gone wrong. Sitecore may no longer be in its original Raw Values / Standard Fields state.",
-      { cause: restoreError },
-    );
+    ), { cause: restoreError });
   }
 
   if (harvestError !== undefined) {
     throw harvestError instanceof Error
       ? harvestError
-      : new Error("Harvest failed with a non-Error value", { cause: harvestError });
+      : Object.assign(new Error("Harvest failed with a non-Error value"), { cause: harvestError });
   }
   return harvestResults ?? [];
 }

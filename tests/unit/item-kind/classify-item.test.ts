@@ -1,12 +1,12 @@
-// @source-path [fobles] tests/unit/classification/classify-item.test.ts
+// @source-path [fobles] tests/unit/item-kind/classify-item.test.ts
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { classifyItem } from "../../../src/content/foundation/reference-data/processing/classification/classify-item.ts";
+import { classifyItem } from "../../../src/content/foundation/reference-data/processing/item-kind/classify-item.ts";
 import type {
   BaseTemplateIdSets,
   ClassificationPathRoots,
-} from "../../../src/content/foundation/reference-data/processing/classification/item-classification.types.ts";
+} from "../../../src/content/foundation/reference-data/processing/item-kind/item-kind.types.ts";
 
 const PATH_ROOTS: ClassificationPathRoots = { content: "/sitecore/content", templates: "/sitecore/templates" };
 const PAGE_ID = "{11111111-1111-1111-1111-111111111111}";
@@ -121,7 +121,7 @@ void test("no configured base template matched returns other", () => {
     baseTemplateIds: baseIds(),
     pathRoots: PATH_ROOTS,
   });
-  assert.equal(result.classification, "other");
+  assert.equal(result.classification, "unknown");
   assert.deepEqual(result.diagnostics.matchedBaseTemplateClassifications, []);
 });
 
@@ -132,7 +132,7 @@ void test("a path outside both /sitecore/content and /sitecore/templates classif
     baseTemplateIds: baseIds(),
     pathRoots: PATH_ROOTS,
   });
-  assert.equal(result.classification, "other");
+  assert.equal(result.classification, "unknown");
 });
 
 void test("an undefined item path classifies as other", () => {
@@ -142,7 +142,7 @@ void test("an undefined item path classifies as other", () => {
     baseTemplateIds: baseIds(),
     pathRoots: PATH_ROOTS,
   });
-  assert.equal(result.classification, "other");
+  assert.equal(result.classification, "unknown");
 });
 
 void test("overlap between Tenant and Site bases uses precedence (Tenant wins) and records both matches", () => {
@@ -173,7 +173,7 @@ void test("classification is always exactly one of the five mutually exclusive v
     baseTemplateIds: baseIds(),
     pathRoots: PATH_ROOTS,
   });
-  assert.ok(["template", "tenant", "site", "page", "other"].includes(result.classification));
+  assert.ok(["template", "tenant", "site", "page", "unknown"].includes(result.classification));
   assert.equal(typeof result.classification, "string");
 });
 

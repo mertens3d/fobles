@@ -24,6 +24,14 @@ export function startItemHistoryManager(doc: Document): ItemHistoryCleanup {
             const snapshot = JSON.stringify({ scope, visit });
             if (snapshot !== lastSnapshot) {
               lastSnapshot = snapshot;
+              void import("../foundation/reference-data/processing/item-kind/structural-discovery.ts").then(({ scheduleStructuralDiscovery }) => {
+                const currentScope = resolveHistoryScope(doc);
+                if (!stopped && currentScope.origin === scope.origin && currentScope.database === scope.database) {
+                  scheduleStructuralDiscovery(scope, [visit]);
+                }
+              }).catch((error: unknown) => {
+                extensionLog.warn("Item history: structural discovery failed", { error });
+              });
               void requestHistoryChange(scope, { action: "visit", visit }).catch((error: unknown) => {
                 if (lastSnapshot === snapshot) {
                   lastSnapshot = undefined;

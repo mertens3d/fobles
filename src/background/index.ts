@@ -3,6 +3,8 @@
 import { LOGGER, MESSAGE } from "../constants/extension-const";
 import "./fobles-utility-lock-registration";
 import "./item-history-registration.ts";
+import "./known-sites-registration.ts";
+import "./structural-command-registration.ts";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
 import { extensionLog } from "../content/logger";
 import {
@@ -18,6 +20,7 @@ import {
   handleWorkerTabRemoved,
   clearWorkerPoolForHost,
   runPoolTask,
+  getWorkerPoolStatus,
 } from "../content/foundation/workers/pool/background-worker-pool";
 import {
   WORKER_IFRAME_READY_MESSAGE_TYPE,
@@ -28,6 +31,7 @@ import {
   type WorkerAdoptedMessage,
   type WorkerIframeReadyMessage,
   type WorkerReadyMessage,
+  type WorkerPoolStatusMessage,
 } from "../content/foundation/workers/transport/worker.messages";
 import { WORKER_MESSAGE_TYPE } from "../content/foundation/workers/worker-protocol.const";
 import { appendPersistedLogEntry, clearPersistedLogEntries } from "../shared/logging/persisted-log-storage";
@@ -59,6 +63,7 @@ type RuntimeMessage =
   | PoolCancelRequestMessage
   | PoolCancelTaskMessage
   | PoolDisposeMessage
+  | WorkerPoolStatusMessage
   | WorkerReadyMessage
   | WorkerIframeReadyMessage
   | WorkerAdoptedMessage
@@ -189,10 +194,13 @@ chrome.runtime.onMessage.addListener((request: RuntimeMessage, sender, sendRespo
       hostTabId: sender.tab?.id,
     });
     cancelPoolTask(request.requestId, request.taskId, sender.tab?.id);
+  } else if ("type" in request && request.type === MESSAGE_TYPE.WORKER_POOL_STATUS) {
+    sendResponse(getWorkerPoolStatus(sender.tab?.id, request.requestId));
   } else if ("type" in request && request.type === MESSAGE_TYPE.POOL_DISPOSE) {
     const startedAt = performance.now();
     extensionLog.debug(LOGGER.NAMESPACE, "Worker diagnostics: pool dispose started", { hostTabId: sender.tab?.id });
-    void disposeWorkerPool()
+    const hostTabId = sender.tab?.id;
+    void (hostTabId === undefined ? Promise.resolve() : disposeWorkerPool(hostTabId))
       .then(() => {
         extensionLog.debug(LOGGER.NAMESPACE, "Worker diagnostics: pool dispose settled", {
           hostTabId: sender.tab?.id,

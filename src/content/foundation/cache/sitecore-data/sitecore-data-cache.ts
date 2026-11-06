@@ -148,6 +148,9 @@ export async function putFact<K extends SitecoreDataFactName>(
   value: SitecoreDataFactValueByName[K],
   options: { revision?: string; lastVerifiedAt?: number } = {},
 ): Promise<void> {
+  if (factName === "templateBases" && (value as SitecoreDataFactMap["templateBases"]).directBaseIds === undefined) {
+    throw new TypeError("Unavailable direct template bases cannot be cached");
+  }
   await runCacheTransaction("readwrite", async (itemStore, factStore) => {
     const itemKey = serializeCacheKey(key);
     const now = Date.now();
@@ -159,6 +162,7 @@ export async function putFact<K extends SitecoreDataFactName>(
       itemRecord.revision = options.revision;
     }
     if (factName === "quickInfo") {
+      itemRecord.quickInfoCachedAt = now;
       const quickInfo = value as SitecoreDataFactMap["quickInfo"];
       if (quickInfo.result.status === "found" && quickInfo.result.value) {
         itemRecord.quickInfo = toPersistedValue(stripQuickInfo(quickInfo.result.value), key.environment);
@@ -203,7 +207,7 @@ export async function getFact<K extends SitecoreDataFactName>(
       if (item.quickInfoNotFound) {
         return {
           value: { result: { requested: key.item, status: "not-found" } },
-          cachedAt: item.lastAccessedAt,
+          cachedAt: item.quickInfoCachedAt ?? 0,
         } as SitecoreDataFact<SitecoreDataFactValueByName[K]>;
       }
       if (!item.quickInfo) {
@@ -218,7 +222,7 @@ export async function getFact<K extends SitecoreDataFactName>(
           status: "found" as const,
         },
       };
-      return { value, cachedAt: item.lastAccessedAt } as SitecoreDataFact<SitecoreDataFactValueByName[K]>;
+      return { value, cachedAt: item.quickInfoCachedAt ?? 0 } as SitecoreDataFact<SitecoreDataFactValueByName[K]>;
     }
     const storedFactName = requireStoredFactName(factName);
     const record = (await getRequestResult(factStore.get(factKey(itemKey, storedFactName)))) as

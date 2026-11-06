@@ -4,8 +4,8 @@ import { onStorageChange } from "../../../../shared/storage/storage";
 import {
   getRuntimeSettings,
   initializeRuntimeSettings,
-  RUNTIME_SETTINGS_STORAGE_KEY,
 } from "../../../runtime-settings/runtime-settings";
+import { RUNTIME_SETTINGS_STORAGE_KEY } from "../../../runtime-settings/runtime-settings.const";
 
 export async function getWorkerPoolMaxWorkers(): Promise<number> {
   await initializeRuntimeSettings();

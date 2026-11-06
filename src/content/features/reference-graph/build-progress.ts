@@ -3,6 +3,8 @@ import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { CONST } from "../../../constants/const";
 import { subscribeActivity, type ActivityEvent } from "../../shared/activity/activity-events";
+import { ACTIVITY } from "../../shared/activity/activity.const";
+import { WORK_SCHEDULING } from "../../foundation/workers/work-scheduling.const";
 import type {
   HarvestProgressStatus,
   ProgressStep,
@@ -68,7 +70,7 @@ export function closeReferenceGraphProgressModal(_doc: Document): void {
   }
 }
 
-export function openReferenceGraphProgressModal(doc: Document, onCancel: () => void): void {
+export function openReferenceGraphProgressModal(doc: Document, onCancel: () => void, requestId?: string): void {
   disposeProgressDialog();
   const dialog = doc.createElement("dialog");
   const reactHost = doc.createElement("div");
@@ -81,13 +83,16 @@ export function openReferenceGraphProgressModal(doc: Document, onCancel: () => v
   progressCancelHandler = onCancel;
   activities = [];
   unsubscribeActivity = subscribeActivity((activity) => {
-    const existing = activities.findIndex((item) => item.activityId === activity.activityId);
+    if (activity.source === ACTIVITY.WORKER_POOL.SOURCE) {
+      return;
+    }
+    const existing = activities.findIndex((item) => item.activityId === activity.activityId && item.requestId === activity.requestId);
     activities =
       existing < 0
         ? [...activities, activity]
         : activities.map((item, index) => (index === existing ? activity : item));
     renderProgressDialog();
-  });
+  }, { requestId, workClass: WORK_SCHEDULING.FOREGROUND });
   dialog.addEventListener("close", disposeProgressDialog, { once: true });
   dialog.addEventListener("cancel", (event) => event.preventDefault());
   renderProgressDialog();

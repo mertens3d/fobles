@@ -1,0 +1,4 @@
+export const HARVESTING_LEASE = {
+  ACQUISITION_TIMEOUT_MS: 30_000,
+  RETRY_INTERVAL_MS: 250,
+} as const;

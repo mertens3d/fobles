@@ -4,14 +4,18 @@ import { ITEM_HISTORY } from "../../../shared/item-history/item-history.const.ts
 import { FlyoutTrigger } from "../shared-flyout/flyout-trigger";
 import { createClearHistoryHandler } from "./handlers.ts";
 import { HISTORY_CLASS, HISTORY_TEXT, HISTORY_UI } from "./history.const.ts";
+import { HistoryErrorBoundary } from "./history-error-boundary.tsx";
+import { historyItemLabel } from "./history-label.ts";
 import { HistoryRow } from "./history-row.tsx";
 import type { HistoryTriggerProps } from "./history.types.ts";
 import { useHistoryScope } from "./use-history-scope.ts";
 import { useHistoryStore } from "./use-history-store.ts";
+import { useHistoryKnownSites } from "./use-history-known-sites.ts";
 
-export function HistoryTrigger({ doc, historyFlyout, onOpen, onToggle }: HistoryTriggerProps) {
+function HistoryContents({ doc, historyFlyout, onOpen, onToggle }: HistoryTriggerProps) {
   const scopeState = useHistoryScope(doc);
   const store = useHistoryStore(scopeState.scope);
+  const sites = useHistoryKnownSites(scopeState.scope);
   const error = scopeState.error ?? store.error;
   const scope = store.scope;
 
@@ -54,6 +58,7 @@ export function HistoryTrigger({ doc, historyFlyout, onOpen, onToggle }: History
                   <ul>
                     {items.map((item) => (
                       <HistoryRow key={item.id} item={item} scope={scope} mutate={store.mutate}
+                        label={historyItemLabel(item, sites)}
                         onError={store.reportError} onNavigated={historyFlyout.hide} />
                     ))}
                   </ul>
@@ -65,4 +70,8 @@ export function HistoryTrigger({ doc, historyFlyout, onOpen, onToggle }: History
       </FlyoutTrigger>
     </div>
   );
+}
+
+export function HistoryTrigger(props: HistoryTriggerProps) {
+  return <HistoryErrorBoundary><HistoryContents {...props} /></HistoryErrorBoundary>;
 }

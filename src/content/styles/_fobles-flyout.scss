@@ -18,9 +18,10 @@
   position: fixed;
   top: 3px;
   left: 70px;
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto;
   align-items: center;
-  gap: 8px;
+  gap: 6px 8px;
   font-family: system-ui, "Segoe UI", Arial, sans-serif;
   cursor: grab;
   touch-action: none;

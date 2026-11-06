@@ -3,18 +3,26 @@ import {
   UTILITY_LOCK_MESSAGE,
   type UtilityLockResponse,
 } from "../../../../shared/utility/fobles-utility-lock.messages.ts";
-const RETRY_INTERVAL_MS = 250;
+import { HARVESTING_LEASE } from "./reference-harvesting-lease.const.ts";
+import type { HarvestingLeaseOptions } from "./reference-harvesting-lease.types.ts";
 
-export async function runWithReferenceHarvestingLease<T>(run: () => Promise<T>): Promise<T> {
+export async function runWithReferenceHarvestingLease<T>(run: () => Promise<T>, options: HarvestingLeaseOptions = {}): Promise<T> {
   const ownershipId = crypto.randomUUID();
+  const timeoutMs = options.timeoutMs ?? HARVESTING_LEASE.ACQUISITION_TIMEOUT_MS;
+  const startedAt = performance.now();
   let acquired = false;
   try {
     while (!acquired) {
+      options.signal?.throwIfAborted();
+      if (performance.now() - startedAt >= timeoutMs) {
+        throw new Error(`Timed out waiting for the Fobles harvesting lease after ${timeoutMs} ms`);
+      }
       acquired = await acquire(ownershipId);
       if (!acquired) {
-        await delay(RETRY_INTERVAL_MS);
+        await delay(Math.min(HARVESTING_LEASE.RETRY_INTERVAL_MS, timeoutMs));
       }
     }
+    options.signal?.throwIfAborted();
     return await run();
   } finally {
     if (acquired) {

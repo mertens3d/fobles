@@ -23,6 +23,10 @@ export type PoolCancelTaskMessage = { type: typeof MESSAGE_TYPE.POOL_CANCEL_TASK
 
 export type PoolDisposeMessage = { type: typeof MESSAGE_TYPE.POOL_DISPOSE };
 
+export const WORKER_POOL_STATUS_MESSAGE_TYPE = MESSAGE_TYPE.WORKER_POOL_STATUS;
+
+export type WorkerPoolStatusMessage = { type: typeof MESSAGE_TYPE.WORKER_POOL_STATUS; requestId?: string };
+
 export type WorkerReadyMessage = { type: typeof MESSAGE_TYPE.WORKER_READY };
 
 export type WorkerIframeReadyMessage = { type: typeof WORKER_IFRAME_READY_MESSAGE_TYPE; workerId: string };
@@ -58,6 +62,7 @@ export type WorkerPoolMessage =
   | PoolCancelRequestMessage
   | PoolCancelTaskMessage
   | PoolDisposeMessage
+  | WorkerPoolStatusMessage
   | WorkerReadyMessage
   | WorkerIframeReadyMessage
   | WorkerIframeCreateMessage

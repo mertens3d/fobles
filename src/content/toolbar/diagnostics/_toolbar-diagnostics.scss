@@ -1,0 +1,22 @@
+@use "../../styles/tokens" as *;
+
+.fobles-toolbar-diagnostics {
+  grid-column: 2;
+  grid-row: 2;
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+  contain: inline-size;
+  padding: 5px 8px;
+  border-radius: 4px;
+  background: $fobles-surface;
+  color: $fobles-text;
+  font: 10px/1.4 system-ui, sans-serif;
+  cursor: default;
+
+  &-current {
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

@@ -8,6 +8,18 @@ import { setFoblesNavVisible } from "../../shared/nav-settings";
 import { setToolbarStoreVisible } from "./toolbar-store";
 import type { ToolbarContext } from "./types";
 
+function resolveGraphIconUrl(): string | undefined {
+  let url: string | undefined;
+  try {
+    url = chrome.runtime.getURL(ICONS.GRAPH);
+  } catch {
+    url = undefined;
+  }
+  return url;
+}
+
+const graphIconUrl = resolveGraphIconUrl();
+
 export type ToolbarNavButtonProps = {
   className: string;
   title: string;
@@ -62,7 +74,7 @@ export function GraphButton({ context }: { context: ToolbarContext }) {
       title={TEXT.GRAPH_TITLE}
       onClick={() => publishFoblesShellCommand("reference-graph:open", context.doc)}
     >
-      <img className={CLASS.TOOLBAR_GRAPH_ICON} src={chrome.runtime.getURL(ICONS.GRAPH)} alt="" />
+      {graphIconUrl && <img className={CLASS.TOOLBAR_GRAPH_ICON} src={graphIconUrl} alt="" />}
     </ToolbarNavButton>
   );
 }

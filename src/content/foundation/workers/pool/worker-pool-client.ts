@@ -1,12 +1,15 @@
 // @source-path [fobles] src/content/foundation/workers/pool/worker-pool-client.ts
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
+import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
+import type { WorkerPoolStatus } from "./worker-pool-status.types";
 import type { WorkerTask, WorkerTaskResult } from "../tasks/worker-task.types";
 import type {
   PoolCancelRequestMessage,
   PoolCancelTaskMessage,
   PoolDisposeMessage,
   PoolRunTaskMessage,
+  WorkerPoolStatusMessage,
 } from "../transport/worker.messages";
 
 export async function runWorkerTask(task: WorkerTask): Promise<WorkerTaskResult | undefined> {
@@ -54,4 +57,9 @@ export function cancelWorkerRequest(requestId: string): void {
 export function cancelWorkerTask(requestId: string, taskId: string): void {
   const message: PoolCancelTaskMessage = { type: CONST.FOBLES.WORKER.MESSAGE_TYPE.POOL_CANCEL_TASK, requestId, taskId };
   void chrome.runtime.sendMessage(message);
+}
+
+export function getWorkerPoolStatus(requestId?: string): Promise<WorkerPoolStatus | undefined> {
+  const message: WorkerPoolStatusMessage = { type: WORKER_MESSAGE_TYPE.WORKER_POOL_STATUS, requestId };
+  return chrome.runtime.sendMessage<WorkerPoolStatusMessage, WorkerPoolStatus | undefined>(message);
 }

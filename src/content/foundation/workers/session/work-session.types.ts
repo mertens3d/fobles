@@ -2,12 +2,13 @@
 
 import type { HealthReport } from "../../diagnostics/health.types";
 import type { WorkerTask, WorkerTaskResult } from "../tasks/worker-task.types";
+import type { WorkClass } from "../work-scheduling.types";
 
 export type WorkSessionState = "open" | "cancelling" | "completed" | "released";
 
 export type WorkSessionTask = WorkerTask extends infer T
   ? T extends WorkerTask
-    ? Omit<T, "requestId">
+    ? Omit<T, "requestId" | "workClass">
     : never
   : never;
 
@@ -15,6 +16,7 @@ export type WorkSession = {
   readonly id: string;
   readonly signal: AbortSignal;
   readonly state: WorkSessionState;
+  readonly workClass: WorkClass;
   getHealth: () => HealthReport;
   registerHealthProvider: (provider: { getHealth: () => HealthReport }) => () => void;
   markProgress: (reason: string) => void;

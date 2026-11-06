@@ -25,10 +25,13 @@ export const HISTORY_TEXT = {
   LAST_VISITED: "Last visited",
   PATH: "Path",
   REMOVE: "Remove",
+  SITE_SEPARATOR: ": ",
   TITLE: "History",
+  UNKNOWN_SITE: "(unknown)",
 } as const;
 
 export const HISTORY_UI = {
+  ERROR_LOG: "Item history: UI failed",
   PANEL_ID: "fobles-history-panel",
   TOOLTIP_DELAY: 500,
 } as const;

@@ -1,7 +1,9 @@
 // @source-path [fobles] src/content/foundation/workers/pool/background-worker-pool.ts
 
-import { DEFAULT_RUNTIME_SETTINGS, getRuntimeSettings } from "../../../runtime-settings/runtime-settings";
+import { getRuntimeSettings } from "../../../runtime-settings/runtime-settings";
+import { DEFAULT_RUNTIME_SETTINGS } from "../../../runtime-settings/runtime-settings.const";
 import { publishActivityToHost } from "../../../shared/activity/activity-events";
+import { ACTIVITY } from "../../../shared/activity/activity.const";
 import { labelForWorkerTask } from "../../../shared/activity/activity-labels";
 import { extensionLog } from "../../../logger";
 import { closeWorkerTarget, sendCancelToWorkerTarget } from "../transport/worker-target-service";
@@ -13,6 +15,7 @@ import {
   createCancelledResult,
   type ActiveWorkerTask,
   type PoolWorker,
+  type QueuedTask,
   type WorkerExecutorContext,
   type WorkerTask,
   type WorkerTaskResult,
@@ -20,6 +23,11 @@ import {
 import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
 import type { WorkerPoolState } from "./worker-pool-state";
 import { cancelWorkerIdleDisposal, scheduleWorkerIdleDisposal } from "./worker-idle-disposal";
+import { getWorkClass, takeNextWorkerTask } from "./worker-admission";
+import { snapshotWorkerPoolStatus } from "./worker-pool-status";
+import type { WorkerPoolStatus } from "./worker-pool-status.types";
+import { WORK_SCHEDULING } from "../work-scheduling.const";
+import { backgroundCooldownRemaining, cancelBackgroundCooldown, scheduleBackgroundCooldown } from "./worker-background-cooldown";
 
 let maxWorkers = DEFAULT_RUNTIME_SETTINGS.workerPool.maxWorkers;
 const poolsByHostTabId = new Map<number, WorkerPoolState>();
@@ -33,6 +41,7 @@ function createPool(hostTabId: number | undefined): WorkerPoolState {
     generation: 0,
     workers: [],
     queue: [],
+    admittedTasks: new Set(),
     cancelledRequestIds: new Set<string>(),
     activeTaskByWorkerKey: new Map<string, ActiveWorkerTask>(),
     lastProgressAt: performance.now(),
@@ -77,7 +86,9 @@ function startPoolHealthSupervisor(pool: WorkerPoolState): void {
     const unhealthyWorkers = workers.filter((worker) => !worker.healthy);
     const poolNoProgressMs = Math.round(checkedAt - pool.lastProgressAt);
     const poolUnhealthy =
-      (pool.queue.length > 0 || pool.activeTaskByWorkerKey.size > 0) && poolNoProgressMs >= settings.poolNoProgressMs;
+      (pool.activeTaskByWorkerKey.size > 0 || (pool.queue.length > 0 &&
+        backgroundCooldownRemaining(pool, getRuntimeSettings().workerPool.backgroundIntertaskCooldownMs) === 0)) &&
+      poolNoProgressMs >= settings.poolNoProgressMs;
     extensionLog.debug("Worker pool health: poll", {
       hostTabId: pool.hostTabId,
       healthy: !poolUnhealthy && unhealthyWorkers.length === 0,
@@ -252,7 +263,16 @@ function createExecutorContext(pool: WorkerPoolState): WorkerExecutorContext {
   return {
     activeTaskByWorkerKey: pool.activeTaskByWorkerKey,
     cancelledRequestIds: pool.cancelledRequestIds,
-    createPendingWorker: () => createPendingWorker(pool),
+    requeueTask: (queued) => {
+      if (pool.generation !== generation || pool.cancelledRequestIds.has(queued.task.requestId)) {
+        queued.resolve(createCancelledResult(queued.task));
+      } else {
+        queued.retryQueuedAt = performance.now();
+        pool.queue.push(queued);
+        markPoolProgress(pool, "task-requeued");
+        scheduleNext(pool);
+      }
+    },
     retireWorker: (worker) => retireWorker(pool, worker),
     destroyRetiredWorker: (worker, reason) => destroyRetiredWorker(pool, worker, reason),
     retireAllWorkers: () => retireAllWorkers(pool),
@@ -281,30 +301,34 @@ export function handleWorkerTabRemoved(tabId: number): void {
 }
 
 function scheduleNext(pool: WorkerPoolState): void {
+  pool.queue = pool.queue.filter((queued) => {
+    const cancelled = pool.cancelledRequestIds.has(queued.task.requestId);
+    if (cancelled) {
+      queued.resolve(createCancelledResult(queued.task));
+    }
+    return !cancelled;
+  });
   let scheduling = true;
   while (scheduling && pool.queue.length > 0) {
-    const next = pool.queue[0];
-    if (pool.cancelledRequestIds.has(next.task.requestId)) {
-      pool.queue.shift();
-      markPoolProgress(pool, "task-assigned");
-      next.resolve(createCancelledResult(next.task));
-      continue;
+    const next = takeNextWorkerTask(pool, maxWorkers, getRuntimeSettings().workerPool.backgroundIntertaskCooldownMs);
+    if (!next) {
+      break;
     }
     const idle = pool.workers.find((worker) => worker.generation === pool.generation && worker.state === "idle");
     const count = pool.workers.filter(
       (worker) => worker.generation === pool.generation && worker.state !== "retired",
     ).length;
     if (idle) {
-      pool.queue.shift();
       markPoolProgress(pool, "task-assigned");
       idle.state = "busy";
+      idle.queuedTask = next;
       idle.activeTaskId = next.task.taskId;
       idle.lastProgressAt = performance.now();
       void runWorkerTask(createExecutorContext(pool), idle, next);
     } else if (count < maxWorkers) {
-      pool.queue.shift();
       markPoolProgress(pool, "task-assigned");
       const worker = createPendingWorker(pool);
+      worker.queuedTask = next;
       worker.activeTaskId = next.task.taskId;
       worker.lastProgressAt = performance.now();
       void runTaskOnNewWorker(createExecutorContext(pool), worker, next);
@@ -312,6 +336,10 @@ function scheduleNext(pool: WorkerPoolState): void {
       scheduling = false;
     }
   }
+  scheduleBackgroundCooldown(pool, getRuntimeSettings().workerPool.backgroundIntertaskCooldownMs, () => {
+    markPoolProgress(pool, "background-cooldown-complete");
+    scheduleNext(pool);
+  });
   scheduleWorkerIdleDisposal(pool, async (worker, reason) => {
     if (worker.state !== "idle") {
       return;
@@ -319,9 +347,18 @@ function scheduleNext(pool: WorkerPoolState): void {
     retireWorker(pool, worker);
     await destroyRetiredWorker(pool, worker, reason);
   });
+  publishActivityToHost(pool.hostTabId, {
+    activityId: ACTIVITY.WORKER_POOL.ID,
+    kind: ACTIVITY.WORKER_POOL.KIND,
+    label: ACTIVITY.WORKER_POOL.LABEL,
+    source: ACTIVITY.WORKER_POOL.SOURCE,
+    state: ACTIVITY.WORKER_POOL.STATE,
+    poolStatus: snapshotWorkerPoolStatus(pool, pool.hostTabId, maxWorkers),
+  });
 }
 
 export async function runPoolTask(task: WorkerTask, hostTabId: number | undefined): Promise<WorkerTaskResult> {
+  task = { ...task, workClass: getWorkClass(task) };
   maxWorkers = await getWorkerPoolMaxWorkers();
   if (hostTabId !== undefined && disposingHostTabIds.has(hostTabId)) {
     return createCancelledResult(task);
@@ -336,6 +373,7 @@ export async function runPoolTask(task: WorkerTask, hostTabId: number | undefine
         kind: task.type,
         label: labelForWorkerTask(task),
         state: "cancelled",
+        workClass: getWorkClass(task),
       });
       resolve(createCancelledResult(task));
       return;
@@ -347,10 +385,12 @@ export async function runPoolTask(task: WorkerTask, hostTabId: number | undefine
       kind: task.type,
       label: labelForWorkerTask(task),
       state: "queued",
+      workClass: getWorkClass(task),
     });
     cancelWorkerIdleDisposal(pool);
     const submittedAt = performance.now();
-    pool.queue.push({
+    let settled = false;
+    const queued: QueuedTask = {
       task,
       hostTabId,
       retried: false,
@@ -358,8 +398,19 @@ export async function runPoolTask(task: WorkerTask, hostTabId: number | undefine
       submittedAt,
       deadlineAt: submittedAt + getRuntimeSettings().workerPool.taskTimeoutMs,
       recoveryCount: 0,
-      resolve,
-    });
+      resolve: (result) => {
+        if (!settled) {
+          settled = true;
+          const admitted = pool.admittedTasks.delete(queued);
+          if (admitted && getWorkClass(queued.task) === WORK_SCHEDULING.BACKGROUND) {
+            pool.backgroundCompletedAt = performance.now();
+          }
+          resolve(result);
+          queueMicrotask(() => scheduleNext(pool));
+        }
+      },
+    };
+    pool.queue.push(queued);
     markPoolProgress(pool, "task-queued");
     extensionLog.debug(
       `Worker pool: task queued - maxWorkers=${maxWorkers}, workers=${pool.workers.length}, queue=${pool.queue.length}`,
@@ -386,6 +437,8 @@ export function cancelPoolRequest(requestId: string, hostTabId: number | undefin
     return;
   }
   pool.cancelledRequestIds.add(requestId);
+  pool.workers.filter((worker) => worker.queuedTask?.task.requestId === requestId && worker.state !== "idle")
+    .forEach((worker) => retireWorker(pool, worker));
   pool.queue = pool.queue.filter((queued) => {
     const matches = queued.task.requestId === requestId;
     if (matches) {
@@ -418,6 +471,9 @@ export function cancelPoolTask(requestId: string, taskId: string, hostTabId: num
   if (!pool) {
     return;
   }
+  pool.workers.filter((worker) => worker.queuedTask?.task.requestId === requestId &&
+    worker.queuedTask.task.taskId === taskId && worker.state !== "idle")
+    .forEach((worker) => retireWorker(pool, worker));
   pool.queue = pool.queue.filter((queued) => {
     const matches = queued.task.requestId === requestId && queued.task.taskId === taskId;
     if (matches) {
@@ -481,6 +537,7 @@ export async function disposeWorkerPool(hostTabId?: number): Promise<void> {
 
 async function disposeOnePool(pool: WorkerPoolState): Promise<void> {
   cancelWorkerIdleDisposal(pool);
+  cancelBackgroundCooldown(pool);
   if (pool.healthTimer !== undefined) {
     clearInterval(pool.healthTimer);
     pool.healthTimer = undefined;
@@ -490,6 +547,7 @@ async function disposeOnePool(pool: WorkerPoolState): Promise<void> {
   }
   const workers = [...pool.workers];
   const queue = [...pool.queue];
+  const admitted = [...pool.admittedTasks];
   pool.workers = [];
   pool.queue = [];
   workers.forEach((worker) => {
@@ -501,6 +559,7 @@ async function disposeOnePool(pool: WorkerPoolState): Promise<void> {
   const generation = pool.generation;
   pool.generation += 1;
   deletePool(pool);
+  admitted.forEach((queued) => queued.resolve(createCancelledResult(queued.task)));
   try {
     await disposeWorkerPoolLifecycle({
       workers,
@@ -522,4 +581,8 @@ export function clearWorkerPoolForHost(hostTabId: number): void {
   if (pool) {
     void disposeOnePool(pool);
   }
+}
+
+export function getWorkerPoolStatus(hostTabId: number | undefined, requestId?: string): WorkerPoolStatus {
+  return snapshotWorkerPoolStatus(getPool(hostTabId, false), hostTabId, maxWorkers, requestId);
 }

@@ -28,7 +28,7 @@ export async function CloseFoblesGraph(page: Page): Promise<void> {
 
   await clickWithMouseMarker(page, closeButton, "Fobles Graph Close");
 
-  await expect(graphDialog).toHaveCount(0, { timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS });
+  await expect(graphDialog).toHaveCount(0, { timeout: TEST_CONST.TESTING.TIMEOUTS.UTILITY_CLOSE_MS });
 }
 
 // Generic shared-FoblesWindow chrome macros (collapse/maximize toggle buttons are identical
@@ -56,7 +56,7 @@ export async function WaitForFoblesGraphEnrichmentComplete(page: Page): Promise<
   const graphApp = graphDialog.locator(".fobles-reference-graph-app");
 
   await expect(graphApp).toHaveAttribute("data-enrichment-status", "complete", {
-    timeout: TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS,
+    timeout: TEST_CONST.TESTING.TIMEOUTS.GRAPH_ENRICHMENT_MS,
   });
 }
 

@@ -19,7 +19,7 @@ export function HistoryRow(props: HistoryRowProps) {
         onClick={handlers.navigate}
         onAuxClick={handlers.navigate}
       >
-        {props.item.name}
+        {props.label ?? props.item.name}
       </a>
       <button
         type="button"

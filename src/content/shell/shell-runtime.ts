@@ -3,6 +3,8 @@
 import { registerAuditorShellCommands } from "../features/auditor/auditor-shell-commands";
 import { registerReferenceGraphShellCommands } from "../features/reference-graph/reference-graph-shell-commands";
 import { registerWorkerIframeHost } from "../foundation/workers/iframe/worker-iframe-host";
+import { registerStructuralWorkSession } from "./work-session/structural-work-session.ts";
+import { registerStructuralCommands } from "./structural-command-registration.ts";
 
 let shellStarted = false;
 const shellDisposers: Array<() => void> = [];
@@ -12,6 +14,8 @@ export function startFoblesShellRuntime(doc: Document, win: Window): void {
     return;
   }
   shellStarted = true;
+  shellDisposers.push(registerStructuralWorkSession());
+  shellDisposers.push(registerStructuralCommands(doc, win));
 
   if (win.top === win) {
     registerWorkerIframeHost(doc);

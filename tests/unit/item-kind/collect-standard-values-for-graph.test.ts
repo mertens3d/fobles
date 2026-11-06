@@ -1,9 +1,9 @@
-// @source-path [fobles] tests/unit/classification/collect-standard-values-for-graph.test.ts
+// @source-path [fobles] tests/unit/item-kind/collect-standard-values-for-graph.test.ts
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { collectStandardValuesForTemplateGraph } from "../../../src/content/foundation/reference-data/processing/classification/collect-standard-values-for-graph.ts";
-import type { TemplateInheritanceGraph } from "../../../src/content/foundation/reference-data/processing/classification/item-classification.types.ts";
+import { collectStandardValuesForTemplateGraph } from "../../../src/content/foundation/reference-data/processing/item-kind/collect-standard-values-for-graph.ts";
+import type { TemplateInheritanceGraph } from "../../../src/content/foundation/reference-data/processing/item-kind/item-kind.types.ts";
 
 function graphWith(rootId: string, allTemplateIds: readonly string[]): TemplateInheritanceGraph {
   return {

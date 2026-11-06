@@ -21,7 +21,7 @@ import {
   readStoredHistory,
   readStoredHistoryScopes,
   SCENARIO,
-} from "../user-jumps/toolbar-integration/item-history.helpers";
+} from "../../parallel/item-history/item-history.helpers";
 
 foblesTest.describe("Toolbar item history", () => {
   foblesTest("captures the initially selected real Sitecore item without a DOM mutation", async ({ page, sharedBrowserContext }) => {

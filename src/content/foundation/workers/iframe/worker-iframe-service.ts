@@ -154,9 +154,13 @@ export function sendCancelToWorkerIframe(target: WorkerIframeTarget, requestId: 
   });
 }
 
-export function markWorkerIframeReady(workerId: string, hostTabId: number, frameId: number): WorkerIframeTarget {
+export function markWorkerIframeReady(workerId: string, hostTabId: number, frameId: number): WorkerIframeTarget | undefined {
   const target: WorkerIframeTarget = { kind: "iframe", workerId, hostTabId, frameId };
   const pending = pendingReadyByWorkerId.get(workerId);
+  const existing = targetByWorkerId.get(workerId);
+  if ((pending && pending.hostTabId !== hostTabId) || (existing && existing.hostTabId !== hostTabId)) {
+    return undefined;
+  }
   targetByWorkerId.set(workerId, target);
   extensionLog.debug("Worker iframe service: ready", {
     workerId,
@@ -188,8 +192,11 @@ export function clearHostWorkerIframeTargets(hostTabId: number): void {
 
 function waitForWorkerIframeReady(workerId: string, hostTabId: number): Promise<WorkerIframeTarget> {
   const existingTarget = targetByWorkerId.get(workerId);
-  if (existingTarget) {
+  if (existingTarget?.hostTabId === hostTabId) {
     return Promise.resolve(existingTarget);
+  }
+  if (existingTarget || (pendingReadyByWorkerId.has(workerId) && pendingReadyByWorkerId.get(workerId)?.hostTabId !== hostTabId)) {
+    return Promise.reject(new Error(`Worker iframe belongs to another host: ${workerId}`));
   }
   return new Promise((resolve, reject) => {
     rejectPendingReady(workerId, new Error("Worker iframe readiness was superseded"));

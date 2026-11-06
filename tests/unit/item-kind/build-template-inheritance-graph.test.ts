@@ -1,12 +1,12 @@
-// @source-path [fobles] tests/unit/classification/build-template-inheritance-graph.test.ts
+// @source-path [fobles] tests/unit/item-kind/build-template-inheritance-graph.test.ts
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
   buildTemplateInheritanceGraph,
   type FetchDirectBaseTemplates,
-} from "../../../src/content/foundation/reference-data/processing/classification/build-template-inheritance-graph.ts";
-import type { TemplateIdentity } from "../../../src/content/foundation/reference-data/processing/classification/item-classification.types.ts";
+} from "../../../src/content/foundation/reference-data/processing/item-kind/build-template-inheritance-graph.ts";
+import type { TemplateIdentity } from "../../../src/content/foundation/reference-data/processing/item-kind/item-kind.types.ts";
 
 function id(n: number): TemplateIdentity {
   return { id: `{t${n}}` };

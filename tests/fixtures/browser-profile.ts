@@ -1,10 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 
-// Create a fresh profile for each worker, preserving the previous behavior of
-// launchPersistentContext(""). Write preferences before Chromium opens it.
+// Agents: Fresh worker profiles prevent Chromium from reusing an older unpacked extension service worker.
 export function createBrowserProfile(workerSlot: number): string {
-  const userDataDir = path.resolve("./playwright/test-artifacts", `FoblesTestDirectory${workerSlot}`);
+  const artifactsDir = path.resolve("./playwright/test-artifacts");
+  fs.mkdirSync(artifactsDir, { recursive: true });
+  const userDataDir = fs.mkdtempSync(path.join(artifactsDir, `FoblesTestDirectory${workerSlot}-`));
 
   const profileDir = path.join(userDataDir, "Default");
   fs.mkdirSync(profileDir, { recursive: true });

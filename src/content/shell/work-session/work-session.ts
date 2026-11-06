@@ -11,6 +11,8 @@ import {
   runWorkerTask,
 } from "../../foundation/workers/pool/worker-pool-client";
 import type { WorkerTaskResult } from "../../foundation/workers/tasks/worker-task.types";
+import { WORK_SCHEDULING } from "../../foundation/workers/work-scheduling.const";
+import type { WorkClass } from "../../foundation/workers/work-scheduling.types";
 import type {
   WorkSession,
   WorkSessionState,
@@ -61,10 +63,16 @@ async function releasePoolLease(sessionId: string): Promise<void> {
   poolDisposalPromise ??= disposeBackgroundWorkerPool().finally(() => {
     poolDisposalPromise = undefined;
   });
+  let disposalTimeout: ReturnType<typeof setTimeout> | undefined;
   try {
-    await Promise.race([poolDisposalPromise, new Promise<void>((resolve) => setTimeout(resolve, timeoutMs))]);
+    await Promise.race([poolDisposalPromise, new Promise<void>((resolve) => {
+      disposalTimeout = setTimeout(resolve, timeoutMs);
+    })]);
   } finally {
     clearInterval(progressTimer);
+    if (disposalTimeout !== undefined) {
+      clearTimeout(disposalTimeout);
+    }
     const remainingBeforeFailsafe = document.querySelectorAll(WORKER_POOL.WORKER_IFRAME_SELECTOR).length;
     if (remainingBeforeFailsafe > 0) {
       updateFoblesCleanupDialog(document, {
@@ -74,7 +82,9 @@ async function releasePoolLease(sessionId: string): Promise<void> {
         phase: "failsafe",
       });
     }
-    runFinalWorkerIframeCleanup(sessionId);
+    if (activeSessionCount === 0) {
+      runFinalWorkerIframeCleanup(sessionId);
+    }
     updateFoblesCleanupDialog(document, {
       removed: initialIframeCount,
       total: initialIframeCount,
@@ -85,7 +95,7 @@ async function releasePoolLease(sessionId: string): Promise<void> {
   extensionLog.debug("Shell work session: final lease released; worker pool disposed", { sessionId });
 }
 
-export function createWorkSession(): WorkSession {
+export function createWorkSession(workClass: WorkClass = WORK_SCHEDULING.FOREGROUND): WorkSession {
   const id = crypto.randomUUID();
   const controller = new AbortController();
   const activeTasks = new Set<Promise<unknown>>();
@@ -114,7 +124,8 @@ export function createWorkSession(): WorkSession {
     const children: HealthReport[] = Array.from(healthProviders, (provider) => provider.getHealth());
     const unhealthyChild = children.find((child) => child.state === "unhealthy");
     const noProgressMs = Math.round(checkedAt - lastProgressAt);
-    const specialistStalled = activeTasks.size > 0 && noProgressMs >= health.specialistNoProgressMs;
+    const specialistStalled = workClass === WORK_SCHEDULING.FOREGROUND &&
+      activeTasks.size > 0 && noProgressMs >= health.specialistNoProgressMs;
     const healthState =
       specialistStalled || unhealthyChild
         ? "unhealthy"
@@ -149,7 +160,10 @@ export function createWorkSession(): WorkSession {
   function track<T>(promise: Promise<T>, taskId: string): Promise<T> {
     activeTasks.add(promise);
     markProgress(`task-started:${taskId}`);
-    void promise.finally(() => {
+    void promise.then(() => {
+      activeTasks.delete(promise);
+      markProgress(`task-settled:${taskId}`);
+    }, () => {
       activeTasks.delete(promise);
       markProgress(`task-settled:${taskId}`);
     });
@@ -160,7 +174,12 @@ export function createWorkSession(): WorkSession {
     if (state !== "open" || controller.signal.aborted) {
       return undefined;
     }
-    return await track(runWorkerTask({ ...task, requestId: id }), task.taskId);
+    if (poolDisposalPromise) {
+      await poolDisposalPromise;
+    }
+    return state === "open" && !controller.signal.aborted
+      ? await track(runWorkerTask({ ...task, requestId: id, workClass }), task.taskId)
+      : undefined;
   }
 
   async function settleActiveTasks(): Promise<void> {
@@ -187,9 +206,17 @@ export function createWorkSession(): WorkSession {
       return;
     }
     await settleActiveTasks();
+    if (state !== "open") {
+      return;
+    }
     state = "completed";
-    extensionLog.debug("Shell work session: work completed; resources retained until specialist close", {
+    if (workClass === WORK_SCHEDULING.BACKGROUND) {
+      await cancel();
+    }
+    extensionLog.debug("Shell work session: work completed", {
       sessionId: id,
+      workClass,
+      resourcesRetained: workClass === WORK_SCHEDULING.FOREGROUND,
     });
   }
 
@@ -212,7 +239,7 @@ export function createWorkSession(): WorkSession {
   healthTimer = setInterval(() => {
     const report = getHealth();
     // extensionLog.debug("Shell health: poll", report);
-    if (report.state === "unhealthy") {
+    if (workClass === WORK_SCHEDULING.FOREGROUND && report.state === "unhealthy") {
       extensionLog.error("Shell health: unhealthy specialist; cancelling", report);
       void cancel();
     }
@@ -220,6 +247,7 @@ export function createWorkSession(): WorkSession {
 
   return {
     id,
+    workClass,
     signal: controller.signal,
     get state(): WorkSessionState {
       return state;

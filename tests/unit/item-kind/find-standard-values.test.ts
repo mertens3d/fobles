@@ -1,8 +1,8 @@
-// @source-path [fobles] tests/unit/classification/find-standard-values.test.ts
+// @source-path [fobles] tests/unit/item-kind/find-standard-values.test.ts
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { findStandardValues } from "../../../src/content/foundation/reference-data/processing/classification/find-standard-values.ts";
+import { findStandardValues } from "../../../src/content/foundation/reference-data/processing/item-kind/find-standard-values.ts";
 
 void test("finds the child item named exactly '__Standard Values'", () => {
   const children = [{ scItemName: "Home" }, { scItemName: "__Standard Values" }, { scItemName: "Data" }];

@@ -56,7 +56,7 @@ export const SITECORE = {
     SHELL_DEFAULT: "/sitecore/shell/default.aspx",
     TEMPLATE_MANAGER: "/sitecore/shell/Applications/Templates/Template-Manager",
   },
-  CLASSIFICATION: {
+  ITEM_KIND: {
     PATH_ROOTS: { CONTENT: "/sitecore/content", TEMPLATES: "/sitecore/templates" },
     BASE_TEMPLATE_PATHS: {
       PAGE: ["/sitecore/templates/Foundation/Experience Accelerator/Multisite/Content/Page"],

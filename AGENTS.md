@@ -26,6 +26,7 @@
 
 ## Code Conventions
 
+- Before adding explanatory inline documentation, check the documented Agent-comment convention. New explanatory comments must use `Agents:` (for example, `// Agents:`); do not add ordinary human-oriented rationale comments. Keep README notes limited to facts future Agents need to safely change the system.
 - Prefer `type` over `interface` for TypeScript type definitions.
 - Put shared types/interfaces in a dedicated `x.types.ts` file, not inline in a logic file.
 - Put shared const data/config collections in their own dedicated const file, separate from the logic that consumes them.
@@ -52,6 +53,7 @@
 
 ## Extension Behavior
 
+- Structural ItemKind lives in `src/content/foundation/reference-data/processing/item-kind/` (replaces `classification/`); direct template-base cache facts belong to TEMPLATE records, never content memberships. Known Sites and structural settings contracts are documented in `src/shared/structural/README.md`; preserve origin/database isolation, seven-day stale-while-revalidate, background WorkSession priority, and the existing harvesting lease for raw-mode fallback.
 - Item history: capture/observation lives in `src/content/item-history/`, React UI/navigation and colocated styles in `src/content/toolbar/history/`, and the cross-surface model/repository in `src/shared/item-history/`. Only the background history writer performs mutations; keep capture independent of toolbar visibility and LBolt.
 - History retains at most 20 unique normalized GUIDs per Sitecore origin/database (never language), newest first; categories are Content, Templates, Layouts, and PowerShell. Do not add Site grouping or restore LBolt hover scaling.
 - Replacement ZIPs use verified repository-relative paths and preserve source-path headers; represent deleted files only with `// Delete Me`. Do not run history E2E tests unless explicitly requested.

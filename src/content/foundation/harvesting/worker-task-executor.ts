@@ -1,6 +1,8 @@
 // @source-path [fobles] src/content/foundation/harvesting/worker-task-executor.ts
 
 import { collectChildren } from "./collectors/child-collector";
+import { collectTemplateBases } from "./collectors/template-bases-collector.ts";
+import { SITECORE } from "../../../constants/sitecore.ts";
 import { collectParent } from "./collectors/parent-collector";
 import { collectReferrers } from "./collectors/referrer-collector";
 import { collectLayouts } from "./collectors/section-collector/layout-collector/layout-collector";
@@ -98,6 +100,9 @@ function executeGetQuickInfo(doc: Document, requested: SitecoreItemLocator): Sit
     if (requestedId !== resolvedId) {
       return { requested, resolved, status: "not-found" };
     }
+  } else if (requested.value.trim().replace(/\/+$/, "").toLowerCase() !==
+    item.scItemPath?.trim().replace(/\/+$/, "").toLowerCase()) {
+    return { requested, resolved, status: "not-found" };
   }
 
   return { requested, resolved, value: item, status: "found" };
@@ -139,7 +144,15 @@ export async function executeWorkerTask(
   let result: WorkerTaskExecutionResult | undefined = cancelledResultIfAborted(task, signal);
 
   if (!result) {
-    if (task.type === "get-quick-info") {
+    if (task.type === "get-template-bases") {
+      const resolved = executeGetQuickInfo(doc, task.requested);
+      const path = resolved.value?.scItemPath?.toLowerCase();
+      const root = SITECORE.ITEM_KIND.PATH_ROOTS.TEMPLATES.toLowerCase();
+      result = successResult(task, {
+        directBaseIds: resolved.status === "found" && (path === root || path?.startsWith(`${root}/`))
+          ? collectTemplateBases(doc) : undefined,
+      });
+    } else if (task.type === "get-quick-info") {
       const resolvedResult = executeGetQuickInfo(doc, task.requested);
 
       result = successResult(task, {

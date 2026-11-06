@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/shared-flyout/use-flyout-visibility.ts
 
-import { useCallback, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 
 const CLOSE_DELAY_MS = 250;
 
@@ -27,6 +27,8 @@ export function useFlyoutVisibility(win: Window): FlyoutVisibilityState {
     win.clearTimeout(closeTimerRef.current);
     closeTimerRef.current = null;
   }, [win]);
+
+  useEffect(() => cancelHide, [cancelHide]);
 
   const hide = useCallback(() => {
     cancelHide();

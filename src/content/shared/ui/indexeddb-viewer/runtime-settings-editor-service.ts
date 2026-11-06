@@ -1,7 +1,8 @@
 // @source-path [fobles] src/content/shared/ui/indexeddb-viewer/runtime-settings-editor-service.ts
-import { getStorageValue, setStorageValue } from "../../../../shared/storage/storage";
-import { normalizeRuntimeSettings, RUNTIME_SETTINGS_STORAGE_KEY } from "../../../runtime-settings/runtime-settings";
-import type { RuntimeSettingsSaveResult } from "./developer-dialog.types";
+import { getStorageValue, setStorageValue } from "../../../../shared/storage/storage.ts";
+import { normalizeRuntimeSettings } from "../../../runtime-settings/runtime-settings.ts";
+import { RUNTIME_SETTINGS_STORAGE_KEY } from "../../../runtime-settings/runtime-settings.const.ts";
+import type { RuntimeSettingsSaveResult } from "./developer-dialog.types.ts";
 const SAVED = "Saved.";
 const SAVED_NORMALIZED = "Saved. Unknown keys were dropped and missing or invalid values were reset to defaults.";
 const NOT_AN_OBJECT = "Settings must be a JSON object.";

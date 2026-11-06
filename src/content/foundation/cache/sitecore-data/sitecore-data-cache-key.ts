@@ -10,6 +10,11 @@ const KEY_SEPARATOR = "::";
 export function normalizeIdentityPart(value: string): string {
   return value.trim().toLowerCase();
 }
+
+export function serializeDatabasePrefix(database: string): string {
+  return `${normalizeIdentityPart(database)}${KEY_SEPARATOR}`;
+}
+
 function normalizeGuid(value: string): string {
   return value.replace(/[{}]/g, "").trim().toLowerCase();
 }

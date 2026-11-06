@@ -6,6 +6,7 @@ import type {
   LayoutSectionField,
 } from "../../reference-data/model/sitecore-item.types";
 import type { WorkerTarget } from "../pool/worker-target";
+import type { WorkClass } from "../work-scheduling.types";
 
 // An item reference as actually requested of Sitecore - as opposed to an ambiguous
 // itemIdOrPath string, every item-oriented operation says explicitly which kind it means.
@@ -24,6 +25,7 @@ export type SitecoreResolvedResult<TValue> = {
 };
 
 export type WorkerTaskType =
+  | "get-template-bases"
   | "get-quick-info"
   | "get-parent"
   | "get-children"
@@ -40,9 +42,12 @@ type WorkerTaskBase<TType extends WorkerTaskType> = {
   type: TType;
   // Page the worker must navigate to before executing this task.
   url: string;
+  workClass?: WorkClass;
 };
 
 export type GetQuickInfoTask = WorkerTaskBase<"get-quick-info"> & { requested: SitecoreItemLocator };
+
+export type GetTemplateBasesTask = WorkerTaskBase<"get-template-bases"> & { requested: SitecoreItemLocator };
 
 export type GetParentTask = WorkerTaskBase<"get-parent">;
 
@@ -61,6 +66,7 @@ export type SetRawValuesTask = WorkerTaskBase<"set-raw-values"> & { value: boole
 export type SetStandardFieldsTask = WorkerTaskBase<"set-standard-fields"> & { value: boolean };
 
 export type WorkerTask =
+  | GetTemplateBasesTask
   | GetQuickInfoTask
   | GetParentTask
   | GetChildrenTask
@@ -72,6 +78,7 @@ export type WorkerTask =
   | SetStandardFieldsTask;
 
 export type WorkerTaskPayloadByType = {
+  "get-template-bases": { directBaseIds: readonly string[] | undefined };
   "get-quick-info": { result: SitecoreResolvedResult<ItemGraphNodeData>; revision?: string };
   "get-parent": { parent: ItemGraphNodeData | undefined };
   "get-children": { childItems: readonly ItemGraphNodeData[] };
@@ -142,6 +149,7 @@ export type PoolWorker = {
   lastProgressAt: number;
   recoveryCount: number;
   activeTaskId: string | undefined;
+  queuedTask?: QueuedTask;
 };
 
 export type QueuedTask = {
@@ -153,6 +161,7 @@ export type QueuedTask = {
   deadlineAt: number;
   recoveryCount: number;
   resolve: (result: WorkerTaskResult) => void;
+  retryQueuedAt?: number;
 };
 
 export type ActiveWorkerTask = { target: WorkerTarget; requestId: string; taskId: string };
@@ -160,7 +169,7 @@ export type ActiveWorkerTask = { target: WorkerTarget; requestId: string; taskId
 export type WorkerExecutorContext = {
   activeTaskByWorkerKey: Map<string, ActiveWorkerTask>;
   cancelledRequestIds: Set<string>;
-  createPendingWorker: () => PoolWorker;
+  requeueTask: (queued: QueuedTask) => void;
   retireWorker: (worker: PoolWorker) => void;
   destroyRetiredWorker: (worker: PoolWorker, reason: string) => Promise<void>;
   retireAllWorkers: () => number;

@@ -5,6 +5,8 @@ import { PersistedLogsSection } from "./persisted-logs/persisted-logs-section";
 import { JumpFlyoutButtonsSection } from "./jump-flyout-buttons/jump-flyout-buttons-section";
 import { AiPagesMappingsSection } from "./ai-pages-mappings/ai-pages-mappings-section";
 import { DeveloperSettingsSection } from "./developer-settings/developer-settings-section";
+import { StructuralSettingsSection } from "./structural/structural-settings-section";
+import { KnownSitesSection } from "./structural/known-sites-section";
 
 export function OptionsApp() {
   return (
@@ -14,6 +16,8 @@ export function OptionsApp() {
       <PersistedLogsSection />
       <JumpFlyoutButtonsSection />
       <AiPagesMappingsSection />
+      <StructuralSettingsSection />
+      <KnownSitesSection />
       <DeveloperSettingsSection />
     </>
   );
