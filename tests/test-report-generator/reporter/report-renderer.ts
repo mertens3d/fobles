@@ -6,6 +6,7 @@ import { refreshScriptRunning } from "./client-script";
 
 export type RenderReportInput = {
   outputFile: string;
+  isCurrentReport: boolean;
   fullResult: CurrentFullResult;
   results: ReportResult[];
   startedAt: Date;
@@ -109,6 +110,8 @@ export function renderReport(input: RenderReportInput): string {
   const timestamp = finishedAt.toLocaleString();
   const duration = finishedAt.getTime() - input.startedAt.getTime();
   const checks = input.results.flatMap((result) => result.steps);
+  const totalTestDuration = input.results.reduce((total, result) => total + result.duration, 0);
+  const averageTestDuration = input.results.length > 0 ? totalTestDuration / input.results.length : 0;
   const counts = checks.reduce<Record<string, number>>((summary, result) => {
     summary[result.status] = (summary[result.status] ?? 0) + 1;
     return summary;
@@ -116,6 +119,7 @@ export function renderReport(input: RenderReportInput): string {
 
   const passed = input.fullResult.status === "passed";
   const running = input.fullResult.status === "running";
+  const autoRefresh = running && input.isCurrentReport;
   const failedCount = counts.failed ?? 0;
 
   const rows = input.results
@@ -148,7 +152,7 @@ export function renderReport(input: RenderReportInput): string {
     : "";
   const statusText = !running && !passed ? ` · ${escapeHtml(formatStatus(input.fullResult.status))}` : "";
   const runningText = running ? "Run in progress · " : "";
-  const refreshText = running
+  const refreshText = autoRefresh
     ? ` ·
       <label>
         <input
@@ -160,7 +164,7 @@ export function renderReport(input: RenderReportInput): string {
       </label>
       · <span id="refresh-countdown"></span>`
     : "";
-  const refreshScript = running ? `${refreshScriptRunning}` : "";
+  const refreshScript = autoRefresh ? `${refreshScriptRunning}` : "";
 
   const head = `<head>
   <meta charset="utf-8">
@@ -185,6 +189,8 @@ export function renderReport(input: RenderReportInput): string {
       <div class="summary-card${failedCount > 0 ? " alert" : ""}"><strong>${failedCount}</strong>Checks failed</div>
       <div class="summary-card"><strong>${counts.skipped ?? 0}</strong>Checks skipped</div>
       <div class="summary-card"><strong>${checks.length}</strong>Checks total</div>
+      <div class="summary-card"><strong>${escapeHtml(formatDuration(totalTestDuration))}</strong>Total test time</div>
+      <div class="summary-card"><strong>${escapeHtml(formatDuration(averageTestDuration))}</strong>Average / test</div>
     </section>
     <div class="table-container">
       <table>

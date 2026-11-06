@@ -1,4 +1,4 @@
-// @source-path [fobles] tests/e2e/parallel/toolbar-history/item-history.spec.ts
+// @source-path [fobles] tests/e2e/stateful/toolbar-history/item-history.spec.ts
 
 import { ITEM_HISTORY_CAPTURE } from "../../../../src/content/item-history/item-history.const";
 import { HISTORY_CLASS, HISTORY_TEXT, HISTORY_UI } from "../../../../src/content/toolbar/history/history.const";
@@ -21,7 +21,7 @@ import {
   readStoredHistory,
   readStoredHistoryScopes,
   SCENARIO,
-} from "./item-history.helpers";
+} from "../user-jumps/toolbar-integration/item-history.helpers";
 
 foblesTest.describe("Toolbar item history", () => {
   foblesTest("captures the initially selected real Sitecore item without a DOM mutation", async ({ page, sharedBrowserContext }) => {

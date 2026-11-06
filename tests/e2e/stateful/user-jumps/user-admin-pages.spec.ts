@@ -1,25 +1,25 @@
-import { expect, foblesTest } from "../../../../fixtures/playwright";
+import { expect, foblesTest } from "../../../fixtures/playwright";
 import {
   clickExtensionControl,
   getExtensionId,
   openExtensionPage,
   setExtensionCheckbox,
-} from "../../../../fixtures/extension";
-import { TEST_CONST } from "../../../../constants/TEST_CONST";
-import { clickWithMouseMarker } from "../../../../helpers/mouse-proxy";
-import { openContentEditor } from "../../../../fixtures/sitecore";
-import { findFoblesFrame } from "../../../../helpers/frame-finder";
-import { ClickFoblesJumpButton } from "../../../../macros/fobles-macros";
-import { attachLocatorScreenshot } from "../../../../helpers/fobles-helpers-support/screenshots";
-import { bringPageToFront } from "../../../../helpers/page-switch";
+} from "../../../fixtures/extension";
+import { TEST_CONST } from "../../../constants/TEST_CONST";
+import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
+import { openContentEditor } from "../../../fixtures/sitecore";
+import { findFoblesFrame } from "../../../helpers/frame-finder";
+import { ClickFoblesJumpButton } from "../../../macros/fobles-macros";
+import { attachLocatorScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
+import { bringPageToFront } from "../../../helpers/page-switch";
 import {
   clickOptionsButton,
   fillOptionsInput,
   findAdminPageByLabel,
   openAdminPagesColumn,
   TESTING,
-} from "../../../shared/extension-ui/options-test-helpers";
-import { locateJumpFlyout } from "../../../../helpers/locator-helpers";
+} from "../../shared/extension-ui/options-test-helpers";
+import { locateJumpFlyout } from "../../../helpers/locator-helpers";
 
 foblesTest.describe("User Admin Pages Toolbar Integration", () => {
   foblesTest(

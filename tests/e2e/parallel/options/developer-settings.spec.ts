@@ -1,11 +1,11 @@
-// @source-path [Fobles] tests/e2e/parallel/extension-ui/extension-integration/developer-settings.spec.ts
+// @source-path [Fobles] tests/e2e/parallel/options/extension-integration/developer-settings.spec.ts
 
-import { expect, foblesTest, type Page } from "../../../../fixtures/playwright";
-import { getExtensionId, openExtensionPage, setExtensionCheckbox } from "../../../../fixtures/extension";
-import { setupParallelContentEditor } from "../../../../helpers/fobles-helpers-support/test-setup";
-import { attachPageScreenshot } from "../../../../helpers/fobles-helpers-support/screenshots";
-import { bringPageToFront } from "../../../../helpers/page-switch";
-import { clickOptionsButton, openSettingsSection, readStableCheckboxState, TESTING } from "../../../shared/extension-ui/options-test-helpers";
+import { expect, foblesTest, type Page } from "../../../fixtures/playwright";
+import { getExtensionId, openExtensionPage, setExtensionCheckbox } from "../../../fixtures/extension";
+import { setupParallelContentEditor } from "../../../helpers/fobles-helpers-support/test-setup";
+import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
+import { bringPageToFront } from "../../../helpers/page-switch";
+import { clickOptionsButton, openSettingsSection, readStableCheckboxState, TESTING } from "../../shared/extension-ui/options-test-helpers";
 import type { ConsoleMessage } from "@playwright/test";
 
 foblesTest.describe("Extension UI Integration", () => {

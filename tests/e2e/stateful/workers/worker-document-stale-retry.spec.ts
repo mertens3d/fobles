@@ -5,6 +5,7 @@ import {
   ITEM_STORE_NAME,
 } from "../../../../src/content/foundation/cache/sitecore-data/indexed-db";
 import { expect, foblesTest, type Page } from "../../../fixtures/playwright";
+import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 import {
   ClickFoblesGraphButton,
   CloseFoblesGraph,
@@ -39,7 +40,7 @@ async function clearSitecoreDataCache(page: Page): Promise<void> {
 foblesTest.describe("Worker pool", () => {
   foblesTest(
     "retries editor-state tasks after the worker document becomes stale",
-    async ({ page, sharedBrowserContext }) => {
+    async ({ page, sharedBrowserContext }, testInfo) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 
       const serviceWorker =
@@ -53,8 +54,16 @@ foblesTest.describe("Worker pool", () => {
       await clearSitecoreDataCache(page);
 
       await ClickFoblesGraphButton(page);
-      await WaitForFoblesGraphEnrichmentComplete(page);
-      await CloseFoblesGraph(page);
+      const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
+      const step = createFoblesStep(page, testInfo, graphDialog, "Worker Stale Retry");
+      await step("Graph harvest retries stale editor-state work and completes", async () => {
+        await WaitForFoblesGraphEnrichmentComplete(page);
+        await expect(graphDialog).toBeVisible();
+      });
+      await step("Graph closes after the worker retry succeeds", async () => {
+        await CloseFoblesGraph(page);
+        await expect(graphDialog).toHaveCount(0);
+      }, { screenshot: false });
 
       const logs = await GetFoblesPersistedLogs(sharedBrowserContext);
 

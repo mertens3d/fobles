@@ -1,22 +1,22 @@
-import { expect, foblesTest, type Locator } from "../../../../fixtures/playwright";
-import { getExtensionId, openExtensionPage, setFoblesNavWarningVisible } from "../../../../fixtures/extension";
-import { TEST_CONST } from "../../../../constants/TEST_CONST";
-import { clickWithMouseMarker } from "../../../../helpers/mouse-proxy";
-import { openContentEditor } from "../../../../fixtures/sitecore";
-import { findFoblesFrame } from "../../../../helpers/frame-finder";
-import { createFoblesStep } from "../../../../helpers/fobles-helpers-support/test-step";
-import { attachLocatorScreenshot } from "../../../../helpers/fobles-helpers-support/screenshots";
-import { attachItemPathScreenshot } from "../../../../helpers/fobles-helpers-support/navigation-assertions";
-import { ClickFoblesJumpButton } from "../../../../macros/fobles-macros";
-import { pauseForHuman } from "../../../../helpers/wait-helpers";
-import { bringPageToFront } from "../../../../helpers/page-switch";
+import { expect, foblesTest, type Locator } from "../../../fixtures/playwright";
+import { getExtensionId, openExtensionPage, setFoblesNavWarningVisible } from "../../../fixtures/extension";
+import { TEST_CONST } from "../../../constants/TEST_CONST";
+import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
+import { openContentEditor } from "../../../fixtures/sitecore";
+import { findFoblesFrame } from "../../../helpers/frame-finder";
+import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
+import { attachLocatorScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
+import { attachItemPathScreenshot } from "../../../helpers/fobles-helpers-support/navigation-assertions";
+import { ClickFoblesJumpButton } from "../../../macros/fobles-macros";
+import { pauseForHuman } from "../../../helpers/wait-helpers";
+import { bringPageToFront } from "../../../helpers/page-switch";
 import {
   addTestRow,
   removeTestRowIfPresent,
   setTestRowEnabled,
-} from "../../toolbar/support/extension-options-settings-helpers";
-import { expectFoValue } from "../../../../expect-snippets/expect-snippets";
-import { locateJumpFlyout } from "../../../../helpers/locator-helpers";
+} from "../toolbar/support/extension-options-settings-helpers";
+import { expectFoValue } from "../../../expect-snippets/expect-snippets";
+import { locateJumpFlyout } from "../../../helpers/locator-helpers";
 
 foblesTest.describe("User Tree Jumps", () => {
   foblesTest.describe("Toolbar Integration", () => {

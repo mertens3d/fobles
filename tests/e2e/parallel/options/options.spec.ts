@@ -1,9 +1,9 @@
-// @source-path [Fobles] tests/e2e/parallel/extension-ui/persistence/options.spec.ts
+// @source-path [Fobles] tests/e2e/parallel/options/persistence/options.spec.ts
 
-import { expect, foblesTest } from "../../../../fixtures/playwright";
-import { clickExtensionControl, getExtensionId, openExtensionPage } from "../../../../fixtures/extension";
-import { attachPageScreenshot } from "../../../../helpers/fobles-helpers-support/screenshots";
-import { TEST_CONST } from "../../../../constants/TEST_CONST";
+import { expect, foblesTest } from "../../../fixtures/playwright";
+import { clickExtensionControl, getExtensionId, openExtensionPage } from "../../../fixtures/extension";
+import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
+import { TEST_CONST } from "../../../constants/TEST_CONST";
 import {
   clickOptionsButton,
   fillOptionsInput,
@@ -13,7 +13,7 @@ import {
   openSettingsSection,
   type StoredSettingsSnapshot,
   TESTING,
-} from "../../../shared/extension-ui/options-test-helpers";
+} from "../../shared/extension-ui/options-test-helpers";
 
 foblesTest.describe("Additional Settings Persistence", () => {
   foblesTest("clears all stored settings", async ({ sharedBrowserContext }, testInfo) => {

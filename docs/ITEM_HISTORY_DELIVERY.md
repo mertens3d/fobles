@@ -55,8 +55,8 @@ Reload the unpacked extension and hard-refresh affected Sitecore tabs (Ctrl+F5).
 - [tests/unit/item-history/item-history-repository.test.ts](../tests/unit/item-history/item-history-repository.test.ts)
 - [tests/unit/item-history/quick-info.test.ts](../tests/unit/item-history/quick-info.test.ts)
 - [tests/unit/item-history/quick-info-observer.test.ts](../tests/unit/item-history/quick-info-observer.test.ts)
-- [tests/e2e/parallel/toolbar-history/item-history.spec.ts](../tests/e2e/parallel/toolbar-history/item-history.spec.ts)
-- [tests/e2e/parallel/toolbar-history/item-history.helpers.ts](../tests/e2e/parallel/toolbar-history/item-history.helpers.ts)
+- [tests/e2e/parallel/item-history/item-history.spec.ts](../tests/e2e/parallel/item-history/item-history.spec.ts)
+- [tests/e2e/parallel/item-history/item-history.helpers.ts](../tests/e2e/parallel/item-history/item-history.helpers.ts)
 - [tests/e2e/toolbar-ui/hover.spec.ts](../tests/e2e/toolbar-ui/hover.spec.ts)
 - [tests/item-history.tsconfig.json](../tests/item-history.tsconfig.json)
 - [package.json](../package.json) — focused history validation scripts and happy-dom test dependency.

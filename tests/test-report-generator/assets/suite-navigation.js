@@ -13,7 +13,7 @@
     const rawLabel = file.replace(/^test-report-?/, "").replace(/\.html$/, "") || "current";
     const [, project] = /^(stateful|parallel)(?:-|$)/.exec(rawLabel) ?? [];
     const suite = project ? rawLabel.slice(project.length).replace(/^-/, "") || "all" : rawLabel;
-    const label = project ? `${project} / ${suite}` : suite;
+    const label = suite === "all" ? "All tests" : suite;
     const item = document.createElement(file === currentFile ? "span" : "a");
     const classes = ["suite-nav__item"];
 

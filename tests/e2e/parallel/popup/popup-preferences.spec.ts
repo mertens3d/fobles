@@ -1,12 +1,12 @@
-import { expect, foblesTest, type Locator } from "../../../../fixtures/playwright";
+import { expect, foblesTest, type Locator } from "../../../fixtures/playwright";
 import {
   clickExtensionControl,
   getExtensionId,
   openExtensionPage,
   setExtensionCheckbox,
-} from "../../../../fixtures/extension";
-import { attachPageScreenshot } from "../../../../helpers/fobles-helpers-support/screenshots";
-import { TEST_CONST } from "../../../../constants/TEST_CONST";
+} from "../../../fixtures/extension";
+import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
+import { TEST_CONST } from "../../../constants/TEST_CONST";
 
 async function readStableCheckboxState(checkbox: Locator): Promise<boolean> {
   let previousState: boolean | undefined;

@@ -1,4 +1,4 @@
-// @source-path [fobles] tests/e2e/parallel/toolbar-history/item-history.helpers.ts
+// @source-path [fobles] tests/e2e/parallel/item-history/item-history.helpers.ts
 
 import type { BrowserContext } from "@playwright/test";
 import { readFile } from "node:fs/promises";

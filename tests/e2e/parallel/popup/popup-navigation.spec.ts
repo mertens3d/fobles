@@ -1,7 +1,7 @@
-import { expect, foblesTest, type Page } from "../../../../fixtures/playwright";
-import { clickExtensionControl, getExtensionId, openExtensionPage } from "../../../../fixtures/extension";
-import { TEST_CONST } from "../../../../constants/TEST_CONST";
-import { attachPageScreenshot } from "../../../../helpers/fobles-helpers-support/screenshots";
+import { expect, foblesTest, type Page } from "../../../fixtures/playwright";
+import { clickExtensionControl, getExtensionId, openExtensionPage } from "../../../fixtures/extension";
+import { TEST_CONST } from "../../../constants/TEST_CONST";
+import { attachPageScreenshot } from "../../../helpers/fobles-helpers-support/screenshots";
 
 foblesTest.describe("Extension UI Integration", () => {
   foblesTest("opens Additional Settings from the popup", async ({ sharedBrowserContext }, testInfo) => {

@@ -1,4 +1,5 @@
 import { expect, foblesTest } from "../../../fixtures/playwright";
+import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 import { reloadAndReadEditorState, setupReferenceGraphState, type EditorState } from "./harvest-test-helpers";
 import { TEST_CONST } from "../../../constants/TEST_CONST";
 import {
@@ -16,13 +17,21 @@ const STATES: readonly { label: string; initial: EditorState }[] = [
 
 foblesTest.describe("Harvest editor state", () => {
   for (const { label, initial } of STATES) {
-    foblesTest(`${label}: restores caller editor state`, async ({ page }) => {
+    foblesTest(`${label}: restores caller editor state`, async ({ page }, testInfo) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
 
       await setupReferenceGraphState(page, initial);
       await ClickFoblesGraphButton(page);
-      await WaitForFoblesGraphEnrichmentComplete(page);
-      await CloseFoblesGraph(page);
+      const graphDialog = page.locator(`#${TEST_CONST.FOBLES.DOM.IDS.DIALOG_ID}`);
+      const step = createFoblesStep(page, testInfo, graphDialog, "Harvest Editor State");
+      await step("Harvest completes in the Reference Graph", async () => {
+        await WaitForFoblesGraphEnrichmentComplete(page);
+        await expect(graphDialog).toBeVisible();
+      });
+      await step("Graph closes before checking restored editor state", async () => {
+        await CloseFoblesGraph(page);
+        await expect(graphDialog).toHaveCount(0);
+      }, { screenshot: false });
 
       const restored = await reloadAndReadEditorState(page);
       expect(restored).toEqual(initial);

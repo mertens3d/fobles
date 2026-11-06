@@ -7,6 +7,13 @@ Playwright end-to-end tests live in `tests/e2e/` and exercise the extension agai
 - Preserve feature subfolders within each group. Shared fixtures, macros, and helpers remain outside the groups; existing feature support is reused rather than duplicated.
 - The folder determines scheduling; do not add `@sitecore-state` tags. Parallel Sitecore tests must verify Raw Values and Standard Fields are off and must not change either setting. They must establish Fobles' activation state explicitly when their assertions depend on it. Do not run stateful and parallel projects simultaneously.
 
+### Utility Windows And Harvest Screenshots
+
+- Shared utility window drag/resize and collapse/maximize coverage belongs in `e2e/stateful/utility-window/`, not the graph feature folder. Use utility terminology to match the extension's `openFoblesUtility` API.
+- Use `createFoblesStep` with a dialog Locator for focused graph/harvest/window screenshots. A Playwright Frame is not a screenshot target; disable screenshots for close steps targeting a removed dialog.
+- `utility-window/utility-window-worker-shutdown.spec.ts` covers normal close with no warning, stalled active enrichment with failsafe removal, and an injected orphan outside the worker container. Normal disposal must remove both frames and their container; forced cleanup must display the user warning.
+- The stalled-work test holds non-root worker navigation until after close. Root requests must remain unblocked so initial graph acquisition can finish. This exercises active-work fallback, not a direct assertion of the disposal timeout duration or clean cancellation of an unstalled task.
+
 ## File Organization
 
 - `fixtures/sitecore.ts`'s `openSitecorePage` is the one choke point every navigation funnels

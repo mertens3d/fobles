@@ -1,11 +1,11 @@
-import { expect, foblesTest } from "../../../../fixtures/playwright";
-import { getExtensionId, openExtensionPage } from "../../../../fixtures/extension";
-import { TEST_CONST } from "../../../../constants/TEST_CONST";
+import { expect, foblesTest } from "../../../fixtures/playwright";
+import { getExtensionId, openExtensionPage } from "../../../fixtures/extension";
+import { TEST_CONST } from "../../../constants/TEST_CONST";
 import {
   openTreeJumpsColumn,
   addTestRow,
   removeTestRowIfPresent,
-} from "../../../stateful/toolbar/support/extension-options-settings-helpers";
+} from "../../stateful/toolbar/support/extension-options-settings-helpers";
 
 foblesTest.describe("User Tree Jump Persistence", () => {
   foblesTest("Additional Settings adds and normalizes a User Tree Jump", async ({ sharedBrowserContext }) => {

@@ -3,6 +3,7 @@
 import { defineConfig, devices } from "@playwright/test";
 import dotenv from "dotenv";
 import path from "node:path";
+import { getReportGroup, reportGroupName } from "./test-report-generator/reporter/report-group";
 
 // PLAYWRIGHT_AUTH_DIR/PLAYWRIGHT_PROFILE_DIR are the only settings still read from .env - test
 // environments, Sitecore CLI login targets, and test user credentials live in
@@ -19,64 +20,9 @@ const isListOnly = process.argv.includes("--list");
 // through to the generic "default" test-report.html.
 const argsText = process.argv.join(" ").replace(/\\/g, "/");
 
-// Matched on "e2e/..." rather than "tests/e2e/..." - an invocation's cwd (repo root vs tests/
-// itself) or an absolute path (e.g. the VS Code Test Explorer's "Run Test" button) changes
-// whatever comes before "e2e/", but never that segment itself.
-function getReportSuiteName(args: string): string | null {
-  args = args.replace(/e2e\/(?:stateful|parallel)\//g, "e2e/");
-  if (args.includes("e2e/harvest")) {
-    return "harvest";
-  }
-  if (args.includes("e2e/toolbar-history")) {
-    return "toolbar-history";
-  }
-  if (args.includes("e2e/toolbar-ui")) {
-    return "toolbar-ui";
-  }
-  if (args.includes("e2e/toolbar")) {
-    return "toolbar";
-  }
-  if (args.includes("e2e/extension-ui")) {
-    if (args.includes("e2e/extension-ui/persistence")) {
-      return "extension-ui-persistence";
-    }
-    if (args.includes("e2e/extension-ui/toolbar-integration")) {
-      return "extension-ui-toolbar";
-    }
-    if (args.includes("e2e/extension-ui/extension-integration")) {
-      return "extension-ui-runtime";
-    }
-    return "extension-ui";
-  }
-  if (args.includes("e2e/strategies")) {
-    return "strategies";
-  }
-  if (args.includes("e2e/editor")) {
-    return "editor";
-  }
-  if (args.includes("e2e/fobles-pages")) {
-    return "pages";
-  }
-  if (args.includes("e2e/reference-graph")) {
-    return "reference-graph";
-  }
-  if (args.includes("e2e/workers")) {
-    return "workers";
-  }
-  if (args.includes("e2e/promo-video")) {
-    return "promo-video";
-  }
-  return null;
-}
-
 // Each focused test set gets its own report file so running one group does not overwrite another.
-const reportProjectName = argsText.includes("edge-parallel") || argsText.includes("e2e/parallel")
-  ? "parallel"
-  : argsText.includes("edge-stateful") || argsText.includes("e2e/stateful")
-    ? "stateful"
-    : null;
-const reportSuiteName = getReportSuiteName(argsText);
-const reportName = [reportProjectName, reportSuiteName].filter(Boolean).join("-");
+const reportGroup = getReportGroup(argsText);
+const reportName = reportGroup ? reportGroupName(reportGroup) : "";
 const reportFileName = reportName ? `test-report-${reportName}.html` : "test-report.html";
 // Video recording is a hardcoded RECORD_VIDEO setting consumed by tests/fixtures/playwright.ts, not
 // anything computed here - flip it by hand before/after a promoVideo recording session.

@@ -6,7 +6,7 @@ Keep this file until the initial-capture E2E failure is resolved; delete it afte
 
 Run only the initial-capture test through Playwright (no new npm script):
 
-`npm run test:e2e -- --project=edge-parallel tests/e2e/parallel/toolbar-history/item-history.spec.ts --grep "captures the initially selected"`
+`npm run test:e2e -- --project=edge-parallel tests/e2e/parallel/item-history/item-history.spec.ts --grep "captures the initially selected"`
 
 ## Latest observations (2026-11-04)
 
@@ -21,7 +21,7 @@ Run only the initial-capture test through Playwright (no new npm script):
 
 ## Current temporary diagnostic
 
-`tests/e2e/parallel/toolbar-history/item-history.helpers.ts` compares the background script served by the active worker to the bundle on disk and prints the frame URL. Remove this helper and its call once the cause is established.
+`tests/e2e/parallel/item-history/item-history.helpers.ts` compares the background script served by the active worker to the bundle on disk and prints the frame URL. Remove this helper and its call once the cause is established.
 
 ## Next checks
 

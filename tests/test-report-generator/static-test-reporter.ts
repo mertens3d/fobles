@@ -5,6 +5,7 @@ import type { FullConfig, FullResult, Reporter, Suite, TestCase, TestResult } fr
 import { matchAttachmentsToSteps } from "./reporter/attachment-matching";
 import { printStopSafelyWarning } from "./reporter/browser-utils";
 import { renderReport } from "./reporter/report-renderer";
+import { getReportGroup, reportGroupName } from "./reporter/report-group";
 import { writeSuiteNavigationData } from "./reporter/suite-navigation";
 import type {
   CurrentFullResult,
@@ -212,11 +213,29 @@ export default class StaticTestReporter implements Reporter {
       for (const file of fs.readdirSync(reportsDirectory)) {
         if (file.startsWith("test-report") && file.endsWith(".html")) {
           this.reportFiles.add(file);
+          this.upgradeReportNavigation(path.join(reportsDirectory, file));
         }
       }
     } catch {
       fs.mkdirSync(reportsDirectory, { recursive: true });
     }
+  }
+
+  private upgradeReportNavigation(reportPath: string): void {
+    let html = fs.readFileSync(reportPath, "utf8");
+    const hasSharedNavigation = html.includes("data-suite-nav") && html.includes("assets/suite-navigation.js");
+    if (hasSharedNavigation) {
+      return;
+    }
+
+    html = html.replace(/<nav class="suite-nav">[\s\S]*?<\/nav>/, '<nav class="suite-nav" data-suite-nav aria-label="Test reports"></nav>');
+    if (!html.includes("assets/suite-navigation.js")) {
+      html = html.replace(
+        '<script src="assets/scripts.js"></script>',
+        '<script src="suite-navigation-data.js"></script>\n  <script src="assets/suite-navigation.js"></script>\n  <script src="assets/scripts.js"></script>',
+      );
+    }
+    fs.writeFileSync(reportPath, html, "utf8");
   }
 
   private writeSuiteNavigationData(): void {
@@ -233,6 +252,7 @@ export default class StaticTestReporter implements Reporter {
 
     const liveHtml = renderReport({
       outputFile: this.outputFile,
+      isCurrentReport: true,
       fullResult,
       results: allResults,
       startedAt: this.startedAt,
@@ -249,6 +269,7 @@ export default class StaticTestReporter implements Reporter {
 
       const html = renderReport({
         outputFile: folderOutputFile,
+        isCurrentReport: path.resolve(folderOutputFile) === this.outputFile,
         fullResult,
         results,
         startedAt: this.startedAt,
@@ -264,11 +285,9 @@ export default class StaticTestReporter implements Reporter {
 }
 
 function getFolderName(test: TestCase): string {
-  const file = test.location.file.replace(/\\/g, "/");
+  const reportGroup = getReportGroup(test.location.file);
 
-  const match = file.match(/\/e2e\/(stateful|parallel)\/([^/]+)\//);
-
-  return match ? `${match[1]}-${match[2]}` : "misc";
+  return reportGroup ? reportGroupName(reportGroup) : "misc";
 }
 
 function copyAssets(outputPath: string): void {

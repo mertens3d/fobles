@@ -5,7 +5,7 @@
   },
   "include": [
     "unit/item-history/**/*.ts",
-    "e2e/parallel/toolbar-history/item-history*.ts",
+    "e2e/parallel/item-history/item-history*.ts",
     "e2e/parallel/toolbar-ui/hover.spec.ts"
   ]
 }

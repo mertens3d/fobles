@@ -12,8 +12,8 @@ import { showSpeakBubble } from "../../../helpers/speak-bubble";
 import { moveMouseTowardCenter } from "../../../helpers/mouse-proxy-support/mouse-movement";
 import { demoSightings } from "./demo-sightings";
 
-foblesTest.describe("Promo Video", () => {
-  foblesTest("promo video", async ({ page: sharedPage, sharedBrowserContext }) => {
+foblesTest.describe("Video", () => {
+  foblesTest("video", async ({ page: sharedPage, sharedBrowserContext }) => {
     foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
     let testError: unknown;
 
