@@ -13,7 +13,7 @@ import {
   openSettingsSection,
   type StoredSettingsSnapshot,
   TESTING,
-} from "../../../stateful/extension-ui/options-test-helpers";
+} from "../../../shared/extension-ui/options-test-helpers";
 
 foblesTest.describe("Additional Settings Persistence", () => {
   foblesTest("clears all stored settings", async ({ sharedBrowserContext }, testInfo) => {

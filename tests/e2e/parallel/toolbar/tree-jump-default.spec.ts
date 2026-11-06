@@ -4,19 +4,19 @@ import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
 import { bringPageToFront } from "../../../helpers/page-switch";
 import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 import { attachItemPathScreenshot } from "../../../helpers/fobles-helpers-support/navigation-assertions";
-import { openContentEditor } from "../../../fixtures/sitecore";
 import { ClickFoblesJumpButton } from "../../../macros/fobles-macros";
 import { expectFoValue } from "../../../expect-snippets/expect-snippets";
 import type { BrowserContext, Locator } from "@playwright/test";
 import { clickFoblesNavigationButtonStep } from "../../../helpers/click-navigate-helpers";
 import type { TreeJumpDefinition } from "../../../constants_partials/CONST.Types";
 import { getTreeJumpFlyoutButton } from "../../../helpers/element-finders";
+import { setupParallelContentEditor } from "../../../helpers/fobles-helpers-support/test-setup";
 
 foblesTest.describe("TreeJumpNavigation", () => {
   for (const treeJumpTarget of TEST_CONST.TESTING.TREE_JUMP_TARGETS) {
     foblesTest(`${treeJumpTarget.label}-Click`, async ({ page, sharedBrowserContext }, testInfo) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
-      await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      await setupParallelContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT, true);
 
       const step = createFoblesStep(page, testInfo, page, "Tree Jump Click");
 
@@ -27,7 +27,7 @@ foblesTest.describe("TreeJumpNavigation", () => {
   for (const treeJumpTarget of TEST_CONST.TESTING.TREE_JUMP_TARGETS) {
     foblesTest(`${treeJumpTarget.label}-CtrlClick`, async ({ sharedBrowserContext, page }, testInfo) => {
       foblesTest.setTimeout(TEST_CONST.TESTING.TIMEOUTS.TEST_SUITE_MS);
-      await openContentEditor(page);
+      await setupParallelContentEditor(page, undefined, true);
       await ClickFoblesJumpButton(page);
       await ClickFoblesJumpButton(page, false);
       const step = createFoblesStep(page, testInfo, page, "Ctrl+Click Jump");
@@ -65,7 +65,7 @@ async function testOneClick(
   await step(
     `Click: navigates to "${treeJumpTarget.clickNavigationExpect.foValue}"`,
     async () => {
-      await openContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT);
+      await setupParallelContentEditor(page, TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT, true);
       await ClickFoblesJumpButton(page);
       let foblesTreeButton: Locator | undefined;
       if (treeJumpTarget.clickNavigationExpect?.foValue) {

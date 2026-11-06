@@ -18,7 +18,7 @@ import {
   findAdminPageByLabel,
   openAdminPagesColumn,
   TESTING,
-} from "../options-test-helpers";
+} from "../../../shared/extension-ui/options-test-helpers";
 import { locateJumpFlyout } from "../../../../helpers/locator-helpers";
 
 foblesTest.describe("User Admin Pages Toolbar Integration", () => {

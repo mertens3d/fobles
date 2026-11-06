@@ -1,7 +1,7 @@
-// @source-path [Fobles] tests/e2e/stateful/fobles-pages/pages-with-toolbar-visible.spec.ts
+// @source-path [Fobles] tests/e2e/parallel/fobles-pages/pages-with-toolbar-visible.spec.ts
 
 import { expect, foblesTest, type Page, type TestInfo } from "../../../fixtures/playwright";
-import { openSitecorePage } from "../../../fixtures/sitecore";
+import { setupParallelSitecorePage } from "../../../helpers/fobles-helpers-support/test-setup";
 import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 import {
@@ -61,7 +61,7 @@ async function stepVisibility(page: Page, testInfo: TestInfo, pageCase: PageCase
     `${pageCase.label}: Fobles nav ${pageCase.foblesEligible ? "appears" : "does not appear"}`,
     async (fullTitle) => {
       await attachUiPathNote(testInfo, pageCase.uiPath, fullTitle);
-      await openSitecorePage(page, pageCase.encodedPath);
+      await setupParallelSitecorePage(page, pageCase.encodedPath, false);
 
       if (!pageCase.foblesEligible) {
         await expectNeverAppears(

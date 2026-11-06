@@ -1,5 +1,5 @@
 import { expect, foblesTest } from "../../../fixtures/playwright";
-import { openSitecorePage } from "../../../fixtures/sitecore";
+import { setupParallelContentEditor } from "../../../helpers/fobles-helpers-support/test-setup";
 import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 import {
@@ -27,7 +27,7 @@ const SCENARIO = EDITOR_SCENARIOS.QUICK_INFO_SECTION;
 
 foblesTest.describe("Editor scenario: quick info section", () => {
   foblesTest("toggling Fobles decorates and restores the Quick Info panel", async ({ page }, testInfo) => {
-    await openSitecorePage(page, `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`);
+    await setupParallelContentEditor(page, SCENARIO.itemId, false);
 
     const foblesFrame = await findFoblesFrame(page);
     await ensureMouseMarkerExists(foblesFrame);

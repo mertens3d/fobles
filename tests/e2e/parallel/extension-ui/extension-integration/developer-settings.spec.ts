@@ -1,11 +1,11 @@
-// @source-path [Fobles] tests/e2e/stateful/extension-ui/extension-integration/developer-settings.spec.ts
+// @source-path [Fobles] tests/e2e/parallel/extension-ui/extension-integration/developer-settings.spec.ts
 
 import { expect, foblesTest, type Page } from "../../../../fixtures/playwright";
 import { getExtensionId, openExtensionPage, setExtensionCheckbox } from "../../../../fixtures/extension";
-import { openContentEditor } from "../../../../fixtures/sitecore";
+import { setupParallelContentEditor } from "../../../../helpers/fobles-helpers-support/test-setup";
 import { attachPageScreenshot } from "../../../../helpers/fobles-helpers-support/screenshots";
 import { bringPageToFront } from "../../../../helpers/page-switch";
-import { clickOptionsButton, openSettingsSection, readStableCheckboxState, TESTING } from "../options-test-helpers";
+import { clickOptionsButton, openSettingsSection, readStableCheckboxState, TESTING } from "../../../shared/extension-ui/options-test-helpers";
 import type { ConsoleMessage } from "@playwright/test";
 
 foblesTest.describe("Extension UI Integration", () => {
@@ -47,7 +47,7 @@ foblesTest.describe("Extension UI Integration", () => {
         );
 
         await bringPageToFront(page);
-        await openContentEditor(page);
+        await setupParallelContentEditor(page, undefined, false);
         // await findFoblesFrame(page);
         debugMessages.length = 0;
         await setExtensionCheckbox(optionsPage, debugLogging, true, TESTING.OPTIONS.DEVELOPER.DEBUG_LOGGING_SELECTOR);
@@ -57,7 +57,7 @@ foblesTest.describe("Extension UI Integration", () => {
         );
 
         await bringPageToFront(page);
-        await openContentEditor(page);
+        await setupParallelContentEditor(page, undefined, false);
         // await findFoblesFrame(page);
 
         await expect
@@ -75,7 +75,7 @@ foblesTest.describe("Extension UI Integration", () => {
         );
         debugMessages.length = 0;
         await bringPageToFront(page);
-        await openContentEditor(page);
+        await setupParallelContentEditor(page, undefined, false);
         // await findFoblesFrame(page);
         expect(debugMessages.some((message) => message.includes(TESTING.CONTENT_EDITOR_DEBUG.LOG_MARKER))).toBe(false);
         await attachPageScreenshot(testInfo, page, TESTING.REPORT_SCREENSHOTS.DEBUG_LOGGING_DISABLED);

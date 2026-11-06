@@ -5,6 +5,7 @@ import type { FullConfig, FullResult, Reporter, Suite, TestCase, TestResult } fr
 import { matchAttachmentsToSteps } from "./reporter/attachment-matching";
 import { printStopSafelyWarning } from "./reporter/browser-utils";
 import { renderReport } from "./reporter/report-renderer";
+import { writeSuiteNavigationData } from "./reporter/suite-navigation";
 import type {
   CurrentFullResult,
   NoteInfo,
@@ -43,6 +44,7 @@ export default class StaticTestReporter implements Reporter {
   private lastFullResult: CurrentFullResult;
   private totalTests: number;
   private readonly runtimeOutput = new WeakMap<TestResult, string[]>();
+  private readonly reportFiles = new Set<string>();
 
   constructor(options: ReporterOptions = {}) {
     this.outputFile = path.resolve(
@@ -60,6 +62,9 @@ export default class StaticTestReporter implements Reporter {
 
   onBegin(_config: FullConfig, suite: Suite): void {
     this.totalTests = suite.allTests().length;
+    this.loadExistingReportFiles();
+    this.reportFiles.add(path.basename(this.outputFile));
+    this.writeSuiteNavigationData();
     printStopSafelyWarning();
     this.writeReport({ status: "running" });
   }
@@ -167,6 +172,9 @@ export default class StaticTestReporter implements Reporter {
     const remainingNotes = matchAttachmentsToSteps(notes, steps, "notes");
 
     const folderName = getFolderName(test);
+    const folderOutputFile = `test-report-${folderName}.html`;
+    this.reportFiles.add(folderOutputFile);
+    this.writeSuiteNavigationData();
 
     if (!this.resultsByFolder.has(folderName)) {
       this.resultsByFolder.set(folderName, []);
@@ -194,6 +202,25 @@ export default class StaticTestReporter implements Reporter {
 
   onEnd(fullResult: FullResult): void {
     this.writeReport(fullResult);
+    this.loadExistingReportFiles();
+    this.writeSuiteNavigationData();
+  }
+
+  private loadExistingReportFiles(): void {
+    const reportsDirectory = path.dirname(this.outputFile);
+    try {
+      for (const file of fs.readdirSync(reportsDirectory)) {
+        if (file.startsWith("test-report") && file.endsWith(".html")) {
+          this.reportFiles.add(file);
+        }
+      }
+    } catch {
+      fs.mkdirSync(reportsDirectory, { recursive: true });
+    }
+  }
+
+  private writeSuiteNavigationData(): void {
+    writeSuiteNavigationData(path.dirname(this.outputFile), this.reportFiles);
   }
 
   private writeReport(fullResult: CurrentFullResult): void {
@@ -239,9 +266,9 @@ export default class StaticTestReporter implements Reporter {
 function getFolderName(test: TestCase): string {
   const file = test.location.file.replace(/\\/g, "/");
 
-  const match = file.match(/\/e2e\/(?:stateful|parallel)\/([^/]+)\//);
+  const match = file.match(/\/e2e\/(stateful|parallel)\/([^/]+)\//);
 
-  return match?.[1] ?? "misc";
+  return match ? `${match[1]}-${match[2]}` : "misc";
 }
 
 function copyAssets(outputPath: string): void {

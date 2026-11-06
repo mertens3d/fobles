@@ -27,6 +27,12 @@ function getReportSuiteName(args: string): string | null {
   if (args.includes("e2e/harvest")) {
     return "harvest";
   }
+  if (args.includes("e2e/toolbar-history")) {
+    return "toolbar-history";
+  }
+  if (args.includes("e2e/toolbar-ui")) {
+    return "toolbar-ui";
+  }
   if (args.includes("e2e/toolbar")) {
     return "toolbar";
   }
@@ -64,10 +70,14 @@ function getReportSuiteName(args: string): string | null {
 }
 
 // Each focused test set gets its own report file so running one group does not overwrite another.
-const reportSuiteName = getReportSuiteName(argsText) ??
-  (argsText.includes("edge-parallel") || argsText.includes("e2e/parallel") ? "parallel" :
-    argsText.includes("edge-stateful") || argsText.includes("e2e/stateful") ? "stateful" : null);
-const reportFileName = reportSuiteName ? `test-report-${reportSuiteName}.html` : "test-report.html";
+const reportProjectName = argsText.includes("edge-parallel") || argsText.includes("e2e/parallel")
+  ? "parallel"
+  : argsText.includes("edge-stateful") || argsText.includes("e2e/stateful")
+    ? "stateful"
+    : null;
+const reportSuiteName = getReportSuiteName(argsText);
+const reportName = [reportProjectName, reportSuiteName].filter(Boolean).join("-");
+const reportFileName = reportName ? `test-report-${reportName}.html` : "test-report.html";
 // Video recording is a hardcoded RECORD_VIDEO setting consumed by tests/fixtures/playwright.ts, not
 // anything computed here - flip it by hand before/after a promoVideo recording session.
 
@@ -114,6 +124,7 @@ export default defineConfig({
     {
       name: "edge-parallel",
       testDir: "./e2e/parallel",
+      fullyParallel: true,
       workers: 4,
       use: { browserName: "chromium", channel: "msedge", ...devices["Desktop Chrome"] },
     },

@@ -237,17 +237,23 @@ pre {
   color: #1f2933;
 }
 .suite-nav {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.4rem;
+  display: grid;
+  gap: 0.5rem;
+  grid-template-columns: repeat(auto-fill, minmax(min(100%, 5rem), 1fr));
   margin-bottom: 0.6rem;
 }
 .suite-nav a,
 .suite-nav span {
+  align-items: center;
+  box-sizing: border-box;
   border-radius: 999px;
+  display: flex;
   font-size: 0.8rem;
-  padding: 0.25rem 0.7rem;
+  justify-content: center;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.7rem;
   text-decoration: none;
+  white-space: nowrap;
 }
 .suite-nav a {
   background: #fff;
@@ -257,8 +263,33 @@ pre {
 .suite-nav a:hover {
   background: #e7f5ff;
 }
+.suite-nav a.suite-nav__item--stateful {
+  background: #f3f0ff;
+  border-color: #d0bfff;
+  color: #5f3dc4;
+}
+.suite-nav a.suite-nav__item--parallel {
+  background: #e6fcf5;
+  border-color: #96f2d7;
+  color: #087f5b;
+}
+.suite-nav a.suite-nav__item--stateful:hover {
+  background: #e5dbff;
+}
+.suite-nav a.suite-nav__item--parallel:hover {
+  background: #c3fae8;
+}
 .suite-nav span.current {
-  background: #1864ab;
+  border: 1px solid transparent;
   color: #fff;
   font-weight: 700;
+}
+.suite-nav span.suite-nav__item--stateful.current {
+  background: #7048e8;
+}
+.suite-nav span.suite-nav__item--parallel.current {
+  background: #099268;
+}
+.suite-nav span.suite-nav__item.current:not(.suite-nav__item--stateful, .suite-nav__item--parallel) {
+  background: #1864ab;
 }

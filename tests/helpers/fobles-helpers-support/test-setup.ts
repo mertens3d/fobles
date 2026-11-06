@@ -13,22 +13,39 @@ export async function setupContentEditorForTestingBasic(page: Page) {
   await moveMouseToDefault(page);
 }
 
-export async function setupContentEditorForTesting(page: Page, scenario: StrategyScenarioData) {
-  //return { page, fieldTable, locatorFirstResult, STEP_WAIT_MS, step, SCENARIO: scenario , testInfo };
+export async function setupParallelContentEditor(
+  page: Page,
+  foValue: string = TEST_CONST.SITECORE.ITEMS.CONTENT_ITEM_ID,
+  foblesEnabled?: boolean,
+): Promise<void> {
+  await openContentEditor(page, foValue, { normalizeEditorState: false });
+  await assertDefaultSitecoreEditorState(page);
+  if (foblesEnabled === true) {
+    await clickLbolt(page);
+  }
+  await moveMouseToDefault(page);
+}
 
-  console.log(`[fobles] Opening strategy item ${scenario.itemId}`);
-  await openSitecorePage(
-    page,
-    `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${scenario.itemId}`,
-    { normalizeEditorState: false },
-  );
+export async function setupParallelSitecorePage(page: Page, path: string, foblesEnabled?: boolean): Promise<void> {
+  await setupParallelContentEditor(page, TEST_CONST.SITECORE.ITEMS.CONTENT_ITEM_ID, foblesEnabled);
+  await openSitecorePage(page, path, { normalizeEditorState: false });
+}
+
+export async function assertDefaultSitecoreEditorState(page: Page): Promise<void> {
   const rawValues = await getScRawValuesState(page);
   const standardFields = await getScStandardFieldsState(page);
   if (rawValues || standardFields) {
     throw new Error(
-      `Strategy tests require Raw Values and Standard Fields to be off (Raw Values: ${rawValues ? "on" : "off"}; Standard Fields: ${standardFields ? "on" : "off"}). Run the Sitecore editor-state reset test first.`,
+      `Parallel Sitecore tests require Raw Values and Standard Fields to be off (Raw Values: ${rawValues ? "on" : "off"}; Standard Fields: ${standardFields ? "on" : "off"}). Run the Sitecore editor-state reset test first.`,
     );
   }
+}
+
+export async function setupContentEditorForTesting(page: Page, scenario: StrategyScenarioData) {
+  //return { page, fieldTable, locatorFirstResult, STEP_WAIT_MS, step, SCENARIO: scenario , testInfo };
+
+  console.log(`[fobles] Opening strategy item ${scenario.itemId}`);
+  await setupParallelContentEditor(page, scenario.itemId, false);
   // &fo=${scenario.itemId}`);
   console.log(`[fobles] Navigation finished at ${page.url()}`);
   await moveMouseToDefault(page);
@@ -61,7 +78,7 @@ async function logActivationState(frame: Frame, message: string): Promise<void> 
 }
 
 export async function activateFobles(page: Page): Promise<Frame> {
-  await openContentEditor(page);
+  await setupParallelContentEditor(page);
 
   const treeFrame = await findFrameWithSelector(page, `#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`, activateFobles.name, 30_000);
 

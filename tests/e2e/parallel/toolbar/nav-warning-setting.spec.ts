@@ -3,7 +3,7 @@ import { getExtensionId, setFoblesNavWarningVisible } from "../../../fixtures/ex
 import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { clickWithMouseMarker } from "../../../helpers/mouse-proxy";
 import { clickTreeJump } from "../../../macros/sitecore-macros";
-import { openContentEditor } from "../../../fixtures/sitecore";
+import { setupParallelContentEditor } from "../../../helpers/fobles-helpers-support/test-setup";
 import { findFoblesFrame } from "../../../helpers/frame-finder";
 import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 
@@ -19,7 +19,7 @@ foblesTest.describe("Same-tab navigation warning setting", () => {
       // jump test uses - then hands back whatever (if anything) shows up as a "dialog". Skips the
       // macro's own auto-dismiss since this test needs to inspect/click the dialog itself.
       const jumpAndGetDialog = async (): Promise<Locator> => {
-        await openContentEditor(page);
+        await setupParallelContentEditor(page, undefined, true);
         const foblesFrame = await findFoblesFrame(page);
         await clickTreeJump(page, TEST_CONST.SITECORE.TREE_JUMP_PATHS.TEMPLATES, { skipDialogDismiss: true });
         return foblesFrame.getByRole("dialog");

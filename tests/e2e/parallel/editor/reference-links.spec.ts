@@ -7,7 +7,7 @@ import { EDITOR_SCENARIOS } from "./editor-scenarios";
 import { clickLbolt } from "../../../macros/fobles-macros";
 import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { expect, foblesTest } from "../../../fixtures/playwright";
-import { openSitecorePage } from "../../../fixtures/sitecore";
+import { setupParallelContentEditor } from "../../../helpers/fobles-helpers-support/test-setup";
 import { pauseForHuman } from "../../../helpers/wait-helpers";
 import { FOBLES_HIDDEN_CLASS_PATTERN } from "../../shared/strategies/support/CONST";
 
@@ -32,7 +32,7 @@ function expectedReferenceNotFoundMessage(expectedButtonText: string): string {
 
 foblesTest.describe("Editor scenario: reference links", () => {
   foblesTest("toggling Fobles decorates and restores the Links gallery", async ({ page }, testInfo) => {
-    await openSitecorePage(page, `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${SCENARIO.itemId}`);
+    await setupParallelContentEditor(page, SCENARIO.itemId, false);
 
     const foblesFrame = await findFoblesFrame(page);
     await ensureMouseMarkerExists(foblesFrame);

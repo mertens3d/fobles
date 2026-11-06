@@ -37,9 +37,13 @@ async function ensureRawValuesDisabled(page: Page): Promise<void> {
   }
 }
 
-export async function openContentEditor(page: Page, foValue: string = TEST_CONST.SITECORE.ITEMS.CONTENT_ITEM_ID): Promise<void> {
+export async function openContentEditor(
+  page: Page,
+  foValue: string = TEST_CONST.SITECORE.ITEMS.CONTENT_ITEM_ID,
+  options: { normalizeEditorState?: boolean } = {},
+): Promise<void> {
   const path = TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED + (foValue ? `&fo=${foValue}` : "");
-  await openSitecorePage(page, path);
+  await openSitecorePage(page, path, options);
 }
 
 export async function openSitecorePage(

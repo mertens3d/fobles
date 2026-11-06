@@ -1,19 +1,19 @@
-// @source-path [fobles] tests/e2e/stateful/extension-ui/toolbar-integration/item-history.helpers.ts
+// @source-path [fobles] tests/e2e/parallel/toolbar-history/item-history.helpers.ts
 
 import type { BrowserContext } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { SITECORE } from "../../../../../src/constants/sitecore";
-import { ITEM_HISTORY_CAPTURE } from "../../../../../src/content/item-history/item-history.const";
-import { TEST_CONSTB } from "../../../../fixtures/playwright.const";
-import { HISTORY_CLASS } from "../../../../../src/content/toolbar/history/history.const";
-import { ITEM_HISTORY } from "../../../../../src/shared/item-history/item-history.const";
-import { historyStorageKey } from "../../../../../src/shared/item-history/item-history-model";
-import type { HistoryItem, HistoryScope, HistoryVisit } from "../../../../../src/shared/item-history/item-history.types";
-import { expect, type Frame, type Locator, type Page } from "../../../../fixtures/playwright";
-import { openContentEditor } from "../../../../fixtures/sitecore";
-import { findFoblesFrame, findFrameWithSelector } from "../../../../helpers/frame-finder";
-import { STRATEGY_SCENARIOS } from "../../../shared/strategies/support/strategy-scenarios";
+import { SITECORE } from "../../../../src/constants/sitecore";
+import { ITEM_HISTORY_CAPTURE } from "../../../../src/content/item-history/item-history.const";
+import { TEST_CONSTB } from "../../../fixtures/playwright.const";
+import { HISTORY_CLASS } from "../../../../src/content/toolbar/history/history.const";
+import { ITEM_HISTORY } from "../../../../src/shared/item-history/item-history.const";
+import { historyStorageKey } from "../../../../src/shared/item-history/item-history-model";
+import type { HistoryItem, HistoryScope, HistoryVisit } from "../../../../src/shared/item-history/item-history.types";
+import { expect, type Frame, type Locator, type Page } from "../../../fixtures/playwright";
+import { setupParallelContentEditor } from "../../../helpers/fobles-helpers-support/test-setup";
+import { findFoblesFrame, findFrameWithSelector } from "../../../helpers/frame-finder";
+import { STRATEGY_SCENARIOS } from "../../shared/strategies/support/strategy-scenarios";
 
 export const SCENARIO = STRATEGY_SCENARIOS.DROP_LINK;
 
@@ -94,7 +94,7 @@ async function logHistoryDiagnostics(page: Page, frame: Frame): Promise<void> {
 }
 
 export async function openHistoryEditor(page: Page): Promise<{ frame: Frame; initial: HistoryVisit }> {
-  await openContentEditor(page, SCENARIO.itemId);
+  await setupParallelContentEditor(page, SCENARIO.itemId, true);
   const frame = await findFoblesFrame(page);
   await expect.poll(async () => canonicalGuid((await readQuickInfo(frame)).id)).toBe(canonicalGuid(SCENARIO.itemId));
   const initial = await readQuickInfo(frame);

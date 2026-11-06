@@ -142,7 +142,7 @@ export function renderReport(input: RenderReportInput): string {
     })
     .join("");
 
-  const suiteNavHtml = renderSuiteNav(input.outputFile);
+  const suiteNavHtml = renderSuiteNav();
   const loginAlertHtml = input.loginAlertUrl
     ? `<div class="login-alert">Login needed - switch to the browser window and log in, then click "Resume" in the Playwright Inspector. (<a href="${escapeHtml(input.loginAlertUrl)}" target="_blank">${escapeHtml(toDisplayUrl(input.loginAlertUrl))}</a>)</div>`
     : "";
@@ -198,6 +198,8 @@ export function renderReport(input: RenderReportInput): string {
     <img id="screenshot-modal-img" class="screenshot-modal-content" alt="">
     <iframe id="screenshot-modal-frame" class="screenshot-modal-content" title="Log viewer"></iframe>
   </div>
+  <script src="suite-navigation-data.js"></script>
+  <script src="assets/suite-navigation.js"></script>
   <script src="assets/scripts.js"></script>
   ${refreshScript}
 </body>

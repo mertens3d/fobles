@@ -2,7 +2,7 @@ import { foblesTest, type Page } from "../../../fixtures/playwright";
 import { expectStaticToolbarPosition, expectFoblesContainerVisible } from "../../../expect-snippets/expect-snippets";
 import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
-import { setupContentEditorForTestingBasic } from "../../../helpers/fobles-helpers-support/test-setup";
+import { setupParallelContentEditor } from "../../../helpers/fobles-helpers-support/test-setup";
 import { moveMouseToDefault as moveMouseToDefault } from "../../../helpers/mouse-proxy";
 import { dragToolbarToCornerLocation } from "../../../macros/fobles-macros";
 import { pauseForBrowser, pauseForHuman } from "../../../helpers/wait-helpers";
@@ -20,7 +20,7 @@ foblesTest.describe("positions", () => {
 
     await step("Setup: initial conditions", async () => {
       await pauseForBrowser(page, STEP_WAIT_MS);
-      await setupContentEditorForTestingBasic(page);
+      await setupParallelContentEditor(page, undefined, false);
       await expectFoblesContainerVisible(page);
       await moveMouseToDefault(page);
     });

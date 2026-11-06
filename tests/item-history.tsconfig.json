@@ -5,8 +5,7 @@
   },
   "include": [
     "unit/item-history/**/*.ts",
-    "e2e/stateful/extension-ui/toolbar-integration/item-history*.ts",
-    "e2e/stateful/toolbar-history/item-history.spec.ts",
-    "e2e/stateful/toolbar-ui/hover.spec.ts"
+    "e2e/parallel/toolbar-history/item-history*.ts",
+    "e2e/parallel/toolbar-ui/hover.spec.ts"
   ]
 }

@@ -1,29 +1,13 @@
 import fs from "node:fs";
 import path from "node:path";
-import { escapeHtml } from "./report-utils";
 
-export function renderSuiteNav(outputFile: string): string {
-  const reportsDir = path.dirname(outputFile);
-  const currentFile = path.basename(outputFile);
-  let siblingFiles: string[];
+export function renderSuiteNav(): string {
+  return '<nav class="suite-nav" data-suite-nav aria-label="Test reports"></nav>';
+}
 
-  try {
-    siblingFiles = fs
-      .readdirSync(reportsDir)
-      .filter((file) => file.startsWith("test-report") && file.endsWith(".html"))
-      .sort();
-  } catch {
-    siblingFiles = [currentFile];
-  }
-
-  const links = siblingFiles
-    .map((file) => {
-      const label = file.replace(/^test-report-?/, "").replace(/\.html$/, "") || "current";
-      return file === currentFile
-        ? `<span class="current">${escapeHtml(label)}</span>`
-        : `<a href="${escapeHtml(file)}">${escapeHtml(label)}</a>`;
-    })
-    .join("");
-
-  return `<nav class="suite-nav">${links}</nav>`;
+export function writeSuiteNavigationData(reportsDirectory: string, reportFiles: Iterable<string>): void {
+  const uniqueFiles = [...new Set(reportFiles)].sort();
+  const data = `globalThis.FOBLES_TEST_REPORTS = ${JSON.stringify(uniqueFiles).replace(/</g, "\\u003c")};\n`;
+  fs.mkdirSync(reportsDirectory, { recursive: true });
+  fs.writeFileSync(path.join(reportsDirectory, "suite-navigation-data.js"), data, "utf8");
 }
