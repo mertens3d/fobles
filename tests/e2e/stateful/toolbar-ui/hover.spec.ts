@@ -1,4 +1,3 @@
-import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { getButtonSize, getLastKnownMousePosition, moveMouseOutsideHoverArea } from "../../../helpers/mouse-proxy";
 import { activateFobles } from "../../../helpers/fobles-helpers-support/test-setup";
 import { hoverAndSlideOut } from "../../../helpers/hover-helpers";

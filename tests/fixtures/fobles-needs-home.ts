@@ -2,7 +2,6 @@ import { type Page, expect } from "@playwright/test";
 import { TEST_CONST } from "../constants/TEST_CONST";
 import { locateJumpFlyout } from "../helpers/locator-helpers";
 
-
 export async function openFoblesJumpFlyout(page: Page): Promise<void> {
   const jumpFlyoutTrigger = page.locator(TEST_CONST.FOBLES.SELECTORS.JUMP_FLYOUT_TRIGGER).first();
 
@@ -33,4 +32,3 @@ export async function enableFobles(page: Page): Promise<void> {
     await toggle.click();
   }
 }
-

@@ -2,9 +2,7 @@
 
 import { expect, foblesTest, type Page } from "../../../../fixtures/playwright";
 import { getExtensionId, openExtensionPage, setExtensionCheckbox } from "../../../../fixtures/extension";
-import { TEST_CONST } from "../../../../constants/TEST_CONST";
 import { openContentEditor } from "../../../../fixtures/sitecore";
-import { findFoblesFrame } from "../../../../helpers/frame-finder";
 import { attachPageScreenshot } from "../../../../helpers/fobles-helpers-support/screenshots";
 import { bringPageToFront } from "../../../../helpers/page-switch";
 import { clickOptionsButton, openSettingsSection, readStableCheckboxState, TESTING } from "../options-test-helpers";

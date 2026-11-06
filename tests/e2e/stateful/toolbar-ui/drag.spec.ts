@@ -44,7 +44,6 @@ foblesTest.describe("positions", () => {
   });
 });
 
-
 async function positionTestCommon(page: Page, cornerPosition: CornerPosition) {
   await moveMouseTowardCenter(page);
   await dragToolbarToCornerLocation(page, cornerPosition);

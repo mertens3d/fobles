@@ -6,16 +6,11 @@ import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 import {
   attachUiPathNote,
-  expectFoblesButtonNewTabNavigation,
-  expectFoblesButtonSameTabNavigation,
 } from "../../../helpers/fobles-helpers-support/navigation-assertions";
-import { clickWithMouseMarker, ensureMouseMarkerExists } from "../../../helpers/mouse-proxy";
+import { ensureMouseMarkerExists } from "../../../helpers/mouse-proxy";
 import { findFoblesFrame, findFrameWithSelector } from "../../../helpers/frame-finder";
-import { expectNeverAppears, pauseForHuman } from "../../../helpers/wait-helpers";
-import { clickLbolt } from "../../../macros/fobles-macros";
+import { expectNeverAppears } from "../../../helpers/wait-helpers";
 import type { PageCase, ToolbarType } from "../../../constants_partials/CONST.Types";
-import { toBracedGuid } from "../../../helpers/guid-helpers";
-import type { FoblesStep } from "../../../helpers/fobles-test-step.types";
 import { locateJumpFlyoutTrigger, locateLBoltButton } from "../../../helpers/locator-helpers";
 import { expectFoblesContainerVisible } from "../../../expect-snippets/expect-snippets";
 
@@ -88,4 +83,3 @@ async function stepVisibility(page: Page, testInfo: TestInfo, pageCase: PageCase
   );
   return step;
 }
-

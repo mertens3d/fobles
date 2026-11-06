@@ -1,5 +1,5 @@
 import { TEST_CONST } from "../constants/TEST_CONST";
-import { expect, type Frame, type Page } from "../fixtures/playwright";
+import { expect, type Page } from "../fixtures/playwright";
 import { getScSearchParams, normalizeFoValueForCompare, normalizePath } from "../helpers/path-helpers";
 import { locateJumpFlyout, locateLBoltButton, locateToolbarContainer } from "../helpers/locator-helpers";
 

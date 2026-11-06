@@ -1,14 +1,12 @@
 // @source-path [fobles] tests/fixtures/sitecore.ts
 
-import { expect, type Page } from "@playwright/test";
+import { type Page } from "@playwright/test";
 import { TEST_CONST } from "../constants/TEST_CONST";
 import { getTestEnvironment } from "./environment";
 import { ensureAuthenticatedUrl } from "./auto-login";
 import { bringPageToFront } from "../helpers/page-switch";
 import { ensureMouseMarkerExists } from "../helpers/mouse-proxy";
 import { setScRawValuesState, setScStandardFieldsState, setTreePanelWidth } from "../macros/sitecore-macros";
-import { locateJumpFlyout } from "../helpers/locator-helpers";
-import { openFoblesJumpFlyout } from "./fobles-needs-home";
 
 // Sitecore's Content Editor "View > Raw Values" ribbon toggle is a persisted per-session setting,
 // not something tied to the current page - if a prior manual session left it on, every field
@@ -114,7 +112,3 @@ export async function logoutCurrentSitecoreSession(page: Page): Promise<boolean>
   }
   return false;
 }
-
-
-
-

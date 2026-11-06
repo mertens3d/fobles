@@ -37,13 +37,13 @@ async function takeOver(message: UtilityLockMessage, tabId: number | undefined):
   }
   const current = ownersByOrigin.get(message.origin);
   if (current && current.tabId !== tabId) {
-    try {
-      await chrome.tabs.sendMessage(current.tabId, {
+      await chrome.tabs
+        .sendMessage(current.tabId, {
         type: UTILITY_LOCK_MESSAGE.OWNERSHIP_LOST,
         ownershipId: current.ownershipId,
         origin: current.origin,
-      });
-    } catch {}
+        })
+        .catch(() => undefined);
   }
   ownersByOrigin.set(message.origin, { tabId, ownershipId: message.ownershipId, origin: message.origin });
   return { acquired: true, ownerTabId: tabId, ownerOwnershipId: message.ownershipId };

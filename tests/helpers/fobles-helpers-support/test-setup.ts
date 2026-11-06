@@ -1,10 +1,9 @@
-import { expect, type Frame, type Locator, type Page } from "@playwright/test";
+import { type Frame, type Locator, type Page } from "@playwright/test";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { openContentEditor, openSitecorePage } from "../../fixtures/sitecore";
 import { getScRawValuesState, getScStandardFieldsState } from "../../macros/sitecore-macros";
 import { clickWithMouseMarker, ensureMouseMarkerExists, moveMouseToDefault } from "../mouse-proxy";
 import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
-import { expectLBoltButtonVisible } from "../../expect-snippets/expect-snippets";
 import { clickLbolt } from "../../macros/fobles-macros";
 import type { StrategyScenarioData } from "../../e2e/shared/strategies/support/scenario.types";
 
@@ -64,14 +63,11 @@ async function logActivationState(frame: Frame, message: string): Promise<void> 
 export async function activateFobles(page: Page): Promise<Frame> {
   await openContentEditor(page);
 
-
   const treeFrame = await findFrameWithSelector(page, `#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`, activateFobles.name, 30_000);
 
   // await expect
   //   .poll(
   //     async () => {
-
-
 
   //       for (const frame of page.frames()) {
   //         if ((await frame.locator(`#${TEST_CONST.SITECORE.DOM.TREE_NODE_IDS.CONTENT}`).count()) > 0) {

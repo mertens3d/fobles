@@ -3,7 +3,6 @@ import { TEST_CONST } from "../../constants/TEST_CONST";
 import { clickWithMouseMarker, highlightClickTarget } from "../mouse-proxy";
 import { clickContentTabIfPresent } from "../../macros/sitecore-macros";
 import { dismissFoblesConfirmDialogIfPresent } from "../../macros/fobles-macros";
-import { findFrameWithSelector } from "../frame-finder";
 import { bringPageToFront } from "../page-switch";
 import type { StrategyTestContext } from "../../e2e/shared/strategies/support/scenario.types";
 import { attachLocatorScreenshot } from "./screenshots";

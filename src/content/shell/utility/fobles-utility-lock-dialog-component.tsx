@@ -40,12 +40,6 @@ export function showFoblesUtilityLockDialog(
 ): Promise<boolean> {
   return new Promise<boolean>((resolve) => {
     let takingOwnership = false;
-    let mounted: MountedDialog;
-
-    function complete(acquired: boolean): void {
-      mounted.dispose();
-      resolve(acquired);
-    }
 
     function actions(dispose: () => void): readonly FoblesMessageDialogAction[] {
       return [
@@ -63,13 +57,14 @@ export function showFoblesUtilityLockDialog(
           onClick: async () => {
             takingOwnership = true;
             const acquired = await onTakeOwnership();
-            complete(acquired);
+            dispose();
+            resolve(acquired);
           },
         },
       ];
     }
 
-    mounted = mountDialog(
+    mountDialog(
       container,
       actions,
       "Fobles Utility Already Active",
@@ -79,10 +74,9 @@ export function showFoblesUtilityLockDialog(
 }
 
 export function showFoblesUtilityOwnershipLostDialog(container: HTMLElement): void {
-  let mounted: MountedDialog;
-  mounted = mountDialog(
+  mountDialog(
     container,
-    () => [{ label: "Close", onClick: () => mounted.dispose() }],
+    (dispose) => [{ label: "Close", onClick: dispose }],
     "Fobles Utility Ownership Changed",
     "Another tab took ownership. This Fobles utility has stopped.",
   );

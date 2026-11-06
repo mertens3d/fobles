@@ -1,4 +1,5 @@
 node_modules/
+.eslintcache
 build-ts/
 dist/*
 !dist/packed/
