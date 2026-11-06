@@ -239,7 +239,7 @@ export default class StaticTestReporter implements Reporter {
 function getFolderName(test: TestCase): string {
   const file = test.location.file.replace(/\\/g, "/");
 
-  const match = file.match(/\/e2e\/([^/]+)\//);
+  const match = file.match(/\/e2e\/(?:stateful|parallel)\/([^/]+)\//);
 
   return match?.[1] ?? "misc";
 }

@@ -20,7 +20,16 @@ import { TEST_CONSTB } from "./playwright.const";
 // The context is shared for the worker's entire run.
 
 async function logoutSitecoreSessions(context: BrowserContext): Promise<void> {
-  const page = context.pages()[0];
+  const { getTestEnvironment } = await import("./environment");
+  const { baseUrl } = getTestEnvironment();
+  const sitecoreOrigin = new URL(baseUrl).origin;
+  const page = context.pages().find((candidate) => {
+    try {
+      return new URL(candidate.url()).origin === sitecoreOrigin;
+    } catch {
+      return false;
+    }
+  });
   if (!page) {
     return;
   }
@@ -28,9 +37,6 @@ async function logoutSitecoreSessions(context: BrowserContext): Promise<void> {
   try {
     // The last test may have left the browser on an admin subpage without
     // shell chrome. Content Editor provides the logout link.
-    const { getTestEnvironment } = await import("./environment");
-    const { baseUrl } = getTestEnvironment();
-
     await page.goto(new URL(TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED, baseUrl).toString(), {
       waitUntil: "domcontentloaded",
     });

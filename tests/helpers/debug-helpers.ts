@@ -1,4 +1,4 @@
-import type { StrategyTestContext } from "../e2e/strategies/support/scenario.types";
+import type { StrategyTestContext } from "../e2e/shared/strategies/support/scenario.types";
 
 export async function LogDebugTestContext(testContext: StrategyTestContext): Promise<void> {
   const safe = async <T>(name: string, action: () => Promise<T>): Promise<T | string> => {

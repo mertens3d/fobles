@@ -23,6 +23,7 @@ const argsText = process.argv.join(" ").replace(/\\/g, "/");
 // itself) or an absolute path (e.g. the VS Code Test Explorer's "Run Test" button) changes
 // whatever comes before "e2e/", but never that segment itself.
 function getReportSuiteName(args: string): string | null {
+  args = args.replace(/e2e\/(?:stateful|parallel)\//g, "e2e/");
   if (args.includes("e2e/harvest")) {
     return "harvest";
   }
@@ -47,8 +48,14 @@ function getReportSuiteName(args: string): string | null {
   if (args.includes("e2e/editor")) {
     return "editor";
   }
-  if (args.includes("e2e/pages")) {
+  if (args.includes("e2e/fobles-pages")) {
     return "pages";
+  }
+  if (args.includes("e2e/reference-graph")) {
+    return "reference-graph";
+  }
+  if (args.includes("e2e/workers")) {
+    return "workers";
   }
   if (args.includes("e2e/promo-video")) {
     return "promo-video";
@@ -57,9 +64,11 @@ function getReportSuiteName(args: string): string | null {
 }
 
 // Each focused test set gets its own report file so running one group does not overwrite another.
-const reportSuiteName = getReportSuiteName(argsText);
+const reportSuiteName = getReportSuiteName(argsText) ??
+  (argsText.includes("edge-parallel") || argsText.includes("e2e/parallel") ? "parallel" :
+    argsText.includes("edge-stateful") || argsText.includes("e2e/stateful") ? "stateful" : null);
 const reportFileName = reportSuiteName ? `test-report-${reportSuiteName}.html` : "test-report.html";
-// Video recording is a hardcoded RECORD_VIDEO constant in tests/e2e/fixtures/playwright.ts, not
+// Video recording is a hardcoded RECORD_VIDEO setting consumed by tests/fixtures/playwright.ts, not
 // anything computed here - flip it by hand before/after a promoVideo recording session.
 
 export default defineConfig({
@@ -91,23 +100,21 @@ export default defineConfig({
     // attachment on the test-level row.
     screenshot: "off",
     // video (Playwright's own built-in option) has no effect here - sharedBrowserContext
-    // (tests/e2e/fixtures/playwright.ts) calls launchPersistentContext directly, bypassing the
+    // (tests/fixtures/playwright.ts) calls launchPersistentContext directly, bypassing the
     // context/page fixtures this setting normally configures. That fixture's own RECORD_VIDEO
     // constant controls recording instead (see its own comment for why).
   },
-  // Sitecore editor-state tests are explicitly tagged and isolated in a one-worker project.
-  // The general project waits for that project to finish, then uses the global four-worker cap.
   projects: [
     {
-      name: "edge-sitecore-state",
-      grep: /@sitecore-state/,
+      name: "edge-stateful",
+      testDir: "./e2e/stateful",
       workers: 1,
       use: { browserName: "chromium", channel: "msedge", ...devices["Desktop Chrome"] },
     },
     {
-      name: "edge",
-      grepInvert: /@sitecore-state/,
-      // dependencies: ["edge-sitecore-state"],
+      name: "edge-parallel",
+      testDir: "./e2e/parallel",
+      workers: 4,
       use: { browserName: "chromium", channel: "msedge", ...devices["Desktop Chrome"] },
     },
   ],

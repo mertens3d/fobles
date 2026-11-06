@@ -44,7 +44,11 @@ export async function openContentEditor(page: Page, foValue: string = TEST_CONST
   await openSitecorePage(page, path);
 }
 
-export async function openSitecorePage(page: Page, path = ""): Promise<void> {
+export async function openSitecorePage(
+  page: Page,
+  path = "",
+  options: { normalizeEditorState?: boolean } = {},
+): Promise<void> {
   await bringPageToFront(page);
   // Sitecore only reads this cookie at load time, so it must be set before navigating, not after.
   await setTreePanelWidth(page, TEST_CONST.TESTING.TREE_PANEL_WIDTH_PX);
@@ -71,7 +75,9 @@ export async function openSitecorePage(page: Page, path = ""): Promise<void> {
     });
   await page.waitForLoadState("domcontentloaded");
   await ensureAuthenticatedUrl(page);
-  await ensureDefaultEditorState(page);
+  if (options.normalizeEditorState !== false) {
+    await ensureDefaultEditorState(page);
+  }
   await ensureMouseMarkerExists(page);
 
   console.log(`[fobles] [${openSitecorePage.name}] Navigation finished at ${page.url()}`);

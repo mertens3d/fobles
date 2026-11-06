@@ -2,6 +2,11 @@
 
 Playwright end-to-end tests live in `tests/e2e/` and exercise the extension against a real Sitecore environment.
 
+- `e2e/stateful/`: Sitecore tests that intentionally change or depend on shared editor state; one worker (`edge-stateful`).
+- `e2e/parallel/`: extension-only tests, read-only strategy tests that require default editor settings, and the data-page recording smoke test; four workers (`edge-parallel`).
+- Preserve feature subfolders within each group. Shared fixtures, macros, and helpers remain outside the groups; existing feature support is reused rather than duplicated.
+- The folder determines scheduling; do not add `@sitecore-state` tags. Parallel strategy tests must verify Raw Values and Standard Fields are off and must not change either setting. Do not run stateful and parallel projects simultaneously when both include Sitecore tests.
+
 ## File Organization
 
 - `fixtures/sitecore.ts`'s `openSitecorePage` is the one choke point every navigation funnels
@@ -106,7 +111,7 @@ Use VS Code's Playwright test runner to run or debug individual tests and suites
 To verify Playwright configuration and test discovery without opening a browser or contacting Sitecore:
 
 ```text
-npm run test:e2e -- --project=edge --list
+npm run test:e2e -- --list
 ```
 
 ## Sitecore Test Login Warning
@@ -115,13 +120,24 @@ If you're prompted to log in on every run even within the same test session, or 
 doesn't load after logging in, the Sitecore active-user limit may be full. Use Sitecore's Kick
 User tool to free an existing session, then try again.
 
-Tests that change shared Sitecore Raw Values/Standard Fields state, plus the worker-tab test that
-uses that state, carry the `@sitecore-state` tag. They run in the dedicated `edge-sitecore-state`
-project with one worker. The general `edge` project allows four workers, excludes tagged tests,
-and depends on the stateful project so the two groups do not overlap in a full run. When running a
-general test, expect the stateful project to run first; in VS Code's Playwright test runner, the
-tagged tests appear under `edge-sitecore-state`. Each worker uses a persistent browser profile and
-its own shared browser context (`fixtures/playwright.ts`).
+The `edge-stateful` project runs `e2e/stateful/` with one worker. `edge-parallel` runs
+`e2e/parallel/` with four workers. The projects have no dependency, so selecting
+a parallel test does not trigger the stateful suite. Strategy tests in the parallel project use
+Sitecore but only read the default editor state; run the explicit reset test in
+`stateful/setup/sitecore-editor-state-reset.spec.ts` first if Raw Values or Standard Fields were
+left on. Do not run both projects at once when running Sitecore tests: run stateful first, then
+parallel. Each worker has its own persistent profile and shared browser context. Teardown logs out
+only when that worker actually visited Sitecore.
+
+Run the reset by itself with
+`npm run test:e2e -- --project=edge-stateful tests/e2e/stateful/setup/sitecore-editor-state-reset.spec.ts`.
+For a complete sequential Sitecore run, run `edge-stateful` first and then `edge-parallel`; do not
+use a combined all-project run while the parallel strategy specs are enabled.
+
+Select `edge-stateful` in VS Code or pass `--project=edge-stateful` for a single-worker run.
+For a parallel-only run, pass `--project=edge-parallel`. Keep `test:e2e` as the sole E2E npm script.
+Run promo recording only with `edge-stateful` and one worker; concurrent recording contexts
+share the video output directory and must not run together.
 
 If a run gets force-killed (crash, closing the terminal, a second Ctrl+C), its browser process can
 be left running and holding that profile lock - every later run then fails immediately with
@@ -197,7 +213,7 @@ spec actually consumes each one yet.
 
 ### Hardcoded Expected Values
 
-Each `strategies/*.spec.ts` file hardcodes its own expected values (item GUIDs, resolved paths,
+Each `parallel/strategies/*.spec.ts` file hardcodes its own expected values (item GUIDs, resolved paths,
 button text) as consts rather than reading them from the serialized YAML at runtime - tests
 should assert against a fixed, independent expectation, not "whatever the data currently says"
 (otherwise a real regression could pass silently). These consts were harvested by hand by looking
@@ -225,7 +241,7 @@ which every item already has. Any existing scenario item exercises them.
 - [x] multilist-options
 - [x] multilist-with-search
 - [x] quick-info-section (no dedicated item needed - see note above)
-- [x] reference-links (no dedicated item needed - see note above; has its own spec under `tests/e2e/editor/`, unlike quick-info-section/template-path)
+- [x] reference-links (no dedicated item needed - see note above; has its own spec under `tests/e2e/stateful/editor/`, unlike quick-info-section/template-path)
 - [ ] style-checklist (new - operates on Presentation Details -> Controls -> Edit's "Styles" checkbox widget, not a regular content item field; no test yet)
 - [x] tag-list
 - [x] template-path (no dedicated item needed - see note above)
@@ -234,7 +250,7 @@ which every item already has. Any existing scenario item exercises them.
 
 ## Editor Scenario Coverage
 
-`tests/e2e/editor/` tests the editor-strategies (`src/content/features/augmentor/editor-
+`tests/e2e/stateful/editor/` tests the editor-strategies (`src/content/features/augmentor/editor-
 strategies/`) - these decorate a piece of Content Editor's own UI chrome rather than a single
 Sitecore field, so unlike `strategies/*.spec.ts` they don't toggle Fobles on before locating their
 target: that UI chrome (e.g. the "Links" gallery) often only exists in the DOM *after* an extra

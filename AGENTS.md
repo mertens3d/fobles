@@ -45,7 +45,8 @@
 - Run `npm run build:scss` after stylesheet-only changes.
 - Run `npm run build:extension` after extension changes. It regenerates runtime bundles and copies the extension icon.
 - Keep `test:e2e` as the sole E2E npm script; use VS Code's Playwright test runner for individual tests/suites and debugging. Do not add per-suite or per-test npm scripts.
-- Run `npm run test:e2e -- --project=edge --list` to verify Playwright test discovery without executing tests.
+- E2E folder is the scheduling source of truth: `tests/e2e/stateful/` uses `edge-stateful` (one worker); `tests/e2e/parallel/` uses `edge-parallel` (four workers, no project dependency). Keep shared editor-state mutation tests stateful. Parallel strategy tests may interact with Sitecore only after asserting Raw Values and Standard Fields are off; they must not change either setting. Run the explicit editor-state reset test first if needed, and do not run both projects simultaneously when parallel Sitecore tests are selected. Do not reintroduce state tags.
+- Run `npm run test:e2e -- --list` to verify Playwright test discovery without executing tests. Use `--project=edge-parallel` for a parallel-only run.
 - Generated test output is stored under `playwright/test-artifacts/` and should not be committed.
 - Reload the unpacked extension and hard-refresh (Ctrl+F5) affected Sitecore tabs after manifest or content-script changes. A normal refresh can leave the old content script running against an invalidated extension context, causing `chrome.storage` reads to silently fall back to defaults.
 

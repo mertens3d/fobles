@@ -2,14 +2,14 @@ import fs from "node:fs";
 import path from "node:path";
 import { parse as parseYaml } from "yaml";
 
-// Keeps tests/e2e/strategies/support/yml-fobles.CONST.ts's hand-transcribed `path` values in
+// Keeps tests/e2e/shared/strategies/support/yml-fobles.CONST.ts's hand-transcribed `path` values in
 // sync with tests/items-fobles/serialization/**/*.yml (the actual source of truth) - items get
 // moved/renamed in Sitecore without anyone remembering to update the const, which then silently
 // breaks locators built from `path` far later. Only rewrites `path` values; every other
 // hand-picked field (fieldHint/fieldValue/displayName) is left untouched since those aren't
 // simple 1:1 copies of a single YAML field.
 const SERIALIZATION_ROOT = path.resolve("tests/items-fobles/serialization");
-const CONST_FILE = path.resolve("tests/e2e/strategies/support/yml-fobles.CONST.ts");
+const CONST_FILE = path.resolve("tests/e2e/shared/strategies/support/yml-fobles.CONST.ts");
 
 function collectYmlFiles(dir) {
   const results = [];

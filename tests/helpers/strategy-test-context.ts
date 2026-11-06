@@ -3,7 +3,7 @@
 import { TEST_CONST } from "../constants/TEST_CONST";
 import { findFoblesFrame } from "./frame-finder";
 import type { Locator, Page, TestInfo } from "@playwright/test";
-import type { StrategyScenarioData, StrategyTestContext } from "../e2e/strategies/support/scenario.types";
+import type { StrategyScenarioData, StrategyTestContext } from "../e2e/shared/strategies/support/scenario.types";
 import { createFoblesStep } from "./fobles-helpers-support/test-step";
 import { getEditorSectionLocator } from "./fobles-helpers-support/test-setup";
 

@@ -1,11 +1,12 @@
 import { expect, type Frame, type Locator, type Page } from "@playwright/test";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { openContentEditor, openSitecorePage } from "../../fixtures/sitecore";
+import { getScRawValuesState, getScStandardFieldsState } from "../../macros/sitecore-macros";
 import { clickWithMouseMarker, ensureMouseMarkerExists, moveMouseToDefault } from "../mouse-proxy";
 import { findFoblesFrame, findFrameWithSelector } from "../frame-finder";
 import { expectLBoltButtonVisible } from "../../expect-snippets/expect-snippets";
 import { clickLbolt } from "../../macros/fobles-macros";
-import type { StrategyScenarioData } from "../../e2e/strategies/support/scenario.types";
+import type { StrategyScenarioData } from "../../e2e/shared/strategies/support/scenario.types";
 
 export async function setupContentEditorForTestingBasic(page: Page) {
   await openContentEditor(page);
@@ -17,7 +18,18 @@ export async function setupContentEditorForTesting(page: Page, scenario: Strateg
   //return { page, fieldTable, locatorFirstResult, STEP_WAIT_MS, step, SCENARIO: scenario , testInfo };
 
   console.log(`[fobles] Opening strategy item ${scenario.itemId}`);
-  await openSitecorePage(page, `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${scenario.itemId}`);
+  await openSitecorePage(
+    page,
+    `${TEST_CONST.SITECORE.PATHS.CONTENT_EDITOR_BW_ENCODED}&fo=${scenario.itemId}`,
+    { normalizeEditorState: false },
+  );
+  const rawValues = await getScRawValuesState(page);
+  const standardFields = await getScStandardFieldsState(page);
+  if (rawValues || standardFields) {
+    throw new Error(
+      `Strategy tests require Raw Values and Standard Fields to be off (Raw Values: ${rawValues ? "on" : "off"}; Standard Fields: ${standardFields ? "on" : "off"}). Run the Sitecore editor-state reset test first.`,
+    );
+  }
   // &fo=${scenario.itemId}`);
   console.log(`[fobles] Navigation finished at ${page.url()}`);
   await moveMouseToDefault(page);

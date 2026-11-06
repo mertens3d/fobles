@@ -2,7 +2,7 @@
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "Playwright Strategies",
+      "name": "Playwright Strategies (Parallel)",
       "type": "pwa-node",
       "request": "launch",
       "program": "${workspaceFolder}/node_modules/@playwright/test/cli.js",
@@ -11,9 +11,8 @@
         "-c",
         "tests/playwright.config.ts",
         "--retries=0",
-        "tests/e2e/00-session-start.spec.ts",
-        "tests/e2e/toolbar",
-        "tests/e2e/zz-session-end.spec.ts"
+        "--project=edge-parallel",
+        "tests/e2e/parallel/strategies"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
@@ -28,9 +27,11 @@
         "-c",
         "tests/playwright.config.ts",
         "--retries=0",
-        "tests/e2e/00-session-start.spec.ts",
-        "tests/e2e/toolbar/toolbar-drag.spec.ts",
-        "tests/e2e/zz-session-end.spec.ts"
+        "--project=edge-stateful",
+        "--project=edge-stateful",
+        "tests/e2e/stateful/00-session-start.spec.ts",
+        "tests/e2e/stateful/toolbar-ui/drag.spec.ts",
+        "tests/e2e/stateful/zz-session-end.spec.ts"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
@@ -45,9 +46,11 @@
         "-c",
         "tests/playwright.config.ts",
         "--retries=0",
-        "tests/e2e/00-session-start.spec.ts",
-        "tests/e2e/toolbar/toolbar-other.spec.ts",
-        "tests/e2e/zz-session-end.spec.ts"
+        "--project=edge-stateful",
+        "--project=edge-stateful",
+        "tests/e2e/stateful/00-session-start.spec.ts",
+        "tests/e2e/stateful/toolbar",
+        "tests/e2e/stateful/zz-session-end.spec.ts"
       ],
       "cwd": "${workspaceFolder}",
       "console": "integratedTerminal"
