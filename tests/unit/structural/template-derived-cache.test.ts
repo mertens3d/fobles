@@ -21,7 +21,7 @@ async function seedRoots(f: ReturnType<typeof runtimeFixture>): Promise<void> {
       status: "found", requested: item,
       value: factoryItemGraphNodeData({ scItemId: guid(index), scItemName: kind, scItemPath: path }),
     } });
-    await cache.putFact(structuralTemplateCacheKey(SCOPE, guid(index)), "templateBases", { directBaseIds: [] });
+    await cache.putFact(structuralTemplateCacheKey(SCOPE, guid(index)), "templateBases", { inheritedTemplateIds: [] });
   }
 }
 
@@ -30,7 +30,7 @@ void test("derived kind round-trips through new runtime/service instances on the
   t.mock.method(Date, "now", f.now);
   await seedRoots(f);
   const key = structuralTemplateCacheKey(SCOPE, guid(10));
-  await cache.putFact(key, "templateBases", { directBaseIds: [guid(2)] });
+  await cache.putFact(key, "templateBases", { inheritedTemplateIds: [guid(2)] });
   const item = { id: guid(21), name: "Home", path: "/sitecore/content/Site/Home", templateId: guid(10) };
   const first = await createStructuralRuntimeDriver(SCOPE, f.options);
   assert.deepEqual(await createTemplateStructuralService().classify(item, first, f.options.settings, f.now()), {
@@ -60,7 +60,7 @@ void test("derived kind round-trips through new runtime/service instances on the
   assert.deepEqual(f.tasks, []);
 });
 
-void test("new services invalidate persisted kinds for direct, transitive, and settings changes without discarding direct bases", async () => {
+void test("new services invalidate persisted kinds for inheritance and settings changes without discarding inherited templates", async () => {
   const f = fixture();
   const item = f.content(20, "/sitecore/content/Site", guid(10));
   f.bases.set(guid(10), [guid(11)]);
@@ -87,8 +87,8 @@ void test("persisted fingerprints detect changed cached transitive bases and set
   await seedRoots(f);
   const key = structuralTemplateCacheKey(SCOPE, guid(10));
   const dependency = structuralTemplateCacheKey(SCOPE, guid(11));
-  await cache.putFact(key, "templateBases", { directBaseIds: [guid(11)] });
-  await cache.putFact(dependency, "templateBases", { directBaseIds: [guid(2)] });
+  await cache.putFact(key, "templateBases", { inheritedTemplateIds: [guid(11)] });
+  await cache.putFact(dependency, "templateBases", { inheritedTemplateIds: [guid(2)] });
   const item = { id: guid(21), name: "Home", path: "/sitecore/content/Site/Home", templateId: guid(10) };
   async function classify() {
     const driver = await createStructuralRuntimeDriver(SCOPE, f.options);
@@ -98,22 +98,22 @@ void test("persisted fingerprints detect changed cached transitive bases and set
   }
   assert.equal((await classify()).kind, "site");
   const original = await cache.getFact(key, "templateDerived");
-  await cache.putFact(dependency, "templateBases", { directBaseIds: [guid(3)] });
+  await cache.putFact(dependency, "templateBases", { inheritedTemplateIds: [guid(3)] });
   assert.equal((await classify()).kind, "tenant");
   assert.notEqual((await cache.getFact(key, "templateDerived"))?.value.fingerprint, original?.value.fingerprint);
   f.options.settings.baseTemplatePaths.tenant = [];
   assert.equal((await classify()).kind, "unknown");
   assert.equal((await cache.getFact(key, "templateDerived"))?.value.kind, "unknown");
-  assert.deepEqual((await cache.getFact(key, "templateBases"))?.value.directBaseIds, [guid(11)]);
-  assert.deepEqual((await cache.getFact(dependency, "templateBases"))?.value.directBaseIds, [guid(3)]);
+  assert.deepEqual((await cache.getFact(key, "templateBases"))?.value.inheritedTemplateIds, [guid(11)]);
+  assert.deepEqual((await cache.getFact(dependency, "templateBases"))?.value.inheritedTemplateIds, [guid(3)]);
   assert.deepEqual(f.tasks, []);
 });
 
-void test("SWR returns stale derived kind without recertification and converges after direct-base refresh", async (t) => {
+void test("SWR returns stale derived kind without recertification and converges after inheritance refresh", async (t) => {
   let now = 1000;
   t.mock.method(Date, "now", () => now);
   const key = structuralTemplateCacheKey(SCOPE, guid(10));
-  await cache.putFact(key, "templateBases", { directBaseIds: [guid(2)] });
+  await cache.putFact(key, "templateBases", { inheritedTemplateIds: [guid(2)] });
   const f = runtimeFixture();
   await seedRoots(f);
   const item = { id: guid(21), name: "Home", path: "/sitecore/content/Site/Home", templateId: guid(10) };

@@ -148,8 +148,8 @@ export async function putFact<K extends SitecoreDataFactName>(
   value: SitecoreDataFactValueByName[K],
   options: { revision?: string; lastVerifiedAt?: number } = {},
 ): Promise<void> {
-  if (factName === "templateBases" && (value as SitecoreDataFactMap["templateBases"]).directBaseIds === undefined) {
-    throw new TypeError("Unavailable direct template bases cannot be cached");
+  if (factName === "templateBases" && (value as SitecoreDataFactMap["templateBases"]).inheritedTemplateIds === undefined) {
+    throw new TypeError("Unavailable template inheritance cannot be cached");
   }
   await runCacheTransaction("readwrite", async (itemStore, factStore) => {
     const itemKey = serializeCacheKey(key);

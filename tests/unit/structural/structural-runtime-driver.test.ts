@@ -19,7 +19,7 @@ void test("runtime age tuning is read live and ignores legacy structural age", a
   t.mock.method(Date, "now", f.now);
   Object.assign(f.options.settings, { maxAgeMs: 1 });
   const key = structuralTemplateCacheKey(SCOPE, guid(10));
-  await cache.putFact(key, "templateBases", { directBaseIds: [guid(2)] });
+  await cache.putFact(key, "templateBases", { inheritedTemplateIds: [guid(2)] });
   f.age();
   getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs = 1000;
   const driver = await createStructuralRuntimeDriver(SCOPE, f.options);
@@ -69,7 +69,7 @@ void test("stale template facts return old data immediately and refresh atomical
   const f = runtimeFixture();
   t.mock.method(Date, "now", f.now);
   const key = structuralTemplateCacheKey(SCOPE, guid(10));
-  await cache.putFact(key, "templateBases", { directBaseIds: [guid(2)] });
+  await cache.putFact(key, "templateBases", { inheritedTemplateIds: [guid(2)] });
   await cache.putFact(key, "customSections", { sections: [] });
   f.age();
   f.setBases([guid(3)]);
@@ -77,12 +77,12 @@ void test("stale template facts return old data immediately and refresh atomical
   const stale = await driver.bases(guid(10), false);
   assert.deepEqual(stale?.value, [guid(2)]);
   await driver.finish();
-  assert.deepEqual((await cache.getFact(key, "templateBases"))?.value.directBaseIds, [guid(3)]);
+  assert.deepEqual((await cache.getFact(key, "templateBases"))?.value.inheritedTemplateIds, [guid(3)]);
   assert.deepEqual((await cache.getFact(key, "customSections"))?.value, { sections: [] });
   assert.equal(f.tasks.filter((task) => task.type === "get-template-bases").length, 1);
 });
 
-void test("direct-base reads deduplicate, preserve empty versus unavailable, and invoke the leased fallback only when needed", async () => {
+void test("inheritance reads deduplicate and preserve empty versus unavailable", async () => {
   const f = runtimeFixture();
   f.setBases([]);
   const driver = await createStructuralRuntimeDriver(SCOPE, f.options);
@@ -95,9 +95,9 @@ void test("direct-base reads deduplicate, preserve empty versus unavailable, and
   const unavailable = await createStructuralRuntimeDriver(SCOPE, f.options);
   assert.equal(await unavailable.bases(guid(11), false), undefined);
   await unavailable.finish();
-  assert.equal(f.fallbackCalls(), 1);
+  assert.equal(f.fallbackCalls(), 0);
   assert.equal(await cache.getFact(structuralTemplateCacheKey(SCOPE, guid(11)), "templateBases"), undefined);
-  await assert.rejects(cache.putFact(structuralTemplateCacheKey(SCOPE, guid(11)), "templateBases", { directBaseIds: undefined }));
+  await assert.rejects(cache.putFact(structuralTemplateCacheKey(SCOPE, guid(11)), "templateBases", { inheritedTemplateIds: undefined }));
 });
 
 void test("untrusted path cache hits cannot satisfy configured roots; live fallback parent targets are not persisted", async () => {

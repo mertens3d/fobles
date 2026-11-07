@@ -41,7 +41,7 @@ export function runtimeFixture() {
         } else if (task.type === "get-parent") {
           result = { ...base, type: task.type, payload: { parent: parentFact } };
         } else if (task.type === "get-template-bases") {
-          result = { ...base, type: task.type, payload: { directBaseIds: baseIds } };
+          result = { ...base, type: task.type, payload: { inheritedTemplateIds: baseIds } };
         }
         return Promise.resolve(result);
       },

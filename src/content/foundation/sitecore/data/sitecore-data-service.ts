@@ -43,7 +43,7 @@ function isCacheableResult(result: WorkerTaskExecutionResult): result is WorkerT
     return result.payload.result.status !== "error";
   }
   if (result.type === "get-template-bases") {
-    return result.payload.directBaseIds !== undefined;
+    return result.payload.inheritedTemplateIds !== undefined;
   }
 
   return true;

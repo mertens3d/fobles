@@ -117,7 +117,7 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
       extensionLog.debug("Structural discovery: ancestor classified", { scope, target: item, classification, fresh });
       if (!item.templateId || !classification.complete) {
         extensionLog.warn("Structural discovery: ancestor classification incomplete", {
-          scope, target: item, reason: !item.templateId ? "missing-template" : "missing-root-or-direct-bases", classification,
+          scope, target: item, reason: !item.templateId ? "missing-template" : "missing-root-or-template-inheritance", classification,
         });
       }
       if (!fresh && classification.stale) {

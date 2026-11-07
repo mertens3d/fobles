@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/foundation/harvesting/worker-task-executor.ts
 
 import { collectChildren } from "./collectors/child-collector";
-import { collectTemplateBases } from "./collectors/template-bases-collector.ts";
+import { collectInheritedTemplateIds } from "./collectors/template-bases-collector.ts";
 import { SITECORE } from "../../../constants/sitecore.ts";
 import { collectParent } from "./collectors/parent-collector";
 import { collectReferrers } from "./collectors/referrer-collector";
@@ -30,6 +30,8 @@ import {
   type WorkerTaskType,
 } from "../workers/tasks/worker-task.types";
 import type { ItemGraphNodeData } from "../reference-data/model/sitecore-item.types";
+import { extensionLog } from "../../logger.ts";
+import { openScInheritanceTab } from "../sitecore/macros/editor-tab-macro.ts";
 
 function normalizeSitecoreItemId(value: string | undefined): string | undefined {
   return value?.replace(/[{}]/g, "").trim().toLowerCase();
@@ -108,6 +110,17 @@ function executeGetQuickInfo(doc: Document, requested: SitecoreItemLocator): Sit
   return { requested, resolved, value: item, status: "found" };
 }
 
+async function waitForTemplateInheritance(doc: Document, signal: AbortSignal): Promise<readonly string[] | undefined> {
+  const inheritanceDoc = await openScInheritanceTab(doc, signal);
+  if (!inheritanceDoc) {
+    extensionLog.warn("Template inheritance: Inheritance tab unavailable");
+    return undefined;
+  }
+  const ids = collectInheritedTemplateIds(inheritanceDoc);
+  extensionLog.debug("Template inheritance: harvested", { inheritedTemplateIds: ids });
+  return ids;
+}
+
 async function executeSetRawValues(
   doc: Document,
   task: WorkerTask & { type: "set-raw-values"; value: boolean },
@@ -148,10 +161,17 @@ export async function executeWorkerTask(
       const resolved = executeGetQuickInfo(doc, task.requested);
       const path = resolved.value?.scItemPath?.toLowerCase();
       const root = SITECORE.ITEM_KIND.PATH_ROOTS.TEMPLATES.toLowerCase();
-      result = successResult(task, {
-        directBaseIds: resolved.status === "found" && (path === root || path?.startsWith(`${root}/`))
-          ? collectTemplateBases(doc) : undefined,
+      const isTemplate = resolved.status === "found" && (path === root || path?.startsWith(`${root}/`));
+      extensionLog.debug("Template inheritance: worker task resolved", {
+        requested: task.requested,
+        resolvedStatus: resolved.status,
+        resolved: resolved.resolved,
+        path,
+        root,
+        isTemplate,
+        url: doc.defaultView?.location.href,
       });
+      result = successResult(task, { inheritedTemplateIds: isTemplate ? await waitForTemplateInheritance(doc, signal) : undefined });
     } else if (task.type === "get-quick-info") {
       const resolvedResult = executeGetQuickInfo(doc, task.requested);
 

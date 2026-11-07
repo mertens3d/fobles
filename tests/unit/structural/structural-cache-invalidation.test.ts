@@ -13,7 +13,7 @@ void test("scoped structural invalidation removes template facts across language
   const web = { ...key, database: "web" };
   const masterOther = { ...key, database: "master2" };
   for (const item of [key, danish, web, masterOther]) {
-    await cache.putFact(item, "templateBases", { directBaseIds: [guid(2)] }, { revision: "revision-preserved", lastVerifiedAt: 123 });
+    await cache.putFact(item, "templateBases", { inheritedTemplateIds: [guid(2)] }, { revision: "revision-preserved", lastVerifiedAt: 123 });
     await cache.putFact(item, "templateDerived", { complete: true, fingerprint: "settings/dependencies", inheritedIds: [guid(2)], kind: "site" });
     await cache.putFact(item, "customSections", { sections: [] });
     await cache.putFact(item, "parent", { parent: undefined });

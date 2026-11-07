@@ -3,7 +3,6 @@ import { ITEM_KIND } from "../../../../../shared/structural/structural.const.ts"
 import { getRuntimeSettings } from "../../../../runtime-settings/runtime-settings.ts";
 import type { StructuralScope, StructuralSettings } from "../../../../../shared/structural/structural.types.ts";
 import { extensionLog } from "../../../../logger.ts";
-import { buildTemplateInheritanceGraph } from "./build-template-inheritance-graph.ts";
 import { classifyItem } from "./classify-item.ts";
 import { isWithinSitePath } from "../../../../../shared/known-sites/known-sites-model.ts";
 import type { BaseTemplateIdSets } from "./item-kind.types.ts";
@@ -47,40 +46,29 @@ export function createTemplateStructuralService() {
     }
     let templateKind: StructuralClassification["kind"] = ITEM_KIND.UNKNOWN;
     if (item.templateId) {
-      const graph = await buildTemplateInheritanceGraph({ id: item.templateId }, async (template) => {
-        const fact = await driver.bases(template.id, fresh);
-        if (fact) {
-          stamps.push(`${template.id}:${fact.cachedAt}:${fact.value.join("|")}`);
-          stale ||= now - fact.cachedAt >= maxUnvalidatedAgeMs;
+      const inheritance = await driver.bases(item.templateId, fresh);
+      if (inheritance) {
+        stamps.push(`${item.templateId}:${inheritance.cachedAt}:${inheritance.value.join("|")}`);
+        stale ||= now - inheritance.cachedAt >= maxUnvalidatedAgeMs;
+        const inheritedIds = [item.templateId, ...inheritance.value];
+        const fingerprint = JSON.stringify([settings.baseTemplatePaths, maxUnvalidatedAgeMs, stamps, complete]);
+        const cached = await driver.readDerived(item.templateId);
+        if (complete && cached?.value.fingerprint === fingerprint && cached.value.complete) {
+          templateKind = cached.value.kind;
         } else {
-          extensionLog.warn("Structural discovery: direct bases missing", {
-            scope, target: item, templateId: template.id, reason: "missing-direct-bases", fresh,
-          });
+          templateKind = classifyItem({
+            itemPath: roots.CONTENT, inheritedTemplateIds: inheritedIds, baseTemplateIds: baseIds,
+            pathRoots: { content: roots.CONTENT, templates: roots.TEMPLATES },
+          }).classification;
+          if (complete && !stale) {
+            await driver.writeDerived(item.templateId, { complete, fingerprint, inheritedIds, kind: templateKind });
+          }
         }
-        return fact?.value.map((id) => ({ id }));
-      });
-      const unresolved = (node: typeof graph.root, visited = new Set<string>()): boolean => {
-        let missing = node.unresolved;
-        if (!visited.has(node.template.id)) {
-          visited.add(node.template.id);
-          missing ||= node.directBases.some((base) => unresolved(base, visited));
-        }
-        return missing;
-      };
-      complete &&= !unresolved(graph.root) && !graph.warnings.some((warning) => warning.kind === "limit-reached");
-      const fingerprint = JSON.stringify([settings.baseTemplatePaths, maxUnvalidatedAgeMs, stamps, complete]);
-      const cached = await driver.readDerived(item.templateId);
-      if (complete && cached?.value.fingerprint === fingerprint && cached.value.complete) {
-        templateKind = cached.value.kind;
       } else {
-        const inheritedIds = graph.allTemplateIds;
-        templateKind = classifyItem({
-          itemPath: roots.CONTENT, inheritedTemplateIds: inheritedIds, baseTemplateIds: baseIds,
-          pathRoots: { content: roots.CONTENT, templates: roots.TEMPLATES },
-        }).classification;
-        if (complete && !stale) {
-          await driver.writeDerived(item.templateId, { complete, fingerprint, inheritedIds, kind: templateKind });
-        }
+        complete = false;
+        extensionLog.warn("Structural discovery: template inheritance missing", {
+          scope, target: item, templateId: item.templateId, reason: "missing-inheritance-tab-data", fresh,
+        });
       }
     } else {
       complete = false;

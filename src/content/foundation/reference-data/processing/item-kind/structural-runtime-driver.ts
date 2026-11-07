@@ -3,7 +3,6 @@ import { normalizeHistoryId, normalizeHistoryScope, normalizeHistoryVisit } from
 import { getRuntimeSettings, initializeRuntimeSettings } from "../../../../runtime-settings/runtime-settings.ts";
 import type { StructuralScope } from "../../../../../shared/structural/structural.types.ts";
 import { extensionLog } from "../../../../logger.ts";
-import { collectTemplateBasesFromSections } from "../../../harvesting/collectors/template-bases-collector.ts";
 import * as cache from "../../../cache/sitecore-data/sitecore-data-cache.ts";
 import { structuralTemplateCacheKey } from "../../../cache/sitecore-data/structural-cache-key.ts";
 import type { SitecoreDataCacheKey, SitecoreDataFactMap, SitecoreDataFactName } from "../../../cache/sitecore-data/sitecore-data-cache.types.ts";
@@ -69,15 +68,10 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
         ? await session.runTask({ ...base, type: "get-template-bases", requested: item })
         : await session.runTask({ ...base, type: "get-parent" });
     if (name === "templateBases" && result?.status === "success" && result.type === "get-template-bases" &&
-      result.payload.directBaseIds === undefined) {
-      if (options.templateBasesFallback) {
-        extensionLog.debug("Structural discovery: explicit template-base fallback", { scope: normalized, target: item });
-        result = await options.templateBasesFallback(session, item, urlFor(item));
-      } else {
-        extensionLog.warn("Structural discovery: template bases unavailable without changing editor state", {
-          scope: normalized, target: item, reason: "missing-direct-bases", rawFallback: "disabled-for-background-discovery",
-        });
-      }
+      result.payload.inheritedTemplateIds === undefined) {
+      extensionLog.warn("Structural discovery: template inheritance unavailable", {
+        scope: normalized, target: item, reason: "missing-inheritance-tab-data",
+      });
     }
     let value: SitecoreDataFactMap[K] | undefined;
     if (result?.status === "success") {
@@ -85,7 +79,7 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
         if (result.payload.result.status === "not-found" || verifiedItem(result.payload.result.value, item)) {
           value = { result: result.payload.result } as SitecoreDataFactMap[K];
         }
-      } else if (name === "templateBases" && result.type === "get-template-bases" && result.payload.directBaseIds !== undefined) {
+      } else if (name === "templateBases" && result.type === "get-template-bases" && result.payload.inheritedTemplateIds !== undefined) {
         value = result.payload as SitecoreDataFactMap[K];
       } else if (name === "parent" && result.type === "get-parent") {
         value = result.payload as SitecoreDataFactMap[K];
@@ -187,22 +181,10 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
 
   async function bases(id: string, fresh: boolean): Promise<StructuralRead<readonly string[]> | undefined> {
     const key = structuralTemplateCacheKey(normalized, id);
-    if (!fresh && !await cache.getFact(key, "templateBases")) {
-      for (const name of ["customSections", "standardSections"] as const) {
-        const sections = await cache.getFact(keyFor(key.item), name);
-        const directBaseIds = sections && collectTemplateBasesFromSections(sections.value.sections);
-        if (sections && directBaseIds !== undefined) {
-          const verifiedAt = sections.lastVerifiedAt ?? sections.cachedAt;
-          await cache.putFact(key, "templateBases", { directBaseIds }, { lastVerifiedAt: verifiedAt });
-          extensionLog.debug("Structural discovery: template bases reused from harvested sections", {
-            scope: normalized, target: key.item, source: name, cachedAt: verifiedAt,
-          });
-          break;
-        }
-      }
-    }
     const fact = await read(key, "templateBases", fresh);
-    return fact?.value.directBaseIds === undefined ? undefined : { value: fact.value.directBaseIds, cachedAt: fact.cachedAt };
+    return fact?.value.inheritedTemplateIds === undefined
+      ? undefined
+      : { value: fact.value.inheritedTemplateIds, cachedAt: fact.cachedAt };
   }
 
   async function readDerived(id: string): Promise<StructuralRead<TemplateDerivedRecord> | undefined> {

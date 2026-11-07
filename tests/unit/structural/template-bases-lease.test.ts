@@ -24,7 +24,7 @@ void test("Raw Values fallback owns the existing harvesting lease and restores b
         }
         assert.equal(task.type, "get-template-bases");
         assert.equal(raw, true);
-        return Promise.resolve({ ...base, type: "get-template-bases", payload: { directBaseIds: [] } });
+        return Promise.resolve({ ...base, type: "get-template-bases", payload: { inheritedTemplateIds: [] } });
       },
     } as WorkSession;
     const result = await readTemplateBasesWithLease(session, { kind: "id", value: guid(10) }, `${SCOPE.origin}/sitecore/shell`, {
@@ -89,7 +89,7 @@ void test("restoration retries are bounded and unrecoverable restoration fails v
         restoreAttempts += 1;
         result = { ...base, type: task.type, status: "error", errorMessage: "restore failed" };
       } else if (task.type === "get-template-bases") {
-        result = { ...base, type: task.type, status: "success", payload: { directBaseIds: [] } };
+        result = { ...base, type: task.type, status: "success", payload: { inheritedTemplateIds: [] } };
       } else {
         result = { ...base, type: "set-raw-values", status: "success", payload: { value: true } };
       }
@@ -132,7 +132,7 @@ void test("restoration retries can recover without reporting a restoration failu
         }
         return Promise.resolve({ ...base, type: task.type, payload: { value: task.value } });
       }
-      return Promise.resolve({ ...base, type: "get-template-bases", payload: { directBaseIds: [] } });
+      return Promise.resolve({ ...base, type: "get-template-bases", payload: { inheritedTemplateIds: [] } });
     },
   } as WorkSession;
   const result = await readTemplateBasesWithLease(session, { kind: "id", value: guid(10) }, `${SCOPE.origin}/sitecore/shell`, {

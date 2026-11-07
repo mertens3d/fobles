@@ -78,7 +78,7 @@ export type WorkerTask =
   | SetStandardFieldsTask;
 
 export type WorkerTaskPayloadByType = {
-  "get-template-bases": { directBaseIds: readonly string[] | undefined };
+  "get-template-bases": { inheritedTemplateIds: readonly string[] | undefined };
   "get-quick-info": { result: SitecoreResolvedResult<ItemGraphNodeData>; revision?: string };
   "get-parent": { parent: ItemGraphNodeData | undefined };
   "get-children": { childItems: readonly ItemGraphNodeData[] };

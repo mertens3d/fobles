@@ -141,6 +141,12 @@ export const SITECORE = {
     CONTENT_CONTROL: ".scContentControl",
     DATABASE_INPUT: "input[id$='_Database'][value]",
     EDITORS: "#Editors",
+    EDITOR_TABS: {
+      ROOT: "#EditorTabs",
+      INHERITANCE: "#EditorTabs a[title^='Inheritance:']",
+    },
+    EDITOR_FRAMES: { INHERITANCE: "#EditorFrames > iframe[src*='xmlcontrol=TemplateInheritance']" },
+    TEMPLATE_INHERITANCE: { LIST: "#TemplateList", TEMPLATE: "a.scTemplate" },
     EDITOR_FIELD_MARKER: ".scEditorFieldMarker",
     EDITOR_HEADER: ".scEditorHeader",
     FIELD_ACTION: "a.scContentButton",

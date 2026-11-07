@@ -39,3 +39,21 @@ export function collectTemplateBases(doc: Document): readonly string[] | undefin
   }
   return bases === undefined ? undefined : [...new Set(bases)];
 }
+
+export function collectInheritedTemplateIds(doc: Document): readonly string[] | undefined {
+  const list = doc.querySelector<HTMLElement>(SITECORE.SELECTORS.TEMPLATE_INHERITANCE.LIST);
+  if (!list) {
+    return undefined;
+  }
+  const ids: string[] = [];
+  for (const template of list.querySelectorAll<HTMLAnchorElement>(SITECORE.SELECTORS.TEMPLATE_INHERITANCE.TEMPLATE)) {
+    const handler = template.getAttribute("onclick") ?? "";
+    const match = handler.match(/Load\(\\?"(\{[0-9a-fA-F-]{36}\})\\?"\)/);
+    const id = normalizeHistoryId(match?.[1]);
+    if (!id) {
+      return undefined;
+    }
+    ids.push(id);
+  }
+  return [...new Set(ids)];
+}
