@@ -1,5 +1,5 @@
 import { SITECORE } from "../../../../../constants/sitecore.ts";
-import { getRuntimeSettings, initializeRuntimeSettings } from "../../../../runtime-settings/runtime-settings.ts";
+import { getRuntimeSettings, getStructuralCacheMaxUnvalidatedAgeMs, initializeRuntimeSettings } from "../../../../runtime-settings/runtime-settings.ts";
 import { normalizeHistoryScope, normalizeHistoryVisit } from "../../../../../shared/item-history/item-history-model.ts";
 import { isWithinSitePath, knownSitesStorageKey, matchKnownSite } from "../../../../../shared/known-sites/known-sites-model.ts";
 import { ITEM_KIND, STRUCTURAL } from "../../../../../shared/structural/structural.const.ts";
@@ -21,7 +21,7 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
   function needsValidation(scope: StructuralScope, site: KnownSite, settings: StructuralSettings): boolean {
     const scopeKey = knownSitesStorageKey(scope);
     const stamp = validatedSettings.get(`${scopeKey}:${site.id}`);
-    const expired = site.validatedAt === 0 || deps.now() - site.validatedAt >= getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs;
+    const expired = site.validatedAt === 0 || deps.now() - site.validatedAt >= getStructuralCacheMaxUnvalidatedAgeMs();
     const settingsChanged = stamp !== undefined && stamp !== fingerprint(settings);
     return expired || settingsChanged;
   }
@@ -100,7 +100,7 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
     while (id && seen.size < STRUCTURAL.MAX_ANCESTORS && !seen.has(id)) {
       seen.add(id);
       const resolved = await driver.quickInfo({ kind: "id", value: id }, fresh);
-      if (!fresh && resolved && deps.now() - resolved.cachedAt >= getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs) {
+      if (!fresh && resolved && deps.now() - resolved.cachedAt >= getStructuralCacheMaxUnvalidatedAgeMs()) {
         enqueue(scope, visit, true);
       }
       const item = resolved?.value;
@@ -127,7 +127,7 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
       }
       if (classification.kind === ITEM_KIND.SITE) {
         let confirmedSite = false;
-        if (classification.stale || deps.now() - resolved.cachedAt >= getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs) {
+        if (classification.stale || deps.now() - resolved.cachedAt >= getStructuralCacheMaxUnvalidatedAgeMs()) {
           const live = await driver.quickInfo({ kind: "id", value: item.id }, true);
           if (live?.value) {
             classification = await model.classify(live.value, driver, settings, deps.now(), true, scope);
@@ -151,7 +151,7 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
           scope, target: item, reason: parent ? "missing-parent-id" : "missing-parent-fact", fresh,
         });
       }
-      if (!fresh && parent && deps.now() - parent.cachedAt >= getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs) {
+      if (!fresh && parent && deps.now() - parent.cachedAt >= getStructuralCacheMaxUnvalidatedAgeMs()) {
         enqueue(scope, visit, true);
       }
       id = parent?.value;

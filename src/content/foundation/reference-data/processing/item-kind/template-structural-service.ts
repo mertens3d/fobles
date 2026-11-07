@@ -1,6 +1,7 @@
+// @source-path [fobles] src/content/foundation/reference-data/processing/item-kind/template-structural-service.ts
 import { SITECORE } from "../../../../../constants/sitecore.ts";
 import { ITEM_KIND } from "../../../../../shared/structural/structural.const.ts";
-import { getRuntimeSettings } from "../../../../runtime-settings/runtime-settings.ts";
+import { getStructuralCacheMaxUnvalidatedAgeMs } from "../../../../runtime-settings/runtime-settings.ts";
 import type { StructuralScope, StructuralSettings } from "../../../../../shared/structural/structural.types.ts";
 import { extensionLog } from "../../../../logger.ts";
 import { classifyItem } from "./classify-item.ts";
@@ -18,7 +19,7 @@ export function createTemplateStructuralService() {
     scope?: StructuralScope,
   ): Promise<StructuralClassification> {
     const roots = SITECORE.ITEM_KIND.PATH_ROOTS;
-    const maxUnvalidatedAgeMs = getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs;
+    const maxUnvalidatedAgeMs = getStructuralCacheMaxUnvalidatedAgeMs();
     const baseIds: BaseTemplateIdSets = { page: new Set(), site: new Set(), tenant: new Set() };
     let complete = true;
     let stale = false;

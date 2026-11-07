@@ -1,73 +1,42 @@
-import { spawnSync } from "node:child_process";
-import { dirname, join, resolve } from "node:path";
-import { fileURLToPath } from "node:url";
-import { copyFileSync } from "node:fs";
+// @source-path [fobles] tools/scripts/build/build-extension.js
+
 import * as esbuild from "esbuild";
+import { ESBUILD_BUILDS, SASS_BUILDS, esbuildOptions, run, runNodeScript, sassArgs } from "./build-common.js";
 
-const projectRoot = resolve(dirname(fileURLToPath(import.meta.url)), "../../..");
-
-function run(command, args) {
-  const result = spawnSync(command, args, {
-    cwd: projectRoot,
-    stdio: "inherit",
-    shell: false,
-  });
-
-  if (result.error) {
-    console.error(result.error);
-    process.exit(1);
-  }
-
-  if (result.status !== 0) {
-    process.exit(result.status ?? 1);
+function compileSass() {
+  for (const build of SASS_BUILDS) {
+    run(process.execPath, sassArgs(build));
   }
 }
 
-console.log("Building extension...");
-
-run(process.execPath, [join(projectRoot, "tools/scripts/dev/check-node-version.js")]);
-run(process.execPath, [join(projectRoot, "tools/scripts/build/write-build-info.js")]);
-
-run(process.execPath, [
-  "node_modules/sass/sass.js",
-  "src/content/styles/fobles-extension.scss",
-  "dist/unpacked/fobles.css",
-  "--no-source-map",
-]);
-
-
-run(process.execPath, [
-  "node_modules/sass/sass.js",
-  "src/options/options.scss",
-  "dist/unpacked/options.css",
-  "--no-source-map",
-]);
-
-run(process.execPath, [
-  "node_modules/typescript/bin/tsc",
-  "--noEmit",
-  "-p",
-  "tsconfig.json",
-]);
-run(process.execPath, [join(projectRoot, "tools/scripts/dev/check-boundaries.mjs")]);
-
-async function bundle(entryPoint, outfile, format) {
-  await esbuild.build({
-    entryPoints: [join(projectRoot, entryPoint)],
-    outfile: join(projectRoot, outfile),
-    bundle: true,
-    platform: "browser",
-    format,
-  });
+function typecheck() {
+  run(process.execPath, [
+    "node_modules/typescript/bin/tsc",
+    "--noEmit",
+    "-p",
+    "tsconfig.json",
+  ]);
 }
 
-await bundle("src/content/index.ts", "dist/unpacked/content.js", "iife");
-await bundle("src/background/index.ts", "dist/unpacked/background.js", "esm");
-await bundle("src/options/index.tsx", "dist/unpacked/options.js", "iife");
-await bundle("src/popup/index.tsx", "dist/unpacked/popup.js", "iife");
+async function bundleExtension() {
+  await Promise.all(ESBUILD_BUILDS.map((build) => esbuild.build(esbuildOptions(build))));
+}
 
-run(process.execPath, [
-  join(projectRoot, "tools/scripts/build/add-generated-banner.js"),
-]);
+async function buildExtension() {
+  console.log("Building extension...");
 
-console.log("Extension build complete.");
+  runNodeScript("tools/scripts/dev/check-node-version.js");
+  runNodeScript("tools/scripts/build/write-build-info.js");
+
+  compileSass();
+  typecheck();
+  runNodeScript("tools/scripts/dev/check-boundaries.mjs");
+
+  await bundleExtension();
+
+  runNodeScript("tools/scripts/build/add-generated-banner.js");
+
+  console.log("Extension build complete.");
+}
+
+await buildExtension();

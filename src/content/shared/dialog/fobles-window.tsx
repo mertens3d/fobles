@@ -16,6 +16,7 @@ export function FoblesWindow({
   minHeight,
   onClose,
   onHelp,
+  headerActions,
   children,
 }: FoblesWindowProps) {
   const geometry = useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeight, minWidth, minHeight });
@@ -44,6 +45,7 @@ export function FoblesWindow({
         collapsed={geometry.collapsed}
         maximized={geometry.maximized}
         onHelp={onHelp}
+        headerActions={headerActions}
         onToggleCollapse={geometry.toggleCollapse}
         onToggleMaximize={geometry.toggleMaximize}
         onClose={onClose}

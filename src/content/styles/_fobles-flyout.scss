@@ -1,3 +1,4 @@
+@use "z-layers" as z;
 @use "tokens" as *;
 @use "mixins" as *;
 
@@ -139,6 +140,7 @@
 
 .fobles-jump-flyout,
 .fobles-proxy-buttons {
+  z-index: z.fobles-z(flyout);
   @include fobles-jump-flyout-panel;
   // Overrides the draggable toolbar container's grab cursor so the flyout doesn't look draggable.
   cursor: default;
@@ -151,6 +153,7 @@
 }
 
 .fobles-jump-flyout {
+  z-index: z.fobles-z(flyout);
   flex-direction: column;
   min-width: $fobles-jump-flyout-width;
 

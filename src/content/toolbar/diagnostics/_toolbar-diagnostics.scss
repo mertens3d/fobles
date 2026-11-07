@@ -1,56 +1,41 @@
 @use "../../styles/tokens" as *;
+@use "../../shared/ui/persisted-window/persisted-window";
 
-.fobles-toolbar-diagnostics {
-  grid-column: 2;
-  grid-row: 2;
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-  contain: inline-size;
-  padding: 5px 8px;
-  border-radius: 4px;
-  background: $fobles-surface;
-  color: $fobles-text;
-  font: 10px/1.4 system-ui, sans-serif;
-  cursor: default;
+.fobles-toolbar-diagnostics { grid-column: 2; grid-row: 2; box-sizing: border-box; width: 100%; min-width: 0; contain: inline-size; padding: 5px 8px; border-radius: 4px; background: $fobles-surface; color: $fobles-text; font: 10px/1.4 system-ui, sans-serif; cursor: default; position: relative; z-index: 10; pointer-events: auto; }
+.fobles-toolbar-diagnostics-summary, .fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress, .fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-content, .fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-track { box-sizing: border-box; width: 100%; min-width: 0; }
+.fobles-toolbar-diagnostics-summary { position: relative; z-index: 11; padding: 0; border: 0; background: transparent; pointer-events: auto; cursor: pointer; }
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress { display: flex; flex: 1 1 100%; }
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-content { flex: 1 1 100%; }
+.fobles-worker-task-manager { display: flex; height: 100%; min-height: 0; flex-direction: column; font: 12px/1.4 system-ui, sans-serif; }
+.fobles-worker-task-manager-summary { flex: 0 0 auto; padding: 8px 12px; border-bottom: 1px solid $fobles-border; }
+.fobles-worker-task-manager-workers { flex: 1 1 auto; min-height: 0; overflow: auto; padding: 8px; }
+.fobles-worker-task-manager-worker { margin-bottom: 8px; padding: 8px 10px; border: 1px solid $fobles-border; border-radius: 4px; }
+.fobles-worker-task-manager-worker:last-child { margin-bottom: 0; }
+.fobles-worker-task-manager-worker-title { margin-bottom: 5px; font-weight: 700; }
+.fobles-worker-task-manager-worker dl { display: grid; gap: 2px; margin: 0; }
+.fobles-worker-task-manager-worker dl > div { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 8px; }
+.fobles-worker-task-manager-worker dt { font-weight: 600; }
+.fobles-worker-task-manager-worker dd { min-width: 0; margin: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.fobles-worker-task-manager-empty { padding: 18px 10px; text-align: center; }
+.fobles-persisted-window .fobles-history-panel { position: static !important; inset: auto !important; transform: none !important; box-sizing: border-box; width: 100% !important; max-width: none !important; height: 100%; max-height: none !important; overflow-x: hidden !important; overflow-y: auto !important; box-shadow: none; }
+.fobles-persisted-window .fobles-history-panel > header { display: none; }
 
-  &-current {
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-  }
-}
-
-/* Progress must win pointer hit-testing over the toolbar drag surface. */
-.fobles-toolbar-diagnostics {
-  position: relative;
-  z-index: 10;
-  pointer-events: auto;
-}
-
-.fobles-toolbar-diagnostics button,
-.fobles-toolbar-diagnostics [role="button"] {
-  position: relative;
-  z-index: 11;
-  pointer-events: auto;
-}
-
-
-/* Toolbar-owned sizing for the shared progress primitive. */
-.fobles-toolbar-diagnostics-summary,
-.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress,
-.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-content,
-.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-track {
-  box-sizing: border-box;
-  width: 100%;
-  min-width: 0;
-}
-
-.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress {
-  display: flex;
-  flex: 1 1 100%;
-}
-
-.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-content {
-  flex: 1 1 100%;
-}
+.fobles-worker-task-manager-grid { flex: 1 1 auto; min-height: 0; overflow: auto; background: $fobles-surface; }
+.fobles-worker-task-manager-table { width: 100%; min-width: 760px; border-collapse: collapse; table-layout: fixed; color: $fobles-text; font: inherit; }
+.fobles-worker-task-manager-table th, .fobles-worker-task-manager-table td { box-sizing: border-box; height: 30px; padding: 5px 8px; border-bottom: 1px solid $fobles-border; overflow: hidden; text-align: left; text-overflow: ellipsis; white-space: nowrap; vertical-align: middle; }
+.fobles-worker-task-manager-table th { position: sticky; top: 0; z-index: 1; background: $fobles-surface; font-weight: 600; }
+.fobles-worker-task-manager-table tbody tr { cursor: pointer; }
+.fobles-worker-task-manager-table tbody tr:nth-child(even) { background: rgba(0, 0, 0, 0.025); }
+.fobles-worker-task-manager-table tbody tr:hover { background: rgba(0, 120, 215, 0.1); }
+.fobles-worker-task-manager-table th:nth-child(1), .fobles-worker-task-manager-table td:nth-child(1) { width: 88px; }
+.fobles-worker-task-manager-table th:nth-child(2), .fobles-worker-task-manager-table td:nth-child(2) { width: 84px; }
+.fobles-worker-task-manager-table th:nth-child(3), .fobles-worker-task-manager-table td:nth-child(3) { width: 78px; }
+.fobles-worker-task-manager-table th:nth-child(4), .fobles-worker-task-manager-table td:nth-child(4) { width: 126px; }
+.fobles-worker-task-manager-table th:nth-child(5), .fobles-worker-task-manager-table td:nth-child(5) { width: 118px; }
+.fobles-worker-task-manager-table th:nth-child(6), .fobles-worker-task-manager-table td:nth-child(6) { width: 54px; }
+.fobles-worker-task-manager-table th:nth-child(7), .fobles-worker-task-manager-table td:nth-child(7) { width: 80px; }
+.fobles-worker-task-manager-table th:nth-child(8), .fobles-worker-task-manager-table td:nth-child(8) { width: 78px; }
+.fobles-worker-task-manager-table th:nth-child(9), .fobles-worker-task-manager-table td:nth-child(9) { width: 44px; text-align: right; }
+.fobles-worker-task-manager-details { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 4px 10px; margin: 0 0 12px; }
+.fobles-worker-task-manager-details dt { font-weight: 600; }
+.fobles-worker-task-manager-details dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }

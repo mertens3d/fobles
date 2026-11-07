@@ -26,6 +26,7 @@ import { cancelWorkerIdleDisposal, scheduleWorkerIdleDisposal } from "./worker-i
 import { getWorkClass, takeNextWorkerTask } from "./worker-admission";
 import { snapshotWorkerPoolStatus } from "./worker-pool-status";
 import type { WorkerPoolStatus } from "./worker-pool-status.types";
+import { recordWorkerTaskQueued, recordWorkerTaskSettled } from "./worker-task-history";
 import { WORK_SCHEDULING } from "../work-scheduling.const";
 import { backgroundCooldownRemaining, cancelBackgroundCooldown, scheduleBackgroundCooldown } from "./worker-background-cooldown";
 
@@ -387,6 +388,7 @@ export async function runPoolTask(task: WorkerTask, hostTabId: number | undefine
       state: "queued",
       workClass: getWorkClass(task),
     });
+    recordWorkerTaskQueued(hostTabId, task);
     cancelWorkerIdleDisposal(pool);
     const submittedAt = performance.now();
     let settled = false;
@@ -405,6 +407,7 @@ export async function runPoolTask(task: WorkerTask, hostTabId: number | undefine
           if (admitted && getWorkClass(queued.task) === WORK_SCHEDULING.BACKGROUND) {
             pool.backgroundCompletedAt = performance.now();
           }
+          recordWorkerTaskSettled(hostTabId, queued.task, result, queued.recoveryCount);
           resolve(result);
           queueMicrotask(() => scheduleNext(pool));
         }

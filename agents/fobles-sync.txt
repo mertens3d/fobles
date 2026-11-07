@@ -1,0 +1,5 @@
+Fobles AI replacement package sync marker.
+Package: fobles-task-manager-details-clickaway-20261107T194500Z.zip
+ID: 0dd90553-9e41-406e-a120-dd281e9860aa
+Created UTC: 2026-11-07T19:45:00Z
+Purpose: Lets Worker Task Details use the shared DetailsPanel default click-away-close behavior.

@@ -8,6 +8,7 @@ export function FoblesWindowTitlebar({
   collapsed,
   maximized,
   onHelp,
+  headerActions,
   onToggleCollapse,
   onToggleMaximize,
   onClose,
@@ -26,6 +27,7 @@ export function FoblesWindowTitlebar({
     >
       <div className="fobles-window-title">{title}</div>
       <div className="fobles-window-actions">
+        {headerActions}
         {onHelp && <DialogIconButton kind="help" label="Help" surface="dark" onClick={onHelp} />}
         <button
           type="button"

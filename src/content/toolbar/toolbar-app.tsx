@@ -118,14 +118,16 @@ export function ToolbarApp({ context }: ToolbarAppProps) {
         {!isCompact && isIse && <SetIseTabTitleButton context={context} />}
         {!isCompact && <ToolbarCloseButton context={context} />}
       </div>
-      <ToolbarDiagnostics />
       {!isCompact && (
-        <HistoryTrigger
-          doc={context.doc}
-          historyFlyout={historyFlyout}
-          onOpen={openHistoryFlyout}
-          onToggle={toggleHistoryFlyout}
-        />
+        <>
+          <ToolbarDiagnostics />
+          <HistoryTrigger
+            doc={context.doc}
+            historyFlyout={historyFlyout}
+            onOpen={openHistoryFlyout}
+            onToggle={toggleHistoryFlyout}
+          />
+        </>
       )}
     </div>
   );

@@ -1,8 +1,10 @@
+// @source-path [fobles] src/content/foundation/workers/pool/worker-pool-status.ts
 import { WORK_SCHEDULING } from "../work-scheduling.const.ts";
 import type { QueuedTask } from "../tasks/worker-task.types.ts";
 import { getWorkClass } from "./worker-admission.ts";
 import type { WorkerPoolState } from "./worker-pool-state.ts";
 import type { WorkerPoolStatus, WorkerPoolTaskStatus } from "./worker-pool-status.types.ts";
+import { getWorkerTaskHistory } from "./worker-task-history";
 
 function taskStatus(queued: QueuedTask, phase: WorkerPoolTaskStatus["phase"]): WorkerPoolTaskStatus {
   const task = queued.task;
@@ -33,7 +35,24 @@ export function snapshotWorkerPoolStatus(
       : worker?.state === "starting" ? WORK_SCHEDULING.PHASE.STARTING : WORK_SCHEDULING.PHASE.EXECUTING;
     return taskStatus(queued, phase);
   });
+  const checkedAt = performance.now();
   const occupied = workers.filter((worker) => worker.state !== "idle").length;
+  const workerStatuses = workers.map((worker, index) => {
+    const queued = worker.queuedTask;
+    const phase = queued
+      ? pool?.queue.includes(queued) ? WORK_SCHEDULING.PHASE.RETRYING
+        : worker.state === "starting" ? WORK_SCHEDULING.PHASE.STARTING : WORK_SCHEDULING.PHASE.EXECUTING
+      : undefined;
+    return {
+      workerNumber: index + 1,
+      state: worker.state,
+      currentUrl: worker.currentUrl,
+      targetKind: worker.target?.kind,
+      activeTask: queued && phase ? taskStatus(queued, phase) : undefined,
+      noProgressMs: Math.max(0, Math.round(checkedAt - worker.lastProgressAt)),
+      recoveryCount: worker.recoveryCount,
+    };
+  });
   return {
     hostTabId,
     activeBackground: activeTasks.filter((task) => task.workClass === WORK_SCHEDULING.BACKGROUND).length,
@@ -46,6 +65,8 @@ export function snapshotWorkerPoolStatus(
     queuedForeground: queuedTasks.filter((task) => task.workClass === WORK_SCHEDULING.FOREGROUND).length,
     queuedTasks,
     workerCount: workers.length,
+    workers: workerStatuses,
+    taskHistory: getWorkerTaskHistory(hostTabId, requestId),
     requestId,
   };
 }

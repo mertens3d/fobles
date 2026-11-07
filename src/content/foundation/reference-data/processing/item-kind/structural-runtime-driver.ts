@@ -1,6 +1,7 @@
+// @source-path [fobles] src/content/foundation/reference-data/processing/item-kind/structural-runtime-driver.ts
 import { SITECORE } from "../../../../../constants/sitecore.ts";
 import { normalizeHistoryId, normalizeHistoryScope, normalizeHistoryVisit } from "../../../../../shared/item-history/item-history-model.ts";
-import { getRuntimeSettings, initializeRuntimeSettings } from "../../../../runtime-settings/runtime-settings.ts";
+import { getStructuralCacheMaxUnvalidatedAgeMs, initializeRuntimeSettings } from "../../../../runtime-settings/runtime-settings.ts";
 import type { StructuralScope } from "../../../../../shared/structural/structural.types.ts";
 import { extensionLog } from "../../../../logger.ts";
 import * as cache from "../../../cache/sitecore-data/sitecore-data-cache.ts";
@@ -117,7 +118,7 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
     const cached = stored && { ...stored, cachedAt: stored.lastVerifiedAt ?? stored.cachedAt };
     const token = JSON.stringify([key.database, key.language, key.item, name]);
     let result: StructuralRead<SitecoreDataFactMap[K]> | undefined;
-    if (!cached || fresh || now() - cached.cachedAt >= getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs) {
+    if (!cached || fresh || now() - cached.cachedAt >= getStructuralCacheMaxUnvalidatedAgeMs()) {
       let refresh = inflight.get(token);
       if (!refresh) {
         extensionLog.debug("Structural discovery: read start", { scope: normalized, target: key.item, fact: name, fresh });

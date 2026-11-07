@@ -27,7 +27,7 @@ function isInteractiveTarget(target: EventTarget | null): boolean {
     target instanceof Element &&
     Boolean(
       target.closest(
-        `button, a, input, select, textarea, [role='button'], ${SELECTORS.JUMP_FLYOUT}, ${SELECTORS.PROXY_BUTTONS}, ${HISTORY_SELECTOR.PANEL}`,
+        `button, a, input, select, textarea, [role='button'], .fobles-window, .fobles-window-portal-root, ${SELECTORS.JUMP_FLYOUT}, ${SELECTORS.PROXY_BUTTONS}, ${HISTORY_SELECTOR.PANEL}`,
       ),
     )
   );

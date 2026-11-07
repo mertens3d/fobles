@@ -3,7 +3,7 @@ import type { RUNTIME_FAULT } from "./runtime-settings.const.ts";
 export type RuntimeFault = (typeof RUNTIME_FAULT)[keyof typeof RUNTIME_FAULT];
 
 export type RuntimeSettings = {
-  structuralCache: { maxUnvalidatedAgeMs: number };
+  structuralCache: { maxUnvalidatedAgeHours: number };
   workerPool: {
     backgroundIntertaskCooldownMs: number;
     maxWorkers: number;

@@ -12,14 +12,30 @@ import { buildHistoryUrl } from "./history-navigation.ts";
 
 export function useHistoryIcon(item: HistoryItem, scope: HistoryScope): string | undefined {
   const [icon, setIcon] = useState<string>();
+
   useEffect(() => {
     let active = true;
-    const key: SitecoreDataCacheKey = { environment: scope.origin, database: scope.database, language: "en", item: { kind: "id", value: item.id } };
-    const task: WorkerTask = { requestId: `history:${item.id}`, taskId: crypto.randomUUID(), type: "get-quick-info",
-      url: buildHistoryUrl(scope, item.id), requested: key.item, workClass: WORK_SCHEDULING.FOREGROUND };
+    const key: SitecoreDataCacheKey = {
+      environment: scope.origin,
+      database: scope.database,
+      language: "en",
+      item: { kind: "id", value: item.id },
+    };
+    const task: WorkerTask = {
+      requestId: `history:${item.id}`,
+      taskId: crypto.randomUUID(),
+      type: "get-quick-info",
+      url: buildHistoryUrl(scope, item.id),
+      requested: key.item,
+      workClass: WORK_SCHEDULING.BACKGROUND,
+    };
     const read = (): void => {
-      void requestFact(key, "quickInfo", async () => (await runWorkerTask(task)) ?? createErrorResult(task, "No response from worker pool"),
-        { requestId: task.requestId, visible: true }).then((fact) => {
+      void requestFact(
+        key,
+        "quickInfo",
+        async () => (await runWorkerTask(task)) ?? createErrorResult(task, "No response from worker pool"),
+        { requestId: task.requestId, visible: false },
+      ).then((fact) => {
         if (active) {
           setIcon(fact?.result.status === "found" ? fact.result.value?.scItemIcon : undefined);
         }
@@ -32,5 +48,6 @@ export function useHistoryIcon(item: HistoryItem, scope: HistoryScope): string |
       unsubscribe();
     };
   }, [item.id, scope.database, scope.origin]);
+
   return icon;
 }

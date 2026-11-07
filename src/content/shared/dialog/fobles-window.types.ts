@@ -25,6 +25,7 @@ export type FoblesWindowProps = {
   minHeight: number;
   onClose: () => void;
   onHelp?: () => void;
+  headerActions?: ReactNode;
   children: ReactNode;
 };
 
@@ -57,6 +58,7 @@ export type FoblesWindowTitlebarProps = {
   collapsed: boolean;
   maximized: boolean;
   onHelp?: () => void;
+  headerActions?: ReactNode;
   onToggleCollapse: () => void;
   onToggleMaximize: () => void;
   onClose: () => void;

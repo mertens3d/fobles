@@ -292,10 +292,11 @@ void test("concurrent requests do not corrupt item records", async () => {
   assert.ok(record?.children);
 });
 
-
 void test("requestFact returns undefined on a miss, deduplicates acquisition, then exposes the cached fact", async () => {
   let release!: () => void;
-  const gate = new Promise<void>((resolve) => { release = resolve; });
+  const gate = new Promise<void>((resolve) => {
+    release = resolve;
+  });
   let calls = 0;
   const key = sampleKey();
   const fetchLive = async (): Promise<WorkerTaskExecutionResult> => {

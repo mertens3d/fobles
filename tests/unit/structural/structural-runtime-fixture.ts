@@ -8,7 +8,7 @@ import { normalizeStructuralSettings } from "../../../src/shared/structural/stru
 import { guid, SCOPE } from "./structural-fixture.ts";
 
 export function runtimeFixture() {
-  getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs = 100;
+  getRuntimeSettings().structuralCache.maxUnvalidatedAgeHours = 1;
   let now = Date.now();
   let baseIds: readonly string[] | undefined = [guid(2)];
   let found = true;
@@ -45,40 +45,23 @@ export function runtimeFixture() {
         }
         return Promise.resolve(result);
       },
-      cancel: () => {
-        cancelled += 1;
-        return Promise.resolve();
-      },
-      complete: () => {
-        completed += 1;
-        return Promise.resolve();
-      },
+      cancel: () => { cancelled += 1; return Promise.resolve(); },
+      complete: () => { completed += 1; return Promise.resolve(); },
     } as WorkSession;
   };
   const options = {
     identity: { environment: SCOPE.origin, database: SCOPE.database, language: "en" },
     origin: SCOPE.origin, settings: normalizeStructuralSettings(undefined), createSession,
     now: () => now,
-    templateBasesFallback: (): Promise<WorkerTaskResult | undefined> => {
-      fallbackCalls += 1;
-      return Promise.resolve(undefined);
-    },
+    templateBasesFallback: (): Promise<WorkerTaskResult | undefined> => { fallbackCalls += 1; return Promise.resolve(undefined); },
   };
   return {
     options, tasks, classes, template, item, parent, unavailablePaths,
-    setParent: (value: ItemGraphNodeData | undefined) => {
-      parentFact = value;
-    },
-    age: () => {
-      now += 101;
-    },
+    setParent: (value: ItemGraphNodeData | undefined) => { parentFact = value; },
+    age: () => { now += 60 * 60 * 1000 + 1; },
     now: () => now,
-    setBases: (ids: readonly string[] | undefined) => {
-      baseIds = ids;
-    },
-    missing: () => {
-      found = false;
-    },
+    setBases: (ids: readonly string[] | undefined) => { baseIds = ids; },
+    missing: () => { found = false; },
     completed: () => completed,
     cancelled: () => cancelled,
     fallbackCalls: () => fallbackCalls,
