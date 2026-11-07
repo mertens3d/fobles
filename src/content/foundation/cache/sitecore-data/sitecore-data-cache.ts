@@ -10,6 +10,7 @@ import {
 } from "./indexed-db.ts";
 import { serializeCacheKey } from "./sitecore-data-cache-key.ts";
 import { toPersistedValue } from "./sitecore-data-cache-persistence.ts";
+import { publishFactUpdated } from "./sitecore-data-events.ts";
 import type {
   SitecoreDataCacheFactRecord,
   SitecoreDataCacheItemRecord,
@@ -189,6 +190,8 @@ export async function putFact<K extends SitecoreDataFactName>(
       factStore.put({ key: factKey(itemKey, storedFactName), itemKey, factName: storedFactName, fact }),
     );
   });
+  publishFactUpdated(key, factName);
+
 }
 
 export async function getFact<K extends SitecoreDataFactName>(

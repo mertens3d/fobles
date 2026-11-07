@@ -56,16 +56,8 @@ export function StructuralSettingsSection() {
   return (
     <details className="settings-section">
       <summary>{STRUCTURAL_OPTIONS.TITLE}</summary>
-      <p>Configure the base templates used to discover sites and identify pages and tenants. Cached results remain usable while they are refreshed.</p>
+      <p>Site/page/tenant classification templates are built-in application constants. Only structural diagnostics are configurable.</p>
       <fieldset className="structural-fields" disabled={!draft || busy}>
-        <p>Enter one full template path per line. An empty list explicitly disables that category's bases.</p>
-        {STRUCTURAL_OPTIONS.PATH_FIELDS.map(({ kind, label }) => (
-          <label key={kind}>
-            {label}
-            <textarea rows={3} value={draft?.paths[kind] ?? ""}
-              onChange={(event) => setDraft((current) => current && ({ ...current, paths: { ...current.paths, [kind]: event.target.value } }))} />
-          </label>
-        ))}
         <label className="visibility-setting">
           <input type="checkbox" checked={draft?.showToolbarDiagnostics ?? false}
             onChange={(event) => setDraft((current) => current && ({ ...current, showToolbarDiagnostics: event.target.checked }))} />

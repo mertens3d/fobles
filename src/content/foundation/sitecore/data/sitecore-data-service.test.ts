@@ -15,7 +15,7 @@ import type {
   SitecoreDataCacheKey,
   SitecoreDataCacheRecord,
 } from "../../cache/sitecore-data/sitecore-data-cache.types";
-import { factNameForTaskType, getFact } from "./sitecore-data-service.ts";
+import { factNameForTaskType, getFact, requestFact } from "./sitecore-data-service.ts";
 import type {
   WorkerTaskCancelledResult,
   WorkerTaskDocumentStaleResult,
@@ -290,4 +290,24 @@ void test("concurrent requests do not corrupt item records", async () => {
   const record = await peekRecord(key);
   assert.ok(record?.parent);
   assert.ok(record?.children);
+});
+
+
+void test("requestFact returns undefined on a miss, deduplicates acquisition, then exposes the cached fact", async () => {
+  let release!: () => void;
+  const gate = new Promise<void>((resolve) => { release = resolve; });
+  let calls = 0;
+  const key = sampleKey();
+  const fetchLive = async (): Promise<WorkerTaskExecutionResult> => {
+    calls += 1;
+    await gate;
+    return successResult("get-parent", { parent: undefined });
+  };
+  assert.equal(await requestFact(key, "parent", fetchLive), undefined);
+  assert.equal(await requestFact(key, "parent", fetchLive), undefined);
+  assert.equal(calls, 1);
+  release();
+  await new Promise((resolve) => setTimeout(resolve, 0));
+  assert.deepEqual(await requestFact(key, "parent", fetchLive), { parent: undefined });
+  assert.equal(calls, 1);
 });

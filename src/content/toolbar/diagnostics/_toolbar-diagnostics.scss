@@ -20,3 +20,37 @@
     white-space: nowrap;
   }
 }
+
+/* Progress must win pointer hit-testing over the toolbar drag surface. */
+.fobles-toolbar-diagnostics {
+  position: relative;
+  z-index: 10;
+  pointer-events: auto;
+}
+
+.fobles-toolbar-diagnostics button,
+.fobles-toolbar-diagnostics [role="button"] {
+  position: relative;
+  z-index: 11;
+  pointer-events: auto;
+}
+
+
+/* Toolbar-owned sizing for the shared progress primitive. */
+.fobles-toolbar-diagnostics-summary,
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress,
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-content,
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-track {
+  box-sizing: border-box;
+  width: 100%;
+  min-width: 0;
+}
+
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress {
+  display: flex;
+  flex: 1 1 100%;
+}
+
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-content {
+  flex: 1 1 100%;
+}

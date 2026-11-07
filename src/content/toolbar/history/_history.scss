@@ -67,20 +67,30 @@
 }
 
 .fobles-history-group {
-  h3 {
-    margin: 8px 4px 3px;
-    color: $fobles-text;
-    font-size: 11px;
-    font-weight: 700;
-    text-transform: uppercase;
-  }
+  margin-top: 4px;
+  border: 1px solid $fobles-border;
+  border-radius: 4px;
+  overflow: hidden;
 
-  ul {
-    margin: 0;
-    padding: 0 0 0 14px;
-    list-style: none;
-  }
+  ul { margin: 0; padding: 0; list-style: none; }
 }
+
+.fobles-history-group-toggle {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 8px !important;
+  border: 0 !important;
+  border-radius: 0 !important;
+  background: $fobles-surface !important;
+  color: $fobles-text !important;
+  font-weight: 700 !important;
+  text-align: left;
+}
+
+.fobles-history-group-toggle:hover { background: $fobles-surface-hover !important; }
+.fobles-history-disclosure { width: 12px; flex: 0 0 12px; color: $fobles-blue-deep; font-size: 9px; }
 
 .fobles-history-row {
   display: flex;
@@ -97,9 +107,12 @@
 .fobles-history-link {
   flex: 1 1 auto;
   min-width: 0;
-  padding: 6px;
+  padding: 6px 7px;
   overflow: hidden;
-  color: $fobles-blue-deep;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: $fobles-text;
   text-decoration: none;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -119,18 +132,6 @@
   color: #a32121;
 }
 
-.fobles-history-tooltip {
-  max-width: min(480px, calc(100vw - 16px));
-  padding: 8px 10px;
-  border: 1px solid $fobles-border;
-  border-radius: 6px;
-  background: $fobles-white;
-  box-shadow: 0 4px 12px $fobles-shadow-panel;
-  color: $fobles-text;
-  font: 12px/1.5 system-ui, "Segoe UI", Arial, sans-serif;
-  white-space: pre-wrap;
-  overflow-wrap: anywhere;
-}
 
 .fobles-toolbar-container[data-position$="right"] {
   .fobles-history-trigger {
@@ -166,4 +167,157 @@
 
 .fobles-toolbar-container[data-position="bottom-right"] .fobles-history-panel {
   transform-origin: bottom right;
+}
+.fobles-history-item-icon { width: 16px; height: 16px; flex: 0 0 16px; }
+
+.fobles-history-group-body {
+  display: block;
+  position: relative;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+  border-top: 1px solid $fobles-border;
+}
+
+.fobles-history-group-body > ul {
+  display: block;
+  height: auto;
+  min-height: 0;
+  overflow: visible;
+}
+
+
+/* Outer safety boundary: the complete History panel scrolls when expanded groups exceed the viewport. */
+#fobles-history-panel {
+  max-height: min(80vh, 640px);
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+#fobles-history-panel > header {
+  position: sticky;
+  top: 0;
+  z-index: 2;
+  background: $fobles-white;
+}
+
+
+/* Fixed History workspace: independent of the toolbar/flyout anchor. */
+#fobles-history-panel {
+  position: fixed !important;
+  top: 50% !important;
+  right: clamp(16px, 8vw, 128px) !important;
+  bottom: auto !important;
+  left: auto !important;
+  transform: translateY(-50%) !important;
+  width: min(360px, calc(100vw - 32px)) !important;
+  max-height: min(80vh, 720px) !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  z-index: 2147483000 !important;
+}
+
+#fobles-history-panel > header {
+  position: sticky;
+  top: 0;
+  z-index: 2147483001;
+}
+
+
+/* Expanded History groups retain independent scrolling inside the fixed History workspace. */
+.fobles-history-group-body {
+  display: block;
+  position: relative;
+  height: auto;
+  min-height: 0;
+  max-height: 180px;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.fobles-history-group-body > ul {
+  display: block;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  overflow: visible;
+}
+
+
+/* Authoritative fixed History workspace. Reserve explicit space above the Fobles toolbar. */
+#fobles-history-panel {
+  position: fixed !important;
+  top: clamp(16px, 10vh, 96px) !important;
+  right: clamp(16px, 8vw, 128px) !important;
+  bottom: 112px !important;
+  left: auto !important;
+  transform: none !important;
+  width: min(360px, calc(100vw - 32px)) !important;
+  max-height: none !important;
+  overflow-x: hidden !important;
+  overflow-y: auto !important;
+  overscroll-behavior: contain;
+  z-index: 2147483000 !important;
+}
+
+#fobles-history-panel > header {
+  position: sticky;
+  top: 0;
+  z-index: 2147483001;
+  background: $fobles-white;
+}
+
+.fobles-history-group-body {
+  max-height: 180px;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.fobles-history-group-body > ul {
+  max-height: none;
+  overflow: visible;
+}
+
+
+/* Modal History workspace: backdrop owns click-away and blocks Sitecore controls underneath. */
+.fobles-history-backdrop {
+  position: fixed;
+  inset: 0;
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: rgb(0 0 0 / 8%);
+  cursor: default;
+  pointer-events: auto;
+  z-index: 2147483645 !important;
+}
+
+#fobles-history-panel {
+  z-index: 2147483646 !important;
+}
+
+#fobles-history-panel > header {
+  z-index: 2147483646 !important;
+}
+
+
+/* Keep the History tab inset symmetrically from either horizontal toolbar edge. */
+.fobles-toolbar.is-left .fobles-history-tab,
+.fobles-toolbar[data-horizontal="left"] .fobles-history-tab { left: 12px !important; right: auto !important; }
+.fobles-toolbar.is-right .fobles-history-tab,
+.fobles-toolbar[data-horizontal="right"] .fobles-history-tab { right: 12px !important; left: auto !important; }
+
+
+/* Left-side toolbar includes the grip column; place History after the grip while retaining the same 18px visual inset. */
+.fobles-toolbar-container[data-position$="left"] .fobles-history-trigger {
+  left: 36px;
+  right: auto;
 }

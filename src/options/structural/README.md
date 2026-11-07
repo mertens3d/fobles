@@ -2,7 +2,7 @@
 
 ## Agents: contracts and ownership
 
-- Structural settings use the shared sync accessors; blank path lists disable a category. Draft validation rejects invalid paths instead of silently dropping them.
+- Site/Page/Tenant classification base paths are immutable application constants and are not exposed as Options fields. Structural Options only persists diagnostics plus Known Sites administration.
 - The temporary user-facing title is `Site discovery`; internal structural contracts retain their names. Maximum age belongs only to Runtime Settings (`structuralCache.maxUnvalidatedAgeMs`); legacy sync age fields are ignored. Save uses the existing `settings-actions`/`settings-button` layout, not a grid-stretched button.
 - The diagnostic toggle uses shared structural `showToolbarDiagnostics` (off by default), independent of the Developer button and debug logging. Preserve it in every settings draft round-trip.
 - Known Sites scope selection uses canonical origin/database keys, preserving ports and excluding language. Scope changes unmount the previous panel; pending reads must not replace subscription updates.

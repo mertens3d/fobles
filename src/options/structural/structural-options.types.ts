@@ -1,9 +1,6 @@
-import type { KnownSite, StructuralKind, StructuralScope } from "../../shared/structural/structural.types.ts";
+import type { KnownSite, StructuralScope } from "../../shared/structural/structural.types.ts";
 
-export type StructuralSettingsDraft = {
-  paths: Record<StructuralKind, string>;
-  showToolbarDiagnostics: boolean;
-};
+export type StructuralSettingsDraft = { showToolbarDiagnostics: boolean };
 
 export type KnownSitesPanelProps = { scope: StructuralScope };
 

@@ -14,14 +14,16 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
   const validatedSettings = new Map<string, string>();
   let queue: Promise<void> = Promise.resolve();
 
-  function fingerprint(settings: StructuralSettings): string {
-    return JSON.stringify([settings.baseTemplatePaths.page, settings.baseTemplatePaths.site, settings.baseTemplatePaths.tenant]);
+  function fingerprint(_settings: StructuralSettings): string {
+    return "immutable-classification-roots-v1";
   }
 
   function needsValidation(scope: StructuralScope, site: KnownSite, settings: StructuralSettings): boolean {
     const scopeKey = knownSitesStorageKey(scope);
     const stamp = validatedSettings.get(`${scopeKey}:${site.id}`);
-    return site.validatedAt === 0 || deps.now() - site.validatedAt >= getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs || stamp !== fingerprint(settings);
+    const expired = site.validatedAt === 0 || deps.now() - site.validatedAt >= getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs;
+    const settingsChanged = stamp !== undefined && stamp !== fingerprint(settings);
+    return expired || settingsChanged;
   }
 
   async function saveSite(scope: StructuralScope, site: KnownSite, settings: StructuralSettings): Promise<void> {
@@ -32,13 +34,13 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
 
   async function validateSite(scope: StructuralScope, site: KnownSite, driver: StructuralDriver, settings: StructuralSettings): Promise<void> {
     extensionLog.debug("Structural discovery: validation start", { scope, target: site });
-    const resolved = await driver.quickInfo({ kind: "id", value: site.id }, true);
+    const resolved = await driver.quickInfo({ kind: "id", value: site.id }, false);
     if (resolved?.value === null) {
       await deps.removeSite(scope, site.id);
       extensionLog.debug("Structural discovery: validation result", { scope, target: site, reason: "site-not-found" });
     } else if (resolved?.value) {
       const model = templates.get(knownSitesStorageKey(scope))!;
-      const classification = await model.classify(resolved.value, driver, settings, deps.now(), true, scope);
+      const classification = await model.classify(resolved.value, driver, settings, deps.now(), false, scope);
       if (classification.complete && !classification.stale) {
         if (classification.kind === ITEM_KIND.SITE && resolved.value.templateId) {
           await saveSite(scope, { ...resolved.value, templateId: resolved.value.templateId, validatedAt: deps.now() }, settings);
@@ -162,7 +164,7 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
   }
 
   function enqueue(scope: StructuralScope, visit: StructuralVisit, revalidate = false): void {
-    const key = `${knownSitesStorageKey(scope)}:${visit.id}:${revalidate ? "refresh" : "visit"}`;
+    const key = `${knownSitesStorageKey(scope)}:${visit.id}:structural`;
     if (!pending.has(key)) {
       pending.add(key);
       extensionLog.debug("Structural discovery: enqueue", { scope, target: visit, revalidate });
@@ -197,7 +199,7 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
 
   function enqueueValidation(scope: StructuralScope, site: KnownSite): void {
     const scopeKey = knownSitesStorageKey(scope);
-    const key = `${scopeKey}:${site.id}:validate`;
+    const key = `${scopeKey}:${site.id}:structural`;
     if (!pending.has(key)) {
       pending.add(key);
       extensionLog.debug("Structural discovery: validation enqueue", { scope, target: site });
@@ -252,10 +254,8 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
   function rediscoverScope(scope: StructuralScope, sites: readonly KnownSite[], visits: readonly StructuralVisit[]): number {
     const normalized = normalizeHistoryScope(scope);
     const unique = new Map<string, StructuralVisit>();
-    for (const site of sites) {
-      enqueueValidation(normalized, site);
-      unique.set(site.id, normalizeHistoryVisit(site));
-    }
+    // Stored sites are lookup results, not implicit rediscovery work.
+    void sites;
     for (const visit of visits) {
       const row = normalizeHistoryVisit(visit);
       unique.set(row.id, row);

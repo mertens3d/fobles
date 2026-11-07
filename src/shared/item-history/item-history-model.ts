@@ -48,12 +48,14 @@ export function normalizeHistoryId(value: unknown): string | undefined {
 export function classifyHistoryPath(path: string): HistoryCategory {
   const normalized = (normalizePath(path) ?? "").toLowerCase();
   let category: HistoryCategory = "Content";
-  if (isPathWithin(normalized, ITEM_HISTORY_PATH_ROOTS.TEMPLATES)) {
+  if (isPathWithin(normalized, ITEM_HISTORY_PATH_ROOTS.MEDIA_LIBRARY)) {
+    category = "Media Library";
+  } else if (isPathWithin(normalized, ITEM_HISTORY_PATH_ROOTS.TEMPLATES)) {
     category = "Templates";
-  } else if (isPathWithin(normalized, ITEM_HISTORY_PATH_ROOTS.LAYOUTS)) {
-    category = "Layouts";
-  } else if (isPathWithin(normalized, ITEM_HISTORY_PATH_ROOTS.POWERSHELL)) {
-    category = "PowerShell";
+  } else if (isPathWithin(normalized, ITEM_HISTORY_PATH_ROOTS.LAYOUT)) {
+    category = "Layout";
+  } else if (isPathWithin(normalized, ITEM_HISTORY_PATH_ROOTS.SYSTEM)) {
+    category = "System";
   }
   return category;
 }
@@ -126,11 +128,24 @@ export function normalizeHistoryItems(value: unknown): HistoryItem[] {
   }
   items.sort((left, right) => right.lastVisitedAt - left.lastVisitedAt);
   const seen = new Set<string>();
-  return items.filter((item) => {
+  return limitHistoryItems(items.filter((item) => {
     const unique = !seen.has(item.id);
     seen.add(item.id);
     return unique;
-  }).slice(0, ITEM_HISTORY.MAX_ITEMS);
+  }));
+}
+
+function limitHistoryItems(items: readonly HistoryItem[]): HistoryItem[] {
+  const counts = new Map<HistoryCategory, number>();
+  return items.filter((item) => {
+    const count = counts.get(item.category) ?? 0;
+    const limit = ITEM_HISTORY.MAX_ITEMS_BY_CATEGORY[item.category];
+    const include = count < limit;
+    if (include) {
+      counts.set(item.category, count + 1);
+    }
+    return include;
+  });
 }
 
 /** Replaces visit metadata and moves the item to the front using a finite nonnegative writer timestamp. */
@@ -140,5 +155,5 @@ export function upsertHistoryItem(history: unknown, visit: HistoryVisit, time: n
     throw new TypeError("Invalid item history timestamp");
   }
   const item: HistoryItem = { ...normalized, category: classifyHistoryPath(normalized.path), lastVisitedAt: time };
-  return [item, ...normalizeHistoryItems(history).filter((entry) => entry.id !== item.id)].slice(0, ITEM_HISTORY.MAX_ITEMS);
+  return limitHistoryItems([item, ...normalizeHistoryItems(history).filter((entry) => entry.id !== item.id)]);
 }

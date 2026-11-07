@@ -14,28 +14,13 @@ void test("structural Options use Site discovery copy and explain internal scope
   assert.equal(structuralError(undefined), "Structural operation failed.");
 });
 
-void test("structural Options round-trip defaults without runtime cache tuning", () => {
+void test("structural Options expose diagnostics only and preserve immutable classification roots", () => {
   const defaults = normalizeStructuralSettings(undefined);
   const draft = structuralSettingsDraft(defaults);
-  assert.equal("ageDays" in draft, false);
-  assert.deepEqual(Object.keys(draft).sort(), ["paths", "showToolbarDiagnostics"]);
-  assert.equal(draft.showToolbarDiagnostics, false);
-  assert.equal(parseStructuralSettingsDraft({ ...draft, showToolbarDiagnostics: true }).showToolbarDiagnostics, true);
-  assert.equal("maxAgeMs" in defaults, false);
-  assert.deepEqual(parseStructuralSettingsDraft(draft), defaults);
-});
-
-void test("structural Options normalize line-separated paths and preserve explicit empty categories", () => {
-  const draft = {
-    paths: { page: " /sitecore/templates/Feature//Page/ \r\n/sitecore/templates/Feature/Page", site: "", tenant: "  \n" },
-    showToolbarDiagnostics: false,
-  };
-  assert.deepEqual(parseStructuralSettingsDraft(draft).baseTemplatePaths, {
-    page: ["/sitecore/templates/Feature/Page"], site: [], tenant: [],
-  });
-  for (const path of ["/sitecore/content/Page", "/sitecore/templates", "/sitecore/templates/../Page", "/sitecore/templates/Page\u0000"]) {
-    assert.throws(() => parseStructuralSettingsDraft({ ...draft, paths: { ...draft.paths, page: path } }), { message: STRUCTURAL_OPTIONS.INVALID_PATHS });
-  }
+  assert.deepEqual(Object.keys(draft), ["showToolbarDiagnostics"]);
+  assert.equal(parseStructuralSettingsDraft({ showToolbarDiagnostics: true }).showToolbarDiagnostics, true);
+  assert.deepEqual(parseStructuralSettingsDraft(draft).baseTemplatePaths, defaults.baseTemplatePaths);
+  assert.deepEqual(normalizeStructuralSettings({ baseTemplatePaths: { page: [], site: [], tenant: [] } }).baseTemplatePaths, defaults.baseTemplatePaths);
 });
 
 void test("Known Sites scope picker includes only canonical keys and isolates ports/databases", () => {

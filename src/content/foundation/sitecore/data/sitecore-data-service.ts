@@ -14,6 +14,7 @@ import type {
   WorkerTaskType,
 } from "../../workers/tasks/worker-task.types";
 import type { FetchLiveFact, GetFactOptions, SitecoreDataFactResult } from "./sitecore-data.types";
+import { serializeCacheKey } from "../../cache/sitecore-data/sitecore-data-cache-key.ts";
 
 // Only these 7 atomic reads have a cacheable fact - set-raw-values/set-standard-fields are
 // mutations and are never routed through this service at all.
@@ -116,4 +117,26 @@ export async function getFact<TName extends SitecoreDataFactName>(
   emitCacheActivity(activityId, factName, "completed", "live; cached", options?.requestId);
 
   return { outcome: "resolved", fact: { value, source: "live" } };
+}
+
+const requestsInFlight = new Map<string, Promise<void>>();
+
+export async function requestFact<TName extends SitecoreDataFactName>(
+  key: SitecoreDataCacheKey,
+  factName: TName,
+  fetchLive: FetchLiveFact,
+  options?: GetFactOptions,
+): Promise<SitecoreDataFactMap[TName] | undefined> {
+  const cached = await cache.getFact(key, factName);
+  if (cached) {
+    return cached.value;
+  }
+  const requestKey = `${serializeCacheKey(key)}::${factName}`;
+  if (!requestsInFlight.has(requestKey)) {
+    const request = getFact(key, factName, fetchLive, options).then(() => undefined).finally(() => {
+      requestsInFlight.delete(requestKey);
+    });
+    requestsInFlight.set(requestKey, request);
+  }
+  return undefined;
 }

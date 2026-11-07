@@ -48,9 +48,6 @@ void test("Options structural handlers use scoped writer and storage facade with
 
   assert.equal((await readKnownSiteScopes()).length, 2);
   const draft = structuralSettingsDraft(normalizeStructuralSettings(undefined));
-  const before = structuredClone(sync);
-  await assert.rejects(saveStructuralOptions({ ...draft, paths: { ...draft.paths, page: "/outside" } }));
-  assert.deepEqual(sync, before);
   await saveStructuralOptions({ ...draft, showToolbarDiagnostics: true });
   assert.equal(sync[STORAGE.KEY.SHOW_DEVELOPER_BUTTON], undefined);
   assert.equal(sync[STORAGE.KEY.DEBUG_LOGGING], true);

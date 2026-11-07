@@ -1,7 +1,7 @@
 // @source-path [fobles] tests/e2e/parallel/item-history/item-history.spec.ts
 
 import { ITEM_HISTORY_CAPTURE } from "../../../../src/content/item-history/item-history.const";
-import { HISTORY_CLASS, HISTORY_TEXT, HISTORY_UI } from "../../../../src/content/toolbar/history/history.const";
+import { HISTORY_CLASS, HISTORY_TEXT } from "../../../../src/content/toolbar/history/history.const";
 import { historyStorageKey } from "../../../../src/shared/item-history/item-history-model";
 import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { expect, foblesTest } from "../../../fixtures/playwright";
@@ -117,12 +117,12 @@ foblesTest.describe("Toolbar item history", () => {
     });
   });
 
-  foblesTest("groups Content, Templates, Layouts and PowerShell without Site grouping", async ({ page }, testInfo) => {
+  foblesTest("groups Content, Media Library, Templates, Layout and System without Site grouping", async ({ page }, testInfo) => {
     const { frame } = await openHistoryEditor(page);
     const step = createFoblesStep(page, testInfo, historyPanel(frame), "Item History");
     await step("groups visits by item category", async () => {
     await historyPanel(frame).getByRole("button", { name: HISTORY_TEXT.CLEAR, exact: true }).click();
-    await expect(frame.locator(`.${HISTORY_CLASS.EMPTY}`)).toBeVisible();
+    await expect(historyPanel(frame).locator(`.${HISTORY_CLASS.GROUP}`)).toHaveCount(5);
     const visits = [
       { id: SCENARIO.itemId, name: "History site A", path: "/sitecore/content/Site A/Home" },
       { id: STRATEGY_SCENARIOS.DROP_TREE.itemId, name: "History site B", path: "/sitecore/content/Site B/Home" },
@@ -134,17 +134,17 @@ foblesTest.describe("Toolbar item history", () => {
       await mutateQuickInfo(frame, visit);
     }
     const panel = historyPanel(frame);
-    await expect(panel.locator(`.${HISTORY_CLASS.GROUP} h3`)).toHaveText(["Content", "Templates", "Layouts", "PowerShell"]);
+    await expect(panel.locator(`.${HISTORY_CLASS.GROUP} > .fobles-history-group-toggle`)).toHaveText(["Content (2)", "Media Library (0)", "Templates (1)", "Layout (1)", "System (1)"]);
     await expect(panel.getByRole("region", { name: "Content", exact: true }).getByRole("link"))
       .toHaveText(["History site B", "History site A"]);
-    for (const [category, name] of [["Templates", "History template"], ["Layouts", "History layout"], ["PowerShell", "History script"]]) {
+    for (const [category, name] of [["Templates", "History template"], ["Layout", "History layout"], ["System", "History script"]]) {
       await expect(panel.getByRole("region", { name: category, exact: true }).getByRole("link")).toHaveText(name);
     }
     await expect(panel.getByRole("heading", { name: /^Site(?: A| B)?$/ })).toHaveCount(0);
     });
   });
 
-  foblesTest("hover opens and closes History; clicking pins and unpins it without changing LBolt size", async ({ page }, testInfo) => {
+  foblesTest("History is click-only and does not change LBolt size", async ({ page }, testInfo) => {
     const { frame } = await openHistoryEditor(page);
     const tab = frame.locator(`.${HISTORY_CLASS.TAB}`);
     const step = createFoblesStep(page, testInfo, historyPanel(frame), "Item History");
@@ -156,9 +156,6 @@ foblesTest.describe("Toolbar item history", () => {
     await page.mouse.move(0, 0);
     await expect(historyPanel(frame)).toBeHidden();
     await tab.hover();
-    await expect(historyPanel(frame)).toBeVisible();
-    await expect(tab).toHaveAttribute("aria-pressed", "false");
-    await page.mouse.move(0, 0);
     await expect(historyPanel(frame)).toBeHidden();
     await tab.click();
     await page.mouse.move(0, 0);
@@ -177,30 +174,6 @@ foblesTest.describe("Toolbar item history", () => {
     await expect(historyPanel(frame)).toBeHidden();
   });
 
-  foblesTest("delays body-appended Tippy details for 500 ms and shows path, braced GUID and last visited", async ({ page, sharedBrowserContext }, testInfo) => {
-    const { frame, initial } = await openHistoryEditor(page);
-    const [stored] = await readStoredHistory(sharedBrowserContext, frame);
-    const lastVisited = await frame.evaluate((timestamp) => new Date(timestamp).toLocaleString(), stored.lastVisitedAt);
-    const tooltip = frame.locator(`body > .${HISTORY_CLASS.TOOLTIP}`);
-    const step = createFoblesStep(page, testInfo, tooltip, "Item History Tooltip");
-    await step("shows delayed item details outside the history panel", async () => {
-      await historyLink(frame, initial.name).hover();
-      await page.waitForTimeout(200);
-      expect(await tooltip.isVisible()).toBe(false);
-      await page.waitForTimeout(HISTORY_UI.TOOLTIP_DELAY - 200 + 100);
-      await expect(tooltip).toBeVisible();
-      await expect(tooltip).toHaveAttribute("role", "tooltip");
-      await expect(tooltip).toHaveText([
-        `${HISTORY_TEXT.PATH}: ${initial.path}`,
-        `${HISTORY_TEXT.GUID}: ${canonicalGuid(initial.id)}`,
-        `${HISTORY_TEXT.LAST_VISITED}: ${lastVisited}`,
-      ].join("\n"), { useInnerText: true });
-      await expect(historyPanel(frame).locator(`.${HISTORY_CLASS.TOOLTIP}`)).toHaveCount(0);
-    });
-    await page.mouse.move(0, 0);
-    await expect(tooltip).toBeHidden();
-  });
-
   foblesTest("removes a row without navigating and clears all history to the disabled empty state", async ({ page, sharedBrowserContext }, testInfo) => {
     const { frame, initial } = await openHistoryEditor(page);
     const step = createFoblesStep(page, testInfo, historyPanel(frame), "Item History");
@@ -215,9 +188,9 @@ foblesTest.describe("Toolbar item history", () => {
     await expect.poll(async () => (await readStoredHistory(sharedBrowserContext, frame)).map((item) => item.name)).toEqual([initial.name]);
     const clear = historyPanel(frame).getByRole("button", { name: HISTORY_TEXT.CLEAR, exact: true });
     await clear.click();
-    await expect(frame.locator(`.${HISTORY_CLASS.EMPTY}`)).toHaveText(HISTORY_TEXT.EMPTY);
+    await expect(historyPanel(frame).locator(`.${HISTORY_CLASS.GROUP}`)).toHaveCount(5);
     await expect(historyPanel(frame).locator(`.${HISTORY_CLASS.ROW}`)).toHaveCount(0);
-    await expect(historyPanel(frame).locator(`.${HISTORY_CLASS.GROUP}`)).toHaveCount(0);
+    await expect(historyPanel(frame).locator(`.${HISTORY_CLASS.GROUP}`)).toHaveCount(5);
     await expect(clear).toBeDisabled();
     await expect.poll(() => readStoredHistory(sharedBrowserContext, frame)).toEqual([]);
     expect(page.url()).toBe(sourceUrl);

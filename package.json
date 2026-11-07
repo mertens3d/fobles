@@ -7,9 +7,10 @@
     "node": "24.x"
   },
   "scripts": {
+    "build:extension": "node tools/scripts/build/build-extension.js",
     "validate": "npm run typecheck:extension && npm run typecheck:tests && npm run lint && npm run test:unit && npm run build:extension && npm run test:e2e -- --list",
     "lint": "eslint . --cache --cache-location .eslintcache --concurrency=auto",
-    "build:extension": "node tools/scripts/build/build-extension.js",
+    
     "typecheck:extension": "tsc --noEmit -p tsconfig.json",
     "typecheck:tests": "tsc --noEmit -p tests/tsconfig.json",
     "typecheck:history": "tsc --noEmit -p tests/item-history.tsconfig.json",

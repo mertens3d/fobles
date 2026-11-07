@@ -5,6 +5,7 @@ import { useEffect, useRef } from "react";
 export type FlyoutTriggerProps = {
   className: string;
   button: React.ReactNode;
+  enableHover?: boolean;
   onHoverOpen: () => void;
   onHoverScheduleClose: () => void;
   onOutsidePointerDown: () => void;
@@ -16,6 +17,7 @@ export type FlyoutTriggerProps = {
 export function FlyoutTrigger({
   className,
   button,
+  enableHover = true,
   onHoverOpen,
   onHoverScheduleClose,
   onOutsidePointerDown,
@@ -38,7 +40,9 @@ export function FlyoutTrigger({
   }, [onOutsidePointerDown]);
 
   return (
-    <div ref={triggerRef} className={className} onMouseEnter={onHoverOpen} onMouseLeave={onHoverScheduleClose}>
+    <div ref={triggerRef} className={className}
+      onMouseEnter={enableHover ? onHoverOpen : undefined}
+      onMouseLeave={enableHover ? onHoverScheduleClose : undefined}>
       {button}
       {children}
     </div>

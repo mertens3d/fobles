@@ -47,3 +47,10 @@ $fobles-shadow-dialog: rgba(0, 0, 0, 0.32);
 $fobles-shadow-drag: rgba(0, 0, 0, 0.35);
 $fobles-backdrop: rgba(14, 24, 36, 0.58);
 $fobles-blue-border: rgba(47, 111, 237, 0.22);
+
+// Shared workspace/component semantics. Auditor remains the visual baseline.
+$fobles-panel-header-background: $fobles-surface;
+$fobles-panel-hover-background: $fobles-surface-hover;
+$fobles-panel-border: $fobles-border;
+$fobles-progress-track: #dbe3ef;
+$fobles-progress-value: $fobles-blue;

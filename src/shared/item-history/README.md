@@ -2,8 +2,8 @@
 
 - GUIDs are lowercase dashed strings without braces. Braced, dashed and compact 32-character inputs are accepted.
 - Item paths retain display casing, collapse repeated separators, convert backslashes and remove surrounding whitespace/trailing slashes. Paths must be rooted at `/sitecore`; dot segments and control characters are invalid.
-- Classification matches root/descendant segment boundaries case-insensitively: `/sitecore/templates`, `/sitecore/layout`, `/sitecore/system/modules/powershell`. All other valid item paths are Content.
-- Persisted rows require valid GUID/name/path/category and a finite nonnegative timestamp. Category spellings are case-insensitive; the canonical category is derived from the path. Newest rows supply all metadata for duplicate GUIDs; equal timestamps preserve input order. Deduplication precedes the 20-item cap.
+- Classification matches root/descendant segment boundaries case-insensitively: `/sitecore/templates`, `/sitecore/layout`, `/sitecore/system`. All other valid item paths are Content.
+- Persisted rows require valid GUID/name/path/category and a finite nonnegative timestamp. Category spellings are case-insensitive; the canonical category is derived from the path. Newest rows supply all metadata for duplicate GUIDs; equal timestamps preserve input order. Deduplication precedes per-category caps: Content 10; Media Library, Templates, Layout, and System 5 each.
 - Scope keys contain only the normalized HTTP(S) URL origin and trimmed lowercase database. Non-default ports are retained. URL paths, queries, language and extra scope properties never participate.
 - `getHistory` and `subscribeHistory` read local storage through the facade. Subscriptions do not perform an initial read and return a cleanup function.
 - `mutateHistory` delegates to `requestHistoryChange`; neither client entry point writes storage or maintains a tab-local queue.

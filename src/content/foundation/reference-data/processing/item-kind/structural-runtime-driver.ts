@@ -62,7 +62,7 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
         return undefined;
       }
     }
-    let result = name === "quickInfo"
+    const result = name === "quickInfo"
       ? await session.runTask({ ...base, type: "get-quick-info", requested: item })
       : name === "templateBases"
         ? await session.runTask({ ...base, type: "get-template-bases", requested: item })

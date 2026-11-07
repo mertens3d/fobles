@@ -10,7 +10,6 @@ export const HISTORY_CLASS = {
   REMOVE: "fobles-history-remove",
   ROW: "fobles-history-row",
   TAB: "fobles-history-tab",
-  TOOLTIP: "fobles-history-tooltip",
   TRIGGER: "fobles-history-trigger",
 } as const;
 
@@ -27,11 +26,10 @@ export const HISTORY_TEXT = {
   REMOVE: "Remove",
   SITE_SEPARATOR: ": ",
   TITLE: "History",
-  UNKNOWN_SITE: "(unknown)",
+  UNKNOWN_SITE: "_",
 } as const;
 
 export const HISTORY_UI = {
   ERROR_LOG: "Item history: UI failed",
   PANEL_ID: "fobles-history-panel",
-  TOOLTIP_DELAY: 500,
 } as const;

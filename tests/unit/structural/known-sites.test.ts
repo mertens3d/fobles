@@ -46,14 +46,14 @@ void test("normalization preserves newest moved GUID metadata, drops invalid row
   assert.deepEqual(sites.find((site) => site.id === moved.id), moved);
 });
 
-void test("shared structural settings discard legacy age tuning and reuse existing Sitecore paths", () => {
+void test("shared structural settings keep immutable classification roots and discard legacy overrides", () => {
   const defaults = normalizeStructuralSettings(undefined);
   assert.equal("maxAgeMs" in defaults, false);
   assert.deepEqual(defaults.baseTemplatePaths.site, SITECORE.ITEM_KIND.BASE_TEMPLATE_PATHS.SITE);
-  const root = SITECORE.ITEM_KIND.PATH_ROOTS.TEMPLATES;
   const settings = normalizeStructuralSettings({
-    maxAgeMs: -1, baseTemplatePaths: { site: [`${root}/Custom/`, `${root}/../Bad`, "https://bad.example/", `${root}/Custom`] },
+    maxAgeMs: -1,
+    baseTemplatePaths: { page: [], site: ["/sitecore/templates/Custom"], tenant: [] },
   });
-  assert.deepEqual(settings.baseTemplatePaths.site, [`${root}/Custom`]);
+  assert.deepEqual(settings.baseTemplatePaths, defaults.baseTemplatePaths);
   assert.equal("maxAgeMs" in settings, false);
 });

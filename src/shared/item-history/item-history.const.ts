@@ -5,14 +5,22 @@ import { SITECORE } from "../../constants/sitecore.ts";
 export const FOBLES_ITEM_HISTORY_CHANGE = "FOBLES_ITEM_HISTORY_CHANGE";
 
 export const ITEM_HISTORY = {
-  CATEGORIES: ["Content", "Templates", "Layouts", "PowerShell"],
-  MAX_ITEMS: 20,
+  CATEGORIES: ["Content", "Media Library", "Templates", "Layout", "System"],
+  MAX_ITEMS_BY_CATEGORY: {
+    Content: 10,
+    "Media Library": 5,
+    Templates: 5,
+    Layout: 5,
+    System: 5,
+  },
+  COLLAPSED_STORAGE_KEY: "fobles:item-history:collapsed",
   STORAGE_KEY_PREFIX: "fobles:item-history:",
 } as const;
 
 export const ITEM_HISTORY_PATH_ROOTS = {
-  LAYOUTS: `${SITECORE.RELATIVE_PATHS_ENCODED.ROOT}/layout`,
-  POWERSHELL: `${SITECORE.RELATIVE_PATHS_ENCODED.ROOT}/system/modules/powershell`,
+  LAYOUT: `${SITECORE.RELATIVE_PATHS_ENCODED.ROOT}/layout`,
+  MEDIA_LIBRARY: `${SITECORE.RELATIVE_PATHS_ENCODED.ROOT}/media library`,
+  SYSTEM: `${SITECORE.RELATIVE_PATHS_ENCODED.ROOT}/system`,
   ROOT: SITECORE.RELATIVE_PATHS_ENCODED.ROOT,
   TEMPLATES: SITECORE.ITEM_KIND.PATH_ROOTS.TEMPLATES,
 } as const;

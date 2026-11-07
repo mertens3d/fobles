@@ -1,6 +1,6 @@
 // @source-path [fobles] src/shared/item-history/item-history.types.ts
 
-export type HistoryCategory = "Content" | "Templates" | "Layouts" | "PowerShell";
+export type HistoryCategory = "Content" | "Media Library" | "Templates" | "Layout" | "System";
 
 export type HistoryItem = {
   id: string;

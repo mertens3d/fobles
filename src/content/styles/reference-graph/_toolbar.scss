@@ -161,13 +161,13 @@
       margin-top: 3px;
       overflow: hidden;
       border-radius: 2px;
-      background: #dbe3ef;
+      background: $fobles-progress-track;
     }
 
     &-value {
       height: 100%;
       border-radius: 2px;
-      background: $fobles-blue;
+      background: $fobles-progress-value;
     }
   }
 
@@ -197,3 +197,6 @@
   }
   &-controls-content > .fobles-reference-graph-view-reference-model { margin-top: 8px; }
 }
+
+.fobles-reference-graph-toolbar-footer-phases { appearance: none; border: 0; padding: 0; background: transparent; color: inherit; text-align: left; cursor: pointer; }
+.fobles-reference-graph-progress-details { position: absolute; left: 10px; top: 100%; z-index: 120; width: 320px; padding: 8px; border: 1px solid $fobles-border; border-radius: 4px; background: $fobles-white; box-shadow: 0 8px 18px $fobles-shadow-panel; }
