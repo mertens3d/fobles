@@ -16,15 +16,6 @@ export function useHistoryKnownSites(scope: HistoryScope | null): readonly Known
     function publish(sites: KnownSite[]): void {
       if (active && scope) {
         setSnapshot({ scope, sites });
-        if (sites.length) {
-          const publishedRevision = revision;
-          void import("../../foundation/reference-data/processing/item-kind/structural-discovery.ts").then(({ lookupKnownSite }) => {
-            if (active && revision === publishedRevision) {
-              return Promise.all(sites.map((site) => lookupKnownSite(scope, site.path)));
-            }
-            return undefined;
-          }).catch(() => undefined);
-        }
       }
     }
 

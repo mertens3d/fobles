@@ -38,8 +38,8 @@ export function WorkerTaskManagerPanel({ status }: WorkerTaskManagerPanelProps) 
         <dt>Elapsed</dt><dd>{selected.elapsedMs === undefined ? "—" : `${selected.elapsedMs} ms`}</dd><dt>Recoveries</dt><dd>{selected.recoveryCount}</dd>
       </dl>
       <h4>Snapshot</h4><pre>{JSON.stringify(selected, null, 2)}</pre>
-      <h4>Request Payload</h4><pre>Not captured yet.</pre>
-      <h4>Response Payload</h4><pre>Not captured yet.</pre>
+      <h4>Request Payload{selected.requestPayload.truncated ? " (truncated)" : ""}</h4><pre>{JSON.stringify(selected.requestPayload.value, null, 2)}</pre>
+      <h4>Response Payload{selected.responsePayload?.truncated ? " (truncated)" : ""}</h4><pre>{selected.responsePayload ? JSON.stringify(selected.responsePayload.value, null, 2) : "Pending"}</pre>
     </DetailsPanel> : null}
   </div>;
 }

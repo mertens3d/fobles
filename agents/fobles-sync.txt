@@ -1,5 +1,5 @@
 Fobles AI replacement package sync marker.
-Package: fobles-task-manager-details-clickaway-20261107T194500Z.zip
-ID: 0dd90553-9e41-406e-a120-dd281e9860aa
-Created UTC: 2026-11-07T19:45:00Z
-Purpose: Lets Worker Task Details use the shared DetailsPanel default click-away-close behavior.
+Package: fobles-todo-sync-rebased-20261107T200500Z.zip
+ID: 831f4877-1ff3-45b9-a841-8b57cd7f6f86
+Created UTC: 2026-11-07T20:05:00Z
+Purpose: Synchronizes both repository TODO files, rebased to the current auditor journey TODO SHA.

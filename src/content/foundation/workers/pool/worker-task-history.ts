@@ -3,6 +3,10 @@ import { getWorkClass } from "./worker-admission";
 import type { WorkerTask, WorkerTaskResult } from "../tasks/worker-task.types";
 import type { WorkerTaskSnapshot } from "./worker-pool-status.types";
 
+const HISTORY_RETENTION_MS = 30 * 60 * 1000;
+const HISTORY_LIMIT = 250;
+const PAYLOAD_LIMIT = 64 * 1024;
+
 const historyByHostTabId = new Map<number | undefined, WorkerTaskSnapshot[]>();
 const startedAtByTaskId = new Map<string, number>();
 
@@ -13,9 +17,19 @@ function targetFor(task: WorkerTask): string {
   return task.url;
 }
 
+function snapshotPayload(value: unknown): { value: unknown; truncated: boolean } {
+  const json = JSON.stringify(value);
+  return json.length <= PAYLOAD_LIMIT ? { value, truncated: false } : { value: `${json.slice(0, PAYLOAD_LIMIT)}…`, truncated: true };
+}
+
+function retained(entries: WorkerTaskSnapshot[]): WorkerTaskSnapshot[] {
+  const cutoff = Date.now() - HISTORY_RETENTION_MS;
+  return entries.filter((entry) => entry.activityAt >= cutoff).slice(0, HISTORY_LIMIT);
+}
+
 function upsert(hostTabId: number | undefined, snapshot: WorkerTaskSnapshot): void {
   const history = historyByHostTabId.get(hostTabId) ?? [];
-  historyByHostTabId.set(hostTabId, [snapshot, ...history.filter((entry) => entry.taskId !== snapshot.taskId)]);
+  historyByHostTabId.set(hostTabId, retained([snapshot, ...history.filter((entry) => entry.taskId !== snapshot.taskId)]));
 }
 
 export function recordWorkerTaskQueued(hostTabId: number | undefined, task: WorkerTask): void {
@@ -31,6 +45,8 @@ export function recordWorkerTaskQueued(hostTabId: number | undefined, task: Work
     activityAt: Date.now(),
     elapsedMs: undefined,
     recoveryCount: 0,
+    requestPayload: snapshotPayload(task),
+    responsePayload: undefined,
   });
 }
 
@@ -48,6 +64,8 @@ export function recordWorkerTaskStarted(hostTabId: number | undefined, task: Wor
     activityAt: Date.now(),
     elapsedMs: undefined,
     recoveryCount,
+    requestPayload: snapshotPayload(task),
+    responsePayload: undefined,
   });
 }
 
@@ -68,10 +86,13 @@ export function recordWorkerTaskSettled(hostTabId: number | undefined, task: Wor
     activityAt: Date.now(),
     elapsedMs: startedAt === undefined ? undefined : Math.max(0, Math.round(performance.now() - startedAt)),
     recoveryCount,
+    requestPayload: previous?.requestPayload ?? snapshotPayload(task),
+    responsePayload: snapshotPayload(result),
   });
 }
 
 export function getWorkerTaskHistory(hostTabId: number | undefined, requestId?: string): WorkerTaskSnapshot[] {
-  const history = historyByHostTabId.get(hostTabId) ?? [];
+  const history = retained(historyByHostTabId.get(hostTabId) ?? []);
+  historyByHostTabId.set(hostTabId, history);
   return requestId === undefined ? [...history] : history.filter((entry) => entry.requestId === requestId);
 }

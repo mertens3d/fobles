@@ -26,6 +26,8 @@ export type WorkerTaskSnapshot = {
   activityAt: number;
   elapsedMs: number | undefined;
   recoveryCount: number;
+  requestPayload: { value: unknown; truncated: boolean };
+  responsePayload: { value: unknown; truncated: boolean } | undefined;
 };
 
 export type WorkerPoolWorkerStatus = {
