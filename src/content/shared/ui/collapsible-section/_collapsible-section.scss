@@ -1,0 +1,6 @@
+// @source-path [fobles] src/content/shared/ui/collapsible-section/_collapsible-section.scss
+.fobles-collapsible-section { box-sizing: border-box; width: 100%; border: 1px solid #c5d1e4; border-radius: 4px; background: #f6f8fc; overflow: hidden; }
+.fobles-collapsible-section-toggle { box-sizing: border-box; display: flex; width: 100%; height: 24px; align-items: center; gap: 5px; padding: 2px 8px; border: 0; background: linear-gradient(#3f7ff0, #1f62d5); color: #fff; font: 600 12px/20px Arial, sans-serif; text-align: left; cursor: pointer; }
+.fobles-collapsible-section-toggle:hover { background: linear-gradient(#4a88f5, #286cde); }
+.fobles-collapsible-section-chevron { width: 10px; flex: 0 0 10px; text-align: center; }
+.fobles-collapsible-section-content { box-sizing: border-box; padding: 7px 8px 8px; border-top: 1px solid #c5d1e4; background: #f6f8fc; color: #243246; }

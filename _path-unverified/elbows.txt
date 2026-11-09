@@ -1,0 +1,137 @@
+I can give you the working rules I apply to Fobles and coding, including your standing instructions, but not internal system/tool instructions.
+
+Fobles source retrieval
+Treat current repository source as authoritative. Never guess missing types, properties, contracts, or paths.
+Default to repository/OneDrive retrieval before asking you for files.
+Fobles root: C:\Users\gregory.mertens\OneDrive - Kestra Financial\Projects\fobles
+For .ts / .tsx, prefer synchronized .ts.txt / .tsx.txt proxies.
+Retrieval order:
+Current supplied authoritative AI package.
+Current synchronized OneDrive/SharePoint source.
+Targeted exact proxy search.
+Search-based package request when ownership/path is unknown.
+Weak/empty/Expired search results do not establish that a file is unavailable.
+Do not ask you for source until established retrieval routes are exhausted.
+Follow imports recursively through types, constants, hooks, components, services, stores, utilities, and consumers.
+Determine the implementation actually used by the import graph.
+Coding discipline
+Preserve:
+first-line // @source-path [fobles] ...
+existing architecture
+existing constants
+static properties
+ordering where mechanically transforming
+No barrels or re-exports.
+No magic strings when a project constant exists.
+Types belong in the existing .types.ts structure.
+Prefer reusable/shared infrastructure over feature-specific implementations.
+Do not refactor unrelated code while fixing something.
+Whole functions/files when presenting code, never fragments requiring you to find insertion points.
+TS/TSX formatting:
+compact existing project style
+approximately 140-column preference
+one statement per line
+exactly one blank line before file/block-level functions
+JSX/TSX fences use ts.
+Architecture principles currently established
+FoblesWindow is the common floating-window implementation.
+It owns:
+chrome/title bar
+close/minimize controls
+geometry
+drag/resize
+persistence
+z-order/focus
+portal behavior
+FoblesClientWindow handles nested/client-window ownership and clickaway.
+FoblesDetailsWindow is the standard details-window composition.
+Client content should know nothing about its container.
+DetailsPanel is markup/content, not a window.
+CopyButton owns clipboard behavior only.
+Feature-specific CSS must not recreate or override shared window behavior.
+Nested/details windows use policies such as non-draggable/non-resizable/non-collapsible rather than bespoke implementations.
+Fobles top-level windows must remain above Sitecore splitter z-index: 100.
+Sitecore native modal/error dialogs must remain above Fobles.
+Worker Monitor terminology/behavior
+Window: Worker Monitor
+Live section: Worker State
+Historical section: Flight Recorder
+Worker State represents live/current pool workers, including workers still mounted while retiring.
+Use native worker states such as starting, idle, busy, retired.
+Flight Recorder contains terminal historical snapshots only.
+Diagnostics must not create additional work merely to enrich diagnostics.
+Item Name is populated opportunistically when already known.
+Retained request/response payloads support diagnostic reconstruction.
+Minimize/restore
+Each window owns and persists its expanded geometry independently.
+Minimized docking is presentation only.
+Docking must never overwrite expanded left/top/width/height.
+Multiple minimized windows maintain stable dock ordering.
+Focus/z-order changes must not physically reorder minimized windows.
+Double-click:
+expanded → minimize
+minimized → exact previous expanded geometry
+Single-click must not restore.
+Add diagnostics around geometry/state transitions when investigating failures.
+ZIP replacement packages
+Include only files actually changed.
+Every replacement must be based on the exact source state being replaced.
+inputSha256 must represent that exact destination state.
+Never chain a package using stale hashes.
+Added/moved/renamed/deleted symbols require consumer/importer closure analysis.
+Search for stale names/paths.
+Verify imports resolve.
+Deletion replacement files contain exactly: // Delete Me
+Include an agents/... sync marker containing GUID, UTC timestamp, and package identity.
+Validate ZIP structure/integrity.
+Do not call something validated unless applicable closure checks passed.
+Full Fobles build is not required for delivery, but distinguish build validation from static validation.
+ZIP apply behavior we just specified
+
+For each replacement:
+
+Plain Text
+current SHA == manifest input SHA
+→ apply
+ 
+current SHA == ZIP replacement payload SHA
+→ skip
+→ "This change has already been applied"
+ 
+otherwise
+→ genuine local-change conflict
+No manifest-schema change required.
+Already-applied files are successful no-ops.
+Do not overwrite them unnecessarily.
+Conflict diagnostics should contain input/current/output SHA values.
+Validation
+
+Before delivering code:
+
+Impact-check callers and consumers.
+Check persistence/runtime boundaries.
+Check related UI and styling consequences.
+TypeScript/static validation where available.
+Package closure validation.
+ZIP integrity validation.
+Never knowingly ship a compiler error.
+If you report a compiler/runtime error, correct it and continue rather than stopping at an apology.
+PowerShell
+Expanded formatting, not compressed formatting.
+One parameter/property per line where applicable.
+Expanded control-flow blocks.
+No semicolon-combined statements.
+For bracketed .NET/library types, render using your marker convention, e.g.: [!!!Environment!!!]::NewLine
+I must explicitly tell you when I have applied that marker transformation.
+Working behavior
+Keep working until I either:
+deliver the requested result, or
+reach a real blocker after exhausting established retrieval/implementation paths.
+Do not repeatedly send progress updates instead of doing the work.
+When you report that something is wrong, correct it and continue.
+Prefer a uniquely named replacement ZIP for multi-file work.
+Be concise, direct, and implementation-oriented.
+Do not use profanity when addressing you.
+
+do not address just part of the ask unless you specificy specifcially what is what is being deliverd. Do no bury that message in a bunch of other text
+Do not be verbose

@@ -30,11 +30,8 @@ export function FoblesClientWindow({ ownerRef, onClose, children, ...windowProps
       return;
     }
     function handlePointerDown(event: PointerEvent): void {
-      const owner = ownerRef.current;
       const target = event.target;
-      if (owner && target instanceof Node && owner.contains(target) && !clientRef.current?.contains(target)) {
-        onClose();
-      }
+      if (target instanceof Node && !clientRef.current?.contains(target)) { onClose(); }
     }
     doc.addEventListener("pointerdown", handlePointerDown, true);
     return () => doc.removeEventListener("pointerdown", handlePointerDown, true);

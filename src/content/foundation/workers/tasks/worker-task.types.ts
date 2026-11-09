@@ -100,8 +100,10 @@ type WorkerTaskSuccessResultFor<TType extends WorkerTaskType> = WorkerTaskResult
 // Distributing the mapped type over WorkerTaskType builds a true discriminated union.
 export type WorkerTaskSuccessResult = { [TType in WorkerTaskType]: WorkerTaskSuccessResultFor<TType> }[WorkerTaskType];
 
+export type WorkerTaskFailureCode = "layout-unavailable" | "layout-malformed";
+
 export type WorkerTaskErrorResult = {
-  [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & { status: "error"; errorMessage: string };
+  [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & { status: "error"; errorMessage: string; failureCode?: WorkerTaskFailureCode; failureDetails?: Record<string, unknown>; recoverable?: boolean };
 }[WorkerTaskType];
 
 export type WorkerTaskCancelledResult = {
@@ -130,8 +132,8 @@ export function createDocumentStaleResult(task: WorkerTask): WorkerTaskDocumentS
   return { requestId: task.requestId, taskId: task.taskId, type: task.type, status: "document-stale" };
 }
 
-export function createErrorResult(task: WorkerTask, errorMessage: string): WorkerTaskErrorResult {
-  return { requestId: task.requestId, taskId: task.taskId, type: task.type, status: "error", errorMessage };
+export function createErrorResult(task: WorkerTask, errorMessage: string, options?: { failureCode?: WorkerTaskFailureCode; failureDetails?: Record<string, unknown>; recoverable?: boolean }): WorkerTaskErrorResult {
+  return { requestId: task.requestId, taskId: task.taskId, type: task.type, status: "error", errorMessage, ...options };
 }
 
 export function createCancelledResult(task: WorkerTask): WorkerTaskCancelledResult {

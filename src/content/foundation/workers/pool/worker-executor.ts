@@ -315,7 +315,17 @@ async function runTaskOnWorker(context: WorkerExecutorContext, worker: PoolWorke
     context.scheduleNext();
     return;
   }
-  if (executionResult?.status === "document-stale") {
+  if (executionResult?.status === "error" && executionResult.recoverable === false) {
+    worker.state = "idle";
+    worker.lastProgressAt = performance.now();
+    worker.activeTaskId = undefined;
+    worker.queuedTask = undefined;
+    extensionLog.warn("Worker health: non-recoverable task failure; recovery skipped", { taskId: queued.task.taskId, taskType: queued.task.type, failureCode: executionResult.failureCode, failureDetails: executionResult.failureDetails });
+    queued.resolve(executionResult);
+    context.scheduleNext();
+    return;
+  }
+    if (executionResult?.status === "document-stale") {
     extensionLog.debug(
       `Worker pool: document-stale result intercepted` +
         ` taskId=${queued.task.taskId}` +

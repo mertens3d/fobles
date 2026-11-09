@@ -102,6 +102,11 @@ export function openReferenceGraphUtility(
 }
 
 export function openDeveloperUtility(doc: Document): void {
+  const existing = doc.getElementById(INDEXEDDB_VIEWER.DIALOG_ID);
+  if (existing) {
+    existing.querySelector<HTMLButtonElement>(".fobles-dialog-icon-button--close")?.click();
+    return;
+  }
   void openFoblesUtility({
     doc,
     id: INDEXEDDB_VIEWER.DIALOG_ID,

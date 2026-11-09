@@ -16,21 +16,21 @@ import {
 } from "../../../../reference-data/model/sitecore-item.types";
 import type { HarvestContext } from "../../../sitecore-harvester.types";
 
-export const collectLayouts = (harvestContext: HarvestContext): Promise<void> => {
-  harvestContext.result.layoutSectionFields = [
-    processLayoutFieldValue(harvestContext, "Renderings"),
-    processLayoutFieldValue(harvestContext, "Final renderings"),
-  ];
-  return Promise.resolve();
+export type LayoutCollectionFailure = { code: "layout-unavailable" | "layout-malformed"; message: string; details: Record<string, unknown> };
+
+export const collectLayouts = (harvestContext: HarvestContext): Promise<LayoutCollectionFailure | undefined> => {
+  const collected = [processLayoutFieldValue(harvestContext, "Renderings"), processLayoutFieldValue(harvestContext, "Final renderings")];
+  harvestContext.result.layoutSectionFields = collected.map(({ field }) => field);
+  return Promise.resolve(collected.find(({ failure }) => failure)?.failure);
 };
 
-const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: string): LayoutSectionField => {
+const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: string): { field: LayoutSectionField; failure?: LayoutCollectionFailure } => {
   const sectionFieldHtml = findFieldInput(harvestContext.doc, layoutName);
   const layoutSectionField: LayoutSectionField = { name: layoutName, devices: [], rawMarkup: sectionFieldHtml?.value };
   const xml = sectionFieldHtml?.value;
 
   if (!xml) {
-    return layoutSectionField;
+    return { field: layoutSectionField, failure: { code: "layout-unavailable", message: `${layoutName} field is unavailable`, details: { layoutName, fieldPresent: Boolean(sectionFieldHtml) } } };
   }
 
   const rawProcessedXml = processLayoutXml(xml);
@@ -44,7 +44,7 @@ const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: str
       parsedRootKeys: rawProcessedXml && typeof rawProcessedXml === "object" ? Object.keys(rawProcessedXml) : [],
       renderingRootKeys: rawProcessedXml?.r && typeof rawProcessedXml.r === "object" ? Object.keys(rawProcessedXml.r) : [],
     });
-    return layoutSectionField;
+    return { field: layoutSectionField, failure: { code: "layout-malformed", message: `${layoutName} XML does not contain a device collection`, details: { layoutName, rawMarkupLength: xml.length, parsedRootKeys: rawProcessedXml && typeof rawProcessedXml === "object" ? Object.keys(rawProcessedXml) : [], renderingRootKeys: rawProcessedXml?.r && typeof rawProcessedXml.r === "object" ? Object.keys(rawProcessedXml.r) : [] } } };
   }
 
   for (const device of devices) {
@@ -69,7 +69,7 @@ const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: str
     layoutSectionField.devices.push(deviceData);
   }
 
-  return layoutSectionField;
+  return { field: layoutSectionField };
 };
 
 export function createLayoutPlacements(
@@ -153,7 +153,7 @@ function parseReferenceParameters(raw?: string): Record<string, string> {
   );
 }
 
-function processLayoutXml(xml: string): SitecoreLayoutXml | undefined {
+export function processLayoutXml(xml: string): SitecoreLayoutXml | undefined {
   const parser = new XMLParser({
     ignoreAttributes: false,
     attributeNamePrefix: "",

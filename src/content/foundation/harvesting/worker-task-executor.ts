@@ -224,12 +224,13 @@ export async function executeWorkerTask(
               successResult(task, { sections: harvestContext.result.standardFieldSections ?? [] });
             break;
 
-          case "get-layout":
-            await collectLayouts(harvestContext);
-            result =
-              cancelledResultIfAborted(task, signal) ??
-              successResult(task, { layoutSectionFields: harvestContext.result.layoutSectionFields ?? [] });
+          case "get-layout": {
+            const failure = await collectLayouts(harvestContext);
+            result = cancelledResultIfAborted(task, signal) ?? (failure
+              ? createErrorResult(task, failure.message, { failureCode: failure.code, failureDetails: failure.details, recoverable: false })
+              : successResult(task, { layoutSectionFields: harvestContext.result.layoutSectionFields ?? [] }));
             break;
+          }
         }
       }
     }

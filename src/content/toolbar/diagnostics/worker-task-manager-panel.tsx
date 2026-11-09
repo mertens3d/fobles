@@ -3,6 +3,7 @@ import { useEffect, useRef, useState } from "react";
 import type { WorkerPoolStatus, WorkerPoolWorkerStatus, WorkerTaskSnapshot } from "../../foundation/workers/pool/worker-pool-status.types";
 import { extensionLog } from "../../logger";
 import { FoblesDetailsWindow } from "../../shared/dialog/fobles-details-window";
+import { CollapsibleSection } from "../../shared/ui/collapsible-section/collapsible-section";
 import { WorkerStateDetails } from "./worker-state-details";
 import { DIAGNOSTIC_OPERATION_LABELS } from "./toolbar-diagnostics.const";
 
@@ -51,7 +52,7 @@ function WorkerStateTable({ workers, history }: { workers: readonly WorkerPoolWo
 
 function WorkerMonitorTable({ entries, mounted, onSelect }: { entries: readonly WorkerTaskSnapshot[]; mounted: boolean; onSelect: (entry: WorkerTaskSnapshot) => void }) {
   return <table className="fobles-worker-task-manager-table">
-    <thead><tr><th title={COLUMN_HELP.activity}>Activity</th><th title={COLUMN_HELP.worker}>Worker</th><th title={COLUMN_HELP.status}>Status</th><th title={COLUMN_HELP.task}>Task</th><th title={COLUMN_HELP.itemName}>Item Name</th><th title={COLUMN_HELP.target}>Target</th><th title={COLUMN_HELP.workClass}>Class</th><th title={COLUMN_HELP.phase}>Phase</th><th title={COLUMN_HELP.outcome}>Outcome</th><th title={COLUMN_HELP.recoveries}>Recoveries</th></tr></thead>
+    <thead><tr><th>Activity</th><th>Worker</th><th>Status</th><th>Task</th><th>Item Name</th><th>Target</th><th>Class</th><th>Phase</th><th>Outcome</th><th>Recoveries</th></tr></thead>
     <tbody>{entries.map((entry) => <tr key={entry.taskId} onDoubleClick={() => onSelect(entry)} title="Double-click for task details">
       <td>{new Date(entry.activityAt).toLocaleTimeString()}</td>
       <td title={entry.workerKey}>{entry.workerKey ? entry.workerKey.replace(/^iframe:/, "").slice(0, 7) : "—"}</td>
@@ -67,6 +68,7 @@ export function WorkerTaskManagerPanel({ status }: WorkerTaskManagerPanelProps) 
   const history = status?.taskHistory ?? [];
   const flightRecorder = history.filter((entry) => entry.outcome !== undefined);
   const [selected, setSelected] = useState<WorkerTaskSnapshot>();
+  const [legendExpanded, setLegendExpanded] = useState(false);
   const panelRef = useRef<HTMLDivElement>(null);
   const workers = status?.workers ?? [];
   const workerSignature = workers.map((worker) => `${worker.workerNumber}:${worker.state}:${worker.activeTask?.taskId ?? "idle"}`).join("|");
@@ -86,6 +88,7 @@ export function WorkerTaskManagerPanel({ status }: WorkerTaskManagerPanelProps) 
   }
 
   return <div ref={panelRef} className={`fobles-worker-task-manager${selected ? " has-details" : ""}`}>
+    <CollapsibleSection title="Column legend" expanded={legendExpanded} onExpandedChange={setLegendExpanded}><dl><dt>Activity</dt><dd>Latest activity time.</dd><dt>Worker</dt><dd>Pool worker.</dd><dt>State</dt><dd>Native worker state.</dd><dt>Item Name</dt><dd>Known item name.</dd><dt>Status</dt><dd>Live or historical.</dd><dt>Task</dt><dd>Worker operation.</dd><dt>Target</dt><dd>Item, path, or URL.</dd><dt>Class</dt><dd>FG or BG.</dd><dt>Phase</dt><dd>Lifecycle phase.</dd><dt>Outcome</dt><dd>Terminal result.</dd><dt>Target Kind</dt><dd>Worker target type.</dd><dt>Active Task</dt><dd>Current work.</dd><dt>URL</dt><dd>Worker document.</dd><dt>No Progress</dt><dd>Time since progress.</dd><dt>Recoveries</dt><dd>Recovery attempts.</dd></dl></CollapsibleSection>
     <div className="fobles-worker-task-manager-summary">Workers {status?.workerCount ?? 0}/{status?.maxWorkers ?? 0} · Worker State {workers.length} · Flight Recorder {flightRecorder.length}</div>
     <div className="fobles-worker-monitor-workspace">
       <div className="fobles-worker-task-manager-grid">

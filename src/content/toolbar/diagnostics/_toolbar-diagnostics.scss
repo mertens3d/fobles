@@ -1,3 +1,4 @@
+@use "../../shared/ui/collapsible-section/collapsible-section";
 @use "../../styles/tokens" as *;
 @use "../../shared/ui/persisted-window/persisted-window";
 
@@ -50,7 +51,7 @@
 .fobles-worker-monitor-group > h3 { position: sticky; top: 0; z-index: 3; margin: 0; padding: 7px 8px; border-bottom: 1px solid $fobles-border; background: $fobles-surface; font-size: 12px; }
 .fobles-worker-monitor-group + .fobles-worker-monitor-group { border-top: 2px solid $fobles-border; }
 .fobles-worker-task-manager-table { min-width: 980px; }
-.fobles-worker-task-manager-table th { cursor: help; }
+
 
 .fobles-worker-monitor-workspace { position: relative; display: block; min-width: 0; min-height: 0; flex: 1; }
 .fobles-worker-monitor-workspace > .fobles-worker-task-manager-grid { width: 100%; min-width: 0; height: 100%; }
@@ -91,3 +92,7 @@
 .fobles-worker-state-grid-row > span { min-width: 0; padding: 5px 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; box-sizing: border-box; }
 .fobles-worker-state-grid-header { position: sticky; z-index: 2; top: 0; background: $fobles-surface; font-weight: 600; }
 @media (max-width: 760px) { .fobles-worker-state-grid-row { grid-template-columns: 48px 64px minmax(72px, 1fr) 72px minmax(110px, 1.5fr) minmax(92px, 1.2fr) 76px 68px; } }
+
+.fobles-worker-task-manager .fobles-collapsible-section dl { display: grid; grid-template-columns: max-content 1fr max-content 1fr; gap: 3px 8px; margin: 0; padding: 6px 8px 8px; font-size: 11px; }
+.fobles-worker-task-manager .fobles-collapsible-section dt { font-weight: 600; }
+.fobles-worker-task-manager .fobles-collapsible-section dd { margin: 0; color: $fobles-muted; }

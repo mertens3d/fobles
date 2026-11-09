@@ -15,7 +15,7 @@ export const HARVEST_STEPS: readonly HarvestStep[] = [
     label: "Custom Fields",
     build: collectSections,
   },
-  { stepKey: "layouts", filterKeys: ["layouts"], label: "Layout Fields", build: collectLayouts },
+  { stepKey: "layouts", filterKeys: ["layouts"], label: "Layout Fields", build: async (harvestContext) => { await collectLayouts(harvestContext); } },
   { stepKey: "referrers", filterKeys: ["referrers"], label: "Referrers", build: collectReferrers },
   { stepKey: "parent", filterKeys: ["parent"], label: "Parent", build: collectParent },
 ];
