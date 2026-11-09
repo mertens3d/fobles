@@ -1,0 +1,3 @@
+packageId=4d715ef5-d41c-4d39-a4ca-c0571e649866
+createdUtc=2026-11-09T04:16:00Z
+purpose=Remove obsolete DetailsPanel lifecycle props from remaining consumers.

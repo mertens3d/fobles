@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/toolbar/diagnostics/worker-task-manager-panel.tsx
-import { useState } from "react";
+import { useRef, useState } from "react";
 import type { WorkerPoolStatus, WorkerTaskSnapshot } from "../../foundation/workers/pool/worker-pool-status.types";
+import { FoblesClientWindow } from "../../shared/dialog/fobles-client-window";
 import { DetailsPanel } from "../../shared/ui/details/details-panel";
 import { DIAGNOSTIC_OPERATION_LABELS } from "./toolbar-diagnostics.const";
 
@@ -13,7 +14,8 @@ function shortTarget(value: string): string {
 export function WorkerTaskManagerPanel({ status }: WorkerTaskManagerPanelProps) {
   const history = status?.taskHistory ?? [];
   const [selected, setSelected] = useState<WorkerTaskSnapshot>();
-  return <div className="fobles-worker-task-manager">
+  const panelRef = useRef<HTMLDivElement>(null);
+  return <div ref={panelRef} className="fobles-worker-task-manager">
     <div className="fobles-worker-task-manager-summary">Workers {status?.workerCount ?? 0}/{status?.maxWorkers ?? 0} · Activity {history.length}</div>
     <div className="fobles-worker-task-manager-grid">
       <table className="fobles-worker-task-manager-table">
@@ -29,7 +31,7 @@ export function WorkerTaskManagerPanel({ status }: WorkerTaskManagerPanelProps) 
         </tr>)}</tbody>
       </table>
     </div>
-    {selected ? <DetailsPanel title="Worker Task Details" closeLabel="Close worker task details" onClose={() => setSelected(undefined)}
+    {selected ? <FoblesClientWindow ownerRef={panelRef} id="fobles-worker-task-details" className="fobles-worker-task-details-window" title="Worker Task Details" storageKey="fobles.window.worker-task-details" defaultWidth={720} defaultHeight={520} minWidth={480} minHeight={260} onClose={() => setSelected(undefined)}><DetailsPanel title="Worker Task Details"
       getCopyText={() => JSON.stringify(selected, null, 2)}>
       <dl className="fobles-worker-task-manager-details">
         <dt>Task ID</dt><dd>{selected.taskId}</dd><dt>Request ID</dt><dd>{selected.requestId}</dd><dt>Type</dt><dd>{selected.type}</dd>
@@ -40,6 +42,6 @@ export function WorkerTaskManagerPanel({ status }: WorkerTaskManagerPanelProps) 
       <h4>Snapshot</h4><pre>{JSON.stringify(selected, null, 2)}</pre>
       <h4>Request Payload{selected.requestPayload.truncated ? " (truncated)" : ""}</h4><pre>{JSON.stringify(selected.requestPayload.value, null, 2)}</pre>
       <h4>Response Payload{selected.responsePayload?.truncated ? " (truncated)" : ""}</h4><pre>{selected.responsePayload ? JSON.stringify(selected.responsePayload.value, null, 2) : "Pending"}</pre>
-    </DetailsPanel> : null}
+    </DetailsPanel></FoblesClientWindow> : null}
   </div>;
 }

@@ -2,7 +2,7 @@
 @use "tokens" as *;
 @use "z-layers" as z;
 .fobles-specialist-session { position: fixed; inset: 0; z-index: $fobles-specialist-window-z-index; pointer-events: none; }
-.fobles-specialist-session .fobles-window { z-index: 10; pointer-events: auto; }
+.fobles-specialist-session .fobles-window { pointer-events: auto; }
 .fobles-window {
   position: absolute !important;
   z-index: z.fobles-z(window);
@@ -20,7 +20,13 @@
   background: $fobles-white;
   box-shadow: 0 12px 36px $fobles-shadow-dialog;
   color: $fobles-text;
-  &.is-collapsed { min-height: 34px !important; }
+  &.is-collapsed {
+    left: var(--fobles-window-collapsed-left) !important;
+    top: var(--fobles-window-collapsed-top) !important;
+    width: 300px !important;
+    height: 34px !important;
+    min-height: 34px !important;
+  }
   &.is-collapsed .fobles-window-content, &.is-collapsed .fobles-window-resize { display: none; }
   &.is-maximized { border-radius: 2px; }
 }

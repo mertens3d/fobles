@@ -1,0 +1,3 @@
+markerId=42ed2760-3ba7-4556-9ac8-880f43622cc9
+createdUtc=2026-11-09T16:09:49.428270Z
+identity=fobles-window-collapse-constants

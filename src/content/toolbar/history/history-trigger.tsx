@@ -4,7 +4,6 @@ import { useEffect, useState } from "react";
 import { ITEM_HISTORY } from "../../../shared/item-history/item-history.const.ts";
 import { PersistedWindow } from "../../shared/ui/persisted-window/persisted-window";
 import type { PersistedWindowVisibilityRequest } from "../../shared/ui/persisted-window/persisted-window.types";
-import { FlyoutTrigger } from "../shared-flyout/flyout-trigger";
 import { createClearHistoryHandler } from "./handlers.ts";
 import { HISTORY_CLASS, HISTORY_TEXT, HISTORY_UI } from "./history.const.ts";
 import { HistoryErrorBoundary } from "./history-error-boundary.tsx";
@@ -25,7 +24,7 @@ function readCollapsedGroups(): Set<string> {
   }
 }
 
-function HistoryContents({ doc, historyFlyout, onOpen, onToggle }: HistoryTriggerProps) {
+function HistoryContents({ doc, historyFlyout, onToggle }: HistoryTriggerProps) {
   const scopeState = useHistoryScope(doc);
   const store = useHistoryStore(scopeState.scope);
   const sites = useHistoryKnownSites(scopeState.scope);
@@ -35,14 +34,6 @@ function HistoryContents({ doc, historyFlyout, onOpen, onToggle }: HistoryTrigge
   const [windowVisible, setWindowVisible] = useState(false);
   const [visibilityRequest, setVisibilityRequest] = useState<PersistedWindowVisibilityRequest>();
 
-  useEffect(() => {
-    if (windowVisible && !historyFlyout.visible) {
-      onOpen();
-    } else if (!windowVisible && historyFlyout.visible) {
-      historyFlyout.hide();
-    }
-  }, [historyFlyout, onOpen, windowVisible]);
-
   function toggleGroup(category: string): void {
     const next = new Set(collapsedGroups);
     if (next.has(category)) { next.delete(category); } else { next.add(category); }
@@ -51,15 +42,15 @@ function HistoryContents({ doc, historyFlyout, onOpen, onToggle }: HistoryTrigge
   }
 
   function toggleHistory(): void {
+    historyFlyout.hide();
     onToggle();
     setVisibilityRequest((current) => ({ id: (current?.id ?? 0) + 1, visible: !windowVisible }));
   }
 
   return <div title="" className={HISTORY_CLASS.TRIGGER}>
-    <FlyoutTrigger className={HISTORY_CLASS.ACTIONS} enableHover={false} onHoverOpen={onOpen}
-      onHoverScheduleClose={historyFlyout.scheduleHide} onOutsidePointerDown={() => undefined}
-      button={<button type="button" className={HISTORY_CLASS.TAB} aria-controls={HISTORY_UI.PANEL_ID}
-        aria-expanded={windowVisible} aria-pressed={windowVisible} onClick={toggleHistory}>{HISTORY_TEXT.TITLE}</button>}>
+    <div className={HISTORY_CLASS.ACTIONS}>
+      <button type="button" className={HISTORY_CLASS.TAB} aria-controls={HISTORY_UI.PANEL_ID}
+        aria-expanded={windowVisible} aria-pressed={windowVisible} onClick={toggleHistory}>{HISTORY_TEXT.TITLE}</button>
       <PersistedWindow windowId="history" title={HISTORY_TEXT.TITLE} visibilityRequest={visibilityRequest}
         defaultGeometry={{ x: Math.max(16, window.innerWidth - 400), y: 72, width: 360, height: 620 }} minWidth={300} minHeight={280}
         onVisibilityChange={setWindowVisible}>
@@ -84,7 +75,7 @@ function HistoryContents({ doc, historyFlyout, onOpen, onToggle }: HistoryTrigge
           })}
         </section>
       </PersistedWindow>
-    </FlyoutTrigger>
+    </div>
   </div>;
 }
 

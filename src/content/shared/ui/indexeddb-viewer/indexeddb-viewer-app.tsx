@@ -144,9 +144,7 @@ export function IndexedDbViewerApp({ doc }: IndexedDbViewerAppProps) {
           <aside className={CLASS.DETAILS}>
             <DetailsPanel
               title={TEXT.DETAILS_TITLE}
-              closeLabel={TEXT.DETAILS_CLOSE}
-              onClose={() => setSelectedKey(undefined)}
-              getCopyText={() => JSON.stringify(selected.record, null, 2)}
+getCopyText={() => JSON.stringify(selected.record, null, 2)}
               actions={
                 <>
                   <button

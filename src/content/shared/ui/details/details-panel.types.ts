@@ -3,10 +3,7 @@ import type { ReactNode } from "react";
 
 export type DetailsPanelProps = {
   title: string;
-  closeLabel: string;
-  onClose?: () => void;
   getCopyText?: () => string;
   actions?: ReactNode;
-  closeOnOutsidePointer?: boolean;
   children?: ReactNode;
 };

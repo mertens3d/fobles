@@ -243,10 +243,7 @@ export function NodeDetailsPanel({
   return (
     <DetailsPanel
       title="Node Details"
-      closeLabel="Close node details"
-      onClose={onClose}
-      closeOnOutsidePointer
-      getCopyText={() => buildClipboardText(diagnosticTreeNode, formattedRawSource, formattedItemRawMarkup)}
+getCopyText={() => buildClipboardText(diagnosticTreeNode, formattedRawSource, formattedItemRawMarkup)}
     >
       {rows.map(([label, value]) => (
         <div key={label} className={DETAILS_PANEL.CLASS.ROW}>

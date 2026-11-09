@@ -20,6 +20,9 @@ export function WorkerTaskManagerWindow() {
   }, [visible]);
 
   useEffect(() => {
+    if (!visible) {
+      return undefined;
+    }
     let active = true;
     const refresh = (): void => {
       void getWorkerPoolStatus()

@@ -6,6 +6,8 @@ import { FOBLES_WINDOW_COLLAPSED_WIDTH, FOBLES_WINDOW_TITLE_BAR_HEIGHT, FOBLES_W
 const STACK_STORAGE_KEY = "fobles.window.stack";
 const WINDOW_SELECTOR = ".fobles-window[data-fobles-window-key]";
 const WINDOW_STACK_BASE_Z_INDEX = 10000;
+const COLLAPSED_LEFT = "--fobles-window-collapsed-left";
+const COLLAPSED_TOP = "--fobles-window-collapsed-top";
 
 type PersistedWindowStack = { order: string[] };
 
@@ -40,10 +42,8 @@ function normalize(windows: readonly HTMLElement[]): void {
   collapsed.forEach((element, index) => {
     const column = index % columns;
     const row = Math.floor(index / columns);
-    element.style.width = `${width}px`;
-    element.style.height = `${FOBLES_WINDOW_TITLE_BAR_HEIGHT}px`;
-    element.style.left = `${FOBLES_WINDOW_VIEWPORT_MARGIN + column * (width + gap)}px`;
-    element.style.top = `${window.innerHeight - FOBLES_WINDOW_VIEWPORT_MARGIN - (row + 1) * FOBLES_WINDOW_TITLE_BAR_HEIGHT - row * gap}px`;
+    element.style.setProperty(COLLAPSED_LEFT, `${FOBLES_WINDOW_VIEWPORT_MARGIN + column * (width + gap)}px`);
+    element.style.setProperty(COLLAPSED_TOP, `${window.innerHeight - FOBLES_WINDOW_VIEWPORT_MARGIN - (row + 1) * FOBLES_WINDOW_TITLE_BAR_HEIGHT - row * gap}px`);
   });
 }
 
