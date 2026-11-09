@@ -12,6 +12,11 @@ export type FoblesClientWindowProps = {
   defaultHeight: number;
   minWidth: number;
   minHeight: number;
+  collapsible?: boolean;
+  draggable?: boolean;
+  resizable?: boolean;
+  persistent?: boolean;
+  placement?: "floating" | "client-overlay";
   onClose: () => void;
   children: ReactNode;
 };
@@ -35,5 +40,5 @@ export function FoblesClientWindow({ ownerRef, onClose, children, ...windowProps
     return () => doc.removeEventListener("pointerdown", handlePointerDown, true);
   }, [onClose, ownerRef]);
 
-  return <div ref={clientRef} className="fobles-client-window"><FoblesWindow {...windowProps} onClose={onClose}>{children}</FoblesWindow></div>;
+  return <div ref={clientRef} className={`fobles-client-window${windowProps.placement === "client-overlay" ? " fobles-client-window--overlay" : ""}`}><FoblesWindow {...windowProps} onClose={onClose}>{children}</FoblesWindow></div>;
 }

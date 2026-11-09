@@ -36,7 +36,7 @@ export function WorkerTaskManagerWindow() {
 
         })
         .catch((error: unknown) => {
-          extensionLog.error("Worker Task Manager: status request failed", { visible, error });
+          extensionLog.error("Worker Monitor: status request failed", { visible, error });
         });
     };
     refresh();
@@ -47,7 +47,7 @@ export function WorkerTaskManagerWindow() {
     };
   }, [visible]);
 
-  return <PersistedWindow windowId="worker-task-manager" title="Worker Task Manager" visibilityRequest={visibilityRequest}
+  return <PersistedWindow windowId="worker-monitor" title="Worker Monitor" visibilityRequest={visibilityRequest}
     defaultGeometry={{ x: 80, y: 80, width: 760, height: 520 }} minWidth={560} minHeight={260} onVisibilityChange={setVisible}>
     <WorkerTaskManagerPanel status={status} />
   </PersistedWindow>;

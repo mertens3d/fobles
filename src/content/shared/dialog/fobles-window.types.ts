@@ -23,6 +23,11 @@ export type FoblesWindowProps = {
   defaultHeight: number;
   minWidth: number;
   minHeight: number;
+  collapsible?: boolean;
+  draggable?: boolean;
+  resizable?: boolean;
+  persistent?: boolean;
+  placement?: "floating" | "client-overlay";
   onClose?: () => void;
   onHelp?: () => void;
   headerActions?: ReactNode;
@@ -58,6 +63,8 @@ export type FoblesWindowTitlebarProps = {
   collapsed: boolean;
   onHelp?: () => void;
   headerActions?: ReactNode;
+  collapsible: boolean;
+  draggable: boolean;
   onToggleCollapse: () => void;
   onClose?: () => void;
   onPointerDown: (event: PointerEvent<HTMLDivElement>) => void;

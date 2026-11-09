@@ -26,11 +26,15 @@ export function startBrowserNavigation({ doc, navigateToItem }: BrowserNavigatio
   let lastItemId = getCurrentItemId(doc);
   const initialFo = readFo(win);
   if (lastItemId && initialFo !== lastItemId) {
-    win.history.replaceState({ ...win.history.state, [STATE_KEY]: lastItemId }, "", itemUrl(win, lastItemId));
+    win.history.pushState({ ...win.history.state, [STATE_KEY]: lastItemId }, "", itemUrl(win, lastItemId));
   }
   const poll = win.setInterval(() => {
     const itemId = getCurrentItemId(doc);
-    if (!itemId || itemId === lastItemId) {
+    if (!itemId) {
+      return;
+    }
+    const focusedItemId = readFo(win);
+    if (itemId === lastItemId && focusedItemId === itemId) {
       return;
     }
     lastItemId = itemId;

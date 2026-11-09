@@ -1,47 +1,100 @@
 // @source-path [fobles] src/content/toolbar/diagnostics/worker-task-manager-panel.tsx
-import { useRef, useState } from "react";
-import type { WorkerPoolStatus, WorkerTaskSnapshot } from "../../foundation/workers/pool/worker-pool-status.types";
-import { FoblesClientWindow } from "../../shared/dialog/fobles-client-window";
-import { DetailsPanel } from "../../shared/ui/details/details-panel";
+import { useEffect, useRef, useState } from "react";
+import type { WorkerPoolStatus, WorkerPoolWorkerStatus, WorkerTaskSnapshot } from "../../foundation/workers/pool/worker-pool-status.types";
+import { extensionLog } from "../../logger";
+import { FoblesDetailsWindow } from "../../shared/dialog/fobles-details-window";
+import { WorkerStateDetails } from "./worker-state-details";
 import { DIAGNOSTIC_OPERATION_LABELS } from "./toolbar-diagnostics.const";
 
 export type WorkerTaskManagerPanelProps = { status: WorkerPoolStatus | undefined };
+
+type MountedWorker = { key: string; workerId: string; source: string; visible: boolean };
+
+const COLUMN_HELP = {
+  activity: "Time of the latest recorded lifecycle activity.",
+  worker: "Worker target assigned to the task. Iframe workers show their worker identifier.",
+  status: "Mounted means the worker iframe is currently present in the worker container; Historical means it is not.",
+  task: "Worker operation represented by this snapshot.",
+  itemName: "Sitecore item name when it exists in the captured request payload.",
+  target: "Requested item identifier, path, or URL.",
+  workClass: "FG is foreground work; BG is background work.",
+  phase: "Latest recorded lifecycle phase.",
+  outcome: "Terminal task result when available.",
+  recoveries: "Number of worker recovery attempts made while processing this task.",
+} as const;
 
 function shortTarget(value: string): string {
   return value.length <= 12 ? value : `${value.slice(0, 7)}…`;
 }
 
+function objectValue(value: unknown, key: string): unknown {
+  return value && typeof value === "object" && key in value ? (value as Record<string, unknown>)[key] : undefined;
+}
+
+function itemName(entry: WorkerTaskSnapshot): string {
+  const response = entry.responsePayload?.value;
+  const resolvedName = objectValue(objectValue(objectValue(objectValue(response, "payload"), "result"), "value"), "scItemName");
+  if (typeof resolvedName === "string" && resolvedName) { return resolvedName; }
+  const requested = objectValue(entry.requestPayload.value, "requested");
+  const requestedName = objectValue(requested, "scItemName") ?? objectValue(requested, "name");
+  return typeof requestedName === "string" && requestedName ? requestedName : "—";
+}
+
+function WorkerStateTable({ workers, history }: { workers: readonly WorkerPoolWorkerStatus[]; history: readonly WorkerTaskSnapshot[] }) {
+  return <div className="fobles-worker-state-grid" role="table"><div className="fobles-worker-state-grid-row fobles-worker-state-grid-header" role="row"><span>Worker</span><span>State</span><span title={COLUMN_HELP.itemName}>Item Name</span><span>Target Kind</span><span>Active Task</span><span>URL</span><span>No Progress</span><span title={COLUMN_HELP.recoveries}>Recoveries</span></div>{workers.map((worker) => {
+    const snapshot = worker.activeTask ? history.find((entry) => entry.taskId === worker.activeTask?.taskId) : undefined;
+    const knownItemName = snapshot ? itemName(snapshot) : "—";
+    const activeTask = worker.activeTask ? `${worker.activeTask.phase} · ${DIAGNOSTIC_OPERATION_LABELS[worker.activeTask.type]}` : "—";
+    return <div className="fobles-worker-state-grid-row" role="row" key={worker.workerNumber}><span>{worker.workerNumber}</span><span>{worker.state}</span><span title={knownItemName}>{knownItemName}</span><span>{worker.targetKind ?? "—"}</span><span title={activeTask}>{activeTask}</span><span title={worker.currentUrl}>{worker.currentUrl ?? "—"}</span><span>{worker.noProgressMs} ms</span><span>{worker.recoveryCount}</span></div>;
+  })}</div>;
+}
+
+function WorkerMonitorTable({ entries, mounted, onSelect }: { entries: readonly WorkerTaskSnapshot[]; mounted: boolean; onSelect: (entry: WorkerTaskSnapshot) => void }) {
+  return <table className="fobles-worker-task-manager-table">
+    <thead><tr><th title={COLUMN_HELP.activity}>Activity</th><th title={COLUMN_HELP.worker}>Worker</th><th title={COLUMN_HELP.status}>Status</th><th title={COLUMN_HELP.task}>Task</th><th title={COLUMN_HELP.itemName}>Item Name</th><th title={COLUMN_HELP.target}>Target</th><th title={COLUMN_HELP.workClass}>Class</th><th title={COLUMN_HELP.phase}>Phase</th><th title={COLUMN_HELP.outcome}>Outcome</th><th title={COLUMN_HELP.recoveries}>Recoveries</th></tr></thead>
+    <tbody>{entries.map((entry) => <tr key={entry.taskId} onDoubleClick={() => onSelect(entry)} title="Double-click for task details">
+      <td>{new Date(entry.activityAt).toLocaleTimeString()}</td>
+      <td title={entry.workerKey}>{entry.workerKey ? entry.workerKey.replace(/^iframe:/, "").slice(0, 7) : "—"}</td>
+      <td>{mounted ? "Mounted" : "Historical"}</td>
+      <td>{DIAGNOSTIC_OPERATION_LABELS[entry.type]}</td><td title={itemName(entry)}>{itemName(entry)}</td>
+      <td title={entry.target}>{shortTarget(entry.target)}</td><td title={entry.workClass}>{entry.workClass === "foreground" ? "FG" : "BG"}</td>
+      <td>{entry.phase}</td><td>{entry.outcome ?? "—"}</td><td>{entry.recoveryCount}</td>
+    </tr>)}</tbody>
+  </table>;
+}
+
 export function WorkerTaskManagerPanel({ status }: WorkerTaskManagerPanelProps) {
   const history = status?.taskHistory ?? [];
+  const flightRecorder = history.filter((entry) => entry.outcome !== undefined);
   const [selected, setSelected] = useState<WorkerTaskSnapshot>();
   const panelRef = useRef<HTMLDivElement>(null);
-  return <div ref={panelRef} className="fobles-worker-task-manager">
-    <div className="fobles-worker-task-manager-summary">Workers {status?.workerCount ?? 0}/{status?.maxWorkers ?? 0} · Activity {history.length}</div>
-    <div className="fobles-worker-task-manager-grid">
-      <table className="fobles-worker-task-manager-table">
-        <thead><tr><th>Activity</th><th>Worker</th><th>Status</th><th>Task</th><th>Target</th><th>Class</th><th>Phase</th><th>Outcome</th><th>Rec</th></tr></thead>
-        <tbody>{history.map((entry) => <tr key={entry.taskId} onDoubleClick={() => setSelected(entry)} title="Double-click for task details">
-          <td>{new Date(entry.activityAt).toLocaleTimeString()}</td>
-          <td title={entry.workerKey}>{entry.workerKey ? entry.workerKey.replace(/^iframe:/, "").slice(0, 7) : "—"}</td>
-          <td>{entry.outcome === undefined ? "Active" : "Disposed"}</td>
-          <td>{DIAGNOSTIC_OPERATION_LABELS[entry.type]}</td>
-          <td title={entry.target}>{shortTarget(entry.target)}</td>
-          <td title={entry.workClass}>{entry.workClass === "foreground" ? "FG" : "BG"}</td>
-          <td>{entry.phase}</td><td>{entry.outcome ?? "—"}</td><td>{entry.recoveryCount}</td>
-        </tr>)}</tbody>
-      </table>
+  const workers = status?.workers ?? [];
+  const workerSignature = workers.map((worker) => `${worker.workerNumber}:${worker.state}:${worker.activeTask?.taskId ?? "idle"}`).join("|");
+
+  useEffect(() => {
+    extensionLog.debug("Worker Monitor: native worker state", { workers, workerStateCount: workers.length, flightRecorderCount: flightRecorder.length });
+  }, [workerSignature, history.length]);
+
+  function select(entry: WorkerTaskSnapshot): void {
+    extensionLog.debug("Worker Monitor: task details requested", { taskId: entry.taskId, requestId: entry.requestId, workerKey: entry.workerKey, ownerConnected: panelRef.current?.isConnected === true });
+    setSelected(entry);
+  }
+
+  function closeDetails(): void {
+    extensionLog.debug("Worker Monitor: task details closed", { taskId: selected?.taskId });
+    setSelected(undefined);
+  }
+
+  return <div ref={panelRef} className={`fobles-worker-task-manager${selected ? " has-details" : ""}`}>
+    <div className="fobles-worker-task-manager-summary">Workers {status?.workerCount ?? 0}/{status?.maxWorkers ?? 0} · Worker State {workers.length} · Flight Recorder {flightRecorder.length}</div>
+    <div className="fobles-worker-monitor-workspace">
+      <div className="fobles-worker-task-manager-grid">
+        <section className="fobles-worker-monitor-group"><h3>Worker State</h3><WorkerStateTable workers={workers} history={history} />{workers.length ? null : <div className="fobles-worker-task-manager-empty">No live pool workers.</div>}</section>
+        <section className="fobles-worker-monitor-group"><h3>Flight Recorder</h3><WorkerMonitorTable entries={flightRecorder} mounted={false} onSelect={select} />{flightRecorder.length ? null : <div className="fobles-worker-task-manager-empty">No historical worker activity.</div>}</section>
+      </div>
+      {selected ? <FoblesDetailsWindow ownerRef={panelRef} id="fobles-worker-state-details" title="Worker State Details" onClose={closeDetails}>
+        <WorkerStateDetails snapshot={selected} itemName={itemName(selected)} />
+      </FoblesDetailsWindow> : null}
     </div>
-    {selected ? <FoblesClientWindow ownerRef={panelRef} id="fobles-worker-task-details" className="fobles-worker-task-details-window" title="Worker Task Details" storageKey="fobles.window.worker-task-details" defaultWidth={720} defaultHeight={520} minWidth={480} minHeight={260} onClose={() => setSelected(undefined)}><DetailsPanel title="Worker Task Details"
-      getCopyText={() => JSON.stringify(selected, null, 2)}>
-      <dl className="fobles-worker-task-manager-details">
-        <dt>Task ID</dt><dd>{selected.taskId}</dd><dt>Request ID</dt><dd>{selected.requestId}</dd><dt>Type</dt><dd>{selected.type}</dd>
-        <dt>Target</dt><dd>{selected.target}</dd><dt>Class</dt><dd>{selected.workClass}</dd><dt>Phase</dt><dd>{selected.phase}</dd>
-        <dt>Outcome</dt><dd>{selected.outcome ?? "—"}</dd><dt>Worker</dt><dd>{selected.workerKey ?? "—"}</dd>
-        <dt>Elapsed</dt><dd>{selected.elapsedMs === undefined ? "—" : `${selected.elapsedMs} ms`}</dd><dt>Recoveries</dt><dd>{selected.recoveryCount}</dd>
-      </dl>
-      <h4>Snapshot</h4><pre>{JSON.stringify(selected, null, 2)}</pre>
-      <h4>Request Payload{selected.requestPayload.truncated ? " (truncated)" : ""}</h4><pre>{JSON.stringify(selected.requestPayload.value, null, 2)}</pre>
-      <h4>Response Payload{selected.responsePayload?.truncated ? " (truncated)" : ""}</h4><pre>{selected.responsePayload ? JSON.stringify(selected.responsePayload.value, null, 2) : "Pending"}</pre>
-    </DetailsPanel></FoblesClientWindow> : null}
   </div>;
 }

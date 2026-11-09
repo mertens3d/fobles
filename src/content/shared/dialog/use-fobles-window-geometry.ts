@@ -76,6 +76,7 @@ export function useFoblesWindowGeometry({
   useEffect(() => {
     function onViewportResize(): void {
       setState((current) => {
+        if (current.collapsed) { return current; }
         const next: FoblesWindowState = { ...current, ...clampRect(window, current, minWidth, minHeight) };
         persist(next);
         return next;
@@ -91,14 +92,14 @@ export function useFoblesWindowGeometry({
       if (current.collapsed) {
         const restoreRect = restoreRectOrDefault(current);
         const next: FoblesWindowState = { ...current, ...restoreRect, collapsed: false, maximized: false, restoreRect: undefined };
-        extensionLog.debug("Fobles window: restoring minimized window", { storageKey, current, restoreRect, next });
+        extensionLog.debug("Fobles window: restoring minimized window", { storageKey, current, restoreRect, next, domRect: dialogRef.current ? readRect(dialogRef.current) : undefined });
         persist(next);
         return next;
       }
-      const restoreRect = dialogRef.current ? readRect(dialogRef.current) : current;
+      const restoreRect = { left: current.left, top: current.top, width: current.width, height: current.height };
       const dockedTop = viewportRect(window).height - FOBLES_WINDOW_TITLE_BAR_HEIGHT - FOBLES_WINDOW_VIEWPORT_MARGIN;
       const next: FoblesWindowState = { ...current, restoreRect, collapsed: true, maximized: false, top: dockedTop };
-      extensionLog.debug("Fobles window: minimizing window", { storageKey, current, restoreRect, dockedTop, next });
+      extensionLog.debug("Fobles window: minimizing window", { storageKey, current, domRect: dialogRef.current ? readRect(dialogRef.current) : undefined, restoreRect, dockedTop, next });
       persist(next);
       return next;
     });

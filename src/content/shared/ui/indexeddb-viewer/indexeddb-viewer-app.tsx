@@ -1,5 +1,6 @@
 // @source-path [fobles] src/content/shared/ui/indexeddb-viewer/indexeddb-viewer-app.tsx
-import { useCallback, useDeferredValue, useEffect, useMemo, useState } from "react";
+import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
+import { FoblesDetailsWindow } from "../../dialog/fobles-details-window";
 import { DetailsPanel } from "../details/details-panel";
 import { DETAILS_PANEL } from "../details/details-panel.const";
 import { JsonTree } from "../json-tree/json-tree";
@@ -11,6 +12,7 @@ const { CLASS, TEXT } = INDEXEDDB_VIEWER;
 const EMPTY_ROWS: CacheRowsByStore = { sitecoreItems: [], sitecoreFacts: [] };
 
 export function IndexedDbViewerApp({ doc }: IndexedDbViewerAppProps) {
+  const appRef = useRef<HTMLDivElement>(null);
   const [rowsByStore, setRowsByStore] = useState<CacheRowsByStore>(EMPTY_ROWS);
   const [activeStore, setActiveStore] = useState<IndexedDbStoreId>("sitecoreItems");
   const [loaded, setLoaded] = useState(false);
@@ -141,10 +143,10 @@ export function IndexedDbViewerApp({ doc }: IndexedDbViewerAppProps) {
           )}
         </div>
         {selected ? (
-          <aside className={CLASS.DETAILS}>
+          <FoblesDetailsWindow id="fobles-indexeddb-value-details" title="IndexedDB Value Details" ownerRef={appRef} onClose={() => setSelectedKey(undefined)}>
             <DetailsPanel
               title={TEXT.DETAILS_TITLE}
-getCopyText={() => JSON.stringify(selected.record, null, 2)}
+              getCopyText={() => JSON.stringify(selected.record, null, 2)}
               actions={
                 <>
                   <button
@@ -170,7 +172,7 @@ getCopyText={() => JSON.stringify(selected.record, null, 2)}
               </div>
               <JsonTree key={`${selected.key}:${treeVersion}`} value={selected.record} defaultOpenDepth={openDepth} />
             </DetailsPanel>
-          </aside>
+          </FoblesDetailsWindow>
         ) : null}
       </div>
     </div>

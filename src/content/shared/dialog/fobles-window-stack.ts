@@ -1,13 +1,16 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window-stack.ts
 
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
+import { extensionLog } from "../../logger";
 import { FOBLES_WINDOW_COLLAPSED_WIDTH, FOBLES_WINDOW_TITLE_BAR_HEIGHT, FOBLES_WINDOW_VIEWPORT_MARGIN } from "./fobles-window.const";
 
 const STACK_STORAGE_KEY = "fobles.window.stack";
 const WINDOW_SELECTOR = ".fobles-window[data-fobles-window-key]";
-const WINDOW_STACK_BASE_Z_INDEX = 10000;
-const COLLAPSED_LEFT = "--fobles-window-collapsed-left";
-const COLLAPSED_TOP = "--fobles-window-collapsed-top";
+const WINDOW_STACK_BASE_Z_INDEX = 101;
+const COLLAPSED_LEFT_PROPERTY = "--fobles-window-collapsed-left";
+const COLLAPSED_TOP_PROPERTY = "--fobles-window-collapsed-top";
+const COLLAPSED_ORDER_PROPERTY = "foblesCollapsedOrder";
+let nextCollapsedOrder = 0;
 
 type PersistedWindowStack = { order: string[] };
 
@@ -34,7 +37,24 @@ function normalize(windows: readonly HTMLElement[]): void {
   windows.forEach((element, index) => {
     element.style.zIndex = String(base + index);
   });
+  const expanded = windows.filter((element) => !element.classList.contains("is-collapsed"));
+  expanded.forEach((element) => {
+    delete element.dataset[COLLAPSED_ORDER_PROPERTY];
+  });
   const collapsed = windows.filter((element) => element.classList.contains("is-collapsed"));
+  collapsed.forEach((element) => {
+    if (element.dataset[COLLAPSED_ORDER_PROPERTY] === undefined) { element.dataset[COLLAPSED_ORDER_PROPERTY] = String(nextCollapsedOrder++); }
+  });
+  collapsed.sort((left, right) => Number(left.dataset[COLLAPSED_ORDER_PROPERTY]) - Number(right.dataset[COLLAPSED_ORDER_PROPERTY]));
+  expanded.forEach((element) => {
+    const collapsedLeft = element.style.getPropertyValue(COLLAPSED_LEFT_PROPERTY);
+    const collapsedTop = element.style.getPropertyValue(COLLAPSED_TOP_PROPERTY);
+    element.style.removeProperty(COLLAPSED_LEFT_PROPERTY);
+    element.style.removeProperty(COLLAPSED_TOP_PROPERTY);
+    if (collapsedLeft || collapsedTop) {
+      extensionLog.debug("Fobles window stack: released collapsed docking", { windowKey: windowKey(element), collapsedLeft, collapsedTop, inlineLeft: element.style.left, inlineTop: element.style.top, inlineWidth: element.style.width, inlineHeight: element.style.height });
+    }
+  });
   const width = FOBLES_WINDOW_COLLAPSED_WIDTH;
   const gap = 4;
   const availableWidth = Math.max(width, window.innerWidth - FOBLES_WINDOW_VIEWPORT_MARGIN * 2);
@@ -42,8 +62,11 @@ function normalize(windows: readonly HTMLElement[]): void {
   collapsed.forEach((element, index) => {
     const column = index % columns;
     const row = Math.floor(index / columns);
-    element.style.setProperty(COLLAPSED_LEFT, `${FOBLES_WINDOW_VIEWPORT_MARGIN + column * (width + gap)}px`);
-    element.style.setProperty(COLLAPSED_TOP, `${window.innerHeight - FOBLES_WINDOW_VIEWPORT_MARGIN - (row + 1) * FOBLES_WINDOW_TITLE_BAR_HEIGHT - row * gap}px`);
+    const collapsedLeft = `${FOBLES_WINDOW_VIEWPORT_MARGIN + column * (width + gap)}px`;
+    const collapsedTop = `${window.innerHeight - FOBLES_WINDOW_VIEWPORT_MARGIN - (row + 1) * FOBLES_WINDOW_TITLE_BAR_HEIGHT - row * gap}px`;
+    element.style.setProperty(COLLAPSED_LEFT_PROPERTY, collapsedLeft);
+    element.style.setProperty(COLLAPSED_TOP_PROPERTY, collapsedTop);
+    extensionLog.debug("Fobles window stack: applied collapsed docking", { windowKey: windowKey(element), collapsedOrder: element.dataset[COLLAPSED_ORDER_PROPERTY], collapsedLeft, collapsedTop, inlineLeft: element.style.left, inlineTop: element.style.top, inlineWidth: element.style.width, inlineHeight: element.style.height });
   });
 }
 

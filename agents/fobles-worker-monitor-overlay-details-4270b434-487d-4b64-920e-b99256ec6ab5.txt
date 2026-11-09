@@ -1,0 +1,3 @@
+markerId=4270b434-487d-4b64-920e-b99256ec6ab5
+createdUtc=2026-11-09T17:04:48.557916Z
+identity=fobles-worker-monitor-overlay-details

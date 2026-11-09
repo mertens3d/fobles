@@ -2,7 +2,7 @@
 @use "tokens" as *;
 @use "z-layers" as z;
 .fobles-specialist-session { position: fixed; inset: 0; z-index: $fobles-specialist-window-z-index; pointer-events: none; }
-.fobles-specialist-session .fobles-window { pointer-events: auto; }
+.fobles-specialist-session .fobles-window { z-index: 10; pointer-events: auto; }
 .fobles-window {
   position: absolute !important;
   z-index: z.fobles-z(window);
@@ -20,13 +20,7 @@
   background: $fobles-white;
   box-shadow: 0 12px 36px $fobles-shadow-dialog;
   color: $fobles-text;
-  &.is-collapsed {
-    left: var(--fobles-window-collapsed-left) !important;
-    top: var(--fobles-window-collapsed-top) !important;
-    width: 300px !important;
-    height: 34px !important;
-    min-height: 34px !important;
-  }
+  &.is-collapsed { min-height: 34px !important; }
   &.is-collapsed .fobles-window-content, &.is-collapsed .fobles-window-resize { display: none; }
   &.is-maximized { border-radius: 2px; }
 }
@@ -51,3 +45,14 @@
 .fobles-window-resize--sw { bottom: 0; left: 0; cursor: nesw-resize; }
 .fobles-auditor-dialog .fobles-window-content { padding: 10px 12px 12px; }
 .fobles-idb-dialog .fobles-window-content { padding: 12px 16px 16px; }
+
+.fobles-client-window--overlay { position: absolute; z-index: 4; top: 8px; right: 24px; bottom: 8px; width: min(420px, calc(100% - 40px)); min-width: 320px; }
+.fobles-client-window--overlay > .fobles-window--client-overlay { position: absolute; inset: 0; width: 100%; height: 100%; min-width: 0 !important; min-height: 0 !important; }
+.fobles-window--client-overlay > .fobles-window-content { min-width: 0; min-height: 0; padding: 0; overflow: auto; }
+.fobles-window--client-overlay > .fobles-window-content > * { width: 100%; min-width: 0; min-height: 100%; margin: 0; box-sizing: border-box; }
+
+.fobles-window--client-overlay .fobles-details-panel { position: static; inset: auto; width: 100%; min-width: 0; min-height: 100%; max-width: none; max-height: none; margin: 0; padding: 0; overflow: visible; border: 0; border-radius: 0; box-shadow: none; box-sizing: border-box; }
+.fobles-window--client-overlay .fobles-details-panel-header { position: static; margin: 0; padding: 8px 12px; }
+.fobles-window--client-overlay .fobles-details-panel-content { margin: 0; padding: 0 12px 12px; }
+
+.fobles-window.is-collapsed { left: var(--fobles-window-collapsed-left) !important; top: var(--fobles-window-collapsed-top) !important; width: 300px !important; height: 34px !important; }

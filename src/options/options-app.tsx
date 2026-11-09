@@ -7,6 +7,7 @@ import { AiPagesMappingsSection } from "./ai-pages-mappings/ai-pages-mappings-se
 import { DeveloperSettingsSection } from "./developer-settings/developer-settings-section";
 import { StructuralSettingsSection } from "./structural/structural-settings-section";
 import { KnownSitesSection } from "./structural/known-sites-section";
+import { BrowserNavigationSection } from "./browser-navigation/browser-navigation-section";
 
 export function OptionsApp() {
   return (
@@ -16,6 +17,7 @@ export function OptionsApp() {
       <PersistedLogsSection />
       <JumpFlyoutButtonsSection />
       <AiPagesMappingsSection />
+      <BrowserNavigationSection />
       <StructuralSettingsSection />
       <KnownSitesSection />
       <DeveloperSettingsSection />

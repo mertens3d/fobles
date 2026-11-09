@@ -1,0 +1,3 @@
+markerId=a6b22a9b-45b6-404e-a881-4d76d7446feb
+createdUtc=2026-11-09T17:17:31.509942Z
+identity=fobles-client-window-abstraction

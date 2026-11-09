@@ -712,3 +712,26 @@
 
 /* Help is owned by the shared Fobles window title bar. */
 .fobles-auditor-app > .fobles-auditor-help-button { display: none !important; }
+
+
+// Auditor details use FoblesDetailsWindow for placement and chrome. Neutralize legacy graph-panel framing inside its client area.
+#fobles-auditor-workspace-details .fobles-reference-graph-node-details {
+  position: static;
+  inset: auto;
+  z-index: auto;
+  width: 100%;
+  max-width: none;
+  min-height: 100%;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  box-shadow: none;
+  color: inherit;
+  font: inherit;
+}
+#fobles-auditor-workspace-details .fobles-reference-graph-node-details-header { margin: 0; padding: 8px 12px; }
+#fobles-auditor-workspace-details .fobles-details-panel-content { padding: 0 12px 12px; }

@@ -36,11 +36,18 @@ const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: str
   const rawProcessedXml = processLayoutXml(xml);
   extensionLog.debug("Processed layout XML:", rawProcessedXml);
 
-  if (!rawProcessedXml) {
+  const devices = rawProcessedXml?.r?.d;
+  if (!Array.isArray(devices)) {
+    extensionLog.warn("Layout collector: parsed layout does not contain a device collection", {
+      layoutName,
+      rawMarkupLength: xml.length,
+      parsedRootKeys: rawProcessedXml && typeof rawProcessedXml === "object" ? Object.keys(rawProcessedXml) : [],
+      renderingRootKeys: rawProcessedXml?.r && typeof rawProcessedXml.r === "object" ? Object.keys(rawProcessedXml.r) : [],
+    });
     return layoutSectionField;
   }
 
-  for (const device of rawProcessedXml.r.d) {
+  for (const device of devices) {
     const controls = (device.r ?? []).map((rendering): { placeholderPath: string; control: ScControl } => ({
       placeholderPath: readRenderingAttribute(rendering, "ph") || "(no placeholder)",
       control: {

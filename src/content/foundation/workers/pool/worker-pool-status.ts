@@ -26,7 +26,7 @@ export function snapshotWorkerPoolStatus(
   requestId?: string,
 ): WorkerPoolStatus {
   const matches = (queued: QueuedTask): boolean => requestId === undefined || queued.task.requestId === requestId;
-  const workers = pool?.workers.filter((worker) => worker.generation === pool.generation && worker.state !== "retired") ?? [];
+  const workers = pool?.workers.filter((worker) => worker.generation === pool.generation) ?? [];
   const queuedTasks = (pool?.queue ?? []).filter((queued) => !pool?.admittedTasks.has(queued) && matches(queued))
     .map((queued) => taskStatus(queued, WORK_SCHEDULING.PHASE.QUEUED));
   const activeTasks = Array.from(pool?.admittedTasks ?? []).filter(matches).map((queued) => {

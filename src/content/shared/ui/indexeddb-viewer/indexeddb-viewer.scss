@@ -142,28 +142,4 @@
   background: #e3edff;
 }
 
-.fobles-idb-details {
-  position: absolute;
-  top: 0;
-  right: 0;
-  bottom: 0;
-  z-index: 20;
-  width: min(620px, 75%);
-  overflow: hidden;
-  background: #20344f;
-  box-shadow: -10px 0 24px rgba(0, 0, 0, 0.22);
 
-  .fobles-reference-graph-node-details {
-    position: relative;
-    inset: auto;
-    width: auto;
-    max-width: none;
-    height: 100%;
-    min-height: 0;
-    max-height: none;
-    margin: 0;
-    overflow: auto;
-    border-radius: 0;
-    box-sizing: border-box;
-  }
-}

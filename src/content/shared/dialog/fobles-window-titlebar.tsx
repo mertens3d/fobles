@@ -6,6 +6,8 @@ import type { FoblesWindowTitlebarProps } from "./fobles-window.types";
 export function FoblesWindowTitlebar({
   title,
   collapsed,
+  collapsible,
+  draggable,
   onHelp,
   headerActions,
   onToggleCollapse,
@@ -17,17 +19,17 @@ export function FoblesWindowTitlebar({
   return (
     <div
       className="fobles-window-titlebar"
-      onPointerDown={onPointerDown}
-      onPointerMove={onPointerMove}
-      onPointerUp={onPointerUp}
-      onPointerCancel={onPointerUp}
-      onDoubleClick={onToggleCollapse}
+      onPointerDown={draggable ? onPointerDown : undefined}
+      onPointerMove={draggable ? onPointerMove : undefined}
+      onPointerUp={draggable ? onPointerUp : undefined}
+      onPointerCancel={draggable ? onPointerUp : undefined}
+      onDoubleClick={collapsible ? onToggleCollapse : undefined}
     >
       <div className="fobles-window-title">{title}</div>
       <div className="fobles-window-actions">
         {headerActions}
         {onHelp && <DialogIconButton kind="help" label="Help" surface="dark" onClick={onHelp} />}
-        <button
+        {collapsible && <button
           type="button"
           className="fobles-window-button fobles-window-collapse"
           title={collapsed ? "Restore" : "Minimize"}
@@ -35,7 +37,7 @@ export function FoblesWindowTitlebar({
           onClick={onToggleCollapse}
         >
           {collapsed ? "▢" : "_"}
-        </button>
+        </button>}
         {onClose && <DialogIconButton kind="close" label="Close" surface="dark" onClick={onClose} />}
       </div>
     </div>

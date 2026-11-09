@@ -20,7 +20,7 @@
 .fobles-history-error { color: #a32121; }
 .fobles-history-item-icon { width: 16px; height: 16px; flex: 0 0 16px; }
 .fobles-history-group-body { display: block; position: relative; height: auto; min-height: 0; max-height: none; overflow: visible; border-top: 1px solid $fobles-border; }
-.fobles-history-group-body > ul { display: block; height: auto; min-height: 0; max-height: none; overflow: visible; }
+.fobles-history-group-body > ul { display: block; height: auto; min-height: 0; max-height: none; margin-left: 12px; overflow: visible; }
 
 .fobles-toolbar-container[data-position$="right"] .fobles-history-trigger { right: 18px; left: auto; }
 

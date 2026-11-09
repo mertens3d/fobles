@@ -22,7 +22,7 @@ export function ToolbarDiagnostics({ services: dependencies = services }: Toolba
   const total = active + queued;
   const summaryLabel = total > 0 ? operation : "Idle";
   return state.enabled ? <section className={TOOLBAR_DIAGNOSTICS.CLASS} aria-label={TOOLBAR_DIAGNOSTICS.LABEL}>
-    <button type="button" className="fobles-toolbar-diagnostics-summary" title={`${active} active · ${queued} queued. Click for worker details.`}
+    <button type="button" className="fobles-toolbar-diagnostics-summary" title={`${active} active · ${queued} queued. Click for Worker Monitor.`}
       onClick={() => window.dispatchEvent(new CustomEvent(WORKER_TASK_MANAGER_TOGGLE_EVENT))}>
       <PhaseProgressBar label={summaryLabel} displayLabel={summaryLabel} progress={{ completed: total > 0 ? Math.max(0, total - queued) : 0, max: total > 0 ? total : 1, status: total > 0 ? "running" : "idle" }} />
     </button>

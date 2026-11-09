@@ -33,6 +33,7 @@ import { AuditorTestDetailsDialog } from "../auditor-test-details-dialog/auditor
 import { AuditorSummary } from "../auditor-summary/auditor-summary";
 import { AuditorToolbar } from "../auditor-toolbar/auditor-toolbar";
 import { NodeDetailsPanel } from "../../../../shared/ui/details/node-details-panel";
+import { FoblesDetailsWindow } from "../../../../shared/dialog/fobles-details-window";
 const ALL_STATUSES: readonly AuditFindingStatus[] = ["pending", "passed", "warning", "error"];
 const DATA_OPERATION_POLL_INTERVAL_MS = 100;
 const DEFAULT_GRAPH_FILTERS: SitecoreHarvestFiltersState = {
@@ -102,6 +103,7 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   const [selectedTreeNodeId, setSelectedTreeNodeId] = useState<string>();
   const [selectedTestDetails, setSelectedTestDetails] = useState<AuditorTestDetailsSelection | undefined>(undefined);
   const [showHelp, setShowHelp] = useState(false);
+  const appRef = useRef<HTMLDivElement>(null);
   const startedAt = useRef(performance.now());
   const completedElapsedSeconds = useRef<number | undefined>(undefined);
   const dataOperation = useFoblesDataOperationWhenReady(workOperationId);
@@ -331,7 +333,7 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
     downloadAuditFindingsCsv(doc, visibleFindings, `fobles-auditor-findings-${Date.now()}.csv`);
   }
   return (
-    <div className="fobles-auditor-app">
+    <div ref={appRef} className="fobles-auditor-app">
       <AuditorSummary counts={summary} selectedStatuses={selectedStatuses} onToggleStatus={toggleStatus} />
       <AuditorToolbar
         selectedChecks={selectedChecks}
@@ -390,14 +392,9 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
           ) : null}
         </div>
         {selectedTreeNodeId && model ? (
-          <aside className="fobles-auditor-workspace-details">
-            <NodeDetailsPanel
-              selectedTreeNodeId={selectedTreeNodeId}
-              nodesById={model.nodesById}
-              processingStateByTreeNodeId={model.processingStateByTreeNodeId}
-              onClose={() => setSelectedTreeNodeId(undefined)}
-            />
-          </aside>
+          <FoblesDetailsWindow id="fobles-auditor-workspace-details" title="Auditor Details" ownerRef={appRef} onClose={() => setSelectedTreeNodeId(undefined)}>
+            <NodeDetailsPanel selectedTreeNodeId={selectedTreeNodeId} nodesById={model.nodesById} processingStateByTreeNodeId={model.processingStateByTreeNodeId} />
+          </FoblesDetailsWindow>
         ) : null}
       </div>
       <AuditorTestDetailsDialog selection={selectedTestDetails} onClose={() => setSelectedTestDetails(undefined)} />

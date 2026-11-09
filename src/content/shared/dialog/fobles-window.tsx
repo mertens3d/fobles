@@ -16,6 +16,11 @@ export function FoblesWindow({
   defaultHeight,
   minWidth,
   minHeight,
+  collapsible = true,
+  draggable = true,
+  resizable = true,
+  persistent = true,
+  placement = "floating",
   onClose,
   onHelp,
   headerActions,
@@ -30,6 +35,7 @@ export function FoblesWindow({
     geometry.collapsed ? "is-collapsed" : "",
     geometry.maximized ? "is-maximized" : "",
     geometry.dragging ? "is-dragging" : "",
+    placement === "client-overlay" ? "fobles-window--client-overlay" : "",
   ]
     .filter(Boolean)
     .join(" ");
@@ -42,12 +48,14 @@ export function FoblesWindow({
       data-fobles-window-key={storageKey}
       role="dialog"
       aria-label={title}
-      style={{ minWidth: geometry.collapsed ? FOBLES_WINDOW_COLLAPSED_WIDTH : minWidth, minHeight, ...geometry.style }}
+      style={persistent ? { minWidth: geometry.collapsed ? FOBLES_WINDOW_COLLAPSED_WIDTH : minWidth, minHeight, ...geometry.style } : { minWidth, minHeight }}
       onPointerDownCapture={(event) => bringFoblesWindowToFront(event.currentTarget)}
     >
       <FoblesWindowTitlebar
         title={title}
         collapsed={geometry.collapsed}
+        collapsible={collapsible}
+        draggable={draggable}
         onHelp={onHelp}
         headerActions={headerActions}
         onToggleCollapse={geometry.toggleCollapse}
@@ -57,7 +65,7 @@ export function FoblesWindow({
         onPointerUp={geometry.onTitlePointerUp}
       />
       <div className="fobles-window-content">{children}</div>
-      {FOBLES_WINDOW_RESIZE_EDGES.map((edge) => (
+      {resizable && FOBLES_WINDOW_RESIZE_EDGES.map((edge) => (
         <div
           key={edge}
           className={`fobles-window-resize fobles-window-resize--${edge}`}
