@@ -1,0 +1,3 @@
+packageId=556a90a2-d6a0-4532-83ab-cf3eb9b03458
+createdUtc=2026-11-09T03:52:00Z
+purpose=Make DetailsPanel content-only; owning client controls close and click-away lifecycle.

@@ -1,0 +1,3 @@
+packageId=6cb194f2-c961-4b50-975e-eb147523bfa7
+createdUtc=2026-11-09T03:39:00Z
+purpose=Rebased sibling-window architecture package.

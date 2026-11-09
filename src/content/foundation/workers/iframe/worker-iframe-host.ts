@@ -51,7 +51,8 @@ export async function createWorkerIframe(doc: Document, url: string): Promise<Wo
   iframe.dataset.workerId = workerId;
   iframe.src = createWorkerUrl(url, workerId);
   applyWorkerIframeClass(iframe, workerIframeById.size);
-  getWorkerIframeContainer(doc).appendChild(iframe);
+  const container = await getWorkerIframeContainer(doc);
+  container.appendChild(iframe);
   workerIframeById.set(workerId, iframe);
   logWorkerMemory("iframe created", {
     workerId,
@@ -61,14 +62,42 @@ export async function createWorkerIframe(doc: Document, url: string): Promise<Wo
   return { workerId };
 }
 
-function createWorkerIframeContainer(doc: Document): HTMLDivElement {
+const WORKER_IFRAME_CONTAINER_WAIT_MS = 2000;
+const WORKER_IFRAME_WINDOW_CONTENT_SELECTOR = ".fobles-worker-iframe-window-content";
+
+async function waitForWorkerIframeContainer(doc: Document): Promise<HTMLDivElement | undefined> {
+  const existing = doc.getElementById(WORKER_POOL.WORKER_IFRAME_CONTAINER_ID);
+  if (existing instanceof HTMLDivElement) {
+    return existing;
+  }
+  return new Promise((resolve) => {
+    const observer = new MutationObserver(() => {
+      const container = doc.getElementById(WORKER_POOL.WORKER_IFRAME_CONTAINER_ID);
+      if (container instanceof HTMLDivElement) {
+        clearTimeout(timeout);
+        observer.disconnect();
+        resolve(container);
+      }
+    });
+    const timeout = window.setTimeout(() => {
+      observer.disconnect();
+      resolve(undefined);
+    }, WORKER_IFRAME_CONTAINER_WAIT_MS);
+    observer.observe(doc.documentElement, { childList: true, subtree: true });
+  });
+}
+
+function createHiddenWorkerIframeStagingContainer(doc: Document): HTMLDivElement {
   const container = doc.createElement("div");
   container.id = WORKER_POOL.WORKER_IFRAME_CONTAINER_ID;
-  container.classList.add(WORKER_POOL.WORKER_IFRAME_CONTAINER_CLASS);
-  applyWorkerIframeContainerClass(container);
+  container.classList.add(WORKER_POOL.WORKER_IFRAME_CONTAINER_CLASS, WORKER_POOL.WORKER_IFRAME_CONTAINER_CLASS_HIDDEN);
   doc.body.appendChild(container);
-  extensionLog.debug("Worker iframe host: container created", { containerId: container.id });
+  extensionLog.warn("Worker iframe host: window container unavailable; hidden staging container created", { containerId: container.id });
   return container;
+}
+
+function isWindowHostedContainer(container: HTMLElement): boolean {
+  return container.closest(WORKER_IFRAME_WINDOW_CONTENT_SELECTOR) !== null;
 }
 
 function applyWorkerIframeContainerClass(container: HTMLDivElement): void {
@@ -85,14 +114,10 @@ function applyWorkerIframeClass(iframe: HTMLIFrameElement, index: number): void 
   iframe.classList.toggle(WORKER_POOL.WORKER_IFRAME_CLASS_VISIBLE, !hidden);
 }
 
-function getWorkerIframeContainer(doc: Document): HTMLDivElement {
-  const existingContainer = doc.getElementById(WORKER_POOL.WORKER_IFRAME_CONTAINER_ID);
-  let container: HTMLDivElement;
-  if (existingContainer instanceof HTMLDivElement) {
-    container = existingContainer;
+async function getWorkerIframeContainer(doc: Document): Promise<HTMLDivElement> {
+  const container = await waitForWorkerIframeContainer(doc) ?? createHiddenWorkerIframeStagingContainer(doc);
+  if (isWindowHostedContainer(container)) {
     applyWorkerIframeContainerClass(container);
-  } else {
-    container = createWorkerIframeContainer(doc);
   }
   return container;
 }
@@ -203,7 +228,10 @@ export function emergencyCleanupWorkerIframes(doc: Document): WorkerIframeEmerge
 export function removeAllWorkerIframes(doc: Document): void {
   workerIframeById.forEach((iframe) => iframe.remove());
   workerIframeById.clear();
-  doc.getElementById(WORKER_POOL.WORKER_IFRAME_CONTAINER_ID)?.remove();
+  const container = doc.getElementById(WORKER_POOL.WORKER_IFRAME_CONTAINER_ID);
+  if (container instanceof HTMLElement && !isWindowHostedContainer(container)) {
+    container.remove();
+  }
 }
 
 function createWorkerUrl(url: string, workerId: string): string {
@@ -213,7 +241,11 @@ function createWorkerUrl(url: string, workerId: string): string {
 }
 
 function removeEmptyContainer(): void {
-  if (workerIframeById.size === 0) {
-    document.getElementById(WORKER_POOL.WORKER_IFRAME_CONTAINER_ID)?.remove();
+  if (workerIframeById.size !== 0) {
+    return;
+  }
+  const container = document.getElementById(WORKER_POOL.WORKER_IFRAME_CONTAINER_ID);
+  if (container instanceof HTMLElement && !isWindowHostedContainer(container)) {
+    container.remove();
   }
 }

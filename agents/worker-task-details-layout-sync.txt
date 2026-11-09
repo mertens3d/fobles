@@ -1,0 +1,3 @@
+packageId=2ec26542-df66-4b06-8819-67cd6183c720
+createdUtc=2026-11-09T03:46:00Z
+purpose=Rebased Worker Task Details layout package.

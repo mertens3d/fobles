@@ -5,9 +5,9 @@ import { SITECORE } from "../../constants/sitecore.ts";
 export const FOBLES_ITEM_HISTORY_CHANGE = "FOBLES_ITEM_HISTORY_CHANGE";
 
 export const ITEM_HISTORY = {
-  CATEGORIES: ["Content", "Media Library", "Templates", "Layout", "System"],
+  CATEGORIES: ["Content", "Layout", "Media Library", "System", "Templates"],
   MAX_ITEMS_BY_CATEGORY: {
-    Content: 10,
+    Content: 6,
     "Media Library": 5,
     Templates: 5,
     Layout: 5,

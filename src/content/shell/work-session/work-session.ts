@@ -25,8 +25,7 @@ let poolDisposalPromise: Promise<void> | undefined;
 
 function runFinalWorkerIframeCleanup(sessionId: string): void {
   const cleanup = emergencyCleanupWorkerIframes(document);
-  const forcedCleanupRequired =
-    cleanup.orphanCountBefore > 0 || cleanup.trackedCountBefore > 0 || cleanup.containerFound;
+  const forcedCleanupRequired = cleanup.orphanCountBefore > 0 || cleanup.trackedCountBefore > 0;
   const cleanupFailed = cleanup.orphanCountAfter > 0 || cleanup.trackedCountAfter > 0 || cleanup.containerExistsAfter;
 
   if (!forcedCleanupRequired) {

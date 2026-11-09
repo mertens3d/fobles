@@ -6,11 +6,9 @@ import type { FoblesWindowTitlebarProps } from "./fobles-window.types";
 export function FoblesWindowTitlebar({
   title,
   collapsed,
-  maximized,
   onHelp,
   headerActions,
   onToggleCollapse,
-  onToggleMaximize,
   onClose,
   onPointerDown,
   onPointerMove,
@@ -23,7 +21,7 @@ export function FoblesWindowTitlebar({
       onPointerMove={onPointerMove}
       onPointerUp={onPointerUp}
       onPointerCancel={onPointerUp}
-      onDoubleClick={onToggleMaximize}
+      onDoubleClick={onToggleCollapse}
     >
       <div className="fobles-window-title">{title}</div>
       <div className="fobles-window-actions">
@@ -38,16 +36,7 @@ export function FoblesWindowTitlebar({
         >
           {collapsed ? "▢" : "_"}
         </button>
-        <button
-          type="button"
-          className="fobles-window-button fobles-window-maximize"
-          title={maximized ? "Restore" : "Maximize"}
-          aria-label={maximized ? "Restore" : "Maximize"}
-          onClick={onToggleMaximize}
-        >
-          {maximized ? "❐" : "□"}
-        </button>
-        <DialogIconButton kind="close" label="Close" surface="dark" onClick={onClose} />
+        {onClose && <DialogIconButton kind="close" label="Close" surface="dark" onClick={onClose} />}
       </div>
     </div>
   );

@@ -1,6 +1,8 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window.tsx
 
-import { FOBLES_WINDOW_RESIZE_EDGES } from "./fobles-window.const";
+import { useEffect } from "react";
+import { FOBLES_WINDOW_COLLAPSED_WIDTH, FOBLES_WINDOW_RESIZE_EDGES } from "./fobles-window.const";
+import { bringFoblesWindowToFront, registerFoblesWindow, syncFoblesWindowStack } from "./fobles-window-stack";
 import { useFoblesWindowGeometry } from "./use-fobles-window-geometry";
 import { FoblesWindowTitlebar } from "./fobles-window-titlebar";
 import type { FoblesWindowProps } from "./fobles-window.types";
@@ -20,6 +22,8 @@ export function FoblesWindow({
   children,
 }: FoblesWindowProps) {
   const geometry = useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeight, minWidth, minHeight });
+  useEffect(() => { const element = geometry.dialogRef.current; return element ? registerFoblesWindow(element) : undefined; }, [geometry.dialogRef]);
+  useEffect(() => { syncFoblesWindowStack(); }, [geometry.collapsed]);
   const stateClasses = [
     className,
     "fobles-window",
@@ -38,16 +42,15 @@ export function FoblesWindow({
       data-fobles-window-key={storageKey}
       role="dialog"
       aria-label={title}
-      style={{ minWidth, minHeight, ...geometry.style }}
+      style={{ minWidth: geometry.collapsed ? FOBLES_WINDOW_COLLAPSED_WIDTH : minWidth, minHeight, ...geometry.style }}
+      onPointerDownCapture={(event) => bringFoblesWindowToFront(event.currentTarget)}
     >
       <FoblesWindowTitlebar
         title={title}
         collapsed={geometry.collapsed}
-        maximized={geometry.maximized}
         onHelp={onHelp}
         headerActions={headerActions}
         onToggleCollapse={geometry.toggleCollapse}
-        onToggleMaximize={geometry.toggleMaximize}
         onClose={onClose}
         onPointerDown={geometry.onTitlePointerDown}
         onPointerMove={geometry.onTitlePointerMove}

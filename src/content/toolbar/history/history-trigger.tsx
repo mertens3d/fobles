@@ -73,7 +73,8 @@ function HistoryContents({ doc, historyFlyout, onOpen, onToggle }: HistoryTrigge
             const collapsed = collapsedGroups.has(category);
             return <section key={category} className={HISTORY_CLASS.GROUP} aria-label={category}>
               <button type="button" className="fobles-history-group-toggle" aria-expanded={!collapsed} onClick={() => toggleGroup(category)}>
-                <span className="fobles-history-disclosure" aria-hidden="true">{collapsed ? "▸" : "▾"}</span>
+                <img className="fobles-history-disclosure" src={collapsed ? "/sitecore/shell/themes/standard/images/treemenu_collapsed.png" : "/sitecore/shell/themes/standard/images/treemenu_expanded.png"} width={15} height={15} alt="" aria-hidden="true" />
+                <img className="fobles-history-group-icon" src={HISTORY_GROUP_ICON[category]} width={16} height={16} alt="" />
                 <span>{category} ({items.length})</span>
               </button>
               {!collapsed && items.length > 0 && <div className="fobles-history-group-body"><ul>{scope && items.map((item) =>
@@ -86,6 +87,14 @@ function HistoryContents({ doc, historyFlyout, onOpen, onToggle }: HistoryTrigge
     </FlyoutTrigger>
   </div>;
 }
+
+const HISTORY_GROUP_ICON: Record<string, string> = {
+  Content: "/temp/iconcache/people/16x16/cubes_blue.png",
+  Layout: "/temp/iconcache/applications/16x16/windows.png",
+  "Media Library": "/temp/iconcache/applications/16x16/photo_scenery.png",
+  System: "/temp/iconcache/people/16x16/workstation1.png",
+  Templates: "/temp/iconcache/applications/16x16/form_blue.png",
+};
 
 export function HistoryTrigger(props: HistoryTriggerProps) {
   return <HistoryErrorBoundary><HistoryContents {...props} /></HistoryErrorBoundary>;

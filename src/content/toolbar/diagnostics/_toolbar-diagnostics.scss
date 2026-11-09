@@ -1,9 +1,9 @@
 @use "../../styles/tokens" as *;
 @use "../../shared/ui/persisted-window/persisted-window";
 
-.fobles-toolbar-diagnostics { grid-column: 2; grid-row: 2; box-sizing: border-box; width: 100%; min-width: 0; contain: inline-size; padding: 5px 8px; border-radius: 4px; background: $fobles-surface; color: $fobles-text; font: 10px/1.4 system-ui, sans-serif; cursor: default; position: relative; z-index: 10; pointer-events: auto; }
+.fobles-toolbar-diagnostics { grid-column: 2; grid-row: 2; box-sizing: border-box; width: 100%; min-width: 0; contain: inline-size; padding: 5px 8px; border-radius: 4px; background: $fobles-surface; color: $fobles-text; font: 10px/1.4 system-ui, sans-serif; cursor: default; position: relative; pointer-events: auto; }
 .fobles-toolbar-diagnostics-summary, .fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress, .fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-content, .fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-track { box-sizing: border-box; width: 100%; min-width: 0; }
-.fobles-toolbar-diagnostics-summary { position: relative; z-index: 11; padding: 0; border: 0; background: transparent; pointer-events: auto; cursor: pointer; }
+.fobles-toolbar-diagnostics-summary { position: relative; padding: 0; border: 0; background: transparent; pointer-events: auto; cursor: pointer; }
 .fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress { display: flex; flex: 1 1 100%; }
 .fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-content { flex: 1 1 100%; }
 .fobles-worker-task-manager { display: flex; height: 100%; min-height: 0; flex-direction: column; font: 12px/1.4 system-ui, sans-serif; }
@@ -39,3 +39,10 @@
 .fobles-worker-task-manager-details { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 4px 10px; margin: 0 0 12px; }
 .fobles-worker-task-manager-details dt { font-weight: 600; }
 .fobles-worker-task-manager-details dd { min-width: 0; margin: 0; overflow-wrap: anywhere; }
+
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress { border: 0; box-shadow: none; }
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-track { border: 1px solid #7f9bc4; border-radius: 2px; box-sizing: border-box; }
+
+.fobles-toolbar-diagnostics { border: 1px solid #7f9bc4; border-radius: 3px; box-sizing: border-box; }
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress,
+.fobles-toolbar-diagnostics .fobles-reference-graph-enrichment-progress-track { border: 0; box-shadow: none; }

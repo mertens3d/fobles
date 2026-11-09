@@ -1,6 +1,11 @@
 // @source-path [fobles] src/content/item-history/item-history-manager.ts
 
 import { requestHistoryChange } from "../../shared/item-history/item-history-client.ts";
+import type { SitecoreDataCacheKey } from "../foundation/cache/sitecore-data/sitecore-data-cache.types.ts";
+import { requestFact } from "../foundation/sitecore/data/sitecore-data-service.ts";
+import { runWorkerTask } from "../foundation/workers/pool/worker-pool-client.ts";
+import { createErrorResult, type WorkerTask } from "../foundation/workers/tasks/worker-task.types.ts";
+import { WORK_SCHEDULING } from "../foundation/workers/work-scheduling.const.ts";
 import { extensionLog } from "../logger.ts";
 import { ITEM_HISTORY_CAPTURE } from "./item-history.const.ts";
 import type { ItemHistoryCleanup } from "./item-history.types.ts";
@@ -31,6 +36,11 @@ export function startItemHistoryManager(doc: Document): ItemHistoryCleanup {
                 }
               }).catch((error: unknown) => {
                 extensionLog.warn("Item history: structural discovery failed", { error });
+              });
+              const key: SitecoreDataCacheKey = { environment: scope.origin, database: scope.database, language: "en", item: { kind: "id", value: visit.id } };
+              const task: WorkerTask = { requestId: `history:${visit.id}`, taskId: crypto.randomUUID(), type: "get-quick-info", url: doc.location.href, requested: key.item, workClass: WORK_SCHEDULING.BACKGROUND };
+              void requestFact(key, "quickInfo", async () => (await runWorkerTask(task)) ?? createErrorResult(task, "No response from worker pool"), { requestId: task.requestId, visible: false }).catch((error: unknown) => {
+                extensionLog.warn("Item history: quick info prefetch failed", { error });
               });
               void requestHistoryChange(scope, { action: "visit", visit }).catch((error: unknown) => {
                 if (lastSnapshot === snapshot) {

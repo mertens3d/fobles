@@ -2,7 +2,7 @@
 @use "../../styles/tokens" as *;
 @use "../../styles/mixins" as *;
 
-.fobles-history-trigger { position: absolute; top: 100%; left: 18px; cursor: default; touch-action: auto; }
+.fobles-history-trigger { position: absolute; top: 100%; right: 18px; left: auto; cursor: default; touch-action: auto; }
 .fobles-history-tab { @include fobles-button-base; display: block; padding: 2px 12px 3px; border-top: 0; border-radius: 0 0 12px 12px; font-size: 10px; }
 .fobles-history-panel { box-sizing: border-box; width: 100%; min-width: 0; height: auto; min-height: 0; overflow: visible; overscroll-behavior: contain; color: $fobles-text; cursor: default; font-size: 12px; opacity: 1; pointer-events: auto;
   button { appearance: none; border: 1px solid $fobles-border; border-radius: 4px; background: $fobles-white; color: $fobles-blue-deep; padding: 3px 6px; font: inherit; cursor: pointer; &:disabled { opacity: 0.5; cursor: default; } }
@@ -11,15 +11,16 @@
 .fobles-history-group { margin-top: 4px; border: 1px solid $fobles-border; border-radius: 4px; overflow: hidden; ul { margin: 0; padding: 0; list-style: none; } }
 .fobles-history-group-toggle { width: 100%; display: flex; align-items: center; gap: 6px; padding: 6px 8px !important; border: 0 !important; border-radius: 0 !important; background: $fobles-surface !important; color: $fobles-text !important; font-weight: 700 !important; text-align: left; }
 .fobles-history-group-toggle:hover { background: $fobles-surface-hover !important; }
-.fobles-history-disclosure { width: 12px; flex: 0 0 12px; color: $fobles-blue-deep; font-size: 9px; }
+.fobles-history-disclosure { width: 15px; height: 15px; flex: 0 0 15px; }
+.fobles-history-group-icon { width: 16px; height: 16px; flex: 0 0 16px; }
 .fobles-history-row { display: flex; align-items: center; gap: 4px; border-radius: 4px; &:hover, &:focus-within { background: $fobles-surface-hover; } }
 .fobles-history-link { flex: 1 1 auto; min-width: 0; padding: 6px 7px; overflow: hidden; display: flex; align-items: center; gap: 7px; color: $fobles-text; text-decoration: none; text-overflow: ellipsis; white-space: nowrap; }
 .fobles-history-remove { flex: none; }
 .fobles-history-empty, .fobles-history-error { margin: 6px 4px; overflow-wrap: anywhere; }
 .fobles-history-error { color: #a32121; }
 .fobles-history-item-icon { width: 16px; height: 16px; flex: 0 0 16px; }
-.fobles-history-group-body { display: block; position: relative; height: auto; min-height: 0; max-height: 180px; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; scrollbar-gutter: stable; border-top: 1px solid $fobles-border; }
+.fobles-history-group-body { display: block; position: relative; height: auto; min-height: 0; max-height: none; overflow: visible; border-top: 1px solid $fobles-border; }
 .fobles-history-group-body > ul { display: block; height: auto; min-height: 0; max-height: none; overflow: visible; }
 
 .fobles-toolbar-container[data-position$="right"] .fobles-history-trigger { right: 18px; left: auto; }
-.fobles-toolbar-container[data-position^="bottom"] .fobles-history-trigger { top: auto; bottom: 100%; }
+
