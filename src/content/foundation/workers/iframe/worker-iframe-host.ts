@@ -100,25 +100,14 @@ function isWindowHostedContainer(container: HTMLElement): boolean {
   return container.closest(WORKER_IFRAME_WINDOW_CONTENT_SELECTOR) !== null;
 }
 
-function applyWorkerIframeContainerClass(container: HTMLDivElement): void {
-  const hidden = getRuntimeSettings().workerPool.hideWorkerIframes;
-  container.classList.toggle(WORKER_POOL.WORKER_IFRAME_CONTAINER_CLASS_HIDDEN, hidden);
-  container.classList.toggle(WORKER_POOL.WORKER_IFRAME_CONTAINER_CLASS_VISIBLE, !hidden);
-}
-
 function applyWorkerIframeClass(iframe: HTMLIFrameElement, index: number): void {
-  const hidden = getRuntimeSettings().workerPool.hideWorkerIframes;
   iframe.title = `Fobles worker iframe ${index + 1}`;
   iframe.classList.add(WORKER_POOL.WORKER_IFRAME_CLASS);
-  iframe.classList.toggle(WORKER_POOL.WORKER_IFRAME_CLASS_HIDDEN, hidden);
-  iframe.classList.toggle(WORKER_POOL.WORKER_IFRAME_CLASS_VISIBLE, !hidden);
+  iframe.classList.add(WORKER_POOL.WORKER_IFRAME_CLASS_VISIBLE);
 }
 
 async function getWorkerIframeContainer(doc: Document): Promise<HTMLDivElement> {
   const container = await waitForWorkerIframeContainer(doc) ?? createHiddenWorkerIframeStagingContainer(doc);
-  if (isWindowHostedContainer(container)) {
-    applyWorkerIframeContainerClass(container);
-  }
   return container;
 }
 

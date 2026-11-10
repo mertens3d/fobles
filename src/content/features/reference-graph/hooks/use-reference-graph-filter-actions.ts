@@ -4,9 +4,9 @@ import type cytoscape from "cytoscape";
 import { useCallback } from "react";
 import { setReferenceGraphFilters } from "../../../../shared/reference-graph-settings";
 import type {
-  SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { createAllFiltersState } from "../graph-filters";
 import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
 import type { HarvestForLink } from "../graph.types";

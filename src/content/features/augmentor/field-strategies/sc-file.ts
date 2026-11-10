@@ -1,7 +1,7 @@
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
 import { ensurePathShape } from "../helper";
-import type { FileFobles as FileConfig } from "../fobles.types";
+import type { FileFobles as FileConfig } from "../../../../constants/fobles.types";
 import { applySingleInputFieldStrategy } from "../shared/apply-single-input-field";
 
 export function applyFileStrategy(doc: Document, config: FileConfig): void {

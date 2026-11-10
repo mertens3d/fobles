@@ -4,7 +4,7 @@ import { AUDIT_CHECK } from "../../../../../constants/audit-checks.const";
 import { getReferenceGraphFilters } from "../../../../../shared/reference-graph-settings";
 import { extensionLog } from "../../../../logger";
 import { logHeapSnapshot } from "../../../../foundation/diagnostics/heap-snapshot";
-import type { SitecoreHarvestFiltersState } from "../../../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_REFERENCE_GRAPH_BASE.ts";
 import {
   getFoblesDataOperation,
   subscribeFoblesAcquisitionProgress,

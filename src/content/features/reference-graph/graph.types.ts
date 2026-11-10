@@ -2,17 +2,16 @@
 import type cytoscape from "cytoscape";
 import type { WorkSession } from "../../foundation/workers/session/work-session.types";
 import type {
-  SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { EnrichmentProgress } from "./enrichment/enrichment.types";
 import type { GraphParameterVisibilitySettings } from "./graph-parameter-visibility-settings";
 import type { getGraphViewportState } from "./graph-viewport-settings";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
+import type { LayoutGraphPresetName } from "../../../constants/LayoutGraphPresetName.types";
 
 export type LayoutPreset = { label: string; build: () => cytoscape.LayoutOptions };
-
-export type LayoutGraphPresetName = "dagre" | "cose-bilkent" | "fcose" | "breadthfirst";
 
 export type HarvestForLink = (
   link: string,

@@ -1,6 +1,6 @@
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
-import type { IconFobles as IconConfig } from "../fobles.types";
+import type { IconFobles as IconConfig } from "../../../../constants/fobles.types";
 
 const isIconField = (input: HTMLInputElement): boolean => {
   const fieldCell = input.closest(CONST.SITECORE.SELECTORS.FIELD_CELL);

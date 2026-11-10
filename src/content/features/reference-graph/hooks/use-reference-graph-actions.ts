@@ -2,11 +2,12 @@
 import type cytoscape from "cytoscape";
 import type { WorkSession } from "../../../foundation/workers/session/work-session.types";
 import type {
-  SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
-import type { HarvestForLink, LayoutGraphPresetName } from "../graph.types";
+import type { HarvestForLink } from "../graph.types";
+import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
 import type { GraphState } from "./use-reference-graph";
 import { useReferenceGraphFilterActions } from "./use-reference-graph-filter-actions";
 import { useReferenceGraphRenderActions } from "./use-reference-graph-render-actions";

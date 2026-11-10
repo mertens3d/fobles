@@ -13,6 +13,18 @@ import {
 import { JumpFlyoutColumn } from "./jump-flyout-column";
 import { UserTreeJumpGroup } from "./user-tree-jump-group";
 import { UserAdminPageGroup } from "./user-admin-page-group";
+import { openAiPages } from "./ai-pages";
+
+const aiGroup = {
+  ...AI_GROUP,
+  groupMembers: AI_GROUP.groupMembers.map((member) => ({
+    ...member,
+    action: member.id === FOBLES.TOOLBAR.JUMP_FLYOUT.BUTTON_IDS.AI_PAGES
+      ? openAiPages
+      : member.action,
+  })),
+};
+
 
 export type JumpFlyoutProps = {
   doc: Document;
@@ -43,7 +55,7 @@ export function JumpFlyout({ doc, visible, onOptionActivated, onCancelHide, onSc
         <JumpFlyoutColumn
           doc={doc}
           title={TEXT.GROUP_NAME.ADMIN_PAGES}
-          groups={[...ADMIN_PAGE_GROUP, AI_GROUP, THIRD_PARTY_GROUP]}
+          groups={[...ADMIN_PAGE_GROUP, aiGroup, THIRD_PARTY_GROUP]}
           onOptionActivated={onOptionActivated}
         >
           <UserAdminPageGroup doc={doc} onOptionActivated={onOptionActivated} />

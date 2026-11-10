@@ -4,9 +4,9 @@ import type { WorkSession } from "../workers/session/work-session.types";
 import type {
   HarvestProgressCallback,
   HarvestProgressStatus,
-  SitecoreHarvestFiltersState,
-  StepKey,
 } from "../harvesting/sitecore-harvester.types";
+import type { StepKey } from "../../../constants/graph.const";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { PROGRESS_STEPS } from "../harvesting/planner/harvest-steps";
 import type { PreparedReferenceModel } from "./acquisition/prepare-reference-model";
 import {

@@ -4,7 +4,8 @@ import type {
   SitecoreDataFactName,
   SitecoreDataFactValueByName,
 } from "../../cache/sitecore-data/sitecore-data-cache.types";
-import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
 import type { PreparedReferenceModel } from "../acquisition/prepare-reference-model";

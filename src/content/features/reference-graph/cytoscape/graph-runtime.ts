@@ -21,9 +21,9 @@ import type {
   AnimationFrameState,
   GraphRuntime,
   GraphRuntimeOptions,
-  LayoutGraphPresetName,
   SavedGraphSettings,
 } from "../graph.types";
+import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
 import { finishReferenceGraphTimer } from "../reference-graph-timing";
 import { cytoscapeFactory } from "./cytoscape-config";
 import { REFERENCE_GRAPH_STYLE } from "./cytoscape-style";

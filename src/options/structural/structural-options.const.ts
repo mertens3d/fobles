@@ -7,4 +7,5 @@ export const STRUCTURAL_OPTIONS = {
   SAVED: "Site discovery settings saved.",
   SAVE_LABEL: "Save site discovery settings",
   TITLE: "Site discovery",
+  INVALID_PATHS: "" // AGENT: TODO
 } as const;

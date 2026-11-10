@@ -5,7 +5,7 @@ import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
 import { collectGuidOptionItems } from "../shared/collect-select-options";
-import type { TreeListFobles as TreeListConfig } from "../fobles.types";
+import type { TreeListFobles as TreeListConfig } from "../../../../constants/fobles.types";
 
 type TreeListItem = { label: string; value: string };
 

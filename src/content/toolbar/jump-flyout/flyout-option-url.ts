@@ -2,7 +2,7 @@ import { CONST } from "../../../constants/const";
 import { getCurrentItemId } from "../../foundation/sitecore/current-item";
 import { joinJumpFlyoutPath } from "../../../shared/jump-flyout/button-settings";
 import { getJumpFlyoutButtonSetting } from "./use-jump-flyout-button-settings";
-import type { FlyoutOption } from "../../../shared/jump-flyout/jump-flyout.types";
+import type { FlyoutOption } from "../../../constants/FlyoutOption";
 
 function getCurrentDatabase(doc: Document): string | null {
   const currentUrl = new URL(doc.defaultView?.location.href ?? window.location.href);

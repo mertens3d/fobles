@@ -32,4 +32,5 @@ export const HISTORY_TEXT = {
 export const HISTORY_UI = {
   ERROR_LOG: "Item history: UI failed",
   PANEL_ID: "fobles-history-panel",
+  TOOLTIP_DELAY: 0 // needs verification from Agent
 } as const;

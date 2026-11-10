@@ -2,7 +2,8 @@
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CLASS, SELECTORS } from "../../constants/fobles.constants";
-import type { ToolbarCorner, ToolbarPlacement } from "../toolbar.types";
+import type { ToolbarCorner } from "../../constants/constants.types";
+import type { ToolbarPlacement } from "../../constants/constants.types";
 import type { ToolbarContext } from "./types";
 import { HISTORY_SELECTOR } from "./history/history.const";
 

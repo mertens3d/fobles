@@ -9,8 +9,8 @@ import type { HistoryTooltipAnchor } from "./history-tooltip-test.types.ts";
 void test("real History tooltip survives hover/focus, close/reopen, row updates and repeated unmounts", async () => {
   const env = createTooltipEnvironment();
   const root = createRoot(env.container, { onUncaughtError: (error) => env.errors.push(error) });
-  const render = (mounted = true) => root.render(createElement(StrictMode, null,
-    createElement(tooltipHistory.Harness, { doc: env.doc, mounted })));
+  const render = (mounted = true) =>
+    root.render(createElement(StrictMode, null, createElement(tooltipHistory.Harness, { doc: env.doc, mounted })));
   const tab = () => env.container.querySelector<HTMLButtonElement>(`.${HISTORY_CLASS.TAB}`)!;
   const row = () => env.container.querySelector<HistoryTooltipAnchor>(`.${HISTORY_CLASS.LINK}`)!;
   const tooltips = () => env.doc.querySelectorAll(`.${HISTORY_CLASS.TOOLTIP}`);
@@ -59,9 +59,15 @@ void test("real History tooltip survives hover/focus, close/reopen, row updates 
     await updateTooltip(() => tab().click());
     await updateTooltip(() => row().focus(), HISTORY_UI.TOOLTIP_DELAY + 30);
     const previous = row()._tippy;
-    await updateTooltip(() => tooltipHistory.probe.publish(tooltipHistory.probe.items.map((item) => ({
-      ...item, path: "/sitecore/content/Renamed", lastVisitedAt: item.lastVisitedAt + 1,
-    }))));
+    await updateTooltip(() =>
+      tooltipHistory.probe.publish(
+        tooltipHistory.probe.items.map((item) => ({
+          ...item,
+          path: "/sitecore/content/Renamed",
+          lastVisitedAt: item.lastVisitedAt + 1,
+        })),
+      ),
+    );
     assert.equal(previous.state.isDestroyed, true);
     assert.notEqual(row()._tippy, previous);
     await updateTooltip(() => {
@@ -91,19 +97,28 @@ void test("History cancels its scheduled flyout close when unmounted", async () 
   try {
     await updateTooltip(() => render(true));
     const actions = env.container.querySelector(`.${HISTORY_CLASS.ACTIONS}`)!;
-    await updateTooltip(() => actions.dispatchEvent(new env.win.MouseEvent("mouseover", {
-      bubbles: true, relatedTarget: env.win.document.body,
-    }) as unknown as Event));
+    await updateTooltip(() =>
+      actions.dispatchEvent(
+        new env.win.MouseEvent("mouseover", {
+          bubbles: true,
+          relatedTarget: env.win.document.body,
+        }) as unknown as Event,
+      ),
+    );
     assert.ok(env.container.querySelector(`.${HISTORY_CLASS.PANEL}`));
     const before = timers.mock.callCount();
-    await updateTooltip(() => actions.dispatchEvent(new env.win.MouseEvent("mouseout", {
-      bubbles: true, relatedTarget: env.win.document.body,
-    }) as unknown as Event));
+    await updateTooltip(() =>
+      actions.dispatchEvent(
+        new env.win.MouseEvent("mouseout", { bubbles: true, relatedTarget: env.win.document.body }) as unknown as Event,
+      ),
+    );
     assert.equal(timers.mock.callCount(), before + 1);
     const timer = timers.mock.calls[timers.mock.callCount() - 1].result;
     await updateTooltip(() => render(false));
-    assert.ok(cancellations.mock.calls.some((call) => call.arguments[0] === timer),
-      "unmount must cancel the pending close rather than running a stale setState");
+    assert.ok(
+      cancellations.mock.calls.some((call) => call.arguments[0] === timer),
+      "unmount must cancel the pending close rather than running a stale setState",
+    );
   } finally {
     await updateTooltip(() => root.unmount());
     timers.mock.restore();
@@ -159,9 +174,7 @@ for (const failure of ["render", "tooltip effect"] as const) {
       assert.deepEqual(env.errors, []);
       await updateTooltip(() => render(false));
       mock.restoreAll();
-      tooltipHistory.probe.items = [{
-        ...tooltipHistory.probe.items[0], id: "11111111-1111-4111-8111-111111111111",
-      }];
+      tooltipHistory.probe.items = [{ ...tooltipHistory.probe.items[0], id: "11111111-1111-4111-8111-111111111111" }];
       await updateTooltip(() => render());
       await updateTooltip(() => env.container.querySelector<HTMLButtonElement>(`.${HISTORY_CLASS.TAB}`)!.click());
       assert.ok(env.container.querySelector(`.${HISTORY_CLASS.LINK}`), "remount can recover History");

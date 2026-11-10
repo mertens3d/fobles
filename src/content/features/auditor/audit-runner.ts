@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/audit-runner.ts
-import type { SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import {
   openFoblesDataAcquisition,
   type FoblesDataAcquisition,

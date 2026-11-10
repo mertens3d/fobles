@@ -76,7 +76,9 @@ export function useFoblesWindowGeometry({
   useEffect(() => {
     function onViewportResize(): void {
       setState((current) => {
-        if (current.collapsed) { return current; }
+        if (current.collapsed) {
+          return current;
+        }
         const next: FoblesWindowState = { ...current, ...clampRect(window, current, minWidth, minHeight) };
         persist(next);
         return next;
@@ -91,15 +93,34 @@ export function useFoblesWindowGeometry({
     setState((current) => {
       if (current.collapsed) {
         const restoreRect = restoreRectOrDefault(current);
-        const next: FoblesWindowState = { ...current, ...restoreRect, collapsed: false, maximized: false, restoreRect: undefined };
-        extensionLog.debug("Fobles window: restoring minimized window", { storageKey, current, restoreRect, next, domRect: dialogRef.current ? readRect(dialogRef.current) : undefined });
+        const next: FoblesWindowState = {
+          ...current,
+          ...restoreRect,
+          collapsed: false,
+          maximized: false,
+          restoreRect: undefined,
+        };
+        extensionLog.debug("Fobles window: restoring minimized window", {
+          storageKey,
+          current,
+          restoreRect,
+          next,
+          domRect: dialogRef.current ? readRect(dialogRef.current) : undefined,
+        });
         persist(next);
         return next;
       }
       const restoreRect = { left: current.left, top: current.top, width: current.width, height: current.height };
       const dockedTop = viewportRect(window).height - FOBLES_WINDOW_TITLE_BAR_HEIGHT - FOBLES_WINDOW_VIEWPORT_MARGIN;
       const next: FoblesWindowState = { ...current, restoreRect, collapsed: true, maximized: false, top: dockedTop };
-      extensionLog.debug("Fobles window: minimizing window", { storageKey, current, domRect: dialogRef.current ? readRect(dialogRef.current) : undefined, restoreRect, dockedTop, next });
+      extensionLog.debug("Fobles window: minimizing window", {
+        storageKey,
+        current,
+        domRect: dialogRef.current ? readRect(dialogRef.current) : undefined,
+        restoreRect,
+        dockedTop,
+        next,
+      });
       persist(next);
       return next;
     });
@@ -150,26 +171,49 @@ export function useFoblesWindowGeometry({
     moved: boolean;
   } | null>(null);
 
-  const onTitlePointerDown = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
-    if (event.button !== 0 || (event.target instanceof Element && event.target.closest("button"))) {
-      return;
-    }
-    if (stateRef.current.collapsed) {
-      extensionLog.debug("Fobles window: ignored title pointer down while minimized", { storageKey, pointerId: event.pointerId, detail: event.detail, state: stateRef.current });
-      return;
-    }
-    event.preventDefault();
-    const rect = dialogRef.current?.getBoundingClientRect();
-    if (!rect) {
-      extensionLog.debug("Fobles window: title pointer down had no window rect", { storageKey, pointerId: event.pointerId });
-      return;
-    }
-    hasUserInteractedRef.current = true;
-    dragStartRef.current = { pointerId: event.pointerId, clientX: event.clientX, clientY: event.clientY, left: rect.left, top: rect.top, moved: false };
-    event.currentTarget.setPointerCapture(event.pointerId);
-    setDragging(true);
-    extensionLog.debug("Fobles window: title drag armed", { storageKey, pointerId: event.pointerId, detail: event.detail, rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height } });
-  }, [storageKey]);
+  const onTitlePointerDown = useCallback(
+    (event: React.PointerEvent<HTMLDivElement>) => {
+      if (event.button !== 0 || (event.target instanceof Element && event.target.closest("button"))) {
+        return;
+      }
+      if (stateRef.current.collapsed) {
+        extensionLog.debug("Fobles window: ignored title pointer down while minimized", {
+          storageKey,
+          pointerId: event.pointerId,
+          detail: event.detail,
+          state: stateRef.current,
+        });
+        return;
+      }
+      event.preventDefault();
+      const rect = dialogRef.current?.getBoundingClientRect();
+      if (!rect) {
+        extensionLog.debug("Fobles window: title pointer down had no window rect", {
+          storageKey,
+          pointerId: event.pointerId,
+        });
+        return;
+      }
+      hasUserInteractedRef.current = true;
+      dragStartRef.current = {
+        pointerId: event.pointerId,
+        clientX: event.clientX,
+        clientY: event.clientY,
+        left: rect.left,
+        top: rect.top,
+        moved: false,
+      };
+      event.currentTarget.setPointerCapture(event.pointerId);
+      setDragging(true);
+      extensionLog.debug("Fobles window: title drag armed", {
+        storageKey,
+        pointerId: event.pointerId,
+        detail: event.detail,
+        rect: { left: rect.left, top: rect.top, width: rect.width, height: rect.height },
+      });
+    },
+    [storageKey],
+  );
 
   const onTitlePointerMove = useCallback((event: React.PointerEvent<HTMLDivElement>) => {
     const start = dragStartRef.current;
@@ -201,11 +245,26 @@ export function useFoblesWindowGeometry({
       dragStartRef.current = null;
       setDragging(false);
       if (!start.moved) {
-        extensionLog.debug("Fobles window: title click completed without geometry change", { storageKey, pointerId: event.pointerId, detail: event.detail, state: stateRef.current });
+        extensionLog.debug("Fobles window: title click completed without geometry change", {
+          storageKey,
+          pointerId: event.pointerId,
+          detail: event.detail,
+          state: stateRef.current,
+        });
         return;
       }
-      const next: FoblesWindowState = { ...stateRef.current, collapsed: false, maximized: false, restoreRect: undefined };
-      extensionLog.debug("Fobles window: title drag completed", { storageKey, pointerId: event.pointerId, start, next });
+      const next: FoblesWindowState = {
+        ...stateRef.current,
+        collapsed: false,
+        maximized: false,
+        restoreRect: undefined,
+      };
+      extensionLog.debug("Fobles window: title drag completed", {
+        storageKey,
+        pointerId: event.pointerId,
+        start,
+        next,
+      });
       setState(next);
       persist(next);
     },

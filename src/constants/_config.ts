@@ -1,4 +1,4 @@
-import type { FoblesConfig } from "../content/features/augmentor/fobles.types";
+import type { FoblesConfig } from "./fobles.types";
 
 export const fieldConfigs: FoblesConfig[] = [
   {

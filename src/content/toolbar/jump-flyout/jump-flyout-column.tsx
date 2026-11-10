@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/toolbar/jump-flyout/jump-flyout-column.tsx
 
 import { CLASS } from "../../../constants/fobles.constants";
-import type { FlyoutGroup } from "../../../shared/jump-flyout/jump-flyout.types";
+import type { FlyoutGroup } from "../../../constants/FlyoutOption";
 import { JumpFlyoutGroup } from "./jump-flyout-group";
 
 export type JumpFlyoutColumnProps = {

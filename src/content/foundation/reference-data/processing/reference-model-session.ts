@@ -10,9 +10,9 @@ import type {
 import { harvestSitecoreWithWorkers } from "../../harvesting/coordinator/foreground-harvest-coordinator";
 import type {
   HarvestProgressCallback,
-  SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import type { WorkSession } from "../../workers/session/work-session.types";

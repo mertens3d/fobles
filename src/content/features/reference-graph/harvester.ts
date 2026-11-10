@@ -3,7 +3,7 @@
 import { extensionLog } from "../../logger";
 import { harvestSitecoreWithWorkers } from "../../foundation/harvesting/coordinator/foreground-harvest-coordinator";
 import type { SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { handleHarvestProgress } from "./build-progress";
 
 // Left-clicking a graph node re-roots the SAME open modal at that item, with no page navigation

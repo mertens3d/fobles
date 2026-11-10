@@ -10,7 +10,7 @@ import {
 } from "../graph-parameter-visibility-settings";
 import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
 import { setGraphParameterVisibility } from "../graph-nodes/graph-expand-collapse-view";
-import type { LayoutGraphPresetName } from "../graph.types";
+import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
 import type { GraphState } from "./use-reference-graph";
 
 type MutableRef<T> = { current: T };

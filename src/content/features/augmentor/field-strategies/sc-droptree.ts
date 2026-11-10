@@ -3,7 +3,7 @@ import { createFoblesButton } from "../helper";
 import { buildFoblesUrl, normalizeFoblesValue } from "../../../foundation/sitecore/fobles-url";
 import { extensionLog } from "../../../logger";
 import { applyButtonClasses } from "../shared/apply-button-classes";
-import type { DropTreeFobles as DropTreeConfig } from "../fobles.types";
+import type { DropTreeFobles as DropTreeConfig } from "../../../../constants/fobles.types";
 
 const getFoblesValue = (host: HTMLInputElement): string | null => {
   const value = host.value.trim();

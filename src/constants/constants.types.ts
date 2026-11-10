@@ -1,4 +1,4 @@
-import type { ToolbarPlacement } from "../content/toolbar.types";
+import type { TOOLBAR_CORNERS } from "./fobles.constants";
 import type { REFERENCE_GRAPH } from "./graph.const";
 
 // Every shell page/dialog Fobles is eligible on, in one place, replacing three previously
@@ -24,4 +24,6 @@ export type AllowedPage = {
   isFoblesEligible: boolean;
 };
 
-export type LayoutScope = (typeof REFERENCE_GRAPH.LAYOUT_SCOPE)[keyof typeof REFERENCE_GRAPH.LAYOUT_SCOPE];
+export type LayoutScope = (typeof REFERENCE_GRAPH.LAYOUT_SCOPE)[keyof typeof REFERENCE_GRAPH.LAYOUT_SCOPE];export type ToolbarPlacement = { corner: ToolbarCorner; offsetX: number; offsetY: number; };
+export type ToolbarCorner = (typeof TOOLBAR_CORNERS)[number];
+

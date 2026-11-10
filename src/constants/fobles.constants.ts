@@ -1,6 +1,6 @@
 // @source-path [Fobles] src/constants/fobles.constants.ts
 
-import type { ToolbarPlacement } from "../content/toolbar.types";
+import type { ToolbarPlacement } from "./constants.types";
 import { CONST } from "./const";
 import type { AllowedPage } from "./constants.types";
 

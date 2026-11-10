@@ -1,3 +1,5 @@
+// @source-path [Fobles] src/shared/jump-flyout/button-catalog.ts
+
 import { TEXT } from "../../constants/fobles.constants";
 import {
   ADMIN_PAGE_GROUP,
@@ -6,7 +8,7 @@ import {
   THIRD_PARTY_GROUP,
   TREE_JUMP_GROUP,
 } from "../../constants/flyout-groups";
-import type { FlyoutGroup } from "./jump-flyout.types";
+import type { FlyoutGroup } from "../../constants/FlyoutOption";
 import type { JumpFlyoutButtonDescriptor } from "./jump-flyout.types";
 
 export type { JumpFlyoutButtonDescriptor } from "./jump-flyout.types";

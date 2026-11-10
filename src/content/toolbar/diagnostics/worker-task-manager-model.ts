@@ -18,31 +18,54 @@ export type WorkerTaskManagerRow = {
 export const WORKER_TASK_MANAGER_HISTORY_MAX = 100;
 
 function outcomeFor(activity: ActivityEvent): string {
-  if (activity.state === "completed") { return activity.detail === "success" ? "Success" : "Completed"; }
-  if (activity.state === "error") { return "Error"; }
-  if (activity.state === "cancelled") { return "Cancelled"; }
+  if (activity.state === "completed") {
+    return activity.detail === "success" ? "Success" : "Completed";
+  }
+  if (activity.state === "error") {
+    return "Error";
+  }
+  if (activity.state === "cancelled") {
+    return "Cancelled";
+  }
   return "—";
 }
 
 function phaseFor(activity: ActivityEvent): string {
-  if (activity.state === "started") { return "Executing"; }
-  if (activity.state === "completed") { return "Completed"; }
-  if (activity.state === "error") { return "Failed"; }
-  if (activity.state === "cancelled") { return "Cancelled"; }
+  if (activity.state === "started") {
+    return "Executing";
+  }
+  if (activity.state === "completed") {
+    return "Completed";
+  }
+  if (activity.state === "error") {
+    return "Failed";
+  }
+  if (activity.state === "cancelled") {
+    return "Cancelled";
+  }
   return activity.state;
 }
 
-export function updateRowsFromActivity(rows: readonly WorkerTaskManagerRow[], activity: ActivityEvent): WorkerTaskManagerRow[] {
-  if (activity.source !== "worker" || !activity.activityId) { return [...rows]; }
+export function updateRowsFromActivity(
+  rows: readonly WorkerTaskManagerRow[],
+  activity: ActivityEvent,
+): WorkerTaskManagerRow[] {
+  if (activity.source !== "worker" || !activity.activityId) {
+    return [...rows];
+  }
   const old = rows.find((row) => row.id === activity.activityId);
   const next: WorkerTaskManagerRow = {
     id: activity.activityId,
     activityAt: activity.timestamp,
-    worker: activity.detail?.startsWith("iframe:") || activity.detail?.startsWith("tab:") ? activity.detail : old?.worker ?? "—",
+    worker:
+      activity.detail?.startsWith("iframe:") || activity.detail?.startsWith("tab:")
+        ? activity.detail
+        : (old?.worker ?? "—"),
     status: activity.state === "started" ? "Active" : "Disposed",
     task: activity.label,
     target: old?.target ?? "—",
-    workClass: activity.workClass === "foreground" ? "FG" : activity.workClass === "background" ? "BG" : old?.workClass ?? "—",
+    workClass:
+      activity.workClass === "foreground" ? "FG" : activity.workClass === "background" ? "BG" : (old?.workClass ?? "—"),
     phase: phaseFor(activity),
     outcome: outcomeFor(activity),
     recoveries: old?.recoveries ?? 0,
@@ -50,11 +73,17 @@ export function updateRowsFromActivity(rows: readonly WorkerTaskManagerRow[], ac
   return [next, ...rows.filter((row) => row.id !== next.id)].slice(0, WORKER_TASK_MANAGER_HISTORY_MAX);
 }
 
-export function reconcileActiveRows(rows: readonly WorkerTaskManagerRow[], status: WorkerPoolStatus | undefined, now = Date.now()): WorkerTaskManagerRow[] {
+export function reconcileActiveRows(
+  rows: readonly WorkerTaskManagerRow[],
+  status: WorkerPoolStatus | undefined,
+  now = Date.now(),
+): WorkerTaskManagerRow[] {
   let next = [...rows];
   for (const worker of status?.workers ?? []) {
     const task = worker.activeTask;
-    if (!task) { continue; }
+    if (!task) {
+      continue;
+    }
     const existing = next.find((row) => row.id === task.taskId);
     const reconciled: WorkerTaskManagerRow = {
       id: task.taskId,

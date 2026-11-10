@@ -2,7 +2,7 @@
 
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
-import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import {
   DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS,
   type GraphParameterVisibilitySettings,

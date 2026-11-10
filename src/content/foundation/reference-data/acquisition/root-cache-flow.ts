@@ -1,7 +1,8 @@
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/root-cache-flow.ts
 
 import type { SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data-cache.types";
-import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
 import type { ItemGraphNodeData, RootItem } from "../model/sitecore-item.types";
 import type { ProcessingStatus } from "../processing/processing-state";

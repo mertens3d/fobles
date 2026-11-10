@@ -5,9 +5,9 @@ import type { SitecoreDataCacheKey, QuickInfoPayload } from "../../cache/sitecor
 import { createSitecoreItemLocator } from "../../harvesting/worker-task-executor";
 import type {
   HarvestProgressCallback,
-  SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { getCurrentItemId } from "../../sitecore/current-item";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";

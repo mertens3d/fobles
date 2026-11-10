@@ -10,7 +10,12 @@ export function useHistoryIcon(item: HistoryItem, scope: HistoryScope): string |
 
   useEffect(() => {
     let active = true;
-    const key: SitecoreDataCacheKey = { environment: scope.origin, database: scope.database, language: "en", item: { kind: "id", value: item.id } };
+    const key: SitecoreDataCacheKey = {
+      environment: scope.origin,
+      database: scope.database,
+      language: "en",
+      item: { kind: "id", value: item.id },
+    };
     const read = (): void => {
       void getFact(key, "quickInfo").then((fact) => {
         if (active) {
@@ -20,7 +25,10 @@ export function useHistoryIcon(item: HistoryItem, scope: HistoryScope): string |
     };
     const unsubscribe = subscribeFactUpdated(key, "quickInfo", read);
     read();
-    return () => { active = false; unsubscribe(); };
+    return () => {
+      active = false;
+      unsubscribe();
+    };
   }, [item.id, scope.database, scope.origin]);
   return icon;
 }

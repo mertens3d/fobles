@@ -1,7 +1,7 @@
 import { DEFAULT_TOOLBAR_PLACEMENT, SELECTORS, TOOLBAR_CORNERS } from "../constants/fobles.constants";
 import { type AllowedPage } from "../constants/constants.types";
 import { MESSAGE, STORAGE } from "../constants/extension-const";
-import type { ToolbarPlacement } from "./toolbar.types";
+import type { ToolbarPlacement } from "../constants/constants.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";
 import { getDebugSettings } from "../shared/debug-settings";
 import { getPlacementForPage, setPlacementForPage } from "./toolbar-placement";
@@ -9,7 +9,7 @@ import { getFoblesNavVisible, setFoblesNavVisible } from "../shared/nav-settings
 import { getFoblesState, setFoblesState as setPersistedFoblesState } from "./state";
 import type { MessageRequest } from "./content.types";
 import { findAllowedPage, isKickUsersPath } from "./guard";
-import { resumeKickAllUsers } from "./features/jump-flyout";
+// import { resumeKickAllUsers } from "./features/jump-flyout";
 import { injectToolbar, setToolbarPlacement, setToolbarVisible, type ToolbarContext } from "./toolbar";
 import { applyPowerShellIseTabIdentity } from "./ise-tab-title";
 import { toggleLightningBolt } from "./feature-toggle";
@@ -140,7 +140,7 @@ async function reconcileCurrentPage(): Promise<void> {
     setPersistedFoblesState(false);
     foblesUiActive = false;
   }
-  resumeKickAllUsers(document);
+  // resumeKickAllUsers(document);
 }
 
 export function startToolbarRuntime(): void {

@@ -8,8 +8,8 @@ import { WORK_SCHEDULING } from "../../foundation/workers/work-scheduling.const"
 import type {
   HarvestProgressStatus,
   ProgressStep,
-  SitecoreHarvestFiltersState,
 } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { ReferenceGraphProgressDialog } from "./components/reference-graph-progress-dialog";
 
 let progressRoot: Root | undefined;

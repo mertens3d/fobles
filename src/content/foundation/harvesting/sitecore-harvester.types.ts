@@ -1,5 +1,7 @@
 // @source-path [fobles] src/content/foundation/harvesting/sitecore-harvester.types.ts
 
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { StepKey } from "../../../constants/graph.const";
 import type {
   ItemGraphNodeData,
   LayoutSectionField,
@@ -37,28 +39,6 @@ export type SitecoreHarvestResult = {
   childItems: readonly ItemGraphNodeData[] | undefined;
   referrers: readonly ItemGraphNodeData[] | undefined;
 };
-
-export type SitecoreHarvestFiltersState = {
-  parent: boolean;
-  children: boolean;
-  layouts: boolean;
-  referrers: boolean;
-  customFields: boolean;
-  standardFields: boolean;
-  template: boolean;
-};
-
-export type StepKey =
-  | "fetch-document"
-  | "parse-document"
-  | "root-item"
-  | "children"
-  | "sections"
-  | "layouts"
-  | "referrers"
-  | "parent"
-  | "enrichment"
-  | "build-graph";
 
 export type HarvestProgressStatus = "active" | "skipped" | "complete";
 

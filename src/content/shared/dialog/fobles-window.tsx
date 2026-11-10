@@ -27,8 +27,13 @@ export function FoblesWindow({
   children,
 }: FoblesWindowProps) {
   const geometry = useFoblesWindowGeometry({ storageKey, defaultWidth, defaultHeight, minWidth, minHeight });
-  useEffect(() => { const element = geometry.dialogRef.current; return element ? registerFoblesWindow(element) : undefined; }, [geometry.dialogRef]);
-  useEffect(() => { syncFoblesWindowStack(); }, [geometry.collapsed]);
+  useEffect(() => {
+    const element = geometry.dialogRef.current;
+    return element ? registerFoblesWindow(element) : undefined;
+  }, [geometry.dialogRef]);
+  useEffect(() => {
+    syncFoblesWindowStack();
+  }, [geometry.collapsed]);
   const stateClasses = [
     className,
     "fobles-window",
@@ -48,7 +53,11 @@ export function FoblesWindow({
       data-fobles-window-key={storageKey}
       role="dialog"
       aria-label={title}
-      style={persistent ? { minWidth: geometry.collapsed ? FOBLES_WINDOW_COLLAPSED_WIDTH : minWidth, minHeight, ...geometry.style } : { minWidth, minHeight }}
+      style={
+        persistent
+          ? { minWidth: geometry.collapsed ? FOBLES_WINDOW_COLLAPSED_WIDTH : minWidth, minHeight, ...geometry.style }
+          : { minWidth, minHeight }
+      }
       onPointerDownCapture={(event) => bringFoblesWindowToFront(event.currentTarget)}
     >
       <FoblesWindowTitlebar
@@ -65,17 +74,18 @@ export function FoblesWindow({
         onPointerUp={geometry.onTitlePointerUp}
       />
       <div className="fobles-window-content">{children}</div>
-      {resizable && FOBLES_WINDOW_RESIZE_EDGES.map((edge) => (
-        <div
-          key={edge}
-          className={`fobles-window-resize fobles-window-resize--${edge}`}
-          data-edge={edge}
-          onPointerDown={(event) => geometry.onResizePointerDown(event, edge)}
-          onPointerMove={geometry.onResizePointerMove}
-          onPointerUp={geometry.onResizePointerUp}
-          onPointerCancel={geometry.onResizePointerUp}
-        />
-      ))}
+      {resizable &&
+        FOBLES_WINDOW_RESIZE_EDGES.map((edge) => (
+          <div
+            key={edge}
+            className={`fobles-window-resize fobles-window-resize--${edge}`}
+            data-edge={edge}
+            onPointerDown={(event) => geometry.onResizePointerDown(event, edge)}
+            onPointerMove={geometry.onResizePointerMove}
+            onPointerUp={geometry.onResizePointerUp}
+            onPointerCancel={geometry.onResizePointerUp}
+          />
+        ))}
     </div>
   );
 }

@@ -2,7 +2,9 @@
 import type { ReactNode } from "react";
 
 export type PersistedWindowGeometry = { x: number; y: number; width: number; height: number };
+
 export type PersistedWindowState = PersistedWindowGeometry & { visible: boolean };
+
 export type PersistedWindowVisibilityRequest = { id: number; visible: boolean };
 
 export type PersistedWindowProps = {

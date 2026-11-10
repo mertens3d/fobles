@@ -1,12 +1,12 @@
 // @source-path [fobles] src/content/features/reference-graph/components/graph-toolbar.tsx
 import type cytoscape from "cytoscape";
 import type {
-  SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { EnrichmentProgress as EnrichmentProgressData } from "../enrichment/enrichment.types";
 import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
-import type { LayoutGraphPresetName } from "../graph.types";
+import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
 import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
 import { BackButton } from "./back-button";
 import { ControlsHeader } from "../../../shared/ui/reference-controls/controls-header";

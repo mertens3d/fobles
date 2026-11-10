@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/types.ts
 
-import type { ToolbarPlacement } from "../toolbar.types";
+import type { ToolbarPlacement } from "../../constants/constants.types";
 
 export type ToolbarContext = {
   doc: Document;

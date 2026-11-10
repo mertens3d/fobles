@@ -1,7 +1,8 @@
 // @source-path [fobles] src/content/foundation/harvesting/planner/harvest-task-planner.ts
 
 import { isGuidLike } from "../../sitecore/guid.ts";
-import type { HarvestRequest, SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../sitecore-harvester.types";
+import type { HarvestRequest, SitecoreHarvestResult } from "../sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE.ts";
 import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../workers/tasks/worker-task.types";
 
 export type CollectorFilterKey = Exclude<keyof SitecoreHarvestFiltersState, "template">;

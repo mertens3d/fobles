@@ -13,7 +13,6 @@ export type WorkerPoolTaskStatus = {
   item?: SitecoreItemLocator;
 };
 
-
 export type WorkerTaskSnapshot = {
   taskId: string;
   requestId: string;

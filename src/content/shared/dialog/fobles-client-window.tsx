@@ -31,11 +31,22 @@ export function FoblesClientWindow({ ownerRef, onClose, children, ...windowProps
     }
     function handlePointerDown(event: PointerEvent): void {
       const target = event.target;
-      if (target instanceof Node && !clientRef.current?.contains(target)) { onClose(); }
+      if (target instanceof Node && !clientRef.current?.contains(target)) {
+        onClose();
+      }
     }
     doc.addEventListener("pointerdown", handlePointerDown, true);
     return () => doc.removeEventListener("pointerdown", handlePointerDown, true);
   }, [onClose, ownerRef]);
 
-  return <div ref={clientRef} className={`fobles-client-window${windowProps.placement === "client-overlay" ? " fobles-client-window--overlay" : ""}`}><FoblesWindow {...windowProps} onClose={onClose}>{children}</FoblesWindow></div>;
+  return (
+    <div
+      ref={clientRef}
+      className={`fobles-client-window${windowProps.placement === "client-overlay" ? " fobles-client-window--overlay" : ""}`}
+    >
+      <FoblesWindow {...windowProps} onClose={onClose}>
+        {children}
+      </FoblesWindow>
+    </div>
+  );
 }

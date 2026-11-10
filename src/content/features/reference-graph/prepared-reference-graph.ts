@@ -2,9 +2,9 @@
 import { extensionLog } from "../../logger";
 import type {
   HarvestProgressCallback,
-  SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import {
   prepareReferenceModel,
   type PreparedReferenceModel,

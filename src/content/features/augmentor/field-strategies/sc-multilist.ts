@@ -4,7 +4,7 @@ import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
-import type { MultilistOptionsFobles as MultilistConfig } from "../fobles.types";
+import type { MultilistOptionsFobles as MultilistConfig } from "../../../../constants/fobles.types";
 
 type MultilistOption = { value: string; label: string };
 

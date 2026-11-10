@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/history/history-trigger.tsx
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { ITEM_HISTORY } from "../../../shared/item-history/item-history.const.ts";
 import { PersistedWindow } from "../../shared/ui/persisted-window/persisted-window";
 import type { PersistedWindowVisibilityRequest } from "../../shared/ui/persisted-window/persisted-window.types";
@@ -13,6 +13,7 @@ import type { HistoryTriggerProps } from "./history.types.ts";
 import { useHistoryScope } from "./use-history-scope.ts";
 import { useHistoryStore } from "./use-history-store.ts";
 import { useHistoryKnownSites } from "./use-history-known-sites.ts";
+import { CONST } from "../../../constants/const.ts";
 
 function readCollapsedGroups(): Set<string> {
   try {
@@ -36,7 +37,11 @@ function HistoryContents({ doc, historyFlyout, onToggle }: HistoryTriggerProps) 
 
   function toggleGroup(category: string): void {
     const next = new Set(collapsedGroups);
-    if (next.has(category)) { next.delete(category); } else { next.add(category); }
+    if (next.has(category)) {
+      next.delete(category);
+    } else {
+      next.add(category);
+    }
     localStorage.setItem(ITEM_HISTORY.COLLAPSED_STORAGE_KEY, JSON.stringify([...next]));
     setCollapsedGroups(next);
   }
@@ -47,46 +52,117 @@ function HistoryContents({ doc, historyFlyout, onToggle }: HistoryTriggerProps) 
     setVisibilityRequest((current) => ({ id: (current?.id ?? 0) + 1, visible: !windowVisible }));
   }
 
-  return <div title="" className={HISTORY_CLASS.TRIGGER}>
-    <div className={HISTORY_CLASS.ACTIONS}>
-      <button type="button" className={HISTORY_CLASS.TAB} aria-controls={HISTORY_UI.PANEL_ID}
-        aria-expanded={windowVisible} aria-pressed={windowVisible} onClick={toggleHistory}>{HISTORY_TEXT.TITLE}</button>
-      <PersistedWindow windowId="history" title={HISTORY_TEXT.TITLE} visibilityRequest={visibilityRequest}
-        defaultGeometry={{ x: Math.max(16, window.innerWidth - 400), y: 72, width: 360, height: 620 }} minWidth={300} minHeight={280}
-        onVisibilityChange={setWindowVisible}>
-        <section id={HISTORY_UI.PANEL_ID} className={HISTORY_CLASS.PANEL} aria-label={HISTORY_TEXT.TITLE}>
-          <div className="fobles-history-content-actions">
-            <button type="button" disabled={!store.items.length} onClick={createClearHistoryHandler(store.mutate)}>{HISTORY_TEXT.CLEAR}</button>
-          </div>
-          {error && <div role="alert" className={HISTORY_CLASS.ERROR}>{error}</div>}
-          {ITEM_HISTORY.CATEGORIES.map((category) => {
-            const items = store.items.filter((item) => item.category === category).sort((a, b) => b.lastVisitedAt - a.lastVisitedAt);
-            const collapsed = collapsedGroups.has(category);
-            return <section key={category} className={HISTORY_CLASS.GROUP} aria-label={category}>
-              <button type="button" className="fobles-history-group-toggle" aria-expanded={!collapsed} onClick={() => toggleGroup(category)}>
-                <img className="fobles-history-disclosure" src={collapsed ? "/sitecore/shell/themes/standard/images/treemenu_collapsed.png" : "/sitecore/shell/themes/standard/images/treemenu_expanded.png"} width={15} height={15} alt="" aria-hidden="true" />
-                <img className="fobles-history-group-icon" src={HISTORY_GROUP_ICON[category]} width={16} height={16} alt="" />
-                <span>{category} ({items.length})</span>
+  return (
+    <div title="" className={HISTORY_CLASS.TRIGGER}>
+      <div className={HISTORY_CLASS.ACTIONS}>
+        <button
+          type="button"
+          className={HISTORY_CLASS.TAB}
+          aria-controls={HISTORY_UI.PANEL_ID}
+          aria-expanded={windowVisible}
+          aria-pressed={windowVisible}
+          onClick={toggleHistory}
+        >
+          {HISTORY_TEXT.TITLE}
+        </button>
+        <PersistedWindow
+          windowId="history"
+          title={HISTORY_TEXT.TITLE}
+          visibilityRequest={visibilityRequest}
+          defaultGeometry={{ x: Math.max(16, window.innerWidth - 400), y: 72, width: 360, height: 620 }}
+          minWidth={300}
+          minHeight={280}
+          onVisibilityChange={setWindowVisible}
+        >
+          <section id={HISTORY_UI.PANEL_ID} className={HISTORY_CLASS.PANEL} aria-label={HISTORY_TEXT.TITLE}>
+            <div className="fobles-history-content-actions">
+              <button type="button" disabled={!store.items.length} onClick={createClearHistoryHandler(store.mutate)}>
+                {HISTORY_TEXT.CLEAR}
               </button>
-              {!collapsed && items.length > 0 && <div className="fobles-history-group-body"><ul>{scope && items.map((item) =>
-                <HistoryRow key={item.id} item={item} scope={scope} mutate={store.mutate} label={historyItemLabel(item, sites)}
-                  onError={store.reportError} onNavigated={() => setVisibilityRequest((current) => ({ id: (current?.id ?? 0) + 1, visible: false }))} />)}</ul></div>}
-            </section>;
-          })}
-        </section>
-      </PersistedWindow>
+            </div>
+            {error && (
+              <div role="alert" className={HISTORY_CLASS.ERROR}>
+                {error}
+              </div>
+            )}
+            {ITEM_HISTORY.CATEGORIES.map((category) => {
+              const items = store.items
+                .filter((item) => item.category === category)
+                .sort((a, b) => b.lastVisitedAt - a.lastVisitedAt);
+              const collapsed = collapsedGroups.has(category);
+              return (
+                <section key={category} className={HISTORY_CLASS.GROUP} aria-label={category}>
+                  <button
+                    type="button"
+                    className="fobles-history-group-toggle"
+                    aria-expanded={!collapsed}
+                    onClick={() => toggleGroup(category)}
+                  >
+                    <img
+                      className="fobles-history-disclosure"
+                      src={
+                        collapsed
+                          ? "/sitecore/shell/themes/standard/images/treemenu_collapsed.png"
+                          : "/sitecore/shell/themes/standard/images/treemenu_expanded.png"
+                      }
+                      width={15}
+                      height={15}
+                      alt=""
+                      aria-hidden="true"
+                    />
+                    <img
+                      className="fobles-history-group-icon"
+                      src={HISTORY_GROUP_ICON[category]}
+                      width={16}
+                      height={16}
+                      alt=""
+                    />
+                    <span>
+                      {category} ({items.length})
+                    </span>
+                  </button>
+                  {!collapsed && items.length > 0 && (
+                    <div className="fobles-history-group-body">
+                      <ul>
+                        {scope &&
+                          items.map((item) => (
+                            <HistoryRow
+                              key={item.id}
+                              item={item}
+                              scope={scope}
+                              mutate={store.mutate}
+                              label={historyItemLabel(item, sites)}
+                              onError={store.reportError}
+                              onNavigated={() =>
+                                setVisibilityRequest((current) => ({ id: (current?.id ?? 0) + 1, visible: false }))
+                              }
+                            />
+                          ))}
+                      </ul>
+                    </div>
+                  )}
+                </section>
+              );
+            })}
+          </section>
+        </PersistedWindow>
+      </div>
     </div>
-  </div>;
+  );
 }
 
 const HISTORY_GROUP_ICON: Record<string, string> = {
-  Content: "/temp/iconcache/people/16x16/cubes_blue.png",
-  Layout: "/temp/iconcache/applications/16x16/windows.png",
-  "Media Library": "/temp/iconcache/applications/16x16/photo_scenery.png",
-  System: "/temp/iconcache/people/16x16/workstation1.png",
-  Templates: "/temp/iconcache/applications/16x16/form_blue.png",
+  Content: CONST.SITECORE.ICONS.PEOPLE.CUBES_BLUE_16,
+  Layout: CONST.SITECORE.ICONS.APPLICATIONS.WINDOWS_16,
+  "Media Library": CONST.SITECORE.ICONS.APPLICATIONS.PHOTO_SCENERY_16,
+  System: CONST.SITECORE.ICONS.PEOPLE.WORKSTATION1_16,
+  Templates: CONST.SITECORE.ICONS.APPLICATIONS.FORM_BLUE_16,
 };
 
 export function HistoryTrigger(props: HistoryTriggerProps) {
-  return <HistoryErrorBoundary><HistoryContents {...props} /></HistoryErrorBoundary>;
+  return (
+    <HistoryErrorBoundary>
+      <HistoryContents {...props} />
+    </HistoryErrorBoundary>
+  );
 }

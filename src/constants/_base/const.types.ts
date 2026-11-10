@@ -11,3 +11,4 @@ export type LayoutPreset = {
   edgeStyle: GraphEdgeStyle;
   build: (rootTreeNodeId: string) => cytoscape.LayoutOptions;
 };
+

@@ -11,7 +11,6 @@
     "dev:extension": "node tools/scripts/build/dev-extension.js",
     "validate": "npm run typecheck:extension && npm run typecheck:tests && npm run lint && npm run test:unit && npm run build:extension && npm run test:e2e -- --list",
     "lint": "eslint . --cache --cache-location .eslintcache --concurrency=auto",
-    
     "typecheck:extension:watch": "tsc --noEmit --watch --preserveWatchOutput -p tsconfig.json",
     "watch:scss": "sass src/content/styles/fobles-extension.scss dist/unpacked/fobles.css --watch --no-source-map",
     "typecheck:tests": "tsc --noEmit -p tests/tsconfig.json",
@@ -39,6 +38,7 @@
     "@types/node": "^26.6.6",
     "@types/react": "^19.3.0",
     "@types/react-dom": "^19.3.0",
+    "dependency-cruiser": "^18.7.2",
     "dotenv": "^16.6.1",
     "esbuild": "^0.27.2",
     "eslint": "^10.11.0",

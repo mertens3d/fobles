@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import type { TemplatePathFobles as TemplatePathConfig } from "../fobles.types";
+import type { TemplatePathFobles as TemplatePathConfig } from "../../../../constants/fobles.types";
 import { createFoblesButton } from "../helper";
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 

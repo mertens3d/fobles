@@ -2,7 +2,10 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Window } from "happy-dom";
 import { SITECORE } from "../../../src/constants/sitecore.ts";
-import { collectTemplateBases, collectTemplateBasesFromSections } from "../../../src/content/foundation/harvesting/collectors/template-bases-collector.ts";
+import {
+  collectTemplateBases,
+  collectTemplateBasesFromSections,
+} from "../../../src/content/foundation/harvesting/collectors/template-bases-collector.ts";
 import { guid } from "./structural-fixture.ts";
 
 void test("targeted direct-base collector preserves unavailable versus genuinely empty and ignores other fields", () => {
@@ -40,9 +43,17 @@ void test("targeted direct-base collector preserves unavailable versus genuinely
 });
 
 void test("harvested sections only supply bases from an explicitly readable base field", () => {
-  const field = { label: SITECORE.ITEM_KIND.FIELD_LABELS.BASE_TEMPLATE, value: `{${guid(2)}}|${guid(2)}`, links: [], rawMarkup: undefined };
+  const field = {
+    label: SITECORE.ITEM_KIND.FIELD_LABELS.BASE_TEMPLATE,
+    value: `{${guid(2)}}|${guid(2)}`,
+    links: [],
+    rawMarkup: undefined,
+  };
   assert.deepEqual(collectTemplateBasesFromSections([{ name: "Data", fields: [field] }]), [guid(2)]);
-  assert.equal(collectTemplateBasesFromSections([{ name: "Data", fields: [{ ...field, value: undefined }] }]), undefined);
+  assert.equal(
+    collectTemplateBasesFromSections([{ name: "Data", fields: [{ ...field, value: undefined }] }]),
+    undefined,
+  );
   assert.equal(collectTemplateBasesFromSections([{ name: "Data", fields: [{ ...field, value: "Site" }] }]), undefined);
   assert.deepEqual(collectTemplateBasesFromSections([{ name: "Data", fields: [{ ...field, value: "" }] }]), []);
   assert.equal(collectTemplateBasesFromSections([]), undefined);

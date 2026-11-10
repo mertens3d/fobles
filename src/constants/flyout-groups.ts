@@ -1,7 +1,6 @@
 // @source-path [fobles] src/constants/flyout-groups.ts
-import { kickAllUsers } from "../content/features/jump-flyout/kick-users";
-import { openAiPages } from "../content/toolbar/jump-flyout/ai-pages";
-import type { FlyoutGroup } from "../shared/jump-flyout/jump-flyout.types";
+// import { kickAllUsers } from "./flyout-groups.types";
+import type { FlyoutGroup } from "./FlyoutOption";
 import { FOBLES } from "./fobles";
 import { TEXT } from "./fobles.constants";
 import { CONST } from "./const";
@@ -122,7 +121,7 @@ export const AI_GROUP: FlyoutGroup = {
     {
       id: FOBLES.TOOLBAR.JUMP_FLYOUT.BUTTON_IDS.AI_PAGES,
       label: "Pages",
-      action: (doc) => openAiPages(doc),
+      // action: (doc) => openAiPages(doc),
       icon: CONST.SITECORE.ICONS.APPLICATIONS.AI_PAGES_EDIT_48,
       isXPOnly: false,
       isAIOnly: true,
@@ -172,15 +171,15 @@ export const APPLICATION_PAGE_GROUP: FlyoutGroup = {
       isXPOnly: false,
       isAIOnly: false,
     },
-    {
-      id: FOBLES.TOOLBAR.JUMP_FLYOUT.BUTTON_IDS.KICK_ALL_USERS,
-      label: "Kick All Users",
-      action: (doc) => kickAllUsers(doc),
-      icon: CONST.SITECORE.ICONS.LICENSE_OPTIONS.USER,
-      isIncomplete: true,
-      isXPOnly: false,
-      isAIOnly: false,
-    },
+    // {
+    //   id: FOBLES.TOOLBAR.JUMP_FLYOUT.BUTTON_IDS.KICK_ALL_USERS,
+    //   label: "Kick All Users",
+    //   action: (doc) => kickAllUsers(doc),
+    //   icon: CONST.SITECORE.ICONS.LICENSE_OPTIONS.USER,
+    //   isIncomplete: true,
+    //   isXPOnly: false,
+    //   isAIOnly: false,
+    // },
     {
       id: FOBLES.TOOLBAR.JUMP_FLYOUT.BUTTON_IDS.FILE_EXPLORER,
       label: "File Explorer",

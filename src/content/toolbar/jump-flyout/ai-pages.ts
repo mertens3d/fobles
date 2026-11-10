@@ -1,10 +1,10 @@
-import { getCurrentItemId } from "../../foundation/sitecore/current-item";
 import {
   getAiPagesMappings,
   onAiPagesMappingsChange,
   type AiPagesGroup,
   type AiPagesMapping,
 } from "../../../shared/ai-pages-mappings";
+import { getCurrentItemId } from "../../foundation/sitecore/current-item";
 import { getQuickInfo } from "../../foundation/sitecore/quick-info";
 
 type ResolvedAiPagesMapping = AiPagesMapping & Omit<AiPagesGroup, "mappings">;
@@ -21,7 +21,7 @@ onAiPagesMappingsChange((groups) => {
   aiPagesGroups = groups;
 });
 
-const getAiPagesMapping = (itemPath: string): ResolvedAiPagesMapping | null => {
+export const getAiPagesMapping = (itemPath: string): ResolvedAiPagesMapping | null => {
   const normalizedPath = normalizeContentPath(itemPath);
   return (
     aiPagesGroups
@@ -41,7 +41,7 @@ const getAiPagesMapping = (itemPath: string): ResolvedAiPagesMapping | null => {
   );
 };
 
-const buildAiPagesUrl = (
+export const buildAiPagesUrl = (
   itemId: string,
   mapping: ResolvedAiPagesMapping,
   language: string | null,
@@ -60,7 +60,6 @@ const buildAiPagesUrl = (
   }
   return url.toString();
 };
-
 export const openAiPages = (doc: Document): void => {
   const itemId = getCurrentItemId(doc);
   const docQuickInfo = getQuickInfo(doc);
@@ -75,3 +74,4 @@ export const openAiPages = (doc: Document): void => {
     window.alert("No AI Pages mapping matches the active item. Configure AI Pages mappings in the extension options.");
   }
 };
+

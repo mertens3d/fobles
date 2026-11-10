@@ -1,7 +1,7 @@
 // @source-path [fobles] src/constants/graph.const.ts
 import type cytoscape from "cytoscape";
-import type { LayoutGraphPresetName } from "../content/features/reference-graph/graph.types";
-import type { SitecoreHarvestFiltersState, StepKey } from "../content/foundation/harvesting/sitecore-harvester.types";
+import type { LayoutGraphPresetName } from "./LayoutGraphPresetName.types.ts";
+import type { SitecoreHarvestFiltersState } from "./_base/_REFERENCE_GRAPH_BASE.ts";
 import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE.ts";
 import type { LayoutPreset } from "./_base/const.types";
 
@@ -123,4 +123,14 @@ export const REFERENCE_GRAPH = {
     },
   } as Record<LayoutGraphPresetName, LayoutPreset>,
   DEFAULT_LAYOUT_PRESET: { LayoutPresetName: "dagre" },
-};
+};export type StepKey = "fetch-document" |
+  "parse-document" |
+  "root-item" |
+  "children" |
+  "sections" |
+  "layouts" |
+  "referrers" |
+  "parent" |
+  "enrichment" |
+  "build-graph";
+

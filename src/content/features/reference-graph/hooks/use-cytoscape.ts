@@ -3,13 +3,14 @@ import type cytoscape from "cytoscape";
 import { useEffect } from "react";
 import type { WorkSession } from "../../../foundation/workers/session/work-session.types";
 import type {
-  SitecoreHarvestFiltersState,
   SitecoreHarvestResult,
 } from "../../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { createGraphRuntime, disposeGraphRuntime, initializeGraphRuntime } from "../cytoscape/graph-runtime";
 import type { EnrichmentProgress } from "../enrichment/enrichment.types";
 import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
-import type { HarvestForLink, LayoutGraphPresetName, MutableRef } from "../graph.types";
+import type { HarvestForLink, MutableRef } from "../graph.types";
+import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
 import type { PreparedReferenceGraph } from "../prepared-reference-graph.types";
 
 export type refReturn = { containerRef: MutableRef<HTMLDivElement | null> };

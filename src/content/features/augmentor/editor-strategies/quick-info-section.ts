@@ -3,7 +3,7 @@ import type {
   QuickInfoCandidate,
   QuickInfoSectionFobles as QuickInfoSectionConfig,
   QuickInfoSource,
-} from "../fobles.types";
+} from "../../../../constants/fobles.types";
 import { createFoblesButton } from "../helper";
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";

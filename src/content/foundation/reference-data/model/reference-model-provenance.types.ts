@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/reference-model-provenance.types.ts
 
 import type { FieldReferenceConfidence } from "../../../field-reference-resolution/field-reference.types";
-import type { FoblesStrategy } from "../../sitecore/fobles-strategy.types";
+import type { FoblesStrategy } from "../../../../constants/fobles.types";
 import type {
   ItemGraphNodeData,
   LayoutDevice,

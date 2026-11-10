@@ -5,6 +5,7 @@ import { extractGuid } from "./guid";
 
 const STATE_KEY = "foblesNavigationItemId";
 const POLL_MS = 250;
+
 export type BrowserNavigationOptions = { doc: Document; navigateToItem: (itemId: string) => void | Promise<void> };
 
 function readFo(win: Window): string | null {

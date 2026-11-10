@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/toolbar/index.tsx
 
 import { createRoot, type Root } from "react-dom/client";
-import type { ToolbarPlacement } from "../toolbar.types";
+import type { ToolbarPlacement } from "../../constants/constants.types";
 import { ToolbarRoot } from "./toolbar-root";
 import { hasToolbarStore, setToolbarContext, setToolbarStoreVisible } from "./toolbar-store";
 import type { ToolbarContext } from "./types";

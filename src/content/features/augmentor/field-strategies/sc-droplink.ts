@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import type { DroplinkFobles as DroplinkConfig } from "../fobles.types";
+import type { DroplinkFobles as DroplinkConfig } from "../../../../constants/fobles.types";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { extractGuid, hasAnyGuidLikeOption } from "../../../foundation/sitecore/guid";

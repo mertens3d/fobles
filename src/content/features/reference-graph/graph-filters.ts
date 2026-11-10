@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/graph-filters.ts
 
-import type { SitecoreHarvestFiltersState } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 
 export const DEFAULT_RENDERING_GRAPH_FILTERS_STATE: SitecoreHarvestFiltersState = {
   parent: false,

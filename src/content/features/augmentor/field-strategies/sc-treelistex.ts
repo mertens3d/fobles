@@ -5,7 +5,7 @@ import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
-import type { TreelistExFobles as TreelistExConfig } from "../fobles.types";
+import type { TreelistExFobles as TreelistExConfig } from "../../../../constants/fobles.types";
 
 type TreelistExItem = { label: string; value: string };
 

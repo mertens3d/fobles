@@ -1,3 +1,4 @@
+
 // Persisted per-button customization, keyed by the button's stable GUID (see button-ids.ts).
 export type JumpFlyoutButtonSetting = {
   // Snapshot of the button's label at save time, so raw storage is readable without cross-referencing code.
@@ -28,18 +29,4 @@ export type UserTreeJump = { id: string; label: string; enabled: boolean; icon: 
 // current domain root (e.g. "/unicorn.aspx"), matching ADMIN_PAGE_GROUP's own catalog entries.
 export type UserAdminPage = { id: string; label: string; enabled: boolean; icon: string; url: string };
 
-export type FlyoutOption = {
-  id: string;
-  label: string;
-  path?: string;
-  url?: string;
-  useCurrentItemId?: boolean;
-  action?: (doc: Document) => void;
-  icon?: string;
-  // Hides the button entirely (e.g. not ready for use yet) without deleting its definition.
-  isIncomplete?: boolean;
-  isXPOnly?: boolean;
-  isAIOnly?: boolean;
-};
 
-export type FlyoutGroup = { groupMembers: readonly FlyoutOption[]; title?: string };

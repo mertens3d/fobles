@@ -2,14 +2,14 @@
 
 import { useRef, useState } from "react";
 import { CONST } from "../../../../constants/const";
-import type { SitecoreHarvestFiltersState } from "../../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { EnrichmentProgress } from "../enrichment/enrichment.types";
 import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../graph-filters";
 import {
   DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS,
   type GraphParameterVisibilitySettings,
 } from "../graph-parameter-visibility-settings";
-import type { LayoutGraphPresetName } from "../graph.types";
+import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
 import type { PreparedReferenceGraph } from "../prepared-reference-graph.types";
 import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
 

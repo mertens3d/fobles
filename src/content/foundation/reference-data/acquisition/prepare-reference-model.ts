@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/prepare-reference-model.ts
 import { extensionLog } from "../../../logger";
-import type { SitecoreHarvestFiltersState, SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { createReferenceModel } from "../model/reference-model-builder";
 import { buildReferenceModelNodeLookup } from "../model/reference-model-node-lookup";
 import type { ReferenceModelNode } from "../model/reference-model.types";

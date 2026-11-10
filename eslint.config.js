@@ -36,7 +36,10 @@ export default defineConfig([
       "unused-imports/no-unused-imports": "error",
       "@stylistic/max-statements-per-line": ["error", { max: 1 }],
       "@stylistic/no-multiple-empty-lines": ["error", { max: 1, maxEOF: 0, maxBOF: 0 }],
-      "@stylistic/padding-line-between-statements": ["error", { blankLine: "always", prev: "*", next: ["type", "export"] }],
+      "@stylistic/padding-line-between-statements": [
+        "error",
+        { blankLine: "always", prev: "*", next: ["type", "export"] },
+      ],
     },
   },
   {
@@ -159,6 +162,17 @@ export default defineConfig([
             },
           ],
         },
+      ],
+    },
+  },
+  {
+    files: ["**/*.{ts,tsx}"],
+    ignores: ["**/*.types.ts"],
+    rules: {
+      "no-restricted-syntax": [
+        "error",
+        { selector: "TSTypeAliasDeclaration", message: "Type aliases must be declared in .types.ts files." },
+        { selector: "TSInterfaceDeclaration", message: "Interfaces must be declared in .types.ts files." },
       ],
     },
   },

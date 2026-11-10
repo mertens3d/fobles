@@ -1,6 +1,6 @@
 import { FOBLES } from "../../../../constants/fobles";
 import { hasAnyGuidLikeOption } from "../../../foundation/sitecore/guid";
-import type { DroplistFobles as DroplistConfig } from "../fobles.types";
+import type { DroplistFobles as DroplistConfig } from "../../../../constants/fobles.types";
 
 // See sc-droplink.ts for why this can't rely on aria-label; hasAnyGuidLikeOption is what tells
 // the two field types apart.
