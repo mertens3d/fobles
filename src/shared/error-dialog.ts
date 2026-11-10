@@ -1,20 +1,12 @@
 // @source-path [fobles] src/shared/error-dialog.ts
 
+import type { FoblesCleanupProgress } from "./FoblesCleanupProgress.types";
+import type { FoblesMessageDialogOptions, FoblesErrorDialogOptions } from "./FoblesMessageDialogOptions.types";
+
 export const FOBLES_ERROR_DIALOG_ID = "fobles-error-dialog";
 
 export const FOBLES_CLEANUP_DIALOG_ID = "fobles-cleanup-dialog";
 const CLEANUP_PROGRESS_ATTRIBUTE = "data-fobles-cleanup-progress";
-
-type FoblesMessageDialogOptions = { id: string; title: string; messagePublicFacing: string; className?: string };
-
-type FoblesErrorDialogOptions = { title: string; messagePublicFacing: string };
-
-export type FoblesCleanupProgress = {
-  removed: number;
-  total: number;
-  remainingSeconds: number;
-  phase: "disposing" | "failsafe" | "complete";
-};
 
 function showFoblesMessageDialog(
   doc: Document,

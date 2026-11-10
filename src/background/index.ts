@@ -24,6 +24,8 @@ import {
 } from "../content/foundation/workers/pool/background-worker-pool";
 import {
   WORKER_IFRAME_READY_MESSAGE_TYPE,
+} from "../content/foundation/workers/transport/worker.messages";
+import {
   type PoolCancelRequestMessage,
   type PoolCancelTaskMessage,
   type PoolDisposeMessage,
@@ -31,8 +33,8 @@ import {
   type WorkerAdoptedMessage,
   type WorkerIframeReadyMessage,
   type WorkerReadyMessage,
-  type WorkerPoolStatusMessage,
-} from "../content/foundation/workers/transport/worker.messages";
+  type WorkerPoolStatusMessage
+} from "../content/foundation/workers/transport/PoolRunTaskMessage.types.ts";
 import { WORKER_MESSAGE_TYPE } from "../content/foundation/workers/worker-protocol.const";
 import { appendPersistedLogEntry, clearPersistedLogEntries } from "../shared/logging/persisted-log-storage";
 import type { PersistedLogMessage } from "../shared/persisted-log.types";

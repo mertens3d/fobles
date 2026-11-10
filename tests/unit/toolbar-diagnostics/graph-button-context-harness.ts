@@ -2,7 +2,7 @@ import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { build } from "esbuild";
 import { Window } from "happy-dom";
-import type { ToolbarContext } from "../../../src/content/toolbar/types.ts";
+import type { ToolbarContext } from "../../../src/content/toolbar/toolbarcontext.types.ts";
 import type { GraphButtonBundle } from "./graph-button-context.types.ts";
 
 const require = createRequire(import.meta.url);

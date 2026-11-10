@@ -1,10 +1,10 @@
 // @source-path [fobles] src/background/fobles-utility-lock.ts
 /// <reference types="chrome" />
 import {
-  UTILITY_LOCK_MESSAGE,
   type UtilityLockMessage,
   type UtilityLockResponse,
-} from "../shared/utility/fobles-utility-lock.messages";
+} from "../shared/utility/fobles-utility-lock.messages.types";
+import { UTILITY_LOCK_MESSAGE } from "../shared/utility/UTILITY_LOCK_MESSAGE.const";
 
 type UtilityOwner = { tabId: number; ownershipId: string; origin: string };
 const ownersByOrigin = new Map<string, UtilityOwner>();

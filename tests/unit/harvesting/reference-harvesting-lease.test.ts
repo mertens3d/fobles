@@ -3,11 +3,8 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { runWithReferenceHarvestingLease } from "../../../src/content/foundation/harvesting/coordinator/reference-harvesting-lease.ts";
-import { UTILITY_LOCK_MESSAGE } from "../../../src/shared/utility/fobles-utility-lock.messages.ts";
-
-type LockMessage = { type: string; ownershipId: string; origin: string };
-
-type RuntimeResponse = { acquired: boolean } | null;
+import { UTILITY_LOCK_MESSAGE } from "../../../src/shared/utility/UTILITY_LOCK_MESSAGE.const.ts";
+import type { RuntimeResponse, LockMessage } from "./RuntimeResponse.types.ts";
 
 void test("lease contention times out without running work or releasing another owner", async () => {
   const runtime = installRuntime(Array.from({ length: 20 }, () => ({ acquired: false })));

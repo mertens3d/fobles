@@ -2,11 +2,7 @@
 
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 import { extensionLog } from "../../logger";
-import {
-  FOBLES_WINDOW_COLLAPSED_WIDTH,
-  FOBLES_WINDOW_TITLE_BAR_HEIGHT,
-  FOBLES_WINDOW_VIEWPORT_MARGIN,
-} from "./fobles-window.const";
+import { FOBLES_WINDOW } from "./fobles-window.const";
 
 const STACK_STORAGE_KEY = "fobles.window.stack";
 const WINDOW_SELECTOR = ".fobles-window[data-fobles-window-key]";
@@ -76,15 +72,15 @@ function normalize(windows: readonly HTMLElement[]): void {
       });
     }
   });
-  const width = FOBLES_WINDOW_COLLAPSED_WIDTH;
+  const width = FOBLES_WINDOW.COLLAPSED_WIDTH;
   const gap = 4;
-  const availableWidth = Math.max(width, window.innerWidth - FOBLES_WINDOW_VIEWPORT_MARGIN * 2);
+  const availableWidth = Math.max(width, window.innerWidth - FOBLES_WINDOW.VIEWPORT_MARGIN * 2);
   const columns = Math.max(1, Math.floor((availableWidth + gap) / (width + gap)));
   collapsed.forEach((element, index) => {
     const column = index % columns;
     const row = Math.floor(index / columns);
-    const collapsedLeft = `${FOBLES_WINDOW_VIEWPORT_MARGIN + column * (width + gap)}px`;
-    const collapsedTop = `${window.innerHeight - FOBLES_WINDOW_VIEWPORT_MARGIN - (row + 1) * FOBLES_WINDOW_TITLE_BAR_HEIGHT - row * gap}px`;
+    const collapsedLeft = `${FOBLES_WINDOW.VIEWPORT_MARGIN + column * (width + gap)}px`;
+    const collapsedTop = `${window.innerHeight - FOBLES_WINDOW.VIEWPORT_MARGIN - (row + 1) * FOBLES_WINDOW.TITLE_BAR_HEIGHT - row * gap}px`;
     element.style.setProperty(COLLAPSED_LEFT_PROPERTY, collapsedLeft);
     element.style.setProperty(COLLAPSED_TOP_PROPERTY, collapsedTop);
     extensionLog.debug("Fobles window stack: applied collapsed docking", {

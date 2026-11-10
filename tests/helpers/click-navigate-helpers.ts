@@ -16,7 +16,7 @@ import type { BrowserContext } from "@playwright/test";
 import { bringPageToFront } from "./page-switch";
 
 import { buildStepMatchKey } from "./fobles-helpers-support/step-match-key";
-import type { ClickNavigationExpect } from "../constants_partials/CONST.Types";
+import type { ClickNavigationExpect } from "../constants_partials/CONST.types";
 
 // export async function ctrlClickFoblesNavigationButtonStep(page: Page, foblesButton: Locator, expectedUrlContainsPath: string, testInfo: TestInfo, sharedBrowserContext: BrowserContext, step: FoblesStep) {
 //   await step(

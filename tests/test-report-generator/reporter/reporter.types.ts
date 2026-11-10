@@ -33,3 +33,7 @@ export type ReportStep = {
 };
 
 export type CurrentFullResult = Pick<FullResult, "status"> | { status: "running" };
+
+export type ReportGroup = { project: string; suite?: string };
+
+export type MatchableAttachment = ScreenshotInfo | NoteInfo;

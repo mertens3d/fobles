@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window.tsx
 
 import { useEffect } from "react";
-import { FOBLES_WINDOW_COLLAPSED_WIDTH, FOBLES_WINDOW_RESIZE_EDGES } from "./fobles-window.const";
+import { FOBLES_WINDOW} from "./fobles-window.const";
 import { bringFoblesWindowToFront, registerFoblesWindow, syncFoblesWindowStack } from "./fobles-window-stack";
 import { useFoblesWindowGeometry } from "./use-fobles-window-geometry";
 import { FoblesWindowTitlebar } from "./fobles-window-titlebar";
@@ -55,7 +55,7 @@ export function FoblesWindow({
       aria-label={title}
       style={
         persistent
-          ? { minWidth: geometry.collapsed ? FOBLES_WINDOW_COLLAPSED_WIDTH : minWidth, minHeight, ...geometry.style }
+          ? { minWidth: geometry.collapsed ? FOBLES_WINDOW.COLLAPSED_WIDTH : minWidth, minHeight, ...geometry.style }
           : { minWidth, minHeight }
       }
       onPointerDownCapture={(event) => bringFoblesWindowToFront(event.currentTarget)}
@@ -75,7 +75,7 @@ export function FoblesWindow({
       />
       <div className="fobles-window-content">{children}</div>
       {resizable &&
-        FOBLES_WINDOW_RESIZE_EDGES.map((edge) => (
+        FOBLES_WINDOW.RESIZE_EDGES.map((edge) => (
           <div
             key={edge}
             className={`fobles-window-resize fobles-window-resize--${edge}`}

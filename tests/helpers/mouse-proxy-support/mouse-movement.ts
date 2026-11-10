@@ -4,7 +4,7 @@ import { showBillboard } from "../billboard";
 import { pauseForHuman } from "../wait-helpers";
 import type { CornerPosition, MouseCoordinates } from "../mouse-proxy.types";
 import { getLastKnownMousePosition, isSprintMode, setLastKnownMousePosition } from "./mouse-proxy-state";
-import { updateMouseMarkers } from "./mouse-marker";
+import { updateMouseMarkers } from "./mouse-marker.types";
 import { drawMousePath, updateMousePath } from "./mouse-path";
 
 export function resolveCornerPosition(page: Page, cornerPosition: CornerPosition): MouseCoordinates {

@@ -3,7 +3,7 @@
 import { getDebugSettings, onShowDeveloperButtonChange } from "../../shared/debug-settings";
 import { isCompactToolbarPage } from "../guard";
 import { createStorageSyncedStore } from "./create-storage-synced-store";
-import type { ToolbarContext } from "./types";
+import type { ToolbarContext } from "./toolbarcontext.types";
 
 const showDeveloperButtonStore = createStorageSyncedStore<boolean>(
   async () => (await getDebugSettings()).showDeveloperButton,

@@ -1,7 +1,8 @@
 // @source-path [fobles] src/options/ai-pages-mappings/ai-pages-mappings-section.tsx
 
 import { useEffect, useRef, useState } from "react";
-import { getAiPagesMappings, setAiPagesMappings, type AiPagesGroup } from "../../shared/ai-pages-mappings";
+import { getAiPagesMappings, setAiPagesMappings } from "../../shared/ai-pages-mappings";
+import { type AiPagesGroup } from "../../shared/AiPagesMapping.types";
 import type { AiPagesFieldErrors, EditableAiPagesGroup, EditableAiPagesMapping } from "./ai-pages-mappings.types";
 import { AiPagesGroup as AiPagesGroupRow } from "./ai-pages-group";
 

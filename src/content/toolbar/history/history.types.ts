@@ -3,7 +3,7 @@
 import type { MouseEvent } from "react";
 import type { HistoryChange, HistoryItem, HistoryScope } from "../../../shared/item-history/item-history.types.ts";
 import type { KnownSite } from "../../../shared/structural/structural.types.ts";
-import type { FlyoutVisibilityState } from "../shared-flyout/use-flyout-visibility";
+import type { FlyoutVisibilityState } from "../shared-flyout/FlyoutVisibilityState.ts";
 
 export type HistoryMutation = Exclude<HistoryChange, { action: "visit" }>;
 

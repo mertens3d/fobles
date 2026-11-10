@@ -1,10 +1,7 @@
-import type { NoteInfo, ReportStep, ScreenshotInfo } from "./reporter-types";
+import { AttachmentField } from "./AttachmentField.types";
+import type { MatchableAttachment, NoteInfo, ReportStep, ScreenshotInfo } from "./reporter.types";
 
 const STEP_SCREENSHOT_NAME_MATCH_LENGTH = 40;
-
-type MatchableAttachment = ScreenshotInfo | NoteInfo;
-
-type AttachmentField = "screenshots" | "notes";
 
 function sanitizeForMatch(value: string): string {
   return value

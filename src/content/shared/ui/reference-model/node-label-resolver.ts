@@ -4,7 +4,8 @@ import type { ReferenceModelNode } from "../../../foundation/reference-data/mode
 import type { NodePresentation, NodePresentationByKind } from "./node-presentation.types";
 
 type NodeKind = keyof NodePresentationByKind;
-import { LINE_BREAKER, clampMiddle, tryBreakLabel, type LabelBreakResult } from "./text-line-breaker";
+import { LINE_BREAKER, clampMiddle, tryBreakLabel } from "./text-line-breaker";
+import { type LabelBreakResult } from "./LabelBreakResult";
 
 function baseName(treeNode: ReferenceModelNode): string {
   let name: string;

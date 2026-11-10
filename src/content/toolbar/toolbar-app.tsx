@@ -19,7 +19,7 @@ import { JumpFlyoutTrigger } from "./jump-flyout/jump-flyout-trigger";
 import { ProxyFlyoutTrigger } from "./proxy-flyout/proxy-flyout-trigger";
 import { HistoryTrigger } from "./history/history-trigger";
 import { ToolbarDiagnostics } from "./diagnostics/toolbar-diagnostics";
-import type { ToolbarContext } from "./types";
+import type { ToolbarContext } from "./toolbarcontext.types";
 
 export type ToolbarAppProps = { context: ToolbarContext };
 

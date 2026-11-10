@@ -4,24 +4,12 @@ import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { CLASS, SELECTORS } from "../../constants/fobles.constants";
 import type { ToolbarCorner } from "../../constants/constants.types";
 import type { ToolbarPlacement } from "../../constants/constants.types";
-import type { ToolbarContext } from "./types";
+import type { ToolbarContext } from "./toolbarcontext.types";
 import { HISTORY_SELECTOR } from "./history/history.const";
+import type { ToolbarDragResult, DragPosition } from "./ToolbarDragResult";
 
 const MIN_EDGE_MARGIN = 4;
 const RESIZE_SETTLE_DELAY_MS = 200;
-
-type DragPosition = { left: number; top: number };
-
-export type ToolbarDragResult = {
-  containerRef: React.RefObject<HTMLDivElement | null>;
-  className: string;
-  dataPosition: ToolbarCorner;
-  style: React.CSSProperties;
-  onPointerDown: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onPointerMove: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onPointerUp: (event: React.PointerEvent<HTMLDivElement>) => void;
-  onPointerCancel: (event: React.PointerEvent<HTMLDivElement>) => void;
-};
 
 function isInteractiveTarget(target: EventTarget | null): boolean {
   return (

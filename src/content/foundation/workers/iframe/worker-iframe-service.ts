@@ -10,8 +10,8 @@ import type {
   WorkerIframeRemoveMessage,
   WorkerSetOwnedMessage,
   WorkerTaskCancelMessage,
-  WorkerTaskExecuteMessage,
-} from "../transport/worker.messages";
+  WorkerTaskExecuteMessage
+} from "../transport/PoolRunTaskMessage.types";
 import {
   WORKER_IFRAME_CREATE_MESSAGE_TYPE,
   WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE,

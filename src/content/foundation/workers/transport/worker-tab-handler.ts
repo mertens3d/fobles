@@ -1,13 +1,16 @@
 // @source-path [fobles] src/content/foundation/workers/transport/worker-tab-handler.ts
 import { extensionLog } from "../../../logger";
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
-import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
+import type { WorkerTask } from "../tasks/worker-task.types";
 import {
   WORKER_IFRAME_READY_MESSAGE_TYPE,
+} from "./worker.messages";
+import {
   type WorkerIframeReadyMessage,
   type WorkerReadyMessage,
-  type WorkerTabIncomingMessage,
-} from "./worker.messages";
+  type WorkerTabIncomingMessage
+} from "./PoolRunTaskMessage.types";
+import type { ExecuteWorkerTask, IsWorkerDocumentReady } from "./ExecuteWorkerTask";
 
 const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;
 const WORKER_BANNER_ID = "fobles-background-worker-banner";
@@ -25,14 +28,6 @@ function readIframeWorkerId(): string | undefined {
   const workerId = new URL(window.location.href).searchParams.get(WORKER_ID_QUERY_PARAMETER);
   return window.top !== window && workerId ? workerId : undefined;
 }
-
-export type ExecuteWorkerTask = (
-  doc: Document,
-  task: WorkerTask,
-  signal: AbortSignal,
-) => Promise<WorkerTaskExecutionResult>;
-
-export type IsWorkerDocumentReady = (doc: Document) => boolean;
 
 export function registerWorkerTabHandler(
   executeWorkerTask: ExecuteWorkerTask,

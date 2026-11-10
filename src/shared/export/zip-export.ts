@@ -4,8 +4,7 @@ import { strToU8, zipSync } from "fflate";
 import { downloadBlob } from "./download-export";
 import { buildSanitizationReport, sanitizeExportText } from "./export-sanitizer";
 import type { ExportSanitizationCounts } from "./export-sanitizer.types";
-
-export type TextZipEntry = { readonly path: string; readonly content: string };
+import type { TextZipEntry } from "./TextZipEntry.types";
 
 function addCounts(target: ExportSanitizationCounts, source: ExportSanitizationCounts): void {
   target.authorizationValues += source.authorizationValues;

@@ -3,8 +3,7 @@ import { TEST_CONST } from "../../constants/TEST_CONST";
 import { CAPTURE_STEP_SCREENSHOTS } from "../../settings/settings";
 import { highlightScreenShot } from "../mouse-proxy-support/mouse-interactions";
 import { sanitizeFileName } from "../path-helpers";
-
-export type Screenshottable = Pick<Locator, "screenshot">;
+import type { Screenshottable } from "./Screenshottable.types";
 
 // toHaveScreenshot() only attaches its comparison images to the test result on a mismatch/missing
 // baseline - a clean pass produces no attachment for the report to link to. Attach one ourselves

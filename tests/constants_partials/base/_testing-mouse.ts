@@ -1,4 +1,4 @@
-import type { HighlightStyle } from "../CONST.Types";
+import type { HighlightStyle } from "../CONST.types";
 import { _SITECORE_COLORS } from "./_sc-colors";
 
 export const _TESTING_MOUSE = {

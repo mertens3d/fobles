@@ -6,7 +6,8 @@ import {
   rootProcessingStateForDecision,
 } from "../../../src/content/foundation/reference-data/acquisition/root-cache-flow.ts";
 import type { SitecoreDataCacheRecord } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types";
-import type { SitecoreHarvestFiltersState } from "../../../src/content/foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestFiltersState } from "../../../src/constants/_base/_REFERENCE_GRAPH_BASE.ts";
+
 const FILTERS: SitecoreHarvestFiltersState = {
   parent: false,
   children: false,

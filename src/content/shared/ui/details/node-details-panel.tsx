@@ -7,21 +7,13 @@ import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import { DetailsPanel } from "./details-panel";
 import { DETAILS_PANEL } from "./details-panel.const";
+import type { DetailRow, DiagnosticReferenceModelNode } from "./DetailRow";
 
 type NodeDetailsPanelProps = {
   selectedTreeNodeId: string | undefined;
   nodesById: Map<string, ReferenceModelNode>;
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
   onClose?: () => void;
-};
-
-type DetailRow = [string, string];
-
-type DiagnosticReferenceModelNode = Omit<ReferenceModelNode, "children" | "provenance" | "scItem"> & {
-  scItem?: object;
-  children: string;
-  provenance: string;
-  childCount: number;
 };
 
 function itemDetailRows(treeNode: Extract<ReferenceModelNode, { nodeType: "item" }>): DetailRow[] {

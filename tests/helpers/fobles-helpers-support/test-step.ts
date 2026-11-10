@@ -1,7 +1,8 @@
 import { test, type Page, type TestInfo } from "@playwright/test";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import type { FoblesStep } from "../fobles-test-step.types";
-import { attachPageScreenshot, type Screenshottable } from "./screenshots";
+import { attachPageScreenshot } from "./screenshots";
+import { type Screenshottable } from "./Screenshottable.types";
 import { buildStepMatchKey } from "./step-match-key";
 
 // A step whose body navigates away (e.g. a Fobles button's plain click) leaves screenshotTarget

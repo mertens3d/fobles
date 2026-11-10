@@ -6,7 +6,7 @@ import { publishFoblesShellCommand } from "../shell/shell-events";
 import { openDeveloperUtility } from "../shell/utility/fobles-utility-launchers";
 import { setFoblesNavVisible } from "../../shared/nav-settings";
 import { setToolbarStoreVisible } from "./toolbar-store";
-import type { ToolbarContext } from "./types";
+import type { ToolbarContext } from "./toolbarcontext.types";
 
 function resolveGraphIconUrl(): string | undefined {
   let url: string | undefined;

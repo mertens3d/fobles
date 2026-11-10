@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/foundation/harvesting/coordinator/reference-harvesting-lease.ts
 import {
-  UTILITY_LOCK_MESSAGE,
   type UtilityLockResponse,
-} from "../../../../shared/utility/fobles-utility-lock.messages.ts";
+} from "../../../../shared/utility/fobles-utility-lock.messages.types.ts";
+import { UTILITY_LOCK_MESSAGE } from "../../../../shared/utility/UTILITY_LOCK_MESSAGE.const.ts";
 import { HARVESTING_LEASE } from "./reference-harvesting-lease.const.ts";
 import type { HarvestingLeaseOptions } from "./reference-harvesting-lease.types.ts";
 

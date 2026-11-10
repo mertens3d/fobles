@@ -1,4 +1,4 @@
-import type { NoteInfo, ScreenshotInfo } from "./reporter-types";
+import type { NoteInfo, ScreenshotInfo } from "./reporter.types";
 import { escapeHtml } from "./report-utils";
 
 function aliasScreenshotName(name: string): string {

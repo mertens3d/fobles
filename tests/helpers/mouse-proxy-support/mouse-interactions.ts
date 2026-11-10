@@ -2,7 +2,7 @@ import { type Locator, type Page } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { moveMouseToPosition } from "./mouse-movement";
 import type { MouseCoordinates } from "../mouse-proxy.types";
-import type { HighlightStyle } from "../../constants_partials/CONST.Types";
+import type { HighlightStyle } from "../../constants_partials/CONST.types";
 import { isSprintMode } from "./mouse-proxy-state";
 
 export async function getButtonSize(button: Locator): Promise<{ width: number; height: number }> {

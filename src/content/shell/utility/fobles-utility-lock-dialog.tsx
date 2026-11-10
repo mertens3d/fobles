@@ -1,11 +1,10 @@
 // @source-path [fobles] src/content/shell/utility/fobles-utility-lock-dialog.tsx
-import { createRoot, type Root } from "react-dom/client";
+import { createRoot } from "react-dom/client";
 import {
   FoblesMessageDialog,
   type FoblesMessageDialogAction,
 } from "../../shared/ui/fobles-message-dialog/fobles-message-dialog";
-
-type MountedDialog = { host: HTMLDivElement; root: Root; dispose: () => void };
+import type { MountedDialog } from "./MountedDialog";
 
 function mountDialog(
   container: HTMLElement,

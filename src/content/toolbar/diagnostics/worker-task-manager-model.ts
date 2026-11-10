@@ -1,19 +1,7 @@
 // @source-path [fobles] src/content/toolbar/diagnostics/worker-task-manager-model.ts
 import type { ActivityEvent } from "../../shared/activity/activity-events";
 import type { WorkerPoolStatus } from "../../foundation/workers/pool/worker-pool-status.types";
-
-export type WorkerTaskManagerRow = {
-  id: string;
-  activityAt: number;
-  worker: string;
-  status: string;
-  task: string;
-  target: string;
-  workClass: string;
-  phase: string;
-  outcome: string;
-  recoveries: number;
-};
+import type { WorkerTaskManagerRow } from "./WorkerTaskManagerRow";
 
 export const WORKER_TASK_MANAGER_HISTORY_MAX = 100;
 

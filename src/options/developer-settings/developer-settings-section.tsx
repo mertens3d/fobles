@@ -2,7 +2,8 @@
 
 import { useEffect, useState } from "react";
 import { CONST } from "../../constants/const";
-import { getDebugSettings, setDebugSettings, type DebugSettings } from "../../shared/debug-settings";
+import { getDebugSettings, setDebugSettings } from "../../shared/debug-settings";
+import { type DebugSettings } from "../../shared/DebugSettings.types";
 
 const DEFAULT_DEBUG_SETTINGS: DebugSettings = {
   debugLogging: false,

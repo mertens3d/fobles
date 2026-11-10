@@ -1,18 +1,9 @@
 // @source-path [fobles] src/content/toolbar/shared-flyout/use-flyout-visibility.ts
 
 import { useCallback, useEffect, useRef, useState } from "react";
+import type { FlyoutVisibilityState } from "./FlyoutVisibilityState";
 
 const CLOSE_DELAY_MS = 250;
-
-export type FlyoutVisibilityState = {
-  visible: boolean;
-  pinned: boolean;
-  show: () => void;
-  hide: () => void;
-  scheduleHide: () => void;
-  cancelHide: () => void;
-  setPinned: (pinned: boolean) => void;
-};
 
 export function useFlyoutVisibility(win: Window): FlyoutVisibilityState {
   const [visible, setVisible] = useState(false);

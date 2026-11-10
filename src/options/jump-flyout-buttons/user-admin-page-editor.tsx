@@ -7,11 +7,7 @@ import {
   type UserAdminPage,
 } from "../../shared/jump-flyout/user-admin-page-settings";
 import { USER_ADMIN_PAGE } from "../../shared/jump-flyout/user-admin-page-constants";
-
-export type UserAdminPageEditorProps = {
-  entries: readonly UserAdminPage[];
-  onChange: (entries: UserAdminPage[]) => void;
-};
+import type { UserAdminPageEditorProps } from "./UserAdminPageEditorProps";
 
 export function createEmptyUserAdminPage(): UserAdminPage {
   return { id: createUserAdminPageId(), label: "", enabled: true, icon: "", url: "" };

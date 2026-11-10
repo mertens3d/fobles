@@ -1,11 +1,11 @@
 // @source-path [fobles] src/content/shared/ui/reference-model/text-line-breaker.ts
 
+import type { LabelBreakResult } from "./LabelBreakResult";
+
 export const LINE_BREAKER = {
   MAX_LABEL_LINE_LENGTH: 16,
   LINE_BREAK_REGEX: { SPACE: /\s+/g, DASH: /-/g, CAMEL_CASE: /(?=[A-Z])/g },
 };
-
-export type LabelBreakResult = { success: boolean; label: string };
 
 export function tryBreakLabel(labelBreakResult: LabelBreakResult, boundaryPattern: RegExp) {
   const matches = [...labelBreakResult.label.matchAll(boundaryPattern)];

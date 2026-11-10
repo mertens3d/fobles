@@ -2,7 +2,7 @@
 
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import { extensionLog } from "../../../logger";
-import type { WorkerSetOwnedMessage, WorkerTaskExecuteMessage } from "./worker.messages";
+import type { WorkerSetOwnedMessage, WorkerTaskExecuteMessage } from "./PoolRunTaskMessage.types";
 import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
 
 const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;

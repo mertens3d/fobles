@@ -3,11 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 import { extensionLog } from "../../logger";
-import {
-  FOBLES_WINDOW_STATE_TYPE,
-  FOBLES_WINDOW_TITLE_BAR_HEIGHT,
-  FOBLES_WINDOW_VIEWPORT_MARGIN,
-} from "./fobles-window.const";
+import { FOBLES_WINDOW } from "./fobles-window.const";
 import {
   centeredRect,
   clampRect,
@@ -15,6 +11,7 @@ import {
   readRect,
   viewportRect,
 } from "./fobles-window-geometry-math";
+
 import type {
   FoblesWindowGeometry,
   FoblesWindowGeometryOptions,
@@ -32,7 +29,7 @@ export function useFoblesWindowGeometry({
 }: FoblesWindowGeometryOptions): FoblesWindowGeometry {
   const dialogRef = useRef<HTMLDivElement | null>(null);
   const [state, setState] = useState<FoblesWindowState>(() => ({
-    type: FOBLES_WINDOW_STATE_TYPE,
+    type: FOBLES_WINDOW.STATE_TYPE,
     ...centeredRect(window, defaultWidth, defaultHeight, minWidth, minHeight),
     collapsed: false,
     maximized: false,
@@ -111,7 +108,7 @@ export function useFoblesWindowGeometry({
         return next;
       }
       const restoreRect = { left: current.left, top: current.top, width: current.width, height: current.height };
-      const dockedTop = viewportRect(window).height - FOBLES_WINDOW_TITLE_BAR_HEIGHT - FOBLES_WINDOW_VIEWPORT_MARGIN;
+      const dockedTop = viewportRect(window).height - FOBLES_WINDOW.TITLE_BAR_HEIGHT - FOBLES_WINDOW.VIEWPORT_MARGIN;
       const next: FoblesWindowState = { ...current, restoreRect, collapsed: true, maximized: false, top: dockedTop };
       extensionLog.debug("Fobles window: minimizing window", {
         storageKey,
@@ -152,10 +149,10 @@ export function useFoblesWindowGeometry({
         restoreRect,
         collapsed: false,
         maximized: true,
-        left: FOBLES_WINDOW_VIEWPORT_MARGIN,
-        top: FOBLES_WINDOW_VIEWPORT_MARGIN,
-        width: viewport.width - FOBLES_WINDOW_VIEWPORT_MARGIN * 2,
-        height: viewport.height - FOBLES_WINDOW_VIEWPORT_MARGIN * 2,
+        left: FOBLES_WINDOW.VIEWPORT_MARGIN,
+        top: FOBLES_WINDOW.VIEWPORT_MARGIN,
+        width: viewport.width - FOBLES_WINDOW.VIEWPORT_MARGIN * 2,
+        height: viewport.height - FOBLES_WINDOW.VIEWPORT_MARGIN * 2,
       };
       persist(next);
       return next;
@@ -222,15 +219,15 @@ export function useFoblesWindowGeometry({
     }
     const rectWidth = dialogRef.current?.getBoundingClientRect().width ?? 0;
     const maxLeft = Math.max(
-      FOBLES_WINDOW_VIEWPORT_MARGIN,
-      window.innerWidth - rectWidth - FOBLES_WINDOW_VIEWPORT_MARGIN,
+      FOBLES_WINDOW.VIEWPORT_MARGIN,
+      window.innerWidth - rectWidth - FOBLES_WINDOW.VIEWPORT_MARGIN,
     );
     const maxTop = Math.max(
-      FOBLES_WINDOW_VIEWPORT_MARGIN,
-      window.innerHeight - FOBLES_WINDOW_TITLE_BAR_HEIGHT - FOBLES_WINDOW_VIEWPORT_MARGIN,
+      FOBLES_WINDOW.VIEWPORT_MARGIN,
+      window.innerHeight - FOBLES_WINDOW.TITLE_BAR_HEIGHT - FOBLES_WINDOW.VIEWPORT_MARGIN,
     );
-    const left = Math.min(Math.max(start.left + event.clientX - start.clientX, FOBLES_WINDOW_VIEWPORT_MARGIN), maxLeft);
-    const top = Math.min(Math.max(start.top + event.clientY - start.clientY, FOBLES_WINDOW_VIEWPORT_MARGIN), maxTop);
+    const left = Math.min(Math.max(start.left + event.clientX - start.clientX, FOBLES_WINDOW.VIEWPORT_MARGIN), maxLeft);
+    const top = Math.min(Math.max(start.top + event.clientY - start.clientY, FOBLES_WINDOW.VIEWPORT_MARGIN), maxTop);
     start.moved = start.moved || left !== start.left || top !== start.top;
     setState((current) => ({ ...current, left, top }));
   }, []);
@@ -346,7 +343,7 @@ export function useFoblesWindowGeometry({
       left: state.left,
       top: state.top,
       width: state.width,
-      height: state.collapsed ? FOBLES_WINDOW_TITLE_BAR_HEIGHT : state.height,
+      height: state.collapsed ? FOBLES_WINDOW.TITLE_BAR_HEIGHT : state.height,
     }),
     [state],
   );

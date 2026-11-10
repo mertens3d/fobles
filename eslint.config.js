@@ -167,11 +167,14 @@ export default defineConfig([
   },
   {
     files: ["**/*.{ts,tsx}"],
-    ignores: ["**/*.types.ts"],
+    ignores: ["**/*.types.ts", "**/*.d.ts"],
     rules: {
       "no-restricted-syntax": [
         "error",
-        { selector: "TSTypeAliasDeclaration", message: "Type aliases must be declared in .types.ts files." },
+        {
+          selector: "TSTypeAliasDeclaration:not([id.name=/Props$/])",
+          message: "Type aliases must be declared in .types.ts files.",
+        },
         { selector: "TSInterfaceDeclaration", message: "Interfaces must be declared in .types.ts files." },
       ],
     },

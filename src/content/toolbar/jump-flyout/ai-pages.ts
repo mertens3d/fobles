@@ -1,13 +1,8 @@
-import {
-  getAiPagesMappings,
-  onAiPagesMappingsChange,
-  type AiPagesGroup,
-  type AiPagesMapping,
-} from "../../../shared/ai-pages-mappings";
+import { getAiPagesMappings, onAiPagesMappingsChange } from "../../../shared/ai-pages-mappings";
+import { type AiPagesGroup } from "../../../shared/AiPagesMapping.types";
 import { getCurrentItemId } from "../../foundation/sitecore/current-item";
 import { getQuickInfo } from "../../foundation/sitecore/quick-info";
-
-type ResolvedAiPagesMapping = AiPagesMapping & Omit<AiPagesGroup, "mappings">;
+import type { ResolvedAiPagesMapping } from "./ResolvedAiPagesMapping";
 
 let aiPagesGroups: readonly AiPagesGroup[] = [];
 
@@ -74,4 +69,3 @@ export const openAiPages = (doc: Document): void => {
     window.alert("No AI Pages mapping matches the active item. Configure AI Pages mappings in the extension options.");
   }
 };
-

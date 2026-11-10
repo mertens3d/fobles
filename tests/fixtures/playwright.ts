@@ -14,6 +14,7 @@ import { attachPageDiagnosticHandlers } from "./playwright-page-diagnostic-handl
 import { cleanPromoVideoFiles, getPromoVideoDir, renamePromoVideoFiles } from "./playwright-video-files";
 import { attachPersistedLogs } from "./playwright-persisited-logs";
 import { TEST_CONSTB } from "./playwright.const";
+import type { TestFixtures, WorkerFixtures } from "./TestFixtures.types";
 
 // This fixture launches its own context, so playwright.config.ts's use.video
 // setting is not consulted. RECORD_VIDEO controls recording here directly.
@@ -51,10 +52,6 @@ async function logoutSitecoreSessions(context: BrowserContext): Promise<void> {
     }
   }
 }
-
-type WorkerFixtures = { sharedBrowserContext: BrowserContext; sharedPage: import("@playwright/test").Page };
-
-type TestFixtures = { resetTestSettings: void };
 
 export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
   // Start every test with the same settings, even when the previous test

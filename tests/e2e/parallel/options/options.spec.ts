@@ -11,9 +11,9 @@ import {
   findGroupByName,
   openAdminPagesColumn,
   openSettingsSection,
-  type StoredSettingsSnapshot,
   TESTING,
 } from "../../shared/extension-ui/options-test-helpers";
+import { type StoredSettingsSnapshot } from "../../shared/extension-ui/StoredSettingsSnapshot.types";
 
 foblesTest.describe("Additional Settings Persistence", () => {
   foblesTest("clears all stored settings", async ({ sharedBrowserContext }, testInfo) => {

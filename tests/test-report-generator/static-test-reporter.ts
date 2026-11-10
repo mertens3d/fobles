@@ -14,7 +14,7 @@ import type {
   ReportStep,
   ScreenshotInfo,
   ReportResult,
-} from "./reporter/reporter-types";
+} from "./reporter/reporter.types";
 import { stripAnsiSafe, toReportRelativeHref } from "./reporter/report-utils";
 
 function flattenSteps(steps: TestResult["steps"]): ReportStep[] {

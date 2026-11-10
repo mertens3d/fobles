@@ -13,8 +13,6 @@ import { DIAGNOSTIC_OPERATION_LABELS } from "./toolbar-diagnostics.const";
 
 export type WorkerTaskManagerPanelProps = { status: WorkerPoolStatus | undefined };
 
-type MountedWorker = { key: string; workerId: string; source: string; visible: boolean };
-
 const COLUMN_HELP = {
   activity: "Time of the latest recorded lifecycle activity.",
   worker: "Worker target assigned to the task. Iframe workers show their worker identifier.",

@@ -11,14 +11,7 @@ import type {
   HistoryScope,
   HistoryVisit,
 } from "../../../src/shared/item-history/item-history.types.ts";
-
-type MessageListener = (
-  message: unknown,
-  sender: chrome.runtime.MessageSender,
-  sendResponse: (response: HistoryChangeResponse) => void,
-) => boolean;
-
-type StorageListener = (changes: Record<string, chrome.storage.StorageChange>, areaName: string) => void;
+import type { StorageListener, MessageListener } from "./StorageListener.types.ts";
 
 const EXTENSION_ID = "fobles-test-extension";
 const MASTER: HistoryScope = { origin: "https://sitecore.example", database: "master" };

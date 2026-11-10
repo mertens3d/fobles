@@ -1,18 +1,11 @@
-import { expect, type Locator, type Page } from "../fixtures/playwright";
+import { expect, type Page } from "../fixtures/playwright";
 import { getButtonSize, moveMouseOutsideHoverArea, moveMouseToLocatorCenter } from "./mouse-proxy";
 import { TEST_CONST } from "../constants/TEST_CONST";
-import type { MouseCoordinates } from "./mouse-proxy.types";
 import { pauseForHuman } from "./wait-helpers";
+import type { HoverAndGrowOptions } from "./HoverAndGrowOptions.types";
+import type { HoverAndSlideOutOptions } from "./HoverAndSlideOutOptions";
 
 const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
-
-export type HoverAndGrowOptions = {
-  name: string;
-  hoverTarget: Locator;
-  measureTarget: Locator;
-  moveAwayTargets: Locator | Locator[];
-  mousePosition: MouseCoordinates;
-};
 
 export async function hoverAndGrow(page: Page, options: HoverAndGrowOptions): Promise<void> {
   for (let cycle = 1; cycle <= 3; cycle += 1) {
@@ -34,14 +27,6 @@ export async function hoverAndGrow(page: Page, options: HoverAndGrowOptions): Pr
     console.log(`[fobles] ${options.name} shrank after moving away, cycle ${cycle}`);
   }
 }
-
-export type HoverAndSlideOutOptions = {
-  name: string;
-  hoverTarget: Locator;
-  flyoutTarget: Locator;
-  hoverRegion: Locator | Locator[];
-  mousePosition: MouseCoordinates;
-};
 
 export async function hoverAndSlideOut(page: Page, options: HoverAndSlideOutOptions): Promise<void> {
   for (let cycle = 1; cycle <= 3; cycle += 1) {

@@ -1,23 +1,7 @@
 // @source-path [fobles] src/content/shell/utility/fobles-utility-store.ts
 
 import { useSyncExternalStore } from "react";
-import type { ReactNode } from "react";
-
-export type MountedFoblesUtility = {
-  id: string;
-  className: string;
-  title: string;
-  storageKey: string;
-  defaultWidth: number;
-  defaultHeight: number;
-  minWidth: number;
-  minHeight: number;
-  children: ReactNode;
-  onClose?: () => void | Promise<void>;
-  onHelp?: () => void;
-};
-
-type UtilityStore = { utilities: readonly MountedFoblesUtility[]; listeners: Set<() => void> };
+import type { UtilityStore, MountedFoblesUtility } from "./UtilityStore";
 
 const stores = new WeakMap<Document, UtilityStore>();
 

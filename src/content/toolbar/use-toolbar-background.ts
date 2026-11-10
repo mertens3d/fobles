@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { CSS_PROPERTIES } from "../../constants/fobles.constants";
 import { CONST } from "../../constants/const";
-import type { ToolbarContext } from "./types";
+import type { ToolbarContext } from "./toolbarcontext.types";
 
 export function useToolbarBackgroundColor(context: ToolbarContext): React.CSSProperties {
   const [backgroundColor, setBackgroundColor] = useState<string | undefined>(undefined);

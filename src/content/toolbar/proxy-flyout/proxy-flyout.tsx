@@ -6,6 +6,7 @@ import { FOBLES } from "../../../constants/fobles";
 import { extensionLog } from "../../logger";
 import { findRibbonCheckbox, postSitecoreEvent } from "../../features/augmentor/proxy-buttons-ribbon";
 import { SC_PROXY_BUTTONS } from "./proxy-flyout.const";
+import type { ProxyButtonOption } from "./ProxyButtonOption";
 
 export type ProxyFlyoutProps = {
   doc: Document;
@@ -13,8 +14,6 @@ export type ProxyFlyoutProps = {
   onCancelHide: () => void;
   onScheduleHide: () => void;
 };
-
-type ProxyButtonOption = (typeof SC_PROXY_BUTTONS)[number];
 
 function ProxyButtonCheckbox({ doc, option, visible }: { doc: Document; option: ProxyButtonOption; visible: boolean }) {
   const checkboxRef = useRef<HTMLInputElement | null>(null);

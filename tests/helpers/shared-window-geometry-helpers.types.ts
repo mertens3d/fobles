@@ -1,6 +1,5 @@
 import { expect, type Locator } from "@playwright/test";
-
-export type BoundingBoxRect = { x: number; y: number; width: number; height: number };
+import type { BoundingBoxRect } from "./BoundingBoxRect.types";
 
 const BOX_PROPERTIES = ["x", "y", "width", "height"] as const;
 

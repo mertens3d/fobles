@@ -1,5 +1,4 @@
-// @source-path [fobles] src/content/shared/ui/dialog/dialog-icon-button.tsx
-export type DialogIconButtonSurface = "light" | "dark";
+import type { DialogIconButtonSurface } from "./DialogIconButtonSurface";
 
 export type DialogIconButtonProps = {
   kind: "close" | "help";

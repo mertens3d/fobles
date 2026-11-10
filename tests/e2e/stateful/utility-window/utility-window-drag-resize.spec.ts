@@ -3,8 +3,8 @@ import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 import { ClickFoblesGraphButton, CloseFoblesGraph } from "../../../macros/fobles-macros";
 import { setupReferenceGraphState } from "../harvest/harvest-test-helpers";
-import { expectBoxClose, getRequiredBoundingBox } from "../../../helpers/shared-window-geometry-helpers";
-import { FOBLES_WINDOW_TITLE_BAR_HEIGHT, FOBLES_WINDOW_VIEWPORT_MARGIN } from "../../../../src/content/shared/dialog/fobles-window.const";
+import { expectBoxClose, getRequiredBoundingBox } from "../../../helpers/shared-window-geometry-helpers.types";
+import { FOBLES_WINDOW } from "../../../../src/content/shared/dialog/fobles-window.const";
 
 async function dragUtilityWindow(page: Page, titleBar: Locator, dx: number, dy: number): Promise<void> {
   const titleBox = await getRequiredBoundingBox(titleBar, "the title bar");
@@ -32,13 +32,13 @@ foblesTest.describe("Shared utility window drag and resize", () => {
 
     const before = await getRequiredBoundingBox(dialog, "the utility window");
     const viewport = await page.evaluate(() => ({ height: window.innerHeight, width: window.innerWidth }));
-    const horizontalLimit = viewport.width - FOBLES_WINDOW_VIEWPORT_MARGIN - before.width;
-    const verticalLimit = viewport.height - FOBLES_WINDOW_TITLE_BAR_HEIGHT - FOBLES_WINDOW_VIEWPORT_MARGIN;
+    const horizontalLimit = viewport.width - FOBLES_WINDOW.VIEWPORT_MARGIN - before.width;
+    const verticalLimit = viewport.height - FOBLES_WINDOW.TITLE_BAR_HEIGHT - FOBLES_WINDOW.VIEWPORT_MARGIN;
     const room = {
       down: verticalLimit - before.y,
-      left: before.x - FOBLES_WINDOW_VIEWPORT_MARGIN,
+      left: before.x - FOBLES_WINDOW.VIEWPORT_MARGIN,
       right: horizontalLimit - before.x,
-      up: before.y - FOBLES_WINDOW_VIEWPORT_MARGIN,
+      up: before.y - FOBLES_WINDOW.VIEWPORT_MARGIN,
     };
     const deltaX = room.left >= room.right ? -Math.min(80, room.left) : Math.min(80, room.right);
     const deltaY = room.up >= room.down ? -Math.min(40, room.up) : Math.min(40, room.down);
@@ -77,13 +77,13 @@ foblesTest.describe("Shared utility window drag and resize", () => {
     await step("Southeast resize grows the window and stops on release", async () => {
       const before = await getRequiredBoundingBox(dialog, "the utility window");
       const viewport = await page.evaluate(() => ({ height: window.innerHeight, width: window.innerWidth }));
-      const roomLeft = before.x - FOBLES_WINDOW_VIEWPORT_MARGIN;
+      const roomLeft = before.x - FOBLES_WINDOW.VIEWPORT_MARGIN;
       if (roomLeft > 0) {
         await dragUtilityWindow(page, dialog.locator(".fobles-window-titlebar"), -roomLeft, 0);
       }
       const positioned = await getRequiredBoundingBox(dialog, "the utility window at the left viewport margin");
-      const availableWidth = Math.max(0, viewport.width - FOBLES_WINDOW_VIEWPORT_MARGIN - positioned.x - positioned.width);
-      const availableHeight = Math.max(0, viewport.height - FOBLES_WINDOW_VIEWPORT_MARGIN - positioned.y - positioned.height);
+      const availableWidth = Math.max(0, viewport.width - FOBLES_WINDOW.VIEWPORT_MARGIN - positioned.x - positioned.width);
+      const availableHeight = Math.max(0, viewport.height - FOBLES_WINDOW.VIEWPORT_MARGIN - positioned.y - positioned.height);
       const deltaX = Math.min(60, availableWidth);
       const deltaY = Math.min(60, availableHeight);
       expect(deltaX + deltaY).toBeGreaterThan(0);

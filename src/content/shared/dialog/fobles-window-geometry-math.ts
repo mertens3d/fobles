@@ -1,10 +1,6 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window-geometry-math.ts
 
-import {
-  FOBLES_WINDOW_STATE_TYPE,
-  FOBLES_WINDOW_TITLE_BAR_HEIGHT,
-  FOBLES_WINDOW_VIEWPORT_MARGIN,
-} from "./fobles-window.const.ts";
+import { FOBLES_WINDOW } from "./fobles-window.const.ts";
 import type { FoblesWindowState, WindowRect } from "./fobles-window.types.ts";
 
 export function viewportRect(win: Window): { width: number; height: number } {
@@ -13,17 +9,17 @@ export function viewportRect(win: Window): { width: number; height: number } {
 
 export function clampRect(win: Window, rect: WindowRect, minWidth: number, minHeight: number): WindowRect {
   const viewport = viewportRect(win);
-  const maxWidth = Math.max(minWidth, viewport.width - FOBLES_WINDOW_VIEWPORT_MARGIN * 2);
-  const maxHeight = Math.max(minHeight, viewport.height - FOBLES_WINDOW_VIEWPORT_MARGIN * 2);
+  const maxWidth = Math.max(minWidth, viewport.width - FOBLES_WINDOW.VIEWPORT_MARGIN * 2);
+  const maxHeight = Math.max(minHeight, viewport.height - FOBLES_WINDOW.VIEWPORT_MARGIN * 2);
   const width = Math.min(maxWidth, Math.max(minWidth, rect.width));
   const height = Math.min(maxHeight, Math.max(minHeight, rect.height));
   const left = Math.min(
-    viewport.width - FOBLES_WINDOW_VIEWPORT_MARGIN - width,
-    Math.max(FOBLES_WINDOW_VIEWPORT_MARGIN, rect.left),
+    viewport.width - FOBLES_WINDOW.VIEWPORT_MARGIN - width,
+    Math.max(FOBLES_WINDOW.VIEWPORT_MARGIN, rect.left),
   );
   const top = Math.min(
-    viewport.height - FOBLES_WINDOW_VIEWPORT_MARGIN - FOBLES_WINDOW_TITLE_BAR_HEIGHT,
-    Math.max(FOBLES_WINDOW_VIEWPORT_MARGIN, rect.top),
+    viewport.height - FOBLES_WINDOW.VIEWPORT_MARGIN - FOBLES_WINDOW.TITLE_BAR_HEIGHT,
+    Math.max(FOBLES_WINDOW.VIEWPORT_MARGIN, rect.top),
   );
   return { left, top, width, height };
 }
@@ -63,7 +59,7 @@ export function parsePersistedFoblesWindowState(
     return undefined;
   }
   const candidate = stored as Partial<FoblesWindowState>;
-  if (candidate.type !== undefined && candidate.type !== FOBLES_WINDOW_STATE_TYPE) {
+  if (candidate.type !== undefined && candidate.type !== FOBLES_WINDOW.STATE_TYPE) {
     return undefined;
   }
   const hasValidRect = [candidate.left, candidate.top, candidate.width, candidate.height].every(

@@ -2,16 +2,18 @@
 
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
-import { getRuntimeSettings, initializeRuntimeSettings } from "../../../runtime-settings/runtime-settings";
+import { initializeRuntimeSettings } from "../../../runtime-settings/runtime-settings";
 import { logWorkerMemory, logWorkerMemoryAfterDelays } from "../diagnostics/memory-diagnostics";
 import {
   WORKER_IFRAME_CREATE_MESSAGE_TYPE,
   WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE,
   WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE,
   WORKER_IFRAME_REMOVE_MESSAGE_TYPE,
-  type WorkerIframeCreateResult,
-  type WorkerIframeHostMessage,
 } from "../transport/worker.messages";
+import {
+  type WorkerIframeCreateResult,
+  type WorkerIframeHostMessage
+} from "../transport/PoolRunTaskMessage.types";
 
 const WORKER_POOL = CONST.FOBLES.WORKER_POOL;
 const workerIframeById = new Map<string, HTMLIFrameElement>();

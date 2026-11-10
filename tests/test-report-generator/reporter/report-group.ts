@@ -1,4 +1,4 @@
-export type ReportGroup = { project: string; suite?: string };
+import { ReportGroup } from "./reporter.types";
 
 export function getReportGroup(value: string): ReportGroup | undefined {
   const normalized = value.replace(/\\/g, "/");

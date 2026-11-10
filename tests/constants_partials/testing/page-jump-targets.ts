@@ -1,6 +1,6 @@
 // @source-path [fobles] tests/constants_partials/testing/page-jump-targets.ts
 
-import type { PageJumpDefinition, TreeJumpDefinition } from "../CONST.Types";
+import type { PageJumpDefinition, TreeJumpDefinition } from "../CONST.types";
 
 export const TEST_TREE_JUMP_TARGETS: TreeJumpDefinition[] = [
   {

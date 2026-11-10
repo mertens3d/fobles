@@ -4,8 +4,6 @@ import { TEST_CONST } from "../../../constants/TEST_CONST";
 
 export const TESTING = TEST_CONST.TESTING;
 
-export type StoredSettingsSnapshot = { local: Record<string, unknown>; sync: Record<string, unknown> };
-
 export async function clickOptionsButton(page: Page, label: string): Promise<void> {
   await clickExtensionControl(page, page.getByRole("button", { name: label }), label);
 }

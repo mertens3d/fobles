@@ -4,9 +4,9 @@ import { createRoot, type Root } from "react-dom/client";
 import type { ToolbarPlacement } from "../../constants/constants.types";
 import { ToolbarRoot } from "./toolbar-root";
 import { hasToolbarStore, setToolbarContext, setToolbarStoreVisible } from "./toolbar-store";
-import type { ToolbarContext } from "./types";
+import type { ToolbarContext } from "./toolbarcontext.types";
 
-export type { ToolbarContext } from "./types";
+export type { ToolbarContext } from "./toolbarcontext.types";
 
 const REACT_MOUNT_NOTE = "react mount";
 

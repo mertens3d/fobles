@@ -1,5 +1,4 @@
-// @source-path [fobles] src/content/shared/ui/filters/filter-shell.tsx
-export type FilterOption<TKey extends string> = { key: TKey; label: string };
+import type { FilterOption } from "./FilterOption";
 
 export type FilterGroupProps<TKey extends string> = {
   label: string;

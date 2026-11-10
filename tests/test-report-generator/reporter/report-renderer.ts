@@ -1,18 +1,9 @@
-import type { CurrentFullResult, ReportResult, ReportStep, ScreenshotInfo } from "./reporter-types";
+import type { ReportResult, ReportStep, ScreenshotInfo } from "./reporter.types";
 import { escapeHtml, formatDuration, formatStatus, toDisplayUrl } from "./report-utils";
 import { renderNotes, renderScreenshotLinks } from "./screenshot-rendering";
 import { renderSuiteNav } from "./suite-navigation";
 import { refreshScriptRunning } from "./client-script";
-
-export type RenderReportInput = {
-  outputFile: string;
-  isCurrentReport: boolean;
-  fullResult: CurrentFullResult;
-  results: ReportResult[];
-  startedAt: Date;
-  totalTests: number;
-  loginAlertUrl: string | null;
-};
+import { RenderReportInput } from "./RenderReportInput.types";
 
 function renderDetails(error: string, screenshots: ScreenshotInfo[] = []): string {
   const parts: string[] = [];

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/shared/storage/storage.ts
 
-export type StorageArea = "sync" | "local";
+import type { StorageArea } from "./storage.types";
 
 export async function getStorageValue<T = unknown>(
   keys: string[] | null,

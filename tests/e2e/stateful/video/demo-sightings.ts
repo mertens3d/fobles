@@ -6,10 +6,9 @@ import { findFrameWithSelector } from "../../../helpers/frame-finder";
 import { pauseForHuman } from "../../../helpers/wait-helpers";
 import { pressToggleLboltHotkey } from "../../../macros/fobles-macros";
 import { FOBLES_YML } from "../../shared/strategies/support/yml-fobles.CONST";
+import type { FoSighting } from "./FoSighting.types";
 
 const LBOLT_SETTLE_MS = 1_000;
-
-type FoSighting = { itemId: string; title: string };
 
 // One sighting per Strategy Scenarios field item - title must match the field section's real
 // Content Editor caption exactly (e.g. "Strategy Droplink"), since it's used to rebuild that

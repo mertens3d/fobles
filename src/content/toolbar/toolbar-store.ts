@@ -1,11 +1,8 @@
 // @source-path [fobles] src/content/toolbar/toolbar-store.ts
 
 import { useSyncExternalStore } from "react";
-import type { ToolbarContext } from "./types";
-
-type ToolbarState = { context: ToolbarContext; visible: boolean };
-
-type StoreEntry = { state: ToolbarState; listeners: Set<() => void> };
+import type { ToolbarContext } from "./toolbarcontext.types";
+import type { StoreEntry, ToolbarState } from "./StoreEntry";
 
 const stores = new WeakMap<Document, StoreEntry>();
 

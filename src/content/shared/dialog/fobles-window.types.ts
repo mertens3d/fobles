@@ -1,12 +1,12 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window.types.ts
 
 import type { CSSProperties, PointerEvent, ReactNode, RefObject } from "react";
-import type { FOBLES_WINDOW_STATE_TYPE } from "./fobles-window.const.ts";
+import type { FOBLES_WINDOW } from "./fobles-window.const.ts";
 
 export type WindowRect = { left: number; top: number; width: number; height: number };
 
 export type FoblesWindowState = WindowRect & {
-  type: typeof FOBLES_WINDOW_STATE_TYPE;
+  type: typeof FOBLES_WINDOW.STATE_TYPE;
   collapsed: boolean;
   maximized: boolean;
   restoreRect?: WindowRect;

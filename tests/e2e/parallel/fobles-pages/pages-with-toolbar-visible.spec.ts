@@ -10,7 +10,7 @@ import {
 import { ensureMouseMarkerExists } from "../../../helpers/mouse-proxy";
 import { findFoblesFrame, findFrameWithSelector } from "../../../helpers/frame-finder";
 import { expectNeverAppears } from "../../../helpers/wait-helpers";
-import type { PageCase, ToolbarType } from "../../../constants_partials/CONST.Types";
+import type { PageCase, ToolbarType } from "../../../constants_partials/CONST.types";
 import { locateJumpFlyoutTrigger, locateLBoltButton } from "../../../helpers/locator-helpers";
 import { expectFoblesContainerVisible } from "../../../expect-snippets/expect-snippets";
 

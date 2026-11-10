@@ -9,8 +9,8 @@ import type {
   PoolCancelTaskMessage,
   PoolDisposeMessage,
   PoolRunTaskMessage,
-  WorkerPoolStatusMessage,
-} from "../transport/worker.messages";
+  WorkerPoolStatusMessage
+} from "../transport/PoolRunTaskMessage.types";
 
 export async function runWorkerTask(task: WorkerTask): Promise<WorkerTaskResult | undefined> {
   const message: PoolRunTaskMessage = { type: CONST.FOBLES.WORKER.MESSAGE_TYPE.POOL_RUN_TASK, task };

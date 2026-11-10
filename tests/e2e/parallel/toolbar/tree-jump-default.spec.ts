@@ -8,7 +8,7 @@ import { ClickFoblesJumpButton } from "../../../macros/fobles-macros";
 import { expectFoValue } from "../../../expect-snippets/expect-snippets";
 import type { BrowserContext, Locator } from "@playwright/test";
 import { clickFoblesNavigationButtonStep } from "../../../helpers/click-navigate-helpers";
-import type { TreeJumpDefinition } from "../../../constants_partials/CONST.Types";
+import type { TreeJumpDefinition } from "../../../constants_partials/CONST.types";
 import { getTreeJumpFlyoutButton } from "../../../helpers/element-finders";
 import { setupParallelContentEditor } from "../../../helpers/fobles-helpers-support/test-setup";
 

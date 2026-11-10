@@ -1,4 +1,3 @@
-
 // Persisted per-button customization, keyed by the button's stable GUID (see button-ids.ts).
 export type JumpFlyoutButtonSetting = {
   // Snapshot of the button's label at save time, so raw storage is readable without cross-referencing code.
@@ -28,5 +27,3 @@ export type UserTreeJump = { id: string; label: string; enabled: boolean; icon: 
 // USER_ADMIN_PAGE.MAX_ENTRIES). Unlike a Tree Jump's pathSuffix, url is already relative to the
 // current domain root (e.g. "/unicorn.aspx"), matching ADMIN_PAGE_GROUP's own catalog entries.
 export type UserAdminPage = { id: string; label: string; enabled: boolean; icon: string; url: string };
-
-

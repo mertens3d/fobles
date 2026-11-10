@@ -1,5 +1,5 @@
 import { toBracedGuidQuery } from "../../helpers/guid-helpers";
-import type { PageCase } from "../CONST.Types";
+import type { PageCase } from "../CONST.types";
 import { _SITECORE_BASE_CONST } from "../base/_sitecore-constants";
 
 const FOBLES_TESTING_MODULE_ROOT_ID = _SITECORE_BASE_CONST.ITEMS.CONTENT_ITEM_ID;

@@ -19,12 +19,9 @@ const aiGroup = {
   ...AI_GROUP,
   groupMembers: AI_GROUP.groupMembers.map((member) => ({
     ...member,
-    action: member.id === FOBLES.TOOLBAR.JUMP_FLYOUT.BUTTON_IDS.AI_PAGES
-      ? openAiPages
-      : member.action,
+    action: member.id === FOBLES.TOOLBAR.JUMP_FLYOUT.BUTTON_IDS.AI_PAGES ? openAiPages : member.action,
   })),
 };
-
 
 export type JumpFlyoutProps = {
   doc: Document;

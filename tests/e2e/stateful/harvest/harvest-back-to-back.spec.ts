@@ -6,7 +6,8 @@ import {
   CloseFoblesGraph,
   WaitForFoblesGraphEnrichmentComplete,
 } from "../../../macros/fobles-macros";
-import { reloadAndReadEditorState, setupReferenceGraphState, type EditorState } from "./harvest-test-helpers";
+import { reloadAndReadEditorState, setupReferenceGraphState } from "./harvest-test-helpers";
+import { type EditorState } from "./EditorState";
 
 const FIRST_STATE: EditorState = { rawValues: false, standardFields: true };
 

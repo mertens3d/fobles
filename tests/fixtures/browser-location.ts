@@ -1,12 +1,11 @@
 import fs from "node:fs";
 import path from "node:path";
 import type { BrowserContext } from "@playwright/test";
+import type { WindowPosition } from "./WindowPosition.types";
 
 function getWindowPositionPath(workerSlot: number): string {
   return path.resolve("./playwright/test-artifacts", `browser-window-position-${workerSlot}.json`);
 }
-
-type WindowPosition = { left: number; top: number };
 
 function isWindowPosition(value: unknown): value is WindowPosition {
   return (

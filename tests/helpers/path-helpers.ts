@@ -1,5 +1,6 @@
 import { TEST_CONST } from "../constants/TEST_CONST";
 import type { Page } from "../fixtures/playwright";
+import type { SitecoreSearchParams } from "./SitecoreSearchParams.types";
 
 export const getLastTwoPathItems = (path?: string): string =>
   (path ?? "").split("/").filter(Boolean).slice(-2).join("/");
@@ -24,8 +25,6 @@ export function sanitizeFileName(value: string): string {
 export function normalizePath(encodedUrl: string): string {
   return new URL(encodedUrl, "https://dummy").pathname.toLowerCase();
 }
-
-export type SitecoreSearchParams = { fo: string | null };
 
 export function getScSearchParams(url: URL): SitecoreSearchParams {
   const result: SitecoreSearchParams = { fo: url.searchParams.get(TEST_CONST.SITECORE.SEARCH_PARAMS.FO) };

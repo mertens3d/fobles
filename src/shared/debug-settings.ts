@@ -1,13 +1,7 @@
 // @source-path [fobles] src/shared/debug-settings.ts
 import { STORAGE } from "../constants/extension-const";
+import type { DebugSettings } from "./DebugSettings.types";
 import { getStorageValue, onStorageChange, setStorageValue } from "./storage/storage";
-
-export type DebugSettings = {
-  debugLogging: boolean;
-  persistDebugLogs: boolean;
-  showReloadExtensionButton: boolean;
-  showDeveloperButton: boolean;
-};
 
 export async function getDebugSettings(): Promise<DebugSettings> {
   const result = await getStorageValue<boolean>([

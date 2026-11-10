@@ -1,11 +1,9 @@
 // @source-path [fobles] src/content/foundation/workers/pool/worker-idle-disposal.ts
 import { extensionLog } from "../../../logger";
-import type { PoolWorker } from "../tasks/worker-task.types";
+import type { DestroyIdleWorker } from "./DestroyIdleWorker";
 import type { WorkerPoolState } from "./worker-pool-state";
 
 export const WORKER_IDLE_DISPOSAL_DELAY_MS = 7000;
-
-export type DestroyIdleWorker = (worker: PoolWorker, reason: string) => Promise<void>;
 
 export function cancelWorkerIdleDisposal(pool: WorkerPoolState): void {
   if (pool.idleDisposalTimer === undefined) {

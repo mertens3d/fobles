@@ -1,14 +1,6 @@
 import { STORAGE } from "../constants/extension-const";
+import type { AiPagesMapping, AiPagesGroup } from "./AiPagesMapping.types";
 import { getStorageValue, onStorageChange, setStorageValue } from "./storage/storage";
-
-export type AiPagesMapping = { contentRoot: string; site: string };
-
-export type AiPagesGroup = {
-  mappings: readonly AiPagesMapping[];
-  name: string;
-  organization: string;
-  tenantName: string;
-};
 
 const isAiPagesMapping = (value: unknown): value is AiPagesMapping => {
   if (!value || typeof value !== "object") {
@@ -45,7 +37,13 @@ const normalizeAiPagesGroup = (group: AiPagesGroup): AiPagesGroup => ({
 });
 
 function normalizeAiPagesGroups(value: unknown): readonly AiPagesGroup[] {
-  return Array.isArray(value) ? value.filter(isAiPagesGroup).map(normalizeAiPagesGroup) : [];
+ if (!Array.isArray(value)) {
+    return [];
+  }
+
+  const groups: unknown[] = value;
+  return groups.filter(isAiPagesGroup).map(normalizeAiPagesGroup);
+
 }
 
 export async function getAiPagesMappings(): Promise<readonly AiPagesGroup[]> {

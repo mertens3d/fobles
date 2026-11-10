@@ -8,6 +8,7 @@ import {
 import { getSecureSecret } from "../../tools/scripts/dev/secure-secret-store.js";
 import { Secret } from "./secret";
 import type { SitecoreEnvironment, TestEnvironment } from "./sitecore-environment.types";
+import type { TestUserCredentials } from "./TestUserCredentials.types.js";
 
 function toSitecoreEnvironment(entry: { endpoint: string; name: string; version: string }): SitecoreEnvironment {
   return {
@@ -29,8 +30,6 @@ export function getTestEnvironment(): TestEnvironment {
 export function getTestEnvironments(): TestEnvironment[] {
   return getConfigEnvironments().map(toTestEnvironment);
 }
-
-export type TestUserCredentials = { username?: string; password?: Secret };
 
 // Resolves the active environment's testUser - a literal "name" is used as-is; *SecretName fields
 // look the value up in the DPAPI secure secret store (npm run secret:set) instead. Passwords are
