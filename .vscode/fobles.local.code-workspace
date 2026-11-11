@@ -1,0 +1,16 @@
+{
+  "folders": [
+    {
+      "path": ".."
+    }
+  ],
+  "settings": {
+    "workbench.colorCustomizations": {
+      "statusBar.background": "#6b3434",
+      "statusBar.foreground": "#ffffff",
+      "statusBar.noFolderBackground": "#6b3434",
+      "statusBar.noFolderForeground": "#ffffff"
+    },
+    "window.title": "🔴 [fobles] ${dirty}${activeEditorShort}${separator}${rootName}"
+  }
+}
