@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/shared/ui/reference-model/text-line-breaker.ts
 
-import type { LabelBreakResult } from "./LabelBreakResult";
+import type { LabelBreakResult } from "./LabelBreakResult.types";
 
 export const LINE_BREAKER = {
   MAX_LABEL_LINE_LENGTH: 16,

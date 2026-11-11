@@ -1,4 +1,3 @@
-
 export type FlyoutVisibilityState = {
   visible: boolean;
   pinned: boolean;

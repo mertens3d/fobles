@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/toolbar/create-storage-synced-store.ts
 
 import { useSyncExternalStore } from "react";
-import type { StorageSyncedStore } from "./StorageSyncedStore";
+import type { StorageSyncedStore } from "./StorageSyncedStore.types";
 
 export function createStorageSyncedStore<T>(
   fetchInitial: () => Promise<T>,

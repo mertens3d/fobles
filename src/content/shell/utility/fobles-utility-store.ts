@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/shell/utility/fobles-utility-store.ts
 
 import { useSyncExternalStore } from "react";
-import type { UtilityStore, MountedFoblesUtility } from "./UtilityStore";
+import type { UtilityStore, MountedFoblesUtility } from "./UtilityStore.types";
 
 const stores = new WeakMap<Document, UtilityStore>();
 

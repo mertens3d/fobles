@@ -3,7 +3,7 @@ import { getButtonSize, moveMouseOutsideHoverArea, moveMouseToLocatorCenter } fr
 import { TEST_CONST } from "../constants/TEST_CONST";
 import { pauseForHuman } from "./wait-helpers";
 import type { HoverAndGrowOptions } from "./HoverAndGrowOptions.types";
-import type { HoverAndSlideOutOptions } from "./HoverAndSlideOutOptions";
+import type { HoverAndSlideOutOptions } from "./HoverAndSlideOutOptions.types";
 
 const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 

@@ -2,7 +2,7 @@
 
 import { useSyncExternalStore } from "react";
 import type { ToolbarContext } from "./toolbarcontext.types";
-import type { StoreEntry, ToolbarState } from "./StoreEntry";
+import type { StoreEntry, ToolbarState } from "./StoreEntry.types";
 
 const stores = new WeakMap<Document, StoreEntry>();
 

@@ -1,7 +1,9 @@
 import type { ReactNode } from "react";
 
 
-export type MountedFoblesUtility = {
+export type FoblesUtilityOptions = {
+  lockAlreadyHeld?: boolean;
+  doc: Document;
   id: string;
   className: string;
   title: string;
@@ -10,8 +12,7 @@ export type MountedFoblesUtility = {
   defaultHeight: number;
   minWidth: number;
   minHeight: number;
-  children: ReactNode;
+  createChildren: () => ReactNode | Promise<ReactNode>;
   onClose?: () => void | Promise<void>;
   onHelp?: () => void;
 };
-export type UtilityStore = { utilities: readonly MountedFoblesUtility[]; listeners: Set<() => void>; };

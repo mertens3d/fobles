@@ -1,4 +1,3 @@
-
 export type WorkerTaskManagerRow = {
   id: string;
   activityAt: number;

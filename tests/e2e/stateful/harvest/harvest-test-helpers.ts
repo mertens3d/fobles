@@ -7,7 +7,7 @@ import {
   setScStandardFieldsState,
 } from "../../../macros/sitecore-macros";
 import { FOBLES_YML } from "../../shared/strategies/support/yml-fobles.CONST";
-import type { EditorState } from "./EditorState";
+import type { EditorState } from "./EditorState.types";
 
 const REFERENCE_GRAPH_ITEM = FOBLES_YML.CONTENT.STRATEGY_DROPLINK;
 

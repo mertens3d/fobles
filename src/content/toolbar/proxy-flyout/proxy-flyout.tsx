@@ -6,7 +6,7 @@ import { FOBLES } from "../../../constants/fobles";
 import { extensionLog } from "../../logger";
 import { findRibbonCheckbox, postSitecoreEvent } from "../../features/augmentor/proxy-buttons-ribbon";
 import { SC_PROXY_BUTTONS } from "./proxy-flyout.const";
-import type { ProxyButtonOption } from "./ProxyButtonOption";
+import type { ProxyButtonOption } from "./ProxyButtonOption.types";
 
 export type ProxyFlyoutProps = {
   doc: Document;

@@ -4,7 +4,7 @@ import { CLASS, TEXT } from "../../../constants/fobles.constants";
 import { FOBLES } from "../../../constants/fobles";
 import { FlyoutTrigger } from "../shared-flyout/flyout-trigger";
 import { ToolbarNavButton } from "../toolbar-buttons";
-import type { FlyoutVisibilityState } from "../shared-flyout/FlyoutVisibilityState";
+import type { FlyoutVisibilityState } from "../shared-flyout/FlyoutVisibilityState.types";
 import { ProxyFlyout } from "./proxy-flyout";
 
 export type ProxyFlyoutTriggerProps = {

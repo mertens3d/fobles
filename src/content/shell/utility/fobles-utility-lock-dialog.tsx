@@ -4,7 +4,7 @@ import {
   FoblesMessageDialog,
   type FoblesMessageDialogAction,
 } from "../../shared/ui/fobles-message-dialog/fobles-message-dialog";
-import type { MountedDialog } from "./MountedDialog";
+import type { MountedDialog } from "./MountedDialog.types";
 
 function mountDialog(
   container: HTMLElement,

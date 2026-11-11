@@ -1,25 +1,9 @@
 // @source-path [fobles] src/content/shell/utility/fobles-utility.tsx
 
-import type { ReactNode } from "react";
 import { mountFoblesUtility } from "./fobles-utility-store";
 import { acquireFoblesUtilityLock, releaseFoblesUtilityLock, takeOverFoblesUtilityLock } from "./fobles-utility-lock";
 import { showFoblesUtilityLockDialog } from "./fobles-utility-lock-dialog-component";
-
-export type FoblesUtilityOptions = {
-  lockAlreadyHeld?: boolean;
-  doc: Document;
-  id: string;
-  className: string;
-  title: string;
-  storageKey: string;
-  defaultWidth: number;
-  defaultHeight: number;
-  minWidth: number;
-  minHeight: number;
-  createChildren: () => ReactNode | Promise<ReactNode>;
-  onClose?: () => void | Promise<void>;
-  onHelp?: () => void;
-};
+import type { FoblesUtilityOptions } from "./FoblesUtilityOptions.types";
 
 function createUtilityContainer(doc: Document): HTMLDivElement {
   const container = doc.createElement("div");

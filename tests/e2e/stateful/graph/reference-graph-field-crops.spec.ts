@@ -11,7 +11,7 @@ import {
   WaitForFoblesGraphEnrichmentComplete,
 } from "../../../macros/fobles-macros";
 import { reloadAndReadEditorState, setupReferenceGraphState } from "../harvest/harvest-test-helpers";
-import { type EditorState } from "../harvest/EditorState";
+import { type EditorState } from "../harvest/EditorState.types";
 
 const FILTER_RERENDER_TIMEOUT_MS = 30_000;
 

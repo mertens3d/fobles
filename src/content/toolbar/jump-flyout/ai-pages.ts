@@ -2,7 +2,7 @@ import { getAiPagesMappings, onAiPagesMappingsChange } from "../../../shared/ai-
 import { type AiPagesGroup } from "../../../shared/AiPagesMapping.types";
 import { getCurrentItemId } from "../../foundation/sitecore/current-item";
 import { getQuickInfo } from "../../foundation/sitecore/quick-info";
-import type { ResolvedAiPagesMapping } from "./ResolvedAiPagesMapping";
+import type { ResolvedAiPagesMapping } from "./ResolvedAiPagesMapping.types";
 
 let aiPagesGroups: readonly AiPagesGroup[] = [];
 
@@ -55,6 +55,7 @@ export const buildAiPagesUrl = (
   }
   return url.toString();
 };
+
 export const openAiPages = (doc: Document): void => {
   const itemId = getCurrentItemId(doc);
   const docQuickInfo = getQuickInfo(doc);

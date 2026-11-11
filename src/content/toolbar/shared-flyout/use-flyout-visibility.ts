@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/toolbar/shared-flyout/use-flyout-visibility.ts
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { FlyoutVisibilityState } from "./FlyoutVisibilityState";
+import type { FlyoutVisibilityState } from "./FlyoutVisibilityState.types";
 
 const CLOSE_DELAY_MS = 250;
 

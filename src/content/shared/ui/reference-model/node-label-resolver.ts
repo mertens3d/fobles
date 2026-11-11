@@ -5,7 +5,7 @@ import type { NodePresentation, NodePresentationByKind } from "./node-presentati
 
 type NodeKind = keyof NodePresentationByKind;
 import { LINE_BREAKER, clampMiddle, tryBreakLabel } from "./text-line-breaker";
-import { type LabelBreakResult } from "./LabelBreakResult";
+import { type LabelBreakResult } from "./LabelBreakResult.types";
 
 function baseName(treeNode: ReferenceModelNode): string {
   let name: string;

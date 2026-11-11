@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/shell/utility/fobles-utility-lock.ts
 import { type UtilityLockResponse } from "../../../shared/utility/fobles-utility-lock.messages.types";
 import { UTILITY_LOCK_MESSAGE } from "../../../shared/utility/UTILITY_LOCK_MESSAGE.const";
-import type { OwnershipLostHandler } from "./OwnershipLostHandler";
+import type { OwnershipLostHandler } from "./OwnershipLostHandler.types";
 
 const lostHandlersByOwnershipId = new Map<string, OwnershipLostHandler>();
 let listenerRegistered = false;
