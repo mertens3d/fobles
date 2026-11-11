@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-summary/auditor-summary.tsx
-import type { AuditFindingStatus } from "../../audit-finding.types.ts";
+import type { AuditFindingStatus } from "../../auditor.types";
 import type { AuditSummaryCounts } from "../../auditor.types.ts";
 
 export type AuditorSummaryProps = {

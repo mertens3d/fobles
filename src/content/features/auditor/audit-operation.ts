@@ -1,14 +1,15 @@
+import type { AuditOperationState } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/audit-operation.ts
 import { showFoblesErrorDialog } from "../../../shared/error-dialog";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { createWorkOperation } from "../../shell/work-operation/work-operation";
 import { extensionLog } from "../../logger";
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
-import { createAuditFindingStore, type AuditFindingStore } from "./audit-finding-store";
-import { createAuditRunner, type AuditRunner } from "./audit-runner";
+import { createAuditFindingStore } from "./audit-finding-store";
+import type { AuditFindingStore } from "./auditor.types";
+import { createAuditRunner } from "./audit-runner";
+import type { AuditRunner } from "./auditor.types";
 import { getAuditorGraphFilters } from "./auditor-ui-settings";
-
-type AuditOperationState = "created" | "running" | "closing" | "closed";
 
 export class AuditOperation {
   private readonly operationId = crypto.randomUUID();

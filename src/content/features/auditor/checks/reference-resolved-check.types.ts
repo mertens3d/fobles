@@ -1,5 +1,5 @@
 import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing.types";
-import type { AuditFindingStatus } from "../audit-finding.types";
+import type { AuditFindingStatus } from "../auditor.types";
 
 export type ResolveStateInterpretation = { status: AuditFindingStatus; summary: string };
 

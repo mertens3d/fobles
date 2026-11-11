@@ -1,32 +1,17 @@
+import type { BuildAuditFindingOptions } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/audit-finding-factory.ts
 
 import type { ItemGraphNodeData } from "../../foundation/reference-data/model/sitecore-item.types";
 import { buildAuditFindingId } from "./audit-finding-id.ts";
-import type { AuditFinding, AuditFindingSeverity, AuditFindingStatus } from "./audit-finding.types";
+import type { AuditFinding } from "./auditor.types";
+import type { AuditFindingSeverity } from "./auditor.types";
+import type { AuditFindingStatus } from "./auditor.types";
 
 const SEVERITY_BY_STATUS: Readonly<Record<AuditFindingStatus, AuditFindingSeverity>> = {
   error: "error",
   passed: "info",
   pending: "info",
   warning: "warning",
-};
-
-export type BuildAuditFindingOptions = {
-  checkKey: string;
-  checkLabel: string;
-  status: AuditFindingStatus;
-  referenceModelNodeId: string | undefined;
-  item: ItemGraphNodeData | undefined;
-  summary: string;
-  dataType?: string;
-  // Injected rather than imported directly - buildFoblesUrl depends on browser globals
-  // (window.location) that do not exist under Node's native-TS test runner. Production
-  // (audit-runner.ts) passes the real buildFoblesUrl; tests pass a stub or omit it.
-  buildSitecoreUrl?: (identity: string) => string;
-  context?: string;
-  details?: string;
-  discoveredAt?: number;
-  completedAt?: number;
 };
 
 // The single place every check builds an AuditFinding from, so id derivation, Sitecore-URL

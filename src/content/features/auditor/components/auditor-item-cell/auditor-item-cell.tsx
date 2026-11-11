@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-item-cell/auditor-item-cell.tsx
 
 import type { ICellRendererParams } from "ag-grid-community";
-import type { AuditFinding } from "../../audit-finding.types.ts";
+import type { AuditFinding } from "../../auditor.types";
 
 export function AuditorItemCell(props: ICellRendererParams<AuditFinding>) {
   const finding = props.data;

@@ -1,12 +1,7 @@
-import type { ReferenceHarvestingQueue } from "./processing.types.js";
-import type { QueuedReferenceHarvestingJob } from "./processing.types.js";
-import type { ReferenceHarvestingQueueOptions } from "./processing.types.js";
-import type { ReferenceHarvestingJob } from "./processing.types.js";
-// @source-path [fobles] src/content/foundation/reference-data/processing/reference-harvesting-queue.ts
+// @source-path [Fobles] src/content/foundation/reference-data/processing/reference-harvesting-queue.ts
 
+import type { QueuedReferenceHarvestingJob, ReferenceHarvestingJob, ReferenceHarvestingQueue, ReferenceHarvestingQueueOptions } from "./processing.types.js";
 import { normalizeItemLocator } from "../../cache/sitecore-data/sitecore-data-cache-key.ts";
-import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data-cache.types";
-import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
 
 export function referenceHarvestingJobKey(job: ReferenceHarvestingJob): string {
   const item = normalizeItemLocator(job.item);

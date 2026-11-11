@@ -1,3 +1,5 @@
+import type { AuditReportTreeNode } from "./auditor.types.js";
+import type { AuditDataOrigin } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/audit-report-tree.ts
 
 import type { ProcessingStateByTreeNodeId } from "../../foundation/reference-data/processing/processing.types";
@@ -6,25 +8,8 @@ import { getGraphPresentationState } from "../../foundation/reference-data/model
 import { resolveNodeLabel } from "../../shared/ui/reference-model/node-label-resolver";
 import { NODE_PRESENTATION_BY_KIND } from "../../shared/ui/reference-model/node-presentation";
 import type { ReferenceModelNode } from "../../foundation/reference-data/model/reference-model.types";
-import type { AuditFinding, AuditFindingStatus } from "./audit-finding.types";
-
-export type AuditDataOrigin = "Referenced" | "Cached" | "Live" | undefined;
-
-export type AuditReportTreeNode = {
-  id: string;
-  parentId: string | undefined;
-  depth: number;
-  kind: "reference-model" | "finding";
-  label: string;
-  details: string | undefined;
-  path: string | undefined;
-  origin: AuditDataOrigin;
-  status: AuditFindingStatus;
-  hasChildren: boolean;
-  referenceModelNodeId: string | undefined;
-  icon: string | undefined;
-  finding: AuditFinding | undefined;
-};
+import type { AuditFinding } from "./auditor.types";
+import type { AuditFindingStatus } from "./auditor.types";
 
 const STATUS_WEIGHT: Readonly<Record<AuditFindingStatus, number>> = { passed: 0, pending: 1, warning: 2, error: 3 };
 

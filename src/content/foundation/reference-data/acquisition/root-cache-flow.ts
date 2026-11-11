@@ -1,17 +1,12 @@
+import type { RootCacheDecision } from "./acquisition.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/root-cache-flow.ts
 
-import type { SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data-cache.types";
+import type { SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
 import type { ItemGraphNodeData, RootItem } from "../model/sitecore-item.types";
 import type { ProcessingStatus } from "../processing/processing.types";
-
-export type RootCacheDecision =
-  | { kind: "cache-only"; result: SitecoreHarvestResult }
-  | { kind: "cache-then-reharvest"; result: SitecoreHarvestResult }
-  | { kind: "cache-unverified"; result: SitecoreHarvestResult }
-  | { kind: "harvest-required" };
 
 function hasRequiredFacts(record: SitecoreDataCacheRecord, filters: SitecoreHarvestFiltersState): boolean {
   if (filters.parent && !record.parent) {

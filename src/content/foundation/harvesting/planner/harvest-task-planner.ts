@@ -1,15 +1,12 @@
+import type { CollectorTaskPlan } from "./planner.types.js";
+import type { CollectorTaskType } from "./planner.types.js";
+import type { CollectorFilterKey } from "./planner.types.js";
 // @source-path [fobles] src/content/foundation/harvesting/planner/harvest-task-planner.ts
 
 import { isGuidLike } from "../../sitecore/guid.ts";
 import type { HarvestRequest, SitecoreHarvestResult } from "../sitecore-harvester.types";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE.ts";
 import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../workers/tasks/worker-task.types";
-
-export type CollectorFilterKey = Exclude<keyof SitecoreHarvestFiltersState, "template">;
-
-export type CollectorTaskType = Exclude<WorkerTaskType, "get-template-bases" | "get-quick-info" | "set-raw-values" | "set-standard-fields">;
-
-export type CollectorTaskPlan = { normalTasks: WorkerTask[]; layoutTasks: WorkerTask[] };
 
 // "template" is a HarvestRequest filter, but it's not a collector task of its own - it only
 // narrows the sections a get-custom-fields/get-standard-fields task returns, so it has no entry

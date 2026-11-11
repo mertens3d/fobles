@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import type { ICellRendererParams } from "ag-grid-community";
-import type { AuditFindingStatus } from "../../audit-finding.types";
+import type { AuditFindingStatus } from "../../auditor.types";
 import type { AuditorTreeRow } from "../../auditor-grid/auditor-grid.types";
 import { AuditorStatusIcon } from "../auditor-status-icon/auditor-status-icon";
 

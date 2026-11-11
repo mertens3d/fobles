@@ -1,14 +1,12 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/reference-model-fact-patcher.ts
 
-import type {
-  SitecoreDataFactName,
-  SitecoreDataFactValueByName,
-} from "../../cache/sitecore-data/sitecore-data-cache.types";
+import type { SitecoreDataFactValueByName } from "../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
-import type { PreparedReferenceModel } from "../acquisition/prepare-reference-model";
+import type { PreparedReferenceModel } from "../acquisition/acquisition.types";
 import { createReferenceModel } from "./reference-model-builder";
 import { buildReferenceModelNodeLookup } from "./reference-model-node-lookup";
 import type { ItemGraphNodeData, RootItem } from "./sitecore-item.types";

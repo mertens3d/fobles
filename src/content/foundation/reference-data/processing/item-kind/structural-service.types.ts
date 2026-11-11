@@ -2,8 +2,8 @@ import type { ItemKind, KnownSite, StructuralScope, StructuralSettings, Structur
 import type { SitecoreItemLocator, WorkerTaskResult } from "../../../workers/tasks/worker-task.types.ts";
 import type { WorkSession } from "../../../workers/session/work-session.types.ts";
 import type { WorkClass } from "../../../workers/work-scheduling.types.ts";
-import type { SitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity.ts";
-import type { TemplateDerivedRecord } from "../../../cache/sitecore-data/template-derived.types.ts";
+import type { SitecoreDataIdentity } from "../../../sitecore/data/data.types";
+import type { TemplateDerivedRecord } from "../../../cache/sitecore-data/sitecore-data.types";
 
 export type StructuralItem = StructuralVisit & { templateId?: string };
 

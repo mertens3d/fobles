@@ -1,3 +1,4 @@
+import type { SitecoreDataIdentity } from "./data.types.js";
 // @source-path [fobles] src/content/foundation/sitecore/data/sitecore-data-identity.ts
 
 import { SITECORE } from "../../../../constants/sitecore.ts";
@@ -31,8 +32,6 @@ function resolveLanguage(doc: Document): string {
   const currentUrl = new URL(doc.defaultView?.location.href ?? window.location.href);
   return currentUrl.searchParams.get("sc_lang")?.trim() || "en";
 }
-
-export type SitecoreDataIdentity = { environment: string; database: string; language: string };
 
 export function resolveSitecoreDataIdentity(doc: Document = document): SitecoreDataIdentity {
   return { environment: resolveEnvironment(doc), database: resolveDatabase(doc), language: resolveLanguage(doc) };

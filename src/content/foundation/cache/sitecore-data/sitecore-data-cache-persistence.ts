@@ -1,3 +1,4 @@
+import type { PersistedNode } from "./sitecore-data.types.js";
 // @source-path [fobles] src/content/foundation/cache/sitecore-data/sitecore-data-cache-persistence.ts
 
 import { SITECORE_DATA_CACHE } from "../../../../constants/sitecore-data-cache.const.ts";
@@ -10,8 +11,6 @@ const NON_PERSISTED_KEYS: ReadonlySet<string> = new Set([
 ]);
 const ORIGIN_RELATIVE_KEYS: ReadonlySet<string> = new Set(SITECORE_DATA_CACHE.ORIGIN_RELATIVE_KEYS);
 const OMIT = Symbol("omit-persisted-value");
-
-type PersistedNode = unknown;
 
 function resolveOrigin(environment: string): string | undefined {
   let origin: string | undefined;

@@ -17,13 +17,9 @@ import {
   getExpandedByCollapseKey,
   setExpandedStateForCollapseKey,
 } from "../../../../shared/ui/reference-model/graph-collapse-settings";
-import type { AuditFinding } from "../../audit-finding.types.ts";
-import {
-  DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS,
-  getAuditorLayoutViewSettings,
-  subscribeAuditorLayoutViewSettings,
-  type AuditorLayoutViewSettings,
-} from "../../auditor-layout-view-settings";
+import type { AuditFinding } from "../../auditor.types";
+import { DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS, getAuditorLayoutViewSettings, subscribeAuditorLayoutViewSettings } from "../../auditor-layout-view-settings";
+import type { AuditorLayoutViewSettings } from "../../auditor.types";
 import {
   descendantExpandableIds,
   isAuditorRowVisible,

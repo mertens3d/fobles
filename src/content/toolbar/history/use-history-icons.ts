@@ -2,7 +2,7 @@
 import { useEffect, useState } from "react";
 import { getFact } from "../../foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { subscribeFactUpdated } from "../../foundation/cache/sitecore-data/sitecore-data-events.ts";
-import type { SitecoreDataCacheKey } from "../../foundation/cache/sitecore-data/sitecore-data-cache.types.ts";
+import type { SitecoreDataCacheKey } from "../../foundation/cache/sitecore-data/sitecore-data.types";
 import type { HistoryItem, HistoryScope } from "../../../shared/item-history/item-history.types.ts";
 
 export function useHistoryIcon(item: HistoryItem, scope: HistoryScope): string | undefined {

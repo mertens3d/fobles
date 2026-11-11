@@ -5,7 +5,7 @@ import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing.types";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
-import type { AuditFinding } from "../audit-finding.types";
+import type { AuditFinding } from "../auditor.types";
 import { buildAuditReportTree } from "../audit-report-tree";
 import type { AuditorDescendantFailure, AuditorTreeRow, JourneyStage } from "./auditor-grid.types";
 

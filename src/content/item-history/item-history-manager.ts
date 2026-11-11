@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/item-history/item-history-manager.ts
 
 import { requestHistoryChange } from "../../shared/item-history/item-history-client.ts";
-import type { SitecoreDataCacheKey } from "../foundation/cache/sitecore-data/sitecore-data-cache.types.ts";
+import type { SitecoreDataCacheKey } from "../foundation/cache/sitecore-data/sitecore-data.types";
 import { requestFact } from "../foundation/sitecore/data/sitecore-data-service.ts";
 import { runWorkerTask } from "../foundation/workers/pool/worker-pool-client.ts";
 import { createErrorResult, type WorkerTask } from "../foundation/workers/tasks/worker-task.types.ts";

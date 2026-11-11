@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-test-details-dialog/auditor-test-details-dialog.tsx
 import { DialogIconButton } from "../../../../shared/ui/dialog/dialog-icon-button";
-import type { AuditFinding, AuditFindingStatus } from "../../audit-finding.types.ts";
+import type { AuditFinding } from "../../auditor.types";
+import type { AuditFindingStatus } from "../../auditor.types";
 import type { AuditorDescendantFailure, AuditorTestDetailsSelection } from "../../auditor-grid/auditor-grid.types.ts";
 import { AuditorStatusIcon } from "../auditor-status-icon/auditor-status-icon";
 

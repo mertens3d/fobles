@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-status-icon/auditor-status-icon.tsx
 import { CONST } from "../../../../../constants/const";
-import type { AuditFindingStatus } from "../../audit-finding.types";
+import type { AuditFindingStatus } from "../../auditor.types";
 
 const STATUS_ICON: Readonly<Record<AuditFindingStatus, string>> = {
   pending: CONST.SITECORE.ICONS.APPLICATIONS.BULLET_BALL_GLASS_YELLOW_32,

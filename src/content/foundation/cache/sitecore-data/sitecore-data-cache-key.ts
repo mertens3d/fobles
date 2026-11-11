@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
-import type { SitecoreDataCacheKey } from "./sitecore-data-cache.types";
+import type { SitecoreDataCacheKey } from "./sitecore-data.types";
 // Not a Sitecore-legal character in an environment name, database name, language code, or GUID -
 // safe to join normalized parts with, and to use as a stable serialized-key boundary.
 const KEY_SEPARATOR = "::";

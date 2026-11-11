@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-fact-patcher.ts
-import type { SitecoreDataFactMap, SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data-cache.types";
-import type { PreparedReferenceModel } from "../acquisition/prepare-reference-model";
+import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataFactMap } from "../../cache/sitecore-data/sitecore-data.types";
+import type { PreparedReferenceModel } from "../acquisition/acquisition.types";
 import type { ItemGraphNodeData } from "../model/sitecore-item.types";
 import type { ReferenceModelNode } from "../model/reference-model.types";
 function normalizeReference(value: string | undefined): string | undefined {

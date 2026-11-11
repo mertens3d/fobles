@@ -1,14 +1,9 @@
+import type { GraphVisibilityLayoutContext } from "./graph-nodes.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-visibility-layout.ts
 
 import type cytoscape from "cytoscape";
 import { runGraphLayout } from "../cytoscape/graph-layout";
 import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/graph-collapse.types";
-
-export type GraphVisibilityLayoutContext = {
-  getCurrentLayoutPresetName: () => Parameters<typeof runGraphLayout>[1];
-  getRootTreeNodeId: () => string;
-  refreshVisibility: () => void;
-};
 
 export function runInitialVisibilityLayout(
   cy: cytoscape.Core,

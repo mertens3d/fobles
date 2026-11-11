@@ -1,27 +1,15 @@
+import type { AuditRunner, AuditRunnerOptions } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/audit-runner.ts
-import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import {
   openFoblesDataAcquisition,
   type FoblesDataAcquisition,
 } from "../../foundation/reference-data/reference-data-acquisition";
 import { buildFoblesUrl } from "../../foundation/sitecore/fobles-url";
-import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
-import type { AuditCheckContext } from "./audit-check.types";
-import type { AuditFindingStore } from "./audit-finding-store";
+import type { AuditCheckContext } from "./auditor.types";
 import { cacheValidationCheck } from "./checks/cache-validation-check";
 import { itemNavigationCheck } from "./checks/item-navigation-check";
 import { itemResolvedCheck } from "./checks/item-resolved-check";
 import { referenceResolvedCheck } from "./checks/reference-resolved-check";
-
-export type AuditRunnerOptions = {
-  doc: Document;
-  findingStore: AuditFindingStore;
-  workOperation: WorkOperation;
-  filters: SitecoreHarvestFiltersState;
-  onError?: (error: unknown) => void;
-};
-
-export type AuditRunner = { run: () => Promise<void>; dispose: () => void };
 
 export function createAuditRunner({
   doc,

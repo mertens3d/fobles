@@ -1,3 +1,6 @@
+import type { ProjectedGraphNode } from "./graph-nodes.types.js";
+import type { AppendGraphNodeOptions } from "./graph-nodes.types.js";
+import type { CompoundGroupDefinition } from "./graph-nodes.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-node-builder.ts
 
 import type cytoscape from "cytoscape";
@@ -12,26 +15,13 @@ import {
 import { kindClass } from "./graph-helpers";
 import { resolveNodeLabel } from "../../../shared/ui/reference-model/node-label-resolver";
 import { NODE_PRESENTATION_BY_KIND } from "../../../shared/ui/reference-model/node-presentation";
-import type { GraphNodeData } from "./graph-node.types";
+import type { GraphNodeData } from "./graph-nodes.types";
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import { iconForProcessingState } from "./processing-icon";
 
 export const COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group";
 
 export const INVISIBLE_COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group--invisible";
-
-type CompoundGroupDefinition = {
-  idSuffix: string;
-  rootCollapseKey: GraphCollapseKey;
-  memberCollapseKeys: readonly GraphCollapseKey[];
-  includeMemberDescendants?: boolean;
-};
-
-type AppendGraphNodeOptions = {
-  semanticParentTreeNodeId?: string;
-  compoundParentNodeId?: string;
-  propagateCompoundParent?: boolean;
-};
 
 const COMPOUND_GROUP_DEFINITIONS: readonly CompoundGroupDefinition[] = [
   { idSuffix: "group", rootCollapseKey: GRAPH_COLLAPSE_KEY.CHILDREN, memberCollapseKeys: [GRAPH_COLLAPSE_KEY.CHILD] },
@@ -70,8 +60,6 @@ const COMPOUND_GROUP_DEFINITIONS: readonly CompoundGroupDefinition[] = [
     includeMemberDescendants: true,
   },
 ];
-
-export type ProjectedGraphNode = { data: GraphNodeData; classes: string[] };
 
 export function getGraphOwnedClasses(): string[] {
   const kindClasses = Object.keys(NODE_PRESENTATION_BY_KIND).map(kindClass);

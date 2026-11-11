@@ -2,8 +2,10 @@
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing.types";
 import { buildAuditFinding } from "../audit-finding-factory.ts";
-import type { AuditCheck, AuditCheckContext } from "../audit-check.types";
-import type { AuditFinding, AuditFindingStatus } from "../audit-finding.types";
+import type { AuditCheck } from "../auditor.types";
+import type { AuditCheckContext } from "../auditor.types";
+import type { AuditFinding } from "../auditor.types";
+import type { AuditFindingStatus } from "../auditor.types";
 
 export const CACHE_VALIDATION_CHECK_KEY = "cache-validation";
 

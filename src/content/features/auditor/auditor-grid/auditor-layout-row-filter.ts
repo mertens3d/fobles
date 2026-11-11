@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/features/auditor/auditor-grid/auditor-layout-row-filter.ts
 
-import type { AuditorLayoutViewKey, AuditorLayoutViewSettings } from "../auditor-layout-view-settings";
+import type { AuditorLayoutViewSettings } from "../auditor.types";
+import type { AuditorLayoutViewKey } from "../auditor.types";
 import type { AuditorTreeRow } from "./auditor-grid.types";
 
 function rowLayoutViewKey(row: AuditorTreeRow): AuditorLayoutViewKey | undefined {

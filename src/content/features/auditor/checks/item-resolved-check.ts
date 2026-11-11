@@ -1,8 +1,9 @@
 // @source-path [fobles] src/content/features/auditor/checks/item-resolved-check.ts
 
 import { buildAuditFinding } from "../audit-finding-factory.ts";
-import type { AuditCheck, AuditCheckContext } from "../audit-check.types";
-import type { AuditFindingStatus } from "../audit-finding.types";
+import type { AuditCheck } from "../auditor.types";
+import type { AuditCheckContext } from "../auditor.types";
+import type { AuditFindingStatus } from "../auditor.types";
 
 export const ITEM_RESOLVED_CHECK_KEY = "item-resolved";
 

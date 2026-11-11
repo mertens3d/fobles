@@ -5,10 +5,8 @@ import type {
   SitecoreHarvestResult,
 } from "../../foundation/harvesting/sitecore-harvester.types";
 import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
-import {
-  prepareReferenceModel,
-  type PreparedReferenceModel,
-} from "../../foundation/reference-data/acquisition/prepare-reference-model";
+import { prepareReferenceModel } from "../../foundation/reference-data/acquisition/prepare-reference-model";
+import type { PreparedReferenceModel } from "../../foundation/reference-data/acquisition/acquisition.types";
 import type { ProcessingStatus } from "../../foundation/reference-data/processing/processing.types";
 import { projectReferenceModelToGraphElements } from "./graph-nodes/graph-elements";
 import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";

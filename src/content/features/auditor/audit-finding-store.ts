@@ -1,7 +1,10 @@
+import type { AuditFindingStore } from "./auditor.types.js";
+import type { AuditFindingStoreListener } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/audit-finding-store.ts
 
 import type { AuditSummaryCounts } from "./auditor.types";
-import type { AuditFinding, AuditFindingStatus } from "./audit-finding.types";
+import type { AuditFinding } from "./auditor.types";
+import type { AuditFindingStatus } from "./auditor.types";
 
 const STATUS_ORDER: Readonly<Record<AuditFindingStatus, number>> = { pending: 0, error: 1, warning: 2, passed: 3 };
 
@@ -71,21 +74,6 @@ export function summarizeAuditFindings(findings: readonly AuditFinding[]): Audit
 
   return counts;
 }
-
-export type AuditFindingStoreListener = (snapshot: readonly AuditFinding[]) => void;
-
-export type AuditFindingStore = {
-  upsert: (finding: AuditFinding) => void;
-  upsertMany: (findings: readonly AuditFinding[]) => void;
-  getSnapshot: () => readonly AuditFinding[];
-  subscribe: (listener: AuditFindingStoreListener) => () => void;
-  search: (query: string) => readonly AuditFinding[];
-  filterByStatus: (statuses: ReadonlySet<AuditFindingStatus>) => readonly AuditFinding[];
-  filterByCheck: (checkKeys: ReadonlySet<string>) => readonly AuditFinding[];
-  getSummary: () => AuditSummaryCounts;
-  clear: () => void;
-  dispose: () => void;
-};
 
 // Framework-independent by design - no React/AG Grid import may ever land in this file. UI layers
 // subscribe and re-render themselves; this module only owns identity-keyed storage + ordering.

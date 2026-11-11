@@ -1,5 +1,5 @@
 import { downloadSanitizedText } from "../../../../shared/export/text-export.ts";
-import type { AuditFinding } from "../audit-finding.types";
+import type { AuditFinding } from "../auditor.types";
 import { AUDIT_EXPORT_COLUMNS, type AuditExportColumn } from "./audit-export-columns.ts";
 
 function escapeCsvField(value: string): string {

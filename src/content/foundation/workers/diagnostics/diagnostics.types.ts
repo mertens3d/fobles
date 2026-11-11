@@ -1,5 +1,3 @@
-
-
 export type MemoryContext = Readonly<Record<string, unknown>>;
 
 export type PerformanceWithMemory = Performance & {

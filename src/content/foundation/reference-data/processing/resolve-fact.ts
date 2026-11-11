@@ -3,7 +3,8 @@ import type { ResolveOutcome } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/resolve-fact.ts
 
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
-import type { SitecoreDataCacheKey, StoredQuickInfo } from "../../cache/sitecore-data/sitecore-data-cache.types";
+import type { StoredQuickInfo } from "../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreItemLocator, WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
 import type { ItemGraphNodeData } from "../model/sitecore-item.types.ts";
 

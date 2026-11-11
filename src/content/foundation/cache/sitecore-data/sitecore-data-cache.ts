@@ -11,19 +11,17 @@ import {
 import { serializeCacheKey } from "./sitecore-data-cache-key.ts";
 import { toPersistedValue } from "./sitecore-data-cache-persistence.ts";
 import { publishFactUpdated } from "./sitecore-data-events.ts";
-import type {
-  SitecoreDataCacheFactRecord,
-  SitecoreDataCacheItemRecord,
-  SitecoreDataCacheKey,
-  SitecoreDataCacheRecord,
-  SitecoreDataFact,
-  SitecoreDataFactMap,
-  SitecoreDataFactName,
-  SitecoreDataFactValueByName,
-  SitecoreStoredFactName,
-  StoredQuickInfo,
-  StoredSitecoreDataFactMap,
-} from "./sitecore-data-cache.types.ts";
+import type { SitecoreDataFactValueByName } from "./sitecore-data.types";
+import type { SitecoreDataCacheRecord } from "./sitecore-data.types";
+import type { SitecoreDataCacheFactRecord } from "./sitecore-data.types";
+import type { SitecoreDataCacheItemRecord } from "./sitecore-data.types";
+import type { SitecoreDataFact } from "./sitecore-data.types";
+import type { StoredSitecoreDataFactMap } from "./sitecore-data.types";
+import type { SitecoreStoredFactName } from "./sitecore-data.types";
+import type { SitecoreDataFactName } from "./sitecore-data.types";
+import type { SitecoreDataFactMap } from "./sitecore-data.types";
+import type { StoredQuickInfo } from "./sitecore-data.types";
+import type { SitecoreDataCacheKey } from "./sitecore-data.types";
 
 function requireStoredFactName(
   factName: SitecoreDataFactName,

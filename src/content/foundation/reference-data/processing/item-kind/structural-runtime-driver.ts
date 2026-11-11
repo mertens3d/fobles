@@ -6,8 +6,10 @@ import type { StructuralScope } from "../../../../../shared/structural/structura
 import { extensionLog } from "../../../../logger.ts";
 import * as cache from "../../../cache/sitecore-data/sitecore-data-cache.ts";
 import { structuralTemplateCacheKey } from "../../../cache/sitecore-data/structural-cache-key.ts";
-import type { SitecoreDataCacheKey, SitecoreDataFactMap, SitecoreDataFactName } from "../../../cache/sitecore-data/sitecore-data-cache.types.ts";
-import type { TemplateDerivedRecord } from "../../../cache/sitecore-data/template-derived.types.ts";
+import type { SitecoreDataFactName } from "../../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataFactMap } from "../../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataCacheKey } from "../../../cache/sitecore-data/sitecore-data.types";
+import type { TemplateDerivedRecord } from "../../../cache/sitecore-data/sitecore-data.types";
 import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity.ts";
 import { WORK_SCHEDULING } from "../../../workers/work-scheduling.const.ts";
 import type { SitecoreItemLocator } from "../../../workers/tasks/worker-task.types.ts";

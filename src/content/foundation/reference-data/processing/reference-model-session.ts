@@ -1,38 +1,25 @@
-import type { StartSharedReferenceModelSessionOptions } from "./processing.types.js";
-import type { SharedReferenceModelSession } from "./processing.types.js";
-import type { ReferenceModelSessionStateChange } from "./processing.types.js";
+import type { ReferenceModelSessionStateChange, SharedReferenceModelSession, StartSharedReferenceModelSessionOptions } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-session.ts
 
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { extensionLog } from "../../../logger";
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache";
-import type {
-  SitecoreDataCacheKey,
-  SitecoreDataFactMap,
-  SitecoreDataFactName,
-} from "../../cache/sitecore-data/sitecore-data-cache.types";
+import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataFactMap } from "../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
 import { harvestSitecoreWithWorkers } from "../../harvesting/coordinator/foreground-harvest-coordinator";
 import type {
-  HarvestProgressCallback,
-  SitecoreHarvestResult,
+  SitecoreHarvestResult
 } from "../../harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
-import type { WorkSession } from "../../workers/session/work-session.types";
 import type { SitecoreItemLocator, WorkerTask } from "../../workers/tasks/worker-task.types";
 import { acquireReferenceModelForCurrentItem } from "../acquisition/acquire-reference-model";
-import type { PreparedReferenceModel } from "../acquisition/prepare-reference-model";
-import { collectEnrichmentGuidLookup } from "./resolve-candidate-collector";
-import { createReferenceHarvestingQueue } from "./reference-harvesting-queue";
-import type { ReferenceHarvestingQueue } from "./processing.types";
-import type { ReferenceHarvestingProgress } from "./processing.types";
-import type { ReferenceHarvestingJob } from "./processing.types";
 import { patchReferenceModelFact } from "../model/reference-model-fact-patcher";
-import type { ReferenceModelProcessingController } from "./processing.types";
-import type { ReferenceModelProcessingProgress } from "./processing.types";
+import type { ReferenceHarvestingJob, ReferenceHarvestingProgress, ReferenceHarvestingQueue, ReferenceModelProcessingController, ReferenceModelProcessingProgress } from "./processing.types";
+import { createReferenceHarvestingQueue } from "./reference-harvesting-queue";
 import { startReferenceModelProcessor } from "./reference-model-processor";
-import type { ProcessingStateByTreeNodeId } from "./processing.types";
-import type { ProcessingStatus } from "./processing.types";
+import { collectEnrichmentGuidLookup } from "./resolve-candidate-collector";
 
 const sessionsByWorkSessionId = new Map<string, SharedReferenceModelSession>();
 const FACTS_BY_FILTER: ReadonlyArray<[keyof SitecoreHarvestFiltersState, SitecoreDataFactName]> = [

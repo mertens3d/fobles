@@ -1,30 +1,23 @@
+import type { AcquiredReferenceModel, AcquireReferenceModelOptions } from "./acquisition.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/acquire-reference-model.ts
 
-import { getItem, putFact } from "../../cache/sitecore-data/sitecore-data-cache";
-import type { SitecoreDataCacheKey, QuickInfoPayload } from "../../cache/sitecore-data/sitecore-data-cache.types";
-import { createSitecoreItemLocator } from "../../harvesting/worker-task-executor";
-import type {
-  HarvestProgressCallback,
-  SitecoreHarvestResult,
-} from "../../harvesting/sitecore-harvester.types";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import { extensionLog } from "../../../logger";
+import { getItem, putFact } from "../../cache/sitecore-data/sitecore-data-cache";
+import type { QuickInfoPayload } from "../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
+import type {
+  SitecoreHarvestResult
+} from "../../harvesting/sitecore-harvester.types";
+import { createSitecoreItemLocator } from "../../harvesting/worker-task-executor";
 import { getCurrentItemId } from "../../sitecore/current-item";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import type { WorkSession } from "../../workers/session/work-session.types";
 import type { WorkerTask, WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
-import { extensionLog } from "../../../logger";
-import { prepareReferenceModel, type PreparedReferenceModel } from "./prepare-reference-model";
-import { decideRootCacheUsage, rootProcessingStateForDecision, type RootCacheDecision } from "./root-cache-flow";
+import { prepareReferenceModel } from "./prepare-reference-model";
+import { decideRootCacheUsage, rootProcessingStateForDecision } from "./root-cache-flow";
 import { readLiveRootRevision } from "./root-revision";
-
-export type AcquireReferenceModelOptions = {
-  signal: AbortSignal;
-  onProgress?: HarvestProgressCallback;
-  onHarvestRequired?: () => void;
-};
-
-export type AcquiredReferenceModel = { itemId: string; prepared: PreparedReferenceModel; decision: RootCacheDecision };
 
 function quickInfoPayload(result: WorkerTaskExecutionResult): QuickInfoPayload | undefined {
   return result.status === "success" && result.type === "get-quick-info" ? result.payload : undefined;

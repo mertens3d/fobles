@@ -1,3 +1,4 @@
+import type { GraphExpandCollapseController } from "./graph-nodes.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-expand-collapse.ts
 
 import type cytoscape from "cytoscape";
@@ -16,7 +17,6 @@ import {
   initializeCollapsedTreeNodeIds,
   readCollapseKey,
 } from "./graph-collapse-state";
-import type { ExpandedByCollapseKey } from "../../../foundation/reference-data/model/graph-collapse.types";
 import {
   applyGraphVisibility,
   createExpandCollapseOverlay,
@@ -24,20 +24,8 @@ import {
   removeMissingCollapsedTreeNodeIds,
   synchronizeExpandCollapseControls,
 } from "./graph-expand-collapse-view";
-import { type ExpandCollapseAction, type ExpandCollapseButtonController } from "./graph-node.types";
-import {
-  runInitialVisibilityLayout,
-  runVisibilityLayout,
-  type GraphVisibilityLayoutContext,
-} from "./graph-visibility-layout";
-
-type GraphExpandCollapseController = ExpandCollapseButtonController & {
-  expandedByCollapseKey: ExpandedByCollapseKey | undefined;
-  getCurrentFilters: () => SitecoreHarvestFiltersState;
-  getCurrentLayoutPresetName: () => LayoutGraphPresetName;
-  getRootTreeNodeId: () => string;
-  updateControls: () => void;
-};
+import type { ExpandCollapseAction, GraphVisibilityLayoutContext } from "./graph-nodes.types";
+import { runInitialVisibilityLayout, runVisibilityLayout } from "./graph-visibility-layout";
 
 const CONTROL_EVENTS = ["render", "position", "pan", "zoom", "resize", "layoutstop", "add", "remove", "data"].join(" ");
 

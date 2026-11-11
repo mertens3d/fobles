@@ -14,8 +14,9 @@ import type { PhaseProgress } from "../../../../foundation/reference-data/progre
 import { LifecycleProgressFooter } from "../../../../shared/ui/reference-controls/lifecycle-progress-footer";
 import { ReferenceModelViewer } from "../../../../shared/ui/reference-model/reference-model-viewer";
 import { getGraphPresentationState } from "../../../../foundation/reference-data/model/graph-presentation-state";
-import type { AuditFinding, AuditFindingStatus } from "../../audit-finding.types.ts";
-import type { AuditFindingStore } from "../../audit-finding-store";
+import type { AuditFinding } from "../../auditor.types";
+import type { AuditFindingStatus } from "../../auditor.types";
+import type { AuditFindingStore } from "../../auditor.types";
 import {
   getAuditorCheckFilter,
   getAuditorGraphFilters,

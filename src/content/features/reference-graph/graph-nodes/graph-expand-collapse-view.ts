@@ -8,7 +8,8 @@ import {
   type GraphParameterVisibilitySettings,
 } from "../graph-parameter-visibility-settings";
 import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/graph-collapse.types";
-import type { ExpandCollapseButtonController, ExpandCollapseAction } from "./graph-node.types";
+import type { ExpandCollapseButtonController } from "./graph-nodes.types";
+import type { ExpandCollapseAction } from "./graph-nodes.types";
 
 const PARAMETER_VISIBILITY_SCRATCH_KEY = "_foblesParameterVisibilitySettings";
 

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/auditor/export/audit-export-columns.ts
 
-import type { AuditFinding } from "../audit-finding.types";
+import type { AuditFinding } from "../auditor.types";
 
 export type AuditExportColumn = { key: string; header: string; getValue: (finding: AuditFinding) => string };
 

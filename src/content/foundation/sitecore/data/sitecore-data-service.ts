@@ -3,17 +3,17 @@
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import { emitActivity, type ActivityState } from "../../../shared/activity/activity-events.ts";
 import { labelForFact } from "../../../shared/activity/activity-labels.ts";
-import type {
-  SitecoreDataCacheKey,
-  SitecoreDataFactMap,
-  SitecoreDataFactName,
-} from "../../cache/sitecore-data/sitecore-data-cache.types";
+import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataFactMap } from "../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
 import type {
   WorkerTaskExecutionResult,
   WorkerTaskSuccessResult,
   WorkerTaskType,
 } from "../../workers/tasks/worker-task.types";
-import type { FetchLiveFact, GetFactOptions, SitecoreDataFactResult } from "./sitecore-data.types";
+import type { GetFactOptions } from "./data.types";
+import type { SitecoreDataFactResult } from "./data.types";
+import type { FetchLiveFact } from "./data.types";
 import { serializeCacheKey } from "../../cache/sitecore-data/sitecore-data-cache-key.ts";
 
 // Only these 7 atomic reads have a cacheable fact - set-raw-values/set-standard-fields are

@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/features/auditor/auditor-grid/auditor-grid.types.ts
 
 import type { GraphCollapseKey } from "../../../foundation/reference-data/model/graph-collapse.types";
-import type { AuditFinding } from "../audit-finding.types";
-import type { AuditReportTreeNode } from "../audit-report-tree";
+import type { AuditFinding } from "../auditor.types";
+import type { AuditReportTreeNode } from "../auditor.types";
 
 export type JourneyStage = "referenced" | "cached" | "live" | "tested";
 

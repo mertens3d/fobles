@@ -1,3 +1,4 @@
+import type { AuditorLayoutViewSettings } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/auditor-layout-view-settings.ts
 
 export const AUDITOR_LAYOUT_VIEW_KEYS = [
@@ -8,12 +9,6 @@ export const AUDITOR_LAYOUT_VIEW_KEYS = [
   "datasource",
   "parameter",
 ] as const;
-
-export type AuditorLayoutViewKey = (typeof AUDITOR_LAYOUT_VIEW_KEYS)[number];
-
-export type AuditorLayoutViewSettings = Readonly<Record<AuditorLayoutViewKey, boolean>> & {
-  readonly type: "auditorLayoutViewSettings";
-};
 
 export const DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS: AuditorLayoutViewSettings = {
   type: "auditorLayoutViewSettings",

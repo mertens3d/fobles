@@ -1,5 +1,3 @@
-
-
 export type BrowserNavigationOptions = { doc: Document; navigateToItem: (itemId: string) => void | Promise<void> };
 
 export type QuickInfoTemplate = { path: string | undefined; id: string | undefined };

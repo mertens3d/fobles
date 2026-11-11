@@ -4,8 +4,9 @@ import { extensionLog } from "../../../logger.ts";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing.types";
 import { buildAuditFinding } from "../audit-finding-factory.ts";
-import type { AuditCheck, AuditCheckContext } from "../audit-check.types";
-import type { AuditFinding } from "../audit-finding.types";
+import type { AuditCheck } from "../auditor.types";
+import type { AuditCheckContext } from "../auditor.types";
+import type { AuditFinding } from "../auditor.types";
 import type { ReferenceResolvedDiagnostic, ResolveStateInterpretation } from "./reference-resolved-check.types";
 const CHECK = AUDIT_CHECK.REFERENCE_RESOLVED;
 

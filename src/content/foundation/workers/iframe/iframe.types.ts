@@ -1,5 +1,3 @@
-
-
 export type WorkerIframeEmergencyCleanupResult = {
   containerFound: boolean;
   trackedCountBefore: number;

@@ -2,7 +2,7 @@ import { normalizeHistoryScope } from "../../../../shared/item-history/item-hist
 import type { StructuralScope } from "../../../../shared/structural/structural.types.ts";
 import { getRequestResult, runCacheTransaction } from "./indexed-db.ts";
 import { serializeDatabasePrefix } from "./sitecore-data-cache-key.ts";
-import type { SitecoreDataCacheFactRecord } from "./sitecore-data-cache.types.ts";
+import type { SitecoreDataCacheFactRecord } from "./sitecore-data.types";
 
 export async function invalidateStructuralCache(scope: StructuralScope, currentOrigin: string): Promise<void> {
   const normalized = normalizeHistoryScope(scope);

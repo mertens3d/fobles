@@ -1,36 +1,25 @@
-import type { GuidResult } from "./processing.types.js";
-import type { GuidWork } from "./processing.types.js";
-import type { ItemSnapshot } from "./processing.types.js";
-import type { StartReferenceModelProcessorOptions } from "./processing.types.js";
+import type { GuidResult, GuidWork, ItemSnapshot, StartReferenceModelProcessorOptions } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processor.ts
 import { extensionLog } from "../../../logger";
 import { initializeRuntimeSettings, isJourneyStepLiveEnabled } from "../../../runtime-settings/runtime-settings";
+import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
 import type { HealthReport } from "../../diagnostics/health.types";
-import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import { mergeEnrichedItem } from "../../harvesting/planner/enrichment-task-planner";
 import { createSitecoreItemLocator } from "../../harvesting/worker-task-executor";
+import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
+import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import {
   createErrorResult,
   type WorkerTask,
   type WorkerTaskExecutionResult,
 } from "../../workers/tasks/worker-task.types";
-import type { WorkSession } from "../../workers/session/work-session.types";
-import { buildFoblesUrl } from "../../sitecore/fobles-url";
-import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data-cache.types";
 import type { ItemGraphNodeData } from "../model/sitecore-item.types";
-import type { ReferenceModelNode } from "../model/reference-model.types";
-import { collectEnrichmentGuidLookup, isEligibleForResolve } from "./resolve-candidate-collector";
+import { setProcessingState } from "./processing-state";
+import type { CachedItemFact, ProcessingStatus, ReferenceModelProcessingController, ResolveOutcome } from "./processing.types";
 import { sortGuidsByEnrichmentPriority } from "./reference-model-processing-priority";
 import { firstItemNode, itemsFor } from "./reference-model-processing-tree-state";
-import type { ReferenceModelProcessingStateChange } from "./processing.types";
-import type { ReferenceModelProcessingController } from "./processing.types";
-import type { ReferenceModelProcessingProgress } from "./processing.types";
-import { setProcessingState } from "./processing-state";
-import type { ProcessingStateByTreeNodeId } from "./processing.types";
-import type { ProcessingStatus } from "./processing.types";
+import { collectEnrichmentGuidLookup, isEligibleForResolve } from "./resolve-candidate-collector";
 import { readCachedItemFact, verifyItemFact } from "./resolve-fact";
-import type { CachedItemFact } from "./processing.types";
-import type { ResolveOutcome } from "./processing.types";
 
 const NON_TERMINAL_STATUSES = new Set<ProcessingStatus | undefined>([undefined, "pending", "cached", "enriching"]);
 const DEFAULT_MAX_LIVE_IN_FLIGHT = 4;
