@@ -1,3 +1,4 @@
+import type { PersistedWindowStack } from "./dialog.types.js";
 // @source-path [fobles] src/content/shared/dialog/fobles-window-stack.ts
 
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
@@ -11,8 +12,6 @@ const COLLAPSED_LEFT_PROPERTY = "--fobles-window-collapsed-left";
 const COLLAPSED_TOP_PROPERTY = "--fobles-window-collapsed-top";
 const COLLAPSED_ORDER_PROPERTY = "foblesCollapsedOrder";
 let nextCollapsedOrder = 0;
-
-type PersistedWindowStack = { order: string[] };
 
 function mountedWindows(): HTMLElement[] {
   return Array.from(document.querySelectorAll<HTMLElement>(WINDOW_SELECTOR));

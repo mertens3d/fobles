@@ -1,4 +1,7 @@
-// @source-path [fobles] src/content/foundation/sitecore/quick-info.types.ts
+
+
+export type BrowserNavigationOptions = { doc: Document; navigateToItem: (itemId: string) => void | Promise<void> };
+
 export type QuickInfoTemplate = { path: string | undefined; id: string | undefined };
 
 export type QuickInfo = {

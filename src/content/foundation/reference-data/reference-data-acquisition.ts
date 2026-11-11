@@ -4,7 +4,7 @@ import type { WorkSession } from "../workers/session/work-session.types";
 
 export type FoblesDataAcquisition = FoblesDataSession;
 
-type LegacyOptions = Parameters<typeof openFoblesDataSession>[0];
+export type LegacyOptions = Parameters<typeof openFoblesDataSession>[0];
 
 export type FoblesDataAcquisitionOptions = Omit<LegacyOptions, "workSession"> & { workOperation: WorkSession };
 

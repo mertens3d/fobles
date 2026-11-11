@@ -1,17 +1,5 @@
-// @source-path [fobles] src/content/foundation/reference-data/processing/processing-state.ts
-export type ProcessingStatus =
-  | "pending"
-  | "cached"
-  | "enriching"
-  | "enriched"
-  | "verified"
-  | "revision-mismatch"
-  | "unverified"
-  | "not-found"
-  | "failed";
-
-export type ProcessingStateByTreeNodeId = Map<string, ProcessingStatus>;
-
+import type { ProcessingStateByTreeNodeId } from "./processing.types.js";
+import type { ProcessingStatus } from "./processing.types.js";
 export function setProcessingState(
   treeNodeIds: readonly string[],
   stateByTreeNodeId: ProcessingStateByTreeNodeId,

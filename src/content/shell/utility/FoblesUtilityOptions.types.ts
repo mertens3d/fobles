@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 
-
 export type FoblesUtilityOptions = {
   lockAlreadyHeld?: boolean;
   doc: Document;

@@ -1,10 +1,8 @@
+import type { WorkerTarget } from "./pool.types.js";
+import type { WorkerTabTarget } from "./pool.types.js";
 // @source-path [fobles] src/content/foundation/workers/pool/worker-target.ts
 
-import type { WorkerIframeTarget } from "../iframe/worker-iframe-service";
-
-export type WorkerTabTarget = { kind: "tab"; tabId: number };
-
-export type WorkerTarget = WorkerTabTarget | WorkerIframeTarget;
+import type { WorkerIframeTarget } from "../iframe/iframe.types";
 
 export function isWorkerTabTarget(target: WorkerTarget): target is WorkerTabTarget {
   return target.kind === "tab";

@@ -1,13 +1,9 @@
+import type { PerformanceWithMemory } from "./diagnostics.types.js";
+import type { MemoryContext } from "./diagnostics.types.js";
 // @source-path [fobles] src/content/foundation/workers/diagnostics/memory-diagnostics.ts
 
 import { extensionLog } from "../../../logger";
 import { DEBUG_MEMORY } from "../worker-protocol.const";
-
-type MemoryContext = Readonly<Record<string, unknown>>;
-
-type PerformanceWithMemory = Performance & {
-  memory?: { usedJSHeapSize: number; totalJSHeapSize: number; jsHeapSizeLimit: number };
-};
 
 const MB = 1024 * 1024;
 let baselineUsedJSHeapSize: number | undefined;

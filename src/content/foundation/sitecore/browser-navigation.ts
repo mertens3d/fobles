@@ -1,3 +1,4 @@
+import type { BrowserNavigationOptions } from "./sitecore.types.js";
 // @source-path [fobles] src/content/foundation/sitecore/browser-navigation.ts
 import { SITECORE } from "../../../constants/sitecore";
 import { getCurrentItemId } from "./current-item";
@@ -5,8 +6,6 @@ import { extractGuid } from "./guid";
 
 const STATE_KEY = "foblesNavigationItemId";
 const POLL_MS = 250;
-
-export type BrowserNavigationOptions = { doc: Document; navigateToItem: (itemId: string) => void | Promise<void> };
 
 function readFo(win: Window): string | null {
   return extractGuid(new URL(win.location.href).searchParams.get(SITECORE.SEARCH_PARAMS.FOCUSED_ITEM) ?? "");

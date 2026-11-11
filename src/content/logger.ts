@@ -1,3 +1,4 @@
+import type { FoblesGlobal } from "./content.types.js";
 // @source-path [fobles] src/content/logger.ts
 
 import { LOGGER, STORAGE } from "../constants/extension-const.ts";
@@ -10,8 +11,6 @@ import type {
   PersistedLogMessage,
 } from "../shared/persisted-log.types";
 import type { Logger } from "./content.types";
-
-type FoblesGlobal = typeof globalThis & { __sitecoreFoblesDebug?: boolean; __sitecoreFoblesPersistLogs?: boolean };
 
 const foblesGlobal = globalThis as FoblesGlobal;
 

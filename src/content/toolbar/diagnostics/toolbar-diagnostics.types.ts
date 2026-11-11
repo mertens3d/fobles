@@ -1,4 +1,4 @@
-import type { WorkerPoolStatus } from "../../foundation/workers/pool/worker-pool-status.types";
+import type { WorkerPoolStatus } from "../../foundation/workers/pool/pool.types";
 import type { ActivityEvent, ActivityListener } from "../../shared/activity/activity.types";
 import type { StructuralSettings } from "../../../shared/structural/structural.types";
 

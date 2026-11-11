@@ -18,7 +18,8 @@ import {
   type WorkerExecutorContext,
   type WorkerTaskResult,
 } from "../tasks/worker-task.types";
-import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
+import { isWorkerTabTarget } from "./worker-target";
+import type { WorkerTarget } from "./pool.types";
 import { DEBUG_WORKER_POOL } from "../worker-protocol.const";
 import { publishActivityToHost } from "../../../shared/activity/activity-events";
 import { labelForWorkerTask } from "../../../shared/activity/activity-labels";

@@ -1,7 +1,7 @@
 import { WORK_SCHEDULING } from "../work-scheduling.const.ts";
 import type { WorkClass } from "../work-scheduling.types.ts";
 import type { QueuedTask, WorkerTask } from "../tasks/worker-task.types.ts";
-import type { WorkerPoolState } from "./worker-pool-state.ts";
+import type { WorkerPoolState } from "./pool.types";
 import { backgroundCooldownRemaining } from "./worker-background-cooldown.ts";
 
 export function getWorkClass(task: WorkerTask): WorkClass {

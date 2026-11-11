@@ -3,10 +3,8 @@
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
-import type {
-  ProcessingStateByTreeNodeId,
-  ProcessingStatus,
-} from "../../../foundation/reference-data/processing/processing-state";
+import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing.types";
+import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing.types";
 import {
   GRAPH_COLLAPSE_KEY,
   type GraphCollapseKey,

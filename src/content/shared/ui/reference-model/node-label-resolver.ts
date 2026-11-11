@@ -1,11 +1,9 @@
-// @source-path [fobles] src/content/shared/ui/reference-model/node-label-resolver.ts
+// @source-path [Fobles] src/content/shared/ui/reference-model/node-label-resolver.ts
 
+import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
-import type { NodePresentation, NodePresentationByKind } from "./node-presentation.types";
-
-type NodeKind = keyof NodePresentationByKind;
+import type { LabelBreakResult, NodePresentation } from "./reference-model.types";
 import { LINE_BREAKER, clampMiddle, tryBreakLabel } from "./text-line-breaker";
-import { type LabelBreakResult } from "./LabelBreakResult.types";
 
 function baseName(treeNode: ReferenceModelNode): string {
   let name: string;

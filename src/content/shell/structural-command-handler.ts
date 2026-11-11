@@ -1,7 +1,7 @@
 import { normalizeStructuralCommand, structuralScopeMatches } from "../../shared/structural/structural-command.ts";
 import type { StructuralCommandResponse } from "../../shared/structural/structural-command.types.ts";
 import { STRUCTURAL_COMMAND } from "../../shared/structural/structural.const.ts";
-import type { StructuralCommandDependencies } from "./structural-command.types.ts";
+import type { StructuralCommandDependencies } from "./shell.types";
 
 export function createStructuralCommandHandler(deps: StructuralCommandDependencies) {
   return function handle(message: unknown, sender: chrome.runtime.MessageSender, respond: (response: StructuralCommandResponse) => void): boolean {

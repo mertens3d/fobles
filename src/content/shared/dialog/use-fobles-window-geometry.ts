@@ -12,13 +12,11 @@ import {
   viewportRect,
 } from "./fobles-window-geometry-math";
 
-import type {
-  FoblesWindowGeometry,
-  FoblesWindowGeometryOptions,
-  FoblesWindowState,
-  ResizeEdge,
-  WindowRect,
-} from "./fobles-window.types";
+import type { FoblesWindowGeometry } from "./dialog.types";
+import type { FoblesWindowGeometryOptions } from "./dialog.types";
+import type { ResizeEdge } from "./dialog.types";
+import type { FoblesWindowState } from "./dialog.types";
+import type { WindowRect } from "./dialog.types";
 
 export function useFoblesWindowGeometry({
   storageKey,

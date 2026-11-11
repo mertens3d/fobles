@@ -1,10 +1,8 @@
 // @source-path [fobles] src/content/toolbar/diagnostics/worker-task-manager-panel.tsx
 import { useEffect, useRef, useState } from "react";
-import type {
-  WorkerPoolStatus,
-  WorkerPoolWorkerStatus,
-  WorkerTaskSnapshot,
-} from "../../foundation/workers/pool/worker-pool-status.types";
+import type { WorkerPoolStatus } from "../../foundation/workers/pool/pool.types";
+import type { WorkerPoolWorkerStatus } from "../../foundation/workers/pool/pool.types";
+import type { WorkerTaskSnapshot } from "../../foundation/workers/pool/pool.types";
 import { extensionLog } from "../../logger";
 import { FoblesDetailsWindow } from "../../shared/dialog/fobles-details-window";
 import { CollapsibleSection } from "../../shared/ui/collapsible-section/collapsible-section";

@@ -1,12 +1,6 @@
+import type { FoblesMessageDialogAction } from "./fobles-message-dialog.types.js";
 // @source-path [fobles] src/content/shared/ui/fobles-message-dialog/fobles-message-dialog.tsx
 import type { ReactNode } from "react";
-
-export type FoblesMessageDialogAction = {
-  label: string;
-  primary?: boolean;
-  disabled?: boolean;
-  onClick: () => void | Promise<void>;
-};
 
 export type FoblesMessageDialogProps = {
   title: string;

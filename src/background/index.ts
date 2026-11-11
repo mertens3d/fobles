@@ -25,16 +25,14 @@ import {
 import {
   WORKER_IFRAME_READY_MESSAGE_TYPE,
 } from "../content/foundation/workers/transport/worker.messages";
-import {
-  type PoolCancelRequestMessage,
-  type PoolCancelTaskMessage,
-  type PoolDisposeMessage,
-  type PoolRunTaskMessage,
-  type WorkerAdoptedMessage,
-  type WorkerIframeReadyMessage,
-  type WorkerReadyMessage,
-  type WorkerPoolStatusMessage
-} from "../content/foundation/workers/transport/PoolRunTaskMessage.types.ts";
+import type { WorkerAdoptedMessage } from "../content/foundation/workers/transport/transport.types";
+import type { WorkerIframeReadyMessage } from "../content/foundation/workers/transport/transport.types";
+import type { WorkerReadyMessage } from "../content/foundation/workers/transport/transport.types";
+import type { WorkerPoolStatusMessage } from "../content/foundation/workers/transport/transport.types";
+import type { PoolDisposeMessage } from "../content/foundation/workers/transport/transport.types";
+import type { PoolCancelTaskMessage } from "../content/foundation/workers/transport/transport.types";
+import type { PoolCancelRequestMessage } from "../content/foundation/workers/transport/transport.types";
+import type { PoolRunTaskMessage } from "../content/foundation/workers/transport/transport.types";
 import { WORKER_MESSAGE_TYPE } from "../content/foundation/workers/worker-protocol.const";
 import { appendPersistedLogEntry, clearPersistedLogEntries } from "../shared/logging/persisted-log-storage";
 import type { PersistedLogMessage } from "../shared/persisted-log.types";

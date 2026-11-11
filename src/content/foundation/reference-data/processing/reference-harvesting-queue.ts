@@ -1,27 +1,12 @@
+import type { ReferenceHarvestingQueue } from "./processing.types.js";
+import type { QueuedReferenceHarvestingJob } from "./processing.types.js";
+import type { ReferenceHarvestingQueueOptions } from "./processing.types.js";
+import type { ReferenceHarvestingJob } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-harvesting-queue.ts
 
 import { normalizeItemLocator } from "../../cache/sitecore-data/sitecore-data-cache-key.ts";
 import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data-cache.types";
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
-
-export type ReferenceHarvestingJob = { item: SitecoreItemLocator; factName: SitecoreDataFactName };
-
-export type ReferenceHarvestingProgress = { completed: number; max: number; status: "running" | "complete" };
-
-export type ReferenceHarvestingQueueOptions = {
-  runJob: (job: ReferenceHarvestingJob, signal: AbortSignal) => Promise<void>;
-  onProgress?: (progress: ReferenceHarvestingProgress) => void;
-  onError?: (job: ReferenceHarvestingJob, error: unknown) => void;
-};
-
-type QueuedReferenceHarvestingJob = ReferenceHarvestingJob & { onSettled?: (succeeded: boolean) => void };
-
-export type ReferenceHarvestingQueue = {
-  enqueue: (job: ReferenceHarvestingJob, onSettled?: (succeeded: boolean) => void) => void;
-  remove: (predicate: (job: ReferenceHarvestingJob) => boolean) => number;
-  pendingCount: () => number;
-  dispose: () => void;
-};
 
 export function referenceHarvestingJobKey(job: ReferenceHarvestingJob): string {
   const item = normalizeItemLocator(job.item);

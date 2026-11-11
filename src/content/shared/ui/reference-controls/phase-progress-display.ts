@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/shared/ui/reference-controls/phase-progress-display.ts
 
 import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
-import type { PhaseProgressDisplay } from "./PhaseProgressDisplay";
+import type { PhaseProgressDisplay } from "./reference-controls.types";
 
 // 0 / 0 (no work at all) reads as already complete, same as N / N - never 0%, which would
 // misleadingly suggest a phase is stuck rather than simply having nothing to do.

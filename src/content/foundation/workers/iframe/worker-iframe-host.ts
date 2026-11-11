@@ -1,3 +1,4 @@
+import type { WorkerIframeEmergencyCleanupResult } from "./iframe.types.js";
 // @source-path [fobles] src/content/foundation/workers/iframe/worker-iframe-host.ts
 
 import { CONST } from "../../../../constants/const";
@@ -10,10 +11,8 @@ import {
   WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE,
   WORKER_IFRAME_REMOVE_MESSAGE_TYPE,
 } from "../transport/worker.messages";
-import {
-  type WorkerIframeCreateResult,
-  type WorkerIframeHostMessage
-} from "../transport/PoolRunTaskMessage.types";
+import type { WorkerIframeHostMessage } from "../transport/transport.types";
+import type { WorkerIframeCreateResult } from "../transport/transport.types";
 
 const WORKER_POOL = CONST.FOBLES.WORKER_POOL;
 const workerIframeById = new Map<string, HTMLIFrameElement>();
@@ -146,17 +145,6 @@ export function removeWorkerIframe(workerId: string): boolean {
   }
   return removed;
 }
-
-export type WorkerIframeEmergencyCleanupResult = {
-  containerFound: boolean;
-  trackedCountBefore: number;
-  orphanCountBefore: number;
-  workerIds: string[];
-  iframeSrcs: string[];
-  orphanCountAfter: number;
-  trackedCountAfter: number;
-  containerExistsAfter: boolean;
-};
 
 export function emergencyCleanupWorkerIframes(doc: Document): WorkerIframeEmergencyCleanupResult {
   const containerId = WORKER_POOL.WORKER_IFRAME_CONTAINER_ID;

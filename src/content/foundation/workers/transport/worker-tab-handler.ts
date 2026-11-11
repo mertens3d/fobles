@@ -5,12 +5,11 @@ import type { WorkerTask } from "../tasks/worker-task.types";
 import {
   WORKER_IFRAME_READY_MESSAGE_TYPE,
 } from "./worker.messages";
-import {
-  type WorkerIframeReadyMessage,
-  type WorkerReadyMessage,
-  type WorkerTabIncomingMessage
-} from "./PoolRunTaskMessage.types";
-import type { ExecuteWorkerTask, IsWorkerDocumentReady } from "./ExecuteWorkerTask";
+import type { WorkerTabIncomingMessage } from "./transport.types";
+import type { WorkerIframeReadyMessage } from "./transport.types";
+import type { WorkerReadyMessage } from "./transport.types";
+import type { IsWorkerDocumentReady } from "./transport.types";
+import type { ExecuteWorkerTask } from "./transport.types";
 
 const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;
 const WORKER_BANNER_ID = "fobles-background-worker-banner";

@@ -3,7 +3,7 @@
 import type { ItemGraphNodeData } from "../model/sitecore-item.types";
 import type { ReferenceModelNode } from "../model/reference-model.types";
 import { firstItemNode } from "./reference-model-processing-tree-state";
-import type { ReferenceModelProcessingPriorityRank } from "./reference-model-processing.types";
+import type { ReferenceModelProcessingPriorityRank } from "./processing.types";
 
 export function rankItemForEnrichment(item: ItemGraphNodeData): ReferenceModelProcessingPriorityRank {
   if (!item.scItemName) {

@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/shared/ui/reference-model/node-presentation.ts
 
 import { _REFERENCE_GRAPH_BASE } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
-import type { NodePresentationByKind } from "./node-presentation.types";
+import type { NodePresentationByKind } from "./reference-model.types";
 
 const NODE_KIND = _REFERENCE_GRAPH_BASE.NODE_KIND;
 

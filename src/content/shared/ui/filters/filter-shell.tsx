@@ -1,4 +1,4 @@
-import type { FilterOption } from "./FilterOption";
+import type { FilterOption } from "./filters.types";
 
 export type FilterGroupProps<TKey extends string> = {
   label: string;

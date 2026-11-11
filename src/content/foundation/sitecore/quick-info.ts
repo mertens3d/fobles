@@ -1,5 +1,6 @@
 import { SITECORE } from "../../../constants/sitecore.ts";
-import type { QuickInfo, QuickInfoTemplate } from "./quick-info.types";
+import type { QuickInfo } from "./sitecore.types";
+import type { QuickInfoTemplate } from "./sitecore.types";
 
 export const getQuickInfo = (doc: Document): QuickInfo => {
   const labelPrefix = SITECORE.QUICK_INFO.LABEL_PREFIX;

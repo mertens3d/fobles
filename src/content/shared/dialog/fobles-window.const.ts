@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window.const.ts
 
-import type { ResizeEdge } from "./fobles-window.types.ts";
+import type { ResizeEdge } from "./dialog.types";
 
 export const FOBLES_WINDOW = {
   VIEWPORT_MARGIN: 12,

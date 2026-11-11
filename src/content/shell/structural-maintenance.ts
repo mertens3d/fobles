@@ -1,7 +1,7 @@
 import type { StructuralAction } from "../../shared/structural/structural-command.types.ts";
 import { STRUCTURAL_COMMAND } from "../../shared/structural/structural.const.ts";
 import type { StructuralScope } from "../../shared/structural/structural.types.ts";
-import type { StructuralMaintenanceDependencies } from "./structural-command.types.ts";
+import type { StructuralMaintenanceDependencies } from "./shell.types";
 
 export async function maintainStructuralScope(action: StructuralAction, scope: StructuralScope, deps: StructuralMaintenanceDependencies): Promise<number> {
   let scheduled = 0;

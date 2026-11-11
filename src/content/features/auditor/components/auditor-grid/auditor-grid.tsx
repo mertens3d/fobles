@@ -11,7 +11,7 @@ import {
   type RowDoubleClickedEvent,
 } from "ag-grid-community";
 import type { ReferenceModelNode } from "../../../../foundation/reference-data/model/reference-model.types";
-import type { ProcessingStateByTreeNodeId } from "../../../../foundation/reference-data/processing/processing-state";
+import type { ProcessingStateByTreeNodeId } from "../../../../foundation/reference-data/processing/processing.types";
 import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_REFERENCE_GRAPH_BASE.ts";
 import {
   getExpandedByCollapseKey,

@@ -1,5 +1,5 @@
 import type { WorkClass } from "../../foundation/workers/work-scheduling.types";
-import type { WorkerPoolStatus } from "../../foundation/workers/pool/worker-pool-status.types";
+import type { WorkerPoolStatus } from "../../foundation/workers/pool/pool.types";
 import type { ACTIVITY } from "./activity.const";
 
 export type ActivityState = "queued" | "started" | "completed" | "error" | "cancelled";

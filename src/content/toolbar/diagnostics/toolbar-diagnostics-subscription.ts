@@ -1,5 +1,5 @@
 import type { ActivityEvent } from "../../shared/activity/activity.types";
-import type { WorkerPoolStatus } from "../../foundation/workers/pool/worker-pool-status.types";
+import type { WorkerPoolStatus } from "../../foundation/workers/pool/pool.types";
 import type { ToolbarDiagnosticsServices, ToolbarDiagnosticsState } from "./toolbar-diagnostics.types";
 
 export function observeToolbarDiagnostics(

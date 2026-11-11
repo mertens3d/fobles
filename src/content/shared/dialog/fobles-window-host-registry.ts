@@ -1,8 +1,7 @@
+import type { HostEntry } from "./dialog.types.js";
 // @source-path [fobles] src/content/shared/dialog/fobles-window-host-registry.ts
 
 import type { Root } from "react-dom/client";
-
-type HostEntry = { host: HTMLElement; root: Root };
 
 const hostsByDoc = new WeakMap<Document, Map<string, HostEntry>>();
 

@@ -5,7 +5,7 @@ import type {
   SitecoreHarvestSection,
   LayoutSectionField,
 } from "../../reference-data/model/sitecore-item.types";
-import type { WorkerTarget } from "../pool/worker-target";
+import type { WorkerTarget } from "../pool/pool.types";
 import type { WorkClass } from "../work-scheduling.types";
 
 // An item reference as actually requested of Sitecore - as opposed to an ambiguous

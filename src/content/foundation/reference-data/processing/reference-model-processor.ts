@@ -1,3 +1,7 @@
+import type { GuidResult } from "./processing.types.js";
+import type { GuidWork } from "./processing.types.js";
+import type { ItemSnapshot } from "./processing.types.js";
+import type { StartReferenceModelProcessorOptions } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processor.ts
 import { extensionLog } from "../../../logger";
 import { initializeRuntimeSettings, isJourneyStepLiveEnabled } from "../../../runtime-settings/runtime-settings";
@@ -18,49 +22,16 @@ import type { ReferenceModelNode } from "../model/reference-model.types";
 import { collectEnrichmentGuidLookup, isEligibleForResolve } from "./resolve-candidate-collector";
 import { sortGuidsByEnrichmentPriority } from "./reference-model-processing-priority";
 import { firstItemNode, itemsFor } from "./reference-model-processing-tree-state";
-import type {
-  ReferenceModelProcessingController,
-  ReferenceModelProcessingProgress,
-  ReferenceModelProcessingStateChange,
-} from "./reference-model-processing.types";
-import { setProcessingState, type ProcessingStateByTreeNodeId, type ProcessingStatus } from "./processing-state";
-import { readCachedItemFact, verifyItemFact, type CachedItemFact, type ResolveOutcome } from "./resolve-fact";
+import type { ReferenceModelProcessingStateChange } from "./processing.types";
+import type { ReferenceModelProcessingController } from "./processing.types";
+import type { ReferenceModelProcessingProgress } from "./processing.types";
+import { setProcessingState } from "./processing-state";
+import type { ProcessingStateByTreeNodeId } from "./processing.types";
+import type { ProcessingStatus } from "./processing.types";
+import { readCachedItemFact, verifyItemFact } from "./resolve-fact";
+import type { CachedItemFact } from "./processing.types";
+import type { ResolveOutcome } from "./processing.types";
 
-// The harvest queue's aggregate activity. The processor does not exit while a re-harvest is pending, and re-scans the model whenever the queue reports activity because a finished re-harvest can introduce new references.
-export type ReferenceModelHarvestActivity = {
-  pendingCount: () => number;
-  subscribe: (listener: () => void) => () => void;
-};
-
-type StartReferenceModelProcessorOptions = {
-  doc: Document;
-  workSession: WorkSession;
-  referenceModel: ReferenceModelNode;
-  nodesById: Map<string, ReferenceModelNode>;
-  processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
-  onStateChange?: ReferenceModelProcessingStateChange;
-  onStaleStructural?: (
-    reference: string,
-    treeNodeIds: readonly string[],
-    setTerminalState: (succeeded: boolean) => void,
-  ) => void;
-  onProgress?: (progress: ReferenceModelProcessingProgress) => void;
-  harvestActivity?: ReferenceModelHarvestActivity;
-  maxLiveInFlight?: number;
-};
-
-type ItemSnapshot = Pick<
-  ItemGraphNodeData,
-  "scItemId" | "scItemName" | "scItemPath" | "scTemplate" | "scItemIcon" | "rawMarkup" | "link"
->;
-
-type GuidWork = {
-  reference: string | undefined;
-  cached: CachedItemFact | undefined;
-  snapshots: Map<ItemGraphNodeData, ItemSnapshot>;
-};
-
-type GuidResult = { status: ProcessingStatus; value: ItemGraphNodeData | undefined };
 const NON_TERMINAL_STATUSES = new Set<ProcessingStatus | undefined>([undefined, "pending", "cached", "enriching"]);
 const DEFAULT_MAX_LIVE_IN_FLIGHT = 4;
 function snapshotOf(item: ItemGraphNodeData): ItemSnapshot {

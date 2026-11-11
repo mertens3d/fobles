@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/toolbar/diagnostics/worker-state-details.tsx
-import type { WorkerTaskSnapshot } from "../../foundation/workers/pool/worker-pool-status.types";
+import type { WorkerTaskSnapshot } from "../../foundation/workers/pool/pool.types";
 import { DetailsPanel } from "../../shared/ui/details/details-panel";
 
 export type WorkerStateDetailsProps = { snapshot: WorkerTaskSnapshot; itemName: string };

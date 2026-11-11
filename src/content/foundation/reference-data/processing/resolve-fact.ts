@@ -1,23 +1,11 @@
+import type { CachedItemFact } from "./processing.types.js";
+import type { ResolveOutcome } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/resolve-fact.ts
 
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import type { SitecoreDataCacheKey, StoredQuickInfo } from "../../cache/sitecore-data/sitecore-data-cache.types";
 import type { SitecoreItemLocator, WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
 import type { ItemGraphNodeData } from "../model/sitecore-item.types.ts";
-
-export type ResolveOutcome =
-  | { kind: "enriched"; value: ItemGraphNodeData }
-  | { kind: "verified"; value: ItemGraphNodeData }
-  | { kind: "revision-mismatch"; value: ItemGraphNodeData; hadStructuralCache: boolean }
-  | { kind: "unverified"; value: ItemGraphNodeData }
-  | { kind: "not-found" }
-  | { kind: "failed" };
-
-export type CachedItemFact = {
-  value: ItemGraphNodeData | undefined;
-  revision: string | undefined;
-  hadStructuralCache: boolean;
-};
 
 function restoreQuickInfo(quickInfo: StoredQuickInfo): ItemGraphNodeData {
   const scTemplate = itemFromLocator(quickInfo.scTemplate);

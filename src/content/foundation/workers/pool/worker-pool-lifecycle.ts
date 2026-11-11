@@ -1,19 +1,11 @@
-// @source-path [fobles] src/content/foundation/workers/pool/worker-pool-lifecycle.ts
+// @source-path [Fobles] src/content/foundation/workers/pool/worker-pool-lifecycle.ts
+
+import type { DisposeWorkerPoolOptions, WorkerPoolDisposalResult } from "./pool.types.js";
 import { extensionLog } from "../../../logger";
-import { closeWorkerTarget, sendCancelToWorkerTarget } from "../transport/worker-target-service";
-import type { ActiveWorkerTask, PoolWorker, QueuedTask } from "../tasks/worker-task.types";
-import { resetWorkerReadiness } from "./worker-readiness";
+import type { PoolWorker } from "../tasks/worker-task.types";
 import { createCancelledResult } from "../tasks/worker-task.types";
-
-type DisposeWorkerPoolOptions = {
-  workers: PoolWorker[];
-  queue: QueuedTask[];
-  activeTaskByWorkerKey: Map<string, ActiveWorkerTask>;
-  cancelledRequestIds: Set<string>;
-  generation: number;
-};
-
-export type WorkerPoolDisposalResult = { generation: number };
+import { closeWorkerTarget, sendCancelToWorkerTarget } from "../transport/worker-target-service";
+import { resetWorkerReadiness } from "./worker-readiness";
 
 export async function disposeWorkerPoolLifecycle({
   workers,

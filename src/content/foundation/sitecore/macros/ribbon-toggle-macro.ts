@@ -1,3 +1,4 @@
+import type { BooleanTripleState } from "./macros.types.js";
 // @source-path [fobles] src/content/foundation/sitecore/macros/ribbon-toggle-macro.ts
 
 import { CONST } from "../../../../constants/const";
@@ -29,8 +30,6 @@ export async function setScRawValuesState(container: ParentNode, desiredState: b
 
   extensionLog.debug(`[setScRawValuesState] - Set raw values state to: ${desiredState}`);
 }
-
-export type BooleanTripleState = true | false | undefined;
 
 export async function getScRawValuesState(container: ParentNode): Promise<BooleanTripleState> {
   const selectViewTabSuccess = await clickRibbonViewTab(container);

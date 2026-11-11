@@ -1,17 +1,17 @@
+import type { PendingWorkerReady } from "./iframe.types.js";
+import type { WorkerIframeTarget } from "./iframe.types.js";
 // @source-path [fobles] src/content/foundation/workers/iframe/worker-iframe-service.ts
 import { CONST } from "../../../../constants/const";
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import { extensionLog } from "../../../logger";
-import type {
-  WorkerIframeCreateMessage,
-  WorkerIframeCreateResult,
-  WorkerIframeNavigateMessage,
-  WorkerIframeRemoveAllMessage,
-  WorkerIframeRemoveMessage,
-  WorkerSetOwnedMessage,
-  WorkerTaskCancelMessage,
-  WorkerTaskExecuteMessage
-} from "../transport/PoolRunTaskMessage.types";
+import type { WorkerSetOwnedMessage } from "../transport/transport.types";
+import type { WorkerTaskCancelMessage } from "../transport/transport.types";
+import type { WorkerTaskExecuteMessage } from "../transport/transport.types";
+import type { WorkerIframeRemoveAllMessage } from "../transport/transport.types";
+import type { WorkerIframeRemoveMessage } from "../transport/transport.types";
+import type { WorkerIframeNavigateMessage } from "../transport/transport.types";
+import type { WorkerIframeCreateResult } from "../transport/transport.types";
+import type { WorkerIframeCreateMessage } from "../transport/transport.types";
 import {
   WORKER_IFRAME_CREATE_MESSAGE_TYPE,
   WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE,
@@ -22,15 +22,6 @@ import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task
 
 const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;
 const WORKER_POOL = CONST.FOBLES.WORKER_POOL;
-
-export type WorkerIframeTarget = { kind: "iframe"; workerId: string; hostTabId: number; frameId: number };
-
-type PendingWorkerReady = {
-  hostTabId: number;
-  resolve: (target: WorkerIframeTarget) => void;
-  reject: (error: Error) => void;
-  timeoutId: ReturnType<typeof setTimeout>;
-};
 
 const targetByWorkerId = new Map<string, WorkerIframeTarget>();
 const pendingReadyByWorkerId = new Map<string, PendingWorkerReady>();

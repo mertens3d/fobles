@@ -20,12 +20,13 @@ import {
   type WorkerTask,
   type WorkerTaskResult,
 } from "../tasks/worker-task.types";
-import { isWorkerTabTarget, type WorkerTarget } from "./worker-target";
-import type { WorkerPoolState } from "./worker-pool-state";
+import { isWorkerTabTarget } from "./worker-target";
+import type { WorkerTarget } from "./pool.types";
+import type { WorkerPoolState } from "./pool.types";
 import { cancelWorkerIdleDisposal, scheduleWorkerIdleDisposal } from "./worker-idle-disposal";
 import { getWorkClass, takeNextWorkerTask } from "./worker-admission";
 import { snapshotWorkerPoolStatus } from "./worker-pool-status";
-import type { WorkerPoolStatus } from "./worker-pool-status.types";
+import type { WorkerPoolStatus } from "./pool.types";
 import { recordWorkerTaskQueued, recordWorkerTaskSettled } from "./worker-task-history";
 import { WORK_SCHEDULING } from "../work-scheduling.const";
 import { backgroundCooldownRemaining, cancelBackgroundCooldown, scheduleBackgroundCooldown } from "./worker-background-cooldown";

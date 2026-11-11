@@ -1,4 +1,4 @@
-import type { WorkerPoolState } from "./worker-pool-state.ts";
+import type { WorkerPoolState } from "./pool.types";
 import { WORK_SCHEDULING } from "../work-scheduling.const.ts";
 
 export function backgroundCooldownRemaining(pool: WorkerPoolState, cooldownMs: number): number {

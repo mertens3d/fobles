@@ -17,7 +17,8 @@ import {
   sendTaskToWorkerTab,
 } from "./worker-tab-service";
 import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
-import { isWorkerIframeTarget, isWorkerTabTarget, type WorkerTarget } from "../pool/worker-target";
+import { isWorkerIframeTarget, isWorkerTabTarget } from "../pool/worker-target";
+import type { WorkerTarget } from "../pool/pool.types";
 
 export async function createWorkerTarget(
   hostTabId: number | undefined,

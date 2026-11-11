@@ -9,14 +9,12 @@ import type { StepKey } from "../../../constants/graph.const";
 import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { PROGRESS_STEPS } from "../harvesting/planner/harvest-steps";
 import type { PreparedReferenceModel } from "./acquisition/prepare-reference-model";
-import {
-  startSharedReferenceModelSession,
-  type ReferenceModelSessionStateChange,
-  type SharedReferenceModelSession,
-} from "./processing/reference-model-session";
-import type { ReferenceModelProcessingProgress } from "./processing/reference-model-processing.types";
+import { startSharedReferenceModelSession } from "./processing/reference-model-session";
+import type { SharedReferenceModelSession } from "./processing/processing.types";
+import type { ReferenceModelSessionStateChange } from "./processing/processing.types";
+import type { ReferenceModelProcessingProgress } from "./processing/processing.types";
 import type { PhaseProgress } from "./progress/lifecycle.types";
-import type { ReferenceModelHarvestProgress } from "./processing/reference-model-harvest-queue";
+import type { ReferenceModelHarvestProgress } from "./processing/processing.types";
 
 export type FoblesDataFlavor = "reference-model";
 
@@ -51,9 +49,9 @@ export type FoblesDataSession = {
 
 export type FoblesAcquisitionProgress = { harvestRequired: boolean; progress: PhaseProgress };
 
-type AcquisitionProgressListener = (progress: FoblesAcquisitionProgress) => void;
+export type AcquisitionProgressListener = (progress: FoblesAcquisitionProgress) => void;
 
-type AcquisitionState = {
+export type AcquisitionState = {
   harvestRequired: boolean;
   finished: boolean;
   statusByStepKey: Map<StepKey, HarvestProgressStatus>;

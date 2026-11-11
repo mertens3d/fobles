@@ -1,22 +1,6 @@
-// @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-harvest-queue.ts
-
-export type ReferenceModelHarvestProgress = { completed: number; max: number; status: "running" | "complete" };
-
-export type ReferenceModelHarvestQueueOptions = {
-  runHarvest: (reference: string, signal: AbortSignal) => Promise<void>;
-  onProgress?: (progress: ReferenceModelHarvestProgress) => void;
-  onError?: (reference: string, error: unknown) => void;
-};
-
-type ReferenceModelHarvestJob = { reference: string; onSettled?: (succeeded: boolean) => void };
-
-export type ReferenceModelHarvestQueue = {
-  // No-op if `reference` is already queued, active, or settled in this queue's lifetime.
-  // Jobs added while processing are appended and consumed by the same queue lifecycle.
-  enqueue: (reference: string, onSettled?: (succeeded: boolean) => void) => void;
-  dispose: () => void;
-};
-
+import type { ReferenceModelHarvestQueue } from "./processing.types.js";
+import type { ReferenceModelHarvestJob } from "./processing.types.js";
+import type { ReferenceModelHarvestQueueOptions } from "./processing.types.js";
 // This is a logical Reference Harvesting queue, not another worker pool. Each job still delegates
 // its live work to the shared worker infrastructure through runHarvest. FIFO execution keeps the
 // Sitecore editor-state lifecycle serialized while allowing newly discovered jobs to be appended.

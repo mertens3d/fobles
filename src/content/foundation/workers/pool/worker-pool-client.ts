@@ -2,15 +2,13 @@
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
-import type { WorkerPoolStatus } from "./worker-pool-status.types";
+import type { WorkerPoolStatus } from "./pool.types";
 import type { WorkerTask, WorkerTaskResult } from "../tasks/worker-task.types";
-import type {
-  PoolCancelRequestMessage,
-  PoolCancelTaskMessage,
-  PoolDisposeMessage,
-  PoolRunTaskMessage,
-  WorkerPoolStatusMessage
-} from "../transport/PoolRunTaskMessage.types";
+import type { WorkerPoolStatusMessage } from "../transport/transport.types";
+import type { PoolDisposeMessage } from "../transport/transport.types";
+import type { PoolCancelTaskMessage } from "../transport/transport.types";
+import type { PoolCancelRequestMessage } from "../transport/transport.types";
+import type { PoolRunTaskMessage } from "../transport/transport.types";
 
 export async function runWorkerTask(task: WorkerTask): Promise<WorkerTaskResult | undefined> {
   const message: PoolRunTaskMessage = { type: CONST.FOBLES.WORKER.MESSAGE_TYPE.POOL_RUN_TASK, task };

@@ -1,7 +1,8 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window-geometry-math.ts
 
 import { FOBLES_WINDOW } from "./fobles-window.const.ts";
-import type { FoblesWindowState, WindowRect } from "./fobles-window.types.ts";
+import type { FoblesWindowState } from "./dialog.types";
+import type { WindowRect } from "./dialog.types";
 
 export function viewportRect(win: Window): { width: number; height: number } {
   return { width: win.innerWidth, height: win.innerHeight };

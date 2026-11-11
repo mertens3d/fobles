@@ -2,8 +2,9 @@
 import { WORK_SCHEDULING } from "../work-scheduling.const.ts";
 import type { QueuedTask } from "../tasks/worker-task.types.ts";
 import { getWorkClass } from "./worker-admission.ts";
-import type { WorkerPoolState } from "./worker-pool-state.ts";
-import type { WorkerPoolStatus, WorkerPoolTaskStatus } from "./worker-pool-status.types.ts";
+import type { WorkerPoolState } from "./pool.types";
+import type { WorkerPoolStatus } from "./pool.types";
+import type { WorkerPoolTaskStatus } from "./pool.types";
 import { getWorkerTaskHistory } from "./worker-task-history";
 
 function taskStatus(queued: QueuedTask, phase: WorkerPoolTaskStatus["phase"]): WorkerPoolTaskStatus {

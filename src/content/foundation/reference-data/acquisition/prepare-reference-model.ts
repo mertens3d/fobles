@@ -5,7 +5,8 @@ import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_R
 import { createReferenceModel } from "../model/reference-model-builder";
 import { buildReferenceModelNodeLookup } from "../model/reference-model-node-lookup";
 import type { ReferenceModelNode } from "../model/reference-model.types";
-import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../processing/processing-state";
+import type { ProcessingStateByTreeNodeId } from "../processing/processing.types";
+import type { ProcessingStatus } from "../processing/processing.types";
 
 // The headless result of preparing a harvest: the Reference Model, its node lookup, and the processing-state map that
 // Resolve and Harvest later update. Everything a consumer needs, with no UI projection - Graph adds Cytoscape elements.

@@ -1,8 +1,5 @@
-// @source-path [fobles] src/content/shell/shell-events.ts
-
-export type FoblesShellCommand = "auditor:open" | "reference-graph:open";
-
-export type FoblesShellCommandEvent = { readonly command: FoblesShellCommand; readonly doc: Document };
+import type { FoblesShellCommandEvent } from "./shell.types.js";
+import type { FoblesShellCommand } from "./shell.types.js";
 
 const COMMAND_EVENT_TYPE = "fobles:shell:command";
 const commandTarget = new EventTarget();

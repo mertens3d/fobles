@@ -8,3 +8,5 @@ export type Logger = {
   warn: (...args: unknown[]) => void;
   error: (...args: unknown[]) => void;
 };
+
+export type FoblesGlobal = typeof globalThis & { __sitecoreFoblesDebug?: boolean; __sitecoreFoblesPersistLogs?: boolean };

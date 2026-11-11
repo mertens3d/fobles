@@ -1,3 +1,6 @@
+import type { StartSharedReferenceModelSessionOptions } from "./processing.types.js";
+import type { SharedReferenceModelSession } from "./processing.types.js";
+import type { ReferenceModelSessionStateChange } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-session.ts
 
 import { extensionLog } from "../../../logger";
@@ -20,49 +23,16 @@ import type { SitecoreItemLocator, WorkerTask } from "../../workers/tasks/worker
 import { acquireReferenceModelForCurrentItem } from "../acquisition/acquire-reference-model";
 import type { PreparedReferenceModel } from "../acquisition/prepare-reference-model";
 import { collectEnrichmentGuidLookup } from "./resolve-candidate-collector";
-import {
-  createReferenceHarvestingQueue,
-  type ReferenceHarvestingJob,
-  type ReferenceHarvestingProgress,
-  type ReferenceHarvestingQueue,
-} from "./reference-harvesting-queue";
+import { createReferenceHarvestingQueue } from "./reference-harvesting-queue";
+import type { ReferenceHarvestingQueue } from "./processing.types";
+import type { ReferenceHarvestingProgress } from "./processing.types";
+import type { ReferenceHarvestingJob } from "./processing.types";
 import { patchReferenceModelFact } from "../model/reference-model-fact-patcher";
-import type {
-  ReferenceModelProcessingController,
-  ReferenceModelProcessingProgress,
-} from "./reference-model-processing.types";
+import type { ReferenceModelProcessingController } from "./processing.types";
+import type { ReferenceModelProcessingProgress } from "./processing.types";
 import { startReferenceModelProcessor } from "./reference-model-processor";
-import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "./processing-state";
-
-export type ReferenceModelSessionStateChange = (
-  treeNodeIds: readonly string[],
-  status: ProcessingStatus,
-  state: ProcessingStateByTreeNodeId,
-) => void | Promise<void>;
-
-export type SharedReferenceModelSession = {
-  itemId: string;
-  prepared: PreparedReferenceModel;
-  resolveCandidateTreeNodeIds: ReadonlySet<string>;
-  cacheRevalidationResultByTreeNodeId: ReadonlyMap<string, "passed" | "error">;
-  processingCompletion: Promise<void>;
-  subscribeStateChange: (listener: ReferenceModelSessionStateChange) => () => void;
-  subscribeProcessingProgress: (listener: (progress: ReferenceModelProcessingProgress) => void) => () => void;
-  subscribeHarvestProgress: (listener: (progress: ReferenceHarvestingProgress) => void) => () => void;
-  updateFilters: (filters: SitecoreHarvestFiltersState) => void;
-  dispose: () => void;
-};
-
-export type StartSharedReferenceModelSessionOptions = {
-  doc: Document;
-  workSession: WorkSession;
-  filters: SitecoreHarvestFiltersState;
-  signal: AbortSignal;
-  onAcquireProgress?: HarvestProgressCallback;
-  onHarvestRequired?: () => void;
-  onRootRefresh?: (result: SitecoreHarvestResult) => void;
-  onModelReady?: (prepared: PreparedReferenceModel) => void;
-};
+import type { ProcessingStateByTreeNodeId } from "./processing.types";
+import type { ProcessingStatus } from "./processing.types";
 
 const sessionsByWorkSessionId = new Map<string, SharedReferenceModelSession>();
 const FACTS_BY_FILTER: ReadonlyArray<[keyof SitecoreHarvestFiltersState, SitecoreDataFactName]> = [
