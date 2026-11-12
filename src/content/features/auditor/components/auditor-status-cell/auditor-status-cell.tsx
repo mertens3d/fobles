@@ -1,9 +1,9 @@
+import type { AuditorStatusCellContext, StatusRow } from "./auditor-status-cell.types.js";
 // @source-path [fobles] src/content/features/auditor/components/auditor-status-cell/auditor-status-cell.tsx
 
-import { useEffect, useRef, useState } from "react";
 import type { ICellRendererParams } from "ag-grid-community";
+import { useEffect, useRef, useState } from "react";
 import type { AuditFindingStatus } from "../../auditor.types";
-import type { AuditorTreeRow } from "../../auditor-grid/auditor-grid.types";
 import { AuditorStatusIcon } from "../auditor-status-icon/auditor-status-icon";
 
 const STATUS_LABEL: Readonly<Record<AuditFindingStatus, string>> = {
@@ -12,10 +12,6 @@ const STATUS_LABEL: Readonly<Record<AuditFindingStatus, string>> = {
   warning: "Warning",
   error: "Sitecore Error",
 };
-
-type StatusRow = AuditorTreeRow;
-
-type AuditorStatusCellContext = { onViewTestDetails?: (row: AuditorTreeRow) => void };
 
 export function AuditorStatusCell(props: ICellRendererParams<StatusRow>) {
   const buttonRef = useRef<HTMLButtonElement>(null);

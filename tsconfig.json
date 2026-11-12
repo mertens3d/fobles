@@ -39,6 +39,5 @@
     "build",
     "dist",
     "build-ts",
-    "src/**/*.test.ts"
   ]
 }

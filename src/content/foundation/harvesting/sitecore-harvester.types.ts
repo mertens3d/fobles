@@ -1,13 +1,11 @@
 // @source-path [fobles] src/content/foundation/harvesting/sitecore-harvester.types.ts
 
-import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
-import type { StepKey } from "../../../constants/graph.const";
-import type {
-  ItemGraphNodeData,
-  LayoutSectionField,
-  RootItem,
-  SitecoreHarvestSection,
-} from "../reference-data/model/sitecore-item.types";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
+import type { StepKey } from "../../../constants/constants.types";
+import type { LayoutSectionField } from "../reference-data/model/model.types";
+import type { SitecoreHarvestSection } from "../reference-data/model/model.types";
+import type { RootItem } from "../reference-data/model/model.types";
+import type { ItemGraphNodeData } from "../reference-data/model/model.types";
 import type { HarvestSession } from "./harvest-session.types";
 
 export type HarvestContext = {

@@ -6,13 +6,9 @@ import { itemNavigationCheck } from "../../../src/content/features/auditor/check
 import { referenceResolvedCheck } from "../../../src/content/features/auditor/checks/reference-resolved-check.ts";
 import { cacheValidationCheck } from "../../../src/content/features/auditor/checks/cache-validation-check.ts";
 import { createAuditFindingStore } from "../../../src/content/features/auditor/audit-finding-store.ts";
-import type { AuditCheckContext } from "../../../src/content/features/auditor/audit-check.types";
-import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types";
-import type {
-  ReferenceModelItemNode,
-  ReferenceModelNode,
-} from "../../../src/content/foundation/reference-data/model/reference-model.types";
-import type { ProcessingStatus } from "../../../src/content/foundation/reference-data/processing/processing-state.ts";
+import type { AuditCheckContext } from "../../../src/content/features/auditor/auditor.types.ts";
+import type { ItemGraphNodeData, ReferenceModelNode, ReferenceModelItemNode } from "../../../src/content/foundation/reference-data/model/model.types.ts";
+import type { ProcessingStatus } from "../../../src/content/foundation/reference-data/processing/processing.types.ts";
 function makeItem(overrides: Partial<ItemGraphNodeData> = {}): ItemGraphNodeData {
   return {
     type: "scItem",

@@ -3,9 +3,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { createBaseResult, extractRootItem, mergeCollectorResult } from "../../../src/content/foundation/harvesting/coordinator/harvest-result-merger.ts";
-import { factoryItemGraphNodeData, type RootItem, type SitecoreHarvestSection } from "../../../src/content/foundation/reference-data/model/sitecore-item.types.ts";
 import type { HarvestRequest, SitecoreHarvestResult } from "../../../src/content/foundation/harvesting/sitecore-harvester.types.ts";
 import type { WorkerTaskSuccessResult, WorkerTaskType, WorkerTaskPayloadByType } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
+import type { RootItem, SitecoreHarvestSection } from "../../../src/content/foundation/reference-data/model/model.types.ts";
+import type { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types.ts";
 
 function rootItem(id: string): RootItem {
   return { ...factoryItemGraphNodeData({ scItemId: id }), scItemId: id };

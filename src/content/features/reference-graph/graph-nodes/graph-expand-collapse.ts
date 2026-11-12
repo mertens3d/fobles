@@ -2,8 +2,8 @@ import type { GraphExpandCollapseController } from "./graph-nodes.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-expand-collapse.ts
 
 import type cytoscape from "cytoscape";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
-import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
+import type { LayoutGraphPresetName } from "../../../../constants/constants.types";
 import {
   getExpandedByCollapseKey,
   setExpandedStateForCollapseKey,

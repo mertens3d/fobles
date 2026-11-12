@@ -8,7 +8,7 @@ import {
   THIRD_PARTY_GROUP,
   TREE_JUMP_GROUP,
 } from "../../constants/flyout-groups";
-import type { FlyoutGroup } from "../../constants/FlyoutOption";
+import type { FlyoutGroup } from "../../constants/constants.types";
 import type { JumpFlyoutButtonDescriptor } from "./jump-flyout.types";
 
 export type { JumpFlyoutButtonDescriptor } from "./jump-flyout.types";

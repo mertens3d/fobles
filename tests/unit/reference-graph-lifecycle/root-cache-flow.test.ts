@@ -5,8 +5,8 @@ import {
   decideRootCacheUsage,
   rootProcessingStateForDecision,
 } from "../../../src/content/foundation/reference-data/acquisition/root-cache-flow.ts";
-import type { SitecoreDataCacheRecord } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types";
-import type { SitecoreHarvestFiltersState } from "../../../src/constants/_base/_REFERENCE_GRAPH_BASE.ts";
+import type { SitecoreHarvestFiltersState } from "../../../src/constants/_base/_base.types.ts";
+import type { SitecoreDataCacheRecord } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
 
 const FILTERS: SitecoreHarvestFiltersState = {
   parent: false,

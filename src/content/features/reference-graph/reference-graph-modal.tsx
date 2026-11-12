@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph-modal.tsx
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
 import { ReferenceGraphApp } from "./reference-graph-app";
-import type { HarvestForLink } from "./graph.types";
-import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
+import type { HarvestForLink } from "./reference-graph.types";
+import type { PreparedReferenceGraph } from "./reference-graph.types";
 
 export type ReferenceGraphViewProps = {
   doc: Document;

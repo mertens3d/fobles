@@ -1,3 +1,4 @@
+import type { TreelistExItem } from "./field-strategies.types.js";
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
@@ -5,9 +6,7 @@ import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
-import type { TreelistExFobles as TreelistExConfig } from "../../../../constants/fobles.types";
-
-type TreelistExItem = { label: string; value: string };
+import type { TreelistExFobles as TreelistExConfig } from "../../../../constants/constants.types";
 
 const findEligibleHosts = (doc: Document, config: TreelistExConfig): HTMLElement[] =>
   Array.from(doc.querySelectorAll<HTMLElement>(config.FoblesTopSelector)).filter(

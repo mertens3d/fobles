@@ -1,3 +1,4 @@
+import type { TreeListItem } from "./field-strategies.types.js";
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
 import { formatFoId } from "../../../foundation/sitecore/guid";
@@ -5,9 +6,7 @@ import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
 import { collectGuidOptionItems } from "../shared/collect-select-options";
-import type { TreeListFobles as TreeListConfig } from "../../../../constants/fobles.types";
-
-type TreeListItem = { label: string; value: string };
+import type { TreeListFobles as TreeListConfig } from "../../../../constants/constants.types";
 
 const getTreeNodeValue = (node: Element): string | null => {
   const match = node.id.match(/([0-9a-f]{32})$/i);

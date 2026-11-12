@@ -18,11 +18,8 @@ import {
   getItem,
   putFact,
 } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
-import type {
-  QuickInfoPayload,
-  SitecoreDataCacheKey,
-  SitecoreDataCacheRecord,
-} from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types";
+import type { SitecoreDataCacheKey, SitecoreDataCacheRecord, QuickInfoPayload } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
+
 function sampleKey(overrides: Partial<SitecoreDataCacheKey> = {}): SitecoreDataCacheKey {
   return {
     environment: "DEV",

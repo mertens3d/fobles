@@ -1,8 +1,8 @@
 // @source-path [fobles] tests/unit/sitecore-data-cache/sitecore-data-cache-key.test.ts
 import { test } from "node:test";
 import assert from "node:assert/strict";
+import type { SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
 import { serializeCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts";
-import type { SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types";
 function baseKey(overrides: Partial<SitecoreDataCacheKey> = {}): SitecoreDataCacheKey {
   return {
     environment: "DEV",

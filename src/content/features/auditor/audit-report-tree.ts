@@ -1,5 +1,5 @@
-import type { AuditReportTreeNode } from "./auditor.types.js";
-import type { AuditDataOrigin } from "./auditor.types.js";
+import type { AuditReportTreeNode } from "./auditor.types";
+import type { AuditDataOrigin } from "./auditor.types";
 // @source-path [fobles] src/content/features/auditor/audit-report-tree.ts
 
 import type { ProcessingStateByTreeNodeId } from "../../foundation/reference-data/processing/processing.types";
@@ -7,7 +7,7 @@ import type { ProcessingStatus } from "../../foundation/reference-data/processin
 import { getGraphPresentationState } from "../../foundation/reference-data/model/graph-presentation-state";
 import { resolveNodeLabel } from "../../shared/ui/reference-model/node-label-resolver";
 import { NODE_PRESENTATION_BY_KIND } from "../../shared/ui/reference-model/node-presentation";
-import type { ReferenceModelNode } from "../../foundation/reference-data/model/reference-model.types";
+import type { ReferenceModelNode } from "../../foundation/reference-data/model/model.types";
 import type { AuditFinding } from "./auditor.types";
 import type { AuditFindingStatus } from "./auditor.types";
 

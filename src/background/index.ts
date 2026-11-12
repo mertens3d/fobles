@@ -1,12 +1,8 @@
+import type { ActiveSpecialist, RuntimeMessage, SpecialistFeature } from "./background.types";
 /// <reference types="chrome" />
 
 import { LOGGER, MESSAGE } from "../constants/extension-const";
-import "./fobles-utility-lock-registration";
-import "./item-history-registration.ts";
-import "./known-sites-registration.ts";
-import "./structural-command-registration.ts";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
-import { extensionLog } from "../content/logger";
 import {
   clearHostWorkerIframeTargets,
   markWorkerIframeReady,
@@ -15,27 +11,23 @@ import {
   adoptWorkerTab,
   cancelPoolRequest,
   cancelPoolTask,
+  clearWorkerPoolForHost,
   disposeWorkerPool,
+  getWorkerPoolStatus,
   handleWorkerReady,
   handleWorkerTabRemoved,
-  clearWorkerPoolForHost,
   runPoolTask,
-  getWorkerPoolStatus,
 } from "../content/foundation/workers/pool/background-worker-pool";
 import {
   WORKER_IFRAME_READY_MESSAGE_TYPE,
 } from "../content/foundation/workers/transport/worker.messages";
-import type { WorkerAdoptedMessage } from "../content/foundation/workers/transport/transport.types";
-import type { WorkerIframeReadyMessage } from "../content/foundation/workers/transport/transport.types";
-import type { WorkerReadyMessage } from "../content/foundation/workers/transport/transport.types";
-import type { WorkerPoolStatusMessage } from "../content/foundation/workers/transport/transport.types";
-import type { PoolDisposeMessage } from "../content/foundation/workers/transport/transport.types";
-import type { PoolCancelTaskMessage } from "../content/foundation/workers/transport/transport.types";
-import type { PoolCancelRequestMessage } from "../content/foundation/workers/transport/transport.types";
-import type { PoolRunTaskMessage } from "../content/foundation/workers/transport/transport.types";
 import { WORKER_MESSAGE_TYPE } from "../content/foundation/workers/worker-protocol.const";
+import { extensionLog } from "../content/logger";
 import { appendPersistedLogEntry, clearPersistedLogEntries } from "../shared/logging/persisted-log-storage";
-import type { PersistedLogMessage } from "../shared/persisted-log.types";
+import "./fobles-utility-lock-registration";
+import "./item-history-registration.ts";
+import "./known-sites-registration.ts";
+import "./structural-command-registration.ts";
 
 const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;
 const REFERENCE_GRAPH_LOCK_ACQUIRE = "FOBLES_REFERENCE_GRAPH_LOCK_ACQUIRE";
@@ -43,34 +35,9 @@ const REFERENCE_GRAPH_LOCK_RELEASE = "FOBLES_REFERENCE_GRAPH_LOCK_RELEASE";
 const AUDITOR_LOCK_ACQUIRE = "FOBLES_AUDITOR_LOCK_ACQUIRE";
 const AUDITOR_LOCK_RELEASE = "FOBLES_AUDITOR_LOCK_RELEASE";
 
-type SpecialistFeature = "reference-graph" | "auditor";
-
-type ActiveSpecialist = { feature: SpecialistFeature; hostTabId: number };
 let activeSpecialist: ActiveSpecialist | undefined;
 
 const RELAYED_COMMANDS: readonly string[] = [MESSAGE.ACTION.TOGGLE_FOBLES, MESSAGE.ACTION.TOGGLE_LBOLT];
-
-type ReferenceGraphLockMessage =
-  { type: "FOBLES_REFERENCE_GRAPH_LOCK_ACQUIRE" } | { type: "FOBLES_REFERENCE_GRAPH_LOCK_RELEASE" };
-
-type AuditorLockMessage = { type: "FOBLES_AUDITOR_LOCK_ACQUIRE" } | { type: "FOBLES_AUDITOR_LOCK_RELEASE" };
-
-type RuntimeMessage =
-  | RuntimeReloadMessage
-  | ReferenceGraphLockMessage
-  | AuditorLockMessage
-  | PoolRunTaskMessage
-  | PoolCancelRequestMessage
-  | PoolCancelTaskMessage
-  | PoolDisposeMessage
-  | WorkerPoolStatusMessage
-  | WorkerReadyMessage
-  | WorkerIframeReadyMessage
-  | WorkerAdoptedMessage
-  | PersistedLogMessage;
-interface RuntimeReloadMessage {
-  action: string;
-}
 
 function acquireSpecialist(feature: SpecialistFeature, hostTabId: number | undefined): boolean {
   const acquired =

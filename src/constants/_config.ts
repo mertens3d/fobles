@@ -1,4 +1,4 @@
-import type { FoblesConfig } from "./fobles.types";
+import type { FoblesConfig } from "./constants.types";
 
 export const fieldConfigs: FoblesConfig[] = [
   {

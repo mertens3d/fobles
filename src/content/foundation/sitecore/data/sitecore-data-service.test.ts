@@ -11,11 +11,10 @@ import {
 } from "../../cache/sitecore-data/indexed-db.ts";
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import { serializeCacheKey } from "../../cache/sitecore-data/sitecore-data-cache-key.ts";
-import type {
-  SitecoreDataCacheKey,
-  SitecoreDataCacheRecord,
-} from "../../cache/sitecore-data/sitecore-data-cache.types";
-import { factNameForTaskType, getFact, requestFact } from "./sitecore-data-service.ts";
+// import type {
+//   SitecoreDataCacheKey,
+//   SitecoreDataCacheRecord,
+// } from "../../cache/sitecore-data/sitecore-data-cache.types";
 import type {
   WorkerTaskCancelledResult,
   WorkerTaskDocumentStaleResult,
@@ -23,6 +22,9 @@ import type {
   WorkerTaskExecutionResult,
   WorkerTaskSuccessResult,
 } from "../../workers/tasks/worker-task.types";
+import { factNameForTaskType, requestFact, resolveFact } from "./sitecore-data-service.ts";
+import type { SitecoreDataCacheKey, SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data.types.ts";
+import { getCachedFact } from "../../cache/sitecore-data/sitecore-data-cache.ts";
 
 function sampleKey(overrides: Partial<SitecoreDataCacheKey> = {}): SitecoreDataCacheKey {
   return {
@@ -84,16 +86,16 @@ beforeEach(async () => {
 
 void test("first request with empty cache executes the worker", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
-  await getFact(sampleKey(), "parent", live.fetchLive);
+  await resolveFact(sampleKey(), "parent", live.fetchLive);
   assert.equal(live.callCount(), 1);
 });
 
 void test("live result is cached", async () => {
   const live = countingFetchLive(successResult("get-children", { childItems: [] }));
   const key = sampleKey();
-  await getFact(key, "children", live.fetchLive);
+  await resolveFact(key, "children", live.fetchLive);
 
-  const cached = await cache.getFact(key, "children");
+  const cached = await cache.getCachedFact(key, "children");
   assert.ok(cached);
   assert.deepEqual(cached?.value, { childItems: [] });
 });
@@ -102,15 +104,15 @@ void test("second identical request returns cache without executing the worker",
   const live = countingFetchLive(successResult("get-referrers", { referrers: [] }));
   const key = sampleKey();
 
-  await getFact(key, "referrers", live.fetchLive);
-  await getFact(key, "referrers", live.fetchLive);
+  await resolveFact(key, "referrers", live.fetchLive);
+  await resolveFact(key, "referrers", live.fetchLive);
 
   assert.equal(live.callCount(), 1);
 });
 
 void test("result reports source=live on first request", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
-  const outcome = await getFact(sampleKey(), "parent", live.fetchLive);
+  const outcome = await resolveFact(sampleKey(), "parent", live.fetchLive);
 
   assert.equal(outcome.outcome, "resolved");
   assert.equal(outcome.outcome === "resolved" ? outcome.fact.source : undefined, "live");
@@ -120,8 +122,8 @@ void test("result reports source=cache on second request", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
   const key = sampleKey();
 
-  await getFact(key, "parent", live.fetchLive);
-  const outcome = await getFact(key, "parent", live.fetchLive);
+  await resolveFact(key, "parent", live.fetchLive);
+  const outcome = await resolveFact(key, "parent", live.fetchLive);
 
   assert.equal(outcome.outcome === "resolved" ? outcome.fact.source : undefined, "cache");
 });
@@ -130,11 +132,11 @@ void test("cache hit does not change lastVerifiedAt", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
   const key = sampleKey();
 
-  await getFact(key, "parent", live.fetchLive);
+  await resolveFact(key, "parent", live.fetchLive);
   const firstRecord = await peekRecord(key);
   const firstVerifiedAt = firstRecord?.parent?.lastVerifiedAt;
 
-  await getFact(key, "parent", live.fetchLive);
+  await resolveFact(key, "parent", live.fetchLive);
   const secondRecord = await peekRecord(key);
 
   assert.equal(secondRecord?.parent?.lastVerifiedAt, firstVerifiedAt);
@@ -144,7 +146,7 @@ void test("cache hit does update lastAccessedAt", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
   const key = sampleKey();
 
-  await getFact(key, "parent", live.fetchLive);
+  await resolveFact(key, "parent", live.fetchLive);
 
   await runItemStoreTransaction("readwrite", async (store) => {
     const request = store.get(serializeCacheKey(key)) as IDBRequest<SitecoreDataCacheRecord>;
@@ -153,7 +155,7 @@ void test("cache hit does update lastAccessedAt", async () => {
     await getRequestResult(store.put(existing));
   });
 
-  await getFact(key, "parent", live.fetchLive);
+  await resolveFact(key, "parent", live.fetchLive);
   const record = await peekRecord(key);
 
   assert.ok(record && record.lastAccessedAt > 1);
@@ -164,8 +166,8 @@ void test("cached not-found suppresses another worker lookup", async () => {
   const live = countingFetchLive(successResult("get-quick-info", notFoundPayload));
   const key = sampleKey();
 
-  const first = await getFact(key, "quickInfo", live.fetchLive);
-  const second = await getFact(key, "quickInfo", live.fetchLive);
+  const first = await resolveFact(key, "quickInfo", live.fetchLive);
+  const second = await resolveFact(key, "quickInfo", live.fetchLive);
 
   assert.equal(live.callCount(), 1);
   assert.equal(first.outcome === "resolved" ? first.fact.value.result.status : undefined, "not-found");
@@ -176,37 +178,37 @@ void test("worker error is not cached", async () => {
   const live = countingFetchLive(errorResult("get-parent"));
   const key = sampleKey();
 
-  const outcome = await getFact(key, "parent", live.fetchLive);
+  const outcome = await resolveFact(key, "parent", live.fetchLive);
 
   assert.equal(outcome.outcome, "unresolved");
-  assert.equal(await cache.getFact(key, "parent"), undefined);
+  assert.equal(await getCachedFact(key, "parent"), undefined);
 });
 
 void test("cancelled result is not cached", async () => {
   const live = countingFetchLive(cancelledResult("get-parent"));
   const key = sampleKey();
 
-  const outcome = await getFact(key, "parent", live.fetchLive);
+  const outcome = await resolveFact(key, "parent", live.fetchLive);
 
   assert.equal(outcome.outcome, "unresolved");
-  assert.equal(await cache.getFact(key, "parent"), undefined);
+  assert.equal(await getCachedFact(key, "parent"), undefined);
 });
 
 void test("document-stale is not cached", async () => {
   const live = countingFetchLive(documentStaleResult("get-parent"));
   const key = sampleKey();
 
-  const outcome = await getFact(key, "parent", live.fetchLive);
+  const outcome = await resolveFact(key, "parent", live.fetchLive);
 
   assert.equal(outcome.outcome, "unresolved");
-  assert.equal(await cache.getFact(key, "parent"), undefined);
+  assert.equal(await getCachedFact(key, "parent"), undefined);
 });
 
 void test("environment isolates results", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
 
-  await getFact(sampleKey({ environment: "https://dev.example.com" }), "parent", live.fetchLive);
-  await getFact(sampleKey({ environment: "https://qa.example.com" }), "parent", live.fetchLive);
+  await resolveFact(sampleKey({ environment: "https://dev.example.com" }), "parent", live.fetchLive);
+  await resolveFact(sampleKey({ environment: "https://qa.example.com" }), "parent", live.fetchLive);
 
   assert.equal(live.callCount(), 2);
 });
@@ -214,8 +216,8 @@ void test("environment isolates results", async () => {
 void test("database isolates results", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
 
-  await getFact(sampleKey({ database: "master" }), "parent", live.fetchLive);
-  await getFact(sampleKey({ database: "web" }), "parent", live.fetchLive);
+  await resolveFact(sampleKey({ database: "master" }), "parent", live.fetchLive);
+  await resolveFact(sampleKey({ database: "web" }), "parent", live.fetchLive);
 
   assert.equal(live.callCount(), 2);
 });
@@ -223,8 +225,8 @@ void test("database isolates results", async () => {
 void test("language isolates results", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
 
-  await getFact(sampleKey({ language: "en" }), "parent", live.fetchLive);
-  await getFact(sampleKey({ language: "da" }), "parent", live.fetchLive);
+  await resolveFact(sampleKey({ language: "en" }), "parent", live.fetchLive);
+  await resolveFact(sampleKey({ language: "da" }), "parent", live.fetchLive);
 
   assert.equal(live.callCount(), 2);
 });
@@ -233,8 +235,8 @@ void test("path and GUID identities stay distinct", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
   const value = "46004574-866d-4702-828e-1c95ad1e03aa";
 
-  await getFact(sampleKey({ item: { kind: "id", value } }), "parent", live.fetchLive);
-  await getFact(sampleKey({ item: { kind: "path", value } }), "parent", live.fetchLive);
+  await resolveFact(sampleKey({ item: { kind: "id", value } }), "parent", live.fetchLive);
+  await resolveFact(sampleKey({ item: { kind: "path", value } }), "parent", live.fetchLive);
 
   assert.equal(live.callCount(), 2);
 });
@@ -257,7 +259,7 @@ void test("requested/resolved GUID validation still prevents a Sitecore fallback
   };
   const live = countingFetchLive(successResult("get-quick-info", payload));
 
-  const outcome = await getFact(sampleKey({ item: requested }), "quickInfo", live.fetchLive);
+  const outcome = await resolveFact(sampleKey({ item: requested }), "quickInfo", live.fetchLive);
 
   assert.equal(outcome.outcome === "resolved" ? outcome.fact.value.result.status : undefined, "not-found");
 });
@@ -265,12 +267,12 @@ void test("requested/resolved GUID validation still prevents a Sitecore fallback
 void test("listItems returns cache records through the public API", async () => {
   const live = countingFetchLive(successResult("get-parent", { parent: undefined }));
 
-  await getFact(
+  await resolveFact(
     sampleKey({ item: { kind: "id", value: "11111111-1111-1111-1111-111111111111" } }),
     "parent",
     live.fetchLive,
   );
-  await getFact(
+  await resolveFact(
     sampleKey({ item: { kind: "id", value: "22222222-2222-2222-2222-222222222222" } }),
     "parent",
     live.fetchLive,
@@ -285,7 +287,7 @@ void test("concurrent requests do not corrupt item records", async () => {
   const parentLive = countingFetchLive(successResult("get-parent", { parent: undefined }));
   const childrenLive = countingFetchLive(successResult("get-children", { childItems: [] }));
 
-  await Promise.all([getFact(key, "parent", parentLive.fetchLive), getFact(key, "children", childrenLive.fetchLive)]);
+  await Promise.all([resolveFact(key, "parent", parentLive.fetchLive), resolveFact  (key, "children", childrenLive.fetchLive)]);
 
   const record = await peekRecord(key);
   assert.ok(record?.parent);

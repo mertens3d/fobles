@@ -2,12 +2,9 @@
 
 import { STORAGE } from "../../../../constants/extension-const";
 import { getStorageValue, setStorageValue } from "../../../../shared/storage/storage";
-import {
-  DEFAULT_EXPANDED_BY_COLLAPSE_KEY,
-  isGraphCollapseKey,
-  type ExpandedByCollapseKey,
-  type GraphCollapseKey,
-} from "../../../foundation/reference-data/model/graph-collapse.types";
+import { DEFAULT_EXPANDED_BY_COLLAPSE_KEY, isGraphCollapseKey } from "../../../foundation/reference-data/model/graph-collapse.types";
+import type { ExpandedByCollapseKey } from "../../../foundation/reference-data/model/model.types";
+import type { GraphCollapseKey } from "../../../foundation/reference-data/model/model.types";
 
 export async function getExpandedByCollapseKey(): Promise<ExpandedByCollapseKey> {
   const result = await getStorageValue<unknown>([STORAGE.KEY.REFERENCE_GRAPH.EXPANDED_BY_COLLAPSE_KEY], "local");

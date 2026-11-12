@@ -1,21 +1,9 @@
+import type { StartEnrichmentControllerOptions } from "./enrichment.types.js";
 // @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment-controller.ts
-import type cytoscape from "cytoscape";
-import type { WorkSession } from "../../../foundation/workers/session/work-session.types";
-import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
 import { getFoblesDataSession } from "../../../foundation/reference-data/reference-data-service";
-import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing.types";
 import { patchCytoscapeNodes } from "./enrichment-graph-patcher";
-import type { EnrichmentController, EnrichmentProgressCallback } from "./enrichment.types";
+import type { EnrichmentController } from "./enrichment.types";
 
-type StartEnrichmentControllerOptions = {
-  doc: Document;
-  workSession: WorkSession;
-  referenceModel: ReferenceModelNode;
-  nodesById: Map<string, ReferenceModelNode>;
-  getCy: () => cytoscape.Core | undefined;
-  processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
-  onProgress?: EnrichmentProgressCallback;
-};
 let activeController: EnrichmentController | undefined;
 
 export function disposeActiveEnrichmentController(): void {

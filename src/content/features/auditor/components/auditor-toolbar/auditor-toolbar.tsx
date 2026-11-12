@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { CONST } from "../../../../../constants/const";
-import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_base.types";
 import { ViewReferenceModelButton } from "../../../../shared/ui/reference-controls/view-reference-model-button";
 import { AUDITOR_EXPORT_CSV_EVENT } from "../../../../shared/ui/reference-model/reference-model-viewer";
 import { AUDITOR_LAYOUT_VIEW_KEYS, DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS, getAuditorLayoutViewSettings, setAuditorLayoutViewSettings } from "../../auditor-layout-view-settings";

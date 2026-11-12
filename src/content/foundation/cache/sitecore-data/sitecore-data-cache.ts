@@ -1,6 +1,6 @@
-// @source-path [fobles] src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts
+// @source-path [Fobles] src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts
 
-import type { ItemGraphNodeData } from "../../reference-data/model/sitecore-item.types";
+import type { ItemGraphNodeData } from "../../reference-data/model/model.types";
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
 import {
   FACT_ITEM_KEY_INDEX_NAME,
@@ -192,7 +192,7 @@ export async function putFact<K extends SitecoreDataFactName>(
 
 }
 
-export async function getFact<K extends SitecoreDataFactName>(
+export async function getCachedFact<K extends SitecoreDataFactName>(
   key: SitecoreDataCacheKey,
   factName: K,
 ): Promise<SitecoreDataFact<SitecoreDataFactValueByName[K]> | undefined> {

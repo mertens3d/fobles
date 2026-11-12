@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/auditor-ui-settings.ts
-import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 
 const AUDITOR_UI_KEY = {
   CONTROLS_EXPANDED: "fobles.auditor.controls.expanded",

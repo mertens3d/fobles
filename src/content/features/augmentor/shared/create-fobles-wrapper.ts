@@ -1,5 +1,5 @@
 import { FOBLES } from "../../../../constants/fobles";
-import type { CreateFoblesWrapperOptions } from "./augmentor.types";
+import type { CreateFoblesWrapperOptions } from "./shared.types";
 
 // Every field strategy's "wrapper" element is tagged/classed identically; only the tag,
 // variant classes, and an optional measured height differ per strategy.

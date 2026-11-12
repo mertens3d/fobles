@@ -4,10 +4,15 @@ import { CONST } from "../../../../constants/const";
 import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
 import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance.types";
-import type { ReferenceModelItemNode, ReferenceModelNode, ReferenceModelNonItemNode } from "./reference-model.types";
+import type { ReferenceModelNode } from "./model.types";
+import type { ReferenceModelNonItemNode } from "./model.types";
+import type { ReferenceModelItemNode } from "./model.types";
 import { createRenderingReferenceModelNode } from "./rendering-reference-model-builder";
 import { slugify } from "./slugify";
-import type { ItemGraphNodeData, LayoutDevice, LayoutPlacement, LayoutSectionField } from "./sitecore-item.types";
+import type { LayoutDevice } from "./model.types";
+import type { LayoutPlacement } from "./model.types";
+import type { LayoutSectionField } from "./model.types";
+import type { ItemGraphNodeData } from "./model.types";
 
 export function createReferenceModelNodeId(...parts: Array<string | undefined>): string {
   return parts

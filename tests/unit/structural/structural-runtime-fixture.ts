@@ -2,7 +2,6 @@ import { SITECORE } from "../../../src/constants/sitecore.ts";
 import { getRuntimeSettings } from "../../../src/content/runtime-settings/runtime-settings.ts";
 import {
   factoryItemGraphNodeData,
-  type ItemGraphNodeData,
 } from "../../../src/content/foundation/reference-data/model/sitecore-item.types.ts";
 import type { WorkClass } from "../../../src/content/foundation/workers/work-scheduling.types.ts";
 import type {
@@ -12,6 +11,7 @@ import type {
 import type { WorkerTaskResult } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
 import { normalizeStructuralSettings } from "../../../src/shared/structural/structural-settings.ts";
 import { guid, SCOPE } from "./structural-fixture.ts";
+import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/model.types.ts";
 
 export function runtimeFixture() {
   getRuntimeSettings().structuralCache.maxUnvalidatedAgeHours = 1;

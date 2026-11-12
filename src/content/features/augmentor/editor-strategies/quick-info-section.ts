@@ -1,9 +1,7 @@
 import { FOBLES } from "../../../../constants/fobles";
-import type {
-  QuickInfoCandidate,
-  QuickInfoSectionFobles as QuickInfoSectionConfig,
-  QuickInfoSource,
-} from "../../../../constants/fobles.types";
+import type { QuickInfoSectionFobles as QuickInfoSectionConfig } from "../../../../constants/constants.types";
+import type { QuickInfoCandidate } from "../../../../constants/constants.types";
+import type { QuickInfoSource } from "../../../../constants/constants.types";
 import { createFoblesButton } from "../helper";
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";

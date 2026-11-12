@@ -2,7 +2,7 @@
 
 import { stripGuidBraces } from "../../sitecore/guid.ts";
 import { isItemGraphNodeDataResolved } from "../../harvesting/enrichment/item-enricher.ts";
-import type { ReferenceModelNode } from "../model/reference-model.types";
+import type { ReferenceModelNode } from "../model/model.types";
 
 // Item reference -> every treeNodeId representing that same unresolved item.
 // Prefer GUID when available; otherwise use the Sitecore path.

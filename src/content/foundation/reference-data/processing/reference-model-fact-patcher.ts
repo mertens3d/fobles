@@ -2,8 +2,8 @@
 import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreDataFactMap } from "../../cache/sitecore-data/sitecore-data.types";
 import type { PreparedReferenceModel } from "../acquisition/acquisition.types";
-import type { ItemGraphNodeData } from "../model/sitecore-item.types";
-import type { ReferenceModelNode } from "../model/reference-model.types";
+import type { ItemGraphNodeData } from "../model/model.types";
+import type { ReferenceModelNode } from "../model/model.types";
 function normalizeReference(value: string | undefined): string | undefined {
   return value?.replace(/[{}]/g, "").trim().toLowerCase();
 }

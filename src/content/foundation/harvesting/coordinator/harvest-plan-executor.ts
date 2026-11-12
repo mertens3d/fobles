@@ -22,7 +22,7 @@ import {
   planCollectorTasks,
   requestedLocatorFromUrl,
 } from "../planner/harvest-task-planner";
-import { factNameForTaskType, getFact } from "../../sitecore/data/sitecore-data-service";
+import { factNameForTaskType, resolveFact } from "../../sitecore/data/sitecore-data-service";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
 import { runWithReferenceHarvestingLease } from "./reference-harvesting-lease";
@@ -63,7 +63,7 @@ async function runTaskThroughCache(
     return runWorkerTaskWithTimeout(task);
   }
 
-  const outcome = await getFact(cacheKey, factName, () => runWorkerTaskWithTimeout(task), {
+  const outcome = await resolveFact(cacheKey, factName, () => runWorkerTaskWithTimeout(task), {
     activityId: task.taskId,
     requestId: task.requestId,
   });

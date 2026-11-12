@@ -1,6 +1,7 @@
 import { downloadSanitizedText } from "../../../../shared/export/text-export.ts";
 import type { AuditFinding } from "../auditor.types";
-import { AUDIT_EXPORT_COLUMNS, type AuditExportColumn } from "./audit-export-columns.ts";
+import { AUDIT_EXPORT_COLUMNS } from "./audit-export-columns.ts";
+import type { AuditExportColumn } from "./export.types";
 
 function escapeCsvField(value: string): string {
   const needsQuoting = /[",\r\n]/.test(value);

@@ -3,11 +3,10 @@ import { test } from "node:test";
 import { observeToolbarDiagnostics } from "../../../src/content/toolbar/diagnostics/toolbar-diagnostics-subscription.ts";
 import type { ToolbarDiagnosticsServices, ToolbarDiagnosticsState } from "../../../src/content/toolbar/diagnostics/toolbar-diagnostics.types.ts";
 import type { ActivityListener } from "../../../src/content/shared/activity/activity.types.ts";
-import type { WorkerPoolStatus } from "../../../src/content/foundation/workers/pool/worker-pool-status.types.ts";
 import type { StructuralSettings } from "../../../src/shared/structural/structural.types.ts";
 import { snapshotWorkerPoolStatus } from "../../../src/content/foundation/workers/pool/worker-pool-status.ts";
 import type { QueuedTask } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
-import type { WorkerPoolState } from "../../../src/content/foundation/workers/pool/worker-pool-state.ts";
+import type { WorkerPoolStatus, WorkerPoolState } from "../../../src/content/foundation/workers/pool/pool.types.ts";
 
 const settings: StructuralSettings = { baseTemplatePaths: { page: [], site: [], tenant: [] } };
 

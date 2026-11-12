@@ -3,7 +3,7 @@ import type { GuidResult, GuidWork, ItemSnapshot, StartReferenceModelProcessorOp
 import { extensionLog } from "../../../logger";
 import { initializeRuntimeSettings, isJourneyStepLiveEnabled } from "../../../runtime-settings/runtime-settings";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
-import type { HealthReport } from "../../diagnostics/health.types";
+import type { HealthReport } from "../../diagnostics/diagnostics.types";
 import { mergeEnrichedItem } from "../../harvesting/planner/enrichment-task-planner";
 import { createSitecoreItemLocator } from "../../harvesting/worker-task-executor";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
@@ -13,7 +13,7 @@ import {
   type WorkerTask,
   type WorkerTaskExecutionResult,
 } from "../../workers/tasks/worker-task.types";
-import type { ItemGraphNodeData } from "../model/sitecore-item.types";
+import type { ItemGraphNodeData } from "../model/model.types";
 import { setProcessingState } from "./processing-state";
 import type { CachedItemFact, ProcessingStatus, ReferenceModelProcessingController, ResolveOutcome } from "./processing.types";
 import { sortGuidsByEnrichmentPriority } from "./reference-model-processing-priority";

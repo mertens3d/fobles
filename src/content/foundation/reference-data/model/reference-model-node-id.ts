@@ -6,7 +6,7 @@ import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
 import { createPageLayoutItemsByDeviceId, createLayoutSectionReferenceModel } from "./layout-reference-model-builder";
 import { createReferenceModelNonItemNode } from "./reference-model-node-factory";
 import { createSyntheticProvenance } from "./reference-model-provenance.types";
-import type { ReferenceModelNonItemNode } from "./reference-model.types";
+import type { ReferenceModelNonItemNode } from "./model.types";
 
 export function createLayoutReferenceModel(graphReferenceResult: SitecoreHarvestResult): ReferenceModelNonItemNode {
   const treeNodeId = CONST.FOBLES.REFERENCE_GRAPH.NODE_ID.MAIN_LAYOUT_BOX_NODE_ID;

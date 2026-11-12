@@ -29,7 +29,7 @@ import {
   type WorkerTaskResult,
   type WorkerTaskType,
 } from "../workers/tasks/worker-task.types";
-import type { ItemGraphNodeData } from "../reference-data/model/sitecore-item.types";
+import type { ItemGraphNodeData } from "../reference-data/model/model.types";
 import { extensionLog } from "../../logger.ts";
 import { openScInheritanceTab } from "../sitecore/macros/editor-tab-macro.ts";
 

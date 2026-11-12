@@ -1,11 +1,9 @@
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-collapse-state.ts
 
 import type cytoscape from "cytoscape";
-import {
-  isGraphCollapseKey,
-  type ExpandedByCollapseKey,
-  type GraphCollapseKey,
-} from "../../../foundation/reference-data/model/graph-collapse.types";
+import { isGraphCollapseKey } from "../../../foundation/reference-data/model/graph-collapse.types";
+import type { ExpandedByCollapseKey } from "../../../foundation/reference-data/model/model.types";
+import type { GraphCollapseKey } from "../../../foundation/reference-data/model/model.types";
 
 export function initializeCollapsedTreeNodeIds(
   cy: cytoscape.Core,

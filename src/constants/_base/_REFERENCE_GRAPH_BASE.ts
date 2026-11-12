@@ -1,5 +1,4 @@
-
-export type NodeKind = (typeof _REFERENCE_GRAPH_BASE.NODE_KIND)[keyof typeof _REFERENCE_GRAPH_BASE.NODE_KIND];
+import type { SitecoreHarvestFiltersState } from "./_base.types.js";
 
 export const _REFERENCE_GRAPH_BASE = {
   NODE_KIND: {
@@ -38,13 +37,3 @@ export const _REFERENCE_GRAPH_BASE = {
     template: "fobles-reference-graph-filter-template",
   } as const satisfies Record<keyof SitecoreHarvestFiltersState, string>,
 };
-export type SitecoreHarvestFiltersState = {
-  parent: boolean;
-  children: boolean;
-  layouts: boolean;
-  referrers: boolean;
-  customFields: boolean;
-  standardFields: boolean;
-  template: boolean;
-};
-

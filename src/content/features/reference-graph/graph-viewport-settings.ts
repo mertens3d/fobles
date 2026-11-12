@@ -1,11 +1,10 @@
+import type { GraphViewportState } from "./reference-graph.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-viewport-settings.ts
 
 import type cytoscape from "cytoscape";
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 
 const STORAGE_KEY = "fobles-reference-graph-viewport";
-
-type GraphViewportState = { rootItemId: string; zoom: number; center: { x: number; y: number } };
 
 function isGraphViewportState(value: unknown): value is GraphViewportState {
   if (typeof value !== "object" || value === null) {

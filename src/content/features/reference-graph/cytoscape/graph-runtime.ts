@@ -17,13 +17,11 @@ import {
 } from "../graph-nodes/graph-expand-collapse";
 import { setGraphParameterVisibility } from "../graph-nodes/graph-expand-collapse-view";
 import { getGraphViewportState, restoreGraphViewportState, saveGraphViewportState } from "../graph-viewport-settings";
-import type {
-  AnimationFrameState,
-  GraphRuntime,
-  GraphRuntimeOptions,
-  SavedGraphSettings,
-} from "../graph.types";
-import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
+import type { GraphRuntime } from "../reference-graph.types";
+import type { AnimationFrameState } from "../reference-graph.types";
+import type { SavedGraphSettings } from "../reference-graph.types";
+import type { GraphRuntimeOptions } from "../reference-graph.types";
+import type { LayoutGraphPresetName } from "../../../../constants/constants.types";
 import { finishReferenceGraphTimer } from "../reference-graph-timing";
 import { cytoscapeFactory } from "./cytoscape-config";
 import { REFERENCE_GRAPH_STYLE } from "./cytoscape-style";

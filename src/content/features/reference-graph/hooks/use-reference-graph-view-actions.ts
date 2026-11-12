@@ -1,30 +1,14 @@
+import type { ReferenceGraphViewActions, UseReferenceGraphViewActionsOptions } from "./hooks.types.js";
 // @source-path [fobles] src/content/features/reference-graph/hooks/use-reference-graph-view-actions.ts
 
-import type cytoscape from "cytoscape";
 import { useCallback, useEffect } from "react";
+import type { LayoutGraphPresetName } from "../../../../constants/constants.types";
 import { setReferenceGraphLayout } from "../../../../shared/reference-graph-settings";
 import { getGraphControlsExpanded, setGraphControlsExpanded } from "../graph-controls-settings";
-import {
-  setGraphParameterVisibilitySettings,
-  type GraphParameterVisibilitySettings,
-} from "../graph-parameter-visibility-settings";
 import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
 import { setGraphParameterVisibility } from "../graph-nodes/graph-expand-collapse-view";
-import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
-import type { GraphState } from "./use-reference-graph";
-
-type MutableRef<T> = { current: T };
-
-type UseReferenceGraphViewActionsOptions = { cyRef: MutableRef<cytoscape.Core | undefined>; graphState: GraphState };
-
-export type ReferenceGraphViewActions = {
-  handleControlsExpandedChange: (controlsExpanded: boolean) => void;
-  handleParameterVisibilityChange: (settings: GraphParameterVisibilitySettings) => void;
-  handleLayoutChange: (value: LayoutGraphPresetName) => void;
-  handleRelayout: () => void;
-  handleViewReferenceModel: () => void;
-  handleCloseReferenceModel: () => void;
-};
+import { setGraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
+import type { GraphParameterVisibilitySettings } from "../reference-graph.types";
 
 export function useReferenceGraphViewActions({
   cyRef,

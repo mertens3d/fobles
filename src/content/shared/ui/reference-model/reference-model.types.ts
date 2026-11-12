@@ -1,5 +1,5 @@
 import type cytoscape from "cytoscape";
-import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { NodeKind } from "../../../../constants/_base/_base.types";
 
 export type LabelBreakResult = { success: boolean; label: string };
 

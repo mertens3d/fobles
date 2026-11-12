@@ -3,8 +3,8 @@
 import { STORAGE } from "../constants/extension-const";
 import { CONST } from "../constants/const";
 import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../content/features/reference-graph/graph-filters";
-import type { LayoutGraphPresetName } from "../constants/LayoutGraphPresetName.types";
-import type { SitecoreHarvestFiltersState } from "../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { LayoutGraphPresetName } from "../constants/constants.types";
+import type { SitecoreHarvestFiltersState } from "../constants/_base/_base.types";
 import { getStorageValue, setStorageValue } from "./storage/storage";
 
 export async function getReferenceGraphLayoutName(): Promise<LayoutGraphPresetName> {

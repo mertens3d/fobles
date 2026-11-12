@@ -13,7 +13,7 @@ import type { TemplateDerivedRecord } from "../../../cache/sitecore-data/sitecor
 import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity.ts";
 import { WORK_SCHEDULING } from "../../../workers/work-scheduling.const.ts";
 import type { SitecoreItemLocator } from "../../../workers/tasks/worker-task.types.ts";
-import type { ItemGraphNodeData } from "../../model/sitecore-item.types.ts";
+import type { ItemGraphNodeData } from "../../model/model.types";
 import type { StructuralDriver, StructuralItem, StructuralRead, StructuralRuntimeOptions } from "./structural-service.types.ts";
 
 export async function createStructuralRuntimeDriver(scope: StructuralScope, options: StructuralRuntimeOptions): Promise<StructuralDriver> {
@@ -116,7 +116,7 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
   }
 
   async function read<K extends SitecoreDataFactName>(key: SitecoreDataCacheKey, name: K, fresh: boolean): Promise<StructuralRead<SitecoreDataFactMap[K]> | undefined> {
-    const stored = await cache.getFact(key, name);
+    const stored = await cache.getCachedFact(key, name);
     const cached = stored && { ...stored, cachedAt: stored.lastVerifiedAt ?? stored.cachedAt };
     const token = JSON.stringify([key.database, key.language, key.item, name]);
     let result: StructuralRead<SitecoreDataFactMap[K]> | undefined;
@@ -191,7 +191,7 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
   }
 
   async function readDerived(id: string): Promise<StructuralRead<TemplateDerivedRecord> | undefined> {
-    return cache.getFact(structuralTemplateCacheKey(normalized, id), "templateDerived");
+    return cache.getCachedFact(structuralTemplateCacheKey(normalized, id), "templateDerived");
   }
 
   async function writeDerived(id: string, value: TemplateDerivedRecord): Promise<void> {

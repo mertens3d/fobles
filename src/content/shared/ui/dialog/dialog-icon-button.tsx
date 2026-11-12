@@ -1,4 +1,4 @@
-import type { DialogIconButtonSurface } from "./DialogIconButtonSurface";
+import type { DialogIconButtonSurface } from "./dialog.types";
 
 export type DialogIconButtonProps = {
   kind: "close" | "help";

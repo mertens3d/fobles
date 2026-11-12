@@ -1,62 +1,10 @@
+import type { AcquisitionProgressListener, AcquisitionState, FoblesAcquisitionProgress, FoblesDataRequest, FoblesDataSession } from "./reference-data.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/reference-data-service.ts
 
-import type { WorkSession } from "../workers/session/work-session.types";
-import type {
-  HarvestProgressCallback,
-  HarvestProgressStatus,
-} from "../harvesting/sitecore-harvester.types";
-import type { StepKey } from "../../../constants/graph.const";
-import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { PROGRESS_STEPS } from "../harvesting/planner/harvest-steps";
-import type { PreparedReferenceModel } from "./acquisition/acquisition.types";
-import { startSharedReferenceModelSession } from "./processing/reference-model-session";
 import type { SharedReferenceModelSession } from "./processing/processing.types";
-import type { ReferenceModelSessionStateChange } from "./processing/processing.types";
-import type { ReferenceModelProcessingProgress } from "./processing/processing.types";
+import { startSharedReferenceModelSession } from "./processing/reference-model-session";
 import type { PhaseProgress } from "./progress/lifecycle.types";
-import type { ReferenceModelHarvestProgress } from "./processing/processing.types";
-
-export type FoblesDataFlavor = "reference-model";
-
-export type FoblesDataRequest = {
-  flavor: FoblesDataFlavor;
-  target: "current-object";
-  doc: Document;
-  workSession: WorkSession;
-  signal: AbortSignal;
-  filters: SitecoreHarvestFiltersState;
-  onAcquireProgress?: HarvestProgressCallback;
-  onHarvestRequired?: () => void;
-  onModelReady?: (model: PreparedReferenceModel) => void;
-};
-
-export type FoblesReferenceModelData = {
-  itemId: string;
-  model: PreparedReferenceModel;
-  resolveCandidateTreeNodeIds: ReadonlySet<string>;
-  cacheRevalidationResultByTreeNodeId: ReadonlyMap<string, "passed" | "error">;
-};
-
-export type FoblesDataSession = {
-  data: FoblesReferenceModelData;
-  completion: Promise<void>;
-  subscribeChange: (listener: ReferenceModelSessionStateChange) => () => void;
-  subscribeProcessingProgress: (listener: (progress: ReferenceModelProcessingProgress) => void) => () => void;
-  subscribeHarvestProgress: (listener: (progress: ReferenceModelHarvestProgress) => void) => () => void;
-  updateFilters: (filters: SitecoreHarvestFiltersState) => void;
-  dispose: () => void;
-};
-
-export type FoblesAcquisitionProgress = { harvestRequired: boolean; progress: PhaseProgress };
-
-export type AcquisitionProgressListener = (progress: FoblesAcquisitionProgress) => void;
-
-export type AcquisitionState = {
-  harvestRequired: boolean;
-  finished: boolean;
-  statusByStepKey: Map<StepKey, HarvestProgressStatus>;
-  listeners: Set<AcquisitionProgressListener>;
-};
 
 const dataSessionsByWorkSessionId = new Map<string, FoblesDataSession>();
 const acquisitionByWorkSessionId = new Map<string, AcquisitionState>();

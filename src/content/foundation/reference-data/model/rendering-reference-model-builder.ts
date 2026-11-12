@@ -6,8 +6,12 @@ import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
 import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance.types";
 import { createReferenceModelNodeId } from "./layout-reference-model-builder";
-import type { ReferenceModelItemNode, ReferenceModelNode, ReferenceModelNonItemNode } from "./reference-model.types";
-import { factoryItemGraphNodeData, type ItemGraphNodeData, type ScControl } from "./sitecore-item.types";
+import type { ReferenceModelNode } from "./model.types";
+import type { ReferenceModelNonItemNode } from "./model.types";
+import type { ReferenceModelItemNode } from "./model.types";
+import { factoryItemGraphNodeData } from "./sitecore-item.types";
+import type { ScControl } from "./model.types";
+import type { ItemGraphNodeData } from "./model.types";
 
 export function createRenderingReferenceModelNode(
   pageLayoutTreeNodeId: string,

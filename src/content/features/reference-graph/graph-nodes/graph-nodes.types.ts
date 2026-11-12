@@ -1,6 +1,7 @@
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
-import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
-import type { ExpandedByCollapseKey, GraphCollapseKey } from "../../../foundation/reference-data/model/graph-collapse.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
+import type { LayoutGraphPresetName } from "../../../../constants/constants.types";
+import type { ExpandedByCollapseKey } from "../../../foundation/reference-data/model/model.types";
+import type { GraphCollapseKey } from "../../../foundation/reference-data/model/model.types";
 import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing.types";
 import type { runGraphLayout } from "../cytoscape/graph-layout";
 

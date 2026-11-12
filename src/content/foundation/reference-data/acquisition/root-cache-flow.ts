@@ -3,9 +3,10 @@ import type { RootCacheDecision } from "./acquisition.types.js";
 
 import type { SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
-import type { ItemGraphNodeData, RootItem } from "../model/sitecore-item.types";
+import type { RootItem } from "../model/model.types";
+import type { ItemGraphNodeData } from "../model/model.types";
 import type { ProcessingStatus } from "../processing/processing.types";
 
 function hasRequiredFacts(record: SitecoreDataCacheRecord, filters: SitecoreHarvestFiltersState): boolean {

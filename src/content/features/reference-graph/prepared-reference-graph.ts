@@ -1,24 +1,13 @@
 // @source-path [fobles] src/content/features/reference-graph/prepared-reference-graph.ts
-import { extensionLog } from "../../logger";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 import type {
-  HarvestProgressCallback,
-  SitecoreHarvestResult,
+  SitecoreHarvestResult
 } from "../../foundation/harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
-import { prepareReferenceModel } from "../../foundation/reference-data/acquisition/prepare-reference-model";
 import type { PreparedReferenceModel } from "../../foundation/reference-data/acquisition/acquisition.types";
-import type { ProcessingStatus } from "../../foundation/reference-data/processing/processing.types";
+import { prepareReferenceModel } from "../../foundation/reference-data/acquisition/prepare-reference-model";
+import { extensionLog } from "../../logger";
 import { projectReferenceModelToGraphElements } from "./graph-nodes/graph-elements";
-import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
-
-type PrepareReferenceGraphOptions = {
-  signal?: AbortSignal;
-  // Not used while preparation is structural-only (enrichment runs separately, after the graph is built) - kept so
-  // existing callers don't need to change.
-  onProgress?: HarvestProgressCallback;
-  // Seeds the root node's own trust badge from the root-cache-flow decision that produced this harvest result.
-  rootProcessingState?: ProcessingStatus;
-};
+import type { PreparedReferenceGraph, PrepareReferenceGraphOptions } from "./reference-graph.types";
 
 // Graph's only addition to a prepared Reference Model: the Cytoscape elements projected from it.
 export function addGraphElements(model: PreparedReferenceModel): PreparedReferenceGraph {

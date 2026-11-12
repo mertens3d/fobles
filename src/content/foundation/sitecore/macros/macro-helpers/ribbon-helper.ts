@@ -1,4 +1,4 @@
-import type { selectorHints } from "../../../../../constants/_base/const.types";
+import type { selectorHints } from "../../../../../constants/_base/_base.types";
 import { CONST } from "../../../../../constants/const";
 import { extensionLog } from "../../../../logger";
 

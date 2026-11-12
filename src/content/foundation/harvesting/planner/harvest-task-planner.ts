@@ -5,7 +5,7 @@ import type { CollectorFilterKey } from "./planner.types.js";
 
 import { isGuidLike } from "../../sitecore/guid.ts";
 import type { HarvestRequest, SitecoreHarvestResult } from "../sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE.ts";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../workers/tasks/worker-task.types";
 
 // "template" is a HarvestRequest filter, but it's not a collector task of its own - it only

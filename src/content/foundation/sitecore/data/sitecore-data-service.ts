@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/foundation/sitecore/data/sitecore-data-service.ts
+// @source-path [Fobles] src/content/foundation/sitecore/data/sitecore-data-service.ts
 
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import { emitActivity, type ActivityState } from "../../../shared/activity/activity-events.ts";
@@ -80,14 +80,14 @@ function emitCacheActivity(
 // Read-through: a cache hit never executes `fetchLive` at all; a miss executes it, caches a
 // cacheable outcome, and returns the live value either way. Background revalidation, priority
 // scheduling, and trust heuristics are explicitly out of scope until Phase 3C.
-export async function getFact<TName extends SitecoreDataFactName>(
+export async function resolveFact<TName extends SitecoreDataFactName>(
   key: SitecoreDataCacheKey,
   factName: TName,
   fetchLive: FetchLiveFact,
   options?: GetFactOptions,
 ): Promise<SitecoreDataFactResult<SitecoreDataFactMap[TName]>> {
   const activityId = crypto.randomUUID();
-  const cached = await cache.getFact(key, factName);
+  const cached = await cache.getCachedFact(key, factName);
 
   if (cached) {
     emitCacheActivity(activityId, factName, "completed", "cache hit", options?.requestId);
@@ -127,13 +127,13 @@ export async function requestFact<TName extends SitecoreDataFactName>(
   fetchLive: FetchLiveFact,
   options?: GetFactOptions,
 ): Promise<SitecoreDataFactMap[TName] | undefined> {
-  const cached = await cache.getFact(key, factName);
+  const cached = await cache.getCachedFact(key, factName);
   if (cached) {
     return cached.value;
   }
   const requestKey = `${serializeCacheKey(key)}::${factName}`;
   if (!requestsInFlight.has(requestKey)) {
-    const request = getFact(key, factName, fetchLive, options).then(() => undefined).finally(() => {
+    const request = resolveFact(key, factName, fetchLive, options).then(() => undefined).finally(() => {
       requestsInFlight.delete(requestKey);
     });
     requestsInFlight.set(requestKey, request);

@@ -14,7 +14,7 @@ import {
 import { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types.ts";
 import type { HarvestRequest,  SitecoreHarvestResult } from "../../../src/content/foundation/harvesting/sitecore-harvester.types.ts";
 import type { WorkerTaskType } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
-import type { SitecoreHarvestFiltersState } from "../../../src/constants/_base/_REFERENCE_GRAPH_BASE.ts";
+import type { SitecoreHarvestFiltersState } from "../../../src/constants/_base/_base.types.ts";
 
 const ROOT_ID = "{25FB9977-CC90-4E3C-B036-CAFAAE676303}";
 const REQUEST_URL = `https://sitecore.example/sitecore/shell/Applications/Content%20Editor.aspx?sc_bw=1&fo=${encodeURIComponent(ROOT_ID)}&sc_lang=en`;

@@ -1,5 +1,5 @@
 // @source-path [fobles] src/constants/sitecore.ts
-import type { selectorHints } from "./_base/const.types";
+import type { selectorHints } from "./_base/_base.types";
 
 export const SITECORE = {
   ACTION_PREFIXES: {

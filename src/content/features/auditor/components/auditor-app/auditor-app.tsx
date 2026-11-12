@@ -1,15 +1,11 @@
+import type { FoblesDataOperationHandle } from "./auditor-app.types.js";
 // @source-path [fobles] src/content/features/auditor/components/auditor-app/auditor-app.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AUDIT_CHECK } from "../../../../../constants/audit-checks.const";
 import { getReferenceGraphFilters } from "../../../../../shared/reference-graph-settings";
 import { extensionLog } from "../../../../logger";
 import { logHeapSnapshot } from "../../../../foundation/diagnostics/heap-snapshot";
-import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_REFERENCE_GRAPH_BASE.ts";
-import {
-  getFoblesDataOperation,
-  subscribeFoblesAcquisitionProgress,
-  type FoblesAcquisitionProgress,
-} from "../../../../foundation/reference-data/reference-data-operation";
+import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_base.types";
 import type { PhaseProgress } from "../../../../foundation/reference-data/progress/lifecycle.types";
 import { LifecycleProgressFooter } from "../../../../shared/ui/reference-controls/lifecycle-progress-footer";
 import { ReferenceModelViewer } from "../../../../shared/ui/reference-model/reference-model-viewer";
@@ -35,6 +31,8 @@ import { AuditorSummary } from "../auditor-summary/auditor-summary";
 import { AuditorToolbar } from "../auditor-toolbar/auditor-toolbar";
 import { NodeDetailsPanel } from "../../../../shared/ui/details/node-details-panel";
 import { FoblesDetailsWindow } from "../../../../shared/dialog/fobles-details-window";
+import { getFoblesDataSession, subscribeFoblesAcquisitionProgress } from "../../../../foundation/reference-data/reference-data-service.ts";
+import type { FoblesAcquisitionProgress } from "../../../../foundation/reference-data/reference-data.types.ts";
 const ALL_STATUSES: readonly AuditFindingStatus[] = ["pending", "passed", "warning", "error"];
 const DATA_OPERATION_POLL_INTERVAL_MS = 100;
 const DEFAULT_GRAPH_FILTERS: SitecoreHarvestFiltersState = {
@@ -49,16 +47,15 @@ const DEFAULT_GRAPH_FILTERS: SitecoreHarvestFiltersState = {
 
 export type AuditorAppProps = { doc: Document; findingStore: AuditFindingStore; workOperationId: string };
 
-type FoblesDataOperationHandle = ReturnType<typeof getFoblesDataOperation>;
 // AI NOTE: The Auditor dialog opens while the audit run is still acquiring the Reference Model, so the Data
 // AI NOTE: Service operation does not exist yet at mount. Wait for it instead of subscribing once and giving up.
 function useFoblesDataOperationWhenReady(workOperationId: string): FoblesDataOperationHandle {
-  const [operation, setOperation] = useState<FoblesDataOperationHandle>(() => getFoblesDataOperation(workOperationId));
+  const [operation, setOperation] = useState<FoblesDataOperationHandle>(() => getFoblesDataSession(workOperationId));
   useEffect(() => {
     let active = true;
     const startedAt = performance.now();
     function attach(): boolean {
-      const found = getFoblesDataOperation(workOperationId);
+      const found = getFoblesDataSession(workOperationId);
       if (!found || !active) {
         return false;
       }

@@ -1,6 +1,6 @@
 import { isMenuOwnedFrame } from "../../../guard";
 import { FOBLES } from "../../../../constants/fobles";
-import type { FrameDocumentOptions } from "./augmentor.types";
+import type { FrameDocumentOptions } from "./shared.types";
 
 const getFrameDocument = (frame: Element): Document | null => {
   const frameElement = frame as HTMLIFrameElement | HTMLFrameElement;

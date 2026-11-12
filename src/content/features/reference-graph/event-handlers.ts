@@ -9,10 +9,10 @@ import {
 import type {
   SitecoreHarvestResult,
 } from "../../foundation/harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 import { PROGRESS_STEPS } from "../../foundation/harvesting/planner/harvest-steps";
-import type { HarvestForLink } from "./graph.types";
-import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
+import type { HarvestForLink } from "./reference-graph.types";
+import type { PreparedReferenceGraph } from "./reference-graph.types";
 
 function getEventNode(event: cytoscape.EventObject): cytoscape.NodeSingular {
   return event.target as cytoscape.NodeSingular;

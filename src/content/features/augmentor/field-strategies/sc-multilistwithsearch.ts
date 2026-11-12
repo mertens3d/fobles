@@ -5,7 +5,7 @@ import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
 import { collectGuidOptionItems } from "../shared/collect-select-options";
-import type { MultilistWithSearchFobles as MultilistWithSearchConfig } from "../../../../constants/fobles.types";
+import type { MultilistWithSearchFobles as MultilistWithSearchConfig } from "../../../../constants/constants.types";
 
 const calculatePaneHeight = (select: HTMLSelectElement): number => measureFoblesPaneHeight(select);
 

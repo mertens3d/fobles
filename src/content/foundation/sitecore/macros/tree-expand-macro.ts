@@ -2,7 +2,7 @@ import type { GlyphState } from "./macros.types.js";
 // @source-path [fobles] src/content/foundation/sitecore/macros/tree-expand-macro.ts
 
 import { CONST } from "../../../../constants/const";
-import type { TreeChildNode } from "../../reference-data/model/tree-child-node.types";
+import type { TreeChildNode } from "../../reference-data/model/model.types";
 import { formatFoId, stripGuidBraces } from "../guid";
 
 export function getGlyphId(itemId: string): string {

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/workers/session/work-session.types.ts
 
-import type { HealthReport } from "../../diagnostics/health.types";
+import type { HealthReport } from "../../diagnostics/diagnostics.types";
 import type { WorkerTask, WorkerTaskResult } from "../tasks/worker-task.types";
 import type { WorkClass } from "../work-scheduling.types";
 

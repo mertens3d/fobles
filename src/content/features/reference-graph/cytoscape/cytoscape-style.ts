@@ -1,11 +1,9 @@
+import type { CytoscapeStyle } from "./cytoscape.types.js";
 // @source-path [fobles] src/content/features/reference-graph/cytoscape/cytoscape-style.ts
 
-import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
-import { kindClass } from "../graph-nodes/graph-helpers";
 import { ELLIPSE_SIZE, NODE_PRESENTATION_BY_KIND } from "../../../shared/ui/reference-model/node-presentation";
-
-type CytoscapeStyle = NonNullable<cytoscape.CytoscapeOptions["style"]>;
+import { kindClass } from "../graph-nodes/graph-helpers";
 
 export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
   {

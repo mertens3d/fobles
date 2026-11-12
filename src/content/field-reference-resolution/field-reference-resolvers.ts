@@ -1,13 +1,10 @@
+import type { FieldReferenceResolver } from "./field-reference-resolution.types.js";
 // @source-path [fobles] src/content/field-reference-resolution/field-reference-resolvers.ts
 
 import { SITECORE } from "../../constants/sitecore.ts";
 import { collectGuidOptionItems } from "../features/augmentor/shared/collect-select-options.ts";
 import { extractGuid, formatFoId, hasAnyGuidLikeOption } from "../foundation/sitecore/guid.ts";
-import type { FieldReference } from "./field-reference.types";
-
-// Returning undefined means the field does not match the strategy. Returning an array, including an
-// empty array, means the strategy claimed the field and generic GUID inference must not run.
-export type FieldReferenceResolver = (marker: HTMLElement) => FieldReference[] | undefined;
+import type { FieldReference } from "./field-reference-resolution.types";
 
 function toSitecorePath(value: string): string | undefined {
   const trimmed = value.trim();

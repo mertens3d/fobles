@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/reference-model-builder.ts
 
 import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { CONST } from "../../../../constants/const";
 import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
 import { createReferenceModelNodeId } from "./layout-reference-model-builder";
@@ -9,11 +9,9 @@ import { createLayoutReferenceModel } from "./reference-model-node-id";
 import { REFERENCE_MODEL_FAN_OUT_LIMITS } from "./reference-model-fan-out-limits";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
 import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance.types";
-import type {
-  ReferenceModelItemNode,
-  ReferenceModelNonItemNode,
-  ReferenceModelTruncation,
-} from "./reference-model.types";
+import type { ReferenceModelNonItemNode } from "./model.types";
+import type { ReferenceModelItemNode } from "./model.types";
+import type { ReferenceModelTruncation } from "./model.types";
 import { createCustomFieldsTreeNode, createStandardFieldsTreeNode } from "./sections-reference-model-builder";
 
 export function createReferenceModel(

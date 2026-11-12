@@ -4,7 +4,7 @@ import {
 } from "../../../../shared/utility/fobles-utility-lock.messages.types.ts";
 import { UTILITY_LOCK_MESSAGE } from "../../../../shared/utility/UTILITY_LOCK_MESSAGE.const.ts";
 import { HARVESTING_LEASE } from "./reference-harvesting-lease.const.ts";
-import type { HarvestingLeaseOptions } from "./reference-harvesting-lease.types.ts";
+import type { HarvestingLeaseOptions } from "./coordinator.types";
 
 export async function runWithReferenceHarvestingLease<T>(run: () => Promise<T>, options: HarvestingLeaseOptions = {}): Promise<T> {
   const ownershipId = crypto.randomUUID();

@@ -1,7 +1,7 @@
 import type { ReferenceModelSessionStateChange, SharedReferenceModelSession, StartSharedReferenceModelSessionOptions } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-session.ts
 
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { extensionLog } from "../../../logger";
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache";
 import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
@@ -175,7 +175,7 @@ export async function startSharedReferenceModelSession({
   }
 
   async function hydrateOrQueue(item: SitecoreItemLocator): Promise<void> {
-    const cached = await cache.getFact(cacheKey(item), "quickInfo");
+    const cached = await cache.getCachedFact(cacheKey(item), "quickInfo");
     if (cached) {
       await publish(patchReferenceModelFact(prepared, item, "quickInfo", cached.value, activeFilters));
       return;

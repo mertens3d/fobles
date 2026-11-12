@@ -4,7 +4,7 @@ import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import { COMPOUND_GROUP_CLASS, INVISIBLE_COMPOUND_GROUP_CLASS } from "../graph-nodes/graph-node-builder";
-import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
+import type { LayoutGraphPresetName } from "../../../../constants/constants.types";
 
 export function runGraphLayout(
   cy: cytoscape.Core,

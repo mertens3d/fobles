@@ -1,32 +1,12 @@
-// @source-path [fobles] src/content/features/reference-graph/hooks/use-reference-graph-filter-actions.ts
+// @source-path [Fobles] src/content/features/reference-graph/hooks/use-reference-graph-filter-actions.ts
 
-import type cytoscape from "cytoscape";
 import { useCallback } from "react";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { setReferenceGraphFilters } from "../../../../shared/reference-graph-settings";
-import type {
-  SitecoreHarvestResult,
-} from "../../../foundation/harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { createAllFiltersState } from "../graph-filters";
 import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
-import type { HarvestForLink } from "../graph.types";
 import { changeReferenceGraphFilter } from "./changeReferenceGraphFilter";
-import type { GraphState } from "./use-reference-graph";
-
-type MutableRef<T> = { current: T };
-
-export type UseReferenceGraphFilterActionsOptions = {
-  doc: Document;
-  harvestForLink: HarvestForLink;
-  cyRef: MutableRef<cytoscape.Core | undefined>;
-  graphState: GraphState;
-  renderGraph: (graph: SitecoreHarvestResult) => Promise<void>;
-};
-
-type ReferenceGraphFilterActions = {
-  handleClearFilters: () => void;
-  handleFilterChange: (key: keyof SitecoreHarvestFiltersState, checked: boolean) => void;
-};
+import type { ReferenceGraphFilterActions, UseReferenceGraphFilterActionsOptions } from "./hooks.types.js";
 
 export function useReferenceGraphFilterActions({
   doc,

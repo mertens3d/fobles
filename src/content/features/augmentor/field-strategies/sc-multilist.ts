@@ -1,12 +1,11 @@
+import type { MultilistOption } from "./field-strategies.types.js";
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
-import type { MultilistOptionsFobles as MultilistConfig } from "../../../../constants/fobles.types";
-
-type MultilistOption = { value: string; label: string };
+import type { MultilistOptionsFobles as MultilistConfig } from "../../../../constants/constants.types";
 
 const findEligibleHosts = (table: Element): HTMLSelectElement[] =>
   Array.from(table.querySelectorAll<HTMLSelectElement>(CONST.SITECORE.SELECTORS.MULTILIST.BOX)).filter(

@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/shared/ui/reference-model/reference-model-viewer.tsx
 import { useState } from "react";
 import { copySanitizedText, downloadSanitizedText } from "../../../../shared/export/text-export";
-import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
 import { DialogIconButton } from "../dialog/dialog-icon-button";
 const COPIED_FEEDBACK_DURATION_MS = 1500;
 

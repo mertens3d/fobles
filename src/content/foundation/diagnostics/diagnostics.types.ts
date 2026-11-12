@@ -1,4 +1,3 @@
-// @source-path [fobles] src/content/foundation/diagnostics/health.types.ts
 export type HealthState = "healthy" | "degraded" | "unhealthy";
 
 export type HealthReport = {
@@ -14,3 +13,5 @@ export type HealthReport = {
 };
 
 export type HealthProvider = { getHealth: () => HealthReport };
+
+export type ChromiumPerformance = Performance & { memory?: { usedJSHeapSize: number; totalJSHeapSize: number } };

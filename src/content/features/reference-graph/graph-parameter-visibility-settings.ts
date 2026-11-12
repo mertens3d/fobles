@@ -1,10 +1,9 @@
+import type { GraphParameterVisibilitySettings } from "./reference-graph.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-parameter-visibility-settings.ts
 
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 
 const STORAGE_KEY = "fobles-reference-graph-parameter-visibility";
-
-export type GraphParameterVisibilitySettings = { hideEmptyParameters: boolean; hideNonGuidParameters: boolean };
 
 export const DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS: GraphParameterVisibilitySettings = {
   hideEmptyParameters: true,

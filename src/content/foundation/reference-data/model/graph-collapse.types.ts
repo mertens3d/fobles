@@ -1,4 +1,7 @@
+import type { ExpandedByCollapseKey } from "./model.types.js";
+import type { GraphCollapseKey } from "./model.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/model/graph-collapse.types.ts
+
 export const GRAPH_COLLAPSE_KEY = {
   ROOT: "root",
   PARENT: "parent",
@@ -22,10 +25,6 @@ export const GRAPH_COLLAPSE_KEY = {
   DATASOURCE: "datasource",
   TESTS: "tests",
 } as const;
-
-export type GraphCollapseKey = (typeof GRAPH_COLLAPSE_KEY)[keyof typeof GRAPH_COLLAPSE_KEY];
-
-export type ExpandedByCollapseKey = Record<GraphCollapseKey, boolean>;
 
 export const DEFAULT_EXPANDED_BY_COLLAPSE_KEY: ExpandedByCollapseKey = {
   [GRAPH_COLLAPSE_KEY.ROOT]: true,

@@ -1,7 +1,6 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-window.types.ts
 
-import type { CSSProperties, PointerEvent, ReactNode, RefObject } from "react";
-import type { FOBLES_WINDOW } from "./fobles-window.const.ts";
+import type { PointerEvent, ReactNode } from "react";
 
 export type FoblesWindowProps = {
   id: string;

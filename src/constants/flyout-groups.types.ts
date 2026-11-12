@@ -173,4 +173,3 @@ const waitForKickUserRows = (doc: Document): Promise<HTMLTableRowElement[]> =>
 //   extensionLog.info("Kick All Users opening worker tab", { url: kickUsersUrl });
 //   window.open(kickUsersUrl, "_blank", "noopener,noreferrer");
 // };
-

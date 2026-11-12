@@ -1,3 +1,4 @@
+import type { LayoutCollectionFailure } from "./layout-collector.types.js";
 // @source-path [fobles] src/content/foundation/harvesting/collectors/section-collector/layout-collector/layout-collector.ts
 
 import { XMLParser } from "fast-xml-parser";
@@ -5,18 +6,14 @@ import { extensionLog } from "../../../../../logger";
 import { findFieldInput } from "../../helpers/harvest-helpers";
 import { isGuidLike } from "../../../../sitecore/guid";
 import { readRenderingAttribute } from "./rendering-xml-attributes";
-import type { SitecoreLayoutXml } from "./sitecore-layout-xml-schema.types";
-import {
-  factoryItemGraphNodeData,
-  type ItemGraphNodeData,
-  type LayoutDevice,
-  type LayoutPlacement,
-  type LayoutSectionField,
-  type ScControl,
-} from "../../../../reference-data/model/sitecore-item.types";
+import type { SitecoreLayoutXml } from "./layout-collector.types";
+import { factoryItemGraphNodeData } from "../../../../reference-data/model/sitecore-item.types";
+import type { LayoutDevice } from "../../../../reference-data/model/model.types";
+import type { ScControl } from "../../../../reference-data/model/model.types";
+import type { LayoutPlacement } from "../../../../reference-data/model/model.types";
+import type { LayoutSectionField } from "../../../../reference-data/model/model.types";
+import type { ItemGraphNodeData } from "../../../../reference-data/model/model.types";
 import type { HarvestContext } from "../../../sitecore-harvester.types";
-
-export type LayoutCollectionFailure = { code: "layout-unavailable" | "layout-malformed"; message: string; details: Record<string, unknown> };
 
 export const collectLayouts = (harvestContext: HarvestContext): Promise<LayoutCollectionFailure | undefined> => {
   const collected = [processLayoutFieldValue(harvestContext, "Renderings"), processLayoutFieldValue(harvestContext, "Final renderings")];

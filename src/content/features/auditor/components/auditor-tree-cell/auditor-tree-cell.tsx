@@ -1,5 +1,6 @@
+import type { TreeIndentStyle } from "./auditor-tree-cell.types.js";
 // @source-path [fobles] src/content/features/auditor/components/auditor-tree-cell/auditor-tree-cell.tsx
-import type { CSSProperties, MouseEvent } from "react";
+import type { MouseEvent } from "react";
 import { CONST } from "../../../../../constants/const";
 import type { AuditorTreeRow, LabelParts, ToggleModifiers } from "../../auditor-grid/auditor-grid.types";
 
@@ -20,8 +21,6 @@ type AuditorTreeCellProps = {
   opened: boolean;
   onToggle: (row: AuditorTreeRow, modifiers?: ToggleModifiers) => void;
 };
-
-type TreeIndentStyle = CSSProperties & { "--fobles-auditor-tree-depth": number };
 
 function splitQualifier(label: string): LabelParts {
   const match = /^(.*)\s+\(([^()]+)\)$/.exec(label);

@@ -12,11 +12,8 @@ import {
 } from "../../../src/content/foundation/cache/sitecore-data/indexed-db.ts";
 import { getFact, putFact } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { serializeCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts";
-import type {
-  SitecoreDataCacheFactRecord,
-  SitecoreDataCacheKey,
-} from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types.ts";
-import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types.ts";
+import type { SitecoreDataCacheKey, SitecoreDataCacheFactRecord } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
+import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/model.types.ts";
 
 function key(): SitecoreDataCacheKey {
   return {

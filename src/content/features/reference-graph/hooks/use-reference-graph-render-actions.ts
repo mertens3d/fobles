@@ -1,31 +1,16 @@
-// @source-path [fobles] src/content/features/reference-graph/hooks/use-reference-graph-render-actions.ts
-import type cytoscape from "cytoscape";
+// @source-path [Fobles] src/content/features/reference-graph/hooks/use-reference-graph-render-actions.ts
+
+import type { ReferenceGraphRenderActions, UseReferenceGraphRenderActionsOptions } from "./hooks.types.js";
 import { useCallback } from "react";
-import type { WorkSession } from "../../../foundation/workers/session/work-session.types";
-import { extensionLog } from "../../../logger";
 import type { SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
+import { extensionLog } from "../../../logger";
 import { handleHarvestProgress } from "../build-progress";
 import { startEnrichmentController } from "../enrichment/enrichment-controller";
 import { getEnabledFilterKeys } from "../graph-filters";
 import { initializeGraphCollapseState, refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
 import { setGraphParameterVisibility } from "../graph-nodes/graph-expand-collapse-view";
 import { prepareReferenceGraph } from "../prepared-reference-graph";
-import type { PreparedReferenceGraph } from "../prepared-reference-graph.types";
-import type { GraphState } from "./use-reference-graph";
-
-type MutableRef<T> = { current: T };
-
-type UseReferenceGraphRenderActionsOptions = {
-  doc: Document;
-  workSession: WorkSession;
-  cyRef: MutableRef<cytoscape.Core | undefined>;
-  graphState: GraphState;
-};
-
-export type ReferenceGraphRenderActions = {
-  handleBack: () => void;
-  renderGraph: (graph: SitecoreHarvestResult) => Promise<void>;
-};
+import type { PreparedReferenceGraph } from "../reference-graph.types";
 
 export function useReferenceGraphRenderActions({
   doc,

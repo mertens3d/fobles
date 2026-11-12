@@ -1,10 +1,10 @@
 // @source-path [fobles] src/content/features/auditor/auditor-grid/auditor-row-projector.ts
 
-import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing.types";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import type { AuditFinding } from "../auditor.types";
 import { buildAuditReportTree } from "../audit-report-tree";
 import type { AuditorDescendantFailure, AuditorTreeRow, JourneyStage } from "./auditor-grid.types";

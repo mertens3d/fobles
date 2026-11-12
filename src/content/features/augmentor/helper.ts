@@ -1,3 +1,4 @@
+import type { ConfirmationState } from "./augmentor.types.js";
 import {
   getFoblesNavWarningVisible,
   getTurnOffFoblesAfterNavigation,
@@ -5,12 +6,6 @@ import {
 } from "../../../shared/nav-settings";
 import { FOBLES } from "../../../constants/fobles";
 import { attachFoblesTooltip, hideFoblesTooltip } from "./shared/fobles-tooltip";
-
-type ConfirmationState = {
-  dialog: HTMLDialogElement;
-  setting: HTMLInputElement;
-  resolve?: (confirmed: boolean) => void;
-};
 
 const confirmationStates = new WeakMap<Document, ConfirmationState>();
 let afterNavigationHandler: (() => void) | null = null;

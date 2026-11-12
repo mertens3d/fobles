@@ -1,7 +1,7 @@
 // @source-path [Fobles] src/content/shared/ui/reference-model/node-label-resolver.ts
 
-import type { NodeKind } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
-import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
+import type { NodeKind } from "../../../../constants/_base/_base.types";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
 import type { LabelBreakResult, NodePresentation } from "./reference-model.types";
 import { LINE_BREAKER, clampMiddle, tryBreakLabel } from "./text-line-breaker";
 

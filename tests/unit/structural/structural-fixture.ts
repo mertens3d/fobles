@@ -4,8 +4,8 @@ import { normalizeStructuralSettings } from "../../../src/shared/structural/stru
 import { applyKnownSitesChange, knownSitesStorageKey } from "../../../src/shared/known-sites/known-sites-model.ts";
 import type { KnownSite, StructuralScope } from "../../../src/shared/structural/structural.types.ts";
 import type { StructuralDriver, StructuralItem, StructuralRead } from "../../../src/content/foundation/reference-data/processing/item-kind/structural-service.types.ts";
-import type { TemplateDerivedRecord } from "../../../src/content/foundation/cache/sitecore-data/template-derived.types.ts";
 import { createStructuralDiscoveryService } from "../../../src/content/foundation/reference-data/processing/item-kind/structural-discovery-service.ts";
+import type { TemplateDerivedRecord } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
 
 export const SCOPE: StructuralScope = { origin: "https://sitecore.example:8443", database: "master" };
 
@@ -15,7 +15,7 @@ export function guid(index: number): string {
 
 export function fixture() {
   let now = 1000;
-  getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs = 100;
+  getRuntimeSettings().structuralCache.maxUnvalidatedAgeHours = 100;
   const settings = normalizeStructuralSettings(undefined);
   const items = new Map<string, StructuralItem | null>();
   const bases = new Map<string, readonly string[] | undefined>();

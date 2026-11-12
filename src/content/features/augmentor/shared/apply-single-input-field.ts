@@ -1,7 +1,8 @@
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
-import type { FoblesConfigBase, SingleInputFieldOptions } from "../../../../constants/fobles.types";
-import type { FoblesStrategy } from "../../../../constants/fobles.types";
+import type { SingleInputFieldOptions } from "../../../../constants/constants.types";
+import type { FoblesConfigBase } from "../../../../constants/constants.types";
+import type { FoblesStrategy } from "../../../../constants/constants.types";
 import { createFoblesWrapper } from "./create-fobles-wrapper";
 import { createFoblesItemButton } from "./create-fobles-item-button";
 import { hideWithStyledSpacer } from "./hide-with-styled-spacer";

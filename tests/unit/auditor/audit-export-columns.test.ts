@@ -3,7 +3,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { AUDIT_EXPORT_COLUMNS } from "../../../src/content/features/auditor/export/audit-export-columns.ts";
-import type { AuditFinding } from "../../../src/content/features/auditor/audit-finding.types";
+import type { AuditFinding } from "../../../src/content/features/auditor/auditor.types.ts";
 
 function makeFinding(overrides: Partial<AuditFinding> = {}): AuditFinding {
   return {

@@ -1,4 +1,4 @@
-import type { MeasureFoblesPaneHeightOptions } from "./augmentor.types";
+import type { MeasureFoblesPaneHeightOptions } from "./shared.types";
 
 // Field strategies size their replacement pane off the original control's rendered height,
 // with a 96px floor so an empty/collapsed control still gets a usable pane.

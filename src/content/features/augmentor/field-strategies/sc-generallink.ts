@@ -1,7 +1,7 @@
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
 import { ensurePathShape } from "../helper";
-import type { GeneralLinkFobles as GeneralLinkConfig } from "../../../../constants/fobles.types";
+import type { GeneralLinkFobles as GeneralLinkConfig } from "../../../../constants/constants.types";
 import { applySingleInputFieldStrategy } from "../shared/apply-single-input-field";
 import { extractGuid } from "../../../foundation/sitecore/guid";
 

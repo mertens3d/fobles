@@ -1,5 +1,6 @@
-import type { ItemGraphNodeData } from "../model/sitecore-item.types";
-import type { ReferenceModelNode, ReferenceModelItemNode } from "../model/reference-model.types";
+import type { ItemGraphNodeData } from "../model/model.types";
+import type { ReferenceModelNode } from "../model/model.types";
+import type { ReferenceModelItemNode } from "../model/model.types";
 
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processing-tree-state.ts
 export function itemsFor(

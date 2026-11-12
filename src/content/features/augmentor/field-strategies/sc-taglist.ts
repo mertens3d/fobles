@@ -1,14 +1,13 @@
+import type { TagListItem } from "./field-strategies.types.js";
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
-import type { TagListFobles as TagListConfig } from "../../../../constants/fobles.types";
+import type { TagListFobles as TagListConfig } from "../../../../constants/constants.types";
 import { formatFoId } from "../../../foundation/sitecore/guid";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { measureFoblesPaneHeight } from "../shared/measure-fobles-pane-height";
 import { collectGuidOptionItems } from "../shared/collect-select-options";
-
-type TagListItem = { label: string; value: string };
 
 const collectTreeItems = (pane: Element): TagListItem[] =>
   Array.from(pane.querySelectorAll(CONST.SITECORE.SELECTORS.TREE.NODES_WITH_ID))

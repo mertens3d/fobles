@@ -1,43 +1,7 @@
+import type { UseCytoscapeOptions } from "./hooks.types.js";
 // @source-path [fobles] src/content/features/reference-graph/hooks/use-cytoscape.ts
-import type cytoscape from "cytoscape";
 import { useEffect } from "react";
-import type { WorkSession } from "../../../foundation/workers/session/work-session.types";
-import type {
-  SitecoreHarvestResult,
-} from "../../../foundation/harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
 import { createGraphRuntime, disposeGraphRuntime, initializeGraphRuntime } from "../cytoscape/graph-runtime";
-import type { EnrichmentProgress } from "../enrichment/enrichment.types";
-import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
-import type { HarvestForLink, MutableRef } from "../graph.types";
-import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
-import type { PreparedReferenceGraph } from "../prepared-reference-graph.types";
-
-export type refReturn = { containerRef: MutableRef<HTMLDivElement | null> };
-
-type UseCytoscapeOptions = {
-  doc: Document;
-  workSession: WorkSession;
-  initialPreparedGraph: PreparedReferenceGraph;
-  harvestForLink: HarvestForLink;
-  containerRef: MutableRef<HTMLDivElement | null>;
-  cyRef: MutableRef<cytoscape.Core | undefined>;
-  currentPreparedGraphRef: MutableRef<PreparedReferenceGraph>;
-  currentFiltersRef: MutableRef<SitecoreHarvestFiltersState>;
-  parameterVisibilitySettingsRef: MutableRef<GraphParameterVisibilitySettings>;
-  layoutPresetNameRef: MutableRef<LayoutGraphPresetName>;
-  graphHistoryRef: MutableRef<PreparedReferenceGraph[]>;
-  loadedFiltersByItemIdRef: MutableRef<Map<string, Set<keyof SitecoreHarvestFiltersState>>>;
-  renderGraph: (graph: SitecoreHarvestResult) => Promise<void>;
-  setCurrentFilters: (filters: SitecoreHarvestFiltersState) => void;
-  setParameterVisibilitySettings: (settings: GraphParameterVisibilitySettings) => void;
-  setLayoutPresetName: (name: LayoutGraphPresetName) => void;
-  setHistoryCount: (count: number) => void;
-  setBuildElapsedSeconds: (elapsedSeconds: number | undefined) => void;
-  setSelectedTreeNodeId: (treeNodeId: string | undefined) => void;
-  setEnrichmentProgress: (progress: EnrichmentProgress | undefined) => void;
-  setGraphBusy: (busy: boolean) => void;
-};
 
 export function useCytoscape(options: UseCytoscapeOptions): void {
   useEffect(() => {

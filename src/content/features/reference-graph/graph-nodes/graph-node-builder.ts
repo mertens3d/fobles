@@ -1,22 +1,16 @@
-import type { ProjectedGraphNode } from "./graph-nodes.types.js";
-import type { AppendGraphNodeOptions } from "./graph-nodes.types.js";
-import type { CompoundGroupDefinition } from "./graph-nodes.types.js";
+import type { AppendGraphNodeOptions, CompoundGroupDefinition, ProjectedGraphNode } from "./graph-nodes.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-node-builder.ts
 
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
-import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
-import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing.types";
-import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing.types";
-import {
-  GRAPH_COLLAPSE_KEY,
-  type GraphCollapseKey,
-} from "../../../foundation/reference-data/model/graph-collapse.types";
-import { kindClass } from "./graph-helpers";
+import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/graph-collapse.types";
+import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
+import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../../../foundation/reference-data/processing/processing.types";
 import { resolveNodeLabel } from "../../../shared/ui/reference-model/node-label-resolver";
 import { NODE_PRESENTATION_BY_KIND } from "../../../shared/ui/reference-model/node-presentation";
+import { kindClass } from "./graph-helpers";
 import type { GraphNodeData } from "./graph-nodes.types";
-import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import { iconForProcessingState } from "./processing-icon";
 
 export const COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group";

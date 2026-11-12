@@ -2,7 +2,7 @@
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import { readRenderingAttribute } from "../../../src/content/foundation/harvesting/collectors/section-collector/layout-collector/rendering-xml-attributes.ts";
-import type { SitecoreRenderingXml } from "../../../src/content/foundation/harvesting/collectors/section-collector/layout-collector/sitecore-layout-xml-schema.types";
+import type { SitecoreRenderingXml } from "../../../src/content/foundation/harvesting/collectors/section-collector/layout-collector/layout-collector.types.ts";
 
 const RENDERING_ID = "{493B3A83-0FA7-4484-8FC9-4680991CF743}";
 

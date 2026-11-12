@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processing-priority.ts
 
-import type { ItemGraphNodeData } from "../model/sitecore-item.types";
-import type { ReferenceModelNode } from "../model/reference-model.types";
+import type { ItemGraphNodeData } from "../model/model.types";
+import type { ReferenceModelNode } from "../model/model.types";
 import { firstItemNode } from "./reference-model-processing-tree-state";
 import type { ReferenceModelProcessingPriorityRank } from "./processing.types";
 

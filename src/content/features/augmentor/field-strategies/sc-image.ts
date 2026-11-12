@@ -1,7 +1,7 @@
 import { FOBLES } from "../../../../constants/fobles";
 import { CONST } from "../../../../constants/const";
 import { ensurePathShape } from "../helper";
-import type { ImageFobles as ImageConfig } from "../../../../constants/fobles.types";
+import type { ImageFobles as ImageConfig } from "../../../../constants/constants.types";
 import { applySingleInputFieldStrategy } from "../shared/apply-single-input-field";
 
 export function applyImageStrategy(doc: Document, config: ImageConfig): void {

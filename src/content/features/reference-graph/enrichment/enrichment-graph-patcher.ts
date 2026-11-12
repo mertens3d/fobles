@@ -1,14 +1,12 @@
+import type { NodeRuntimeState } from "./enrichment.types.js";
+import type { ProjectedGraphNodeData } from "./enrichment.types.js";
 // @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment-graph-patcher.ts
 
 import type cytoscape from "cytoscape";
-import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
 import { getGraphOwnedClasses, projectGraphNode } from "../graph-nodes/graph-node-builder";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing.types";
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
-
-type ProjectedGraphNodeData = ReturnType<typeof projectGraphNode>["data"];
-
-type NodeRuntimeState = { position: cytoscape.Position; selected: boolean; locked: boolean; grabbable: boolean };
 
 export function patchCytoscapeNodes(
   cy: cytoscape.Core | undefined,

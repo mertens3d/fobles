@@ -2,7 +2,7 @@ import { SITECORE } from "../../../../constants/sitecore.ts";
 import { normalizeHistoryId } from "../../../../shared/item-history/item-history-model.ts";
 import { KNOWN_FIELD_REFERENCE_RESOLVERS } from "../../../field-reference-resolution/field-reference-resolvers.ts";
 import { extractFieldLabel } from "./helpers/field-harvester.ts";
-import type { SitecoreHarvestSection } from "../../reference-data/model/sitecore-item.types.ts";
+import type { SitecoreHarvestSection } from "../../reference-data/model/model.types";
 
 function parseBaseIds(value: string): readonly string[] | undefined {
   const raw = value.trim();

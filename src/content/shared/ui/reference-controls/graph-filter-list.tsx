@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/shared/ui/reference-controls/graph-filter-list.tsx
 
 import { CONST } from "../../../../constants/const";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 
 type GraphFilterListProps = {
   filters: SitecoreHarvestFiltersState;

@@ -3,7 +3,8 @@ import { CONST } from "../../../constants/const";
 import { showFoblesErrorDialog, updateFoblesCleanupDialog } from "../../../shared/error-dialog";
 import { extensionLog } from "../../logger";
 import { getRuntimeSettings } from "../../runtime-settings/runtime-settings";
-import type { HealthProvider, HealthReport } from "../../foundation/diagnostics/health.types";
+import type { HealthProvider } from "../../foundation/diagnostics/diagnostics.types";
+import type { HealthReport } from "../../foundation/diagnostics/diagnostics.types";
 import { emergencyCleanupWorkerIframes } from "../../foundation/workers/iframe/worker-iframe-host";
 import {
   cancelWorkerRequest,

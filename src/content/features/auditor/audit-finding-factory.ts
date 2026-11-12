@@ -1,11 +1,8 @@
 import type { BuildAuditFindingOptions } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/audit-finding-factory.ts
 
-import type { ItemGraphNodeData } from "../../foundation/reference-data/model/sitecore-item.types";
 import { buildAuditFindingId } from "./audit-finding-id.ts";
-import type { AuditFinding } from "./auditor.types";
-import type { AuditFindingSeverity } from "./auditor.types";
-import type { AuditFindingStatus } from "./auditor.types";
+import type { AuditFinding, AuditFindingSeverity, AuditFindingStatus } from "./auditor.types";
 
 const SEVERITY_BY_STATUS: Readonly<Record<AuditFindingStatus, AuditFindingSeverity>> = {
   error: "error",

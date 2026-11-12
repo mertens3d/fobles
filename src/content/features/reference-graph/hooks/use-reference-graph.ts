@@ -1,65 +1,17 @@
+import type { GraphState } from "./hooks.types.js";
+import type { UseReferenceGraphOptions } from "./hooks.types.js";
 // @source-path [Fobles] src/content/features/reference-graph/hooks/use-reference-graph.ts
 
 import { useRef, useState } from "react";
 import { CONST } from "../../../../constants/const";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import type { EnrichmentProgress } from "../enrichment/enrichment.types";
 import { DEFAULT_RENDERING_GRAPH_FILTERS_STATE } from "../graph-filters";
-import {
-  DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS,
-  type GraphParameterVisibilitySettings,
-} from "../graph-parameter-visibility-settings";
-import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
-import type { PreparedReferenceGraph } from "../prepared-reference-graph.types";
+import { DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS } from "../graph-parameter-visibility-settings";
+import type { GraphParameterVisibilitySettings } from "../reference-graph.types";
+import type { LayoutGraphPresetName } from "../../../../constants/constants.types";
+import type { PreparedReferenceGraph } from "../reference-graph.types";
 import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
-
-type UseReferenceGraphOptions = { initialPreparedGraph: PreparedReferenceGraph };
-
-type MutableRef<T> = { current: T };
-
-export type GraphState = {
-  currentPreparedGraph: PreparedReferenceGraph;
-  setCurrentPreparedGraph: React.Dispatch<React.SetStateAction<PreparedReferenceGraph>>;
-  currentPreparedGraphRef: MutableRef<PreparedReferenceGraph>;
-
-  currentFilters: SitecoreHarvestFiltersState;
-  setCurrentFilters: React.Dispatch<React.SetStateAction<SitecoreHarvestFiltersState>>;
-  currentFiltersRef: MutableRef<SitecoreHarvestFiltersState>;
-
-  parameterVisibilitySettings: GraphParameterVisibilitySettings;
-  setParameterVisibilitySettings: React.Dispatch<React.SetStateAction<GraphParameterVisibilitySettings>>;
-  parameterVisibilitySettingsRef: MutableRef<GraphParameterVisibilitySettings>;
-
-  layoutPresetName: LayoutGraphPresetName;
-  setLayoutPresetName: React.Dispatch<React.SetStateAction<LayoutGraphPresetName>>;
-  layoutPresetNameRef: MutableRef<LayoutGraphPresetName>;
-
-  historyCount: number;
-  setHistoryCount: React.Dispatch<React.SetStateAction<number>>;
-  graphHistoryRef: MutableRef<PreparedReferenceGraph[]>;
-  loadedFiltersByItemIdRef: MutableRef<Map<string, Set<keyof SitecoreHarvestFiltersState>>>;
-
-  buildElapsedSeconds: number | undefined;
-  setBuildElapsedSeconds: React.Dispatch<React.SetStateAction<number | undefined>>;
-
-  controlsExpanded: boolean;
-  setControlsExpanded: React.Dispatch<React.SetStateAction<boolean>>;
-
-  treeDataVisible: boolean;
-  setReferenceModelVisible: React.Dispatch<React.SetStateAction<boolean>>;
-
-  selectedTreeNodeId: string | undefined;
-  setSelectedTreeNodeId: React.Dispatch<React.SetStateAction<string | undefined>>;
-
-  enrichmentProgress: EnrichmentProgress | undefined;
-  setEnrichmentProgress: React.Dispatch<React.SetStateAction<EnrichmentProgress | undefined>>;
-
-  harvestProgress: PhaseProgress | undefined;
-  setHarvestProgress: React.Dispatch<React.SetStateAction<PhaseProgress | undefined>>;
-
-  graphBusy: boolean;
-  setGraphBusy: React.Dispatch<React.SetStateAction<boolean>>;
-};
 
 export function useReferenceGraph({ initialPreparedGraph }: UseReferenceGraphOptions): GraphState {
   const [currentPreparedGraph, setCurrentPreparedGraph] = useState(initialPreparedGraph);

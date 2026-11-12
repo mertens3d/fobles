@@ -1,26 +1,19 @@
 // @source-path [fobles] src/content/features/reference-graph/components/graph-toolbar.tsx
 import type cytoscape from "cytoscape";
-import type {
-  SitecoreHarvestResult,
-} from "../../../foundation/harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
-import type { EnrichmentProgress as EnrichmentProgressData } from "../enrichment/enrichment.types";
-import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
-import type { LayoutGraphPresetName } from "../../../../constants/LayoutGraphPresetName.types";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
+import type { LayoutGraphPresetName } from "../../../../constants/constants.types";
 import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
-import { BackButton } from "./back-button";
 import { ControlsHeader } from "../../../shared/ui/reference-controls/controls-header";
-import { LifecycleProgressFooter } from "../../../shared/ui/reference-controls/lifecycle-progress-footer";
 import { GraphFilterList } from "../../../shared/ui/reference-controls/graph-filter-list";
+import { LifecycleProgressFooter } from "../../../shared/ui/reference-controls/lifecycle-progress-footer";
+import { ViewReferenceModelButton } from "../../../shared/ui/reference-controls/view-reference-model-button";
+import type { EnrichmentProgress as EnrichmentProgressData } from "../enrichment/enrichment.types";
+import type { GraphParameterVisibilitySettings } from "../reference-graph.types";
+import { BackButton } from "./back-button";
+import { GraphHelpDialog, useGraphHelpDialog } from "./graph-help-dialog";
 import { GraphTypeSelect } from "./graph-type-select";
 import { GraphViewControls } from "./graph-view-controls";
 import { ParameterVisibilityControls } from "./parameter-visibility-controls";
-import { ViewReferenceModelButton } from "../../../shared/ui/reference-controls/view-reference-model-button";
-import { GraphHelpDialog, useGraphHelpDialog } from "./graph-help-dialog";
-
-export type GraphToolbarHandle = {
-  showGraph: (graph: SitecoreHarvestResult, addCurrentGraphToHistory: boolean) => void;
-};
 
 type ToolbarProps = {
   rootItemId: string;

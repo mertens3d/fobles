@@ -6,7 +6,7 @@ import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import type { StoredQuickInfo } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreItemLocator, WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
-import type { ItemGraphNodeData } from "../model/sitecore-item.types.ts";
+import type { ItemGraphNodeData } from "../model/model.types";
 
 function restoreQuickInfo(quickInfo: StoredQuickInfo): ItemGraphNodeData {
   const scTemplate = itemFromLocator(quickInfo.scTemplate);

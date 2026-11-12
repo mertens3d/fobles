@@ -2,13 +2,11 @@
 
 import { CONST } from "../../../../../constants/const";
 import { SITECORE } from "../../../../../constants/sitecore";
-import {
-  type HarvestFieldLink,
-  type ItemGraphNodeData,
-  factoryItemGraphNodeData,
-  type SitecoreHarvestField,
-  type SitecoreHarvestSection,
-} from "../../../reference-data/model/sitecore-item.types";
+import { factoryItemGraphNodeData } from "../../../reference-data/model/sitecore-item.types";
+import type { HarvestFieldLink } from "../../../reference-data/model/model.types";
+import type { SitecoreHarvestField } from "../../../reference-data/model/model.types";
+import type { SitecoreHarvestSection } from "../../../reference-data/model/model.types";
+import type { ItemGraphNodeData } from "../../../reference-data/model/model.types";
 import { isGuidLike } from "../../../sitecore/guid";
 import { resolveFieldReferences } from "../../../../field-reference-resolution/field-reference-resolution";
 import type { HarvestContext } from "../../sitecore-harvester.types";

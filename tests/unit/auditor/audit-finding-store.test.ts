@@ -9,7 +9,7 @@ import {
   searchAuditFindings,
   summarizeAuditFindings,
 } from "../../../src/content/features/auditor/audit-finding-store.ts";
-import type { AuditFinding } from "../../../src/content/features/auditor/audit-finding.types";
+import type { AuditFinding } from "../../../src/content/features/auditor/auditor.types.ts";
 
 function makeFinding(overrides: Partial<AuditFinding> & { id: string }): AuditFinding {
   return {

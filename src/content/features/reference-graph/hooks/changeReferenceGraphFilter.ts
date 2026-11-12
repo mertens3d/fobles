@@ -2,7 +2,7 @@ import { PROGRESS_STEPS } from "../../../foundation/harvesting/planner/harvest-s
 import {
   isHarvestStep,
 } from "../../../foundation/harvesting/sitecore-harvester.types";
-import { type SitecoreHarvestFiltersState } from "../../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import {
   openReferenceGraphProgressModal,
@@ -11,7 +11,7 @@ import {
 } from "../build-progress";
 import { createSingleFilterState } from "../graph-filters";
 import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
-import type { UseReferenceGraphFilterActionsOptions } from "./use-reference-graph-filter-actions";
+import type { UseReferenceGraphFilterActionsOptions } from "./hooks.types";
 
 export async function changeReferenceGraphFilter(
   key: keyof SitecoreHarvestFiltersState,

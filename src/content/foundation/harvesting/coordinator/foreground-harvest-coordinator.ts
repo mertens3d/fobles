@@ -1,3 +1,4 @@
+import type { HarvestOptions } from "./coordinator.types.js";
 // @source-path [fobles] src/content/foundation/harvesting/coordinator/foreground-harvest-coordinator.ts
 
 import { HARVEST_STEPS } from "../planner/harvest-steps";
@@ -11,8 +12,6 @@ import {
   isCollectorResultAlreadyPresent,
 } from "../planner/harvest-task-planner";
 import { createBaseResult, extractRootItem, mergeCollectorResult } from "./harvest-result-merger";
-
-type HarvestOptions = { onProgress?: HarvestProgressCallback; signal?: AbortSignal };
 
 function reportSkippedSteps(request: HarvestRequest, onProgress: HarvestProgressCallback | undefined): void {
   for (const step of HARVEST_STEPS) {

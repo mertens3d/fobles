@@ -1,6 +1,6 @@
 // @source-path [fobles] src/constants/flyout-groups.ts
 // import { kickAllUsers } from "./flyout-groups.types";
-import type { FlyoutGroup } from "./FlyoutOption";
+import type { FlyoutGroup } from "./constants.types";
 import { FOBLES } from "./fobles";
 import { TEXT } from "./fobles.constants";
 import { CONST } from "./const";

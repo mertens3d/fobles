@@ -1,12 +1,13 @@
-// @source-path [fobles] src/background/fobles-utility-lock.ts
+// @source-path [Fobles] src/background/fobles-utility-lock.ts
 /// <reference types="chrome" />
+
+import type { UtilityOwner } from "./background.types";
 import {
   type UtilityLockMessage,
   type UtilityLockResponse,
 } from "../shared/utility/fobles-utility-lock.messages.types";
 import { UTILITY_LOCK_MESSAGE } from "../shared/utility/UTILITY_LOCK_MESSAGE.const";
 
-type UtilityOwner = { tabId: number; ownershipId: string; origin: string };
 const ownersByOrigin = new Map<string, UtilityOwner>();
 
 function acquire(message: UtilityLockMessage, tabId: number | undefined): UtilityLockResponse {
@@ -37,13 +38,13 @@ async function takeOver(message: UtilityLockMessage, tabId: number | undefined):
   }
   const current = ownersByOrigin.get(message.origin);
   if (current && current.tabId !== tabId) {
-      await chrome.tabs
-        .sendMessage(current.tabId, {
+    await chrome.tabs
+      .sendMessage(current.tabId, {
         type: UTILITY_LOCK_MESSAGE.OWNERSHIP_LOST,
         ownershipId: current.ownershipId,
         origin: current.origin,
-        })
-        .catch(() => undefined);
+      })
+      .catch(() => undefined);
   }
   ownersByOrigin.set(message.origin, { tabId, ownershipId: message.ownershipId, origin: message.origin });
   return { acquired: true, ownerTabId: tabId, ownerOwnershipId: message.ownershipId };

@@ -1,4 +1,4 @@
-import type { ReferenceModelNode } from "../../../foundation/reference-data/model/reference-model.types";
+import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
 
 export type DetailRow = [string, string];
 

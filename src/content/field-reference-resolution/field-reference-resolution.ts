@@ -1,7 +1,8 @@
 import { CONST } from "../../constants/const.ts";
 import { extractAllGuids } from "./field-reference-guid.ts";
 import { KNOWN_FIELD_REFERENCE_RESOLVERS } from "./field-reference-resolvers.ts";
-import type { FieldReference, FieldReferenceResolution } from "./field-reference.types";
+import type { FieldReferenceResolution } from "./field-reference-resolution.types";
+import type { FieldReference } from "./field-reference-resolution.types";
 
 // A known strategy wins even when it returns no references. Generic GUID inference runs only when
 // no known strategy claims the field. Friendly strategy labels are preferred for graph display;

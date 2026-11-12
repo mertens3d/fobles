@@ -15,7 +15,8 @@ import {
   putFact,
 } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { serializeCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts";
-import type { SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.types.ts";
+import type { SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
+
 function key(): SitecoreDataCacheKey {
   return {
     environment: "DEV",

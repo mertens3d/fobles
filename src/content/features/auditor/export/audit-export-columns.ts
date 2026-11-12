@@ -1,8 +1,6 @@
-// @source-path [fobles] src/content/features/auditor/export/audit-export-columns.ts
+// @source-path [Fobles] src/content/features/auditor/export/audit-export-columns.ts
 
-import type { AuditFinding } from "../auditor.types";
-
-export type AuditExportColumn = { key: string; header: string; getValue: (finding: AuditFinding) => string };
+import type { AuditExportColumn } from "./export.types.js";
 
 function orEmpty(value: string | undefined): string {
   return value ?? "";

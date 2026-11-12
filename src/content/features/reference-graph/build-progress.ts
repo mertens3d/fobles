@@ -9,7 +9,7 @@ import type {
   HarvestProgressStatus,
   ProgressStep,
 } from "../../foundation/harvesting/sitecore-harvester.types";
-import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_REFERENCE_GRAPH_BASE";
+import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 import { ReferenceGraphProgressDialog } from "./components/reference-graph-progress-dialog";
 
 let progressRoot: Root | undefined;

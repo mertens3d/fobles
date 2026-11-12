@@ -5,7 +5,7 @@ import { CLASS } from "../../../constants/fobles.constants";
 import { FOBLES } from "../../../constants/fobles";
 import { attachFoblesTooltip } from "../../features/augmentor/shared/fobles-tooltip";
 import { openFoblesUrl } from "../../features/augmentor/helper";
-import type { FlyoutOption } from "../../../constants/FlyoutOption";
+import type { FlyoutOption } from "../../../constants/constants.types";
 import { buildFlyoutOptionUrl } from "./flyout-option-url";
 import { useJumpFlyoutButtonVisibility } from "./use-jump-flyout-button-visibility";
 import { JUMP_FLYOUT_OPTION_ATTRIBUTE } from "./jump-flyout-option-button.const";

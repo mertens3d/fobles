@@ -1,12 +1,7 @@
-// @source-path [fobles] src/content/foundation/reference-data/reference-data-acquisition.ts
-import { openFoblesDataSession, type FoblesDataSession } from "./reference-data-service";
-import type { WorkSession } from "../workers/session/work-session.types";
+// @source-path [Fobles] src/content/foundation/reference-data/reference-data-acquisition.ts
 
-export type FoblesDataAcquisition = FoblesDataSession;
-
-export type LegacyOptions = Parameters<typeof openFoblesDataSession>[0];
-
-export type FoblesDataAcquisitionOptions = Omit<LegacyOptions, "workSession"> & { workOperation: WorkSession };
+import type { FoblesDataAcquisition, FoblesDataAcquisitionOptions } from "./reference-data.types.js";
+import { openFoblesDataSession } from "./reference-data-service";
 
 export function openFoblesDataAcquisition(
   options: FoblesDataAcquisitionOptions,

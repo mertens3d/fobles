@@ -1,1 +1,0 @@
-import type { ItemKind } from "../../../../shared/structural/structural.types.ts";

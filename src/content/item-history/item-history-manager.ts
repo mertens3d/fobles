@@ -2,7 +2,6 @@
 
 import { requestHistoryChange } from "../../shared/item-history/item-history-client.ts";
 import type { SitecoreDataCacheKey } from "../foundation/cache/sitecore-data/sitecore-data.types";
-import { requestFact } from "../foundation/sitecore/data/sitecore-data-service.ts";
 import { runWorkerTask } from "../foundation/workers/pool/worker-pool-client.ts";
 import { createErrorResult, type WorkerTask } from "../foundation/workers/tasks/worker-task.types.ts";
 import { WORK_SCHEDULING } from "../foundation/workers/work-scheduling.const.ts";
@@ -11,6 +10,7 @@ import { ITEM_HISTORY_CAPTURE } from "./item-history.const.ts";
 import type { ItemHistoryCleanup } from "./item-history.types.ts";
 import { readHistoryVisit, resolveHistoryScope } from "./quick-info.ts";
 import { observeQuickInfo } from "./quick-info-observer.ts";
+import { requestFact } from "../foundation/sitecore/data/sitecore-data-service.ts";
 
 const managers = new WeakMap<Document, ItemHistoryCleanup>();
 

@@ -7,9 +7,9 @@ import { Window } from "happy-dom";
 import { act, createElement } from "react";
 import { createRoot } from "react-dom/client";
 import type { ActivityListener } from "../../../src/content/shared/activity/activity.types.ts";
-import type { WorkerPoolStatus } from "../../../src/content/foundation/workers/pool/worker-pool-status.types.ts";
 import type { StructuralSettings } from "../../../src/shared/structural/structural.types.ts";
 import type { ToolbarDiagnosticsServices } from "../../../src/content/toolbar/diagnostics/toolbar-diagnostics.types.ts";
+import type { WorkerPoolStatus } from "../../../src/content/foundation/workers/pool/pool.types.ts";
 
 const require = createRequire(import.meta.url);
 const bundled = await build({

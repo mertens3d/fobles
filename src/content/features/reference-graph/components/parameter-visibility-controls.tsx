@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/features/reference-graph/components/parameter-visibility-controls.tsx
 
-import type { GraphParameterVisibilitySettings } from "../graph-parameter-visibility-settings";
+import type { GraphParameterVisibilitySettings } from "../reference-graph.types";
 
 type ParameterVisibilityControlsProps = {
   settings: GraphParameterVisibilitySettings;

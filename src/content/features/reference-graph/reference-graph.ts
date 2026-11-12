@@ -1,11 +1,10 @@
+import type { ReferenceGraphOperationState } from "./reference-graph.types.js";
 // @source-path [fobles] src/content/features/reference-graph/reference-graph.ts
 import { showFoblesErrorDialog } from "../../../shared/error-dialog";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { PROGRESS_STEPS } from "../../foundation/harvesting/planner/harvest-steps";
-import {
-  openFoblesDataAcquisition,
-  type FoblesDataAcquisition,
-} from "../../foundation/reference-data/reference-data-acquisition";
+import { openFoblesDataAcquisition } from "../../foundation/reference-data/reference-data-acquisition";
+import type { FoblesDataAcquisition } from "../../foundation/reference-data/reference-data.types";
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
 import { extensionLog } from "../../logger";
 import { openReferenceGraphUtility } from "../../shell/utility/fobles-utility-launchers";
@@ -18,13 +17,11 @@ import {
 } from "./build-progress";
 import { harvestGraphForLink } from "./harvester";
 import { addGraphElements } from "./prepared-reference-graph";
-import type { PreparedReferenceGraph } from "./prepared-reference-graph.types";
+import type { PreparedReferenceGraph } from "./reference-graph.types";
 import { startReferenceGraphTimer } from "./reference-graph-timing";
 
 export let referenceGraphAbortController: AbortController | undefined;
 let activeReferenceGraphOperation: ReferenceGraphOperation | undefined;
-
-type ReferenceGraphOperationState = "created" | "running" | "displaying" | "disposing" | "closed";
 
 class ReferenceGraphOperation {
   private readonly controller = new AbortController();
