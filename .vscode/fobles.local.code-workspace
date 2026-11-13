@@ -11,6 +11,24 @@
       "statusBar.noFolderBackground": "#6b3434",
       "statusBar.noFolderForeground": "#ffffff"
     },
-    "window.title": "🔴 [fobles] ${dirty}${activeEditorShort}${separator}${rootName}"
+    "window.title": "🔴 [fobles] ${dirty}${activeEditorShort}${separator}${rootName}",
+    "files.associations": {
+      "*.sicpackage": "json"
+    },
+    "nodejs-testing.include": [
+      "tests/unit",
+      "src/content/sitecore-data"
+    ],
+    "nodejs-testing.extensions": [
+      {
+        "extensions": [
+          "ts"
+        ],
+        "filePatterns": [
+          "**/*.test.ts"
+        ],
+        "parameters": []
+      }
+    ],
   }
 }

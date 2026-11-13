@@ -4,7 +4,10 @@ export const RUNTIME_SETTINGS_STORAGE_KEY = "fobles-runtime-settings";
 
 export const RUNTIME_FAULT = { REFERENCE_GRAPH_RESTORE_EDITOR_STATE: "referenceGraph.restoreEditorState" } as const;
 
-export const RUNTIME_SETTINGS_LIMITS = { MAX_BACKGROUND_INTERTASK_COOLDOWN_MS: 2_147_483_647, MAX_UNVALIDATED_AGE_HOURS: Math.floor(Number.MAX_SAFE_INTEGER / (60 * 60 * 1000)) } as const;
+export const RUNTIME_SETTINGS_LIMITS = {
+  MAX_BACKGROUND_INTERTASK_COOLDOWN_MS: 2_147_483_647,
+  MAX_UNVALIDATED_AGE_HOURS: Math.floor(Number.MAX_SAFE_INTEGER / (60 * 60 * 1000)),
+} as const;
 
 export const DEFAULT_RUNTIME_SETTINGS: RuntimeSettings = {
   structuralCache: { maxUnvalidatedAgeHours: 7 * 24 },
@@ -20,5 +23,9 @@ export const DEFAULT_RUNTIME_SETTINGS: RuntimeSettings = {
     poolMaxWorkerRecoveries: 3,
     specialistNoProgressMs: 45000,
   },
-  testing: { enabled: false, faults: { [RUNTIME_FAULT.REFERENCE_GRAPH_RESTORE_EDITOR_STATE]: false }, showJourneyStepLive: true },
+  testing: {
+    enabled: false,
+    faults: { [RUNTIME_FAULT.REFERENCE_GRAPH_RESTORE_EDITOR_STATE]: false },
+    showJourneyStepLive: true,
+  },
 };

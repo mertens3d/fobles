@@ -14,7 +14,7 @@ import {
   count,
   deleteItem,
   evictIfNeeded,
-  getFact,
+  getCachedFact,
   getItem,
   putFact,
 } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
@@ -80,7 +80,7 @@ void test("a second putFact preserves the first fact", async () => {
 void test("getFact returns the correct typed fact", async () => {
   const key = sampleKey();
   await putFact(key, "referrers", { referrers: [] });
-  const fact = await getFact(key, "referrers");
+  const fact = await getCachedFact(key, "referrers");
   assert.ok(fact);
   assert.deepEqual(fact?.value, { referrers: [] });
 });
@@ -88,7 +88,7 @@ void test("getFact updates lastAccessedAt", async () => {
   const key = sampleKey();
   await putFact(key, "parent", { parent: undefined });
   await setLastAccessedAt(key, 1);
-  await getFact(key, "parent");
+  await getCachedFact(key, "parent");
   const record = await peekRecord(key);
   assert.ok(record);
   assert.ok(record && record.lastAccessedAt > 1);
@@ -97,10 +97,10 @@ void test("cached not-found remains distinguishable from a cache miss", async ()
   const key = sampleKey();
   const notFoundPayload: QuickInfoPayload = { result: { requested: key.item, status: "not-found" } };
   await putFact(key, "quickInfo", notFoundPayload);
-  const cachedNotFound = await getFact(key, "quickInfo");
+  const cachedNotFound = await getCachedFact(key, "quickInfo");
   assert.equal(cachedNotFound?.value.result.status, "not-found");
   const missingKey = sampleKey({ item: { kind: "id", value: guidFor(999) } });
-  const miss = await getFact(missingKey, "quickInfo");
+  const miss = await getCachedFact(missingKey, "quickInfo");
   assert.equal(miss, undefined);
 });
 void test("deleteItem removes one record", async () => {
@@ -189,9 +189,9 @@ void test("a missing cache fact differs from a resolved empty fact", async () =>
       },
     ],
   });
-  const neverHarvestedFact = await getFact(neverHarvested, "children");
-  const harvestedEmptyFact = await getFact(harvestedEmpty, "children");
-  const harvestedWithValuesFact = await getFact(harvestedWithValues, "children");
+  const neverHarvestedFact = await getCachedFact(neverHarvested, "children");
+  const harvestedEmptyFact = await getCachedFact(harvestedEmpty, "children");
+  const harvestedWithValuesFact = await getCachedFact(harvestedWithValues, "children");
   // Missing: never harvested / unknown.
   assert.equal(neverHarvestedFact, undefined);
   // Resolved empty: harvested and confirmed none.

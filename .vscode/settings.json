@@ -1,18 +1,5 @@
 {
-  "files.associations": {
-    "*.sicpackage": "json"
-  },
-  "nodejs-testing.include": [
-    "tests/unit",
-    "src/content/sitecore-data"
-  ],
-  "nodejs-testing.extensions": [
-    {
-      "extensions": ["ts"],
-      "filePatterns": ["**/*.test.ts"],
-      "parameters": []
-    }
-  ],
+
   "json.schemas": [
     {
       "fileMatch": ["/sitecore.json"],

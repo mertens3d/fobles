@@ -21,11 +21,11 @@ void test("runtime age tuning is read live and ignores legacy structural age", a
   const key = structuralTemplateCacheKey(SCOPE, guid(10));
   await cache.putFact(key, "templateBases", { inheritedTemplateIds: [guid(2)] });
   f.age();
-  getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs = 1000;
+  getRuntimeSettings().structuralCache.maxUnvalidatedAgeHours = 1000;
   const driver = await createStructuralRuntimeDriver(SCOPE, f.options);
   assert.deepEqual((await driver.bases(guid(10), false))?.value, [guid(2)]);
   assert.equal(f.tasks.length, 0);
-  getRuntimeSettings().structuralCache.maxUnvalidatedAgeMs = 50;
+  getRuntimeSettings().structuralCache.maxUnvalidatedAgeHours = 50;
   await driver.bases(guid(10), false);
   await driver.finish();
   assert.equal(f.tasks.filter((task) => task.type === "get-template-bases").length, 1);
@@ -77,8 +77,8 @@ void test("stale template facts return old data immediately and refresh atomical
   const stale = await driver.bases(guid(10), false);
   assert.deepEqual(stale?.value, [guid(2)]);
   await driver.finish();
-  assert.deepEqual((await cache.getFact(key, "templateBases"))?.value.inheritedTemplateIds, [guid(3)]);
-  assert.deepEqual((await cache.getFact(key, "customSections"))?.value, { sections: [] });
+  assert.deepEqual((await cache.getCachedFact(key, "templateBases"))?.value.inheritedTemplateIds, [guid(3)]);
+  assert.deepEqual((await cache.getCachedFact(key, "customSections"))?.value, { sections: [] });
   assert.equal(f.tasks.filter((task) => task.type === "get-template-bases").length, 1);
 });
 
@@ -96,7 +96,7 @@ void test("inheritance reads deduplicate and preserve empty versus unavailable",
   assert.equal(await unavailable.bases(guid(11), false), undefined);
   await unavailable.finish();
   assert.equal(f.fallbackCalls(), 0);
-  assert.equal(await cache.getFact(structuralTemplateCacheKey(SCOPE, guid(11)), "templateBases"), undefined);
+  assert.equal(await cache.getCachedFact(structuralTemplateCacheKey(SCOPE, guid(11)), "templateBases"), undefined);
   await assert.rejects(cache.putFact(structuralTemplateCacheKey(SCOPE, guid(11)), "templateBases", { inheritedTemplateIds: undefined }));
 });
 
@@ -111,7 +111,7 @@ void test("untrusted path cache hits cannot satisfy configured roots; live fallb
   assert.equal(await driver.parent(f.item.scItemId!), undefined);
   await driver.finish();
   assert.ok(!f.tasks.some((task) => task.type === "get-parent"));
-  assert.equal(await cache.getFact({ ...f.options.identity, item: { kind: "id", value: f.item.scItemId! } }, "parent"), undefined);
+  assert.equal(await cache.getCachedFact({ ...f.options.identity, item: { kind: "id", value: f.item.scItemId! } }, "parent"), undefined);
 });
 
 void test("runtime refuses foreign origins and databases before opening a WorkSession", async () => {
@@ -128,9 +128,9 @@ void test("Quick Info cache age is verification age, not last accessed time", as
   const key = { ...f.options.identity, item: { kind: "id" as const, value: f.item.scItemId! } };
   await cache.putFact(key, "quickInfo", { result: { requested: key.item, status: "found", value: f.item } });
   now = 2000;
-  assert.equal((await cache.getFact(key, "quickInfo"))?.cachedAt, 1000);
+  assert.equal((await cache.getCachedFact(key, "quickInfo"))?.cachedAt, 1000);
   now = 3000;
-  assert.equal((await cache.getFact(key, "quickInfo"))?.cachedAt, 1000);
+  assert.equal((await cache.getCachedFact(key, "quickInfo"))?.cachedAt, 1000);
 });
 
 void test("collector-shaped live and cached parent paths resolve through verified Quick Info without repeat tasks", async () => {
@@ -146,7 +146,7 @@ void test("collector-shaped live and cached parent paths resolve through verifie
   assert.equal(f.tasks.length, count);
   assert.equal(f.tasks.filter((task) => task.type === "get-parent").length, 1);
   assert.equal(f.tasks.filter((task) => task.type === "get-quick-info" && task.requested.kind === "path").length, 1);
-  const alias = await cache.getFact({ ...f.options.identity, item: { kind: "id", value: f.parent.scItemId! } }, "quickInfo");
+  const alias = await cache.getCachedFact({ ...f.options.identity, item: { kind: "id", value: f.parent.scItemId! } }, "quickInfo");
   assert.equal(alias?.value.result.value?.scItemPath, f.parent.scItemPath);
 });
 
@@ -173,7 +173,7 @@ void test("unavailable and mismatched path Quick Info never invent parent identi
     const driver = await createStructuralRuntimeDriver(SCOPE, f.options);
     assert.equal((await driver.parent(f.item.scItemId!))?.value, undefined);
     await driver.finish();
-    assert.equal(await cache.getFact({ ...f.options.identity, item: { kind: "path", value: path } }, "quickInfo"), undefined);
+    assert.equal(await cache.getCachedFact({ ...f.options.identity, item: { kind: "path", value: path } }, "quickInfo"), undefined);
   }
 });
 
@@ -189,7 +189,7 @@ void test("fresh parent reads bypass stale edges and resolve the new collector p
   assert.equal((await driver.parent(f.item.scItemId!))?.value, guid(99));
   assert.equal((await driver.parent(f.item.scItemId!, true))?.value, f.parent.scItemId);
   await driver.finish();
-  assert.equal((await cache.getFact(key, "parent"))?.value.parent?.scItemPath, f.parent.scItemPath);
+  assert.equal((await cache.getCachedFact(key, "parent"))?.value.parent?.scItemPath, f.parent.scItemPath);
 });
 
 void test("finish is idempotent and releases the session even when completion fails", async () => {
@@ -263,7 +263,7 @@ void test("finish drains dependent stale parent refreshes before completing and 
   assert.equal(f.tasks.filter((task) => task.type === "get-parent").length, 1);
   assert.equal(f.completed(), 1);
   assert.equal(f.cancelled(), 1);
-  assert.equal((await cache.getFact(key, "parent"))?.value.parent?.scItemId, f.parent.scItemId);
+  assert.equal((await cache.getCachedFact(key, "parent"))?.value.parent?.scItemId, f.parent.scItemId);
 });
 
 void test("automatic discovery leaves unavailable template bases unresolved without any editor-state fallback", async (t) => {
@@ -280,7 +280,7 @@ void test("automatic discovery leaves unavailable template bases unresolved with
   assert.equal(typeof templateBasesFallback, "function");
   assert.equal(f.fallbackCalls(), 0);
   assert.ok(f.tasks.every((task) => task.type !== "set-raw-values" && task.type !== "set-standard-fields"));
-  assert.equal(await cache.getFact(structuralTemplateCacheKey(SCOPE, guid(10)), "templateBases"), undefined);
+  assert.equal(await cache.getCachedFact(structuralTemplateCacheKey(SCOPE, guid(10)), "templateBases"), undefined);
   const diagnostic = warn.mock.calls.find((call) =>
     call.arguments[0] === "Structural discovery: template bases unavailable without changing editor state");
   assert.ok(diagnostic);
@@ -304,5 +304,5 @@ void test("harvested full-section bases reuse their verification age without ope
   assert.deepEqual(await driver.bases(guid(10), false), { value: [guid(2), guid(3)], cachedAt: verifiedAt });
   await driver.finish();
   assert.deepEqual(f.tasks, []);
-  assert.equal((await cache.getFact(key, "templateBases"))?.lastVerifiedAt, verifiedAt);
+  assert.equal((await cache.getCachedFact(key, "templateBases"))?.lastVerifiedAt, verifiedAt);
 });

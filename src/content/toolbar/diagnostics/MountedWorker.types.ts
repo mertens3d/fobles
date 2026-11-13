@@ -1,1 +1,1 @@
-type MountedWorker = { key: string; workerId: string; source: string; visible: boolean; };
+type MountedWorker = { key: string; workerId: string; source: string; visible: boolean };

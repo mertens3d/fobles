@@ -10,7 +10,7 @@ import {
   resetDatabaseConnectionForTests,
   runCacheTransaction,
 } from "../../../src/content/foundation/cache/sitecore-data/indexed-db.ts";
-import { getFact, putFact } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
+import { putFact, getCachedFact } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { serializeCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts";
 import type { SitecoreDataCacheKey, SitecoreDataCacheFactRecord } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
 import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/model.types.ts";
@@ -70,7 +70,7 @@ void test("relationship facts rehydrate locator placeholders for existing runtim
   await putFact(key(), "children", {
     childItems: [item("{B52269FE-554F-4C0F-A0C9-B9ED8D7249F4}", "/ignored"), item("", "/sitecore/content/Home")],
   });
-  const fact = await getFact(key(), "children");
+  const fact = await getCachedFact(key(), "children");
   assert.equal(fact?.value.childItems[0]?.scItemId, "B52269FE-554F-4C0F-A0C9-B9ED8D7249F4");
   assert.equal(fact?.value.childItems[1]?.scItemPath, "/sitecore/content/Home");
   assert.equal(fact?.value.childItems[0]?.scItemName, undefined);

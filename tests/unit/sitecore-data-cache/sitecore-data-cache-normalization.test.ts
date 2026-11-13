@@ -11,8 +11,8 @@ import {
 } from "../../../src/content/foundation/cache/sitecore-data/indexed-db.ts";
 import {
   deleteItem,
-  getFact,
   putFact,
+  getCachedFact,
 } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { serializeCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts";
 import type { SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
@@ -45,8 +45,8 @@ void test("deleting an item cascade-deletes every fact", async () => {
   await putFact(key(), "children", { childItems: [] });
   await putFact(key(), "referrers", { referrers: [] });
   await deleteItem(key());
-  assert.equal(await getFact(key(), "children"), undefined);
-  assert.equal(await getFact(key(), "referrers"), undefined);
+  assert.equal(await getCachedFact(key(), "children"), undefined);
+  assert.equal(await getCachedFact(key(), "referrers"), undefined);
   const count = await runCacheTransaction("readonly", (_, factStore) =>
     getRequestResult(factStore.index(FACT_ITEM_KEY_INDEX_NAME).count(serializeCacheKey(key()))),
   );

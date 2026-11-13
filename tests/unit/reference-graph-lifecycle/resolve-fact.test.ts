@@ -130,7 +130,7 @@ void test("a not-found live result is reported as not-found and is not cached", 
   };
   const outcome = await resolveItemFact(key, fetchLiveOnce(notFoundResult));
   assert.equal(outcome.kind, "not-found");
-  assert.equal(await cache.getFact(key, "quickInfo"), undefined);
+  assert.equal(await cache.getCachedFact(key, "quickInfo"), undefined);
 });
 void test("a failed live result is reported as failed", async () => {
   const key = sampleKey();

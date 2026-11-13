@@ -13,15 +13,31 @@ void test("scoped structural invalidation removes template facts across language
   const web = { ...key, database: "web" };
   const masterOther = { ...key, database: "master2" };
   for (const item of [key, danish, web, masterOther]) {
-    await cache.putFact(item, "templateBases", { inheritedTemplateIds: [guid(2)] }, { revision: "revision-preserved", lastVerifiedAt: 123 });
-    await cache.putFact(item, "templateDerived", { complete: true, fingerprint: "settings/dependencies", inheritedIds: [guid(2)], kind: "site" });
+    await cache.putFact(
+      item,
+      "templateBases",
+      { inheritedTemplateIds: [guid(2)] },
+      { revision: "revision-preserved", lastVerifiedAt: 123 },
+    );
+    await cache.putFact(item, "templateDerived", {
+      complete: true,
+      fingerprint: "settings/dependencies",
+      inheritedIds: [guid(2)],
+      kind: "site",
+    });
     await cache.putFact(item, "customSections", { sections: [] });
     await cache.putFact(item, "parent", { parent: undefined });
     await cache.putFact(item, "quickInfo", { result: { status: "not-found", requested: item.item } });
   }
   const before = await Promise.all([key, danish, web, masterOther].map((item) => cache.getItem(item)));
-  await assert.rejects(invalidateStructuralCache({ ...SCOPE, origin: "https://foreign.example" }, SCOPE.origin), /origin/);
-  await assert.rejects(invalidateStructuralCache({ ...SCOPE, origin: "https://sitecore.example" }, SCOPE.origin), /origin/);
+  await assert.rejects(
+    invalidateStructuralCache({ ...SCOPE, origin: "https://foreign.example" }, SCOPE.origin),
+    /origin/,
+  );
+  await assert.rejects(
+    invalidateStructuralCache({ ...SCOPE, origin: "https://sitecore.example" }, SCOPE.origin),
+    /origin/,
+  );
   assert.deepEqual(await Promise.all([key, danish, web, masterOther].map((item) => cache.getItem(item))), before);
   await invalidateStructuralCache({ origin: "https://SITECORE.example:8443/path", database: " Master " }, SCOPE.origin);
   for (const [index, item] of [key, danish].entries()) {

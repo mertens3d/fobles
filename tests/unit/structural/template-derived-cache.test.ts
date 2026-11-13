@@ -37,7 +37,7 @@ void test("derived kind round-trips through new runtime/service instances on the
     kind: "site", complete: true, stale: false,
   });
   await first.finish();
-  const stored = await cache.getFact(key, "templateDerived");
+  const stored = await cache.getCachedFact(key, "templateDerived");
   assert.equal(stored?.value.kind, "site");
   assert.equal(stored?.value.complete, true);
   assert.ok(stored?.value.fingerprint);
@@ -50,9 +50,9 @@ void test("derived kind round-trips through new runtime/service instances on the
   assert.equal((await model.classify({ ...item, path: "/sitecore/layout/Custom" }, second, f.options.settings, f.now())).kind, "unknown");
   await second.finish();
   assert.equal(writes.mock.callCount(), 0);
-  assert.deepEqual(await cache.getFact(key, "templateDerived"), stored);
+  assert.deepEqual(await cache.getCachedFact(key, "templateDerived"), stored);
   assert.equal(await cache.getItem({ ...f.options.identity, item: { kind: "id", value: item.id } }), undefined);
-  assert.equal(await cache.getFact(structuralTemplateCacheKey({ ...SCOPE, database: "web" }, guid(10)), "templateDerived"), undefined);
+  assert.equal(await cache.getCachedFact(structuralTemplateCacheKey({ ...SCOPE, database: "web" }, guid(10)), "templateDerived"), undefined);
   const danish = await createStructuralRuntimeDriver(SCOPE, { ...f.options, identity: { ...f.options.identity, language: "da" } });
   assert.deepEqual(await danish.readDerived(guid(10)), stored);
   assert.deepEqual((await danish.bases(guid(10), false))?.value, [guid(2)]);
@@ -97,15 +97,15 @@ void test("persisted fingerprints detect changed cached transitive bases and set
     return result;
   }
   assert.equal((await classify()).kind, "site");
-  const original = await cache.getFact(key, "templateDerived");
+  const original = await cache.getCachedFact(key, "templateDerived");
   await cache.putFact(dependency, "templateBases", { inheritedTemplateIds: [guid(3)] });
   assert.equal((await classify()).kind, "tenant");
-  assert.notEqual((await cache.getFact(key, "templateDerived"))?.value.fingerprint, original?.value.fingerprint);
+  assert.notEqual((await cache.getCachedFact(key, "templateDerived"))?.value.fingerprint, original?.value.fingerprint);
   f.options.settings.baseTemplatePaths.tenant = [];
   assert.equal((await classify()).kind, "unknown");
-  assert.equal((await cache.getFact(key, "templateDerived"))?.value.kind, "unknown");
-  assert.deepEqual((await cache.getFact(key, "templateBases"))?.value.inheritedTemplateIds, [guid(11)]);
-  assert.deepEqual((await cache.getFact(dependency, "templateBases"))?.value.inheritedTemplateIds, [guid(3)]);
+  assert.equal((await cache.getCachedFact(key, "templateDerived"))?.value.kind, "unknown");
+  assert.deepEqual((await cache.getCachedFact(key, "templateBases"))?.value.inheritedTemplateIds, [guid(11)]);
+  assert.deepEqual((await cache.getCachedFact(dependency, "templateBases"))?.value.inheritedTemplateIds, [guid(3)]);
   assert.deepEqual(f.tasks, []);
 });
 
@@ -120,7 +120,7 @@ void test("SWR returns stale derived kind without recertification and converges 
   const first = await createStructuralRuntimeDriver(SCOPE, f.options);
   await createTemplateStructuralService().classify(item, first, f.options.settings, now);
   await first.finish();
-  const original = await cache.getFact(key, "templateDerived");
+  const original = await cache.getCachedFact(key, "templateDerived");
   now += 101;
   f.age();
   await seedRoots(f);
@@ -129,13 +129,13 @@ void test("SWR returns stale derived kind without recertification and converges 
   assert.deepEqual(await createTemplateStructuralService().classify(item, staleDriver, f.options.settings, now), {
     kind: "site", complete: true, stale: true,
   });
-  assert.deepEqual(await cache.getFact(key, "templateDerived"), original);
+  assert.deepEqual(await cache.getCachedFact(key, "templateDerived"), original);
   await staleDriver.finish();
   const refreshed = await createStructuralRuntimeDriver(SCOPE, f.options);
   assert.deepEqual(await createTemplateStructuralService().classify(item, refreshed, f.options.settings, now), {
     kind: "tenant", complete: true, stale: false,
   });
   await refreshed.finish();
-  assert.equal((await cache.getFact(key, "templateDerived"))?.value.kind, "tenant");
+  assert.equal((await cache.getCachedFact(key, "templateDerived"))?.value.kind, "tenant");
   assert.equal(f.tasks.filter((task) => task.type === "get-template-bases").length, 1);
 });

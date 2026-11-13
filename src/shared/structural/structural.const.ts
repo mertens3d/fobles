@@ -1,6 +1,12 @@
 import { SITECORE } from "../../constants/sitecore.ts";
 
-export const ITEM_KIND = { PAGE: "page", SITE: "site", TEMPLATE: "template", TENANT: "tenant", UNKNOWN: "unknown" } as const;
+export const ITEM_KIND = {
+  PAGE: "page",
+  SITE: "site",
+  TEMPLATE: "template",
+  TENANT: "tenant",
+  UNKNOWN: "unknown",
+} as const;
 
 export const STRUCTURAL = {
   DEFAULT_SHOW_TOOLBAR_DIAGNOSTICS: false,
