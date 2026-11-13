@@ -1,6 +1,6 @@
-import type { BooleanTripleState } from "./macros.types.js";
 // @source-path [fobles] src/content/foundation/sitecore/macros/ribbon-toggle-macro.ts
 
+import type { BooleanTripleState } from "./macros.types.js";
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import { waitForSitecoreContentEditorPostbackReplacement } from "./macro-helpers/content-editor-postback-helper";

@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/toolbar/diagnostics/toolbar-diagnostics.tsx
+
 import { useEffect, useState } from "react";
 import { getStructuralSettings, watchStructuralSettings } from "../../../shared/structural/structural-settings";
 import { getWorkerPoolStatus } from "../../foundation/workers/pool/worker-pool-client";

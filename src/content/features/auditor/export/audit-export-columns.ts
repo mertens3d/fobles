@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/features/auditor/export/audit-export-columns.ts
+// @source-path [fobles] src/content/features/auditor/export/audit-export-columns.ts
 
 import type { AuditExportColumn } from "./export.types.js";
 

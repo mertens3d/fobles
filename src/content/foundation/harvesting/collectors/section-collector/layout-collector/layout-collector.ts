@@ -1,6 +1,6 @@
-import type { LayoutCollectionFailure } from "./layout-collector.types.js";
 // @source-path [fobles] src/content/foundation/harvesting/collectors/section-collector/layout-collector/layout-collector.ts
 
+import type { LayoutCollectionFailure } from "./layout-collector.types.js";
 import { XMLParser } from "fast-xml-parser";
 import { extensionLog } from "../../../../../logger";
 import { findFieldInput } from "../../helpers/harvest-helpers";

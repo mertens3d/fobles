@@ -1,6 +1,6 @@
-import type { BuildAuditFindingOptions } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/audit-finding-factory.ts
 
+import type { BuildAuditFindingOptions } from "./auditor.types.js";
 import { buildAuditFindingId } from "./audit-finding-id.ts";
 import type { AuditFinding, AuditFindingSeverity, AuditFindingStatus } from "./auditor.types";
 

@@ -1,6 +1,6 @@
-import type { GlyphState } from "./macros.types.js";
 // @source-path [fobles] src/content/foundation/sitecore/macros/tree-expand-macro.ts
 
+import type { GlyphState } from "./macros.types.js";
 import { CONST } from "../../../../constants/const";
 import type { TreeChildNode } from "../../reference-data/model/model.types";
 import { formatFoId, stripGuidBraces } from "../guid";

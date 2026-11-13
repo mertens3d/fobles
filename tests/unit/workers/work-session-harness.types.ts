@@ -1,4 +1,4 @@
-import type { WorkerTask, WorkerTaskResult } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
+import type { WorkerTask, WorkerTaskResult } from "../../../src/content/foundation/workers/tasks/tasks.types";
 
 export type SessionTestEnvironment = {
   cancelled: string[];

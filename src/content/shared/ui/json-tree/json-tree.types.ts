@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/json-tree/json-tree.types.ts
+
 export type JsonEntry = readonly [string, unknown];
 
 export type JsonTreeProps = { value: unknown; defaultOpenDepth?: number };

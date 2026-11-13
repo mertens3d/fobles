@@ -1,7 +1,7 @@
+// @source-path [fobles] src/content/features/reference-graph/hooks/use-reference-graph.ts
+
 import type { GraphState } from "./hooks.types.js";
 import type { UseReferenceGraphOptions } from "./hooks.types.js";
-// @source-path [Fobles] src/content/features/reference-graph/hooks/use-reference-graph.ts
-
 import { useRef, useState } from "react";
 import { CONST } from "../../../../constants/const";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";

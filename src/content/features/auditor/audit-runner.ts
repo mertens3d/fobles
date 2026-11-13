@@ -1,5 +1,6 @@
-import type { AuditRunner, AuditRunnerOptions } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/audit-runner.ts
+
+import type { AuditRunner, AuditRunnerOptions } from "./auditor.types.js";
 import { openFoblesDataAcquisition } from "../../foundation/reference-data/reference-data-acquisition";
 import type { FoblesDataAcquisition } from "../../foundation/reference-data/reference-data.types";
 import { buildFoblesUrl } from "../../foundation/sitecore/fobles-url";

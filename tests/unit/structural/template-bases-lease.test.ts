@@ -4,8 +4,8 @@ import { readTemplateBasesWithLease } from "../../../src/content/foundation/harv
 import { TEMPLATE_BASES_RESTORATION_ERROR_CODE } from "../../../src/content/foundation/harvesting/coordinator/template-bases-lease.const.ts";
 import { STRUCTURAL } from "../../../src/shared/structural/structural.const.ts";
 import type { WorkSession, WorkSessionTask } from "../../../src/content/foundation/workers/session/work-session.types.ts";
-import type { WorkerTaskResult } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
 import { guid, SCOPE } from "./structural-fixture.ts";
+import type { WorkerTaskResult } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
 
 void test("Raw Values fallback owns the existing harvesting lease and restores both original Raw states without touching Standard Fields", async () => {
   for (const original of [false, true]) {

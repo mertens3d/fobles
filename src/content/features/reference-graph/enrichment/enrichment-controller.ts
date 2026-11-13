@@ -1,5 +1,6 @@
-import type { StartEnrichmentControllerOptions } from "./enrichment.types.js";
 // @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment-controller.ts
+
+import type { StartEnrichmentControllerOptions } from "./enrichment.types.js";
 import { getFoblesDataSession } from "../../../foundation/reference-data/reference-data-service";
 import { patchCytoscapeNodes } from "./enrichment-graph-patcher";
 import type { EnrichmentController } from "./enrichment.types";

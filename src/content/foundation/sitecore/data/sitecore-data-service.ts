@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/foundation/sitecore/data/sitecore-data-service.ts
+// @source-path [fobles] src/content/foundation/sitecore/data/sitecore-data-service.ts
 
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import { emitActivity, type ActivityState } from "../../../shared/activity/activity-events.ts";

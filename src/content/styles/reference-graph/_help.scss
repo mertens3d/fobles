@@ -1,4 +1,5 @@
 /* @source-path [fobles] src/content/styles/reference-graph/_help.scss */
+
 @use "../tokens" as *;
 .fobles-reference-graph-help {
   width: min(560px, calc(100vw - 40px));

@@ -1,5 +1,6 @@
-import type { UseCytoscapeOptions } from "./hooks.types.js";
 // @source-path [fobles] src/content/features/reference-graph/hooks/use-cytoscape.ts
+
+import type { UseCytoscapeOptions } from "./hooks.types.js";
 import { useEffect } from "react";
 import { createGraphRuntime, disposeGraphRuntime, initializeGraphRuntime } from "../cytoscape/graph-runtime";
 

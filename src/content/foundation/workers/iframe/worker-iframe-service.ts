@@ -1,6 +1,7 @@
+// @source-path [fobles] src/content/foundation/workers/iframe/worker-iframe-service.ts
+
 import type { PendingWorkerReady } from "./iframe.types.js";
 import type { WorkerIframeTarget } from "./iframe.types.js";
-// @source-path [fobles] src/content/foundation/workers/iframe/worker-iframe-service.ts
 import { CONST } from "../../../../constants/const";
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import { extensionLog } from "../../../logger";

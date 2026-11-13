@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/shared/persisted-log.types.ts
+// @source-path [fobles] src/shared/persisted-log.types.ts
 
 import type { REFERENCE_GRAPH } from "../constants/graph.const";
 

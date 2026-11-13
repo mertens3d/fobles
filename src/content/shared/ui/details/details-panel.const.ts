@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/details/details-panel.const.ts
+
 export const DETAILS_PANEL = {
   COPIED_RESET_MS: 1500,
   CLASS: {

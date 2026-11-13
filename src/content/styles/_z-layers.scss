@@ -1,4 +1,5 @@
 /* @source-path [fobles] src/content/styles/_z-layers.scss */
+
 @use "sass:map";
 $fobles-z-layers: (content: 0, toolbar: 100, flyout: 200, window: 300, window-active: 310, popover: 400, modal-backdrop: 500, modal: 510, notification: 600, critical: 700);
 @function fobles-z($layer) { @if not map.has-key($fobles-z-layers, $layer) { @error "Unknown Fobles z-layer: #{$layer}"; } @return map.get($fobles-z-layers, $layer); }

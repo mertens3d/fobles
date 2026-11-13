@@ -1,12 +1,12 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Window } from "happy-dom";
-import { SITECORE } from "../../../src/constants/sitecore.ts";
 import {
   collectTemplateBases,
   collectTemplateBasesFromSections,
 } from "../../../src/content/foundation/harvesting/collectors/template-bases-collector.ts";
 import { guid } from "./structural-fixture.ts";
+import { SITECORE } from "../../../src/constants/sitecore.const.ts";
 
 void test("targeted direct-base collector preserves unavailable versus genuinely empty and ignores other fields", () => {
   const window = new Window();

@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/details/details-panel.tsx
+
 import { DETAILS_PANEL } from "./details-panel.const";
 import { CopyButton } from "./copy-button";
 import type { DetailsPanelProps } from "./details-panel.types";

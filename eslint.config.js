@@ -4,6 +4,7 @@ import tseslint from "typescript-eslint";
 import { defineConfig } from "eslint/config";
 import unusedImports from "eslint-plugin-unused-imports";
 import stylistic from "@stylistic/eslint-plugin";
+import noLooseDataConst from "./tools/eslint/no-loose-data-const.js";
 
 const FOUNDATION_BOUNDARY_MESSAGE =
   "Foundation is infrastructure/domain code and must not import from features, shell, or shared UI. Move the dependency into foundation or invert the dependency.";
@@ -31,13 +32,7 @@ const CONST_FILES = [
   "**/constants.*.ts",
 ];
 
-// Top-level exported consts whose value is not a function, class, call or other runtime logic.
-const DATA_CONST_RESTRICTION = {
-  selector:
-    "Program > ExportNamedDeclaration > VariableDeclaration[kind='const'] > VariableDeclarator" +
-    ":not([init.type=/^(ArrowFunctionExpression|FunctionExpression|ClassExpression|CallExpression|NewExpression|AwaitExpression|ConditionalExpression)$/])",
-  message: "Data-only constants must be declared in .const.ts files.",
-};
+const FOBLES_PLUGIN = { rules: { "no-loose-data-const": noLooseDataConst } };
 
 const TYPES_FILE_MESSAGE = "Only type aliases, interfaces and type imports/exports belong in .types.ts files.";
 
@@ -68,8 +63,12 @@ const CONST_FILE_RESTRICTIONS = [
   },
   {
     selector:
-      ":matches(ArrowFunctionExpression, FunctionExpression, ClassExpression, NewExpression, AwaitExpression)",
+      ":matches(ArrowFunctionExpression, FunctionExpression, ClassExpression, AwaitExpression)",
     message: "Constants in .const.ts files must be data only: no functions, classes or instances.",
+  },
+  {
+    selector: "NewExpression:not([callee.type='Identifier'][callee.name=/^(Map|Set)$/])",
+    message: "Constants in .const.ts files must be data only: no functions, classes or instances (new Map/new Set lookups are allowed).",
   },
   {
     selector:
@@ -79,6 +78,9 @@ const CONST_FILE_RESTRICTIONS = [
 ];
 
 export default defineConfig([
+  {
+    linterOptions: { reportUnusedDisableDirectives: "error" },
+  },
   {
     ignores: [
       "dist/**",
@@ -93,7 +95,7 @@ export default defineConfig([
   {
     files: ["**/*.{ts,tsx,mts,cts}"],
     extends: [js.configs.recommended, ...tseslint.configs.recommendedTypeChecked],
-    plugins: { "unused-imports": unusedImports, "@stylistic": stylistic },
+    plugins: { "unused-imports": unusedImports, "@stylistic": stylistic, fobles: FOBLES_PLUGIN },
     languageOptions: { globals: globals.browser, parserOptions: { project: "./tsconfig.eslint.json" } },
     rules: {
       curly: ["error", "all"],
@@ -244,7 +246,8 @@ export default defineConfig([
     files: ["src/**/*.{ts,tsx}"],
     ignores: ["**/*.types.ts", "**/*.d.ts", ...CONST_FILES],
     rules: {
-      "no-restricted-syntax": ["error", ...TYPE_DECLARATION_RESTRICTIONS, DATA_CONST_RESTRICTION],
+      "no-restricted-syntax": ["error", ...TYPE_DECLARATION_RESTRICTIONS],
+      "fobles/no-loose-data-const": "error",
     },
   },
   {

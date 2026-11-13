@@ -1,7 +1,7 @@
-import type { PerformanceWithMemory } from "./diagnostics.types.js";
-import type { MemoryContext } from "./diagnostics.types.js";
 // @source-path [fobles] src/content/foundation/workers/diagnostics/memory-diagnostics.ts
 
+import type { PerformanceWithMemory } from "./diagnostics.types.js";
+import type { MemoryContext } from "./diagnostics.types.js";
 import { extensionLog } from "../../../logger";
 import { DEBUG_MEMORY } from "../worker-protocol.const";
 

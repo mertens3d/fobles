@@ -5,8 +5,8 @@ import type { ToolbarDiagnosticsServices, ToolbarDiagnosticsState } from "../../
 import type { ActivityListener } from "../../../src/content/shared/activity/activity.types.ts";
 import type { StructuralSettings } from "../../../src/shared/structural/structural.types.ts";
 import { snapshotWorkerPoolStatus } from "../../../src/content/foundation/workers/pool/worker-pool-status.ts";
-import type { QueuedTask } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
 import type { WorkerPoolStatus, WorkerPoolState } from "../../../src/content/foundation/workers/pool/pool.types.ts";
+import type { QueuedTask } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
 
 const settings: StructuralSettings = { baseTemplatePaths: { page: [], site: [], tenant: [] } };
 

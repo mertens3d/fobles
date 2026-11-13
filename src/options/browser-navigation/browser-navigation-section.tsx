@@ -1,4 +1,5 @@
 // @source-path [fobles] src/options/browser-navigation/browser-navigation-section.tsx
+
 import { useEffect, useState } from "react";
 import { getBrowserNavigationHistoryEnabled, setBrowserNavigationHistoryEnabled } from "../../shared/browser-navigation-settings";
 

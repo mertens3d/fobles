@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/indexeddb-viewer/developer-dialog.types.ts
+
 import type { DEVELOPER_DIALOG } from "./developer-dialog.const";
 
 export type DeveloperTabId = (typeof DEVELOPER_DIALOG.TAB_ID)[keyof typeof DEVELOPER_DIALOG.TAB_ID];

@@ -1,7 +1,7 @@
-import type { AuditFindingStore } from "./auditor.types.js";
-import type { AuditFindingStoreListener } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/audit-finding-store.ts
 
+import type { AuditFindingStore } from "./auditor.types.js";
+import type { AuditFindingStoreListener } from "./auditor.types.js";
 import type { AuditSummaryCounts } from "./auditor.types";
 import type { AuditFinding } from "./auditor.types";
 import type { AuditFindingStatus } from "./auditor.types";

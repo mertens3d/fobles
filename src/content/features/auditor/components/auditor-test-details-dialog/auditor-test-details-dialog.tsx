@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-test-details-dialog/auditor-test-details-dialog.tsx
+
 import { DialogIconButton } from "../../../../shared/ui/dialog/dialog-icon-button";
 import type { AuditFinding } from "../../auditor.types";
 import type { AuditFindingStatus } from "../../auditor.types";

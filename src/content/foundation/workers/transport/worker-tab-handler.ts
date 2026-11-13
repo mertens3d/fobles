@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/foundation/workers/transport/worker-tab-handler.ts
+
 import { extensionLog } from "../../../logger";
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import type { WorkerTask } from "../tasks/tasks.types";

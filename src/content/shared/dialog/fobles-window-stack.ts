@@ -1,6 +1,6 @@
-import type { PersistedWindowStack } from "./dialog.types.js";
 // @source-path [fobles] src/content/shared/dialog/fobles-window-stack.ts
 
+import type { PersistedWindowStack } from "./dialog.types.js";
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 import { extensionLog } from "../../logger";
 import { FOBLES_WINDOW } from "./fobles-window.const";

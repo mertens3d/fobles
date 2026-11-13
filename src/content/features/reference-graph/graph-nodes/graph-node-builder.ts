@@ -1,6 +1,6 @@
-import type { AppendGraphNodeOptions, CompoundGroupDefinition, ProjectedGraphNode } from "./graph-nodes.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-node-builder.ts
 
+import type { AppendGraphNodeOptions, CompoundGroupDefinition, ProjectedGraphNode } from "./graph-nodes.types.js";
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/model.const";

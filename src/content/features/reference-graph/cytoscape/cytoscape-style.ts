@@ -1,6 +1,6 @@
-import type { CytoscapeStyle } from "./cytoscape.types.js";
 // @source-path [fobles] src/content/features/reference-graph/cytoscape/cytoscape-style.ts
 
+import type { CytoscapeStyle } from "./cytoscape.types.js";
 import { CONST } from "../../../../constants/const";
 import { NODE_PRESENTATION_BY_KIND } from "../../../shared/ui/reference-model/reference-model.const";
 import { ELLIPSE_SIZE } from "../../../shared/ui/reference-model/reference-model.const";

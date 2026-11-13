@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Window } from "happy-dom";
-import { SITECORE } from "../../../src/constants/sitecore.ts";
+import { SITECORE } from "../../../src/constants/sitecore.const.ts";
 import { createStructuralCommandHandler } from "../../../src/content/shell/structural-command-handler.ts";
 import { resolveStructuralCommandScope } from "../../../src/content/shell/structural-command-scope.ts";
 import { maintainStructuralScope } from "../../../src/content/shell/structural-maintenance.ts";

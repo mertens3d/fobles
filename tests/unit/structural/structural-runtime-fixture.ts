@@ -1,17 +1,15 @@
-import { SITECORE } from "../../../src/constants/sitecore.ts";
 import { getRuntimeSettings } from "../../../src/content/runtime-settings/runtime-settings.ts";
-import {
-  factoryItemGraphNodeData,
-} from "../../../src/content/foundation/reference-data/model/sitecore-item.types.ts";
 import type { WorkClass } from "../../../src/content/foundation/workers/work-scheduling.types.ts";
 import type {
   WorkSession,
   WorkSessionTask,
 } from "../../../src/content/foundation/workers/session/work-session.types.ts";
-import type { WorkerTaskResult } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
 import { normalizeStructuralSettings } from "../../../src/shared/structural/structural-settings.ts";
 import { guid, SCOPE } from "./structural-fixture.ts";
 import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/model.types.ts";
+import { SITECORE } from "../../../src/constants/sitecore.const.ts";
+import { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.ts";
+import type { WorkerTaskResult } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
 
 export function runtimeFixture() {
   getRuntimeSettings().structuralCache.maxUnvalidatedAgeHours = 1;

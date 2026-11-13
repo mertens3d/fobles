@@ -1,4 +1,5 @@
-// @source-path [fobles] src/shared/utility/fobles-utility-lock.messages.ts
+// @source-path [fobles] src/shared/utility/UTILITY_LOCK_MESSAGE.const.ts
+
 export const UTILITY_LOCK_MESSAGE = {
   ACQUIRE: "FOBLES_UTILITY_LOCK_ACQUIRE",
   RELEASE: "FOBLES_UTILITY_LOCK_RELEASE",

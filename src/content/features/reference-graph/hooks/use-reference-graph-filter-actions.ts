@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/features/reference-graph/hooks/use-reference-graph-filter-actions.ts
+// @source-path [fobles] src/content/features/reference-graph/hooks/use-reference-graph-filter-actions.ts
 
 import { useCallback } from "react";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";

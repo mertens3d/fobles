@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/foundation/reference-data/model/reference-model-provenance.types.ts
+// @source-path [fobles] src/content/foundation/reference-data/model/reference-model-provenance.ts
 
 import type { ReferenceModelProvenance } from "./model.types.js";
 import type { FoblesStrategy } from "../../../../constants/constants.types.js";

@@ -1,7 +1,7 @@
-import type { WorkerTarget } from "./pool.types.js";
-import type { WorkerTabTarget } from "./pool.types.js";
 // @source-path [fobles] src/content/foundation/workers/pool/worker-target.ts
 
+import type { WorkerTarget } from "./pool.types.js";
+import type { WorkerTabTarget } from "./pool.types.js";
 import type { WorkerIframeTarget } from "../iframe/iframe.types";
 
 export function isWorkerTabTarget(target: WorkerTarget): target is WorkerTabTarget {

@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/dialog/fobles-details-window.tsx
+
 import type { ReactNode, RefObject } from "react";
 import { FoblesClientWindow } from "./fobles-client-window";
 

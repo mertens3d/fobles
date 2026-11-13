@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/foundation/sitecore/current-item.ts
+
 import { extractGuid } from "./guid";
 import { getQuickInfo } from "./quick-info";
 

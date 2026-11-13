@@ -1,5 +1,6 @@
-import type { FoblesDataOperationHandle } from "./auditor-app.types.js";
 // @source-path [fobles] src/content/features/auditor/components/auditor-app/auditor-app.tsx
+
+import type { FoblesDataOperationHandle } from "./auditor-app.types.js";
 import { useEffect, useMemo, useRef, useState } from "react";
 import { AUDIT_CHECK } from "../../../../../constants/audit-checks.const";
 import { getReferenceGraphFilters } from "../../../../../shared/reference-graph-settings";

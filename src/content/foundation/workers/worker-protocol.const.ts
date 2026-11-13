@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/foundation/workers/worker-protocol.const.ts
+
 import { CONST } from "../../../constants/const";
 
 export const WORKER_MESSAGE_TYPE = {

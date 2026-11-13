@@ -1,6 +1,6 @@
-import type { FactListener } from "./sitecore-data.types.js";
 // @source-path [fobles] src/content/foundation/cache/sitecore-data/sitecore-data-events.ts
 
+import type { FactListener } from "./sitecore-data.types.js";
 import { serializeCacheKey } from "./sitecore-data-cache-key.ts";
 import type { SitecoreDataFactName } from "./sitecore-data.types";
 import type { SitecoreDataCacheKey } from "./sitecore-data.types";

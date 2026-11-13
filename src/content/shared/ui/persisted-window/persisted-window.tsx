@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/persisted-window/persisted-window.tsx
+
 import { useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { FoblesWindow } from "../../../shared/dialog/fobles-window";

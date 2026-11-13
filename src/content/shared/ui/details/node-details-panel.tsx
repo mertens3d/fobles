@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/details/node-details-panel.tsx
+
 import { useEffect, useState } from "react";
 import prettier from "prettier/standalone";
 import * as prettierPluginHtml from "prettier/plugins/html";

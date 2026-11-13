@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts
+// @source-path [fobles] src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts
 
 import type { ItemGraphNodeData } from "../../reference-data/model/model.types";
 import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";

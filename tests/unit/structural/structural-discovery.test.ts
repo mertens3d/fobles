@@ -1,10 +1,10 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { SITECORE } from "../../../src/constants/sitecore.ts";
 import { knownSitesStorageKey } from "../../../src/shared/known-sites/known-sites-model.ts";
 import { createTemplateStructuralService } from "../../../src/content/foundation/reference-data/processing/item-kind/template-structural-service.ts";
 import { fixture, guid, SCOPE } from "./structural-fixture.ts";
 import { extensionLog } from "../../../src/content/logger.ts";
+import { SITECORE } from "../../../src/constants/sitecore.const.ts";
 
 void test("indirect Site/Page/Tenant inheritance and changed dependencies reuse template structural facts", async () => {
   const f = fixture();

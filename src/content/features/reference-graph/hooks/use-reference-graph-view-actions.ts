@@ -1,6 +1,6 @@
-import type { ReferenceGraphViewActions, UseReferenceGraphViewActionsOptions } from "./hooks.types.js";
 // @source-path [fobles] src/content/features/reference-graph/hooks/use-reference-graph-view-actions.ts
 
+import type { ReferenceGraphViewActions, UseReferenceGraphViewActionsOptions } from "./hooks.types.js";
 import { useCallback, useEffect } from "react";
 import type { LayoutGraphPresetName } from "../../../../constants/constants.types";
 import { setReferenceGraphLayout } from "../../../../shared/reference-graph-settings";

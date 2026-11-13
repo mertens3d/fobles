@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/details/copy-button.tsx
+
 import { useCallback, useEffect, useRef, useState } from "react";
 import { DETAILS_PANEL } from "./details-panel.const";
 

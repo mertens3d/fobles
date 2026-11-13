@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/indexeddb-viewer/indexeddb-viewer-service.ts
+
 import { clear } from "../../../foundation/cache/sitecore-data/sitecore-data-cache";
 import { getRequestResult, runCacheTransaction } from "../../../foundation/cache/sitecore-data/indexed-db";
 import { previewJson } from "../json-tree/json-tree-preview";

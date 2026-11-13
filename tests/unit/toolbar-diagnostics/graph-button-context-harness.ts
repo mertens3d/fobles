@@ -17,7 +17,7 @@ const unrelatedImports = new Map([
 const bundled = await build({
   stdin: {
     contents: `export { GraphButton } from "./src/content/toolbar/toolbar-buttons.tsx";
-      export { ICONS, TEXT } from "./src/constants/fobles.constants.ts";`,
+      export { ICONS, TEXT } from "./src/constants/fobles-b.const.ts";`,
     resolveDir: fileURLToPath(new URL("../../../", import.meta.url)),
   },
   bundle: true,

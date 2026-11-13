@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/persisted-window/persisted-window.types.ts
+
 import type { ReactNode } from "react";
 
 export type PersistedWindowGeometry = { x: number; y: number; width: number; height: number };

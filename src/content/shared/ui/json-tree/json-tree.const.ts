@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/json-tree/json-tree.const.ts
+
 export const JSON_TREE = {
   DEFAULT_OPEN_DEPTH: 3,
   COLLAPSE_ALL_DEPTH: 1,

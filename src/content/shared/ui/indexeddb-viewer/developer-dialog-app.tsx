@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/indexeddb-viewer/developer-dialog-app.tsx
+
 import { useState } from "react";
 import { DEVELOPER_DIALOG } from "./developer-dialog.const";
 import type { DeveloperTabId } from "./developer-dialog.types";

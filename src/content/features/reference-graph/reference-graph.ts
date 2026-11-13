@@ -1,5 +1,6 @@
-import type { ReferenceGraphOperationState } from "./reference-graph.types.js";
 // @source-path [fobles] src/content/features/reference-graph/reference-graph.ts
+
+import type { ReferenceGraphOperationState } from "./reference-graph.types.js";
 import { showFoblesErrorDialog } from "../../../shared/error-dialog";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { PROGRESS_STEPS } from "../../foundation/harvesting/planner/harvest-steps";

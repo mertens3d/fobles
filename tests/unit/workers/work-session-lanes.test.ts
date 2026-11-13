@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
 import { WORK_SCHEDULING } from "../../../src/content/foundation/workers/work-scheduling.const.ts";
-import type { WorkerTaskResult } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
 import { createSessionHarness } from "./work-session-harness.ts";
 import { deferred, until } from "./worker-pool-harness.ts";
+import type { WorkerTaskResult } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
 
 const TASK = { taskId: "task", type: "get-children", url: "https://sitecore.example/editor" } as const;
 

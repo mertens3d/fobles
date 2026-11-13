@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/indexeddb-viewer/developer-dialog.const.ts
+
 import { INDEXEDDB_VIEWER } from "./indexeddb-viewer.const";
 
 export const DEVELOPER_DIALOG = {

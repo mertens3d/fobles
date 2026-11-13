@@ -4,8 +4,6 @@ import "fake-indexeddb/auto";
 import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  DATABASE_NAME,
-  FACT_ITEM_KEY_INDEX_NAME,
   getRequestResult,
   resetDatabaseConnectionForTests,
   runCacheTransaction,
@@ -14,6 +12,7 @@ import { putFact, getCachedFact } from "../../../src/content/foundation/cache/si
 import { serializeCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache-key.ts";
 import type { SitecoreDataCacheKey, SitecoreDataCacheFactRecord } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
 import type { ItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/model.types.ts";
+import { FACT_ITEM_KEY_INDEX_NAME, DATABASE_NAME } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.const.ts";
 
 function key(): SitecoreDataCacheKey {
   return {

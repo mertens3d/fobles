@@ -1,7 +1,7 @@
-import type { CachedItemFact } from "./processing.types.js";
-import type { ResolveOutcome } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/resolve-fact.ts
 
+import type { CachedItemFact } from "./processing.types.js";
+import type { ResolveOutcome } from "./processing.types.js";
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import type { StoredQuickInfo } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";

@@ -1,5 +1,6 @@
-import type { GuidResult, GuidWork, ItemSnapshot, StartReferenceModelProcessorOptions } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processor.ts
+
+import type { GuidResult, GuidWork, ItemSnapshot, StartReferenceModelProcessorOptions } from "./processing.types.js";
 import { extensionLog } from "../../../logger";
 import { initializeRuntimeSettings, isJourneyStepLiveEnabled } from "../../../runtime-settings/runtime-settings";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";

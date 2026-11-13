@@ -3,11 +3,11 @@ import assert from "node:assert/strict";
 import { beforeEach, test } from "node:test";
 import * as cache from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { structuralTemplateCacheKey } from "../../../src/content/foundation/cache/sitecore-data/structural-cache-key.ts";
-import { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types.ts";
 import { createStructuralRuntimeDriver } from "../../../src/content/foundation/reference-data/processing/item-kind/structural-runtime-driver.ts";
 import { createTemplateStructuralService } from "../../../src/content/foundation/reference-data/processing/item-kind/template-structural-service.ts";
 import { fixture, guid, SCOPE } from "./structural-fixture.ts";
 import { runtimeFixture } from "./structural-runtime-fixture.ts";
+import { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.ts";
 
 beforeEach(() => cache.clear());
 

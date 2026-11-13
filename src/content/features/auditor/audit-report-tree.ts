@@ -1,7 +1,7 @@
-import type { AuditReportTreeNode } from "./auditor.types";
-import type { AuditDataOrigin } from "./auditor.types";
 // @source-path [fobles] src/content/features/auditor/audit-report-tree.ts
 
+import type { AuditReportTreeNode } from "./auditor.types";
+import type { AuditDataOrigin } from "./auditor.types";
 import type { ProcessingStateByTreeNodeId } from "../../foundation/reference-data/processing/processing.types";
 import type { ProcessingStatus } from "../../foundation/reference-data/processing/processing.types";
 import { getGraphPresentationState } from "../../foundation/reference-data/model/graph-presentation-state";

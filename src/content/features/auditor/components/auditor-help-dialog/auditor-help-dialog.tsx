@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-help-dialog/auditor-help-dialog.tsx
+
 import { DialogIconButton } from "../../../../shared/ui/dialog/dialog-icon-button";
 
 export type AuditorHelpDialogProps = { open: boolean; onClose: () => void };

@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shell/utility/fobles-utility-lock-dialog-component.tsx
+
 import { createRoot } from "react-dom/client";
 import { FoblesMessageDialog } from "../../shared/ui/fobles-message-dialog/fobles-message-dialog";
 import type { FoblesMessageDialogAction } from "../../shared/ui/fobles-message-dialog/fobles-message-dialog.types";

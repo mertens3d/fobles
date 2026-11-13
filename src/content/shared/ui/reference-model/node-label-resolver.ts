@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/shared/ui/reference-model/node-label-resolver.ts
+// @source-path [fobles] src/content/shared/ui/reference-model/node-label-resolver.ts
 
 import type { NodeKind } from "../../../../constants/_base/_base.types";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";

@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { STORAGE } from "../../../src/constants/extension-const.ts";
+import { STORAGE } from "../../../src/constants/extension.const.ts";
 import { KNOWN_SITES, STRUCTURAL } from "../../../src/shared/structural/structural.const.ts";
 import { normalizeStructuralSettings } from "../../../src/shared/structural/structural-settings.ts";
 import { structuralSettingsDraft } from "../../../src/options/structural/structural-options-model.ts";

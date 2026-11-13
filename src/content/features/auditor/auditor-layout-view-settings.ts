@@ -1,7 +1,7 @@
-import type { AuditorLayoutViewSettings } from "./auditor.types.js";
-import { AUDITOR_LAYOUT_VIEW_KEYS, DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS } from "./auditor.const.js";
 // @source-path [fobles] src/content/features/auditor/auditor-layout-view-settings.ts
 
+import type { AuditorLayoutViewSettings } from "./auditor.types.js";
+import { AUDITOR_LAYOUT_VIEW_KEYS, DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS } from "./auditor.const.js";
 const STORAGE_KEY = "fobles.auditor.layout-view";
 const EVENT_NAME = "fobles:auditor-layout-view-change";
 

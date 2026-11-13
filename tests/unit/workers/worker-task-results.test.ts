@@ -8,8 +8,8 @@ import {
   createErrorResult,
   isDocumentStaleResult,
   isSuccessResult,
-  type GetChildrenTask,
-} from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
+} from "../../../src/content/foundation/workers/tasks/worker-task";
+import type { GetChildrenTask } from "../../../src/content/foundation/workers/tasks/tasks.types";
 
 const task = {
   requestId: "request-1",

@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/shared/jump-flyout/button-catalog.ts
+// @source-path [fobles] src/shared/jump-flyout/button-catalog.ts
 
 import { TEXT } from "../../constants/fobles-b.const";
 import {

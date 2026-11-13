@@ -1,9 +1,9 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { SITECORE } from "../../../src/constants/sitecore.ts";
 import { extensionLog } from "../../../src/content/logger.ts";
 import { STRUCTURAL } from "../../../src/shared/structural/structural.const.ts";
 import { fixture, guid, SCOPE } from "./structural-fixture.ts";
+import { SITECORE } from "../../../src/constants/sitecore.const.ts";
 
 void test("queued validation failures include environment and Site identity and preserve error reporting", async (t) => {
   const warn = t.mock.method(extensionLog, "warn", () => {});

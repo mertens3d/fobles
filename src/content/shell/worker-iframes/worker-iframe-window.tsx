@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shell/worker-iframes/worker-iframe-window.tsx
+
 import { useEffect, useRef } from "react";
 import { CONST } from "../../../constants/const";
 import { getRuntimeSettings } from "../../runtime-settings/runtime-settings";

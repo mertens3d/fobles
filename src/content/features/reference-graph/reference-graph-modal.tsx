@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph-modal.tsx
+
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
 import { ReferenceGraphApp } from "./reference-graph-app";
 import type { HarvestForLink } from "./reference-graph.types";

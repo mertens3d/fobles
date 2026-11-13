@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/toolbar/diagnostics/worker-task-manager-panel.tsx
+
 import { useEffect, useRef, useState } from "react";
 import type { WorkerPoolStatus } from "../../foundation/workers/pool/pool.types";
 import type { WorkerPoolWorkerStatus } from "../../foundation/workers/pool/pool.types";

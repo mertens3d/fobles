@@ -1,3 +1,5 @@
+// @source-path [fobles] src/content/foundation/workers/tasks/worker-task.ts
+
 import type {
   WorkerTask,
   WorkerTaskCancelledResult,
@@ -8,7 +10,6 @@ import type {
   WorkerTaskResult,
   WorkerTaskSuccessResult,
 } from "./tasks.types.js";
-// @source-path [fobles] src/content/foundation/workers/tasks/worker-task.types.ts
 
 export function isSuccessResult(result: WorkerTaskResult): result is WorkerTaskSuccessResult {
   return result.status === "success";

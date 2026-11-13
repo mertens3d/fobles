@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/runtime-settings/runtime-settings.ts
+
 import { getStorageValue, onStorageChange, setStorageValue } from "../../shared/storage/storage.ts";
 import {
   DEFAULT_RUNTIME_SETTINGS,

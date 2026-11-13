@@ -1,16 +1,16 @@
 import "fake-indexeddb/auto";
 import assert from "node:assert/strict";
 import { beforeEach, test } from "node:test";
-import { SITECORE } from "../../../src/constants/sitecore.ts";
 import * as cache from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { structuralTemplateCacheKey } from "../../../src/content/foundation/cache/sitecore-data/structural-cache-key.ts";
 import { createStructuralRuntimeDriver } from "../../../src/content/foundation/reference-data/processing/item-kind/structural-runtime-driver.ts";
-import { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types.ts";
 import { WORK_SCHEDULING } from "../../../src/content/foundation/workers/work-scheduling.const.ts";
 import { guid, SCOPE } from "./structural-fixture.ts";
 import { runtimeFixture } from "./structural-runtime-fixture.ts";
 import { getRuntimeSettings } from "../../../src/content/runtime-settings/runtime-settings.ts";
 import { extensionLog } from "../../../src/content/logger.ts";
+import { SITECORE } from "../../../src/constants/sitecore.const.ts";
+import { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.ts";
 
 beforeEach(() => cache.clear());
 

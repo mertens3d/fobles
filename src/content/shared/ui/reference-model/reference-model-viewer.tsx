@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/reference-model/reference-model-viewer.tsx
+
 import { useState } from "react";
 import { copySanitizedText, downloadSanitizedText } from "../../../../shared/export/text-export";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";

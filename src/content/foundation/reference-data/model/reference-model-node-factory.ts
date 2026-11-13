@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/foundation/reference-data/model/reference-model-node-factory.ts
+// @source-path [fobles] src/content/foundation/reference-data/model/reference-model-node-factory.ts
 
 import type { ReferenceModelItemNodeOptions, ReferenceModelNonItemNodeOptions } from "./model.types";
 import { setGraphPresentationState } from "./graph-presentation-state";

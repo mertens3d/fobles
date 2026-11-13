@@ -1,3 +1,4 @@
 /* @source-path [fobles] src/content/shared/ui/persisted-window/persisted-window.scss */
+
 .fobles-window-portal-root { display: contents; }
 .fobles-persisted-window > .fobles-window-content { min-height: 0; overflow-x: hidden; overflow-y: auto; overscroll-behavior: contain; }

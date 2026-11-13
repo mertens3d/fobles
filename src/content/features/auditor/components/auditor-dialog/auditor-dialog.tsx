@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-dialog/auditor-dialog.tsx
+
 import type { AuditFindingStore } from "../../auditor.types";
 import { AuditorApp } from "../auditor-app/auditor-app";
 

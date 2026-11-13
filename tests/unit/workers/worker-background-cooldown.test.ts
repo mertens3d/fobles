@@ -4,8 +4,8 @@ import { WORK_SCHEDULING } from "../../../src/content/foundation/workers/work-sc
 import { cleanupPoolHarness, createPoolHarness, until } from "./worker-pool-harness.ts";
 import { backgroundCooldownRemaining, cancelBackgroundCooldown, scheduleBackgroundCooldown } from "../../../src/content/foundation/workers/pool/worker-background-cooldown.ts";
 import { takeNextWorkerTask } from "../../../src/content/foundation/workers/pool/worker-admission.ts";
-import type { GetChildrenTask, QueuedTask } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
 import type { WorkerPoolState } from "../../../src/content/foundation/workers/pool/pool.types.ts";
+import type { GetChildrenTask, QueuedTask } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
 
 const HOST = 201;
 const task = (id: string, background = true): GetChildrenTask => ({

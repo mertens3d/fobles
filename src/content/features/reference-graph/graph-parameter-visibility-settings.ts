@@ -1,6 +1,6 @@
-import type { GraphParameterVisibilitySettings } from "./reference-graph.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-parameter-visibility-settings.ts
 
+import type { GraphParameterVisibilitySettings } from "./reference-graph.types.js";
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 import { DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS } from "./reference-graph.const.js";
 import { STORAGE_KEY } from "./reference-graph.const.js";

@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/foundation/workers/pool/worker-pool-client.ts
+
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";

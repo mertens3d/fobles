@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { takeNextWorkerTask } from "../../../src/content/foundation/workers/pool/worker-admission.ts";
 import { WORK_SCHEDULING } from "../../../src/content/foundation/workers/work-scheduling.const.ts";
-import type { QueuedTask, PoolWorker } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
 import type { WorkerPoolState } from "../../../src/content/foundation/workers/pool/pool.types.ts";
+import type { QueuedTask, PoolWorker } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
 
 function queued(): QueuedTask {
   return {

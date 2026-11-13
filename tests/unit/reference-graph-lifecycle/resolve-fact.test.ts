@@ -3,17 +3,13 @@ import "fake-indexeddb/auto";
 import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  DATABASE_NAME,
   resetDatabaseConnectionForTests,
 } from "../../../src/content/foundation/cache/sitecore-data/indexed-db.ts";
 import * as cache from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
 import { resolveItemFact } from "../../../src/content/foundation/reference-data/processing/resolve-fact.ts";
 import type { SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
-import type {
-  WorkerTaskExecutionResult,
-  WorkerTaskPayloadByType,
-  WorkerTaskSuccessResult,
-} from "../../../src/content/foundation/workers/tasks/worker-task.types";
+import { DATABASE_NAME } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.const.ts";
+import type { WorkerTaskPayloadByType, WorkerTaskSuccessResult, WorkerTaskExecutionResult } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
 function sampleKey(): SitecoreDataCacheKey {
   return {
     environment: "dev",

@@ -1,4 +1,5 @@
-// @source-path [fobles] src/content/shared/ui/fobles-message-dialog/fobles-message-dialog.scss
+/* @source-path [fobles] src/content/shared/ui/fobles-message-dialog/fobles-message-dialog.scss */
+
 .fobles-message-dialog-backdrop { z-index: 12000; display: grid; place-items: center; padding: 18px; background: rgb(16 35 57 / 24%); pointer-events: auto; }
 .fobles-message-dialog { width: min(460px, calc(100% - 32px)); padding: 18px 20px; border: 1px solid #7aa7df; border-radius: 3px; background: #fff; box-shadow: 0 12px 30px rgb(20 42 70 / 28%); color: #263a55; font: 12px/1.45 Arial, sans-serif; }
 .fobles-message-dialog__title { margin: 0 0 8px; color: #172e4d; font-size: 16px; font-weight: 600; }

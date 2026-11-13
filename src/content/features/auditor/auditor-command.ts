@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/auditor-command.ts
+
 import { AuditOperation } from "./audit-operation";
 import { openAuditorUtility } from "../../shell/utility/fobles-utility-launchers";
 

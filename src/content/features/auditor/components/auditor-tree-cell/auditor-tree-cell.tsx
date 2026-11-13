@@ -1,5 +1,6 @@
-import type { TreeIndentStyle } from "./auditor-tree-cell.types.js";
 // @source-path [fobles] src/content/features/auditor/components/auditor-tree-cell/auditor-tree-cell.tsx
+
+import type { TreeIndentStyle } from "./auditor-tree-cell.types.js";
 import type { MouseEvent } from "react";
 import { CONST } from "../../../../../constants/const";
 import type { AuditorTreeRow, LabelParts, ToggleModifiers } from "../../auditor-grid/auditor-grid.types";

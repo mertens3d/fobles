@@ -1,6 +1,6 @@
-import type { WorkerIframeEmergencyCleanupResult } from "./iframe.types.js";
 // @source-path [fobles] src/content/foundation/workers/iframe/worker-iframe-host.ts
 
+import type { WorkerIframeEmergencyCleanupResult } from "./iframe.types.js";
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import { initializeRuntimeSettings } from "../../../runtime-settings/runtime-settings";

@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/foundation/workers/pool/worker-pool-lifecycle.ts
+// @source-path [fobles] src/content/foundation/workers/pool/worker-pool-lifecycle.ts
 
 import type { DisposeWorkerPoolOptions, WorkerPoolDisposalResult } from "./pool.types.js";
 import { extensionLog } from "../../../logger";

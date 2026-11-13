@@ -1,5 +1,6 @@
-import type { ChromiumPerformance } from "./diagnostics.types.js";
 // @source-path [fobles] src/content/foundation/diagnostics/heap-snapshot.ts
+
+import type { ChromiumPerformance } from "./diagnostics.types.js";
 import { extensionLog } from "../../logger";
 
 const BYTES_PER_MB = 1024 * 1024;

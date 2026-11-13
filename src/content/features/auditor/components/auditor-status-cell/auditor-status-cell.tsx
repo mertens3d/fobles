@@ -1,6 +1,6 @@
-import type { AuditorStatusCellContext, StatusRow } from "./auditor-status-cell.types.js";
 // @source-path [fobles] src/content/features/auditor/components/auditor-status-cell/auditor-status-cell.tsx
 
+import type { AuditorStatusCellContext, StatusRow } from "./auditor-status-cell.types.js";
 import type { ICellRendererParams } from "ag-grid-community";
 import { useEffect, useRef, useState } from "react";
 import type { AuditFindingStatus } from "../../auditor.types";

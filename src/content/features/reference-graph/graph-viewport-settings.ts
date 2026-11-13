@@ -1,6 +1,6 @@
-import type { GraphViewportState } from "./reference-graph.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-viewport-settings.ts
 
+import type { GraphViewportState } from "./reference-graph.types.js";
 import type cytoscape from "cytoscape";
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 

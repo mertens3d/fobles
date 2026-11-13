@@ -3,7 +3,6 @@
 import type { BrowserContext } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { SITECORE } from "../../../../src/constants/sitecore";
 import { ITEM_HISTORY_CAPTURE } from "../../../../src/content/item-history/item-history.const";
 import { TEST_CONSTB } from "../../../fixtures/playwright.const";
 import { HISTORY_CLASS } from "../../../../src/content/toolbar/history/history.const";
@@ -14,6 +13,7 @@ import { expect, type Frame, type Locator, type Page } from "../../../fixtures/p
 import { setupParallelContentEditor } from "../../../helpers/fobles-helpers-support/test-setup";
 import { findFoblesFrame, findFrameWithSelector } from "../../../helpers/frame-finder";
 import { STRATEGY_SCENARIOS } from "../../shared/strategies/support/strategy-scenarios";
+import { SITECORE } from "../../../../src/constants/sitecore.const";
 
 export const SCENARIO = STRATEGY_SCENARIOS.DROP_LINK;
 

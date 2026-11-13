@@ -1,6 +1,6 @@
-import type { HarvestOptions } from "./coordinator.types.js";
 // @source-path [fobles] src/content/foundation/harvesting/coordinator/foreground-harvest-coordinator.ts
 
+import type { HarvestOptions } from "./coordinator.types.js";
 import { HARVEST_STEPS } from "../planner/harvest-steps";
 import type { HarvestRequest } from "../harvesting.types.js";
 import type { HarvestProgressCallback } from "../harvesting.types.js";

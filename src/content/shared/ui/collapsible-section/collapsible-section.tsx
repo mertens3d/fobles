@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/collapsible-section/collapsible-section.tsx
+
 import type { ReactNode } from "react";
 
 export type CollapsibleSectionProps = { title: string; expanded: boolean; onExpandedChange: (expanded: boolean) => void; children: ReactNode };

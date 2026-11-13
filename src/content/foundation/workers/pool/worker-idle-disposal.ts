@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/foundation/workers/pool/worker-idle-disposal.ts
+
 import { extensionLog } from "../../../logger";
 import type { DestroyIdleWorker } from "./pool.types";
 import type { WorkerPoolState } from "./pool.types";

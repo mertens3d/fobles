@@ -1,6 +1,6 @@
-import type { ReferenceModelSessionStateChange, SharedReferenceModelSession, StartSharedReferenceModelSessionOptions } from "./processing.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-session.ts
 
+import type { ReferenceModelSessionStateChange, SharedReferenceModelSession, StartSharedReferenceModelSessionOptions } from "./processing.types.js";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { extensionLog } from "../../../logger";
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache";

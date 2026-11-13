@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-journey-cell/auditor-journey-cell.tsx
+
 import type { JourneyStage } from "../../auditor-grid/auditor-grid.types";
 const JOURNEY_RANK: Record<JourneyStage, number> = { referenced: 1, cached: 2, live: 3, tested: 4 };
 

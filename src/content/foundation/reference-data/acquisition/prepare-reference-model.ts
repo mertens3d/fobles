@@ -1,5 +1,6 @@
-import type { PreparedReferenceModel, PrepareReferenceModelOptions } from "./acquisition.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/prepare-reference-model.ts
+
+import type { PreparedReferenceModel, PrepareReferenceModelOptions } from "./acquisition.types.js";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { extensionLog } from "../../../logger";
 import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types.js";

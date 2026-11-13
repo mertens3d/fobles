@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/toolbar/diagnostics/worker-task-manager-model.ts
+
 import type { ActivityEvent } from "../../shared/activity/activity-events";
 import type { WorkerPoolStatus } from "../../foundation/workers/pool/pool.types";
 import type { WorkerTaskManagerRow } from "./WorkerTaskManagerRow.types";

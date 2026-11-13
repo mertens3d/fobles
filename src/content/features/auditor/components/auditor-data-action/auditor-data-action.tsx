@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/features/auditor/components/auditor-data-action/auditor-data-action.tsx
+
 export type AuditorDataActionProps = { onClick: () => void };
 
 export function AuditorDataAction({ onClick }: AuditorDataActionProps) {

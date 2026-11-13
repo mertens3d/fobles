@@ -1,6 +1,6 @@
-import type { AcquiredReferenceModel, AcquireReferenceModelOptions } from "./acquisition.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/acquire-reference-model.ts
 
+import type { AcquiredReferenceModel, AcquireReferenceModelOptions } from "./acquisition.types.js";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { extensionLog } from "../../../logger";
 import { getItem, putFact } from "../../cache/sitecore-data/sitecore-data-cache";

@@ -1,4 +1,5 @@
-// @source-path [fobles] src/constants/extension-const.ts
+// @source-path [fobles] src/constants/extension.const.ts
+
 export const STORAGE = {
   KEY: {
     AI_PAGES_MAPPINGS: "aiPagesMappings",

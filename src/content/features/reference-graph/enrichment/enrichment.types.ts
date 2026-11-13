@@ -1,10 +1,10 @@
+// @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment.types.ts
+
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
 import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-data/processing/processing.types";
 import type { WorkSession } from "../../../foundation/workers/session/work-session.types";
 import type { projectGraphNode } from "../graph-nodes/graph-node-builder";
 import type cytoscape from "cytoscape";
-
-// @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment.types.ts
 
 // Counts unique GUIDs requiring enrichment - never Cytoscape nodes or ReferenceModel nodes, since one
 // GUID can back several tree nodes/graph nodes at once.

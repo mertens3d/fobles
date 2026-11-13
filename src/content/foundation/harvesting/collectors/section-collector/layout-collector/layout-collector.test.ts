@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/foundation/harvesting/collectors/section-collector/layout-collector/layout-collector.test.ts
+
 import assert from "node:assert/strict";
 import test from "node:test";
 import { processLayoutXml } from "./layout-collector";

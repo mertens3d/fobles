@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/constants/fobles.constants.ts
+// @source-path [fobles] src/constants/fobles-b.const.ts
 
 import type { ToolbarPlacement } from "./constants.types";
 import { CONST } from "./const";

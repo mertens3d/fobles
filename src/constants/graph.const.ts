@@ -1,5 +1,6 @@
-import type { StepKey } from "./constants.types";
 // @source-path [fobles] src/constants/graph.const.ts
+
+import type { StepKey } from "./constants.types";
 import type cytoscape from "cytoscape";
 import type { LayoutGraphPresetName } from "./constants.types";
 import type { SitecoreHarvestFiltersState } from "./_base/_base.types";

@@ -1,9 +1,5 @@
+import { DATABASE_NAME, FACT_STORE_NAME } from "../../../../src/content/foundation/cache/sitecore-data/sitecore-data.const";
 import { TEST_CONST } from "../../../constants/TEST_CONST";
-import {
-  DATABASE_NAME,
-  FACT_STORE_NAME,
-  ITEM_STORE_NAME,
-} from "../../../../src/content/foundation/cache/sitecore-data/indexed-db";
 import { expect, foblesTest, type Page } from "../../../fixtures/playwright";
 import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 import {
@@ -34,7 +30,7 @@ async function clearSitecoreDataCache(page: Page): Promise<void> {
       });
     }
     database.close();
-  }, { databaseName: DATABASE_NAME, storeNames: [FACT_STORE_NAME, ITEM_STORE_NAME] });
+  }, { databaseName: DATABASE_NAME, storeNames: [FACT_STORE_NAME, FACT_STORE_NAME] });
 }
 
 foblesTest.describe("Worker pool", () => {

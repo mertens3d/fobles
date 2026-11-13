@@ -30,6 +30,7 @@
 - Prefer `type` over `interface` for TypeScript type definitions.
 - Put shared types/interfaces in a dedicated `x.types.ts` file, not inline in a logic file.
 - Put shared const data/config collections in their own dedicated const file, separate from the logic that consumes them.
+- `new Set(...)`/`new Map(...)` lookups built only from data are allowed in `.const.ts` files; type them `ReadonlySet<T>`/`ReadonlyMap<K, V>` so consumers cannot mutate shared constants.
 - Prefer named `const`s over magic strings, especially for values reused more than once or that carry structural meaning (e.g. group titles).
 - Prefer event handlers/listeners in a dedicated `handlers.ts` file, not mixed in with element-building or other logic in the same file.
 - Order type/object fields with required fields first, then optional (`?`) fields, identity fields (`id`/`label`) leading within each group.

@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/indexeddb-viewer/indexeddb-viewer.const.ts
+
 export const INDEXEDDB_VIEWER = {
   DIALOG_ID: "fobles-indexeddb-viewer-dialog",
   MAX_ROWS: 200,

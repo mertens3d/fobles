@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { build } from "esbuild";
 import { fileURLToPath } from "node:url";
 import type { Deferred, PoolTestEnvironment } from "./worker-pool-harness.types.ts";
-import type { WorkerTask, WorkerTaskExecutionResult } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
 import type { WorkerTarget } from "../../../src/content/foundation/workers/pool/pool.types.ts";
+import type { WorkerTask, WorkerTaskExecutionResult } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
 
 const ENVIRONMENT_KEY = "__foblesWorkerPoolTestEnvironment";
 const MAX_MICROTASK_TURNS = 500;

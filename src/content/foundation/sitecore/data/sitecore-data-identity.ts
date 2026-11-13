@@ -1,6 +1,6 @@
-import type { SitecoreDataIdentity } from "./data.types.js";
 // @source-path [fobles] src/content/foundation/sitecore/data/sitecore-data-identity.ts
 
+import type { SitecoreDataIdentity } from "./data.types.js";
 import { SITECORE } from "../../../../constants/sitecore.const.ts";
 
 // No better stable identifier exists yet (see Phase 3A research) - the page origin is the one

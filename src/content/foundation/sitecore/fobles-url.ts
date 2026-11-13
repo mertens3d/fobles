@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/foundation/sitecore/fobles-url.ts
+
 import { CONST } from "../../../constants/const";
 import { isGuidLike, stripGuidBraces } from "./guid";
 

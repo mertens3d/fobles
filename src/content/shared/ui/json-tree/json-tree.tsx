@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/json-tree/json-tree.tsx
+
 import { useState } from "react";
 import { JSON_TREE } from "./json-tree.const";
 import { getJsonEntries, previewJson } from "./json-tree-preview";

@@ -1,6 +1,6 @@
-import type { AcquisitionProgressListener, AcquisitionState, FoblesAcquisitionProgress, FoblesDataRequest, FoblesDataSession } from "./reference-data.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/reference-data-service.ts
 
+import type { AcquisitionProgressListener, AcquisitionState, FoblesAcquisitionProgress, FoblesDataRequest, FoblesDataSession } from "./reference-data.types.js";
 import { PROGRESS_STEPS } from "../harvesting/planner/harvest-steps";
 import type { SharedReferenceModelSession } from "./processing/processing.types";
 import { startSharedReferenceModelSession } from "./processing/reference-model-session";

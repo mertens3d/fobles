@@ -1,5 +1,6 @@
-import type { AuditOperationState } from "./auditor.types.js";
 // @source-path [fobles] src/content/features/auditor/audit-operation.ts
+
+import type { AuditOperationState } from "./auditor.types.js";
 import { showFoblesErrorDialog } from "../../../shared/error-dialog";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
 import { createWorkOperation } from "../../shell/work-operation/work-operation";

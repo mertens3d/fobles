@@ -1,7 +1,7 @@
-import type { NodeRuntimeState } from "./enrichment.types.js";
-import type { ProjectedGraphNodeData } from "./enrichment.types.js";
 // @source-path [fobles] src/content/features/reference-graph/enrichment/enrichment-graph-patcher.ts
 
+import type { NodeRuntimeState } from "./enrichment.types.js";
+import type { ProjectedGraphNodeData } from "./enrichment.types.js";
 import type cytoscape from "cytoscape";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
 import { getGraphOwnedClasses, projectGraphNode } from "../graph-nodes/graph-node-builder";

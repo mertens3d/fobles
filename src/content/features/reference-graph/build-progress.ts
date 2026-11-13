@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/features/reference-graph/build-progress.ts
+
 import { createElement } from "react";
 import { createRoot, type Root } from "react-dom/client";
 import { CONST } from "../../../constants/const";

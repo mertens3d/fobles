@@ -1,4 +1,3 @@
-import { SITECORE } from "../../../src/constants/sitecore.ts";
 import { getRuntimeSettings } from "../../../src/content/runtime-settings/runtime-settings.ts";
 import { normalizeStructuralSettings } from "../../../src/shared/structural/structural-settings.ts";
 import { applyKnownSitesChange, knownSitesStorageKey } from "../../../src/shared/known-sites/known-sites-model.ts";
@@ -6,6 +5,7 @@ import type { KnownSite, StructuralScope } from "../../../src/shared/structural/
 import type { StructuralDriver, StructuralItem, StructuralRead } from "../../../src/content/foundation/reference-data/processing/item-kind/structural-service.types.ts";
 import { createStructuralDiscoveryService } from "../../../src/content/foundation/reference-data/processing/item-kind/structural-discovery-service.ts";
 import type { TemplateDerivedRecord } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
+import { SITECORE } from "../../../src/constants/sitecore.const.ts";
 
 export const SCOPE: StructuralScope = { origin: "https://sitecore.example:8443", database: "master" };
 

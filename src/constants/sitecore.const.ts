@@ -1,4 +1,5 @@
-// @source-path [fobles] src/constants/sitecore.ts
+// @source-path [fobles] src/constants/sitecore.const.ts
+
 import type { selectorHints } from "./_base/_base.types";
 
 export const SITECORE = {

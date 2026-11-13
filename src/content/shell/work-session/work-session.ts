@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shell/work-session/work-session.ts
+
 import { CONST } from "../../../constants/const";
 import { showFoblesErrorDialog, updateFoblesCleanupDialog } from "../../../shared/error-dialog";
 import { extensionLog } from "../../logger";

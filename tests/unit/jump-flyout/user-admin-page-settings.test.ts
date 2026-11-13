@@ -7,7 +7,7 @@ import {
   normalizeUserAdminPageIconPath,
   normalizeUserAdminPageUrl,
 } from "../../../src/shared/jump-flyout/user-admin-page-settings.ts";
-import { USER_ADMIN_PAGE } from "../../../src/shared/jump-flyout/user-admin-page-constants.ts";
+import { USER_ADMIN_PAGE } from "../../../src/shared/jump-flyout/jump-flyout.const.ts";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

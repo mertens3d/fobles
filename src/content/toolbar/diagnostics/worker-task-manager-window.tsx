@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/toolbar/diagnostics/worker-task-manager-window.tsx
+
 import { useEffect, useState } from "react";
 import { extensionLog } from "../../logger";
 import { getWorkerPoolStatus } from "../../foundation/workers/pool/worker-pool-client";

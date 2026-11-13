@@ -1,5 +1,6 @@
-import type { GraphPresentationState } from "./model.types";
 // @source-path [fobles] src/content/foundation/reference-data/model/graph-presentation-state.ts
+
+import type { GraphPresentationState } from "./model.types";
 import type { ReferenceModelNode } from "./model.types";
 
 const stateByNode = new WeakMap<ReferenceModelNode, GraphPresentationState>();

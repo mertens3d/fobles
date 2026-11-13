@@ -1,8 +1,8 @@
+// @source-path [fobles] src/content/foundation/harvesting/planner/harvest-task-planner.ts
+
 import type { CollectorTaskPlan } from "./planner.types.js";
 import type { CollectorTaskType } from "./planner.types.js";
 import type { CollectorFilterKey } from "./planner.types.js";
-// @source-path [fobles] src/content/foundation/harvesting/planner/harvest-task-planner.ts
-
 import { isGuidLike } from "../../sitecore/guid.ts";
 import type { HarvestRequest } from "../harvesting.types";
 import type { SitecoreHarvestResult } from "../harvesting.types";

@@ -1,6 +1,6 @@
-import type { FieldReferenceResolver } from "./field-reference-resolution.types.js";
 // @source-path [fobles] src/content/field-reference-resolution/field-reference-resolvers.ts
 
+import type { FieldReferenceResolver } from "./field-reference-resolution.types.js";
 import { SITECORE } from "../../constants/sitecore.const.ts";
 import { collectGuidOptionItems } from "../features/augmentor/shared/collect-select-options.ts";
 import { extractGuid, formatFoId, hasAnyGuidLikeOption } from "../foundation/sitecore/guid.ts";

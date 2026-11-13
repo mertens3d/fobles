@@ -1,4 +1,4 @@
-// @source-path [Fobles] src/content/features/reference-graph/hooks/use-reference-graph-render-actions.ts
+// @source-path [fobles] src/content/features/reference-graph/hooks/use-reference-graph-render-actions.ts
 
 import type { ReferenceGraphRenderActions, UseReferenceGraphRenderActionsOptions } from "./hooks.types.js";
 import { useCallback } from "react";

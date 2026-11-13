@@ -1,6 +1,6 @@
-import type { RootCacheDecision } from "./acquisition.types.js";
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/root-cache-flow.ts
 
+import type { RootCacheDecision } from "./acquisition.types.js";
 import type { SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types.js";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";

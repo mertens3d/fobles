@@ -1,8 +1,9 @@
+// @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processing-tree-state.ts
+
 import type { ItemGraphNodeData } from "../model/model.types";
 import type { ReferenceModelNode } from "../model/model.types";
 import type { ReferenceModelItemNode } from "../model/model.types";
 
-// @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processing-tree-state.ts
 export function itemsFor(
   treeNodeIds: readonly string[],
   nodesById: Map<string, ReferenceModelNode>,

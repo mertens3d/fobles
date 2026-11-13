@@ -1,11 +1,11 @@
+// @source-path [fobles] src/content/features/auditor/auditor.types.ts
+
 import type { AUDITOR_LAYOUT_VIEW_KEYS } from "./auditor.const";
 import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 import type { ReferenceModelNode } from "../../foundation/reference-data/model/model.types";
 import type { ItemGraphNodeData } from "../../foundation/reference-data/model/model.types";
 import type { ProcessingStateByTreeNodeId } from "../../foundation/reference-data/processing/processing.types";
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
-
-// @source-path [fobles] src/content/features/auditor/auditor.types.ts
 
 export type AuditSummaryCounts = { pending: number; passed: number; warning: number; error: number; total: number };
 

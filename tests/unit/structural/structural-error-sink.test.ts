@@ -3,7 +3,7 @@ import { test } from "node:test";
 import { Window } from "happy-dom";
 import { TEMPLATE_BASES_RESTORATION_ERROR_CODE } from "../../../src/content/foundation/harvesting/coordinator/template-bases-lease.const.ts";
 import { handleStructuralDiscoveryError } from "../../../src/content/shell/work-session/structural-error-sink.ts";
-import { FOBLES_ERROR_DIALOG_ID } from "../../../src/shared/error-dialog.ts";
+import { FOBLES_ERROR_DIALOG_ID } from "../../../src/shared/shared.const.ts";
 
 function restorationFailure(): Error {
   return Object.assign(new Error("restoration failed"), { code: TEMPLATE_BASES_RESTORATION_ERROR_CODE });

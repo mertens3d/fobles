@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/indexeddb-viewer/indexeddb-viewer-app.tsx
+
 import { useCallback, useDeferredValue, useEffect, useMemo, useRef, useState } from "react";
 import { FoblesDetailsWindow } from "../../dialog/fobles-details-window";
 import { DetailsPanel } from "../details/details-panel";

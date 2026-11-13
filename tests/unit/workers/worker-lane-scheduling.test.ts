@@ -2,8 +2,8 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { WORK_SCHEDULING } from "../../../src/content/foundation/workers/work-scheduling.const.ts";
 import type { WorkClass } from "../../../src/content/foundation/workers/work-scheduling.types.ts";
-import type { GetChildrenTask } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
 import { cleanupPoolHarness, createPoolHarness, until } from "./worker-pool-harness.ts";
+import type { GetChildrenTask } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
 
 const HOST = 101;
 const OTHER_HOST = 102;
@@ -83,7 +83,9 @@ for (const retryResult of ["document-stale", "missing-result"] as const) {
       const waiting = pool.runPoolTask(task("bg-wait", WORK_SCHEDULING.BACKGROUND), HOST);
       const foreground = pool.runPoolTask(task("fg-priority"), HOST);
       await until(() => pool.getWorkerPoolStatus(HOST).queuedForeground === 1);
-      env.executions[0].result.resolve(retryResult === "document-stale" ? { ...backgroundTask, status: "document-stale" } : undefined);
+      env.executions[0].result.resolve(
+        retryResult === "document-stale" ? { ...backgroundTask, status: "document-stale" } : undefined,
+      );
       await until(() => env.executions.length === 2);
       assert.equal(env.executions[1].task.taskId, "fg-priority");
       const retryStatus = pool.getWorkerPoolStatus(HOST);
@@ -91,7 +93,10 @@ for (const retryResult of ["document-stale", "missing-result"] as const) {
       assert.equal(retryStatus.activeForeground, 1);
       assert.equal(retryStatus.workerCount, 1);
       assert.equal(retryStatus.queuedBackground, 1);
-      assert.equal(retryStatus.activeTasks.find((entry) => entry.taskId === "bg-retry")?.phase, WORK_SCHEDULING.PHASE.RETRYING);
+      assert.equal(
+        retryStatus.activeTasks.find((entry) => entry.taskId === "bg-retry")?.phase,
+        WORK_SCHEDULING.PHASE.RETRYING,
+      );
       env.executions[1].result.resolve({ ...env.executions[1].task, status: "cancelled" });
       await foreground;
       await until(() => env.executions.length === 3);
@@ -112,10 +117,16 @@ void test("snapshots separate hosts and requests, detach metadata, and host disp
   const { pool, env } = await createPoolHarness(1);
   try {
     const first = pool.runPoolTask(task("host-one", WORK_SCHEDULING.BACKGROUND, "request-one"), HOST);
-    const second = pool.runPoolTask({
-      requestId: "request-two", taskId: "host-two", type: "get-quick-info",
-      requested: { kind: "id", value: "item-two" }, url: "https://other.example/editor",
-    }, OTHER_HOST);
+    const second = pool.runPoolTask(
+      {
+        requestId: "request-two",
+        taskId: "host-two",
+        type: "get-quick-info",
+        requested: { kind: "id", value: "item-two" },
+        url: "https://other.example/editor",
+      },
+      OTHER_HOST,
+    );
     const queued = pool.runPoolTask(task("queued-one", undefined, "request-queued"), HOST);
     await until(() => env.executions.length === 2 && pool.getWorkerPoolStatus(HOST).queuedForeground === 1);
     assert.equal(pool.getWorkerPoolStatus(HOST).activeBackground, 1);
@@ -133,9 +144,9 @@ void test("snapshots separate hosts and requests, detach metadata, and host disp
     assert.equal((await queued).status, "cancelled");
     assert.equal(pool.getWorkerPoolStatus(HOST).workerCount, 0);
     assert.equal(pool.getWorkerPoolStatus(OTHER_HOST).activeForeground, 1);
-    env.executions.find((entry) => entry.task.taskId === "host-two")!.result.resolve({
-      requestId: "request-two", taskId: "host-two", type: "get-quick-info", status: "cancelled",
-    });
+    env.executions
+      .find((entry) => entry.task.taskId === "host-two")!
+      .result.resolve({ requestId: "request-two", taskId: "host-two", type: "get-quick-info", status: "cancelled" });
     await second;
   } finally {
     await cleanupPoolHarness(pool, env);

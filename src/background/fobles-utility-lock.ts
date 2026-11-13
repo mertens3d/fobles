@@ -1,4 +1,5 @@
-// @source-path [Fobles] src/background/fobles-utility-lock.ts
+// @source-path [fobles] src/background/fobles-utility-lock.ts
+
 /// <reference types="chrome" />
 
 import type { UtilityOwner } from "./background.types";

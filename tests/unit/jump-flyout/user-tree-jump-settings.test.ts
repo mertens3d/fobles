@@ -7,7 +7,7 @@ import {
   createUserTreeJumpId,
   normalizeUserTreeJumpIconPath,
 } from "../../../src/shared/jump-flyout/user-tree-jump-settings.ts";
-import { USER_TREE_JUMP } from "../../../src/constants/user-tree-jump-constants.ts";
+import { USER_TREE_JUMP } from "../../../src/constants/user-tree-jump.const.ts";
 
 const UUID_PATTERN = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 

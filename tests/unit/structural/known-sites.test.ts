@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { SITECORE } from "../../../src/constants/sitecore.ts";
+import { SITECORE } from "../../../src/constants/sitecore.const.ts";
 import { knownSitesStorageKey, matchKnownSite, normalizeKnownSite, normalizeKnownSites } from "../../../src/shared/known-sites/known-sites-model.ts";
 import { normalizeStructuralSettings } from "../../../src/shared/structural/structural-settings.ts";
 import { guid, SCOPE } from "./structural-fixture.ts";

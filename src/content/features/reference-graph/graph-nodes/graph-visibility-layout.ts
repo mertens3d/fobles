@@ -1,6 +1,6 @@
-import type { GraphVisibilityLayoutContext } from "./graph-nodes.types.js";
 // @source-path [fobles] src/content/features/reference-graph/graph-nodes/graph-visibility-layout.ts
 
+import type { GraphVisibilityLayoutContext } from "./graph-nodes.types.js";
 import type cytoscape from "cytoscape";
 import { runGraphLayout } from "../cytoscape/graph-layout";
 import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/model.const";

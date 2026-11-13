@@ -1,4 +1,5 @@
-// @source-path [fobles] src/content/features/auditor/components/auditor-navigate/auditor-navigate.scss
+/* @source-path [fobles] src/content/features/auditor/components/auditor-navigate/auditor-navigate.scss */
+
 .fobles-auditor-navigate-cell { width: 18px !important; min-width: 18px !important; max-width: 18px !important; padding: 0 !important; align-items: center !important; justify-content: center; }
 .fobles-auditor-navigate { box-sizing: border-box; display: inline-flex; width: 16px !important; min-width: 16px !important; max-width: 16px !important; height: 16px !important; min-height: 16px !important; max-height: 16px !important; flex: 0 0 16px; aspect-ratio: 1 / 1; align-self: center; align-items: center; justify-content: center; padding: 0 !important; margin: 0; border: 1px solid transparent !important; border-radius: 3px; background: transparent !important; box-shadow: none; opacity: 1; cursor: pointer; transition: background-color 100ms ease, border-color 100ms ease, box-shadow 100ms ease; }
 .fobles-auditor-navigate > span { display: block; width: 4px; height: 4px; flex: 0 0 4px; border-radius: 50%; background: #fff; }

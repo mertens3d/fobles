@@ -2,11 +2,25 @@
 
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { createBaseResult, extractRootItem, mergeCollectorResult } from "../../../src/content/foundation/harvesting/coordinator/harvest-result-merger.ts";
-import type { HarvestRequest, SitecoreHarvestResult } from "../../../src/content/foundation/harvesting/sitecore-harvester.types.ts";
-import type { WorkerTaskSuccessResult, WorkerTaskType, WorkerTaskPayloadByType } from "../../../src/content/foundation/workers/tasks/worker-task.types.ts";
-import type { RootItem, SitecoreHarvestSection } from "../../../src/content/foundation/reference-data/model/model.types.ts";
-import type { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.types.ts";
+import {
+  createBaseResult,
+  extractRootItem,
+  mergeCollectorResult,
+} from "../../../src/content/foundation/harvesting/coordinator/harvest-result-merger.ts";
+import type {
+  SitecoreHarvestResult,
+  HarvestRequest,
+} from "../../../src/content/foundation/harvesting/harvesting.types.ts";
+import type {
+  RootItem,
+  SitecoreHarvestSection,
+} from "../../../src/content/foundation/reference-data/model/model.types.ts";
+import { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.ts";
+import type {
+  WorkerTaskType,
+  WorkerTaskPayloadByType,
+  WorkerTaskSuccessResult,
+} from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
 
 function rootItem(id: string): RootItem {
   return { ...factoryItemGraphNodeData({ scItemId: id }), scItemId: id };
@@ -33,13 +47,10 @@ function success<TType extends WorkerTaskType>(
   type: TType,
   payload: WorkerTaskPayloadByType[TType],
 ): Extract<WorkerTaskSuccessResult, { type: TType }> {
-  return {
-    requestId: "request-1",
-    taskId: `task-${type}`,
-    type,
-    status: "success",
-    payload,
-  } as Extract<WorkerTaskSuccessResult, { type: TType }>;
+  return { requestId: "request-1", taskId: `task-${type}`, type, status: "success", payload } as Extract<
+    WorkerTaskSuccessResult,
+    { type: TType }
+  >;
 }
 
 void test("creates an empty result with only the resolved root item", () => {
@@ -105,9 +116,10 @@ void test("quick-info and editor-state task results do not mutate collector data
   const result = createBaseResult(request(), rootItem("root"));
   const before = { ...result };
 
-  mergeCollectorResult(result, success("get-quick-info", {
-    result: { requested: { kind: "id", value: "root" }, status: "not-found" },
-  }));
+  mergeCollectorResult(
+    result,
+    success("get-quick-info", { result: { requested: { kind: "id", value: "root" }, status: "not-found" } }),
+  );
   mergeCollectorResult(result, success("set-raw-values", { value: false }));
   mergeCollectorResult(result, success("set-standard-fields", { value: true }));
 

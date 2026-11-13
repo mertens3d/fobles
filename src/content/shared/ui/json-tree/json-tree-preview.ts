@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/json-tree/json-tree-preview.ts
+
 import { JSON_TREE } from "./json-tree.const";
 import type { JsonEntry } from "./json-tree.types";
 

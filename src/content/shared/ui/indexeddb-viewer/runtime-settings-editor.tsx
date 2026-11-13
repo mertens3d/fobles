@@ -1,4 +1,5 @@
 // @source-path [fobles] src/content/shared/ui/indexeddb-viewer/runtime-settings-editor.tsx
+
 import { useEffect, useState } from "react";
 import { DEVELOPER_DIALOG } from "./developer-dialog.const";
 import type { RuntimeSettingsEditorStatus } from "./developer-dialog.types";
