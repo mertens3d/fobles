@@ -1,4 +1,4 @@
-import { STORAGE } from "../../../constants/extension-const";
+import { STORAGE } from "../../../constants/extension.const";
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 
 const DEFAULT_CONTROLS_EXPANDED = true;

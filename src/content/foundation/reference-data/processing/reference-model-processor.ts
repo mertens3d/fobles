@@ -8,11 +8,9 @@ import { mergeEnrichedItem } from "../../harvesting/planner/enrichment-task-plan
 import { createSitecoreItemLocator } from "../../harvesting/worker-task-executor";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
-import {
-  createErrorResult,
-  type WorkerTask,
-  type WorkerTaskExecutionResult,
-} from "../../workers/tasks/worker-task.types";
+import { createErrorResult } from "../../workers/tasks/worker-task.js";
+import type { WorkerTaskExecutionResult } from "../../workers/tasks/tasks.types.js";
+import type { WorkerTask } from "../../workers/tasks/tasks.types.js";
 import type { ItemGraphNodeData } from "../model/model.types";
 import { setProcessingState } from "./processing-state";
 import type { CachedItemFact, ProcessingStatus, ReferenceModelProcessingController, ResolveOutcome } from "./processing.types";

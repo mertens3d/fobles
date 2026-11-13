@@ -1,15 +1,15 @@
 // @source-path [fobles] src/content/toolbar/jump-flyout/jump-flyout.tsx
 
-import { CLASS } from "../../../constants/fobles.constants";
-import { TEXT } from "../../../constants/fobles.constants";
-import { FOBLES } from "../../../constants/fobles";
+import { CLASS } from "../../../constants/fobles-b.const";
+import { TEXT } from "../../../constants/fobles-b.const";
+import { FOBLES } from "../../../constants/fobles.const";
 import {
   ADMIN_PAGE_GROUP,
   AI_GROUP,
   APPLICATION_PAGE_GROUP,
   THIRD_PARTY_GROUP,
   TREE_JUMP_GROUP,
-} from "../../../constants/flyout-groups";
+} from "../../../constants/flyout-groups.const";
 import { JumpFlyoutColumn } from "./jump-flyout-column";
 import { UserTreeJumpGroup } from "./user-tree-jump-group";
 import { UserAdminPageGroup } from "./user-admin-page-group";

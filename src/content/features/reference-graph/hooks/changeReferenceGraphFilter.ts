@@ -1,7 +1,7 @@
 import { PROGRESS_STEPS } from "../../../foundation/harvesting/planner/harvest-steps";
 import {
   isHarvestStep,
-} from "../../../foundation/harvesting/sitecore-harvester.types";
+} from "../../../foundation/harvesting/sitecore-harvester";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import {

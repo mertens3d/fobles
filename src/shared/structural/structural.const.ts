@@ -1,4 +1,4 @@
-import { SITECORE } from "../../constants/sitecore.ts";
+import { SITECORE } from "../../constants/sitecore.const.ts";
 
 export const ITEM_KIND = {
   PAGE: "page",

@@ -1,6 +1,6 @@
 import { extensionLog } from "../../../logger";
 import { CONST } from "../../../../constants/const";
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 import { openFoblesUrl } from "../helper";
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
 import { attachFoblesTooltip } from "../shared/fobles-tooltip";

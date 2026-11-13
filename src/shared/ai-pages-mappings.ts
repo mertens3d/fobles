@@ -1,4 +1,4 @@
-import { STORAGE } from "../constants/extension-const";
+import { STORAGE } from "../constants/extension.const";
 import type { AiPagesMapping, AiPagesGroup } from "./AiPagesMapping.types";
 import { getStorageValue, onStorageChange, setStorageValue } from "./storage/storage";
 

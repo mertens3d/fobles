@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { CONST } from "../../constants/const";
-import { STORAGE } from "../../constants/extension-const";
+import { STORAGE } from "../../constants/extension.const";
 import { clearAllStorageValues, getAllStorageValues } from "../../shared/storage/storage";
 
 export function StorageSection() {

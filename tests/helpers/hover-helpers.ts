@@ -2,8 +2,8 @@ import { expect, type Page } from "../fixtures/playwright";
 import { getButtonSize, moveMouseOutsideHoverArea, moveMouseToLocatorCenter } from "./mouse-proxy";
 import { TEST_CONST } from "../constants/TEST_CONST";
 import { pauseForHuman } from "./wait-helpers";
-import type { HoverAndGrowOptions } from "./HoverAndGrowOptions.types";
-import type { HoverAndSlideOutOptions } from "./HoverAndSlideOutOptions.types";
+import type { HoverAndGrowOptions } from "./helpers.types";
+import type { HoverAndSlideOutOptions } from "./helpers.types";
 
 const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 

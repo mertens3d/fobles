@@ -5,10 +5,8 @@ import { CONST } from "../../../constants/const";
 import { subscribeActivity, type ActivityEvent } from "../../shared/activity/activity-events";
 import { ACTIVITY } from "../../shared/activity/activity.const";
 import { WORK_SCHEDULING } from "../../foundation/workers/work-scheduling.const";
-import type {
-  HarvestProgressStatus,
-  ProgressStep,
-} from "../../foundation/harvesting/sitecore-harvester.types";
+import type { HarvestProgressStatus } from "../../foundation/harvesting/harvesting.types";
+import type { ProgressStep } from "../../foundation/harvesting/harvesting.types";
 import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 import { ReferenceGraphProgressDialog } from "./components/reference-graph-progress-dialog";
 

@@ -1,6 +1,7 @@
 import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 import type { StepKey } from "../../../constants/constants.types";
-import type { HarvestProgressCallback, HarvestProgressStatus } from "../harvesting/sitecore-harvester.types";
+import type { HarvestProgressCallback } from "../harvesting/harvesting.types";
+import type { HarvestProgressStatus } from "../harvesting/harvesting.types";
 import type { WorkSession } from "../workers/session/work-session.types";
 import type { PreparedReferenceModel } from "./acquisition/acquisition.types";
 import type { ReferenceModelHarvestProgress, ReferenceModelProcessingProgress, ReferenceModelSessionStateChange } from "./processing/processing.types";

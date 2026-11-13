@@ -1,4 +1,4 @@
-import { SITECORE } from "../../../../constants/sitecore.ts";
+import { SITECORE } from "../../../../constants/sitecore.const.ts";
 import { normalizeHistoryId } from "../../../../shared/item-history/item-history-model.ts";
 import { KNOWN_FIELD_REFERENCE_RESOLVERS } from "../../../field-reference-resolution/field-reference-resolvers.ts";
 import { extractFieldLabel } from "./helpers/field-harvester.ts";

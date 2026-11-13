@@ -2,7 +2,7 @@
 // (scEditorHeaderQuickInfoInputID) than every other row (scEditorHeaderQuickInfoInput) -
 // getQuickInfoValue only reads the latter, so the template's guid needs its own lookup.
 
-import { SITECORE } from "../../../../../constants/sitecore";
+import { SITECORE } from "../../../../../constants/sitecore.const";
 import { buildFoblesUrl } from "../../../sitecore/fobles-url";
 import { formatFoId } from "../../../sitecore/guid";
 import { extensionLog } from "../../../../logger";

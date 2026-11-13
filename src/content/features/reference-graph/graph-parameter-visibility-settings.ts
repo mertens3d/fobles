@@ -2,13 +2,8 @@ import type { GraphParameterVisibilitySettings } from "./reference-graph.types.j
 // @source-path [fobles] src/content/features/reference-graph/graph-parameter-visibility-settings.ts
 
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
-
-const STORAGE_KEY = "fobles-reference-graph-parameter-visibility";
-
-export const DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS: GraphParameterVisibilitySettings = {
-  hideEmptyParameters: true,
-  hideNonGuidParameters: true,
-};
+import { DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS } from "./reference-graph.const.js";
+import { STORAGE_KEY } from "./reference-graph.const.js";
 
 export async function getGraphParameterVisibilitySettings(): Promise<GraphParameterVisibilitySettings> {
   const result = await getStorageValue<unknown>([STORAGE_KEY], "local");

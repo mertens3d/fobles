@@ -3,7 +3,7 @@ import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { createFoblesStep } from "../../../helpers/fobles-helpers-support/test-step";
 import { ClickFoblesGraphButton, CloseFoblesGraph } from "../../../macros/fobles-macros";
 import { setupReferenceGraphState } from "../harvest/harvest-test-helpers";
-import { expectBoxClose, getRequiredBoundingBox } from "../../../helpers/shared-window-geometry-helpers.types";
+import { expectBoxClose, getRequiredBoundingBox } from "../../../helpers/shared-window-geometry-helpers";
 import { FOBLES_WINDOW } from "../../../../src/content/shared/dialog/fobles-window.const";
 
 async function dragUtilityWindow(page: Page, titleBar: Locator, dx: number, dy: number): Promise<void> {

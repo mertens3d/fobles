@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/jump-flyout/jump-flyout-column.tsx
 
-import { CLASS } from "../../../constants/fobles.constants";
+import { CLASS } from "../../../constants/fobles-b.const";
 import type { FlyoutGroup } from "../../../constants/constants.types";
 import { JumpFlyoutGroup } from "./jump-flyout-group";
 

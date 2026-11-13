@@ -1,4 +1,4 @@
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 import { hasAnyGuidLikeOption } from "../../../foundation/sitecore/guid";
 import type { DroplistFobles as DroplistConfig } from "../../../../constants/constants.types";
 

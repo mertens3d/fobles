@@ -1,7 +1,7 @@
 // @source-path [fobles] src/popup/popup-app.tsx
 
 import { useEffect, useState } from "react";
-import { MESSAGE } from "../constants/extension-const";
+import { MESSAGE } from "../constants/extension.const";
 import {
   getFoblesNavVisible,
   getFoblesNavWarningVisible,

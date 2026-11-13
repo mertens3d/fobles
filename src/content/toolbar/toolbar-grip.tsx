@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/toolbar-grip.tsx
 
-import { CLASS } from "../../constants/fobles.constants";
+import { CLASS } from "../../constants/fobles-b.const";
 
 const GRIP_ROWS = 5;
 const GRIP_COLUMNS = [3, 9] as const;

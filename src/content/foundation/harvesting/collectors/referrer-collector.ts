@@ -3,8 +3,8 @@
 import { extractGuid } from "../../sitecore/guid";
 import { extensionLog } from "../../../logger";
 import { buildGalleryLinksUrl } from "./helpers/harvest-helpers";
-import { type HarvestContext } from "../sitecore-harvester.types";
-import { factoryItemGraphNodeData } from "../../reference-data/model/sitecore-item.types";
+import type { HarvestContext } from "../harvesting.types";
+import { factoryItemGraphNodeData } from "../../reference-data/model/sitecore-item";
 import type { ItemGraphNodeData } from "../../reference-data/model/model.types";
 
 // Items that reference this one - Sitecore's own "Links" gallery (ribbon: Links -> "Items that

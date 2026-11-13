@@ -1,8 +1,8 @@
 // @source-path [fobles] src/constants/flyout-groups.ts
 // import { kickAllUsers } from "./flyout-groups.types";
 import type { FlyoutGroup } from "./constants.types";
-import { FOBLES } from "./fobles";
-import { TEXT } from "./fobles.constants";
+import { FOBLES } from "./fobles.const";
+import { TEXT } from "./fobles-b.const";
 import { CONST } from "./const";
 
 export const TREE_JUMP_GROUP: readonly FlyoutGroup[] = [

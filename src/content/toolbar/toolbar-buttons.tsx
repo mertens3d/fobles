@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/toolbar-buttons.tsx
-import { CLASS, ICONS, SYMBOLS, TEXT } from "../../constants/fobles.constants";
-import { FOBLES } from "../../constants/fobles";
+import { CLASS, ICONS, SYMBOLS, TEXT } from "../../constants/fobles-b.const";
+import { FOBLES } from "../../constants/fobles.const";
 import { getPowerShellIseScriptTitle } from "../ise-tab-title";
 import { publishFoblesShellCommand } from "../shell/shell-events";
 import { openDeveloperUtility } from "../shell/utility/fobles-utility-launchers";

@@ -1,6 +1,4 @@
 import type { ExpandedByCollapseKey } from "./model.types.js";
-import type { GraphCollapseKey } from "./model.types.js";
-// @source-path [fobles] src/content/foundation/reference-data/model/graph-collapse.types.ts
 
 export const GRAPH_COLLAPSE_KEY = {
   ROOT: "root",
@@ -50,6 +48,7 @@ export const DEFAULT_EXPANDED_BY_COLLAPSE_KEY: ExpandedByCollapseKey = {
   [GRAPH_COLLAPSE_KEY.TESTS]: false,
 };
 
-export function isGraphCollapseKey(value: unknown): value is GraphCollapseKey {
-  return typeof value === "string" && Object.values(GRAPH_COLLAPSE_KEY).some((collapseKey) => collapseKey === value);
-}
+// Caps on potentially-unbounded relationships included in the ReferenceModel. Only GUIDs actually
+// represented in the resulting tree become enrichment candidates, so these limits also bound
+// enrichment work, not just graph size.
+export const REFERENCE_MODEL_FAN_OUT_LIMITS = { MAX_CHILDREN_PER_ITEM: 50, MAX_REFERRERS_PER_ITEM: 50 } as const;

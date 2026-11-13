@@ -1,4 +1,4 @@
-import { SITECORE } from "../../../../../constants/sitecore.ts";
+import { SITECORE } from "../../../../../constants/sitecore.const.ts";
 import { getStructuralCacheMaxUnvalidatedAgeMs, initializeRuntimeSettings } from "../../../../runtime-settings/runtime-settings.ts";
 import { normalizeHistoryScope, normalizeHistoryVisit } from "../../../../../shared/item-history/item-history-model.ts";
 import { isWithinSitePath, knownSitesStorageKey, matchKnownSite } from "../../../../../shared/known-sites/known-sites-model.ts";

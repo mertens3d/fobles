@@ -6,7 +6,7 @@ import type { ProcessingStateByTreeNodeId } from "../../foundation/reference-dat
 import type { ProcessingStatus } from "../../foundation/reference-data/processing/processing.types";
 import { getGraphPresentationState } from "../../foundation/reference-data/model/graph-presentation-state";
 import { resolveNodeLabel } from "../../shared/ui/reference-model/node-label-resolver";
-import { NODE_PRESENTATION_BY_KIND } from "../../shared/ui/reference-model/node-presentation";
+import { NODE_PRESENTATION_BY_KIND } from "../../shared/ui/reference-model/reference-model.const";
 import type { ReferenceModelNode } from "../../foundation/reference-data/model/model.types";
 import type { AuditFinding } from "./auditor.types";
 import type { AuditFindingStatus } from "./auditor.types";

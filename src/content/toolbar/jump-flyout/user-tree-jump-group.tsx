@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/jump-flyout/user-tree-jump-group.tsx
 
-import { TEXT } from "../../../constants/fobles.constants";
+import { TEXT } from "../../../constants/fobles-b.const";
 import { buildUserTreeJumpPath, type UserTreeJump } from "../../../shared/jump-flyout/user-tree-jump-settings";
 import { JumpFlyoutGroup } from "./jump-flyout-group";
 import { useUserTreeJumps } from "./use-user-tree-jumps";

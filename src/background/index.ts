@@ -1,7 +1,7 @@
 import type { ActiveSpecialist, RuntimeMessage, SpecialistFeature } from "./background.types";
 /// <reference types="chrome" />
 
-import { LOGGER, MESSAGE } from "../constants/extension-const";
+import { LOGGER, MESSAGE } from "../constants/extension.const.ts";
 import { REFERENCE_GRAPH } from "../constants/graph.const";
 import {
   clearHostWorkerIframeTargets,
@@ -18,9 +18,7 @@ import {
   handleWorkerTabRemoved,
   runPoolTask,
 } from "../content/foundation/workers/pool/background-worker-pool";
-import {
-  WORKER_IFRAME_READY_MESSAGE_TYPE,
-} from "../content/foundation/workers/transport/worker.messages";
+import { WORKER_IFRAME_READY_MESSAGE_TYPE } from "../content/foundation/workers/transport/transport.const";
 import { WORKER_MESSAGE_TYPE } from "../content/foundation/workers/worker-protocol.const";
 import { extensionLog } from "../content/logger";
 import { appendPersistedLogEntry, clearPersistedLogEntries } from "../shared/logging/persisted-log-storage";

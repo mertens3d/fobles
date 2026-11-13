@@ -1,4 +1,4 @@
-import { SITECORE } from "../../../../../constants/sitecore.ts";
+import { SITECORE } from "../../../../../constants/sitecore.const.ts";
 import type { StandardValuesCandidate } from "./item-kind.types.ts";
 
 export type { StandardValuesCandidate } from "./item-kind.types.ts";

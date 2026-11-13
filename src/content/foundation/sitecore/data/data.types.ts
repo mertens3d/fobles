@@ -1,5 +1,6 @@
 import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
-import type { SitecoreItemLocator, WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
+import type { WorkerTaskExecutionResult } from "../../workers/tasks/tasks.types";
+import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
 
 export type SitecoreDataIdentity = { environment: string; database: string; language: string };
 

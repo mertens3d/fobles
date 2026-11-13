@@ -10,14 +10,11 @@ import {
   sendTaskToWorkerTarget,
 } from "../transport/worker-target-service";
 import { resetWorkerReadiness, waitForWorkerReady } from "./worker-readiness";
-import {
-  createCancelledResult,
-  createErrorResult,
-  type PoolWorker,
-  type QueuedTask,
-  type WorkerExecutorContext,
-  type WorkerTaskResult,
-} from "../tasks/worker-task.types";
+import { createCancelledResult, createErrorResult } from "../tasks/worker-task";
+import type { WorkerExecutorContext } from "../tasks/tasks.types";
+import type { QueuedTask } from "../tasks/tasks.types";
+import type { PoolWorker } from "../tasks/tasks.types";
+import type { WorkerTaskResult } from "../tasks/tasks.types";
 import { isWorkerTabTarget } from "./worker-target";
 import type { WorkerTarget } from "./pool.types";
 import { DEBUG_WORKER_POOL } from "../worker-protocol.const";

@@ -1,9 +1,7 @@
+import type { BoxProperty } from "./helpers.types.js";
 import { expect, type Locator } from "@playwright/test";
-import type { BoundingBoxRect } from "./BoundingBoxRect.types";
-
-const BOX_PROPERTIES = ["x", "y", "width", "height"] as const;
-
-type BoxProperty = (typeof BOX_PROPERTIES)[number];
+import type { BoundingBoxRect } from "./helpers.types";
+import { BOX_PROPERTIES } from "./helpers.const.js";
 
 // Playwright's boundingBox() returns null for a detached/hidden element - callers doing geometry
 // math want a guaranteed box, not a null-check repeated at every call site.

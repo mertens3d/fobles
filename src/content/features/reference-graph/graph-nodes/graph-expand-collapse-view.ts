@@ -3,9 +3,9 @@
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
-import { DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS } from "../graph-parameter-visibility-settings";
+import { DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS } from "../reference-graph.const";
 import type { GraphParameterVisibilitySettings } from "../reference-graph.types";
-import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/model.const";
 import type { ExpandCollapseButtonController } from "./graph-nodes.types";
 import type { ExpandCollapseAction } from "./graph-nodes.types";
 

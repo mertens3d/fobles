@@ -1,11 +1,11 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/reference-model-node-id.ts
 
 import { CONST } from "../../../../constants/const";
-import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
-import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
+import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types";
+import { GRAPH_COLLAPSE_KEY } from "./model.const";
 import { createPageLayoutItemsByDeviceId, createLayoutSectionReferenceModel } from "./layout-reference-model-builder";
 import { createReferenceModelNonItemNode } from "./reference-model-node-factory";
-import { createSyntheticProvenance } from "./reference-model-provenance.types";
+import { createSyntheticProvenance } from "./reference-model-provenance";
 import type { ReferenceModelNonItemNode } from "./model.types";
 
 export function createLayoutReferenceModel(graphReferenceResult: SitecoreHarvestResult): ReferenceModelNonItemNode {

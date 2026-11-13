@@ -1,4 +1,4 @@
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 import { CONST } from "../../../../constants/const";
 import { ensurePathShape } from "../helper";
 import type { FileFobles as FileConfig } from "../../../../constants/constants.types";

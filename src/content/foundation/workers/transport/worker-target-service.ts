@@ -16,7 +16,8 @@ import {
   sendCancelToWorkerTab,
   sendTaskToWorkerTab,
 } from "./worker-tab-service";
-import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
+import type { WorkerTaskExecutionResult } from "../tasks/tasks.types";
+import type { WorkerTask } from "../tasks/tasks.types";
 import { isWorkerIframeTarget, isWorkerTabTarget } from "../pool/worker-target";
 import type { WorkerTarget } from "../pool/pool.types";
 

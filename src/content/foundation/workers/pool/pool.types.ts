@@ -1,5 +1,10 @@
 import type { WorkerIframeTarget } from "../iframe/iframe.types";
-import type { ActiveWorkerTask, PoolWorker, PoolWorkerState, QueuedTask, SitecoreItemLocator, WorkerTaskType } from "../tasks/worker-task.types";
+import type { ActiveWorkerTask } from "../tasks/tasks.types";
+import type { QueuedTask } from "../tasks/tasks.types";
+import type { PoolWorker } from "../tasks/tasks.types";
+import type { PoolWorkerState } from "../tasks/tasks.types";
+import type { WorkerTaskType } from "../tasks/tasks.types";
+import type { SitecoreItemLocator } from "../tasks/tasks.types";
 import type { WORK_SCHEDULING } from "../work-scheduling.const";
 import type { WorkClass } from "../work-scheduling.types";
 

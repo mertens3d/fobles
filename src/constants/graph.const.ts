@@ -3,7 +3,7 @@ import type { StepKey } from "./constants.types";
 import type cytoscape from "cytoscape";
 import type { LayoutGraphPresetName } from "./constants.types";
 import type { SitecoreHarvestFiltersState } from "./_base/_base.types";
-import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE.ts";
+import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE.const.ts";
 import type { LayoutPreset } from "./_base/_base.types";
 
 export const REFERENCE_GRAPH = {

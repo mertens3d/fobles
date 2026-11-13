@@ -1,4 +1,4 @@
-export const GUID_PATTERN = /\{?([0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12})\}?/;
+import { GUID_PATTERN } from "./sitecore.const.js";
 
 export function isGuidLike(value: string | null | undefined): boolean {
   return typeof value === "string" && /^\{?[0-9a-fA-F-]{36}\}?$/.test(value.trim());

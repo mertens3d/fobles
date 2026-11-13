@@ -1,4 +1,4 @@
-import type { WorkerTaskType } from "../../foundation/workers/tasks/worker-task.types";
+import type { WorkerTaskType } from "../../foundation/workers/tasks/tasks.types";
 
 export const TOOLBAR_DIAGNOSTICS = {
   CLASS: "fobles-toolbar-diagnostics",

@@ -1,4 +1,4 @@
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 import { createFoblesButton } from "../helper";
 import { buildFoblesUrl, normalizeFoblesValue } from "../../../foundation/sitecore/fobles-url";
 import { extensionLog } from "../../../logger";

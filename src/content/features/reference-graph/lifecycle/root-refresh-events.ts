@@ -1,7 +1,7 @@
 import type { RootRefreshListener } from "./lifecycle.types.js";
 // @source-path [fobles] src/content/features/reference-graph/lifecycle/root-refresh-events.ts
 
-import type { SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../../foundation/harvesting/harvesting.types.js";
 
 const listenersByRootItemId = new Map<string, Set<RootRefreshListener>>();
 

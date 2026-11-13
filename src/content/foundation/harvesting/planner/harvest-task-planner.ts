@@ -4,9 +4,13 @@ import type { CollectorFilterKey } from "./planner.types.js";
 // @source-path [fobles] src/content/foundation/harvesting/planner/harvest-task-planner.ts
 
 import { isGuidLike } from "../../sitecore/guid.ts";
-import type { HarvestRequest, SitecoreHarvestResult } from "../sitecore-harvester.types";
+import type { HarvestRequest } from "../harvesting.types";
+import type { SitecoreHarvestResult } from "../harvesting.types";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
-import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../workers/tasks/worker-task.types";
+import type { WorkerTask } from "../../workers/tasks/tasks.types";
+import type { WorkerTaskType } from "../../workers/tasks/tasks.types";
+import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
+import { COLLECTOR_TASK_TYPE_BY_FILTER_KEY } from "./planner.const.js";
 
 // "template" is a HarvestRequest filter, but it's not a collector task of its own - it only
 // narrows the sections a get-custom-fields/get-standard-fields task returns, so it has no entry
@@ -14,17 +18,6 @@ import type { SitecoreItemLocator, WorkerTask, WorkerTaskType } from "../../work
 export function isCollectorFilterKey(filterKey: keyof SitecoreHarvestFiltersState): filterKey is CollectorFilterKey {
   return filterKey !== "template";
 }
-
-// customFields and standardFields are two independent harvest crops, each read via its own
-// atomic operation (both still happen to re-scan the same section DOM - see worker-task-executor).
-export const COLLECTOR_TASK_TYPE_BY_FILTER_KEY: Readonly<Record<CollectorFilterKey, CollectorTaskType>> = {
-  parent: "get-parent",
-  children: "get-children",
-  referrers: "get-referrers",
-  customFields: "get-custom-fields",
-  standardFields: "get-standard-fields",
-  layouts: "get-layout",
-};
 
 // Reverse of COLLECTOR_TASK_TYPE_BY_FILTER_KEY - a Record already guarantees a 1:1 mapping now
 // that customFields/standardFields are separate task types, so this is a plain one-entry-per-key

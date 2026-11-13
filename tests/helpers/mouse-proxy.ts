@@ -1,4 +1,4 @@
-export { ensureMouseMarkerExists, pulseMouseMarkerClick, verifyMouseMarker } from "./mouse-proxy-support/mouse-marker.types";
+export { ensureMouseMarkerExists, pulseMouseMarkerClick, verifyMouseMarker } from "./mouse-proxy-support/mouse-marker";
 
 export {
   clickWithMouseMarker,

@@ -1,8 +1,9 @@
 // @source-path [fobles] src/content/foundation/harvesting/coordinator/harvest-result-merger.ts
 
 import type { RootItem } from "../../reference-data/model/model.types";
-import type { WorkerTaskSuccessResult } from "../../workers/tasks/worker-task.types";
-import type { HarvestRequest, SitecoreHarvestResult } from "../sitecore-harvester.types";
+import type { WorkerTaskSuccessResult } from "../../workers/tasks/tasks.types";
+import type { HarvestRequest } from "../harvesting.types";
+import type { SitecoreHarvestResult } from "../harvesting.types";
 
 // Starting point for the accumulating result: when existingResult is supplied, previously
 // harvested data for filters that were NOT requested this time must survive untouched - cloning

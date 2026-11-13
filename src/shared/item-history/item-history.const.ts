@@ -1,6 +1,6 @@
 // @source-path [fobles] src/shared/item-history/item-history.const.ts
 
-import { SITECORE } from "../../constants/sitecore.ts";
+import { SITECORE } from "../../constants/sitecore.const.ts";
 
 export const FOBLES_ITEM_HISTORY_CHANGE = "FOBLES_ITEM_HISTORY_CHANGE";
 

@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/toolbar/use-toolbar-background.ts
 
 import { useEffect, useState } from "react";
-import { CSS_PROPERTIES } from "../../constants/fobles.constants";
+import { CSS_PROPERTIES } from "../../constants/fobles-b.const";
 import { CONST } from "../../constants/const";
 import type { ToolbarContext } from "./toolbarcontext.types";
 

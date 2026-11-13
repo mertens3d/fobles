@@ -1,11 +1,12 @@
 // @source-path [fobles] src/content/foundation/harvesting/planner/harvest-steps.ts
 import { collectReferrers } from "../collectors/referrer-collector";
-import type { HarvestStep, ProgressStep } from "../sitecore-harvester.types";
+import type { HarvestStep } from "../harvesting.types";
+import type { ProgressStep } from "../harvesting.types";
 import { collectSections } from "../collectors/section-collector/section-collector";
 import { collectParent } from "../collectors/parent-collector";
 import { collectChildren } from "../collectors/child-collector";
 import { collectLayouts } from "../collectors/section-collector/layout-collector/layout-collector";
-import type { WorkerTaskType } from "../../workers/tasks/worker-task.types";
+import type { WorkerTaskType } from "../../workers/tasks/tasks.types";
 
 export const HARVEST_STEPS: readonly HarvestStep[] = [
   { stepKey: "children", filterKeys: ["children"], label: "Children", build: collectChildren },

@@ -4,7 +4,7 @@ import {
   getTurnOffFoblesAfterNavigation,
   setFoblesNavWarningVisible,
 } from "../../../shared/nav-settings";
-import { FOBLES } from "../../../constants/fobles";
+import { FOBLES } from "../../../constants/fobles.const.js";
 import { attachFoblesTooltip, hideFoblesTooltip } from "./shared/fobles-tooltip";
 
 const confirmationStates = new WeakMap<Document, ConfirmationState>();

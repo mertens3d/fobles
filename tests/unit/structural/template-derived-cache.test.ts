@@ -17,10 +17,13 @@ async function seedRoots(f: ReturnType<typeof runtimeFixture>): Promise<void> {
     index += 1;
     const path = f.options.settings.baseTemplatePaths[kind][0];
     const item = { kind: "path" as const, value: path };
-    await cache.putFact({ ...f.options.identity, item }, "quickInfo", { result: {
-      status: "found", requested: item,
-      value: factoryItemGraphNodeData({ scItemId: guid(index), scItemName: kind, scItemPath: path }),
-    } });
+    await cache.putFact({ ...f.options.identity, item }, "quickInfo", {
+      result: {
+        status: "found",
+        requested: item,
+        value: factoryItemGraphNodeData({ scItemId: guid(index), scItemName: kind, scItemPath: path }),
+      },
+    });
     await cache.putFact(structuralTemplateCacheKey(SCOPE, guid(index)), "templateBases", { inheritedTemplateIds: [] });
   }
 }
@@ -34,7 +37,9 @@ void test("derived kind round-trips through new runtime/service instances on the
   const item = { id: guid(21), name: "Home", path: "/sitecore/content/Site/Home", templateId: guid(10) };
   const first = await createStructuralRuntimeDriver(SCOPE, f.options);
   assert.deepEqual(await createTemplateStructuralService().classify(item, first, f.options.settings, f.now()), {
-    kind: "site", complete: true, stale: false,
+    kind: "site",
+    complete: true,
+    stale: false,
   });
   await first.finish();
   const stored = await cache.getCachedFact(key, "templateDerived");
@@ -46,14 +51,26 @@ void test("derived kind round-trips through new runtime/service instances on the
   const writes = t.mock.method(second, "writeDerived");
   const model = createTemplateStructuralService();
   assert.equal((await model.classify({ ...item, id: guid(22) }, second, f.options.settings, f.now())).kind, "site");
-  assert.equal((await model.classify({ ...item, path: "/sitecore/templates/Custom" }, second, f.options.settings, f.now())).kind, "template");
-  assert.equal((await model.classify({ ...item, path: "/sitecore/layout/Custom" }, second, f.options.settings, f.now())).kind, "unknown");
+  assert.equal(
+    (await model.classify({ ...item, path: "/sitecore/templates/Custom" }, second, f.options.settings, f.now())).kind,
+    "template",
+  );
+  assert.equal(
+    (await model.classify({ ...item, path: "/sitecore/layout/Custom" }, second, f.options.settings, f.now())).kind,
+    "unknown",
+  );
   await second.finish();
   assert.equal(writes.mock.callCount(), 0);
   assert.deepEqual(await cache.getCachedFact(key, "templateDerived"), stored);
   assert.equal(await cache.getItem({ ...f.options.identity, item: { kind: "id", value: item.id } }), undefined);
-  assert.equal(await cache.getCachedFact(structuralTemplateCacheKey({ ...SCOPE, database: "web" }, guid(10)), "templateDerived"), undefined);
-  const danish = await createStructuralRuntimeDriver(SCOPE, { ...f.options, identity: { ...f.options.identity, language: "da" } });
+  assert.equal(
+    await cache.getCachedFact(structuralTemplateCacheKey({ ...SCOPE, database: "web" }, guid(10)), "templateDerived"),
+    undefined,
+  );
+  const danish = await createStructuralRuntimeDriver(SCOPE, {
+    ...f.options,
+    identity: { ...f.options.identity, language: "da" },
+  });
   assert.deepEqual(await danish.readDerived(guid(10)), stored);
   assert.deepEqual((await danish.bases(guid(10), false))?.value, [guid(2)]);
   await danish.finish();
@@ -127,13 +144,17 @@ void test("SWR returns stale derived kind without recertification and converges 
   f.setBases([guid(3)]);
   const staleDriver = await createStructuralRuntimeDriver(SCOPE, f.options);
   assert.deepEqual(await createTemplateStructuralService().classify(item, staleDriver, f.options.settings, now), {
-    kind: "site", complete: true, stale: true,
+    kind: "site",
+    complete: true,
+    stale: true,
   });
   assert.deepEqual(await cache.getCachedFact(key, "templateDerived"), original);
   await staleDriver.finish();
   const refreshed = await createStructuralRuntimeDriver(SCOPE, f.options);
   assert.deepEqual(await createTemplateStructuralService().classify(item, refreshed, f.options.settings, now), {
-    kind: "tenant", complete: true, stale: false,
+    kind: "tenant",
+    complete: true,
+    stale: false,
   });
   await refreshed.finish();
   assert.equal((await cache.getCachedFact(key, "templateDerived"))?.value.kind, "tenant");

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/item-history/quick-info-observer.ts
 
-import { SITECORE } from "../../constants/sitecore.ts";
+import { SITECORE } from "../../constants/sitecore.const.ts";
 import { extensionLog } from "../logger.ts";
 import { ITEM_HISTORY_CAPTURE } from "./item-history.const.ts";
 import type { ItemHistoryCleanup, QuickInfoChangeHandler } from "./item-history.types.ts";

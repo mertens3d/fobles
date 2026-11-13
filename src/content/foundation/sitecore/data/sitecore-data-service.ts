@@ -6,11 +6,9 @@ import { labelForFact } from "../../../shared/activity/activity-labels.ts";
 import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreDataFactMap } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
-import type {
-  WorkerTaskExecutionResult,
-  WorkerTaskSuccessResult,
-  WorkerTaskType,
-} from "../../workers/tasks/worker-task.types";
+import type { WorkerTaskExecutionResult } from "../../workers/tasks/tasks.types";
+import type { WorkerTaskSuccessResult } from "../../workers/tasks/tasks.types";
+import type { WorkerTaskType } from "../../workers/tasks/tasks.types";
 import type { GetFactOptions } from "./data.types";
 import type { SitecoreDataFactResult } from "./data.types";
 import type { FetchLiveFact } from "./data.types";

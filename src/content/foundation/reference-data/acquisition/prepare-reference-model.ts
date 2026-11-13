@@ -2,7 +2,7 @@ import type { PreparedReferenceModel, PrepareReferenceModelOptions } from "./acq
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/prepare-reference-model.ts
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { extensionLog } from "../../../logger";
-import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types.js";
 import { createReferenceModel } from "../model/reference-model-builder";
 import { buildReferenceModelNodeLookup } from "../model/reference-model-node-lookup";
 import type { ProcessingStatus } from "../processing/processing.types";

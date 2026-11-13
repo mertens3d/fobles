@@ -1,6 +1,6 @@
 import { TEST_CONST } from "../constants/TEST_CONST";
 import type { Page } from "../fixtures/playwright";
-import type { SitecoreSearchParams } from "./SitecoreSearchParams.types";
+import type { SitecoreSearchParams } from "./helpers.types";
 
 export const getLastTwoPathItems = (path?: string): string =>
   (path ?? "").split("/").filter(Boolean).slice(-2).join("/");

@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/history/history-navigation.ts
 
-import { SITECORE } from "../../../constants/sitecore.ts";
+import { SITECORE } from "../../../constants/sitecore.const.ts";
 import { normalizeHistoryId } from "../../../shared/item-history/item-history-model.ts";
 import type { HistoryScope } from "../../../shared/item-history/item-history.types.ts";
 import { openFoblesUrl } from "../../features/augmentor/helper";

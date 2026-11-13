@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/toolbar/proxy-flyout/proxy-flyout.tsx
 
 import { useEffect, useRef } from "react";
-import { CLASS } from "../../../constants/fobles.constants";
-import { FOBLES } from "../../../constants/fobles";
+import { CLASS } from "../../../constants/fobles-b.const";
+import { FOBLES } from "../../../constants/fobles.const";
 import { extensionLog } from "../../logger";
 import { findRibbonCheckbox, postSitecoreEvent } from "../../features/augmentor/proxy-buttons-ribbon";
 import { SC_PROXY_BUTTONS } from "./proxy-flyout.const";

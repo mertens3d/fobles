@@ -1,10 +1,8 @@
 // @source-path [fobles] src/content/foundation/workers/transport/worker-tab-handler.ts
 import { extensionLog } from "../../../logger";
 import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
-import type { WorkerTask } from "../tasks/worker-task.types";
-import {
-  WORKER_IFRAME_READY_MESSAGE_TYPE,
-} from "./worker.messages";
+import type { WorkerTask } from "../tasks/tasks.types";
+import { WORKER_IFRAME_READY_MESSAGE_TYPE } from "./transport.const";
 import type { WorkerTabIncomingMessage } from "./transport.types";
 import type { WorkerIframeReadyMessage } from "./transport.types";
 import type { WorkerReadyMessage } from "./transport.types";

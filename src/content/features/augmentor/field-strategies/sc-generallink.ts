@@ -1,4 +1,4 @@
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 import { CONST } from "../../../../constants/const";
 import { ensurePathShape } from "../helper";
 import type { GeneralLinkFobles as GeneralLinkConfig } from "../../../../constants/constants.types";

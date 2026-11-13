@@ -8,12 +8,11 @@ import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-da
 import type { SitecoreDataFactMap } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
 import { harvestSitecoreWithWorkers } from "../../harvesting/coordinator/foreground-harvest-coordinator";
-import type {
-  SitecoreHarvestResult
-} from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types.js";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
-import type { SitecoreItemLocator, WorkerTask } from "../../workers/tasks/worker-task.types";
+import type { WorkerTask } from "../../workers/tasks/tasks.types.js";
+import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types.js";
 import { acquireReferenceModelForCurrentItem } from "../acquisition/acquire-reference-model";
 import { patchReferenceModelFact } from "../model/reference-model-fact-patcher";
 import type { ReferenceHarvestingJob, ReferenceHarvestingProgress, ReferenceHarvestingQueue, ReferenceModelProcessingController, ReferenceModelProcessingProgress } from "./processing.types";

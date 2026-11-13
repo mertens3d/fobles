@@ -1,5 +1,6 @@
-import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
-import type { MESSAGE_TYPE, WORKER_IFRAME_CREATE_MESSAGE_TYPE, WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE, WORKER_IFRAME_READY_MESSAGE_TYPE, WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE, WORKER_IFRAME_REMOVE_MESSAGE_TYPE } from "./worker.messages";
+import type { WorkerTaskExecutionResult } from "../tasks/tasks.types";
+import type { WorkerTask } from "../tasks/tasks.types";
+import type { MESSAGE_TYPE, WORKER_IFRAME_CREATE_MESSAGE_TYPE, WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE, WORKER_IFRAME_READY_MESSAGE_TYPE, WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE, WORKER_IFRAME_REMOVE_MESSAGE_TYPE } from "./transport.const";
 
 export type ExecuteWorkerTask = (
   doc: Document,

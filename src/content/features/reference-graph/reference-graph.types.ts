@@ -1,6 +1,7 @@
 import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 import type { LayoutGraphPresetName } from "../../../constants/constants.types";
-import type { HarvestProgressCallback, SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { HarvestProgressCallback } from "../../foundation/harvesting/harvesting.types";
+import type { SitecoreHarvestResult } from "../../foundation/harvesting/harvesting.types";
 import type { PreparedReferenceModel } from "../../foundation/reference-data/acquisition/acquisition.types";
 import type { ProcessingStatus } from "../../foundation/reference-data/processing/processing.types";
 import type { WorkSession } from "../../foundation/workers/session/work-session.types";

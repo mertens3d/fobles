@@ -8,3 +8,5 @@ export const ACTIVITY = {
     STATE: "completed",
   },
 } as const;
+
+export const ACTIVITY_MESSAGE_TYPE = ACTIVITY.MESSAGE_TYPE;

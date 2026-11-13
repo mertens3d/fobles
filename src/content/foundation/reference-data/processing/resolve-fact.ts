@@ -5,7 +5,8 @@ import type { ResolveOutcome } from "./processing.types.js";
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import type { StoredQuickInfo } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
-import type { SitecoreItemLocator, WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
+import type { WorkerTaskExecutionResult } from "../../workers/tasks/tasks.types";
+import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
 import type { ItemGraphNodeData } from "../model/model.types";
 
 function restoreQuickInfo(quickInfo: StoredQuickInfo): ItemGraphNodeData {

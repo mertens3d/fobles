@@ -2,8 +2,8 @@
 
 import type { DisposeWorkerPoolOptions, WorkerPoolDisposalResult } from "./pool.types.js";
 import { extensionLog } from "../../../logger";
-import type { PoolWorker } from "../tasks/worker-task.types";
-import { createCancelledResult } from "../tasks/worker-task.types";
+import type { PoolWorker } from "../tasks/tasks.types.js";
+import { createCancelledResult } from "../tasks/worker-task.js";
 import { closeWorkerTarget, sendCancelToWorkerTarget } from "../transport/worker-target-service";
 import { resetWorkerReadiness } from "./worker-readiness";
 

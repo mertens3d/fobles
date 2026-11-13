@@ -1,7 +1,7 @@
 import { TEST_CONST } from "../../../constants/TEST_CONST";
 import { type Locator, type Page, type TestInfo } from "../../../fixtures/playwright";
 
-import type { FoblesStep } from "../../../helpers/fobles-test-step.types";
+import type { FoblesStep } from "../../../helpers/helpers.types";
 
 import type { StrategyScenarioData } from "./support/scenario.types";
 

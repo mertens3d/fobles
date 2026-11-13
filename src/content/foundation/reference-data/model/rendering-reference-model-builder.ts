@@ -2,14 +2,14 @@
 
 import { CONST } from "../../../../constants/const";
 import { isGuidLike } from "../../sitecore/guid";
-import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "./model.const";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
-import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance.types";
+import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance";
 import { createReferenceModelNodeId } from "./layout-reference-model-builder";
 import type { ReferenceModelNode } from "./model.types";
 import type { ReferenceModelNonItemNode } from "./model.types";
 import type { ReferenceModelItemNode } from "./model.types";
-import { factoryItemGraphNodeData } from "./sitecore-item.types";
+import { factoryItemGraphNodeData } from "./sitecore-item";
 import type { ScControl } from "./model.types";
 import type { ItemGraphNodeData } from "./model.types";
 

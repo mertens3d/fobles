@@ -2,7 +2,7 @@
 
 import type { ReferenceGraphRenderActions, UseReferenceGraphRenderActionsOptions } from "./hooks.types.js";
 import { useCallback } from "react";
-import type { SitecoreHarvestResult } from "../../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../../foundation/harvesting/harvesting.types.js";
 import { extensionLog } from "../../../logger";
 import { handleHarvestProgress } from "../build-progress";
 import { startEnrichmentController } from "../enrichment/enrichment-controller";

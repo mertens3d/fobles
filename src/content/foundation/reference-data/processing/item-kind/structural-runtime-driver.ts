@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/item-kind/structural-runtime-driver.ts
-import { SITECORE } from "../../../../../constants/sitecore.ts";
+import { SITECORE } from "../../../../../constants/sitecore.const.ts";
 import { normalizeHistoryId, normalizeHistoryScope, normalizeHistoryVisit } from "../../../../../shared/item-history/item-history-model.ts";
 import { getStructuralCacheMaxUnvalidatedAgeMs, initializeRuntimeSettings } from "../../../../runtime-settings/runtime-settings.ts";
 import type { StructuralScope } from "../../../../../shared/structural/structural.types.ts";
@@ -12,7 +12,7 @@ import type { SitecoreDataCacheKey } from "../../../cache/sitecore-data/sitecore
 import type { TemplateDerivedRecord } from "../../../cache/sitecore-data/sitecore-data.types";
 import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity.ts";
 import { WORK_SCHEDULING } from "../../../workers/work-scheduling.const.ts";
-import type { SitecoreItemLocator } from "../../../workers/tasks/worker-task.types.ts";
+import type { SitecoreItemLocator } from "../../../workers/tasks/tasks.types";
 import type { ItemGraphNodeData } from "../../model/model.types";
 import type { StructuralDriver, StructuralItem, StructuralRead, StructuralRuntimeOptions } from "./structural-service.types.ts";
 

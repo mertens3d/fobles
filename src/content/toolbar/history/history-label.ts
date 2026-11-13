@@ -1,4 +1,4 @@
-import { SITECORE } from "../../../constants/sitecore.ts";
+import { SITECORE } from "../../../constants/sitecore.const.ts";
 import type { HistoryItem } from "../../../shared/item-history/item-history.types.ts";
 import { isWithinSitePath, matchKnownSite } from "../../../shared/known-sites/known-sites-model.ts";
 import type { KnownSite } from "../../../shared/structural/structural.types.ts";

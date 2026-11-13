@@ -7,7 +7,7 @@ import { PhaseProgressBar } from "../../shared/ui/reference-controls/phase-progr
 import { DIAGNOSTIC_OPERATION_LABELS, TOOLBAR_DIAGNOSTICS } from "./toolbar-diagnostics.const";
 import { observeToolbarDiagnostics } from "./toolbar-diagnostics-subscription";
 import type { ToolbarDiagnosticsProps, ToolbarDiagnosticsServices, ToolbarDiagnosticsState } from "./toolbar-diagnostics.types";
-import { WORKER_TASK_MANAGER_TOGGLE_EVENT } from "./worker-task-manager-window";
+import { WORKER_TASK_MANAGER_TOGGLE_EVENT } from "./diagnostics.const";
 
 const services: ToolbarDiagnosticsServices = { getSettings: getStructuralSettings, getStatus: getWorkerPoolStatus, subscribe: subscribeActivity, watchSettings: watchStructuralSettings };
 

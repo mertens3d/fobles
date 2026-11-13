@@ -2,11 +2,8 @@
 
 import type { FoblesCleanupProgress } from "./FoblesCleanupProgress.types";
 import type { FoblesMessageDialogOptions, FoblesErrorDialogOptions } from "./FoblesMessageDialogOptions.types";
-
-export const FOBLES_ERROR_DIALOG_ID = "fobles-error-dialog";
-
-export const FOBLES_CLEANUP_DIALOG_ID = "fobles-cleanup-dialog";
-const CLEANUP_PROGRESS_ATTRIBUTE = "data-fobles-cleanup-progress";
+import { FOBLES_ERROR_DIALOG_ID, FOBLES_CLEANUP_DIALOG_ID } from "./shared.const";
+import { CLEANUP_PROGRESS_ATTRIBUTE } from "./shared.const";
 
 function showFoblesMessageDialog(
   doc: Document,

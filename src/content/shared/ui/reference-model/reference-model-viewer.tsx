@@ -3,9 +3,8 @@ import { useState } from "react";
 import { copySanitizedText, downloadSanitizedText } from "../../../../shared/export/text-export";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
 import { DialogIconButton } from "../dialog/dialog-icon-button";
+import { AUDITOR_EXPORT_CSV_EVENT } from "./reference-model.const";
 const COPIED_FEEDBACK_DURATION_MS = 1500;
-
-export const AUDITOR_EXPORT_CSV_EVENT = "fobles:auditor-export-csv";
 
 export type ReferenceModelViewerProps = { referenceModel: ReferenceModelNode; onClose: () => void };
 

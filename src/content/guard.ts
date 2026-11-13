@@ -1,4 +1,4 @@
-import { FOBLES_PAGES } from "../constants/fobles.constants";
+import { FOBLES_PAGES } from "../constants/fobles-b.const";
 import { type AllowedPage } from "../constants/constants.types";
 import { CONST } from "../constants/const";
 

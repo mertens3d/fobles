@@ -1,5 +1,5 @@
 import type { TagListItem } from "./field-strategies.types.js";
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const.js";
 import { CONST } from "../../../../constants/const";
 import type { TagListFobles as TagListConfig } from "../../../../constants/constants.types";
 import { formatFoId } from "../../../foundation/sitecore/guid";

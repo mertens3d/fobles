@@ -1,4 +1,4 @@
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 import type { CreateFoblesWrapperOptions } from "./shared.types";
 
 // Every field strategy's "wrapper" element is tagged/classed identically; only the tag,

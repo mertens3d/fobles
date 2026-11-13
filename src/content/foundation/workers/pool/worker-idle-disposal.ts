@@ -2,8 +2,7 @@
 import { extensionLog } from "../../../logger";
 import type { DestroyIdleWorker } from "./pool.types";
 import type { WorkerPoolState } from "./pool.types";
-
-export const WORKER_IDLE_DISPOSAL_DELAY_MS = 7000;
+import { WORKER_IDLE_DISPOSAL_DELAY_MS } from "./pool.const";
 
 export function cancelWorkerIdleDisposal(pool: WorkerPoolState): void {
   if (pool.idleDisposalTimer === undefined) {

@@ -1,4 +1,4 @@
-import type { TOOLBAR_CORNERS } from "./fobles.constants";
+import type { TOOLBAR_CORNERS } from "./fobles-b.const";
 import type { REFERENCE_GRAPH } from "./graph.const";
 
 // Every shell page/dialog Fobles is eligible on, in one place, replacing three previously

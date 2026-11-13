@@ -1,8 +1,7 @@
+import type { LocalMousePosition } from "./mouse-proxy-support.types.js";
 import { expect, type Frame, type Page } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { hasLastKnownMousePosition, isSprintMode, setLastKnownMousePosition } from "./mouse-proxy-state";
-
-type LocalMousePosition = { x: number; y: number; OPEN_DIALOG_SELECTOR: string };
 
 export async function ensureMouseMarkerExists(page: Page | Frame): Promise<void> {
   const isHtmlPage = await page.evaluate(() => document.contentType.startsWith("text/html"));

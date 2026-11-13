@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/jump-flyout/user-admin-page-group.tsx
 
-import { TEXT } from "../../../constants/fobles.constants";
+import { TEXT } from "../../../constants/fobles-b.const";
 import type { UserAdminPage } from "../../../shared/jump-flyout/user-admin-page-settings";
 import { JumpFlyoutGroup } from "./jump-flyout-group";
 import { useUserAdminPages } from "./use-user-admin-pages";

@@ -1,8 +1,9 @@
 // @source-path [fobles] src/content/shared/ui/reference-model/graph-collapse-settings.ts
 
-import { STORAGE } from "../../../../constants/extension-const";
+import { STORAGE } from "../../../../constants/extension.const";
 import { getStorageValue, setStorageValue } from "../../../../shared/storage/storage";
-import { DEFAULT_EXPANDED_BY_COLLAPSE_KEY, isGraphCollapseKey } from "../../../foundation/reference-data/model/graph-collapse.types";
+import { isGraphCollapseKey } from "../../../foundation/reference-data/model/graph-collapse";
+import { DEFAULT_EXPANDED_BY_COLLAPSE_KEY } from "../../../foundation/reference-data/model/model.const";
 import type { ExpandedByCollapseKey } from "../../../foundation/reference-data/model/model.types";
 import type { GraphCollapseKey } from "../../../foundation/reference-data/model/model.types";
 

@@ -2,8 +2,7 @@
 import type { ActivityEvent } from "../../shared/activity/activity-events";
 import type { WorkerPoolStatus } from "../../foundation/workers/pool/pool.types";
 import type { WorkerTaskManagerRow } from "./WorkerTaskManagerRow.types";
-
-export const WORKER_TASK_MANAGER_HISTORY_MAX = 100;
+import { WORKER_TASK_MANAGER_HISTORY_MAX } from "./diagnostics.const";
 
 function outcomeFor(activity: ActivityEvent): string {
   if (activity.state === "completed") {

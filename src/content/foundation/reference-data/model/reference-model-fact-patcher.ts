@@ -2,10 +2,10 @@
 
 import type { SitecoreDataFactValueByName } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
-import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
-import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
+import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
 import type { PreparedReferenceModel } from "../acquisition/acquisition.types";
 import { createReferenceModel } from "./reference-model-builder";
 import { buildReferenceModelNodeLookup } from "./reference-model-node-lookup";

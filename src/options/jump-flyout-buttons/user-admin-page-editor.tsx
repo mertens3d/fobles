@@ -6,7 +6,7 @@ import {
   normalizeUserAdminPageUrl,
   type UserAdminPage,
 } from "../../shared/jump-flyout/user-admin-page-settings";
-import { USER_ADMIN_PAGE } from "../../shared/jump-flyout/user-admin-page-constants";
+import { USER_ADMIN_PAGE } from "../../shared/jump-flyout/jump-flyout.const";
 import type { UserAdminPageEditorProps } from "./UserAdminPageEditorProps";
 
 export function createEmptyUserAdminPage(): UserAdminPage {

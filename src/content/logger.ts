@@ -1,7 +1,7 @@
 import type { FoblesGlobal } from "./content.types.js";
 // @source-path [fobles] src/content/logger.ts
 
-import { LOGGER, STORAGE } from "../constants/extension-const.ts";
+import { LOGGER, STORAGE } from "../constants/extension.const.ts";
 import { REFERENCE_GRAPH } from "../constants/graph.const.ts";
 import { appendPersistedLogEntry } from "../shared/logging/persisted-log-storage.ts";
 import type {

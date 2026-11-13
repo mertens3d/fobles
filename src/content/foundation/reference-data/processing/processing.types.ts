@@ -1,9 +1,10 @@
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
 import type { HealthReport } from "../../diagnostics/diagnostics.types";
-import type { HarvestProgressCallback, SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { HarvestProgressCallback } from "../../harvesting/harvesting.types";
+import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types";
 import type { WorkSession } from "../../workers/session/work-session.types";
-import type { SitecoreItemLocator } from "../../workers/tasks/worker-task.types";
+import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
 import type { PreparedReferenceModel } from "../acquisition/acquisition.types";
 import type { ReferenceModelNode } from "../model/model.types";
 import type { ItemGraphNodeData } from "../model/model.types";

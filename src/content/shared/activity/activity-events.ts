@@ -1,10 +1,8 @@
-import { ACTIVITY } from "./activity.const";
 import { matchesActivityFilter } from "./activity-filter";
+import { ACTIVITY_MESSAGE_TYPE } from "./activity.const";
 import type { ActivityEvent, ActivityFilter, ActivityListener, ActivityMessage } from "./activity.types";
 
 export type { ActivityEvent, ActivityFilter, ActivityMessage, ActivityState } from "./activity.types";
-
-export const ACTIVITY_MESSAGE_TYPE = ACTIVITY.MESSAGE_TYPE;
 
 const listeners = new Set<ActivityListener>();
 

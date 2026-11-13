@@ -6,15 +6,14 @@ import { extensionLog } from "../../../logger";
 import { getItem, putFact } from "../../cache/sitecore-data/sitecore-data-cache";
 import type { QuickInfoPayload } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
-import type {
-  SitecoreHarvestResult
-} from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types.js";
 import { createSitecoreItemLocator } from "../../harvesting/worker-task-executor";
 import { getCurrentItemId } from "../../sitecore/current-item";
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import type { WorkSession } from "../../workers/session/work-session.types";
-import type { WorkerTask, WorkerTaskExecutionResult } from "../../workers/tasks/worker-task.types";
+import type { WorkerTaskExecutionResult } from "../../workers/tasks/tasks.types.js";
+import type { WorkerTask } from "../../workers/tasks/tasks.types.js";
 import { prepareReferenceModel } from "./prepare-reference-model";
 import { decideRootCacheUsage, rootProcessingStateForDecision } from "./root-cache-flow";
 import { readLiveRootRevision } from "./root-revision";

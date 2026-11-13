@@ -7,13 +7,13 @@ import { findFieldInput } from "../../helpers/harvest-helpers";
 import { isGuidLike } from "../../../../sitecore/guid";
 import { readRenderingAttribute } from "./rendering-xml-attributes";
 import type { SitecoreLayoutXml } from "./layout-collector.types";
-import { factoryItemGraphNodeData } from "../../../../reference-data/model/sitecore-item.types";
+import { factoryItemGraphNodeData } from "../../../../reference-data/model/sitecore-item.js";
 import type { LayoutDevice } from "../../../../reference-data/model/model.types";
 import type { ScControl } from "../../../../reference-data/model/model.types";
 import type { LayoutPlacement } from "../../../../reference-data/model/model.types";
 import type { LayoutSectionField } from "../../../../reference-data/model/model.types";
 import type { ItemGraphNodeData } from "../../../../reference-data/model/model.types";
-import type { HarvestContext } from "../../../sitecore-harvester.types";
+import type { HarvestContext } from "../../../harvesting.types.js";
 
 export const collectLayouts = (harvestContext: HarvestContext): Promise<LayoutCollectionFailure | undefined> => {
   const collected = [processLayoutFieldValue(harvestContext, "Renderings"), processLayoutFieldValue(harvestContext, "Final renderings")];

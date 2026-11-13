@@ -2,7 +2,7 @@
 
 import { collectChildren } from "./collectors/child-collector";
 import { collectInheritedTemplateIds } from "./collectors/template-bases-collector.ts";
-import { SITECORE } from "../../../constants/sitecore.ts";
+import { SITECORE } from "../../../constants/sitecore.const.ts";
 import { collectParent } from "./collectors/parent-collector";
 import { collectReferrers } from "./collectors/referrer-collector";
 import { collectLayouts } from "./collectors/section-collector/layout-collector/layout-collector";
@@ -16,19 +16,16 @@ import {
   setScRawValuesState,
   setScStandardFieldsState,
 } from "../sitecore/macros/ribbon-toggle-macro";
-import type { HarvestContext, SitecoreHarvestResult } from "./sitecore-harvester.types";
-import {
-  createCancelledResult,
-  createDocumentStaleResult,
-  createErrorResult,
-  type SitecoreItemLocator,
-  type SitecoreResolvedResult,
-  type WorkerTask,
-  type WorkerTaskExecutionResult,
-  type WorkerTaskPayloadByType,
-  type WorkerTaskResult,
-  type WorkerTaskType,
-} from "../workers/tasks/worker-task.types";
+import type { SitecoreHarvestResult } from "./harvesting.types";
+import type { HarvestContext } from "./harvesting.types";
+import { createCancelledResult, createDocumentStaleResult, createErrorResult } from "../workers/tasks/worker-task.ts";
+import type { WorkerTaskExecutionResult } from "../workers/tasks/tasks.types";
+import type { WorkerTaskResult } from "../workers/tasks/tasks.types";
+import type { WorkerTaskPayloadByType } from "../workers/tasks/tasks.types";
+import type { WorkerTask } from "../workers/tasks/tasks.types";
+import type { WorkerTaskType } from "../workers/tasks/tasks.types";
+import type { SitecoreResolvedResult } from "../workers/tasks/tasks.types";
+import type { SitecoreItemLocator } from "../workers/tasks/tasks.types";
 import type { ItemGraphNodeData } from "../reference-data/model/model.types";
 import { extensionLog } from "../../logger.ts";
 import { openScInheritanceTab } from "../sitecore/macros/editor-tab-macro.ts";

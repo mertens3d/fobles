@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/toolbar/jump-flyout/jump-flyout-trigger.tsx
 
-import { CLASS, TEXT } from "../../../constants/fobles.constants";
-import { FOBLES } from "../../../constants/fobles";
+import { CLASS, TEXT } from "../../../constants/fobles-b.const";
+import { FOBLES } from "../../../constants/fobles.const";
 import { FlyoutTrigger } from "../shared-flyout/flyout-trigger";
 import { ToolbarNavButton } from "../toolbar-buttons";
 import type { FlyoutVisibilityState } from "../shared-flyout/FlyoutVisibilityState.types";

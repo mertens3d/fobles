@@ -3,7 +3,7 @@
 // which values came from looking up the serialized test data versus other file-level constants
 
 import type { Page, Locator, TestInfo } from "@playwright/test";
-import type { FoblesStep } from "../../../../helpers/fobles-test-step.types";
+import type { FoblesStep } from "../../../../helpers/helpers.types";
 
 // (e.g. STEP_WAIT_MS, SCREENSHOT_BASE_NAME).
 export type StrategyScenarioData = {

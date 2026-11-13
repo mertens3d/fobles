@@ -1,4 +1,4 @@
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 import { CONST } from "../../../../constants/const";
 import { ensurePathShape } from "../helper";
 import type { ImageFobles as ImageConfig } from "../../../../constants/constants.types";

@@ -2,7 +2,7 @@
 
 import { extensionLog } from "../../logger";
 import { harvestSitecoreWithWorkers } from "../../foundation/harvesting/coordinator/foreground-harvest-coordinator";
-import type { SitecoreHarvestResult } from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../foundation/harvesting/harvesting.types";
 import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 import { handleHarvestProgress } from "./build-progress";
 

@@ -7,14 +7,14 @@ import {
 } from "../../../runtime-settings/runtime-settings";
 import { RUNTIME_FAULT } from "../../../runtime-settings/runtime-settings.const";
 import { HARVEST_STEP_BY_TASK_TYPE } from "../planner/harvest-steps";
-import type { HarvestProgressCallback, HarvestRequest, ProgressStep } from "../sitecore-harvester.types";
+import type { HarvestRequest } from "../harvesting.types";
+import type { HarvestProgressCallback } from "../harvesting.types";
+import type { ProgressStep } from "../harvesting.types";
 import { cancelWorkerTask, runWorkerTask } from "../../workers/pool/worker-pool-client";
-import {
-  createErrorResult,
-  type WorkerTask,
-  type WorkerTaskResult,
-  type WorkerTaskType,
-} from "../../workers/tasks/worker-task.types";
+import { createErrorResult } from "../../workers/tasks/worker-task";
+import type { WorkerTaskResult } from "../../workers/tasks/tasks.types";
+import type { WorkerTask } from "../../workers/tasks/tasks.types";
+import type { WorkerTaskType } from "../../workers/tasks/tasks.types";
 import {
   createSetRawValuesTask,
   createSetStandardFieldsTask,

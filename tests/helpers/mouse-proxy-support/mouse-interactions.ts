@@ -1,7 +1,7 @@
 import { type Locator, type Page } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { moveMouseToPosition } from "./mouse-movement";
-import type { MouseCoordinates } from "../mouse-proxy.types";
+import type { MouseCoordinates } from "../helpers.types";
 import type { HighlightStyle } from "../../constants_partials/CONST.types";
 import { isSprintMode } from "./mouse-proxy-state";
 

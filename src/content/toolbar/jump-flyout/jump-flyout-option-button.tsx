@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/toolbar/jump-flyout/jump-flyout-option-button.tsx
 
 import { useEffect, useRef } from "react";
-import { CLASS } from "../../../constants/fobles.constants";
-import { FOBLES } from "../../../constants/fobles";
+import { CLASS } from "../../../constants/fobles-b.const";
+import { FOBLES } from "../../../constants/fobles.const";
 import { attachFoblesTooltip } from "../../features/augmentor/shared/fobles-tooltip";
 import { openFoblesUrl } from "../../features/augmentor/helper";
 import type { FlyoutOption } from "../../../constants/constants.types";

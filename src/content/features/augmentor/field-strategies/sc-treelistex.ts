@@ -1,5 +1,5 @@
 import type { TreelistExItem } from "./field-strategies.types.js";
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const.js";
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import { hideWithStyledSpacer } from "../shared/hide-with-styled-spacer";

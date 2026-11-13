@@ -2,9 +2,9 @@
 
 import { CONST } from "../../../../constants/const";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
-import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "./model.const";
 import type { GraphCollapseKey } from "./model.types";
-import { createFieldReferenceProvenance, createSyntheticProvenance } from "./reference-model-provenance.types";
+import { createFieldReferenceProvenance, createSyntheticProvenance } from "./reference-model-provenance";
 import type { ReferenceModelNode } from "./model.types";
 import type { ReferenceModelNonItemNode } from "./model.types";
 import type { ReferenceModelBranch } from "./model.types";
@@ -12,7 +12,7 @@ import { createReferenceModelNodeId } from "./layout-reference-model-builder";
 import type { HarvestFieldLink } from "./model.types";
 import type { SitecoreHarvestField } from "./model.types";
 import type { SitecoreHarvestSection } from "./model.types";
-import type { SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types";
 
 export function createCustomFieldsTreeNode(
   graphReferenceResult: SitecoreHarvestResult,

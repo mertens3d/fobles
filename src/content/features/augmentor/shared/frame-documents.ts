@@ -1,5 +1,5 @@
 import { isMenuOwnedFrame } from "../../../guard";
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 import type { FrameDocumentOptions } from "./shared.types";
 
 const getFrameDocument = (frame: Element): Document | null => {

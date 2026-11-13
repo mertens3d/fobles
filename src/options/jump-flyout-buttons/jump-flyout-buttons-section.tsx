@@ -18,7 +18,7 @@ import {
   setUserAdminPages,
   type UserAdminPage,
 } from "../../shared/jump-flyout/user-admin-page-settings";
-import { TEXT } from "../../constants/fobles.constants";
+import { TEXT } from "../../constants/fobles-b.const";
 import { JumpFlyoutColumn } from "./jump-flyout-column";
 import { JumpFlyoutButtonRow } from "./jump-flyout-button-row";
 import { UserTreeJumpEditor, normalizeUserTreeJumpEntriesForSave } from "./user-tree-jump-editor";

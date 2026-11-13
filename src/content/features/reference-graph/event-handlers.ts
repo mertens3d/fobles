@@ -6,9 +6,7 @@ import {
   initializeReferenceGraphProgressModal,
   openReferenceGraphProgressModal,
 } from "./build-progress";
-import type {
-  SitecoreHarvestResult,
-} from "../../foundation/harvesting/sitecore-harvester.types";
+import type { SitecoreHarvestResult } from "../../foundation/harvesting/harvesting.types";
 import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 import { PROGRESS_STEPS } from "../../foundation/harvesting/planner/harvest-steps";
 import type { HarvestForLink } from "./reference-graph.types";

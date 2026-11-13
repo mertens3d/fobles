@@ -1,4 +1,4 @@
-import { SITECORE } from "../../../constants/sitecore.ts";
+import { SITECORE } from "../../../constants/sitecore.const.ts";
 import type { QuickInfo } from "./sitecore.types";
 import type { QuickInfoTemplate } from "./sitecore.types";
 

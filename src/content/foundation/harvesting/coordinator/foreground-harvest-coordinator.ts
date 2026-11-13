@@ -2,15 +2,15 @@ import type { HarvestOptions } from "./coordinator.types.js";
 // @source-path [fobles] src/content/foundation/harvesting/coordinator/foreground-harvest-coordinator.ts
 
 import { HARVEST_STEPS } from "../planner/harvest-steps";
-import type { HarvestProgressCallback, HarvestRequest, SitecoreHarvestResult } from "../sitecore-harvester.types";
+import type { HarvestRequest } from "../harvesting.types.js";
+import type { HarvestProgressCallback } from "../harvesting.types.js";
+import type { SitecoreHarvestResult } from "../harvesting.types.js";
 import { cancelWorkerRequest } from "../../workers/pool/worker-pool-client";
-import { isSuccessResult, type WorkerTaskResult } from "../../workers/tasks/worker-task.types";
+import { isSuccessResult } from "../../workers/tasks/worker-task.js";
+import type { WorkerTaskResult } from "../../workers/tasks/tasks.types.js";
 import { executeHarvestPlan } from "./harvest-plan-executor";
-import {
-  COLLECTOR_TASK_TYPE_BY_FILTER_KEY,
-  isCollectorFilterKey,
-  isCollectorResultAlreadyPresent,
-} from "../planner/harvest-task-planner";
+import { isCollectorFilterKey, isCollectorResultAlreadyPresent } from "../planner/harvest-task-planner";
+import { COLLECTOR_TASK_TYPE_BY_FILTER_KEY } from "../planner/planner.const";
 import { createBaseResult, extractRootItem, mergeCollectorResult } from "./harvest-result-merger";
 
 function reportSkippedSteps(request: HarvestRequest, onProgress: HarvestProgressCallback | undefined): void {

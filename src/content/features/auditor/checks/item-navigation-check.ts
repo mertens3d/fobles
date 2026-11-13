@@ -5,10 +5,7 @@ import { buildAuditFinding } from "../audit-finding-factory.ts";
 import type { AuditCheck } from "../auditor.types";
 import type { AuditCheckContext } from "../auditor.types";
 import type { AuditFinding } from "../auditor.types";
-
-export const ITEM_NAVIGATION_CHECK_KEY = "item-navigation";
-
-export const ITEM_NAVIGATION_CHECK_LABEL = "Item navigation readiness";
+import { ITEM_NAVIGATION_CHECK_KEY, ITEM_NAVIGATION_CHECK_LABEL } from "./checks.const";
 
 // Phase-1 check 4 of 4: every item node (resolved or not) carries enough identity to build a
 // usable Content Editor link - does not require Resolve to have completed, since a GUID or path

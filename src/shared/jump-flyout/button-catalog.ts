@@ -1,13 +1,13 @@
 // @source-path [Fobles] src/shared/jump-flyout/button-catalog.ts
 
-import { TEXT } from "../../constants/fobles.constants";
+import { TEXT } from "../../constants/fobles-b.const";
 import {
   ADMIN_PAGE_GROUP,
   AI_GROUP,
   APPLICATION_PAGE_GROUP,
   THIRD_PARTY_GROUP,
   TREE_JUMP_GROUP,
-} from "../../constants/flyout-groups";
+} from "../../constants/flyout-groups.const";
 import type { FlyoutGroup } from "../../constants/constants.types";
 import type { JumpFlyoutButtonDescriptor } from "./jump-flyout.types";
 

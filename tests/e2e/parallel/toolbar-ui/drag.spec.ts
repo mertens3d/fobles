@@ -7,7 +7,7 @@ import { moveMouseToDefault as moveMouseToDefault } from "../../../helpers/mouse
 import { dragToolbarToCornerLocation } from "../../../macros/fobles-macros";
 import { pauseForBrowser, pauseForHuman } from "../../../helpers/wait-helpers";
 import { moveMouseTowardCenter } from "../../../helpers/mouse-proxy-support/mouse-movement";
-import type { CornerPosition } from "../../../helpers/mouse-proxy.types";
+import type { CornerPosition } from "../../../helpers/helpers.types";
 
 const STEP_WAIT_MS = TEST_CONST.TESTING.SPEED.SETTINGS[TEST_CONST.TESTING.SPEED.SELECTED].STEP_WAIT_MS;
 

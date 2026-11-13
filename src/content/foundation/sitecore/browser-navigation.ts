@@ -1,6 +1,6 @@
 import type { BrowserNavigationOptions } from "./sitecore.types.js";
 // @source-path [fobles] src/content/foundation/sitecore/browser-navigation.ts
-import { SITECORE } from "../../../constants/sitecore";
+import { SITECORE } from "../../../constants/sitecore.const.js";
 import { getCurrentItemId } from "./current-item";
 import { extractGuid } from "./guid";
 

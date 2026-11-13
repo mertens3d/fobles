@@ -14,8 +14,7 @@ import { DEVELOPER_DIALOG } from "../../shared/ui/indexeddb-viewer/developer-dia
 import { createDeveloperView } from "../../shared/ui/indexeddb-viewer/indexeddb-viewer";
 import { INDEXEDDB_VIEWER } from "../../shared/ui/indexeddb-viewer/indexeddb-viewer.const";
 import { openFoblesUtility } from "./fobles-utility";
-
-export const AUDITOR_DIALOG_ID = "fobles-auditor-dialog";
+import { AUDITOR_DIALOG_ID } from "./utility.const";
 
 export function openAuditorUtility(
   doc: Document,

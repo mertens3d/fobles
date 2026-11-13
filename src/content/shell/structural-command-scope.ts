@@ -1,4 +1,4 @@
-import { SITECORE } from "../../constants/sitecore.ts";
+import { SITECORE } from "../../constants/sitecore.const.ts";
 import { normalizeHistoryScope } from "../../shared/item-history/item-history-model.ts";
 
 export function resolveStructuralCommandScope(doc: Document, win: Window) {

@@ -1,4 +1,4 @@
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 import type { StyleChecklistFobles as StyleChecklistConfig } from "../../../../constants/constants.types";
 import { createFoblesItemButton } from "../shared/create-fobles-item-button";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";

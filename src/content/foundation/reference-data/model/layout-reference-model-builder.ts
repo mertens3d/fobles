@@ -1,9 +1,9 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/layout-reference-model-builder.ts
 
 import { CONST } from "../../../../constants/const";
-import { GRAPH_COLLAPSE_KEY } from "./graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "./model.const";
 import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
-import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance.types";
+import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance";
 import type { ReferenceModelNode } from "./model.types";
 import type { ReferenceModelNonItemNode } from "./model.types";
 import type { ReferenceModelItemNode } from "./model.types";

@@ -3,25 +3,19 @@
 import "fake-indexeddb/auto";
 import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
-import {
-  DATABASE_NAME,
-  getRequestResult,
-  resetDatabaseConnectionForTests,
-  runItemStoreTransaction,
-} from "../../cache/sitecore-data/indexed-db.ts";
+import { getRequestResult, resetDatabaseConnectionForTests, runItemStoreTransaction } from "../../cache/sitecore-data/indexed-db.ts";
+import { DATABASE_NAME } from "../../cache/sitecore-data/sitecore-data.const";
 import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
 import { serializeCacheKey } from "../../cache/sitecore-data/sitecore-data-cache-key.ts";
 // import type {
 //   SitecoreDataCacheKey,
 //   SitecoreDataCacheRecord,
 // } from "../../cache/sitecore-data/sitecore-data-cache.types";
-import type {
-  WorkerTaskCancelledResult,
-  WorkerTaskDocumentStaleResult,
-  WorkerTaskErrorResult,
-  WorkerTaskExecutionResult,
-  WorkerTaskSuccessResult,
-} from "../../workers/tasks/worker-task.types";
+import type { WorkerTaskExecutionResult } from "../../workers/tasks/tasks.types";
+import type { WorkerTaskDocumentStaleResult } from "../../workers/tasks/tasks.types";
+import type { WorkerTaskCancelledResult } from "../../workers/tasks/tasks.types";
+import type { WorkerTaskErrorResult } from "../../workers/tasks/tasks.types";
+import type { WorkerTaskSuccessResult } from "../../workers/tasks/tasks.types";
 import { factNameForTaskType, requestFact, resolveFact } from "./sitecore-data-service.ts";
 import type { SitecoreDataCacheKey, SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data.types.ts";
 import { getCachedFact } from "../../cache/sitecore-data/sitecore-data-cache.ts";

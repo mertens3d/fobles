@@ -3,7 +3,8 @@
 import { requestHistoryChange } from "../../shared/item-history/item-history-client.ts";
 import type { SitecoreDataCacheKey } from "../foundation/cache/sitecore-data/sitecore-data.types";
 import { runWorkerTask } from "../foundation/workers/pool/worker-pool-client.ts";
-import { createErrorResult, type WorkerTask } from "../foundation/workers/tasks/worker-task.types.ts";
+import { createErrorResult } from "../foundation/workers/tasks/worker-task.ts";
+import type { WorkerTask } from "../foundation/workers/tasks/tasks.types";
 import { WORK_SCHEDULING } from "../foundation/workers/work-scheduling.const.ts";
 import { extensionLog } from "../logger.ts";
 import { ITEM_HISTORY_CAPTURE } from "./item-history.const.ts";

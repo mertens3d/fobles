@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { CONST } from "../../constants/const";
-import { LOGGER } from "../../constants/extension-const";
+import { LOGGER } from "../../constants/extension.const";
 import { downloadSanitizedTextZip } from "../../shared/export/zip-export";
 import { copySanitizedText } from "../../shared/export/text-export";
 import { clearPersistedLogEntries, getPersistedLogEntries } from "../../shared/logging/persisted-log-storage";

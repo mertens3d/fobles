@@ -1,5 +1,6 @@
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
-import type { WorkerTask, WorkerTaskType } from "../../workers/tasks/worker-task.types";
+import type { WorkerTask } from "../../workers/tasks/tasks.types";
+import type { WorkerTaskType } from "../../workers/tasks/tasks.types";
 
 export type CollectorFilterKey = Exclude<keyof SitecoreHarvestFiltersState, "template">;
 

@@ -1,5 +1,5 @@
 import type cytoscape from "cytoscape";
-import type { _REFERENCE_GRAPH_BASE } from "./_REFERENCE_GRAPH_BASE";
+import type { _REFERENCE_GRAPH_BASE } from "./_REFERENCE_GRAPH_BASE.const";
 
 export type selectorHints = selectorHint[];
 

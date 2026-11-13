@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/foundation/workers/pool/worker-task-history.ts
 import { getWorkClass } from "./worker-admission";
-import type { WorkerTask, WorkerTaskResult } from "../tasks/worker-task.types";
+import type { WorkerTaskResult } from "../tasks/tasks.types";
+import type { WorkerTask } from "../tasks/tasks.types";
 import type { WorkerTaskSnapshot } from "./pool.types";
 
 const HISTORY_RETENTION_MS = 30 * 60 * 1000;

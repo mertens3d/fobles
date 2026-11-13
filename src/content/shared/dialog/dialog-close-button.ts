@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/shared/dialog/dialog-close-button.ts
 
-import { ICONS } from "../../../constants/fobles.constants";
+import { ICONS } from "../../../constants/fobles-b.const";
 import type { DialogCloseButtonOptions } from "./dialog.types";
 
 export function createDialogCloseButton(

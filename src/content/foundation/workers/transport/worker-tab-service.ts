@@ -4,7 +4,8 @@ import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
 import { extensionLog } from "../../../logger";
 import type { WorkerSetOwnedMessage } from "./transport.types";
 import type { WorkerTaskExecuteMessage } from "./transport.types";
-import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
+import type { WorkerTaskExecutionResult } from "../tasks/tasks.types";
+import type { WorkerTask } from "../tasks/tasks.types";
 
 const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;
 

@@ -18,7 +18,8 @@ import {
   setExpandedStateForCollapseKey,
 } from "../../../../shared/ui/reference-model/graph-collapse-settings";
 import type { AuditFinding } from "../../auditor.types";
-import { DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS, getAuditorLayoutViewSettings, subscribeAuditorLayoutViewSettings } from "../../auditor-layout-view-settings";
+import { getAuditorLayoutViewSettings, subscribeAuditorLayoutViewSettings } from "../../auditor-layout-view-settings";
+import { DEFAULT_AUDITOR_LAYOUT_VIEW_SETTINGS } from "../../auditor.const";
 import type { AuditorLayoutViewSettings } from "../../auditor.types";
 import {
   descendantExpandableIds,

@@ -1,4 +1,4 @@
-import { STORAGE } from "../../constants/extension-const.ts";
+import { STORAGE } from "../../constants/extension.const.ts";
 import { getStorageValue, onStorageChange, setStorageValue } from "../storage/storage.ts";
 import type { JumpFlyoutButtonSetting, JumpFlyoutButtonSettings } from "./jump-flyout.types";
 

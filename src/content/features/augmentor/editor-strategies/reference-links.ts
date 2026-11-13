@@ -1,4 +1,4 @@
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 import type { ReferenceLinksFobles as ReferenceLinksConfig } from "../../../../constants/constants.types";
 import { createFoblesButton } from "../helper";
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";

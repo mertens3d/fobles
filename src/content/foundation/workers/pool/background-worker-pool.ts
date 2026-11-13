@@ -11,15 +11,13 @@ import { runTaskOnNewWorker, runWorkerTask } from "./worker-executor";
 import { disposeWorkerPoolLifecycle } from "./worker-pool-lifecycle";
 import { getWorkerPoolMaxWorkers, onWorkerPoolMaxWorkersChange } from "./worker-pool-settings";
 import { markWorkerReady, resetWorkerReadiness } from "./worker-readiness";
-import {
-  createCancelledResult,
-  type ActiveWorkerTask,
-  type PoolWorker,
-  type QueuedTask,
-  type WorkerExecutorContext,
-  type WorkerTask,
-  type WorkerTaskResult,
-} from "../tasks/worker-task.types";
+import { createCancelledResult } from "../tasks/worker-task";
+import type { WorkerExecutorContext } from "../tasks/tasks.types";
+import type { ActiveWorkerTask } from "../tasks/tasks.types";
+import type { QueuedTask } from "../tasks/tasks.types";
+import type { PoolWorker } from "../tasks/tasks.types";
+import type { WorkerTaskResult } from "../tasks/tasks.types";
+import type { WorkerTask } from "../tasks/tasks.types";
 import { isWorkerTabTarget } from "./worker-target";
 import type { WorkerTarget } from "./pool.types";
 import type { WorkerPoolState } from "./pool.types";

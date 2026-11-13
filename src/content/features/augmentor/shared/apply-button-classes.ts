@@ -1,4 +1,4 @@
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const";
 
 export function applyButtonClasses(button: HTMLButtonElement, options?: { compact?: boolean }): void {
   button.classList.add(FOBLES.CLASSES.BUTTONS.ACTION);

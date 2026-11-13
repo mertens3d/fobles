@@ -1,5 +1,5 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/item-kind/template-structural-service.ts
-import { SITECORE } from "../../../../../constants/sitecore.ts";
+import { SITECORE } from "../../../../../constants/sitecore.const.ts";
 import { ITEM_KIND } from "../../../../../shared/structural/structural.const.ts";
 import { getStructuralCacheMaxUnvalidatedAgeMs } from "../../../../runtime-settings/runtime-settings.ts";
 import type { StructuralScope, StructuralSettings } from "../../../../../shared/structural/structural.types.ts";

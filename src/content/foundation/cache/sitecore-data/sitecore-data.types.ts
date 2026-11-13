@@ -2,7 +2,8 @@ import type { ItemKind } from "../../../../shared/structural/structural.types";
 import type { LayoutSectionField } from "../../reference-data/model/model.types";
 import type { SitecoreHarvestSection } from "../../reference-data/model/model.types";
 import type { ItemGraphNodeData } from "../../reference-data/model/model.types";
-import type { SitecoreItemLocator, WorkerTaskPayloadByType } from "../../workers/tasks/worker-task.types";
+import type { WorkerTaskPayloadByType } from "../../workers/tasks/tasks.types";
+import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
 
 export type PersistedNode = unknown;
 

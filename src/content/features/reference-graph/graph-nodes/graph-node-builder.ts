@@ -3,19 +3,16 @@ import type { AppendGraphNodeOptions, CompoundGroupDefinition, ProjectedGraphNod
 
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
-import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/model.const";
 import { getGraphPresentationState } from "../../../foundation/reference-data/model/graph-presentation-state";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
 import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../../../foundation/reference-data/processing/processing.types";
 import { resolveNodeLabel } from "../../../shared/ui/reference-model/node-label-resolver";
-import { NODE_PRESENTATION_BY_KIND } from "../../../shared/ui/reference-model/node-presentation";
+import { NODE_PRESENTATION_BY_KIND } from "../../../shared/ui/reference-model/reference-model.const";
 import { kindClass } from "./graph-helpers";
 import type { GraphNodeData } from "./graph-nodes.types";
 import { iconForProcessingState } from "./processing-icon";
-
-export const COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group";
-
-export const INVISIBLE_COMPOUND_GROUP_CLASS = "fobles-reference-graph-compound-group--invisible";
+import { COMPOUND_GROUP_CLASS } from "./graph-nodes.const.js";
 
 const COMPOUND_GROUP_DEFINITIONS: readonly CompoundGroupDefinition[] = [
   { idSuffix: "group", rootCollapseKey: GRAPH_COLLAPSE_KEY.CHILDREN, memberCollapseKeys: [GRAPH_COLLAPSE_KEY.CHILD] },

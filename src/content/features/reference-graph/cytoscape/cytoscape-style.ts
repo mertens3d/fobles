@@ -2,7 +2,8 @@ import type { CytoscapeStyle } from "./cytoscape.types.js";
 // @source-path [fobles] src/content/features/reference-graph/cytoscape/cytoscape-style.ts
 
 import { CONST } from "../../../../constants/const";
-import { ELLIPSE_SIZE, NODE_PRESENTATION_BY_KIND } from "../../../shared/ui/reference-model/node-presentation";
+import { NODE_PRESENTATION_BY_KIND } from "../../../shared/ui/reference-model/reference-model.const";
+import { ELLIPSE_SIZE } from "../../../shared/ui/reference-model/reference-model.const";
 import { kindClass } from "../graph-nodes/graph-helpers";
 
 export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
@@ -37,7 +38,7 @@ export const REFERENCE_GRAPH_STYLE: CytoscapeStyle = [
     },
   })),
   {
-    selector: `.${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL)}`,
+    selector: `.${kindClass(CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.STRUCTURAL)}`, 
     style: { "font-size": 9, shape: "ellipse", width: ELLIPSE_SIZE, height: ELLIPSE_SIZE },
   },
   {

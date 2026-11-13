@@ -4,10 +4,7 @@ import { buildAuditFinding } from "../audit-finding-factory.ts";
 import type { AuditCheck } from "../auditor.types";
 import type { AuditCheckContext } from "../auditor.types";
 import type { AuditFindingStatus } from "../auditor.types";
-
-export const ITEM_RESOLVED_CHECK_KEY = "item-resolved";
-
-export const ITEM_RESOLVED_CHECK_LABEL = "Current item resolved";
+import { ITEM_RESOLVED_CHECK_KEY, ITEM_RESOLVED_CHECK_LABEL } from "./checks.const";
 
 // Phase-1 check 1 of 4: the current Sitecore item (the Reference Model root) resolved with
 // enough identity/display data for the rest of the audit to be meaningful.

@@ -1,5 +1,5 @@
 import { collectTreeChildren } from "../harvest-sitecore";
-import type { HarvestContext } from "../sitecore-harvester.types";
+import type { HarvestContext } from "../harvesting.types";
 
 export async function collectChildren(harvestContext: HarvestContext): Promise<void> {
   harvestContext.result.childItems = await collectTreeChildren(harvestContext.doc, harvestContext.rootItem?.scItemId);

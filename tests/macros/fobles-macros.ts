@@ -8,7 +8,8 @@ import {
   ensureMouseMarkerExists,
   moveMouseToBoundingBox,
 } from "../helpers/mouse-proxy";
-import type { CornerPosition, MouseCoordinates } from "../helpers/mouse-proxy.types";
+import type { CornerPosition } from "../helpers/helpers.types";
+import type { MouseCoordinates } from "../helpers/helpers.types";
 import { findFoblesFrame, findFrameWithSelector } from "../helpers/frame-finder";
 import { walkFrameDocuments } from "../helpers/frame-helpers";
 import { expectJumpFlyoutFlyoutHidden, expectJumpFlyoutFlyoutVisible, expectLBoltButtonVisible } from "../expect-snippets/expect-snippets";

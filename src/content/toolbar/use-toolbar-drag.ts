@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/toolbar/use-toolbar-drag.ts
 
 import { useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
-import { CLASS, SELECTORS } from "../../constants/fobles.constants";
+import { CLASS, SELECTORS } from "../../constants/fobles-b.const";
 import type { ToolbarCorner } from "../../constants/constants.types";
 import type { ToolbarPlacement } from "../../constants/constants.types";
 import type { ToolbarContext } from "./toolbarcontext.types";

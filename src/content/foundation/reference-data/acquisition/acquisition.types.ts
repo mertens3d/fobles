@@ -1,4 +1,5 @@
-import type { HarvestProgressCallback, SitecoreHarvestResult } from "../../harvesting/sitecore-harvester.types";
+import type { HarvestProgressCallback } from "../../harvesting/harvesting.types";
+import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types";
 import type { ReferenceModelNode } from "../model/model.types";
 import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../processing/processing.types";
 

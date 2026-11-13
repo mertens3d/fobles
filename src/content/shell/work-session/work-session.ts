@@ -11,7 +11,7 @@ import {
   disposeBackgroundWorkerPool,
   runWorkerTask,
 } from "../../foundation/workers/pool/worker-pool-client";
-import type { WorkerTaskResult } from "../../foundation/workers/tasks/worker-task.types";
+import type { WorkerTaskResult } from "../../foundation/workers/tasks/tasks.types";
 import { WORK_SCHEDULING } from "../../foundation/workers/work-scheduling.const";
 import type { WorkClass } from "../../foundation/workers/work-scheduling.types";
 import type {

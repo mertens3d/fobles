@@ -3,7 +3,7 @@
 import type cytoscape from "cytoscape";
 import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
-import { COMPOUND_GROUP_CLASS, INVISIBLE_COMPOUND_GROUP_CLASS } from "../graph-nodes/graph-node-builder";
+import { COMPOUND_GROUP_CLASS, INVISIBLE_COMPOUND_GROUP_CLASS } from "../graph-nodes/graph-nodes.const";
 import type { LayoutGraphPresetName } from "../../../../constants/constants.types";
 
 export function runGraphLayout(

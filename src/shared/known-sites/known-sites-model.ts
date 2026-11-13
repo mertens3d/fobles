@@ -1,4 +1,4 @@
-import { SITECORE } from "../../constants/sitecore.ts";
+import { SITECORE } from "../../constants/sitecore.const.ts";
 import { normalizeHistoryId, normalizeHistoryScope, normalizeHistoryVisit } from "../item-history/item-history-model.ts";
 import { KNOWN_SITES } from "../structural/structural.const.ts";
 import type { KnownSite, KnownSitesChange, StructuralScope } from "../structural/structural.types.ts";

@@ -2,9 +2,10 @@ import type { Page } from "../../fixtures/playwright";
 import { TEST_CONST } from "../../constants/TEST_CONST";
 import { showBillboard } from "../billboard";
 import { pauseForHuman } from "../wait-helpers";
-import type { CornerPosition, MouseCoordinates } from "../mouse-proxy.types";
+import type { CornerPosition } from "../helpers.types";
+import type { MouseCoordinates } from "../helpers.types";
 import { getLastKnownMousePosition, isSprintMode, setLastKnownMousePosition } from "./mouse-proxy-state";
-import { updateMouseMarkers } from "./mouse-marker.types";
+import { updateMouseMarkers } from "./mouse-marker";
 import { drawMousePath, updateMousePath } from "./mouse-path";
 
 export function resolveCornerPosition(page: Page, cornerPosition: CornerPosition): MouseCoordinates {

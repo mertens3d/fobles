@@ -6,10 +6,8 @@ import type { AuditCheck } from "../auditor.types";
 import type { AuditCheckContext } from "../auditor.types";
 import type { AuditFinding } from "../auditor.types";
 import type { AuditFindingStatus } from "../auditor.types";
+import { CACHE_VALIDATION_CHECK_KEY, CACHE_VALIDATION_CHECK_LABEL } from "./checks.const";
 
-export const CACHE_VALIDATION_CHECK_KEY = "cache-validation";
-
-export const CACHE_VALIDATION_CHECK_LABEL = "Cached revision state";
 function interpretCacheValidationState(
   processingState: ProcessingStatus | undefined,
   revalidationResult: "passed" | "error" | undefined,

@@ -1,7 +1,7 @@
 import type { SitecoreDataIdentity } from "./data.types.js";
 // @source-path [fobles] src/content/foundation/sitecore/data/sitecore-data-identity.ts
 
-import { SITECORE } from "../../../../constants/sitecore.ts";
+import { SITECORE } from "../../../../constants/sitecore.const.ts";
 
 // No better stable identifier exists yet (see Phase 3A research) - the page origin is the one
 // value that's genuinely stable per Sitecore instance and isn't a display label.

@@ -12,13 +12,9 @@ import type { WorkerIframeRemoveMessage } from "../transport/transport.types";
 import type { WorkerIframeNavigateMessage } from "../transport/transport.types";
 import type { WorkerIframeCreateResult } from "../transport/transport.types";
 import type { WorkerIframeCreateMessage } from "../transport/transport.types";
-import {
-  WORKER_IFRAME_CREATE_MESSAGE_TYPE,
-  WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE,
-  WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE,
-  WORKER_IFRAME_REMOVE_MESSAGE_TYPE,
-} from "../transport/worker.messages";
-import type { WorkerTask, WorkerTaskExecutionResult } from "../tasks/worker-task.types";
+import { WORKER_IFRAME_CREATE_MESSAGE_TYPE, WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE, WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE, WORKER_IFRAME_REMOVE_MESSAGE_TYPE } from "../transport/transport.const";
+import type { WorkerTaskExecutionResult } from "../tasks/tasks.types.js";
+import type { WorkerTask } from "../tasks/tasks.types.js";
 
 const MESSAGE_TYPE = WORKER_MESSAGE_TYPE;
 const WORKER_POOL = CONST.FOBLES.WORKER_POOL;

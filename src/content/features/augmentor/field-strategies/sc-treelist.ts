@@ -1,5 +1,5 @@
 import type { TreeListItem } from "./field-strategies.types.js";
-import { FOBLES } from "../../../../constants/fobles";
+import { FOBLES } from "../../../../constants/fobles.const.js";
 import { CONST } from "../../../../constants/const";
 import { formatFoId } from "../../../foundation/sitecore/guid";
 import { createFoblesWrapper } from "../shared/create-fobles-wrapper";

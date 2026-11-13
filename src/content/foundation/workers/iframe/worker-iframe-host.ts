@@ -5,12 +5,7 @@ import { CONST } from "../../../../constants/const";
 import { extensionLog } from "../../../logger";
 import { initializeRuntimeSettings } from "../../../runtime-settings/runtime-settings";
 import { logWorkerMemory, logWorkerMemoryAfterDelays } from "../diagnostics/memory-diagnostics";
-import {
-  WORKER_IFRAME_CREATE_MESSAGE_TYPE,
-  WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE,
-  WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE,
-  WORKER_IFRAME_REMOVE_MESSAGE_TYPE,
-} from "../transport/worker.messages";
+import { WORKER_IFRAME_CREATE_MESSAGE_TYPE, WORKER_IFRAME_NAVIGATE_MESSAGE_TYPE, WORKER_IFRAME_REMOVE_ALL_MESSAGE_TYPE, WORKER_IFRAME_REMOVE_MESSAGE_TYPE } from "../transport/transport.const";
 import type { WorkerIframeHostMessage } from "../transport/transport.types";
 import type { WorkerIframeCreateResult } from "../transport/transport.types";
 

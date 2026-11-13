@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/toolbar/toolbar-app.tsx
 
-import { CLASS, TEXT } from "../../constants/fobles.constants";
+import { CLASS, TEXT } from "../../constants/fobles-b.const";
 import { isCompactToolbarPage, isPowerShellIsePath } from "../guard";
 import { useFlyoutVisibility } from "./shared-flyout/use-flyout-visibility";
 import { ToolbarGrip } from "./toolbar-grip";

@@ -2,8 +2,7 @@
 
 import { downloadBlob } from "./download-export.ts";
 import { sanitizeExportText } from "./export-sanitizer.ts";
-
-export const UTF8_BOM = "\uFEFF";
+import { UTF8_BOM } from "./export.const";
 
 export async function copySanitizedText(value: string): Promise<void> {
   const sanitized = sanitizeExportText(value);

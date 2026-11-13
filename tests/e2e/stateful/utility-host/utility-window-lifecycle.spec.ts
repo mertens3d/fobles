@@ -8,7 +8,7 @@ import {
   ToggleFoblesWindowMaximize,
 } from "../../../macros/fobles-macros";
 import { setupReferenceGraphState } from "../harvest/harvest-test-helpers";
-import { expectBoxClose, getRequiredBoundingBox } from "../../../helpers/shared-window-geometry-helpers.types";
+import { expectBoxClose, getRequiredBoundingBox } from "../../../helpers/shared-window-geometry-helpers";
 
 const COLLAPSED_HEIGHT_CEILING_PX = 60;
 const DOCK_BOTTOM_TOLERANCE_PX = 40;

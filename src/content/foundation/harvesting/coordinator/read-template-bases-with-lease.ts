@@ -1,6 +1,7 @@
 import { STRUCTURAL } from "../../../../shared/structural/structural.const.ts";
 import type { WorkSession } from "../../workers/session/work-session.types.ts";
-import type { SitecoreItemLocator, WorkerTaskResult } from "../../workers/tasks/worker-task.types.ts";
+import type { WorkerTaskResult } from "../../workers/tasks/tasks.types";
+import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
 import { TEMPLATE_BASES_RESTORATION_ERROR_CODE } from "./template-bases-lease.const.ts";
 import type { TemplateBasesLeaseDependencies } from "./coordinator.types";
 import type { TemplateBasesRestorationError } from "./coordinator.types";

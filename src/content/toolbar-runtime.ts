@@ -1,6 +1,6 @@
-import { DEFAULT_TOOLBAR_PLACEMENT, SELECTORS, TOOLBAR_CORNERS } from "../constants/fobles.constants";
+import { DEFAULT_TOOLBAR_PLACEMENT, SELECTORS, TOOLBAR_CORNERS } from "../constants/fobles-b.const";
 import { type AllowedPage } from "../constants/constants.types";
-import { MESSAGE, STORAGE } from "../constants/extension-const";
+import { MESSAGE, STORAGE } from "../constants/extension.const";
 import type { ToolbarPlacement } from "../constants/constants.types";
 import { extensionLog, setExtensionDebugEnabled } from "./logger";
 import { getDebugSettings } from "../shared/debug-settings";

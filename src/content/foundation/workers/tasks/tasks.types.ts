@@ -1,20 +1,9 @@
-// @source-path [fobles] src/content/foundation/workers/tasks/worker-task.types.ts
-
-import type { LayoutSectionField } from "../../reference-data/model/model.types";
-import type { SitecoreHarvestSection } from "../../reference-data/model/model.types";
-import type { ItemGraphNodeData } from "../../reference-data/model/model.types";
+import type { ItemGraphNodeData, LayoutSectionField, SitecoreHarvestSection } from "../../reference-data/model/model.types";
 import type { WorkerTarget } from "../pool/pool.types";
 import type { WorkClass } from "../work-scheduling.types";
 
-// An item reference as actually requested of Sitecore - as opposed to an ambiguous
-// itemIdOrPath string, every item-oriented operation says explicitly which kind it means.
 export type SitecoreItemLocator = { kind: "id"; value: string } | { kind: "path"; value: string };
 
-// Carries both what was asked for and what Sitecore actually resolved, so a caller can tell
-// "found the right item" apart from "Sitecore silently fell back to a different item" (e.g. an
-// unresolved GUID falling back to /sitecore/content/Home) - the latter is reported as
-// "not-found" data, never as though the fallback item were the one requested. Navigation/
-// timeout/parser failures remain WorkerTaskResult-level errors, not part of this type.
 export type SitecoreResolvedResult<TValue> = {
   requested: SitecoreItemLocator;
   resolved?: { itemId: string; path?: string };
@@ -34,7 +23,7 @@ export type WorkerTaskType =
   | "set-raw-values"
   | "set-standard-fields";
 
-type WorkerTaskBase<TType extends WorkerTaskType> = {
+export type WorkerTaskBase<TType extends WorkerTaskType> = {
   requestId: string;
   taskId: string;
   type: TType;
@@ -88,14 +77,13 @@ export type WorkerTaskPayloadByType = {
   "set-standard-fields": { value: boolean };
 };
 
-type WorkerTaskResultBase<TType extends WorkerTaskType> = { requestId: string; taskId: string; type: TType };
+export type WorkerTaskResultBase<TType extends WorkerTaskType> = { requestId: string; taskId: string; type: TType };
 
-type WorkerTaskSuccessResultFor<TType extends WorkerTaskType> = WorkerTaskResultBase<TType> & {
+export type WorkerTaskSuccessResultFor<TType extends WorkerTaskType> = WorkerTaskResultBase<TType> & {
   status: "success";
   payload: WorkerTaskPayloadByType[TType];
 };
 
-// Distributing the mapped type over WorkerTaskType builds a true discriminated union.
 export type WorkerTaskSuccessResult = { [TType in WorkerTaskType]: WorkerTaskSuccessResultFor<TType> }[WorkerTaskType];
 
 export type WorkerTaskFailureCode = "layout-unavailable" | "layout-malformed";
@@ -110,33 +98,11 @@ export type WorkerTaskCancelledResult = {
 
 export type WorkerTaskResult = WorkerTaskSuccessResult | WorkerTaskErrorResult | WorkerTaskCancelledResult;
 
-// @keep A Sitecore editor-state callback replaced the DOM generation used by this worker.
-// @keep The pool must retire this worker and retry the task on a fresh document.
 export type WorkerTaskDocumentStaleResult = {
   [TType in WorkerTaskType]: WorkerTaskResultBase<TType> & { status: "document-stale" };
 }[WorkerTaskType];
 
 export type WorkerTaskExecutionResult = WorkerTaskResult | WorkerTaskDocumentStaleResult;
-
-export function isSuccessResult(result: WorkerTaskResult): result is WorkerTaskSuccessResult {
-  return result.status === "success";
-}
-
-export function isDocumentStaleResult(result: WorkerTaskExecutionResult): result is WorkerTaskDocumentStaleResult {
-  return result.status === "document-stale";
-}
-
-export function createDocumentStaleResult(task: WorkerTask): WorkerTaskDocumentStaleResult {
-  return { requestId: task.requestId, taskId: task.taskId, type: task.type, status: "document-stale" };
-}
-
-export function createErrorResult(task: WorkerTask, errorMessage: string, options?: { failureCode?: WorkerTaskFailureCode; failureDetails?: Record<string, unknown>; recoverable?: boolean }): WorkerTaskErrorResult {
-  return { requestId: task.requestId, taskId: task.taskId, type: task.type, status: "error", errorMessage, ...options };
-}
-
-export function createCancelledResult(task: WorkerTask): WorkerTaskCancelledResult {
-  return { requestId: task.requestId, taskId: task.taskId, type: task.type, status: "cancelled" };
-}
 
 export type PoolWorkerState = "starting" | "idle" | "busy" | "retired";
 

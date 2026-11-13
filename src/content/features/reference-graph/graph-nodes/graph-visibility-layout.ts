@@ -3,7 +3,7 @@ import type { GraphVisibilityLayoutContext } from "./graph-nodes.types.js";
 
 import type cytoscape from "cytoscape";
 import { runGraphLayout } from "../cytoscape/graph-layout";
-import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/graph-collapse.types";
+import { GRAPH_COLLAPSE_KEY } from "../../../foundation/reference-data/model/model.const";
 
 export function runInitialVisibilityLayout(
   cy: cytoscape.Core,

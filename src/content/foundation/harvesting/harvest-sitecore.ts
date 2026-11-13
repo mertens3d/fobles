@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/harvesting/harvest-sitecore.ts
 
-import { factoryItemGraphNodeData } from "../reference-data/model/sitecore-item.types";
+import { factoryItemGraphNodeData } from "../reference-data/model/sitecore-item";
 import type { RootItem } from "../reference-data/model/model.types";
 import type { ItemGraphNodeData } from "../reference-data/model/model.types";
 import type { TreeChildNode } from "../reference-data/model/model.types";

@@ -1,4 +1,4 @@
-import { type AUDITOR_LAYOUT_VIEW_KEYS } from "./auditor-layout-view-settings";
+import type { AUDITOR_LAYOUT_VIEW_KEYS } from "./auditor.const";
 import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
 import type { ReferenceModelNode } from "../../foundation/reference-data/model/model.types";
 import type { ItemGraphNodeData } from "../../foundation/reference-data/model/model.types";

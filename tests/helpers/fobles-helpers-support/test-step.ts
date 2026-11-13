@@ -1,6 +1,6 @@
 import { test, type Page, type TestInfo } from "@playwright/test";
 import { TEST_CONST } from "../../constants/TEST_CONST";
-import type { FoblesStep } from "../fobles-test-step.types";
+import type { FoblesStep } from "../helpers.types";
 import { attachPageScreenshot } from "./screenshots";
 import { type Screenshottable } from "./Screenshottable.types";
 import { buildStepMatchKey } from "./step-match-key";

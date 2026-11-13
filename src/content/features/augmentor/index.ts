@@ -1,8 +1,8 @@
-import { SELECTORS } from "../../../constants/fobles.constants";
-import { FOBLES } from "../../../constants/fobles";
+import { SELECTORS } from "../../../constants/fobles-b.const";
+import { FOBLES } from "../../../constants/fobles.const";
 import { CONST } from "../../../constants/const";
 import { extensionLog } from "../../logger";
-import { fieldConfigs } from "../../../constants/_config";
+import { fieldConfigs } from "../../../constants/constants.const";
 import { walkFrameDocuments } from "./shared/frame-documents";
 import type { FoblesConfig } from "../../../constants/constants.types";
 import type { FoblesStrategy } from "../../../constants/constants.types";

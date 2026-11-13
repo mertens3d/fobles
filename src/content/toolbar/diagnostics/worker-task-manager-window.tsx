@@ -5,8 +5,7 @@ import { getWorkerPoolStatus } from "../../foundation/workers/pool/worker-pool-c
 import { PersistedWindow } from "../../shared/ui/persisted-window/persisted-window";
 import type { PersistedWindowVisibilityRequest } from "../../shared/ui/persisted-window/persisted-window.types";
 import { WorkerTaskManagerPanel } from "./worker-task-manager-panel";
-
-export const WORKER_TASK_MANAGER_TOGGLE_EVENT = "fobles:worker-task-manager-toggle";
+import { WORKER_TASK_MANAGER_TOGGLE_EVENT } from "./diagnostics.const";
 
 export function WorkerTaskManagerWindow() {
   const [visibilityRequest, setVisibilityRequest] = useState<PersistedWindowVisibilityRequest>();

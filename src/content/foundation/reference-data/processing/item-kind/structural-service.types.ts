@@ -1,5 +1,6 @@
 import type { ItemKind, KnownSite, StructuralScope, StructuralSettings, StructuralVisit } from "../../../../../shared/structural/structural.types.ts";
-import type { SitecoreItemLocator, WorkerTaskResult } from "../../../workers/tasks/worker-task.types.ts";
+import type { WorkerTaskResult } from "../../../workers/tasks/tasks.types";
+import type { SitecoreItemLocator } from "../../../workers/tasks/tasks.types";
 import type { WorkSession } from "../../../workers/session/work-session.types.ts";
 import type { WorkClass } from "../../../workers/work-scheduling.types.ts";
 import type { SitecoreDataIdentity } from "../../../sitecore/data/data.types";
