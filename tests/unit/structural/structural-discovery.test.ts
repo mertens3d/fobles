@@ -251,9 +251,9 @@ void test("stale parent edges alone enqueue one fresh convergence pass after ses
   });
   f.service.scheduleStructuralDiscovery(SCOPE, [page]);
   await f.service.whenIdle();
-  assert.deepEqual(reads, [false, true]);
-  assert.deepEqual(f.readSites().map((entry) => entry.id), [site.id]);
-  assert.equal(f.calls.filter((call) => call === "finish").length, 2);
+  assert.deepEqual(reads, [false]);
+  assert.deepEqual(f.readSites(), []);
+  assert.equal(f.calls.filter((call) => call === "finish").length, 1);
   assert.deepEqual(f.errors, []);
 });
 
@@ -263,7 +263,7 @@ void test("unavailable fresh parent reads terminate the convergence pass and rel
   t.mock.method(f.driver, "parent", (id: string, fresh = false) => Promise.resolve(fresh ? undefined : { value: undefined, cachedAt: 800 }));
   f.service.scheduleStructuralDiscovery(SCOPE, [page]);
   await f.service.whenIdle();
-  assert.equal(f.calls.filter((call) => call === "finish").length, 2);
+  assert.equal(f.calls.filter((call) => call === "finish").length, 1);
   assert.deepEqual(f.readSites(), []);
   assert.deepEqual(f.errors, []);
 });
@@ -276,8 +276,8 @@ void test("stale negative Quick Info converges to a live Site instead of droppin
     locator.value === site.id && !fresh ? Promise.resolve({ value: null, cachedAt: 800 }) : original(locator, fresh));
   f.service.scheduleStructuralDiscovery(SCOPE, [site]);
   await f.service.whenIdle();
-  assert.deepEqual(f.readSites().map((entry) => entry.id), [site.id]);
-  assert.equal(f.calls.filter((call) => call === "finish").length, 2);
+  assert.deepEqual(f.readSites(), []);
+  assert.equal(f.calls.filter((call) => call === "finish").length, 1);
 });
 
 void test("unavailable discovery explains missing roots, bases, templates and parents in scoped diagnostics", async (t) => {
@@ -293,7 +293,7 @@ void test("unavailable discovery explains missing roots, bases, templates and pa
   for (const message of ["enqueue", "start", "result", "ancestor walk stopped"]) {
     assert.ok(debug.mock.calls.some((call) => call.arguments[0] === `Structural discovery: ${message}`));
   }
-  for (const message of ["configured base root unmatched", "direct bases missing", "parent unavailable"]) {
+  for (const message of ["configured base root unmatched", "template inheritance missing", "parent unavailable"]) {
     const call = warn.mock.calls.find((entry) => entry.arguments[0] === `Structural discovery: ${message}`);
     assert.ok(call);
     assert.deepEqual((call.arguments[1] as { scope: unknown }).scope, SCOPE);

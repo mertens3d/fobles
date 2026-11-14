@@ -1,21 +1,21 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/processor/reference-model-processor.ts
 
-import type { GuidResult, GuidWork, ItemSnapshot, StartReferenceModelProcessorOptions } from "../processing.types.js";
-import { snapshotOf } from "./reference-model-processing-snapshot";
-import { buildReferenceModelProcessingHealth } from "./reference-model-processing-health";
-import { applyReferenceModelResolveOutcome, requestReferenceModelResolve } from "./reference-model-live-resolver";
-import { DEFAULT_MAX_LIVE_IN_FLIGHT, NON_TERMINAL_STATUSES } from "./reference-model-processor.const";
+import type { GuidResult, GuidWork, ItemSnapshot, StartReferenceModelProcessorOptions } from "../processing.types.ts";
+import { snapshotOf } from "./reference-model-processing-snapshot.ts";
+import { buildReferenceModelProcessingHealth } from "./reference-model-processing-health.ts";
+import { applyReferenceModelReferenceHarvestingOutcome, requestReferenceModelHarvest } from "./reference-model-live-harvester.ts";
+import { DEFAULT_MAX_LIVE_IN_FLIGHT, NON_TERMINAL_STATUSES } from "./reference-model-processor.const.ts";
 import { extensionLog } from "../../../../logger";
 import { initializeRuntimeSettings, isJourneyStepLiveEnabled } from "../../../../runtime-settings/runtime-settings";
 import type { SitecoreDataCacheKey } from "../../../cache/sitecore-data/sitecore-data.types";
 import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity";
-import type { ItemGraphNodeData } from "../../model/model.types";
-import { setProcessingState } from "./processing-state";
-import type { CachedItemFact, ProcessingStatus, ReferenceModelProcessingController } from "../processing.types";
-import { sortGuidsByEnrichmentPriority } from "./reference-model-processing-priority";
-import { firstItemNode, itemsFor } from "./reference-model-processing-tree-state";
-import { collectEnrichmentGuidLookup, isEligibleForResolve } from "../candidates/resolve-candidate-collector";
-import { readCachedItemFact, verifyItemFact } from "../facts/resolve-fact";
+import type { ItemGraphNodeData } from "../../model/model.types.ts";
+import { setProcessingState } from "./processing-state.ts";
+import type { CachedItemFact, ProcessingStatus, ReferenceModelProcessingController } from "../processing.types.ts";
+import { sortGuidsByEnrichmentPriority } from "./reference-model-processing-priority.ts";
+import { firstItemNode, itemsFor } from "./reference-model-processing-tree-state.ts";
+import { collectReferenceHarvestingCandidateLookup, isEligibleForReferenceHarvesting } from "../candidates/reference-harvesting-candidate-collector.ts";
+import { readCachedItemFact, verifyHarvestedItemFact } from "../facts/reference-harvesting-fact.ts";
 import { mergeEnrichedItem } from "../../../harvesting/planner/enrichment-task-planner.js";
 import { createSitecoreItemLocator } from "../../../harvesting/worker-task-executor.js";
 
@@ -38,7 +38,7 @@ export function startReferenceModelProcessor({
   let wake: (() => void) | undefined;
   const activeGuids = new Set<string>();
   const identity = resolveSitecoreDataIdentity(doc);
-  const guidLookup = collectEnrichmentGuidLookup(referenceModel);
+  const guidLookup = collectReferenceHarvestingCandidateLookup(referenceModel);
   const guids = sortGuidsByEnrichmentPriority(Array.from(guidLookup.keys()), guidLookup, nodesById);
   const candidateTreeNodeIds = guids.flatMap((guid) => guidLookup.get(guid) ?? []);
   const guidByTreeNodeId = new Map<string, string>();
@@ -99,7 +99,7 @@ export function startReferenceModelProcessor({
   function rescanForNewCandidates(): void {
     if (!isStopped()) {
       const newGuids: string[] = [];
-      collectEnrichmentGuidLookup(referenceModel).forEach((treeNodeIds, guid) => {
+      collectReferenceHarvestingCandidateLookup(referenceModel).forEach((treeNodeIds, guid) => {
         const fresh = treeNodeIds.filter(
           (treeNodeId) => nodesById.has(treeNodeId) && !guidByTreeNodeId.has(treeNodeId),
         );
@@ -198,7 +198,7 @@ export function startReferenceModelProcessor({
   // Agent: Cache hit: show the cached value now (tier "cached") and queue the live check. Cache miss: straight to the live queue at tier "pending" (reference). With the live step off, the item ends here: "cached" on a hit, "pending" on a miss.
   async function hydrateFromCache(guid: string, liveStepEnabled: boolean): Promise<void> {
     const treeNodeIds = guidLookup.get(guid) ?? [];
-    if (!isEligibleForResolve(treeNodeIds, nodesById)) {
+    if (!isEligibleForReferenceHarvesting(treeNodeIds, nodesById)) {
       await publish(treeNodeIds, "enriched");
       recordResult(guid, "enriched", undefined);
       countCompleted();
@@ -262,12 +262,12 @@ export function startReferenceModelProcessor({
         await publish(treeNodeIds, "enriching");
       }
       if (reference) {
-        const outcome = await verifyItemFact(keyFor(reference), work?.cached, () => requestReferenceModelResolve(workSession, reference, disposed));
+        const outcome = await verifyHarvestedItemFact(keyFor(reference), work?.cached, () => requestReferenceModelHarvest(workSession, reference, disposed));
         if (!isStopped()) {
           restoreSnapshots(work);
-          status = applyReferenceModelResolveOutcome(guid, treeNodeIds, nodesById, outcome);
+          status = applyReferenceModelReferenceHarvestingOutcome(guid, treeNodeIds, nodesById, outcome);
           value = outcome.kind === "not-found" || outcome.kind === "failed" ? undefined : outcome.value;
-          extensionLog.debug("Reference model processor: resolve outcome", {
+          extensionLog.debug("Reference model processor: Reference Harvesting outcome", {
             guid,
             reference,
             outcome: outcome.kind,

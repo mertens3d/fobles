@@ -10,7 +10,7 @@ import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_b
 import type { WorkerTask } from "../../workers/tasks/tasks.types";
 import type { WorkerTaskType } from "../../workers/tasks/tasks.types";
 import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
-import { COLLECTOR_TASK_TYPE_BY_FILTER_KEY } from "./planner.const.js";
+import { COLLECTOR_TASK_TYPE_BY_FILTER_KEY } from "./planner.const.ts";
 
 // "template" is a HarvestRequest filter, but it's not a collector task of its own - it only
 // narrows the sections a get-custom-fields/get-standard-fields task returns, so it has no entry

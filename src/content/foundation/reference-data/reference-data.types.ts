@@ -3,10 +3,10 @@ import type { StepKey } from "../../../constants/constants.types";
 import type { HarvestProgressCallback } from "../harvesting/harvesting.types";
 import type { HarvestProgressStatus } from "../harvesting/harvesting.types";
 import type { WorkSession } from "../workers/session/work-session.types";
-import type { PreparedReferenceModel } from "./acquisition/acquisition.types";
-import type { ReferenceModelHarvestProgress, ReferenceModelProcessingProgress, ReferenceModelSessionStateChange } from "./processing/processing.types";
-import type { PhaseProgress } from "./progress/lifecycle.types";
-import type { openFoblesDataSession } from "./reference-data-service";
+import type { PreparedReferenceModel } from "./acquisition/acquisition.types.ts";
+import type { ReferenceModelHarvestProgress, ReferenceModelProcessingProgress, ReferenceModelSessionStateChange } from "./processing/processing.types.ts";
+import type { PhaseProgress } from "./progress/lifecycle.types.ts";
+import type { openFoblesDataSession } from "./reference-data-service.ts";
 
 export type FoblesDataAcquisition = FoblesDataSession;
 
@@ -31,7 +31,7 @@ export type FoblesDataRequest = {
 export type FoblesReferenceModelData = {
   itemId: string;
   model: PreparedReferenceModel;
-  resolveCandidateTreeNodeIds: ReadonlySet<string>;
+  referenceHarvestingCandidateTreeNodeIds: ReadonlySet<string>;
   cacheRevalidationResultByTreeNodeId: ReadonlyMap<string, "passed" | "error">;
 };
 

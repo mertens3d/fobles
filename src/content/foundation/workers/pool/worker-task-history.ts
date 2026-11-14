@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/workers/pool/worker-task-history.ts
 
-import { getWorkClass } from "./worker-admission";
+import { getWorkClass } from "./worker-admission.ts";
 import type { WorkerTaskResult } from "../tasks/tasks.types";
 import type { WorkerTask } from "../tasks/tasks.types";
 import type { WorkerTaskSnapshot } from "./pool.types";

@@ -3,7 +3,7 @@ import type { FoblesStrategy } from "../../../../constants/constants.types";
 import type { FieldReference } from "../../../field-reference-resolution/field-reference-resolution.types";
 import type { FieldReferenceConfidence } from "../../../field-reference-resolution/field-reference-resolution.types";
 import type { SitecoreDeviceXml, SitecoreRenderingXml } from "../../harvesting/collectors/section-collector/layout-collector/layout-collector.types";
-import type { GRAPH_COLLAPSE_KEY } from "./model.const";
+import type { GRAPH_COLLAPSE_KEY } from "./model.const.ts";
 
 export type GraphCollapseKey = (typeof GRAPH_COLLAPSE_KEY)[keyof typeof GRAPH_COLLAPSE_KEY];
 

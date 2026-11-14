@@ -1,8 +1,8 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/reference-model-node-factory.ts
 
-import type { ReferenceModelItemNodeOptions, ReferenceModelNonItemNodeOptions } from "./model.types";
-import { setGraphPresentationState } from "./graph-presentation-state";
-import type { ReferenceModelItemNode, ReferenceModelNonItemNode } from "./model.types";
+import type { ReferenceModelItemNodeOptions, ReferenceModelNonItemNodeOptions } from "./model.types.ts";
+import { setGraphPresentationState } from "./graph-presentation-state.ts";
+import type { ReferenceModelItemNode, ReferenceModelNonItemNode } from "./model.types.ts";
 
 export function createReferenceModelItemNode({
   treeNodeId,

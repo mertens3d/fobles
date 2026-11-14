@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/processor/processing-state.ts
 
-import type { ProcessingStateByTreeNodeId } from "../processing.types.js";
-import type { ProcessingStatus } from "../processing.types.js";
+import type { ProcessingStateByTreeNodeId } from "../processing.types.ts";
+import type { ProcessingStatus } from "../processing.types.ts";
 
 export function setProcessingState(
   treeNodeIds: readonly string[],

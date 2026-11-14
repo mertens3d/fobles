@@ -28,7 +28,7 @@ void test("toolbar diagnostics stay below buttons in flow and above visible work
     assert.equal(diagnostics.getPropertyValue("grid-row"), "2");
     assert.equal(diagnostics.getPropertyValue("grid-column"), "2");
     assert.equal(diagnostics.getPropertyValue("contain"), "inline-size");
-    assert.equal(diagnostics.getPropertyValue("position"), "");
+    assert.equal(diagnostics.getPropertyValue("position"), "relative");
     assert.doesNotMatch(css, /\[data-position[^}]+> \.fobles-toolbar-diagnostics/);
     assert.ok(Number(toolbar.getPropertyValue("z-index")) > Number(workers.getPropertyValue("z-index")));
   } finally {

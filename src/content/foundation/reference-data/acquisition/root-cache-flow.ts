@@ -1,13 +1,13 @@
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/root-cache-flow.ts
 
-import type { RootCacheDecision } from "./acquisition.types.js";
+import type { RootCacheDecision } from "./acquisition.types.ts";
 import type { SitecoreDataCacheRecord } from "../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types.js";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types.js";
-import type { RootItem } from "../model/model.types";
-import type { ItemGraphNodeData } from "../model/model.types";
-import type { ProcessingStatus } from "../processing/processing.types";
+import type { RootItem } from "../model/model.types.ts";
+import type { ItemGraphNodeData } from "../model/model.types.ts";
+import type { ProcessingStatus } from "../processing/processing.types.ts";
 
 function hasRequiredFacts(record: SitecoreDataCacheRecord, filters: SitecoreHarvestFiltersState): boolean {
   if (filters.parent && !record.parent) {

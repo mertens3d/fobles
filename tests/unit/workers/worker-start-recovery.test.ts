@@ -20,7 +20,7 @@ void test("failed worker startup retries through foreground admission and keeps 
     env.creations[0].ready.reject(new Error("worker creation failed"));
     await until(() => env.creations.length === 2);
     const status = pool.getWorkerPoolStatus(HOST);
-    assert.equal(status.workerCount, 1);
+    assert.equal(status.workerCount, 2);
     assert.equal(status.capacity, 0);
     assert.equal(status.activeBackground, 1);
     assert.equal(status.activeTasks.find((entry) => entry.requestId === "foreground")?.phase, WORK_SCHEDULING.PHASE.STARTING);

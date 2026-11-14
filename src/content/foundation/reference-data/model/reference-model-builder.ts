@@ -3,15 +3,15 @@
 import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { CONST } from "../../../../constants/const";
-import { GRAPH_COLLAPSE_KEY, REFERENCE_MODEL_FAN_OUT_LIMITS } from "./model.const";
-import { createReferenceModelNodeId } from "./layout-reference-model-builder";
-import { createLayoutReferenceModel } from "./reference-model-node-id";
-import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
-import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance";
-import type { ReferenceModelNonItemNode } from "./model.types";
-import type { ReferenceModelItemNode } from "./model.types";
-import type { ReferenceModelTruncation } from "./model.types";
-import { createCustomFieldsTreeNode, createStandardFieldsTreeNode } from "./sections-reference-model-builder";
+import { GRAPH_COLLAPSE_KEY, REFERENCE_MODEL_FAN_OUT_LIMITS } from "./model.const.ts";
+import { createReferenceModelNodeId } from "./layout-reference-model-builder.ts";
+import { createLayoutReferenceModel } from "./reference-model-node-id.ts";
+import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory.ts";
+import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance.ts";
+import type { ReferenceModelNonItemNode } from "./model.types.ts";
+import type { ReferenceModelItemNode } from "./model.types.ts";
+import type { ReferenceModelTruncation } from "./model.types.ts";
+import { createCustomFieldsTreeNode, createStandardFieldsTreeNode } from "./sections-reference-model-builder.ts";
 
 export function createReferenceModel(
   graphReferenceResult: SitecoreHarvestResult,

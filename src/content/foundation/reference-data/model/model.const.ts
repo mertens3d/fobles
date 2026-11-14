@@ -1,4 +1,4 @@
-import type { ExpandedByCollapseKey } from "./model.types.js";
+import type { ExpandedByCollapseKey } from "./model.types.ts";
 
 export const GRAPH_COLLAPSE_KEY = {
   ROOT: "root",

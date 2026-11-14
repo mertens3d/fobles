@@ -1,6 +1,6 @@
-import type { ReferenceModelHarvestQueue } from "./processing.types.js";
-import type { ReferenceModelHarvestJob } from "./processing.types.js";
-import type { ReferenceModelHarvestQueueOptions } from "./processing.types.js";
+import type { ReferenceModelHarvestQueue } from "./processing.types.ts";
+import type { ReferenceModelHarvestJob } from "./processing.types.ts";
+import type { ReferenceModelHarvestQueueOptions } from "./processing.types.ts";
 // This is a logical Reference Harvesting queue, not another worker pool. Each job still delegates
 // its live work to the shared worker infrastructure through runHarvest. FIFO execution keeps the
 // Sitecore editor-state lifecycle serialized while allowing newly discovered jobs to be appended.

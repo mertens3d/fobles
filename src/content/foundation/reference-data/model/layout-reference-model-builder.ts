@@ -1,18 +1,18 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/layout-reference-model-builder.ts
 
 import { CONST } from "../../../../constants/const";
-import { GRAPH_COLLAPSE_KEY } from "./model.const";
-import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
-import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance";
-import type { ReferenceModelNode } from "./model.types";
-import type { ReferenceModelNonItemNode } from "./model.types";
-import type { ReferenceModelItemNode } from "./model.types";
-import { createRenderingReferenceModelNode } from "./rendering-reference-model-builder";
-import { slugify } from "./slugify";
-import type { LayoutDevice } from "./model.types";
-import type { LayoutPlacement } from "./model.types";
-import type { LayoutSectionField } from "./model.types";
-import type { ItemGraphNodeData } from "./model.types";
+import { GRAPH_COLLAPSE_KEY } from "./model.const.ts";
+import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory.ts";
+import { createSitecoreItemProvenance, createSyntheticProvenance } from "./reference-model-provenance.ts";
+import type { ReferenceModelNode } from "./model.types.ts";
+import type { ReferenceModelNonItemNode } from "./model.types.ts";
+import type { ReferenceModelItemNode } from "./model.types.ts";
+import { createRenderingReferenceModelNode } from "./rendering-reference-model-builder.ts";
+import { slugify } from "./slugify.ts";
+import type { LayoutDevice } from "./model.types.ts";
+import type { LayoutPlacement } from "./model.types.ts";
+import type { LayoutSectionField } from "./model.types.ts";
+import type { ItemGraphNodeData } from "./model.types.ts";
 
 export function createReferenceModelNodeId(...parts: Array<string | undefined>): string {
   return parts

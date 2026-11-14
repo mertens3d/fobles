@@ -143,15 +143,15 @@ void test("item history repository background writer", { timeout: 5000 }, async 
     assert.equal(setCalls, 2);
   });
 
-  await t.test("persists at most 20 unique visits without mocking Date.now", async () => {
+  await t.test("persists the configured Content-category limit without mocking Date.now", async () => {
     const responses = await Promise.all(Array.from({ length: 25 }, (_, index) =>
       send(message({ action: "visit", visit: visit(index) }))));
     assert.ok(responses.every((response) => response.ok));
     const history = await getHistory(MASTER);
-    assert.equal(history.length, 20);
-    assert.equal(new Set(history.map((item) => item.id)).size, 20);
+    assert.equal(history.length, 6);
+    assert.equal(new Set(history.map((item) => item.id)).size, 6);
     assert.deepEqual(new Set(history.map((item) => item.id)),
-      new Set(Array.from({ length: 20 }, (_, index) => visit(index + 5).id)));
+      new Set(Array.from({ length: 6 }, (_, index) => visit(index + 19).id)));
     assert.ok(history.every((item) => Number.isFinite(item.lastVisitedAt) && item.lastVisitedAt > 0));
     assert.deepEqual(values[historyStorageKey(MASTER)], history);
     assert.deepEqual(responses[24], { ok: true, history: values[historyStorageKey(MASTER)] });

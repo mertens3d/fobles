@@ -3,6 +3,6 @@
 // export {
 //   getFoblesDataSession as getFoblesDataSession,
 //   subscribeFoblesAcquisitionProgress,
-// } from "./reference-data-service";
+// } from "./reference-data-service.ts";
 
-// export type { FoblesAcquisitionProgress } from "./reference-data-service";
+// export type { FoblesAcquisitionProgress } from "./reference-data-service.ts";

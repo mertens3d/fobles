@@ -2,7 +2,7 @@
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
-import { createReferenceHarvestingQueue } from "../../../src/content/foundation/reference-data/processing/reference-harvesting-queue.ts";
+import { createReferenceHarvestingQueue } from "../../../src/content/foundation/reference-data/processing/queue/reference-harvesting-queue.ts";
 
 void test("deduplicates normalized item and fact jobs", async () => {
   const runs: string[] = [];

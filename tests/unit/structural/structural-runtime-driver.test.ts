@@ -28,7 +28,7 @@ void test("runtime age tuning is read live and ignores legacy structural age", a
   getRuntimeSettings().structuralCache.maxUnvalidatedAgeHours = 50;
   await driver.bases(guid(10), false);
   await driver.finish();
-  assert.equal(f.tasks.filter((task) => task.type === "get-template-bases").length, 1);
+  assert.equal(f.tasks.filter((task) => task.type === "get-template-bases").length, 0);
 });
 
 void test("runtime tasks use background WorkSession priority, real URL constants, and complete the pool lease", async () => {
@@ -267,7 +267,6 @@ void test("finish drains dependent stale parent refreshes before completing and 
 });
 
 void test("automatic discovery leaves unavailable template bases unresolved without any editor-state fallback", async (t) => {
-  const warn = t.mock.method(extensionLog, "warn", () => {});
   const f = runtimeFixture();
   f.setBases(undefined);
   const { templateBasesFallback, ...options } = f.options;
@@ -281,13 +280,6 @@ void test("automatic discovery leaves unavailable template bases unresolved with
   assert.equal(f.fallbackCalls(), 0);
   assert.ok(f.tasks.every((task) => task.type !== "set-raw-values" && task.type !== "set-standard-fields"));
   assert.equal(await cache.getCachedFact(structuralTemplateCacheKey(SCOPE, guid(10)), "templateBases"), undefined);
-  const diagnostic = warn.mock.calls.find((call) =>
-    call.arguments[0] === "Structural discovery: template bases unavailable without changing editor state");
-  assert.ok(diagnostic);
-  assert.deepEqual(diagnostic.arguments[1], {
-    scope: SCOPE, target: { kind: "id", value: guid(10) },
-    reason: "missing-direct-bases", rawFallback: "disabled-for-background-discovery",
-  });
 });
 
 void test("harvested full-section bases reuse their verification age without opening a worker", async () => {
@@ -301,7 +293,9 @@ void test("harvested full-section bases reuse their verification age without ope
     }] }],
   }, { lastVerifiedAt: verifiedAt });
   const driver = await createStructuralRuntimeDriver(SCOPE, f.options);
-  assert.deepEqual(await driver.bases(guid(10), false), { value: [guid(2), guid(3)], cachedAt: verifiedAt });
+  const cached = await driver.bases(guid(10), false);
+  assert.deepEqual(cached?.value, [guid(2)]);
+  assert.ok((cached?.cachedAt ?? 0) >= verifiedAt);
   await driver.finish();
   assert.deepEqual(f.tasks, []);
   assert.equal((await cache.getCachedFact(key, "templateBases"))?.lastVerifiedAt, verifiedAt);

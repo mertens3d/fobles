@@ -1,7 +1,7 @@
 // @source-path [fobles] src/shared/browser-navigation-settings.ts
 
-import { getStorageValue, onStorageChange, setStorageValue } from "./storage/storage";
-import { BROWSER_NAVIGATION_HISTORY_STORAGE_KEY } from "./shared.const";
+import { getStorageValue, onStorageChange, setStorageValue } from "./storage/storage.ts";
+import { BROWSER_NAVIGATION_HISTORY_STORAGE_KEY } from "./shared.const.ts";
 
 export async function getBrowserNavigationHistoryEnabled(): Promise<boolean> {
   const values = await getStorageValue<boolean>([BROWSER_NAVIGATION_HISTORY_STORAGE_KEY]);

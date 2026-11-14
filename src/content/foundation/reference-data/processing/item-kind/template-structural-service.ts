@@ -48,29 +48,40 @@ export function createTemplateStructuralService() {
     }
     let templateKind: StructuralClassification["kind"] = ITEM_KIND.UNKNOWN;
     if (item.templateId) {
-      const inheritance = await driver.bases(item.templateId, fresh);
-      if (inheritance) {
-        stamps.push(`${item.templateId}:${inheritance.cachedAt}:${inheritance.value.join("|")}`);
+      const inheritedIds = new Set<string>([item.templateId]);
+      const pending = [item.templateId];
+      while (pending.length > 0) {
+        const templateId = pending.shift()!;
+        const inheritance = await driver.bases(templateId, fresh);
+        if (!inheritance) {
+          complete = false;
+          extensionLog.warn("Structural discovery: template inheritance missing", {
+            scope, target: item, templateId, reason: "missing-inheritance-tab-data", fresh,
+          });
+          break;
+        }
+        stamps.push(`${templateId}:${inheritance.cachedAt}:${inheritance.value.join("|")}`);
         stale ||= now - inheritance.cachedAt >= maxUnvalidatedAgeMs;
-        const inheritedIds = [item.templateId, ...inheritance.value];
-        const fingerprint = JSON.stringify([settings.baseTemplatePaths, maxUnvalidatedAgeMs, stamps, complete]);
-        const cached = await driver.readDerived(item.templateId);
-        if (complete && cached?.value.fingerprint === fingerprint && cached.value.complete) {
-          templateKind = cached.value.kind;
-        } else {
-          templateKind = classifyItem({
-            itemPath: roots.CONTENT, inheritedTemplateIds: inheritedIds, baseTemplateIds: baseIds,
-            pathRoots: { content: roots.CONTENT, templates: roots.TEMPLATES },
-          }).classification;
-          if (complete && !stale) {
-            await driver.writeDerived(item.templateId, { complete, fingerprint, inheritedIds, kind: templateKind });
+        for (const inheritedId of inheritance.value) {
+          if (!inheritedIds.has(inheritedId)) {
+            inheritedIds.add(inheritedId);
+            pending.push(inheritedId);
           }
         }
+      }
+      const inherited = Array.from(inheritedIds);
+      const fingerprint = JSON.stringify([settings.baseTemplatePaths, maxUnvalidatedAgeMs, stamps, complete]);
+      const cached = await driver.readDerived(item.templateId);
+      if (complete && cached?.value.fingerprint === fingerprint && cached.value.complete) {
+        templateKind = cached.value.kind;
       } else {
-        complete = false;
-        extensionLog.warn("Structural discovery: template inheritance missing", {
-          scope, target: item, templateId: item.templateId, reason: "missing-inheritance-tab-data", fresh,
-        });
+        templateKind = classifyItem({
+          itemPath: roots.CONTENT, inheritedTemplateIds: inherited, baseTemplateIds: baseIds,
+          pathRoots: { content: roots.CONTENT, templates: roots.TEMPLATES },
+        }).classification;
+        if (complete && !stale) {
+          await driver.writeDerived(item.templateId, { complete, fingerprint, inheritedIds: inherited, kind: templateKind });
+        }
       }
     } else {
       complete = false;

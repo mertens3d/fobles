@@ -6,13 +6,13 @@ import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
-import type { PreparedReferenceModel } from "../acquisition/acquisition.types";
-import { createReferenceModel } from "./reference-model-builder";
-import { buildReferenceModelNodeLookup } from "./reference-model-node-lookup";
-import type { RootItem } from "./model.types";
-import type { ItemGraphNodeData } from "./model.types";
-import type { ReferenceModelNode } from "./model.types";
-import type { ReferenceModelItemNode } from "./model.types";
+import type { PreparedReferenceModel } from "../acquisition/acquisition.types.ts";
+import { createReferenceModel } from "./reference-model-builder.ts";
+import { buildReferenceModelNodeLookup } from "./reference-model-node-lookup.ts";
+import type { RootItem } from "./model.types.ts";
+import type { ItemGraphNodeData } from "./model.types.ts";
+import type { ReferenceModelNode } from "./model.types.ts";
+import type { ReferenceModelItemNode } from "./model.types.ts";
 
 const harvestedFactsByPrepared = new WeakMap<PreparedReferenceModel, Map<string, SitecoreHarvestResult>>();
 

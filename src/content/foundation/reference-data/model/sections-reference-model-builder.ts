@@ -1,17 +1,17 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/sections-reference-model-builder.ts
 
 import { CONST } from "../../../../constants/const";
-import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory";
-import { GRAPH_COLLAPSE_KEY } from "./model.const";
-import type { GraphCollapseKey } from "./model.types";
-import { createFieldReferenceProvenance, createSyntheticProvenance } from "./reference-model-provenance";
-import type { ReferenceModelNode } from "./model.types";
-import type { ReferenceModelNonItemNode } from "./model.types";
-import type { ReferenceModelBranch } from "./model.types";
-import { createReferenceModelNodeId } from "./layout-reference-model-builder";
-import type { HarvestFieldLink } from "./model.types";
-import type { SitecoreHarvestField } from "./model.types";
-import type { SitecoreHarvestSection } from "./model.types";
+import { createReferenceModelItemNode, createReferenceModelNonItemNode } from "./reference-model-node-factory.ts";
+import { GRAPH_COLLAPSE_KEY } from "./model.const.ts";
+import type { GraphCollapseKey } from "./model.types.ts";
+import { createFieldReferenceProvenance, createSyntheticProvenance } from "./reference-model-provenance.ts";
+import type { ReferenceModelNode } from "./model.types.ts";
+import type { ReferenceModelNonItemNode } from "./model.types.ts";
+import type { ReferenceModelBranch } from "./model.types.ts";
+import { createReferenceModelNodeId } from "./layout-reference-model-builder.ts";
+import type { HarvestFieldLink } from "./model.types.ts";
+import type { SitecoreHarvestField } from "./model.types.ts";
+import type { SitecoreHarvestSection } from "./model.types.ts";
 import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types";
 
 export function createCustomFieldsTreeNode(

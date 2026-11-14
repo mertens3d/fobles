@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/reference-data/acquisition/acquire-reference-model.ts
 
-import type { AcquiredReferenceModel, AcquireReferenceModelOptions } from "./acquisition.types.js";
+import type { AcquiredReferenceModel, AcquireReferenceModelOptions } from "./acquisition.types.ts";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { extensionLog } from "../../../logger";
 import { getItem, putFact } from "../../cache/sitecore-data/sitecore-data-cache";
@@ -14,9 +14,9 @@ import { buildFoblesUrl } from "../../sitecore/fobles-url";
 import type { WorkSession } from "../../workers/session/work-session.types";
 import type { WorkerTaskExecutionResult } from "../../workers/tasks/tasks.types.js";
 import type { WorkerTask } from "../../workers/tasks/tasks.types.js";
-import { prepareReferenceModel } from "./prepare-reference-model";
-import { decideRootCacheUsage, rootProcessingStateForDecision } from "./root-cache-flow";
-import { readLiveRootRevision } from "./root-revision";
+import { prepareReferenceModel } from "./prepare-reference-model.ts";
+import { decideRootCacheUsage, rootProcessingStateForDecision } from "./root-cache-flow.ts";
+import { readLiveRootRevision } from "./root-revision.ts";
 
 function quickInfoPayload(result: WorkerTaskExecutionResult): QuickInfoPayload | undefined {
   return result.status === "success" && result.type === "get-quick-info" ? result.payload : undefined;

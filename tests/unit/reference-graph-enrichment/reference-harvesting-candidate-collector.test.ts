@@ -1,11 +1,11 @@
-// @source-path [fobles] tests/unit/reference-graph-enrichment/resolve-candidate-collector.test.ts
+// @source-path [fobles] tests/unit/reference-graph-enrichment/reference-harvesting-candidate-collector.test.ts
 
 import { test } from "node:test";
 import assert from "node:assert/strict";
 import {
-  collectEnrichmentGuidLookup,
-  isEligibleForResolve,
-} from "../../../src/content/foundation/reference-data/processing/candidates/resolve-candidate-collector.ts";
+  collectReferenceHarvestingCandidateLookup,
+  isEligibleForReferenceHarvesting,
+} from "../../../src/content/foundation/reference-data/processing/candidates/reference-harvesting-candidate-collector.ts";
 import type {
   ItemGraphNodeData,
   ReferenceModelNode,
@@ -40,7 +40,7 @@ function nodesById(nodes: readonly ReferenceModelItemNode[]): Map<string, Refere
   return new Map(nodes.map((node) => [node.treeNodeId, node]));
 }
 
-void test("a fully resolved Reference Model item is excluded from the guid lookup entirely", () => {
+void test("a fully harvested Reference Model item is excluded from the guid lookup entirely", () => {
   const resolved = makeItemNode(
     "resolved-node",
     makeItem({
@@ -52,14 +52,14 @@ void test("a fully resolved Reference Model item is excluded from the guid looku
   );
   const root = makeItemNode("root", makeItem(), [resolved]);
 
-  assert.equal(collectEnrichmentGuidLookup(root).size, 0);
+  assert.equal(collectReferenceHarvestingCandidateLookup(root).size, 0);
 });
 
-void test("an unresolved item-reference node (e.g. a rendering-parameter GUID like FieldNames) is still a Resolve candidate", () => {
+void test("an unresolved item-reference node (e.g. a rendering-parameter GUID like FieldNames) is still a Reference Harvesting candidate", () => {
   const unresolved = makeItemNode("field-names-node", makeItem({ scItemId: `{${FIELD_NAMES_GUID}}` }));
   const root = makeItemNode("root", makeItem(), [unresolved]);
 
-  const guidLookup = collectEnrichmentGuidLookup(root);
+  const guidLookup = collectReferenceHarvestingCandidateLookup(root);
   assert.equal(guidLookup.size, 1);
   assert.deepEqual(Array.from(guidLookup.values())[0], ["field-names-node"]);
 });
@@ -69,12 +69,12 @@ void test("bracketed and unbracketed spellings of the same GUID collapse into on
   const unbracketed = makeItemNode("unbracketed-node", makeItem({ scItemId: FIELD_NAMES_GUID.toLowerCase() }));
   const root = makeItemNode("root", makeItem(), [bracketed, unbracketed]);
 
-  const guidLookup = collectEnrichmentGuidLookup(root);
+  const guidLookup = collectReferenceHarvestingCandidateLookup(root);
   assert.equal(guidLookup.size, 1);
   assert.deepEqual(Array.from(guidLookup.values())[0]?.sort(), ["bracketed-node", "unbracketed-node"]);
 });
 
-void test("isEligibleForResolve is false once every node sharing a guid has become fully resolved", () => {
+void test("isEligibleForReferenceHarvesting is false once every node sharing a guid has become fully harvested", () => {
   const resolvedItem = makeItem({
     scItemId: "22222222-2222-2222-2222-222222222222",
     scItemName: "Default device",
@@ -83,10 +83,10 @@ void test("isEligibleForResolve is false once every node sharing a guid has beco
   });
   const node = makeItemNode("device-node", resolvedItem);
 
-  assert.equal(isEligibleForResolve(["device-node"], nodesById([node])), false);
+  assert.equal(isEligibleForReferenceHarvesting(["device-node"], nodesById([node])), false);
 });
 
-void test("isEligibleForResolve stays true while at least one sharing node is still unresolved", () => {
+void test("isEligibleForReferenceHarvesting stays true while at least one sharing node is still unresolved", () => {
   const resolvedNode = makeItemNode(
     "resolved-node",
     makeItem({
@@ -102,11 +102,11 @@ void test("isEligibleForResolve stays true while at least one sharing node is st
   );
 
   assert.equal(
-    isEligibleForResolve(["resolved-node", "unresolved-node"], nodesById([resolvedNode, unresolvedNode])),
+    isEligibleForReferenceHarvesting(["resolved-node", "unresolved-node"], nodesById([resolvedNode, unresolvedNode])),
     true,
   );
 });
 
-void test("isEligibleForResolve is false for an empty/unknown treeNodeId list (nothing left to resolve)", () => {
-  assert.equal(isEligibleForResolve([], new Map()), false);
+void test("isEligibleForReferenceHarvesting is false for an empty/unknown treeNodeId list (nothing left to resolve)", () => {
+  assert.equal(isEligibleForReferenceHarvesting([], new Map()), false);
 });

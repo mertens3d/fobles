@@ -1,8 +1,8 @@
-import { matchesActivityFilter } from "./activity-filter";
-import { ACTIVITY_MESSAGE_TYPE } from "./activity.const";
-import type { ActivityEvent, ActivityFilter, ActivityListener, ActivityMessage } from "./activity.types";
+import { matchesActivityFilter } from "./activity-filter.ts";
+import { ACTIVITY_MESSAGE_TYPE } from "./activity.const.ts";
+import type { ActivityEvent, ActivityFilter, ActivityListener, ActivityMessage } from "./activity.types.ts";
 
-export type { ActivityEvent, ActivityFilter, ActivityMessage, ActivityState } from "./activity.types";
+export type { ActivityEvent, ActivityFilter, ActivityMessage, ActivityState } from "./activity.types.ts";
 
 const listeners = new Set<ActivityListener>();
 

@@ -48,8 +48,8 @@ const DEFAULT_GRAPH_FILTERS: SitecoreHarvestFiltersState = {
 
 export type AuditorAppProps = { doc: Document; findingStore: AuditFindingStore; workOperationId: string };
 
-// AI NOTE: The Auditor dialog opens while the audit run is still acquiring the Reference Model, so the Data
-// AI NOTE: Service operation does not exist yet at mount. Wait for it instead of subscribing once and giving up.
+// Agent: The Auditor dialog opens while the audit run is still acquiring the Reference Model, so the Data
+// Agent: Service operation does not exist yet at mount. Wait for it instead of subscribing once and giving up.
 function useFoblesDataOperationWhenReady(workOperationId: string): FoblesDataOperationHandle {
   const [operation, setOperation] = useState<FoblesDataOperationHandle>(() => getFoblesDataSession(workOperationId));
   useEffect(() => {
@@ -114,8 +114,8 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   }, [dataOperation, filtersLoaded, graphFilters]);
   const model = data?.model;
   useEffect(() => findingStore.subscribe(setSnapshot), [findingStore]);
-  // AI NOTE: A cold item runs a live harvest before any data operation exists. Subscribe by work-operation id up front so
-  // AI NOTE: that harvest's progress is visible instead of an empty dialog.
+  // Agent: A cold item runs a live harvest before any data operation exists. Subscribe by work-operation id up front so
+  // Agent: that harvest's progress is visible instead of an empty dialog.
   useEffect(
     () =>
       subscribeFoblesAcquisitionProgress(workOperationId, (progress) => {
@@ -124,8 +124,8 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
       }),
     [workOperationId],
   );
-  // AI NOTE: Persisting is gated on filtersLoaded so the initial defaults never overwrite the stored values.
-  // AI NOTE: Graph filters fall back to the Graph's stored filters until the Auditor has its own stored set.
+  // Agent: Persisting is gated on filtersLoaded so the initial defaults never overwrite the stored values.
+  // Agent: Graph filters fall back to the Graph's stored filters until the Auditor has its own stored set.
   useEffect(() => {
     let active = true;
     void Promise.all([
@@ -195,14 +195,14 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
       unsubscribeProcessing();
     };
   }, [dataOperation, workOperationId]);
-  // AI NOTE: Fallback that needs no event replay: count unique item GUIDs whose every Resolve candidate node
-  // AI NOTE: has reached a terminal processing state, the same unit Graph's Resolving bar counts.
+  // Agent: Fallback that needs no event replay: count unique item GUIDs whose every Resolve candidate node
+  // Agent: has reached a terminal processing state, the same unit Graph's Resolving bar counts.
   const derivedResolveProgress = useMemo<PhaseProgress | undefined>(() => {
     if (!data || !model) {
       return undefined;
     }
     const treeNodeIdsByGuid = new Map<string, string[]>();
-    data.resolveCandidateTreeNodeIds.forEach((treeNodeId) => {
+    data.referenceHarvestingCandidateTreeNodeIds.forEach((treeNodeId) => {
       const node = model.nodesById.get(treeNodeId);
       const guid = (node?.nodeType === "item" ? node.scItem.scItemId || treeNodeId : treeNodeId).toLowerCase();
       const treeNodeIds = treeNodeIdsByGuid.get(guid) ?? [];

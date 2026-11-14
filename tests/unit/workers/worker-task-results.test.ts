@@ -8,7 +8,7 @@ import {
   createErrorResult,
   isDocumentStaleResult,
   isSuccessResult,
-} from "../../../src/content/foundation/workers/tasks/worker-task";
+} from "../../../src/content/foundation/workers/tasks/worker-task.ts";
 import type { GetChildrenTask } from "../../../src/content/foundation/workers/tasks/tasks.types";
 
 const task = {

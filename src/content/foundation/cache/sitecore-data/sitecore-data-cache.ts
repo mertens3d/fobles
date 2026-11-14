@@ -3,7 +3,7 @@
 import type { ItemGraphNodeData } from "../../reference-data/model/model.types";
 import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
 import { getRequestResult, runCacheTransaction } from "./indexed-db.ts";
-import { FACT_ITEM_KEY_INDEX_NAME, LAST_ACCESSED_INDEX_NAME } from "./sitecore-data.const";
+import { FACT_ITEM_KEY_INDEX_NAME, LAST_ACCESSED_INDEX_NAME } from "./sitecore-data.const.ts";
 import { serializeCacheKey } from "./sitecore-data-cache-key.ts";
 import { toPersistedValue } from "./sitecore-data-cache-persistence.ts";
 import { publishFactUpdated } from "./sitecore-data-events.ts";

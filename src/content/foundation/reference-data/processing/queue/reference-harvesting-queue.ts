@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/queue/reference-harvesting-queue.ts
 
-import type { QueuedReferenceHarvestingJob, ReferenceHarvestingJob, ReferenceHarvestingQueue, ReferenceHarvestingQueueOptions } from "../processing.types.js";
+import type { QueuedReferenceHarvestingJob, ReferenceHarvestingJob, ReferenceHarvestingQueue, ReferenceHarvestingQueueOptions } from "../processing.types.ts";
 import { normalizeItemLocator } from "../../../cache/sitecore-data/sitecore-data-cache-key.ts";
 
 export function referenceHarvestingJobKey(job: ReferenceHarvestingJob): string {

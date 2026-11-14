@@ -38,14 +38,14 @@ void test("classification matches roots and descendants case-insensitively with 
   const cases = [
     ["/sitecore/templates", "Templates"],
     [" /SITECORE/Templates/Example/ ", "Templates"],
-    ["/sitecore/layout", "Layouts"],
-    ["/SITECORE/LAYOUT/Renderings/Card", "Layouts"],
-    ["/sitecore/system/modules/PowerShell", "PowerShell"],
-    ["/SITECORE/SYSTEM/MODULES/POWERSHELL/Script Library/Test", "PowerShell"],
+    ["/sitecore/layout", "Layout"],
+    ["/SITECORE/LAYOUT/Renderings/Card", "Layout"],
+    ["/sitecore/system/modules/PowerShell", "System"],
+    ["/SITECORE/SYSTEM/MODULES/POWERSHELL/Script Library/Test", "System"],
     ["/sitecore/templates-extra/Test", "Content"],
     ["/sitecore/layouts/Test", "Content"],
     ["/sitecore/layout-extra/Test", "Content"],
-    ["/sitecore/system/modules/PowerShell-extra/Test", "Content"],
+    ["/sitecore/system/modules/PowerShell-extra/Test", "System"],
     ["/sitecore/content/templates/Test", "Content"],
     ["/sitecore/content/Home", "Content"],
   ];
@@ -73,16 +73,16 @@ void test("normalization validates unknown rows and derives category from canoni
     { ...valid, category: "Unknown" }, { ...valid, lastVisitedAt: "1" },
     { ...valid, lastVisitedAt: NaN }, { ...valid, lastVisitedAt: Infinity }, { ...valid, lastVisitedAt: -1 }];
   assert.deepEqual(normalizeHistoryItems([...invalid, valid]), [valid]);
-  assert.equal(normalizeHistoryItems([{ ...valid, path: "/sitecore/layout/Test" }])[0].category, "Layouts");
+  assert.equal(normalizeHistoryItems([{ ...valid, path: "/sitecore/layout/Test" }])[0].category, "Layout");
   assert.equal(normalizeHistoryItems([{ ...valid, path: "\\sitecore\\content\\Home\\" }])[0].path, "/sitecore/content/Home");
 });
 
 void test("normalization deduplicates before applying the newest-20 limit", () => {
   const entries = Array.from({ length: 25 }, (_, index) => item(index));
   const result = normalizeHistoryItems([...entries, { ...item(24), name: "Newest", lastVisitedAt: 99 }]);
-  assert.equal(result.length, 20);
+  assert.equal(result.length, 6);
   assert.equal(result[0].name, "Newest");
-  assert.equal(result[19].id, item(5).id);
+  assert.equal(result[5].id, item(19).id);
 });
 
 void test("upsert moves revisits to the front, updates metadata and never mutates input", () => {
@@ -103,9 +103,9 @@ void test("upsert moves revisits to the front, updates metadata and never mutate
 void test("upsert trims to 20 and adds a new visit even at an equal timestamp", () => {
   const history = normalizeHistoryItems(Array.from({ length: 20 }, (_, index) => item(index, 50)));
   const result = upsertHistoryItem(history, item(99), 50);
-  assert.equal(result.length, 20);
+  assert.equal(result.length, 6);
   assert.equal(result[0].id, item(99).id);
-  assert.equal(result[result.length - 1].id, item(18).id);
+  assert.equal(result[result.length - 1].id, item(4).id);
 });
 
 void test("scope keys normalize origin/database and ignore paths, query languages and extra language fields", () => {

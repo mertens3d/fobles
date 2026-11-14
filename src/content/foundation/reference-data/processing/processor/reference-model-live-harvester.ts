@@ -1,4 +1,4 @@
-// @source-path [fobles] src/content/foundation/reference-data/processing/processor/reference-model-live-resolver.ts
+// @source-path [fobles] src/content/foundation/reference-data/processing/processor/reference-model-live-harvester.ts
 
 import { extensionLog } from "../../../../logger";
 import { mergeEnrichedItem } from "../../../harvesting/planner/enrichment-task-planner";
@@ -6,11 +6,11 @@ import { createSitecoreItemLocator } from "../../../harvesting/worker-task-execu
 import { buildFoblesUrl } from "../../../sitecore/fobles-url";
 import { createErrorResult } from "../../../workers/tasks/worker-task.js";
 import type { WorkerTaskExecutionResult, WorkerTask } from "../../../workers/tasks/tasks.types.js";
-import type { ReferenceModelNode } from "../../model/model.types";
-import { itemsFor } from "./reference-model-processing-tree-state";
-import type { ProcessingStatus, ResolveOutcome, StartReferenceModelProcessorOptions } from "../processing.types.js";
+import type { ReferenceModelNode } from "../../model/model.types.ts";
+import { itemsFor } from "./reference-model-processing-tree-state.ts";
+import type { ProcessingStatus, ReferenceHarvestingOutcome, StartReferenceModelProcessorOptions } from "../processing.types.ts";
 
-export async function requestReferenceModelResolve(
+export async function requestReferenceModelHarvest(
   workSession: StartReferenceModelProcessorOptions["workSession"],
   reference: string,
   disposed: boolean,
@@ -28,22 +28,22 @@ export async function requestReferenceModelResolve(
     result = taskResult ?? createErrorResult({ ...task, requestId: workSession.id }, "No response from worker pool");
   } catch (error) {
     if (!disposed) {
-      extensionLog.warn("Reference model processor: resolve task failed", { task, error });
+      extensionLog.warn("Reference model processor: Reference Harvesting task failed", { task, error });
     }
     result = createErrorResult(
       { ...task, requestId: workSession.id },
-      error instanceof Error ? error.message : "Resolve task failed",
+      error instanceof Error ? error.message : "Reference Harvesting task failed",
     );
   }
 
   return result;
 }
 
-export function applyReferenceModelResolveOutcome(
+export function applyReferenceModelReferenceHarvestingOutcome(
   guid: string,
   treeNodeIds: string[],
   nodesById: Map<string, ReferenceModelNode>,
-  outcome: ResolveOutcome,
+  outcome: ReferenceHarvestingOutcome,
 ): ProcessingStatus {
   if (outcome.kind !== "not-found" && outcome.kind !== "failed") {
     mergeEnrichedItem(new Map([[guid, itemsFor(treeNodeIds, nodesById)]]), guid, outcome.value);

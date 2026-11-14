@@ -5,9 +5,9 @@ import type { HarvestProgressCallback } from "../../harvesting/harvesting.types"
 import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types";
 import type { WorkSession } from "../../workers/session/work-session.types";
 import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
-import type { PreparedReferenceModel } from "../acquisition/acquisition.types";
-import type { ReferenceModelNode } from "../model/model.types";
-import type { ItemGraphNodeData } from "../model/model.types";
+import type { PreparedReferenceModel } from "../acquisition/acquisition.types.ts";
+import type { ReferenceModelNode } from "../model/model.types.ts";
+import type { ItemGraphNodeData } from "../model/model.types.ts";
 
 export type ProcessingStatus =
   | "pending"
@@ -122,7 +122,7 @@ export type ReferenceModelSessionStateChange = (
 export type SharedReferenceModelSession = {
   itemId: string;
   prepared: PreparedReferenceModel;
-  resolveCandidateTreeNodeIds: ReadonlySet<string>;
+  referenceHarvestingCandidateTreeNodeIds: ReadonlySet<string>;
   cacheRevalidationResultByTreeNodeId: ReadonlyMap<string, "passed" | "error">;
   processingCompletion: Promise<void>;
   subscribeStateChange: (listener: ReferenceModelSessionStateChange) => () => void;
@@ -143,7 +143,7 @@ export type StartSharedReferenceModelSessionOptions = {
   onModelReady?: (prepared: PreparedReferenceModel) => void;
 };
 
-export type ResolveOutcome =
+export type ReferenceHarvestingOutcome =
   | { kind: "enriched"; value: ItemGraphNodeData }
   | { kind: "verified"; value: ItemGraphNodeData }
   | { kind: "revision-mismatch"; value: ItemGraphNodeData; hadStructuralCache: boolean }

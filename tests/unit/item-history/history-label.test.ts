@@ -5,9 +5,9 @@ import { ITEM, SITE } from "./history-sites-test.const.ts";
 
 void test("Content labels expose unresolved Sites without rewriting real item names", () => {
   const item = { ...ITEM, name: "Real: Item Name" };
-  assert.equal(historyItemLabel(item, []), "(unknown): Real: Item Name");
+  assert.equal(historyItemLabel(item, []), "_: Real: Item Name");
   assert.equal(historyItemLabel(item, [SITE]), "Alpha: Real: Item Name");
-  assert.equal(historyItemLabel(item, [{ ...SITE, path: `${SITE.path}Other` }]), "(unknown): Real: Item Name");
+  assert.equal(historyItemLabel(item, [{ ...SITE, path: `${SITE.path}Other` }]), "_: Real: Item Name");
   assert.equal(item.name, "Real: Item Name");
 });
 
@@ -25,5 +25,5 @@ void test("Content catch-all paths outside the content tree never gain an unknow
     assert.equal(historyItemLabel(item, []), item.name);
     assert.equal(historyItemLabel(item, [SITE]), item.name);
   }
-  assert.equal(historyItemLabel({ ...ITEM, path: "/SITECORE/CONTENT/Unresolved/Item" }, []), `(unknown): ${ITEM.name}`);
+  assert.equal(historyItemLabel({ ...ITEM, path: "/SITECORE/CONTENT/Unresolved/Item" }, []), `_: ${ITEM.name}`);
 });

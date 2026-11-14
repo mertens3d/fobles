@@ -1,115 +1,23 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/session/reference-model-session.ts
 
-import type { ReferenceModelSessionStateChange, SharedReferenceModelSession, StartSharedReferenceModelSessionOptions } from "../processing.types.js";
-import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_base.types";
 import { extensionLog } from "../../../../logger";
 import * as cache from "../../../cache/sitecore-data/sitecore-data-cache";
-import type { SitecoreDataFactName } from "../../../cache/sitecore-data/sitecore-data.types";
-import type { SitecoreDataFactMap } from "../../../cache/sitecore-data/sitecore-data.types";
-import type { SitecoreDataCacheKey } from "../../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataCacheKey, SitecoreDataFactMap, SitecoreDataFactName } from "../../../cache/sitecore-data/sitecore-data.types";
 import { harvestSitecoreWithWorkers } from "../../../harvesting/coordinator/foreground-harvest-coordinator";
-import type { SitecoreHarvestResult } from "../../../harvesting/harvesting.types.js";
 import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../../sitecore/fobles-url";
-import type { WorkerTask } from "../../../workers/tasks/tasks.types.js";
-import type { SitecoreItemLocator } from "../../../workers/tasks/tasks.types.js";
-import { acquireReferenceModelForCurrentItem } from "../../acquisition/acquire-reference-model";
-import { patchReferenceModelFact } from "../../model/reference-model-fact-patcher";
-import type { ReferenceHarvestingJob, ReferenceHarvestingProgress, ReferenceHarvestingQueue, ReferenceModelProcessingController, ReferenceModelProcessingProgress } from "../processing.types";
-import { createReferenceHarvestingQueue } from "../queue/reference-harvesting-queue";
-import { startReferenceModelProcessor } from "../processor/reference-model-processor";
-import { collectEnrichmentGuidLookup } from "../candidates/resolve-candidate-collector";
+import type { SitecoreItemLocator, WorkerTask } from "../../../workers/tasks/tasks.types.js";
+import { acquireReferenceModelForCurrentItem } from "../../acquisition/acquire-reference-model.ts";
+import { patchReferenceModelFact } from "../../model/reference-model-fact-patcher.ts";
+import { collectReferenceHarvestingCandidateLookup } from "../candidates/reference-harvesting-candidate-collector.ts";
+import type { ReferenceHarvestingJob, ReferenceHarvestingProgress, ReferenceHarvestingQueue, ReferenceModelProcessingController, ReferenceModelProcessingProgress } from "../processing.types.ts";
+import type { ReferenceModelSessionStateChange, SharedReferenceModelSession, StartSharedReferenceModelSessionOptions } from "../processing.types.ts";
+import { startReferenceModelProcessor } from "../processor/reference-model-processor.ts";
+import { createReferenceHarvestingQueue } from "../queue/reference-harvesting-queue.ts";
+import { factFromResult, filtersForFact, relationshipLocators, sameItem } from "./reference-model-session-facts.ts";
+import { FACTS_BY_FILTER } from "./session.const.ts";
 
 const sessionsByWorkSessionId = new Map<string, SharedReferenceModelSession>();
-const FACTS_BY_FILTER: ReadonlyArray<[keyof SitecoreHarvestFiltersState, SitecoreDataFactName]> = [
-  ["parent", "parent"],
-  ["children", "children"],
-  ["referrers", "referrers"],
-  ["customFields", "customSections"],
-  ["standardFields", "standardSections"],
-  ["layouts", "layout"],
-];
-
-function filtersForFact(factName: SitecoreDataFactName): SitecoreHarvestFiltersState {
-  return {
-    parent: factName === "parent",
-    children: factName === "children",
-    referrers: factName === "referrers",
-    customFields: factName === "customSections",
-    standardFields: factName === "standardSections",
-    layouts: factName === "layout",
-    template: factName === "quickInfo",
-  };
-}
-
-function factFromResult<K extends SitecoreDataFactName>(
-  factName: K,
-  result: SitecoreHarvestResult,
-): SitecoreDataFactMap[K] {
-  const value =
-    factName === "quickInfo"
-      ? {
-          result: {
-            requested: { kind: "id" as const, value: result.rootItem.scItemId },
-            status: "found" as const,
-            value: result.rootItem,
-          },
-        }
-      : factName === "parent"
-        ? { parent: result.parent }
-        : factName === "children"
-          ? { childItems: result.childItems ?? [] }
-          : factName === "referrers"
-            ? { referrers: result.referrers ?? [] }
-            : factName === "customSections"
-              ? { sections: result.customFieldSections ?? [] }
-              : factName === "standardSections"
-                ? { sections: result.standardFieldSections ?? [] }
-                : { layoutSectionFields: result.layoutSectionFields ?? [] };
-  return value as unknown as SitecoreDataFactMap[K];
-}
-
-function locatorFromItem(item: SitecoreDataFactMap["parent"]["parent"]): SitecoreItemLocator | undefined {
-  const id = item?.scItemId?.replace(/[{}]/g, "").trim();
-  if (id) {
-    return { kind: "id", value: id };
-  }
-  const path = item?.scItemPath?.trim();
-  return path ? { kind: "path", value: path } : undefined;
-}
-
-function relationshipLocators<K extends SitecoreDataFactName>(
-  factName: K,
-  value: SitecoreDataFactMap[K],
-): SitecoreItemLocator[] {
-  if (factName === "quickInfo") {
-    const result = (value as SitecoreDataFactMap["quickInfo"]).result;
-    const template = result.status === "found" ? locatorFromItem(result.value?.scTemplate) : undefined;
-    return template ? [template] : [];
-  }
-  if (factName === "parent") {
-    const locator = locatorFromItem((value as SitecoreDataFactMap["parent"]).parent);
-    return locator ? [locator] : [];
-  }
-  if (factName === "children") {
-    return (value as SitecoreDataFactMap["children"]).childItems
-      .map(locatorFromItem)
-      .filter((item): item is SitecoreItemLocator => item !== undefined);
-  }
-  if (factName === "referrers") {
-    return (value as SitecoreDataFactMap["referrers"]).referrers
-      .map(locatorFromItem)
-      .filter((item): item is SitecoreItemLocator => item !== undefined);
-  }
-  return [];
-}
-
-function sameItem(left: SitecoreItemLocator, right: SitecoreItemLocator): boolean {
-  return (
-    left.kind === right.kind &&
-    left.value.replace(/[{}]/g, "").toLowerCase() === right.value.replace(/[{}]/g, "").toLowerCase()
-  );
-}
 
 export function getSharedReferenceModelSession(workSessionId: string): SharedReferenceModelSession | undefined {
   return sessionsByWorkSessionId.get(workSessionId);
@@ -144,8 +52,8 @@ export async function startSharedReferenceModelSession({
   let latestProcessingProgress: ReferenceModelProcessingProgress | undefined;
   let latestHarvestProgress: ReferenceHarvestingProgress | undefined;
   const cacheRevalidationResultByTreeNodeId = new Map<string, "passed" | "error">();
-  const resolveCandidateTreeNodeIds = new Set<string>(
-    Array.from(collectEnrichmentGuidLookup(prepared.referenceModel).values()).flat(),
+  const referenceHarvestingCandidateTreeNodeIds = new Set<string>(
+    Array.from(collectReferenceHarvestingCandidateLookup(prepared.referenceModel).values()).flat(),
   );
   const rootItem: SitecoreItemLocator = { kind: "id", value: itemId };
   const rootFacts = FACTS_BY_FILTER.filter(([filter]) => filters[filter]).map(([, factName]) => factName);
@@ -164,8 +72,8 @@ export async function startSharedReferenceModelSession({
   }
 
   async function publish(changedTreeNodeIds: readonly string[]): Promise<void> {
-    collectEnrichmentGuidLookup(prepared.referenceModel).forEach((treeNodeIds) =>
-      treeNodeIds.forEach((treeNodeId) => resolveCandidateTreeNodeIds.add(treeNodeId)),
+    collectReferenceHarvestingCandidateLookup(prepared.referenceModel).forEach((treeNodeIds) =>
+      treeNodeIds.forEach((treeNodeId) => referenceHarvestingCandidateTreeNodeIds.add(treeNodeId)),
     );
     for (const listener of stateListeners) {
       await listener(changedTreeNodeIds, "enriched", prepared.processingStateByTreeNodeId);
@@ -297,7 +205,7 @@ export async function startSharedReferenceModelSession({
   const session: SharedReferenceModelSession = {
     itemId,
     prepared,
-    resolveCandidateTreeNodeIds,
+    referenceHarvestingCandidateTreeNodeIds,
     cacheRevalidationResultByTreeNodeId,
     processingCompletion: processor.completion,
     subscribeStateChange: (listener) => {

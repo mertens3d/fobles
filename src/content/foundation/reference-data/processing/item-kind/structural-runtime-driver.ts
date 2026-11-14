@@ -14,7 +14,7 @@ import type { TemplateDerivedRecord } from "../../../cache/sitecore-data/sitecor
 import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity.ts";
 import { WORK_SCHEDULING } from "../../../workers/work-scheduling.const.ts";
 import type { SitecoreItemLocator } from "../../../workers/tasks/tasks.types";
-import type { ItemGraphNodeData } from "../../model/model.types";
+import type { ItemGraphNodeData } from "../../model/model.types.ts";
 import type { StructuralDriver, StructuralItem, StructuralRead, StructuralRuntimeOptions } from "./structural-service.types.ts";
 
 export async function createStructuralRuntimeDriver(scope: StructuralScope, options: StructuralRuntimeOptions): Promise<StructuralDriver> {

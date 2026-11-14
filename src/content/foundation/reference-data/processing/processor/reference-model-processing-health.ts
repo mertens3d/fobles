@@ -17,7 +17,7 @@ export function buildReferenceModelProcessingHealth(
     checkedAt,
     lastProgressAt,
     noProgressMs,
-    reason: degraded ? "Resolve candidates are waiting for worker recovery or terminal job results" : undefined,
+    reason: degraded ? "Reference Harvesting candidates are waiting for worker recovery or terminal job results" : undefined,
     activeCount,
     recoveryCount: 0,
   };

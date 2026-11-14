@@ -1,7 +1,7 @@
 // @source-path [fobles] src/content/foundation/reference-data/reference-data-acquisition.ts
 
-import type { FoblesDataAcquisition, FoblesDataAcquisitionOptions } from "./reference-data.types.js";
-import { openFoblesDataSession } from "./reference-data-service";
+import type { FoblesDataAcquisition, FoblesDataAcquisitionOptions } from "./reference-data.types.ts";
+import { openFoblesDataSession } from "./reference-data-service.ts";
 
 export function openFoblesDataAcquisition(
   options: FoblesDataAcquisitionOptions,

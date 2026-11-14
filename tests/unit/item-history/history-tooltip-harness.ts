@@ -28,11 +28,11 @@ const bundled = await build({
     loader: "tsx",
     resolveDir: fileURLToPath(new URL("../../../", import.meta.url)),
   },
-  bundle: true, write: false, platform: "browser", format: "esm", jsx: "automatic",
+  bundle: true, write: false, platform: "node", format: "esm", jsx: "automatic",
   plugins: [{
     name: "history-tooltip-services",
     setup(builder) {
-      builder.onResolve({ filter: /^react(?:\/.*)?$/ }, (args) => ({
+      builder.onResolve({ filter: /^(?:react|react-dom)(?:\/.*)?$/ }, (args) => ({
         path: pathToFileURL(require.resolve(args.path)).href, external: true,
       }));
       builder.onResolve({ filter: /^history-tooltip-probe$/ }, () => ({ path: "probe", namespace: "history-tooltip" }));
@@ -70,6 +70,8 @@ export async function updateTooltip(action: () => void, delay = 0): Promise<void
     if (delay) {
       await new Promise((resolve) => setTimeout(resolve, delay));
     }
+    await Promise.resolve();
+    await new Promise((resolve) => setTimeout(resolve, 0));
   });
 }
 
@@ -80,6 +82,8 @@ export function createTooltipEnvironment() {
     window: win,
     document: win.document,
     navigator: win.navigator,
+    localStorage: win.localStorage,
+    sessionStorage: win.sessionStorage,
     Element: win.Element,
     HTMLElement: win.HTMLElement,
     Node: win.Node,

@@ -1,4 +1,4 @@
-// @source-path [fobles] tests/unit/reference-graph-lifecycle/resolve-fact.test.ts
+// @source-path [fobles] tests/unit/reference-graph-lifecycle/reference-harvesting-fact.test.ts
 import "fake-indexeddb/auto";
 import { beforeEach, test } from "node:test";
 import assert from "node:assert/strict";
@@ -6,7 +6,7 @@ import {
   resetDatabaseConnectionForTests,
 } from "../../../src/content/foundation/cache/sitecore-data/indexed-db.ts";
 import * as cache from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
-import { resolveItemFact } from "../../../src/content/foundation/reference-data/processing/facts/resolve-fact.ts";
+import { harvestItemFact } from "../../../src/content/foundation/reference-data/processing/facts/reference-harvesting-fact.ts";
 import type { SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
 import { DATABASE_NAME } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.const.ts";
 import type { WorkerTaskPayloadByType, WorkerTaskSuccessResult, WorkerTaskExecutionResult } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";
@@ -59,7 +59,7 @@ beforeEach(async () => {
 });
 void test("enrichment-only referenced item (no prior cache) resolves as enriched", async () => {
   const key = sampleKey();
-  const outcome = await resolveItemFact(key, fetchLiveOnce(quickInfoResult("rev-1")));
+  const outcome = await harvestItemFact(key, fetchLiveOnce(quickInfoResult("rev-1")));
   assert.equal(outcome.kind, "enriched");
   const cached = await cache.getItem(key);
   assert.equal(cached?.revision, "rev-1");
@@ -67,7 +67,7 @@ void test("enrichment-only referenced item (no prior cache) resolves as enriched
 void test("cached referenced item revision match is verified and retains the current revision", async () => {
   const key = sampleKey();
   await cache.putFact(key, "quickInfo", { result: quickInfoPayload("rev-1").result }, { revision: "rev-1" });
-  const outcome = await resolveItemFact(key, fetchLiveOnce(quickInfoResult("rev-1")));
+  const outcome = await harvestItemFact(key, fetchLiveOnce(quickInfoResult("rev-1")));
   assert.equal(outcome.kind, "verified");
   const after = await cache.getItem(key);
   assert.equal(after?.revision, "rev-1");
@@ -75,7 +75,7 @@ void test("cached referenced item revision match is verified and retains the cur
 void test("cached referenced item revision mismatch is reported as revision-mismatch", async () => {
   const key = sampleKey();
   await cache.putFact(key, "quickInfo", { result: quickInfoPayload("rev-1").result }, { revision: "rev-1" });
-  const outcome = await resolveItemFact(key, fetchLiveOnce(quickInfoResult("rev-2", "Home Renamed")));
+  const outcome = await harvestItemFact(key, fetchLiveOnce(quickInfoResult("rev-2", "Home Renamed")));
   assert.equal(outcome.kind, "revision-mismatch");
   assert.equal(outcome.kind === "revision-mismatch" ? outcome.hadStructuralCache : undefined, false);
   const after = await cache.getItem(key);
@@ -85,7 +85,7 @@ void test("a revision-mismatch item with cached structural facts reports hadStru
   const key = sampleKey();
   await cache.putFact(key, "quickInfo", { result: quickInfoPayload("rev-1").result }, { revision: "rev-1" });
   await cache.putFact(key, "parent", { parent: undefined });
-  const outcome = await resolveItemFact(key, fetchLiveOnce(quickInfoResult("rev-2")));
+  const outcome = await harvestItemFact(key, fetchLiveOnce(quickInfoResult("rev-2")));
   assert.equal(outcome.kind, "revision-mismatch");
   assert.equal(outcome.kind === "revision-mismatch" ? outcome.hadStructuralCache : undefined, true);
 });
@@ -99,7 +99,7 @@ void test("an unreadable live revision is reported as unverified, never revision
     status: "success",
     payload: { result: quickInfoPayload("rev-2").result, revision: undefined },
   };
-  const outcome = await resolveItemFact(key, fetchLiveOnce(unreadableRevisionResult));
+  const outcome = await harvestItemFact(key, fetchLiveOnce(unreadableRevisionResult));
   assert.equal(outcome.kind, "unverified");
   assert.notEqual(outcome.kind, "revision-mismatch");
 });
@@ -112,7 +112,7 @@ void test("an unreadable live revision on a brand-new item is unverified, not en
     status: "success",
     payload: { result: quickInfoPayload("rev-1").result, revision: undefined },
   };
-  const outcome = await resolveItemFact(key, fetchLiveOnce(unreadableRevisionResult));
+  const outcome = await harvestItemFact(key, fetchLiveOnce(unreadableRevisionResult));
   assert.equal(outcome.kind, "unverified");
 });
 void test("a not-found live result is reported as not-found and is not cached", async () => {
@@ -124,7 +124,7 @@ void test("a not-found live result is reported as not-found and is not cached", 
     status: "success",
     payload: { result: { requested: key.item, status: "not-found" }, revision: undefined },
   };
-  const outcome = await resolveItemFact(key, fetchLiveOnce(notFoundResult));
+  const outcome = await harvestItemFact(key, fetchLiveOnce(notFoundResult));
   assert.equal(outcome.kind, "not-found");
   assert.equal(await cache.getCachedFact(key, "quickInfo"), undefined);
 });
@@ -137,6 +137,6 @@ void test("a failed live result is reported as failed", async () => {
     status: "error",
     errorMessage: "boom",
   };
-  const outcome = await resolveItemFact(key, fetchLiveOnce(errorResult));
+  const outcome = await harvestItemFact(key, fetchLiveOnce(errorResult));
   assert.equal(outcome.kind, "failed");
 });

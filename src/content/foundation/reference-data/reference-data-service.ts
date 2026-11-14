@@ -1,10 +1,10 @@
 // @source-path [fobles] src/content/foundation/reference-data/reference-data-service.ts
 
-import type { AcquisitionProgressListener, AcquisitionState, FoblesAcquisitionProgress, FoblesDataRequest, FoblesDataSession } from "./reference-data.types.js";
+import type { AcquisitionProgressListener, AcquisitionState, FoblesAcquisitionProgress, FoblesDataRequest, FoblesDataSession } from "./reference-data.types.ts";
 import { PROGRESS_STEPS } from "../harvesting/planner/harvest-steps";
-import type { SharedReferenceModelSession } from "./processing/processing.types";
-import { startSharedReferenceModelSession } from "./processing/session/reference-model-session";
-import type { PhaseProgress } from "./progress/lifecycle.types";
+import type { SharedReferenceModelSession } from "./processing/processing.types.ts";
+import { startSharedReferenceModelSession } from "./processing/session/reference-model-session.ts";
+import type { PhaseProgress } from "./progress/lifecycle.types.ts";
 
 const dataSessionsByWorkSessionId = new Map<string, FoblesDataSession>();
 const acquisitionByWorkSessionId = new Map<string, AcquisitionState>();
@@ -91,7 +91,7 @@ export async function openFoblesDataSession(request: FoblesDataRequest): Promise
     data: {
       itemId: source.itemId,
       model: source.prepared,
-      resolveCandidateTreeNodeIds: source.resolveCandidateTreeNodeIds,
+      referenceHarvestingCandidateTreeNodeIds: source.referenceHarvestingCandidateTreeNodeIds,
       cacheRevalidationResultByTreeNodeId: source.cacheRevalidationResultByTreeNodeId,
     },
     completion: source.processingCompletion,

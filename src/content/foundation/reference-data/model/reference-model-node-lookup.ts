@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/reference-model-node-lookup.ts
 
-import type { ReferenceModelNode } from "./model.types";
+import type { ReferenceModelNode } from "./model.types.ts";
 
 // Authoritative mapping from Cytoscape node id (== treeNodeId) back to the domain data that
 // produced it - built once per prepared graph so selection/details resolve through this map

@@ -7,7 +7,7 @@ import type { AuditCheck } from "../auditor.types";
 import type { AuditCheckContext } from "../auditor.types";
 import type { AuditFinding } from "../auditor.types";
 import type { AuditFindingStatus } from "../auditor.types";
-import { CACHE_VALIDATION_CHECK_KEY, CACHE_VALIDATION_CHECK_LABEL } from "./checks.const";
+import { CACHE_VALIDATION_CHECK_KEY, CACHE_VALIDATION_CHECK_LABEL } from "./checks.const.ts";
 
 function interpretCacheValidationState(
   processingState: ProcessingStatus | undefined,

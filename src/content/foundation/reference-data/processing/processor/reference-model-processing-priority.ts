@@ -1,9 +1,9 @@
 // @source-path [fobles] src/content/foundation/reference-data/processing/processor/reference-model-processing-priority.ts
 
-import type { ItemGraphNodeData } from "../../model/model.types";
-import type { ReferenceModelNode } from "../../model/model.types";
-import { firstItemNode } from "./reference-model-processing-tree-state";
-import type { ReferenceModelProcessingPriorityRank } from "../processing.types";
+import type { ItemGraphNodeData } from "../../model/model.types.ts";
+import type { ReferenceModelNode } from "../../model/model.types.ts";
+import { firstItemNode } from "./reference-model-processing-tree-state.ts";
+import type { ReferenceModelProcessingPriorityRank } from "../processing.types.ts";
 
 export function rankItemForEnrichment(item: ItemGraphNodeData): ReferenceModelProcessingPriorityRank {
   if (!item.scItemName) {

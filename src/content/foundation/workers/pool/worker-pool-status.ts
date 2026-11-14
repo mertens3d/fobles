@@ -6,7 +6,7 @@ import { getWorkClass } from "./worker-admission.ts";
 import type { WorkerPoolState } from "./pool.types";
 import type { WorkerPoolStatus } from "./pool.types";
 import type { WorkerPoolTaskStatus } from "./pool.types";
-import { getWorkerTaskHistory } from "./worker-task-history";
+import { getWorkerTaskHistory } from "./worker-task-history.ts";
 
 function taskStatus(queued: QueuedTask, phase: WorkerPoolTaskStatus["phase"]): WorkerPoolTaskStatus {
   const task = queued.task;

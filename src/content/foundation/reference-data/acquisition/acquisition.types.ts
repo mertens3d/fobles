@@ -1,7 +1,7 @@
 import type { HarvestProgressCallback } from "../../harvesting/harvesting.types";
 import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types";
-import type { ReferenceModelNode } from "../model/model.types";
-import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../processing/processing.types";
+import type { ReferenceModelNode } from "../model/model.types.ts";
+import type { ProcessingStateByTreeNodeId, ProcessingStatus } from "../processing/processing.types.ts";
 
 export type AcquireReferenceModelOptions = {
   signal: AbortSignal;

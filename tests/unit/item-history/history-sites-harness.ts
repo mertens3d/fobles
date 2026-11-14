@@ -20,7 +20,7 @@ const bundled = await build({
   plugins: [{
     name: "history-sites-dependencies",
     setup(builder) {
-      builder.onResolve({ filter: /^react(?:\/.*)?$/ }, (args) => ({
+      builder.onResolve({ filter: /^(?:react|react-dom)(?:\/.*)?$/ }, (args) => ({
         path: pathToFileURL(require.resolve(args.path)).href, external: true,
       }));
       builder.onResolve({ filter: /structural-discovery\.ts$|^history-discovery-probe$/ }, () => ({
@@ -64,6 +64,7 @@ export async function update(action: () => void, observe = false): Promise<void>
       await new Promise((resolve) => setTimeout(resolve, ITEM_HISTORY_CAPTURE.DEBOUNCE_MS + 50));
     }
     await Promise.resolve();
+    await new Promise((resolve) => setTimeout(resolve, 0));
   });
 }
 

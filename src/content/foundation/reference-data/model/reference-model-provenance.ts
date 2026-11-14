@@ -1,9 +1,9 @@
 // @source-path [fobles] src/content/foundation/reference-data/model/reference-model-provenance.ts
 
-import type { ReferenceModelProvenance } from "./model.types.js";
+import type { ReferenceModelProvenance } from "./model.types.ts";
 import type { FoblesStrategy } from "../../../../constants/constants.types.js";
 import type { FieldReferenceConfidence } from "../../../field-reference-resolution/field-reference-resolution.types.js";
-import type { ItemGraphNodeData } from "./model.types.js";
+import type { ItemGraphNodeData } from "./model.types.ts";
 
 export function createSitecoreItemProvenance(item: ItemGraphNodeData): ReferenceModelProvenance {
   return { type: "sitecore-item", item: { ...item } };

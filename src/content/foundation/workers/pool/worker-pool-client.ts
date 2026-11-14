@@ -1,16 +1,16 @@
 // @source-path [fobles] src/content/foundation/workers/pool/worker-pool-client.ts
 
-import { CONST } from "../../../../constants/const";
-import { extensionLog } from "../../../logger";
-import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const";
-import type { WorkerPoolStatus } from "./pool.types";
-import type { WorkerTaskResult } from "../tasks/tasks.types";
-import type { WorkerTask } from "../tasks/tasks.types";
-import type { WorkerPoolStatusMessage } from "../transport/transport.types";
-import type { PoolDisposeMessage } from "../transport/transport.types";
-import type { PoolCancelTaskMessage } from "../transport/transport.types";
-import type { PoolCancelRequestMessage } from "../transport/transport.types";
-import type { PoolRunTaskMessage } from "../transport/transport.types";
+import { CONST } from "../../../../constants/const.ts";
+import { extensionLog } from "../../../logger.ts";
+import { WORKER_MESSAGE_TYPE } from "../worker-protocol.const.ts";
+import type { WorkerPoolStatus } from "./pool.types.ts";
+import type { WorkerTaskResult } from "../tasks/tasks.types.ts";
+import type { WorkerTask } from "../tasks/tasks.types.ts";
+import type { WorkerPoolStatusMessage } from "../transport/transport.types.ts";
+import type { PoolDisposeMessage } from "../transport/transport.types.ts";
+import type { PoolCancelTaskMessage } from "../transport/transport.types.ts";
+import type { PoolCancelRequestMessage } from "../transport/transport.types.ts";
+import type { PoolRunTaskMessage } from "../transport/transport.types.ts";
 
 export async function runWorkerTask(task: WorkerTask): Promise<WorkerTaskResult | undefined> {
   const message: PoolRunTaskMessage = { type: CONST.FOBLES.WORKER.MESSAGE_TYPE.POOL_RUN_TASK, task };

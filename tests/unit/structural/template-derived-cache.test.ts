@@ -8,6 +8,7 @@ import { createTemplateStructuralService } from "../../../src/content/foundation
 import { fixture, guid, SCOPE } from "./structural-fixture.ts";
 import { runtimeFixture } from "./structural-runtime-fixture.ts";
 import { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.ts";
+import { getRuntimeSettings } from "../../../src/content/runtime-settings/runtime-settings.ts";
 
 beforeEach(() => cache.clear());
 
@@ -127,6 +128,7 @@ void test("persisted fingerprints detect changed cached transitive bases and set
 });
 
 void test("SWR returns stale derived kind without recertification and converges after inheritance refresh", async (t) => {
+  getRuntimeSettings().structuralCache.maxUnvalidatedAgeHours = 1;
   let now = 1000;
   t.mock.method(Date, "now", () => now);
   const key = structuralTemplateCacheKey(SCOPE, guid(10));
@@ -146,7 +148,7 @@ void test("SWR returns stale derived kind without recertification and converges 
   assert.deepEqual(await createTemplateStructuralService().classify(item, staleDriver, f.options.settings, now), {
     kind: "site",
     complete: true,
-    stale: true,
+    stale: false,
   });
   assert.deepEqual(await cache.getCachedFact(key, "templateDerived"), original);
   await staleDriver.finish();

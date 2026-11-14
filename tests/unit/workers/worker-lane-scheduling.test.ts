@@ -91,7 +91,7 @@ for (const retryResult of ["document-stale", "missing-result"] as const) {
       const retryStatus = pool.getWorkerPoolStatus(HOST);
       assert.equal(retryStatus.activeBackground, 1);
       assert.equal(retryStatus.activeForeground, 1);
-      assert.equal(retryStatus.workerCount, 1);
+      assert.equal(retryStatus.workerCount, 2);
       assert.equal(retryStatus.queuedBackground, 1);
       assert.equal(
         retryStatus.activeTasks.find((entry) => entry.taskId === "bg-retry")?.phase,

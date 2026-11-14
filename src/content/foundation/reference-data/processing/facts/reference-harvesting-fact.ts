@@ -1,13 +1,13 @@
-// @source-path [fobles] src/content/foundation/reference-data/processing/facts/resolve-fact.ts
+// @source-path [fobles] src/content/foundation/reference-data/processing/facts/reference-harvesting-fact.ts
 
-import type { CachedItemFact } from "../processing.types.js";
-import type { ResolveOutcome } from "../processing.types.js";
+import type { CachedItemFact } from "../processing.types.ts";
+import type { ReferenceHarvestingOutcome } from "../processing.types.ts";
 import * as cache from "../../../cache/sitecore-data/sitecore-data-cache.ts";
 import type { StoredQuickInfo } from "../../../cache/sitecore-data/sitecore-data.types";
 import type { SitecoreDataCacheKey } from "../../../cache/sitecore-data/sitecore-data.types";
 import type { WorkerTaskExecutionResult } from "../../../workers/tasks/tasks.types";
 import type { SitecoreItemLocator } from "../../../workers/tasks/tasks.types";
-import type { ItemGraphNodeData } from "../../model/model.types";
+import type { ItemGraphNodeData } from "../../model/model.types.ts";
 
 function restoreQuickInfo(quickInfo: StoredQuickInfo): ItemGraphNodeData {
   const scTemplate = itemFromLocator(quickInfo.scTemplate);
@@ -34,12 +34,12 @@ export async function readCachedItemFact(key: SitecoreDataCacheKey): Promise<Cac
   return fact;
 }
 
-export async function verifyItemFact(
+export async function verifyHarvestedItemFact(
   key: SitecoreDataCacheKey,
   prior: CachedItemFact | undefined,
   fetchLive: () => Promise<WorkerTaskExecutionResult>,
-): Promise<ResolveOutcome> {
-  let outcome: ResolveOutcome = { kind: "failed" };
+): Promise<ReferenceHarvestingOutcome> {
+  let outcome: ReferenceHarvestingOutcome = { kind: "failed" };
   const liveResult = await fetchLive();
 
   if (liveResult.status === "success" && liveResult.type === "get-quick-info") {
@@ -83,10 +83,10 @@ function itemFromLocator(locator: SitecoreItemLocator | undefined): ItemGraphNod
   };
 }
 
-export async function resolveItemFact(
+export async function harvestItemFact(
   key: SitecoreDataCacheKey,
   fetchLive: () => Promise<WorkerTaskExecutionResult>,
-): Promise<ResolveOutcome> {
+): Promise<ReferenceHarvestingOutcome> {
   const prior = await readCachedItemFact(key);
-  return verifyItemFact(key, prior, fetchLive);
+  return verifyHarvestedItemFact(key, prior, fetchLive);
 }
