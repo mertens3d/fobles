@@ -6,7 +6,7 @@ import {
   resetDatabaseConnectionForTests,
 } from "../../../src/content/foundation/cache/sitecore-data/indexed-db.ts";
 import * as cache from "../../../src/content/foundation/cache/sitecore-data/sitecore-data-cache.ts";
-import { resolveItemFact } from "../../../src/content/foundation/reference-data/processing/resolve-fact.ts";
+import { resolveItemFact } from "../../../src/content/foundation/reference-data/processing/facts/resolve-fact.ts";
 import type { SitecoreDataCacheKey } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.types.ts";
 import { DATABASE_NAME } from "../../../src/content/foundation/cache/sitecore-data/sitecore-data.const.ts";
 import type { WorkerTaskPayloadByType, WorkerTaskSuccessResult, WorkerTaskExecutionResult } from "../../../src/content/foundation/workers/tasks/tasks.types.ts";

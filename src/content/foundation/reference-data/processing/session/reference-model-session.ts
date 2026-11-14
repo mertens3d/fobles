@@ -1,24 +1,24 @@
-// @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-session.ts
+// @source-path [fobles] src/content/foundation/reference-data/processing/session/reference-model-session.ts
 
-import type { ReferenceModelSessionStateChange, SharedReferenceModelSession, StartSharedReferenceModelSessionOptions } from "./processing.types.js";
-import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
-import { extensionLog } from "../../../logger";
-import * as cache from "../../cache/sitecore-data/sitecore-data-cache";
-import type { SitecoreDataFactName } from "../../cache/sitecore-data/sitecore-data.types";
-import type { SitecoreDataFactMap } from "../../cache/sitecore-data/sitecore-data.types";
-import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
-import { harvestSitecoreWithWorkers } from "../../harvesting/coordinator/foreground-harvest-coordinator";
-import type { SitecoreHarvestResult } from "../../harvesting/harvesting.types.js";
-import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
-import { buildFoblesUrl } from "../../sitecore/fobles-url";
-import type { WorkerTask } from "../../workers/tasks/tasks.types.js";
-import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types.js";
-import { acquireReferenceModelForCurrentItem } from "../acquisition/acquire-reference-model";
-import { patchReferenceModelFact } from "../model/reference-model-fact-patcher";
-import type { ReferenceHarvestingJob, ReferenceHarvestingProgress, ReferenceHarvestingQueue, ReferenceModelProcessingController, ReferenceModelProcessingProgress } from "./processing.types";
-import { createReferenceHarvestingQueue } from "./reference-harvesting-queue";
-import { startReferenceModelProcessor } from "./reference-model-processor";
-import { collectEnrichmentGuidLookup } from "./resolve-candidate-collector";
+import type { ReferenceModelSessionStateChange, SharedReferenceModelSession, StartSharedReferenceModelSessionOptions } from "../processing.types.js";
+import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_base.types";
+import { extensionLog } from "../../../../logger";
+import * as cache from "../../../cache/sitecore-data/sitecore-data-cache";
+import type { SitecoreDataFactName } from "../../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataFactMap } from "../../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataCacheKey } from "../../../cache/sitecore-data/sitecore-data.types";
+import { harvestSitecoreWithWorkers } from "../../../harvesting/coordinator/foreground-harvest-coordinator";
+import type { SitecoreHarvestResult } from "../../../harvesting/harvesting.types.js";
+import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity";
+import { buildFoblesUrl } from "../../../sitecore/fobles-url";
+import type { WorkerTask } from "../../../workers/tasks/tasks.types.js";
+import type { SitecoreItemLocator } from "../../../workers/tasks/tasks.types.js";
+import { acquireReferenceModelForCurrentItem } from "../../acquisition/acquire-reference-model";
+import { patchReferenceModelFact } from "../../model/reference-model-fact-patcher";
+import type { ReferenceHarvestingJob, ReferenceHarvestingProgress, ReferenceHarvestingQueue, ReferenceModelProcessingController, ReferenceModelProcessingProgress } from "../processing.types";
+import { createReferenceHarvestingQueue } from "../queue/reference-harvesting-queue";
+import { startReferenceModelProcessor } from "../processor/reference-model-processor";
+import { collectEnrichmentGuidLookup } from "../candidates/resolve-candidate-collector";
 
 const sessionsByWorkSessionId = new Map<string, SharedReferenceModelSession>();
 const FACTS_BY_FILTER: ReadonlyArray<[keyof SitecoreHarvestFiltersState, SitecoreDataFactName]> = [
@@ -210,10 +210,10 @@ export async function startSharedReferenceModelSession({
             session: {
               requestId,
               originalEditorState: {
-                rawValues: await import("../../sitecore/macros/ribbon-toggle-macro").then(({ getScRawValuesState }) =>
+                rawValues: await import("../../../sitecore/macros/ribbon-toggle-macro").then(({ getScRawValuesState }) =>
                   getScRawValuesState(doc),
                 ),
-                standardFields: await import("../../sitecore/macros/ribbon-toggle-macro").then(
+                standardFields: await import("../../../sitecore/macros/ribbon-toggle-macro").then(
                   ({ getScStandardFieldsState }) => getScStandardFieldsState(doc),
                 ),
               },
@@ -322,8 +322,8 @@ export async function startSharedReferenceModelSession({
       const previousFilters = activeFilters;
       activeFilters = nextFilters;
       harvestingQueue.remove((job) => !isFactEnabled(job.factName));
-      // A filter that just turned on was never part of the original harvest, so the root item's
-      // fact for it has to be (re)enqueued now - otherwise it never joins the reference model.
+      // Agent: A filter that just turned on was never part of the original harvest, so the root item's
+      // Agent: fact for it has to be (re)enqueued now - otherwise it never joins the reference model.
       FACTS_BY_FILTER.filter(
         ([filter, factName]) => !previousFilters[filter] && nextFilters[filter] && isFactEnabled(factName),
       ).forEach(([, factName]) => harvestingQueue.enqueue({ item: rootItem, factName }));

@@ -1,13 +1,13 @@
-// @source-path [fobles] src/content/foundation/reference-data/processing/resolve-fact.ts
+// @source-path [fobles] src/content/foundation/reference-data/processing/facts/resolve-fact.ts
 
-import type { CachedItemFact } from "./processing.types.js";
-import type { ResolveOutcome } from "./processing.types.js";
-import * as cache from "../../cache/sitecore-data/sitecore-data-cache.ts";
-import type { StoredQuickInfo } from "../../cache/sitecore-data/sitecore-data.types";
-import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
-import type { WorkerTaskExecutionResult } from "../../workers/tasks/tasks.types";
-import type { SitecoreItemLocator } from "../../workers/tasks/tasks.types";
-import type { ItemGraphNodeData } from "../model/model.types";
+import type { CachedItemFact } from "../processing.types.js";
+import type { ResolveOutcome } from "../processing.types.js";
+import * as cache from "../../../cache/sitecore-data/sitecore-data-cache.ts";
+import type { StoredQuickInfo } from "../../../cache/sitecore-data/sitecore-data.types";
+import type { SitecoreDataCacheKey } from "../../../cache/sitecore-data/sitecore-data.types";
+import type { WorkerTaskExecutionResult } from "../../../workers/tasks/tasks.types";
+import type { SitecoreItemLocator } from "../../../workers/tasks/tasks.types";
+import type { ItemGraphNodeData } from "../../model/model.types";
 
 function restoreQuickInfo(quickInfo: StoredQuickInfo): ItemGraphNodeData {
   const scTemplate = itemFromLocator(quickInfo.scTemplate);

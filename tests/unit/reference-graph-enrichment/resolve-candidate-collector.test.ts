@@ -5,7 +5,7 @@ import assert from "node:assert/strict";
 import {
   collectEnrichmentGuidLookup,
   isEligibleForResolve,
-} from "../../../src/content/foundation/reference-data/processing/resolve-candidate-collector.ts";
+} from "../../../src/content/foundation/reference-data/processing/candidates/resolve-candidate-collector.ts";
 import type {
   ItemGraphNodeData,
   ReferenceModelNode,

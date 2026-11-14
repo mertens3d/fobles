@@ -1,38 +1,23 @@
-// @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processor.ts
+// @source-path [fobles] src/content/foundation/reference-data/processing/processor/reference-model-processor.ts
 
-import type { GuidResult, GuidWork, ItemSnapshot, StartReferenceModelProcessorOptions } from "./processing.types.js";
-import { extensionLog } from "../../../logger";
-import { initializeRuntimeSettings, isJourneyStepLiveEnabled } from "../../../runtime-settings/runtime-settings";
-import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
-import type { HealthReport } from "../../diagnostics/diagnostics.types";
-import { mergeEnrichedItem } from "../../harvesting/planner/enrichment-task-planner";
-import { createSitecoreItemLocator } from "../../harvesting/worker-task-executor";
-import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
-import { buildFoblesUrl } from "../../sitecore/fobles-url";
-import { createErrorResult } from "../../workers/tasks/worker-task.js";
-import type { WorkerTaskExecutionResult } from "../../workers/tasks/tasks.types.js";
-import type { WorkerTask } from "../../workers/tasks/tasks.types.js";
-import type { ItemGraphNodeData } from "../model/model.types";
+import type { GuidResult, GuidWork, ItemSnapshot, StartReferenceModelProcessorOptions } from "../processing.types.js";
+import { snapshotOf } from "./reference-model-processing-snapshot";
+import { buildReferenceModelProcessingHealth } from "./reference-model-processing-health";
+import { applyReferenceModelResolveOutcome, requestReferenceModelResolve } from "./reference-model-live-resolver";
+import { DEFAULT_MAX_LIVE_IN_FLIGHT, NON_TERMINAL_STATUSES } from "./reference-model-processor.const";
+import { extensionLog } from "../../../../logger";
+import { initializeRuntimeSettings, isJourneyStepLiveEnabled } from "../../../../runtime-settings/runtime-settings";
+import type { SitecoreDataCacheKey } from "../../../cache/sitecore-data/sitecore-data.types";
+import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity";
+import type { ItemGraphNodeData } from "../../model/model.types";
 import { setProcessingState } from "./processing-state";
-import type { CachedItemFact, ProcessingStatus, ReferenceModelProcessingController, ResolveOutcome } from "./processing.types";
+import type { CachedItemFact, ProcessingStatus, ReferenceModelProcessingController } from "../processing.types";
 import { sortGuidsByEnrichmentPriority } from "./reference-model-processing-priority";
 import { firstItemNode, itemsFor } from "./reference-model-processing-tree-state";
-import { collectEnrichmentGuidLookup, isEligibleForResolve } from "./resolve-candidate-collector";
-import { readCachedItemFact, verifyItemFact } from "./resolve-fact";
-
-const NON_TERMINAL_STATUSES = new Set<ProcessingStatus | undefined>([undefined, "pending", "cached", "enriching"]);
-const DEFAULT_MAX_LIVE_IN_FLIGHT = 4;
-function snapshotOf(item: ItemGraphNodeData): ItemSnapshot {
-  return {
-    scItemId: item.scItemId,
-    scItemName: item.scItemName,
-    scItemPath: item.scItemPath,
-    scTemplate: item.scTemplate,
-    scItemIcon: item.scItemIcon,
-    rawMarkup: item.rawMarkup,
-    link: item.link,
-  };
-}
+import { collectEnrichmentGuidLookup, isEligibleForResolve } from "../candidates/resolve-candidate-collector";
+import { readCachedItemFact, verifyItemFact } from "../facts/resolve-fact";
+import { mergeEnrichedItem } from "../../../harvesting/planner/enrichment-task-planner.js";
+import { createSitecoreItemLocator } from "../../../harvesting/worker-task-executor.js";
 
 export function startReferenceModelProcessor({
   doc,
@@ -60,7 +45,7 @@ export function startReferenceModelProcessor({
   guidLookup.forEach((treeNodeIds, guid) =>
     treeNodeIds.forEach((treeNodeId) => guidByTreeNodeId.set(treeNodeId, guid)),
   );
-  // One entry per GUID, ever: the lookup is already keyed by normalized reference, so every tree node of an item shares a single queue entry and a single live read.
+  // Agent: One entry per GUID, ever: the lookup is already keyed by normalized reference, so every tree node of an item shares a single queue entry and a single live read.
   const cacheQueue: string[] = [...guids];
   const liveQueue: string[] = [];
   const workByGuid = new Map<string, GuidWork>();
@@ -88,20 +73,8 @@ export function startReferenceModelProcessor({
   function keyFor(reference: string): SitecoreDataCacheKey {
     return { ...identity, item: createSitecoreItemLocator(reference) };
   }
-  function getHealth(): HealthReport {
-    const checkedAt = performance.now();
-    const noProgressMs = Math.round(checkedAt - lastProgressAt);
-    const degraded = !disposed && activeGuids.size > 0 && noProgressMs >= 20000;
-    return {
-      owner: "ReferenceModelProcessor",
-      state: degraded ? "degraded" : "healthy",
-      checkedAt,
-      lastProgressAt,
-      noProgressMs,
-      reason: degraded ? "Resolve candidates are waiting for worker recovery or terminal job results" : undefined,
-      activeCount: activeGuids.size,
-      recoveryCount: 0,
-    };
+  function getHealth() {
+    return buildReferenceModelProcessingHealth(disposed, activeGuids.size, lastProgressAt);
   }
   const unregisterHealth = workSession.registerHealthProvider({ getHealth });
   async function publish(treeNodeIds: readonly string[], status: ProcessingStatus): Promise<void> {
@@ -122,7 +95,7 @@ export function startReferenceModelProcessor({
   }
   void publish(candidateTreeNodeIds, "pending");
   onProgress?.({ completedItemCount: 0, maxItemCount, status: maxItemCount > 0 ? "running" : "complete" });
-  // A finished re-harvest can add references to the model. Only tree nodes the model actually holds are adopted; a brand-new GUID joins the cache queue, new nodes of an already-finished GUID reuse its result.
+  // Agent: A finished re-harvest can add references to the model. Only tree nodes the model actually holds are adopted; a brand-new GUID joins the cache queue, new nodes of an already-finished GUID reuse its result.
   function rescanForNewCandidates(): void {
     if (!isStopped()) {
       const newGuids: string[] = [];
@@ -163,8 +136,8 @@ export function startReferenceModelProcessor({
   }
   const unsubscribeHarvest = harvestActivity?.subscribe(onHarvestActivity);
   workSession.signal.addEventListener("abort", signal, { once: true });
-  // Cache queue first, every iteration: a cached value reaches the table before any live read is started. Live reads run in parallel up to maxLiveInFlight and feed back into this loop. The loop ends only when nothing is queued, nothing is in flight, and no re-harvest is pending.
-  // The live step is resolved once per run from the runtime setting testing.showJourneyStepLive; when off, no live queue entry is ever created and references stay at their cached (or pending) tier.
+  // Agent: Cache queue first, every iteration: a cached value reaches the table before any live read is started. Live reads run in parallel up to maxLiveInFlight and feed back into this loop. The loop ends only when nothing is queued, nothing is in flight, and no re-harvest is pending.
+  // Agent: The live step is resolved once per run from the runtime setting testing.showJourneyStepLive; when off, no live queue entry is ever created and references stay at their cached (or pending) tier.
   async function runLoop(): Promise<void> {
     await initializeRuntimeSettings();
     const liveStepEnabled = isJourneyStepLiveEnabled();
@@ -222,7 +195,7 @@ export function startReferenceModelProcessor({
     completedItemCount += 1;
     onProgress?.({ completedItemCount, maxItemCount, status: "running" });
   }
-  // Cache hit: show the cached value now (tier "cached") and queue the live check. Cache miss: straight to the live queue at tier "pending" (reference). With the live step off, the item ends here: "cached" on a hit, "pending" on a miss.
+  // Agent: Cache hit: show the cached value now (tier "cached") and queue the live check. Cache miss: straight to the live queue at tier "pending" (reference). With the live step off, the item ends here: "cached" on a hit, "pending" on a miss.
   async function hydrateFromCache(guid: string, liveStepEnabled: boolean): Promise<void> {
     const treeNodeIds = guidLookup.get(guid) ?? [];
     if (!isEligibleForResolve(treeNodeIds, nodesById)) {
@@ -274,7 +247,7 @@ export function startReferenceModelProcessor({
         signal();
       });
   }
-  // Cached values are display-only: whatever the live read says replaces them, and a failed or not-found read removes them.
+  // Agent: Cached values are display-only: whatever the live read says replaces them, and a failed or not-found read removes them.
   function restoreSnapshots(work: GuidWork | undefined): void {
     work?.snapshots.forEach((snapshot, item) => Object.assign(item, snapshot));
   }
@@ -289,10 +262,10 @@ export function startReferenceModelProcessor({
         await publish(treeNodeIds, "enriching");
       }
       if (reference) {
-        const outcome = await verifyItemFact(keyFor(reference), work?.cached, () => requestResolve(reference));
+        const outcome = await verifyItemFact(keyFor(reference), work?.cached, () => requestReferenceModelResolve(workSession, reference, disposed));
         if (!isStopped()) {
           restoreSnapshots(work);
-          status = applyResolveOutcome(guid, treeNodeIds, outcome);
+          status = applyReferenceModelResolveOutcome(guid, treeNodeIds, nodesById, outcome);
           value = outcome.kind === "not-found" || outcome.kind === "failed" ? undefined : outcome.value;
           extensionLog.debug("Reference model processor: resolve outcome", {
             guid,
@@ -329,32 +302,6 @@ export function startReferenceModelProcessor({
         countCompleted();
       }
     }
-  }
-  async function requestResolve(reference: string): Promise<WorkerTaskExecutionResult> {
-    const task: Omit<Extract<WorkerTask, { type: "get-quick-info" }>, "requestId"> = {
-      taskId: crypto.randomUUID(),
-      type: "get-quick-info",
-      url: buildFoblesUrl(reference),
-      requested: createSitecoreItemLocator(reference),
-    };
-    try {
-      const result = await workSession.runTask(task);
-      return result ?? createErrorResult({ ...task, requestId: workSession.id }, "No response from worker pool");
-    } catch (error) {
-      if (!disposed) {
-        extensionLog.warn("Reference model processor: resolve task failed", { task, error });
-      }
-      return createErrorResult(
-        { ...task, requestId: workSession.id },
-        error instanceof Error ? error.message : "Resolve task failed",
-      );
-    }
-  }
-  function applyResolveOutcome(guid: string, treeNodeIds: string[], outcome: ResolveOutcome): ProcessingStatus {
-    if (outcome.kind !== "not-found" && outcome.kind !== "failed") {
-      mergeEnrichedItem(new Map([[guid, itemsFor(treeNodeIds, nodesById)]]), guid, outcome.value);
-    }
-    return outcome.kind;
   }
   return {
     completion,

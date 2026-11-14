@@ -1,12 +1,12 @@
-// @source-path [fobles] src/content/foundation/reference-data/processing/resolve-candidate-collector.ts
+// @source-path [fobles] src/content/foundation/reference-data/processing/candidates/resolve-candidate-collector.ts
 
-import { stripGuidBraces } from "../../sitecore/guid.ts";
-import { isItemGraphNodeDataResolved } from "../../harvesting/enrichment/item-enricher.ts";
-import type { ReferenceModelNode } from "../model/model.types";
+import { stripGuidBraces } from "../../../sitecore/guid.ts";
+import { isItemGraphNodeDataResolved } from "../../../harvesting/enrichment/item-enricher.ts";
+import type { ReferenceModelNode } from "../../model/model.types";
 
-// Item reference -> every treeNodeId representing that same unresolved item.
-// Prefer GUID when available; otherwise use the Sitecore path.
-// Only items represented in the ReferenceModel become enrichment candidates.
+// Agent: Item reference -> every treeNodeId representing that same unresolved item.
+// Agent: Prefer GUID when available; otherwise use the Sitecore path.
+// Agent: Only items represented in the ReferenceModel become enrichment candidates.
 export function collectEnrichmentGuidLookup(referenceModel: ReferenceModelNode): Map<string, string[]> {
   const treeNodeIdsByReference = new Map<string, string[]>();
 
@@ -15,9 +15,9 @@ export function collectEnrichmentGuidLookup(referenceModel: ReferenceModelNode):
   return treeNodeIdsByReference;
 }
 
-// Bracketed and unbracketed spellings of the same GUID (e.g. a rendering parameter value vs a
-// layout XML attribute) must collapse to one lookup entry - otherwise the same underlying item
-// is scheduled for Resolve twice under two different keys.
+// Agent: Bracketed and unbracketed spellings of the same GUID (e.g. a rendering parameter value vs a
+// Agent: layout XML attribute) must collapse to one lookup entry - otherwise the same underlying item
+// Agent: is scheduled for Resolve twice under two different keys.
 function normalizeReferenceKey(reference: string): string {
   return stripGuidBraces(reference).toLowerCase();
 }
@@ -42,10 +42,10 @@ function collectRecursive(treeNode: ReferenceModelNode, treeNodeIdsByReference: 
   });
 }
 
-// Re-checked right before a guid's Resolve attempt actually runs (not just at collection time) -
-// a shared ItemGraphNodeData object instance (e.g. a page-layout item reused across devices) can
-// become fully resolved via a DIFFERENT guid's merge before this guid's own turn comes up in a
-// concurrent Resolve batch. Reference Graph and Auditor must both honor this, not just Auditor.
+// Agent: Re-checked right before a guid's Resolve attempt actually runs (not just at collection time) -
+// Agent: a shared ItemGraphNodeData object instance (e.g. a page-layout item reused across devices) can
+// Agent: become fully resolved via a DIFFERENT guid's merge before this guid's own turn comes up in a
+// Agent: concurrent Resolve batch. Reference Graph and Auditor must both honor this, not just Auditor.
 export function isEligibleForResolve(
   treeNodeIds: readonly string[],
   nodesById: ReadonlyMap<string, ReferenceModelNode>,

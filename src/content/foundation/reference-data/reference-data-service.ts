@@ -3,7 +3,7 @@
 import type { AcquisitionProgressListener, AcquisitionState, FoblesAcquisitionProgress, FoblesDataRequest, FoblesDataSession } from "./reference-data.types.js";
 import { PROGRESS_STEPS } from "../harvesting/planner/harvest-steps";
 import type { SharedReferenceModelSession } from "./processing/processing.types";
-import { startSharedReferenceModelSession } from "./processing/reference-model-session";
+import { startSharedReferenceModelSession } from "./processing/session/reference-model-session";
 import type { PhaseProgress } from "./progress/lifecycle.types";
 
 const dataSessionsByWorkSessionId = new Map<string, FoblesDataSession>();

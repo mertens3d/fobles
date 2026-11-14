@@ -1,9 +1,9 @@
-// @source-path [fobles] src/content/foundation/reference-data/processing/reference-model-processing-priority.ts
+// @source-path [fobles] src/content/foundation/reference-data/processing/processor/reference-model-processing-priority.ts
 
-import type { ItemGraphNodeData } from "../model/model.types";
-import type { ReferenceModelNode } from "../model/model.types";
+import type { ItemGraphNodeData } from "../../model/model.types";
+import type { ReferenceModelNode } from "../../model/model.types";
 import { firstItemNode } from "./reference-model-processing-tree-state";
-import type { ReferenceModelProcessingPriorityRank } from "./processing.types";
+import type { ReferenceModelProcessingPriorityRank } from "../processing.types";
 
 export function rankItemForEnrichment(item: ItemGraphNodeData): ReferenceModelProcessingPriorityRank {
   if (!item.scItemName) {
@@ -17,8 +17,8 @@ export function rankItemForEnrichment(item: ItemGraphNodeData): ReferenceModelPr
   return 2;
 }
 
-// Stable sort (Array.prototype.sort is spec-guaranteed stable) - ties keep their original
-// discovery/enqueue order instead of being reshuffled.
+// Agent: Stable sort (Array.prototype.sort is spec-guaranteed stable) - ties keep their original
+// Agent: discovery/enqueue order instead of being reshuffled.
 export function sortGuidsByEnrichmentPriority(
   guids: readonly string[],
   guidLookup: Map<string, string[]>,
