@@ -1,6 +1,6 @@
 // @source-path [fobles] src/shared/persisted-log.types.ts
 
-import type { REFERENCE_GRAPH } from "../constants/graph.const";
+import type { REFERENCE_GRAPH } from "../constants/graph.presets";
 
 export type PersistedLogLevel = "debug" | "info" | "warn" | "error";
 

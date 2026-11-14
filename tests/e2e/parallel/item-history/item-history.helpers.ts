@@ -4,7 +4,7 @@ import type { BrowserContext } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
 import { ITEM_HISTORY_CAPTURE } from "../../../../src/content/item-history/item-history.const";
-import { TEST_CONSTB } from "../../../fixtures/playwright.const";
+import { extensionPath } from "../../../fixtures/playwright.const";
 import { HISTORY_CLASS } from "../../../../src/content/toolbar/history/history.const";
 import { ITEM_HISTORY } from "../../../../src/shared/item-history/item-history.const";
 import { historyStorageKey } from "../../../../src/shared/item-history/item-history-model";
@@ -71,7 +71,7 @@ export async function pinHistory(frame: Frame): Promise<void> {
 
 async function logHistoryDiagnostics(page: Page, frame: Frame): Promise<void> {
   const worker = page.context().serviceWorkers()[0];
-  const bundlePath = path.join(TEST_CONSTB.extensionPath, "background.js");
+  const bundlePath = path.join(extensionPath, "background.js");
   const diskSource = await readFile(bundlePath, "utf8");
   const workerState = worker
     ? await worker.evaluate(async () => {
@@ -85,7 +85,7 @@ async function logHistoryDiagnostics(page: Page, frame: Frame): Promise<void> {
       }).catch((error: unknown) => `worker evaluation failed: ${String(error)}`)
     : "no service worker";
   console.log("[history build diagnostics]", JSON.stringify({
-    extensionPath: TEST_CONSTB.extensionPath,
+    extensionPath: extensionPath,
     diskHasTemporaryWriterLogs: diskSource.includes("[Fobles][history-writer]"),
     workerUrl: worker?.url(),
     workerState,

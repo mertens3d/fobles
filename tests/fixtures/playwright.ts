@@ -1,21 +1,23 @@
 // @source-path [fobles] tests/fixtures/playwright.ts
 
-import { chromium, type BrowserContext, test as base } from "@playwright/test";
-import { installConsoleLogging, logDiagnostic } from "./playwright-logging";
-import { logoutCurrentSitecoreSession } from "./sitecore";
+import { test as base, chromium, type BrowserContext } from "@playwright/test";
+import path from "node:path";
 import { TEST_CONST } from "../constants/TEST_CONST";
-import { RECORD_VIDEO } from "../settings/settings";
 import { logTestDividerStart } from "../helpers/logging-helpers";
-import { applyDefaultSettingsProfile } from "./settings-profiles";
 import { enableFoblesDeveloperLogging } from "../macros/fobles-macros";
-import { createBrowserProfile } from "./browser-profile";
-import { restoreWindowPosition, saveWindowPosition } from "./browser-location";
-import { attachPageDiagnosticHandlers } from "./playwright-page-diagnostic-handlers";
-import { cleanPromoVideoFiles, getPromoVideoDir, renamePromoVideoFiles } from "./playwright-video-files";
-import { attachPersistedLogs } from "./playwright-persisited-logs";
-import { TEST_CONSTB } from "./playwright.const";
+import { RECORD_VIDEO } from "../settings/settings";
 import type { TestFixtures, WorkerFixtures } from "./TestFixtures.types";
+import { restoreWindowPosition, saveWindowPosition } from "./browser-location";
+import { createBrowserProfile } from "./browser-profile";
+import { installConsoleLogging, logDiagnostic } from "./playwright-logging";
+import { attachPageDiagnosticHandlers } from "./playwright-page-diagnostic-handlers";
+import { attachPersistedLogs } from "./playwright-persisited-logs";
+import { PLAYWRIGHT_SETTINGS } from "./playwright-settings";
+import { cleanPromoVideoFiles, getPromoVideoDir, renamePromoVideoFiles } from "./playwright-video-files";
+import { applyDefaultSettingsProfile } from "./settings-profiles";
+import { logoutCurrentSitecoreSession } from "./sitecore";
 
+export const extensionPath = path.resolve("./dist/unpacked");
 // This fixture launches its own context, so playwright.config.ts's use.video
 // setting is not consulted. RECORD_VIDEO controls recording here directly.
 // The context is shared for the worker's entire run.
@@ -84,12 +86,9 @@ export const foblesTest = base.extend<TestFixtures, WorkerFixtures>({
       const context = await chromium.launchPersistentContext(userDataDir, {
         channel: "chromium",
         headless: false,
-        viewport: TEST_CONSTB.VIEWPORT_SIZE,
-        ...(RECORD_VIDEO ? { recordVideo: { dir: getPromoVideoDir(), size: TEST_CONSTB.VIEWPORT_SIZE } } : {}),
-        args: [
-          `--disable-extensions-except=${TEST_CONSTB.extensionPath}`,
-          `--load-extension=${TEST_CONSTB.extensionPath}`,
-        ],
+        viewport: PLAYWRIGHT_SETTINGS.VIEWPORT_SIZE,
+        ...(RECORD_VIDEO ? { recordVideo: { dir: getPromoVideoDir(), size: PLAYWRIGHT_SETTINGS.VIEWPORT_SIZE } } : {}),
+        args: [`--disable-extensions-except=${extensionPath}`, `--load-extension=${extensionPath}`],
       });
 
       try {

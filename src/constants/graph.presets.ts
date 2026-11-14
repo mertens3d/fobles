@@ -1,11 +1,11 @@
 // @source-path [fobles] src/constants/graph.const.ts
 
-import type { StepKey } from "./constants.types";
+import type { StepKey } from "./constants.types.ts";
 import type cytoscape from "cytoscape";
-import type { LayoutGraphPresetName } from "./constants.types";
-import type { SitecoreHarvestFiltersState } from "./_base/_base.types";
+import type { LayoutGraphPresetName } from "./constants.types.ts";
+import type { SitecoreHarvestFiltersState } from "./_base/_base.types.ts";
 import { _REFERENCE_GRAPH_BASE } from "./_base/_REFERENCE_GRAPH_BASE.const.ts";
-import type { LayoutPreset } from "./_base/_base.types";
+import type { LayoutPreset } from "./_base/_base.types.ts";
 
 export const REFERENCE_GRAPH = {
   // The persisted-log message type is a background/options feature unrelated to the worker

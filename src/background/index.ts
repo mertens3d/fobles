@@ -2,7 +2,7 @@ import type { ActiveSpecialist, RuntimeMessage, SpecialistFeature } from "./back
 /// <reference types="chrome" />
 
 import { LOGGER, MESSAGE } from "../constants/extension.const.ts";
-import { REFERENCE_GRAPH } from "../constants/graph.const";
+import { REFERENCE_GRAPH } from "../constants/graph.presets.ts";
 import {
   clearHostWorkerIframeTargets,
   markWorkerIframeReady,

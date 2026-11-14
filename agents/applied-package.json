@@ -1,8 +1,8 @@
 {
-  "markerId": "db8bf43e-2f4e-4603-9da7-84a8779ad2b5",
+  "markerId": "6e9e7722-5554-4f36-8994-494b58ea6d0f",
   "projectId": "fobles",
-  "packageId": "8a85baac-ba69-4ba7-8728-794b6e549255",
-  "createdUtc": "2026-11-13T06:05:53.409201Z",
-  "appliedUtc": "2026-11-13T06:06:25.282Z",
-  "zipName": "fobles-const-set-map-20261113-0008.zip"
+  "packageId": "27e6330a-d6fe-4242-9801-e0bddfdc4c38",
+  "createdUtc": "2026-11-14T03:27:51.542376Z",
+  "appliedUtc": "2026-11-14T03:28:49.271Z",
+  "zipName": "fobles-modular-eslint-rules-first-pass.zip"
 }

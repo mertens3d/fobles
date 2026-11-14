@@ -2,7 +2,7 @@
 
 import type { FoblesGlobal } from "./content.types.js";
 import { LOGGER, STORAGE } from "../constants/extension.const.ts";
-import { REFERENCE_GRAPH } from "../constants/graph.const.ts";
+import { REFERENCE_GRAPH } from "../constants/graph.presets.ts";
 import { appendPersistedLogEntry } from "../shared/logging/persisted-log-storage.ts";
 import type {
   PersistedLogContext,

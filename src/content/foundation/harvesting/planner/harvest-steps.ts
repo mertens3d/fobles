@@ -24,7 +24,7 @@ export const HARVEST_STEPS: readonly HarvestStep[] = [
 
 // One entry per collector task type, used to find the matching progress step directly -
 // get-custom-fields and get-standard-fields both map to the "Custom Fields" progress step.
-export const HARVEST_STEP_BY_TASK_TYPE: ReadonlyMap<WorkerTaskType, HarvestStep> = new Map([
+export const HARVEST_STEP_BY_TASK_TYPE: ReadonlyMap<WorkerTaskType, HarvestStep> = new Map([ 
   ["get-children", HARVEST_STEPS[0]],
   ["get-custom-fields", HARVEST_STEPS[1]],
   ["get-standard-fields", HARVEST_STEPS[1]],

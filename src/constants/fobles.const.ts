@@ -2,7 +2,7 @@
 
 import { FOBLES_TOOLBAR_JUMP_FLYOUT_BUTTON_IDS } from "./button-ids.const.ts";
 import { LOGGER, MESSAGE, STORAGE } from "./extension.const.ts";
-import { REFERENCE_GRAPH } from "./graph.const.ts";
+import { REFERENCE_GRAPH } from "./graph.presets.ts";
 import { WORKER_POOL } from "./partials/fobles-workers.const.ts";
 
 export const FOBLES = {

@@ -1,5 +1,5 @@
 import type { TOOLBAR_CORNERS } from "./fobles-b.const";
-import type { REFERENCE_GRAPH } from "./graph.const";
+import type { REFERENCE_GRAPH } from "./graph.presets";
 
 // Every shell page/dialog Fobles is eligible on, in one place, replacing three previously
 // separate lists (path-only pages, xmlcontrol-only dialogs, and which of those get a compact

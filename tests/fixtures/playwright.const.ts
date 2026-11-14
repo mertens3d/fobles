@@ -1,7 +1,5 @@
-import { RECORD_VIDEO } from "../settings/settings";
-import path from "node:path";
+// @source-path [fobles] tests/fixtures/playwright.const.ts
 
 export const TEST_CONSTB = {
-  extensionPath: path.resolve("./dist/unpacked"),
-  VIEWPORT_SIZE: RECORD_VIDEO ? { width: 1100, height: 720 } : { width: 800, height: 720 },
+  VIEWPORT: { RECORDING: { width: 1100, height: 720 }, DEFAULT: { width: 800, height: 720 } },
 };

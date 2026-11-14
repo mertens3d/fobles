@@ -1,6 +1,6 @@
 // @source-path [fobles] src/content/shell/utility/fobles-utility-launchers.tsx
 
-import { REFERENCE_GRAPH } from "../../../constants/graph.const";
+import { REFERENCE_GRAPH } from "../../../constants/graph.presets";
 import { showFoblesCleanupDialog } from "../../../shared/error-dialog";
 import type { AuditFindingStore } from "../../features/auditor/auditor.types";
 import { createAuditorView } from "../../features/auditor/components/auditor-dialog/auditor-dialog";

@@ -2,7 +2,7 @@
 // import { CONST } from "./const";
 // import { extensionLog } from "../content/logger";
 
-import { CONST } from "./const";
+// import { CONST } from "./const";
 
 // const KICK_ALL_USERS_WAIT_MS = 1_000;
 // const KICK_ALL_USERS_MAX_BUTTON_RETRIES = 5;
@@ -34,31 +34,31 @@ import { CONST } from "./const";
 //   }
 // };
 
-export const getKickUsersUrl = (doc: Document): string => {
-  const origin = doc.defaultView?.location.origin ?? window.location.origin;
-  return `${origin}${CONST.SITECORE.RELATIVE_PATHS_ENCODED.KICK_USERS}`;
-};
+// export const getKickUsersUrl = (doc: Document): string => {
+//   const origin = doc.defaultView?.location.origin ?? window.location.origin;
+//   return `${origin}${CONST.SITECORE.RELATIVE_PATHS_ENCODED.KICK_USERS}`;
+// };
 
-const findKickButton = (doc: Document): HTMLButtonElement | null =>
-  Array.from(doc.querySelectorAll<HTMLButtonElement>("button")).find(
-    (button) => button.textContent?.trim().toLowerCase() === "kick off user",
-  ) ?? null;
+// const findKickButton = (doc: Document): HTMLButtonElement | null =>
+//   Array.from(doc.querySelectorAll<HTMLButtonElement>("button")).find(
+//     (button) => button.textContent?.trim().toLowerCase() === "kick off user",
+//   ) ?? null;
 
-const waitForKickUserRows = (doc: Document): Promise<HTMLTableRowElement[]> =>
-  new Promise((resolve) => {
-    const readRows = (): HTMLTableRowElement[] =>
-      Array.from(doc.querySelectorAll<HTMLTableRowElement>(".sc-listcontrol-body tbody tr"));
-    const startedAt = Date.now();
-    const poll = (): void => {
-      const rows = readRows();
-      if (rows.length > 0 || Date.now() - startedAt >= 15_000) {
-        resolve(rows);
-        return;
-      }
-      window.setTimeout(poll, 250);
-    };
-    poll();
-  });
+// const waitForKickUserRows = (doc: Document): Promise<HTMLTableRowElement[]> =>
+//   new Promise((resolve) => {
+//     const readRows = (): HTMLTableRowElement[] =>
+//       Array.from(doc.querySelectorAll<HTMLTableRowElement>(".sc-listcontrol-body tbody tr"));
+//     const startedAt = Date.now();
+//     const poll = (): void => {
+//       const rows = readRows();
+//       if (rows.length > 0 || Date.now() - startedAt >= 15_000) {
+//         resolve(rows);
+//         return;
+//       }
+//       window.setTimeout(poll, 250);
+//     };
+//     poll();
+//   });
 
 // const processKickAllUsers = async (doc: Document): Promise<void> => {
 //   if (localStorage.getItem(STORAGE.KEY.KICK_ALL_USERS) !== "1") {

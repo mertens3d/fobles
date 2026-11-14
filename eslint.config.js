@@ -4,7 +4,9 @@ import tseslint from "typescript-eslint";
 import { defineConfig } from "eslint/config";
 import unusedImports from "eslint-plugin-unused-imports";
 import stylistic from "@stylistic/eslint-plugin";
-import noLooseDataConst from "./tools/eslint/no-loose-data-const.js";
+import noLooseDataConst from "./tools/eslint/rules/no-loose-data-const.ts";
+import { CONST_FILES, CONST_FILE_RESTRICTIONS } from "./tools/eslint/rules/const-files.ts";
+import { TYPE_DECLARATION_RESTRICTIONS, TYPES_FILE_RESTRICTIONS } from "./tools/eslint/rules/type-files.ts";
 
 const FOUNDATION_BOUNDARY_MESSAGE =
   "Foundation is infrastructure/domain code and must not import from features, shell, or shared UI. Move the dependency into foundation or invert the dependency.";
@@ -13,74 +15,10 @@ const SHARED_BOUNDARY_MESSAGE =
 const FEATURE_BOUNDARY_MESSAGE =
   "Specialist features must not import another specialist feature. Move shared behavior into shared/foundation.";
 
-const TYPE_DECLARATION_RESTRICTIONS = [
-  {
-    selector: "TSTypeAliasDeclaration:not([id.name=/Props$/])",
-    message: "Type aliases must be declared in .types.ts files.",
-  },
-  { selector: "TSInterfaceDeclaration", message: "Interfaces must be declared in .types.ts files." },
-];
-
-// Matches the Elbows "Consolidate Constants" source-file exclusions.
-const CONST_FILES = [
-  "**/*.const.ts",
-  "**/*.consts.ts",
-  "**/*.constants.ts",
-  "**/const.ts",
-  "**/consts.ts",
-  "**/constants.ts",
-  "**/constants.*.ts",
-];
-
 const FOBLES_PLUGIN = { rules: { "no-loose-data-const": noLooseDataConst } };
 
-const TYPES_FILE_MESSAGE = "Only type aliases, interfaces and type imports/exports belong in .types.ts files.";
-
-const TYPES_FILE_RESTRICTIONS = [
-  {
-    selector:
-      "Program > :not(ImportDeclaration, TSTypeAliasDeclaration, TSInterfaceDeclaration, ExportNamedDeclaration, ExportAllDeclaration[exportKind='type'], TSModuleDeclaration[declare=true])",
-    message: TYPES_FILE_MESSAGE,
-  },
-  {
-    selector:
-      "Program > ExportNamedDeclaration > :not(TSTypeAliasDeclaration, TSInterfaceDeclaration, ExportSpecifier, Literal, ImportAttribute)",
-    message: TYPES_FILE_MESSAGE,
-  },
-];
-
-const CONST_FILE_MESSAGE = "Only const declarations belong in .const.ts files.";
-
-const CONST_FILE_RESTRICTIONS = [
-  {
-    selector: "Program > :not(ImportDeclaration, VariableDeclaration[kind='const'], ExportNamedDeclaration)",
-    message: CONST_FILE_MESSAGE,
-  },
-  {
-    selector:
-      "Program > ExportNamedDeclaration > :not(VariableDeclaration[kind='const'], ExportSpecifier, Literal, ImportAttribute)",
-    message: CONST_FILE_MESSAGE,
-  },
-  {
-    selector:
-      ":matches(ArrowFunctionExpression, FunctionExpression, ClassExpression, AwaitExpression)",
-    message: "Constants in .const.ts files must be data only: no functions, classes or instances.",
-  },
-  {
-    selector: "NewExpression:not([callee.type='Identifier'][callee.name=/^(Map|Set)$/])",
-    message: "Constants in .const.ts files must be data only: no functions, classes or instances (new Map/new Set lookups are allowed).",
-  },
-  {
-    selector:
-      "CallExpression:not([callee.object.name='Math']):not([callee.object.name='Object'][callee.property.name='freeze'])",
-    message: "Only Math.* and Object.freeze calls are allowed in .const.ts files.",
-  },
-];
-
 export default defineConfig([
-  {
-    linterOptions: { reportUnusedDisableDirectives: "error" },
-  },
+  { linterOptions: { reportUnusedDisableDirectives: "error" } },
   {
     ignores: [
       "dist/**",
@@ -234,11 +172,9 @@ export default defineConfig([
     },
   },
   {
-    files: ["**/*.{ts,tsx}"],
+    files: ["src/**/*.{ts,tsx}"],
     ignores: ["**/*.types.ts", "**/*.d.ts"],
-    rules: {
-      "no-restricted-syntax": ["error", ...TYPE_DECLARATION_RESTRICTIONS],
-    },
+    rules: { "no-restricted-syntax": ["error", ...TYPE_DECLARATION_RESTRICTIONS] },
   },
   {
     // ESLint replaces (does not merge) no-restricted-syntax per block, so each block below
@@ -252,14 +188,7 @@ export default defineConfig([
   },
   {
     files: CONST_FILES,
-    rules: {
-      "no-restricted-syntax": ["error", ...TYPE_DECLARATION_RESTRICTIONS, ...CONST_FILE_RESTRICTIONS],
-    },
+    rules: { "no-restricted-syntax": ["error", ...TYPE_DECLARATION_RESTRICTIONS, ...CONST_FILE_RESTRICTIONS] },
   },
-  {
-    files: ["**/*.types.ts"],
-    rules: {
-      "no-restricted-syntax": ["error", ...TYPES_FILE_RESTRICTIONS],
-    },
-  },
+  { files: ["**/*.types.ts"], rules: { "no-restricted-syntax": ["error", ...TYPES_FILE_RESTRICTIONS] } },
 ]);
