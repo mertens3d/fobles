@@ -5,6 +5,7 @@ import { normalizeHistoryId, normalizeHistoryScope, normalizeHistoryVisit } from
 import { getStructuralCacheMaxUnvalidatedAgeMs, initializeRuntimeSettings } from "../../../../runtime-settings/runtime-settings.ts";
 import type { StructuralScope } from "../../../../../shared/structural/structural.types.ts";
 import { extensionLog } from "../../../../logger.ts";
+import { collectTemplateBasesFromSections } from "../../../harvesting/collectors/template-bases-collector.ts";
 import * as cache from "../../../cache/sitecore-data/sitecore-data-cache.ts";
 import { structuralTemplateCacheKey } from "../../../cache/sitecore-data/structural-cache-key.ts";
 import type { SitecoreDataFactName } from "../../../cache/sitecore-data/sitecore-data.types";
@@ -185,10 +186,19 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
 
   async function bases(id: string, fresh: boolean): Promise<StructuralRead<readonly string[]> | undefined> {
     const key = structuralTemplateCacheKey(normalized, id);
-    const fact = await read(key, "templateBases", fresh);
-    return fact?.value.inheritedTemplateIds === undefined
+    let fact = await cache.getCachedFact(key, "templateBases");
+    if (!fact && !fresh) {
+      const sections = await cache.getCachedFact(keyFor({ kind: "id", value: id }), "customSections");
+      const inheritedTemplateIds = sections ? collectTemplateBasesFromSections(sections.value.sections) : undefined;
+      if (sections && inheritedTemplateIds !== undefined) {
+        const verifiedAt = sections.lastVerifiedAt ?? sections.cachedAt;
+        await cache.putFact(key, "templateBases", { inheritedTemplateIds }, { lastVerifiedAt: verifiedAt });
+      }
+    }
+    const readFact = await read(key, "templateBases", fresh);
+    return readFact?.value.inheritedTemplateIds === undefined
       ? undefined
-      : { value: fact.value.inheritedTemplateIds, cachedAt: fact.cachedAt };
+      : { value: readFact.value.inheritedTemplateIds, cachedAt: readFact.cachedAt };
   }
 
   async function readDerived(id: string): Promise<StructuralRead<TemplateDerivedRecord> | undefined> {

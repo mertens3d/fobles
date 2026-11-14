@@ -77,7 +77,7 @@ void test("normalization validates unknown rows and derives category from canoni
   assert.equal(normalizeHistoryItems([{ ...valid, path: "\\sitecore\\content\\Home\\" }])[0].path, "/sitecore/content/Home");
 });
 
-void test("normalization deduplicates before applying the newest-20 limit", () => {
+void test("normalization deduplicates before applying the Content-category cap", () => {
   const entries = Array.from({ length: 25 }, (_, index) => item(index));
   const result = normalizeHistoryItems([...entries, { ...item(24), name: "Newest", lastVisitedAt: 99 }]);
   assert.equal(result.length, 6);
@@ -100,7 +100,7 @@ void test("upsert moves revisits to the front, updates metadata and never mutate
   assert.throws(() => upsertHistoryItem(history, { ...item(3), id: "bad" }, 30), TypeError);
 });
 
-void test("upsert trims to 20 and adds a new visit even at an equal timestamp", () => {
+void test("upsert applies the Content-category cap and adds a new visit even at an equal timestamp", () => {
   const history = normalizeHistoryItems(Array.from({ length: 20 }, (_, index) => item(index, 50)));
   const result = upsertHistoryItem(history, item(99), 50);
   assert.equal(result.length, 6);

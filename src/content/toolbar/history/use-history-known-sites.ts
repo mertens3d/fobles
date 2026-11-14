@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import type { HistoryScope } from "../../../shared/item-history/item-history.types.ts";
 import { readKnownSites, subscribeKnownSites } from "../../../shared/known-sites/known-sites-repository.ts";
+import { lookupKnownSite } from "../../foundation/reference-data/processing/item-kind/structural-discovery.ts";
 import type { KnownSite } from "../../../shared/structural/structural.types.ts";
 import type { HistoryKnownSitesSnapshot } from "./history.types.ts";
 
@@ -16,6 +17,15 @@ export function useHistoryKnownSites(scope: HistoryScope | null): readonly Known
     function publish(sites: KnownSite[]): void {
       if (active && scope) {
         setSnapshot({ scope, sites });
+        const publishedRevision = revision;
+        void Promise.resolve().then(async () => {
+          for (const site of sites) {
+            if (!active || revision !== publishedRevision) {
+              break;
+            }
+            await lookupKnownSite(scope, site.path).catch(() => undefined);
+          }
+        });
       }
     }
 

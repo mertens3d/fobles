@@ -22,14 +22,16 @@ void test("History UI remains responsive before discovery and updates scoped Sit
   const show = () => root.render(createElement(history.HistoryTrigger, {
     doc: env.doc, historyFlyout: FLYOUT, onOpen: NOOP, onToggle: NOOP,
   }));
-  const label = () => container.querySelector("a")!.textContent;
+  const panel = () => env.doc.getElementById("fobles-history-panel")!;
+  const label = () => panel().querySelector("a")!.textContent;
   try {
     await update(show);
-    assert.equal(label(), "(unknown): Home");
-    assert.equal(container.querySelector("a")!.getAttribute("href")!.includes("sc_content=master"), true);
-    const originalUrl = container.querySelector("a")!.getAttribute("href");
+    await update(() => container.querySelector<HTMLButtonElement>(".fobles-history-tab")!.click());
+    assert.equal(label(), "_: Home");
+    assert.equal(panel().querySelector("a")!.getAttribute("href")!.includes("sc_content=master"), true);
+    const originalUrl = panel().querySelector("a")!.getAttribute("href");
     await update(() => {
-      container.querySelector<HTMLButtonElement>("li button")!.click();
+      panel().querySelector<HTMLButtonElement>("li button")!.click();
     });
     assert.deepEqual(env.messages[0], {
       type: "FOBLES_ITEM_HISTORY_CHANGE", scope: MASTER, change: { action: "remove", id: ITEM.id },
@@ -38,10 +40,10 @@ void test("History UI remains responsive before discovery and updates scoped Sit
     await update(() => env.emit(siteKey, [SITE]));
     assert.equal(label(), "Alpha: Home");
     assert.deepEqual(history.discovery.validations, [{ scope: MASTER, path: SITE.path }]);
-    assert.equal(container.querySelector("a")!.getAttribute("href"), originalUrl);
-    assert.equal(container.querySelector("li button")!.getAttribute("aria-label"), "Remove Home");
+    assert.equal(panel().querySelector("a")!.getAttribute("href"), originalUrl);
+    assert.equal(panel().querySelector("li button")!.getAttribute("aria-label"), "Remove Home");
     assert.deepEqual(env.values[historyKey], [ITEM]);
-    assert.deepEqual(Array.from(container.querySelectorAll("h3"), (node) => node.textContent), ["Content"]);
+    assert.deepEqual(Array.from(panel().querySelectorAll("section[aria-label]"), (node) => node.getAttribute("aria-label")), ["Content", "Layout", "Media Library", "System", "Templates"]);
 
     await update(() => env.emit(siteKey, [{ ...SITE, name: "Renamed" }]));
     assert.equal(label(), "Renamed: Home");
@@ -53,16 +55,16 @@ void test("History UI remains responsive before discovery and updates scoped Sit
     await update(() => env.emit(siteKey, [SITE, { ...SITE, id: TEMPLATE_ID, name: "Nested", path: `${SITE.path}/HOME` }]));
     assert.equal(label(), "Nested: Home");
     await update(() => env.emit(siteKey, [{ ...SITE, path: "/sitecore/content/Alph" }]));
-    assert.equal(label(), "(unknown): Home");
+    assert.equal(label(), "_: Home");
     await update(() => env.emit(siteKey, [SITE]));
     await update(() => env.emit(siteKey, undefined));
-    assert.equal(label(), "(unknown): Home");
+    assert.equal(label(), "_: Home");
 
     env.values[historyStorageKey(WEB)] = [ITEM];
     env.values[knownSitesStorageKey(WEB)] = [{ ...SITE, name: "Web" }];
     await update(() => env.doc.querySelector("#Ribbon_Database")!.setAttribute("value", "web"), true);
     assert.equal(label(), "Web: Home");
-    assert.ok(container.querySelector("a")!.getAttribute("href")!.includes("sc_content=web"));
+    assert.ok(panel().querySelector("a")!.getAttribute("href")!.includes("sc_content=web"));
     await update(() => env.emit(siteKey, [{ ...SITE, name: "Old master" }]));
     assert.equal(label(), "Web: Home");
     assert.deepEqual(env.values[historyKey], [ITEM]);
@@ -122,6 +124,7 @@ void test("storage and validation failures leave actual names and cached labels 
   const container = env.doc.createElement("div");
   const root = createRoot(container);
   const key = knownSitesStorageKey(MASTER);
+  const panel = () => env.doc.getElementById("fobles-history-panel")!;
   env.values[historyStorageKey(MASTER)] = [ITEM];
   env.deferred.add(key);
   history.discovery.error = true;
@@ -129,12 +132,13 @@ void test("storage and validation failures leave actual names and cached labels 
     await update(() => root.render(createElement(history.HistoryTrigger, {
       doc: env.doc, historyFlyout: FLYOUT, onOpen: NOOP, onToggle: NOOP,
     })));
+    await update(() => container.querySelector<HTMLButtonElement>(".fobles-history-tab")!.click());
     await update(() => env.pending.get(key)!.reject(new Error("Storage unavailable")));
-    assert.equal(container.querySelector("a")!.textContent, "(unknown): Home");
+    assert.equal(panel().querySelector("a")!.textContent, "_: Home");
     await update(() => env.emit(key, [SITE]));
-    assert.equal(container.querySelector("a")!.textContent, "Alpha: Home");
-    assert.equal(container.querySelector('[role="alert"]'), null);
-    await update(() => container.querySelector<HTMLButtonElement>("header button")!.click());
+    assert.equal(panel().querySelector("a")!.textContent, "Alpha: Home");
+    assert.equal(env.doc.querySelector('#fobles-history-panel [role="alert"]'), null);
+    await update(() => env.doc.querySelector<HTMLButtonElement>(".fobles-history-content-actions button")!.click());
     assert.deepEqual(env.messages[env.messages.length - 1], {
       type: "FOBLES_ITEM_HISTORY_CHANGE", scope: MASTER, change: { action: "clear" },
     });

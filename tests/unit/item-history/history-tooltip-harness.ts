@@ -1,3 +1,4 @@
+import "fake-indexeddb/auto";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { build } from "esbuild";

@@ -1,3 +1,4 @@
+import "fake-indexeddb/auto";
 import { createRequire } from "node:module";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { build } from "esbuild";
@@ -23,13 +24,17 @@ const bundled = await build({
       builder.onResolve({ filter: /^(?:react|react-dom)(?:\/.*)?$/ }, (args) => ({
         path: pathToFileURL(require.resolve(args.path)).href, external: true,
       }));
+      builder.onResolve({ filter: /sitecore-data-service\.ts$/ }, () => ({
+        path: "sitecore-data-service", namespace: "history-test",
+      }));
       builder.onResolve({ filter: /structural-discovery\.ts$|^history-discovery-probe$/ }, () => ({
         path: "discovery", namespace: "history-test",
       }));
       builder.onResolve({ filter: /augmentor\/helper$/ }, () => ({ path: "navigation", namespace: "history-test" }));
       builder.onResolve({ filter: /use-history-tooltip\.ts$/ }, () => ({ path: "tooltip", namespace: "history-test" }));
       builder.onLoad({ filter: /./, namespace: "history-test" }, (args) => ({
-        contents: args.path === "discovery" ? `
+        contents: args.path === "sitecore-data-service" ? "export async function requestFact() { return undefined; }" :
+          args.path === "discovery" ? `
           export const discovery = { error: false, validations: [], visits: [] };
           export function scheduleStructuralDiscovery(scope, visits) {
             if (discovery.error) throw new Error("Discovery unavailable");
@@ -76,7 +81,7 @@ export function createHistoryEnvironment() {
   const messages: unknown[] = [];
   const pending = new Map<string, { resolve: (value: Record<string, unknown>) => void; reject: (error: Error) => void }>();
   const deferred = new Set<string>();
-  const globals = { window: win, document: win.document, IS_REACT_ACT_ENVIRONMENT: true, chrome: {
+  const globals = { window: win, document: win.document, localStorage: win.localStorage, sessionStorage: win.sessionStorage, IS_REACT_ACT_ENVIRONMENT: true, chrome: {
     runtime: { sendMessage: (message: unknown) => {
       messages.push(message);
       return Promise.resolve({ ok: true, history: [] });

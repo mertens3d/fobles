@@ -294,7 +294,7 @@ void test("harvested full-section bases reuse their verification age without ope
   }, { lastVerifiedAt: verifiedAt });
   const driver = await createStructuralRuntimeDriver(SCOPE, f.options);
   const cached = await driver.bases(guid(10), false);
-  assert.deepEqual(cached?.value, [guid(2)]);
+  assert.deepEqual(cached?.value, [guid(2), guid(3)]);
   assert.ok((cached?.cachedAt ?? 0) >= verifiedAt);
   await driver.finish();
   assert.deepEqual(f.tasks, []);

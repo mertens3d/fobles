@@ -52,7 +52,7 @@ export function createAuditRunner({
           referenceModelNodesById: data.model.nodesById,
           findingStore,
           processingStateByTreeNodeId: data.model.processingStateByTreeNodeId,
-          referenceHarvestingCandidateTreeNodeIds: data.referenceHarvestingCandidateTreeNodeIds,
+          resolveCandidateTreeNodeIds: data.referenceHarvestingCandidateTreeNodeIds,
           cacheRevalidationResultByTreeNodeId: data.cacheRevalidationResultByTreeNodeId,
           buildSitecoreUrl: buildFoblesUrl,
         };

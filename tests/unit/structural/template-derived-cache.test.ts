@@ -145,15 +145,15 @@ void test("SWR returns stale derived kind without recertification and converges 
   await seedRoots(f);
   f.setBases([guid(3)]);
   const staleDriver = await createStructuralRuntimeDriver(SCOPE, f.options);
-  assert.deepEqual(await createTemplateStructuralService().classify(item, staleDriver, f.options.settings, now), {
+  assert.deepEqual(await createTemplateStructuralService().classify(item, staleDriver, f.options.settings, f.now()), {
     kind: "site",
     complete: true,
-    stale: false,
+    stale: true,
   });
   assert.deepEqual(await cache.getCachedFact(key, "templateDerived"), original);
   await staleDriver.finish();
   const refreshed = await createStructuralRuntimeDriver(SCOPE, f.options);
-  assert.deepEqual(await createTemplateStructuralService().classify(item, refreshed, f.options.settings, now), {
+  assert.deepEqual(await createTemplateStructuralService().classify(item, refreshed, f.options.settings, f.now()), {
     kind: "tenant",
     complete: true,
     stale: false,
