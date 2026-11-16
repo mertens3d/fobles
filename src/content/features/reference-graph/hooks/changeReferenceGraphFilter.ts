@@ -1,14 +1,5 @@
-import { PROGRESS_STEPS } from "../../../foundation/harvesting/planner/harvest-steps";
-import {
-  isHarvestStep,
-} from "../../../foundation/harvesting/sitecore-harvester";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import { buildFoblesUrl } from "../../../foundation/sitecore/fobles-url";
-import {
-  openReferenceGraphProgressModal,
-  closeReferenceGraphProgressModal,
-  initializeReferenceGraphProgressModal,
-} from "../build-progress";
 import { createSingleFilterState } from "../graph-filters";
 import { refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
 import type { UseReferenceGraphFilterActionsOptions } from "./hooks.types";
@@ -19,7 +10,7 @@ export async function changeReferenceGraphFilter(
   options: UseReferenceGraphFilterActionsOptions,
   setFilters: (filters: SitecoreHarvestFiltersState) => void,
 ): Promise<void> {
-  const { doc, harvestForLink, cyRef, graphState, renderGraph } = options;
+  const { harvestForLink, cyRef, graphState, renderGraph } = options;
 
   const updatedFilters = { ...graphState.currentFiltersRef.current, [key]: checked };
 
@@ -45,32 +36,17 @@ export async function changeReferenceGraphFilter(
     const link = currentHarvestedData.rootItem.link ?? buildFoblesUrl(currentHarvestedData.rootItem.scItemId);
 
     const requestedFilters = createSingleFilterState(key);
-    let cancelled = false;
-
-    openReferenceGraphProgressModal(doc, () => {
-      cancelled = true;
-      closeReferenceGraphProgressModal(doc);
-    });
-
-    initializeReferenceGraphProgressModal(
-      doc,
-      PROGRESS_STEPS.filter((step) => isHarvestStep(step) && step.filterKeys.includes(key)),
-      requestedFilters,
-    );
-
     const mergedGraph = await harvestForLink(link, requestedFilters, currentHarvestedData);
 
     const graphChanged =
       graphState.currentPreparedGraphRef.current.harvestedData.rootItem.scItemId !==
       currentHarvestedData.rootItem.scItemId;
 
-    if (cancelled || !mergedGraph || graphChanged) {
+    if (!mergedGraph || graphChanged) {
       setFilters({ ...graphState.currentFiltersRef.current, [key]: false });
     } else {
       loadedFilters.add(key);
       await renderGraph(mergedGraph);
     }
-
-    closeReferenceGraphProgressModal(doc);
   }
 }

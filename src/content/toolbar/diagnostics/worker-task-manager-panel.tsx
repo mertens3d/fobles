@@ -4,9 +4,12 @@ import { useEffect, useRef, useState } from "react";
 import type { WorkerPoolStatus } from "../../foundation/workers/pool/pool.types";
 import type { WorkerPoolWorkerStatus } from "../../foundation/workers/pool/pool.types";
 import type { WorkerTaskSnapshot } from "../../foundation/workers/pool/pool.types";
+import { getWorkProgressLabel } from "../../foundation/workers/progress/work-progress-registry";
 import { extensionLog } from "../../logger";
 import { FoblesDetailsWindow } from "../../shared/dialog/fobles-details-window";
 import { CollapsibleSection } from "../../shared/ui/collapsible-section/collapsible-section";
+import { useWorkProgressSnapshots } from "../../shared/ui/work-progress/use-work-progress";
+import { WorkProgress } from "../../shared/ui/work-progress/work-progress";
 import { WorkerStateDetails } from "./worker-state-details";
 import { DIAGNOSTIC_OPERATION_LABELS } from "./toolbar-diagnostics.const";
 
@@ -23,6 +26,7 @@ const COLUMN_HELP = {
   phase: "Latest recorded lifecycle phase.",
   outcome: "Terminal task result when available.",
   recoveries: "Number of worker recovery attempts made while processing this task.",
+  session: "Work session (the Auditor, Graph or structural discovery run) the task belongs to.",
 } as const;
 
 function shortTarget(value: string): string {
@@ -45,6 +49,26 @@ function itemName(entry: WorkerTaskSnapshot): string {
   const requested = objectValue(entry.requestPayload.value, "requested");
   const requestedName = objectValue(requested, "scItemName") ?? objectValue(requested, "name");
   return typeof requestedName === "string" && requestedName ? requestedName : "—";
+}
+
+function sessionLabel(entry: WorkerTaskSnapshot): string {
+  return getWorkProgressLabel(entry.requestId) ?? "—";
+}
+
+// Agent: Every live work session with the same progress display the footers and toolbar use.
+function WorkSessionList() {
+  const snapshots = useWorkProgressSnapshots();
+  return snapshots.length ? (
+    <div className="fobles-worker-monitor-sessions">
+      {snapshots.map((snapshot) => (
+        <div className="fobles-worker-monitor-session" key={snapshot.sessionId}>
+          <WorkProgress snapshot={snapshot} />
+        </div>
+      ))}
+    </div>
+  ) : (
+    <div className="fobles-worker-task-manager-empty">No work sessions.</div>
+  );
 }
 
 function WorkerStateTable({
@@ -114,6 +138,7 @@ function WorkerMonitorTable({
           <th>Phase</th>
           <th>Outcome</th>
           <th>Recoveries</th>
+          <th title={COLUMN_HELP.session}>Session</th>
         </tr>
       </thead>
       <tbody>
@@ -131,6 +156,7 @@ function WorkerMonitorTable({
             <td>{entry.phase}</td>
             <td>{entry.outcome ?? "—"}</td>
             <td>{entry.recoveryCount}</td>
+            <td title={sessionLabel(entry)}>{sessionLabel(entry)}</td>
           </tr>
         ))}
       </tbody>
@@ -206,6 +232,8 @@ export function WorkerTaskManagerPanel({ status }: WorkerTaskManagerPanelProps) 
           <dd>Time since progress.</dd>
           <dt>Recoveries</dt>
           <dd>Recovery attempts.</dd>
+          <dt>Session</dt>
+          <dd>Owning work session.</dd>
         </dl>
       </CollapsibleSection>
       <div className="fobles-worker-task-manager-summary">
@@ -214,6 +242,10 @@ export function WorkerTaskManagerPanel({ status }: WorkerTaskManagerPanelProps) 
       </div>
       <div className="fobles-worker-monitor-workspace">
         <div className="fobles-worker-task-manager-grid">
+          <section className="fobles-worker-monitor-group">
+            <h3>Work Sessions</h3>
+            <WorkSessionList />
+          </section>
           <section className="fobles-worker-monitor-group">
             <h3>Worker State</h3>
             <WorkerStateTable workers={workers} history={history} />

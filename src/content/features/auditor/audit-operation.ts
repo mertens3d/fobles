@@ -6,6 +6,7 @@ import { getReferenceGraphFilters } from "../../../shared/reference-graph-settin
 import { createWorkOperation } from "../../shell/work-operation/work-operation";
 import { extensionLog } from "../../logger";
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
+import { WORK_PROGRESS } from "../../foundation/workers/progress/work-progress.const";
 import { createAuditFindingStore } from "./audit-finding-store";
 import type { AuditFindingStore } from "./auditor.types";
 import { createAuditRunner } from "./audit-runner";
@@ -38,6 +39,7 @@ export class AuditOperation {
 
   async run(): Promise<void> {
     this.state = "running";
+    this.workOperation.describe({ title: WORK_PROGRESS.TITLE.AUDIT });
     const [referenceGraphFilters, auditorGraphFilters] = await Promise.all([
       getReferenceGraphFilters(),
       getAuditorGraphFilters(),

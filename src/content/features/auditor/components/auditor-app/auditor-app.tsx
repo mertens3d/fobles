@@ -7,8 +7,8 @@ import { getReferenceGraphFilters } from "../../../../../shared/reference-graph-
 import { extensionLog } from "../../../../logger";
 import { logHeapSnapshot } from "../../../../foundation/diagnostics/heap-snapshot";
 import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_base.types";
-import type { PhaseProgress } from "../../../../foundation/reference-data/progress/lifecycle.types";
-import { LifecycleProgressFooter } from "../../../../shared/ui/reference-controls/lifecycle-progress-footer";
+import { WorkProgressFooter } from "../../../../shared/ui/reference-controls/work-progress-footer";
+import { useWorkProgress } from "../../../../shared/ui/work-progress/use-work-progress";
 import { ReferenceModelViewer, referenceModelWindowTitle } from "../../../../shared/ui/reference-model/reference-model-viewer";
 import { DETAILS_PANEL } from "../../../../shared/ui/details/details-panel.const";
 import { REFERENCE_MODEL_VIEWER } from "../../../../shared/ui/reference-model/reference-model.const";
@@ -34,8 +34,7 @@ import { AuditorSummary } from "../auditor-summary/auditor-summary";
 import { AuditorToolbar } from "../auditor-toolbar/auditor-toolbar";
 import { NodeDetailsPanel } from "../../../../shared/ui/details/node-details-panel";
 import { FoblesDetailsWindow } from "../../../../shared/dialog/fobles-details-window";
-import { getFoblesDataSession, subscribeFoblesAcquisitionProgress } from "../../../../foundation/reference-data/reference-data-service.ts";
-import type { FoblesAcquisitionProgress } from "../../../../foundation/reference-data/reference-data.types.ts";
+import { getFoblesDataSession } from "../../../../foundation/reference-data/reference-data-service.ts";
 const ALL_STATUSES: readonly AuditFindingStatus[] = ["pending", "passed", "warning", "error"];
 const DATA_OPERATION_POLL_INTERVAL_MS = 100;
 const DEFAULT_GRAPH_FILTERS: SitecoreHarvestFiltersState = {
@@ -91,9 +90,6 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   const [snapshot, setSnapshot] = useState<readonly AuditFinding[]>(() => findingStore.getSnapshot());
   const [query, setQuery] = useState("");
   const [modelRevision, setModelRevision] = useState(0);
-  const [harvestProgress, setHarvestProgress] = useState<PhaseProgress>();
-  const [acquisitionProgress, setAcquisitionProgress] = useState<FoblesAcquisitionProgress>();
-  const [liveResolveProgress, setLiveResolveProgress] = useState<PhaseProgress>();
   const [selectedStatuses, setSelectedStatuses] = useState<ReadonlySet<AuditFindingStatus>>(
     () => new Set(ALL_STATUSES),
   );
@@ -105,8 +101,7 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   const [selectedTestDetails, setSelectedTestDetails] = useState<AuditorTestDetailsSelection | undefined>(undefined);
   const [showHelp, setShowHelp] = useState(false);
   const appRef = useRef<HTMLDivElement>(null);
-  const startedAt = useRef(performance.now());
-  const completedElapsedSeconds = useRef<number | undefined>(undefined);
+  const workProgress = useWorkProgress(workOperationId);
   const dataOperation = useFoblesDataOperationWhenReady(workOperationId);
   const data = dataOperation?.data;
   useEffect(() => {
@@ -116,16 +111,6 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
   }, [dataOperation, filtersLoaded, graphFilters]);
   const model = data?.model;
   useEffect(() => findingStore.subscribe(setSnapshot), [findingStore]);
-  // Agent: A cold item runs a live harvest before any data operation exists. Subscribe by work-operation id up front so
-  // Agent: that harvest's progress is visible instead of an empty dialog.
-  useEffect(
-    () =>
-      subscribeFoblesAcquisitionProgress(workOperationId, (progress) => {
-        extensionLog.debug("Auditor dialog: acquisition progress received", { workOperationId, progress });
-        setAcquisitionProgress(progress);
-      }),
-    [workOperationId],
-  );
   // Agent: Persisting is gated on filtersLoaded so the initial defaults never overwrite the stored values.
   // Agent: Graph filters fall back to the Graph's stored filters until the Auditor has its own stored set.
   useEffect(() => {
@@ -174,64 +159,13 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
     const unsubscribeChange = dataOperation.subscribeChange(() => {
       setModelRevision((current) => current + 1);
     });
-    const unsubscribeHarvest = dataOperation.subscribeHarvestProgress((progress) => {
-      extensionLog.debug("Auditor dialog: harvest progress received", { workOperationId, progress });
-      setHarvestProgress(progress);
-    });
-    const unsubscribeProcessing = dataOperation.subscribeProcessingProgress((progress) => {
-      extensionLog.debug("Auditor dialog: processing progress received", {
-        workOperationId,
-        completedItemCount: progress.completedItemCount,
-        maxItemCount: progress.maxItemCount,
-        status: progress.status,
-      });
-      setLiveResolveProgress({
-        completed: progress.completedItemCount,
-        max: progress.maxItemCount,
-        status: progress.status,
-      });
-    });
     return () => {
       unsubscribeChange();
-      unsubscribeHarvest();
-      unsubscribeProcessing();
     };
-  }, [dataOperation, workOperationId]);
-  // Agent: Fallback that needs no event replay: count unique item GUIDs whose every Resolve candidate node
-  // Agent: has reached a terminal processing state, the same unit Graph's Resolving bar counts.
-  const derivedResolveProgress = useMemo<PhaseProgress | undefined>(() => {
-    if (!data || !model) {
-      return undefined;
-    }
-    const treeNodeIdsByGuid = new Map<string, string[]>();
-    data.referenceHarvestingCandidateTreeNodeIds.forEach((treeNodeId) => {
-      const node = model.nodesById.get(treeNodeId);
-      const guid = (node?.nodeType === "item" ? node.scItem.scItemId || treeNodeId : treeNodeId).toLowerCase();
-      const treeNodeIds = treeNodeIdsByGuid.get(guid) ?? [];
-      treeNodeIds.push(treeNodeId);
-      treeNodeIdsByGuid.set(guid, treeNodeIds);
-    });
-    let completed = 0;
-    treeNodeIdsByGuid.forEach((treeNodeIds) => {
-      const terminal = treeNodeIds.every((treeNodeId) => {
-        const status = model.processingStateByTreeNodeId.get(treeNodeId);
-        return status !== undefined && status !== "pending" && status !== "enriching";
-      });
-      if (terminal) {
-        completed += 1;
-      }
-    });
-    const max = treeNodeIdsByGuid.size;
-    return { completed, max, status: completed >= max ? "complete" : "running" };
-  }, [data, model, modelRevision]);
-  const resolveProgress = liveResolveProgress ?? derivedResolveProgress;
-  if (resolveProgress?.status === "complete" && completedElapsedSeconds.current === undefined) {
-    completedElapsedSeconds.current = (performance.now() - startedAt.current) / 1000;
-  }
-  const resolveComplete = resolveProgress?.status === "complete";
-  // Agent: Auditing has settled once item processing is complete and the Reference Harvesting queue is idle. Until
-  // Agent: then a group whose data has not arrived shows as "auditing"; afterwards it shows as "couldn't audit".
-  const auditingSettled = resolveComplete && harvestProgress?.status !== "running";
+  }, [dataOperation]);
+  // Agent: Auditing has settled once the work session reports no running phase and no unsettled task. Until then a
+  // Agent: group whose data has not arrived shows as "auditing"; afterwards it shows as "couldn't audit".
+  const auditingSettled = model !== undefined && workProgress?.status === "idle";
   useEffect(() => {
     const showHelpFromWindow = (): void => setShowHelp(true);
     window.addEventListener("fobles:auditor-help", showHelpFromWindow);
@@ -241,10 +175,10 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
     logHeapSnapshot("auditor-opened", { workOperationId });
   }, [workOperationId]);
   useEffect(() => {
-    if (resolveComplete) {
+    if (auditingSettled) {
       logHeapSnapshot("auditor-resolve-complete", { workOperationId });
     }
-  }, [resolveComplete, workOperationId]);
+  }, [auditingSettled, workOperationId]);
   const projectedFindings = useMemo(() => {
     const nodesById = model?.nodesById;
     return snapshot.map((finding) => {
@@ -358,14 +292,7 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
         }}
         onViewReferenceModel={() => setViewReferenceModel(true)}
         footer={
-          <LifecycleProgressFooter
-            harvestProgress={
-              harvestProgress ?? (acquisitionProgress?.harvestRequired ? acquisitionProgress.progress : undefined)
-            }
-            resolveProgress={resolveProgress}
-            elapsedSeconds={completedElapsedSeconds.current}
-            buildingLabel="Building audit"
-          />
+          <WorkProgressFooter workSessionId={workOperationId} />
         }
       />
       <div className="fobles-auditor-search-row">

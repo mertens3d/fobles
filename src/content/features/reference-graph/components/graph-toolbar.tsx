@@ -3,12 +3,10 @@
 import type cytoscape from "cytoscape";
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import type { LayoutGraphPresetName } from "../../../../constants/constants.types";
-import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
 import { ControlsHeader } from "../../../shared/ui/reference-controls/controls-header";
 import { GraphFilterList } from "../../../shared/ui/reference-controls/graph-filter-list";
-import { LifecycleProgressFooter } from "../../../shared/ui/reference-controls/lifecycle-progress-footer";
 import { ViewReferenceModelButton } from "../../../shared/ui/reference-controls/view-reference-model-button";
-import type { EnrichmentProgress as EnrichmentProgressData } from "../enrichment/enrichment.types";
+import { WorkProgressFooter } from "../../../shared/ui/reference-controls/work-progress-footer";
 import type { GraphParameterVisibilitySettings } from "../reference-graph.types";
 import { BackButton } from "./back-button";
 import { GraphHelpDialog, useGraphHelpDialog } from "./graph-help-dialog";
@@ -31,9 +29,7 @@ type ToolbarProps = {
   onClearFilters: () => void;
   controlsExpanded: boolean;
   onControlsExpandedChange: (expanded: boolean) => void;
-  buildElapsedSeconds: number | undefined;
-  harvestProgress: PhaseProgress | undefined;
-  enrichmentProgress: EnrichmentProgressData | undefined;
+  workSessionId: string;
   onViewReferenceModel: () => void;
 };
 
@@ -52,17 +48,10 @@ export function GraphToolbar({
   onClearFilters,
   controlsExpanded,
   onControlsExpandedChange,
-  buildElapsedSeconds,
-  harvestProgress,
-  enrichmentProgress,
+  workSessionId,
   onViewReferenceModel,
 }: ToolbarProps) {
   const { dialogRef, showGraphHelp } = useGraphHelpDialog();
-  const resolveProgress: PhaseProgress | undefined = enrichmentProgress && {
-    completed: enrichmentProgress.completedItemCount,
-    max: enrichmentProgress.maxItemCount,
-    status: enrichmentProgress.status,
-  };
   return (
     <div className="fobles-reference-graph-toolbar">
       <ControlsHeader
@@ -86,12 +75,7 @@ export function GraphToolbar({
         </div>
       )}
       <GraphHelpDialog dialogRef={dialogRef} />
-      <LifecycleProgressFooter
-        harvestProgress={harvestProgress}
-        resolveProgress={resolveProgress}
-        elapsedSeconds={buildElapsedSeconds}
-        buildingLabel="Building graph"
-      />
+      <WorkProgressFooter workSessionId={workSessionId} />
     </div>
   );
 }

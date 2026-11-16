@@ -1,7 +1,1 @@
-import type { PhaseProgress } from "../../../foundation/reference-data/progress/lifecycle.types";
-
-export type PhaseProgressBarProps = {
-  label: string;
-  progress: PhaseProgress | undefined;
-  displayLabel?: string;
-};
+// Agent: DELETED - replaced by shared/ui/work-progress (WorkProgress) and work-progress-footer.tsx.

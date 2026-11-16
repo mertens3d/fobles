@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/foundation/workers/session/work-session.types.ts
 
 import type { HealthReport } from "../../diagnostics/diagnostics.types";
+import type { WorkPhaseProgress, WorkSessionDescription } from "../progress/work-progress.types";
 import type { WorkerTaskResult } from "../tasks/tasks.types";
 import type { WorkerTask } from "../tasks/tasks.types";
 import type { WorkClass } from "../work-scheduling.types";
@@ -22,6 +23,9 @@ export type WorkSession = {
   registerHealthProvider: (provider: { getHealth: () => HealthReport }) => () => void;
   markProgress: (reason: string) => void;
   runTask: (task: WorkSessionTask) => Promise<WorkerTaskResult | undefined>;
+  describe: (description: WorkSessionDescription) => void;
+  reportProgress: (phaseKey: string, progress: WorkPhaseProgress) => void;
+  attachRequest: (requestId: string) => void;
   complete: () => Promise<void>;
   cancel: () => Promise<void>;
 };

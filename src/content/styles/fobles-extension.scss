@@ -23,6 +23,7 @@
 @use "../features/auditor/components/auditor-data-action/auditor-data-action";
 @use "../features/auditor/components/auditor-navigate/auditor-navigate";
 @use "../shared/ui/json-tree/json-tree";
+@use "../shared/ui/work-progress/work-progress";
 @use "../shared/ui/indexeddb-viewer/indexeddb-viewer";
 @use "../shared/ui/indexeddb-viewer/developer-dialog";
 @use "iframe-workers";

@@ -7,6 +7,7 @@ import { harvestSitecoreWithWorkers } from "../../../harvesting/coordinator/fore
 import type { SitecoreHarvestResult } from "../../../harvesting/harvesting.types";
 import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../../sitecore/fobles-url";
+import { WORK_PROGRESS } from "../../../workers/progress/work-progress.const.ts";
 import type { SitecoreItemLocator, WorkerTask } from "../../../workers/tasks/tasks.types.js";
 import { acquireReferenceModelForCurrentItem } from "../../acquisition/acquire-reference-model.ts";
 import { patchReferenceModelFact } from "../../model/reference-model-fact-patcher.ts";
@@ -44,6 +45,7 @@ export async function startSharedReferenceModelSession({
     return undefined;
   }
   const { itemId, prepared, decision } = acquired;
+  workSession.describe({ target: prepared.harvestedData.rootItem.scItemName });
   onModelReady?.(prepared);
   const identity = resolveSitecoreDataIdentity(doc);
   const stateListeners = new Set<ReferenceModelSessionStateChange>();
@@ -110,6 +112,7 @@ export async function startSharedReferenceModelSession({
 
   async function runCrop(job: ReferenceHarvestingJob, harvestSignal: AbortSignal): Promise<void> {
     const requestId = crypto.randomUUID();
+    workSession.attachRequest(requestId);
     const harvestRequest = {
       requestId,
       url: buildFoblesUrl(job.item.value),
@@ -156,11 +159,28 @@ export async function startSharedReferenceModelSession({
     }
   }
 
+  function reportValidationProgress(progress: ReferenceModelProcessingProgress): void {
+    workSession.reportProgress(WORK_PROGRESS.PHASE.VALIDATE, {
+      completed: progress.completedItemCount,
+      max: progress.maxItemCount,
+      status: progress.status,
+    });
+  }
+
+  // Agent: A disposed session has no work left; its phases must not keep the work session looking active.
+  function settleReportedProgress(): void {
+    const harvest = latestHarvestProgress ?? { completed: 0, max: 0 };
+    const validation = latestProcessingProgress ?? { completedItemCount: 0, maxItemCount: 0 };
+    workSession.reportProgress(WORK_PROGRESS.PHASE.HARVEST, { ...harvest, status: "complete" });
+    reportValidationProgress({ ...validation, status: "complete" });
+  }
+
   const harvestingQueue: ReferenceHarvestingQueue = createReferenceHarvestingQueue({
     runJob: async (job, harvestSignal) =>
       job.factName === "quickInfo" ? runQuickInfo(job) : runCrop(job, harvestSignal),
     onProgress: (progress) => {
       latestHarvestProgress = progress;
+      workSession.reportProgress(WORK_PROGRESS.PHASE.HARVEST, progress);
       harvestProgressListeners.forEach((listener) => listener(progress));
       harvestActivityListeners.forEach((listener) => listener());
     },
@@ -205,6 +225,7 @@ export async function startSharedReferenceModelSession({
     },
     onProgress: (progress) => {
       latestProcessingProgress = progress;
+      reportValidationProgress(progress);
       processingProgressListeners.forEach((listener) => listener(progress));
     },
     harvestActivity: {
@@ -258,6 +279,7 @@ export async function startSharedReferenceModelSession({
       disposed = true;
       processor.dispose();
       harvestingQueue.dispose();
+      settleReportedProgress();
       stateListeners.clear();
       processingProgressListeners.clear();
       harvestProgressListeners.clear();

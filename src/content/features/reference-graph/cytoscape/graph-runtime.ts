@@ -3,7 +3,6 @@
 import { CONST } from "../../../../constants/const";
 import { getReferenceGraphFilters, getReferenceGraphLayoutName } from "../../../../shared/reference-graph-settings";
 import { extensionLog } from "../../../logger";
-import { closeReferenceGraphProgressModal, handleHarvestProgress } from "../build-progress";
 import { disposeActiveEnrichmentController, startEnrichmentController } from "../enrichment/enrichment-controller";
 import type { EnrichmentProgress } from "../enrichment/enrichment.types";
 import { attachGraphEventHandlers } from "../event-handlers";
@@ -45,7 +44,6 @@ export async function initializeGraphRuntime(runtime: GraphRuntime): Promise<voi
   }
   const { options } = runtime;
   options.setGraphBusy(true);
-  reportBuildProgress(options.doc, "active");
   try {
     const settings = await loadSavedGraphSettings();
     runtime.savedViewport = settings.viewport;
@@ -177,8 +175,6 @@ function completeInitialLayout(runtime: GraphRuntime): void {
   restoreGraphViewportState(cy, runtime.rootItemId, runtime.savedViewport);
   options.setGraphBusy(false);
   startGraphEnrichment(runtime);
-  reportBuildProgress(options.doc, "complete");
-  closeReferenceGraphProgressModal(options.doc);
   extensionLog.debug("Reference graph ready", {
     nodeCount: cy.nodes().length,
     visibleNodeCount: cy.nodes(":visible").length,
@@ -209,12 +205,8 @@ function handleEnrichmentProgress(runtime: GraphRuntime, progress: EnrichmentPro
     });
   }
 }
-function reportBuildProgress(doc: Document, status: "active" | "complete"): void {
-  handleHarvestProgress(doc, { stepKey: "build-graph", label: "Building Graph" }, status);
-}
 function handleInitializationFailure(runtime: GraphRuntime, error: unknown): void {
   runtime.options.setGraphBusy(false);
-  closeReferenceGraphProgressModal(runtime.options.doc);
   extensionLog.error("Reference graph initialization failed", { error });
 }
 function cancelScheduledLayout(animationFrames: AnimationFrameState): void {

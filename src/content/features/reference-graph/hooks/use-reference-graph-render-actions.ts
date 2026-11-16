@@ -4,7 +4,6 @@ import type { ReferenceGraphRenderActions, UseReferenceGraphRenderActionsOptions
 import { useCallback } from "react";
 import type { SitecoreHarvestResult } from "../../../foundation/harvesting/harvesting.types.js";
 import { extensionLog } from "../../../logger";
-import { handleHarvestProgress } from "../build-progress";
 import { startEnrichmentController } from "../enrichment/enrichment-controller";
 import { getEnabledFilterKeys } from "../graph-filters";
 import { initializeGraphCollapseState, refreshGraphVisibilityAndLayout } from "../graph-nodes/graph-expand-collapse";
@@ -68,9 +67,7 @@ export function useReferenceGraphRenderActions({
   const renderGraph = useCallback(
     async (graph: SitecoreHarvestResult): Promise<void> => {
       graphState.setGraphBusy(true);
-      const prepared = await prepareReferenceGraph(graph, graphState.currentFiltersRef.current, {
-        onProgress: (step, status) => handleHarvestProgress(doc, step, status),
-      });
+      const prepared = await prepareReferenceGraph(graph, graphState.currentFiltersRef.current);
       if (prepared) {
         renderPreparedGraph(prepared);
       } else {
@@ -78,7 +75,7 @@ export function useReferenceGraphRenderActions({
         extensionLog.warn("Reference graph prepare: no graph produced", { rootItemId: graph.rootItem.scItemId });
       }
     },
-    [doc, graphState.currentFiltersRef, graphState.setGraphBusy, renderPreparedGraph],
+    [graphState.currentFiltersRef, graphState.setGraphBusy, renderPreparedGraph],
   );
   const handleBack = useCallback((): void => {
     const previousPreparedGraph = graphState.graphHistoryRef.current.pop();

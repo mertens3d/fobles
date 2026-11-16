@@ -1,28 +1,28 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph-modal.tsx
 
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
-import { ReferenceGraphApp } from "./reference-graph-app";
+import { ReferenceGraphLoader } from "./components/reference-graph-loader";
 import type { HarvestForLink } from "./reference-graph.types";
-import type { PreparedReferenceGraph } from "./reference-graph.types";
+import type { ReferenceGraphLoading } from "./reference-graph.types";
 
 export type ReferenceGraphViewProps = {
   doc: Document;
   workOperation: WorkOperation;
-  preparedGraph: PreparedReferenceGraph;
+  loading: ReferenceGraphLoading;
   harvestForLink: HarvestForLink;
 };
 
 export function createReferenceGraphView({
   doc,
   workOperation,
-  preparedGraph,
+  loading,
   harvestForLink,
 }: ReferenceGraphViewProps) {
   return (
-    <ReferenceGraphApp
+    <ReferenceGraphLoader
       doc={doc}
       workSession={workOperation}
-      initialPreparedGraph={preparedGraph}
+      loading={loading}
       harvestForLink={harvestForLink}
     />
   );

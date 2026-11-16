@@ -6,6 +6,7 @@ import * as cache from "../../../src/content/foundation/cache/sitecore-data/site
 import { structuralTemplateCacheKey } from "../../../src/content/foundation/cache/sitecore-data/structural-cache-key.ts";
 import { factoryItemGraphNodeData } from "../../../src/content/foundation/reference-data/model/sitecore-item.ts";
 import { createStructuralRuntimeDriver } from "../../../src/content/foundation/reference-data/processing/item-kind/structural-runtime-driver.ts";
+import { WORK_PROGRESS } from "../../../src/content/foundation/workers/progress/work-progress.const.ts";
 import { WORK_SCHEDULING } from "../../../src/content/foundation/workers/work-scheduling.const.ts";
 import { getRuntimeSettings } from "../../../src/content/runtime-settings/runtime-settings.ts";
 import { guid, SCOPE } from "./structural-fixture.ts";
@@ -39,6 +40,7 @@ void test("runtime tasks use background WorkSession priority, real URL constants
   assert.deepEqual((await driver.bases(guid(10), false))?.value, [guid(2)]);
   await driver.finish();
   assert.deepEqual(f.classes, [WORK_SCHEDULING.BACKGROUND]);
+  assert.deepEqual(f.descriptions, [{ title: WORK_PROGRESS.TITLE.STRUCTURE }]);
   assert.equal(f.completed(), 1);
   assert.equal(f.cancelled(), 1);
   assert.ok(f.tasks.every((task) => new URL(task.url).searchParams.get(SITECORE.SEARCH_PARAMS.CONTENT_DATABASE) === "master"));

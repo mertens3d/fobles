@@ -12,7 +12,6 @@ import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";
 import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
 import type { ReferenceGraphAppProps } from "./reference-graph-app.types";
-import { getFoblesDataSession } from "../../foundation/reference-data/reference-data-service";
 import { subscribeRootRefresh } from "./lifecycle/root-refresh-events";
 import { NodeDetailsPanel } from "../../shared/ui/details/node-details-panel";
 import { FoblesDetailsWindow } from "../../shared/dialog/fobles-details-window";
@@ -70,11 +69,6 @@ export function ReferenceGraphApp({ doc, workSession, initialPreparedGraph, harv
     observer.observe(container);
     return () => observer.disconnect();
   }, []);
-  useEffect(() => {
-    const session = getFoblesDataSession(workSession.id);
-    return session?.subscribeHarvestProgress(graphState.setHarvestProgress);
-  }, [workSession.id, graphState.setHarvestProgress]);
-
   useEffect(() => {
     const rootItemId = graphState.currentPreparedGraph.harvestedData.rootItem.scItemId;
     return subscribeRootRefresh(rootItemId, (result) => {
@@ -134,9 +128,7 @@ export function ReferenceGraphApp({ doc, workSession, initialPreparedGraph, harv
         cy={cyRef.current}
         controlsExpanded={graphState.controlsExpanded}
         onControlsExpandedChange={handleControlsExpandedChange}
-        buildElapsedSeconds={graphState.buildElapsedSeconds}
-        harvestProgress={graphState.harvestProgress}
-        enrichmentProgress={graphState.enrichmentProgress}
+        workSessionId={workSession.id}
         onViewReferenceModel={handleViewReferenceModel}
       />
       {graphState.selectedTreeNodeId ? (

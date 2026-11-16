@@ -78,3 +78,15 @@ export type PrepareReferenceGraphOptions = {
 export type PreparedReferenceGraph = PreparedReferenceModel & { graphElements: cytoscape.ElementDefinition[] };
 
 export type ReferenceGraphOperationState = "created" | "running" | "displaying" | "disposing" | "closed";
+
+export type ReferenceGraphLoadingState =
+  | { status: "loading" }
+  | { status: "ready"; prepared: PreparedReferenceGraph }
+  | { status: "failed"; message: string };
+
+export type ReferenceGraphLoading = {
+  getState: () => ReferenceGraphLoadingState;
+  subscribe: (listener: () => void) => () => void;
+  resolve: (prepared: PreparedReferenceGraph) => void;
+  fail: (message: string) => void;
+};

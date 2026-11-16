@@ -1,5 +1,6 @@
 import { getRuntimeSettings } from "../../../src/content/runtime-settings/runtime-settings.ts";
 import type { WorkClass } from "../../../src/content/foundation/workers/work-scheduling.types.ts";
+import type { WorkSessionDescription } from "../../../src/content/foundation/workers/progress/work-progress.types.ts";
 import type {
   WorkSession,
   WorkSessionTask,
@@ -21,6 +22,7 @@ export function runtimeFixture() {
   let fallbackCalls = 0;
   const classes: WorkClass[] = [];
   const tasks: WorkSessionTask[] = [];
+  const descriptions: WorkSessionDescription[] = [];
   const template = factoryItemGraphNodeData({
     scItemId: guid(10),
     scItemName: "Custom",
@@ -77,6 +79,9 @@ export function runtimeFixture() {
         }
         return Promise.resolve(result);
       },
+      describe: (description: WorkSessionDescription) => {
+        descriptions.push(description);
+      },
       cancel: () => {
         cancelled += 1;
         return Promise.resolve();
@@ -102,6 +107,7 @@ export function runtimeFixture() {
     options,
     tasks,
     classes,
+    descriptions,
     template,
     item,
     parent,

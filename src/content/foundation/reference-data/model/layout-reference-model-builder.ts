@@ -26,13 +26,43 @@ export function createReferenceModelNodeId(...parts: Array<string | undefined>):
     .join("-");
 }
 
+// Agent: Layout data comes from Sitecore markup and from cached copies written by older builds, so nothing in it is
+// Agent: assumed complete or well formed: lists may be missing, strings may be absent, controls may lack raw data.
+function listOf<T>(value: readonly T[] | null | undefined): readonly T[] {
+  return Array.isArray(value) ? value : [];
+}
+
+function textOf(value: unknown): string {
+  return typeof value === "string" ? value : "";
+}
+
+function recordOf(value: unknown): Record<string, unknown> {
+  return value !== null && typeof value === "object" ? (value as Record<string, unknown>) : {};
+}
+
+function readableDevices(layout: LayoutSectionField | null | undefined): LayoutDevice[] {
+  return listOf(layout?.devices).filter((device): device is LayoutDevice =>
+    Boolean(recordOf(device).scDeviceItem && typeof recordOf(device).scDeviceItem === "object"),
+  );
+}
+
+function readableControls(placement: LayoutPlacement): ScControl[] {
+  return listOf(placement.controls).filter((control): control is ScControl =>
+    Boolean(recordOf(control).rendering && typeof recordOf(control).rendering === "object"),
+  );
+}
+
+function readablePlacements(placements: readonly LayoutPlacement[] | null | undefined): LayoutPlacement[] {
+  return listOf(placements).filter((placement): placement is LayoutPlacement => typeof placement === "object");
+}
+
 export function createPageLayoutItemsByDeviceId(
   layoutSectionFields: readonly LayoutSectionField[],
 ): Map<string, ItemGraphNodeData> {
   const pageLayoutItemsByDeviceId = new Map<string, ItemGraphNodeData>();
 
-  layoutSectionFields.forEach((layoutSectionField) => {
-    layoutSectionField.devices.forEach((device) => {
+  listOf(layoutSectionFields).forEach((layoutSectionField) => {
+    readableDevices(layoutSectionField).forEach((device) => {
       const deviceId = device.scDeviceItem.scItemId;
       const pageLayoutItem = device.scPageLayoutItem;
 
@@ -64,7 +94,7 @@ export function createLayoutSectionReferenceModel(
     collapseKey: GRAPH_COLLAPSE_KEY.LAYOUT_SECTION,
     branch: "layouts",
     relationshipToParent: "related",
-    children: layout.devices.map((device, deviceIndex) =>
+    children: readableDevices(layout).map((device, deviceIndex) =>
       createDeviceReferenceModelNode(treeNodeId, device, deviceIndex, pageLayoutItemsByDeviceId, isLayoutDelta(layout)),
     ),
   });
@@ -86,8 +116,8 @@ function createDeviceReferenceModelNode(
     device.scPageLayoutItem ??
     (device.scDeviceItem.scItemId ? pageLayoutItemsByDeviceId.get(device.scDeviceItem.scItemId) : undefined);
   const pageLayoutNode = pageLayoutItem
-    ? createPageLayoutReferenceModelNode(treeNodeId, pageLayoutItem, device.placements)
-    : createMissingPageLayoutReferenceModelNode(treeNodeId, device.placements, inheritsLayout);
+    ? createPageLayoutReferenceModelNode(treeNodeId, pageLayoutItem, readablePlacements(device.placements))
+    : createMissingPageLayoutReferenceModelNode(treeNodeId, readablePlacements(device.placements), inheritsLayout);
 
   return createReferenceModelItemNode({
     treeNodeId,
@@ -105,7 +135,7 @@ function createDeviceReferenceModelNode(
 // Agent: without an l="" attribute keeps the Standard Values layout; it is not missing. Only a full (non-delta) layout
 // Agent: value without l="" really has no layout set.
 function isLayoutDelta(layout: LayoutSectionField): boolean {
-  return LAYOUT_DELTA_ROOT_PATTERN.test(layout.rawMarkup ?? "");
+  return LAYOUT_DELTA_ROOT_PATTERN.test(textOf(layout.rawMarkup));
 }
 
 function createMissingPageLayoutReferenceModelNode(
@@ -152,30 +182,34 @@ function createPlacementReferenceModelNode(
   scopeTreeNodeId: string,
   placement: LayoutPlacement,
 ): ReferenceModelNonItemNode {
+  const path = textOf(placement.path);
+  const name = textOf(placement.name);
   const treeNodeId = createReferenceModelNodeId(
     scopeTreeNodeId,
     CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
-    placement.path,
+    path,
   );
+  const controls = readableControls(placement);
+  const childPlacements = readablePlacements(placement.placements);
   const ownerByPlacement = new Map(
-    placement.placements.map((childPlacement) => [childPlacement, findOwningControl(placement, childPlacement)]),
+    childPlacements.map((childPlacement) => [childPlacement, findOwningControl(controls, childPlacement)]),
   );
   const childPlaceholderNodes = (owner: ScControl | undefined): ReferenceModelNode[] =>
-    placement.placements
+    childPlacements
       .filter((childPlacement) => ownerByPlacement.get(childPlacement) === owner)
       .map((childPlacement) => createPlacementReferenceModelNode(treeNodeId, childPlacement));
   const children: ReferenceModelNode[] = [
     ...childPlaceholderNodes(undefined),
-    ...placement.controls.map((control, controlIndex) =>
+    ...controls.map((control, controlIndex) =>
       createRenderingReferenceModelNode(treeNodeId, control, controlIndex, childPlaceholderNodes(control)),
     ),
   ];
 
   return createReferenceModelNonItemNode({
     treeNodeId,
-    name: placement.name,
+    name,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PLACEHOLDER,
-    provenance: { type: "placeholder", placeholderPath: placement.path, displayName: placement.name },
+    provenance: { type: "placeholder", placeholderPath: path, displayName: name },
     collapseKey: GRAPH_COLLAPSE_KEY.PLACEHOLDER,
     branch: "layouts",
     relationshipToParent: "related",
@@ -186,30 +220,34 @@ function createPlacementReferenceModelNode(
 // Agent: Dynamic placeholders belong to the rendering that exposes them, so they nest under that rendering instead of
 // Agent: beside it. SXA/JSS keys look like "container-1" (the owner has DynamicPlaceholderId=1 in its parameters);
 // Agent: classic keys look like "main-{RENDERING UID}-0". A placeholder with no single clear owner stays where it is.
-function findOwningControl(parent: LayoutPlacement, child: LayoutPlacement): ScControl | undefined {
+function findOwningControl(controls: readonly ScControl[], child: LayoutPlacement): ScControl | undefined {
   const ownerUid = rawPlaceholderSegments(child)
     .map((segment) => UID_DYNAMIC_PLACEHOLDER_PATTERN.exec(segment)?.[1])
     .find((uid): uid is string => Boolean(uid));
-  const dynamicId = NUMBERED_DYNAMIC_PLACEHOLDER_PATTERN.exec(child.name)?.[1];
+  const dynamicId = NUMBERED_DYNAMIC_PLACEHOLDER_PATTERN.exec(textOf(child.name))?.[1];
   const candidates = ownerUid
-    ? parent.controls.filter((control) => normalizeGuid(control.uid) === normalizeGuid(ownerUid))
-    : parent.controls.filter((control) => dynamicId !== undefined && readDynamicPlaceholderId(control) === dynamicId);
+    ? controls.filter((control) => normalizeGuid(control.uid) === normalizeGuid(ownerUid))
+    : controls.filter((control) => dynamicId !== undefined && readDynamicPlaceholderId(control) === dynamicId);
 
   return candidates.length === 1 ? candidates[0] : undefined;
 }
 
 function rawPlaceholderSegments(placement: LayoutPlacement): string[] {
-  const depth = placement.path.split("/").length - 1;
-  return placement.sourcePaths
-    .map((sourcePath) => sourcePath.split("/").filter(Boolean)[depth])
+  const depth = textOf(placement.path).split("/").length - 1;
+  return listOf(placement.sourcePaths)
+    .map((sourcePath) => textOf(sourcePath).split("/").filter(Boolean)[depth])
     .filter((segment): segment is string => Boolean(segment));
 }
 
+// Agent: Prefer the parsed parameters; fall back to the raw s:par / par attribute. Either may be missing (cached
+// Agent: controls can lack rawData entirely).
 function readDynamicPlaceholderId(control: ScControl): string | undefined {
-  const rawParameters = control.rawData["s:par"] ?? control.rawData.par ?? "";
-  return new URLSearchParams(rawParameters).get("DynamicPlaceholderId")?.trim() || undefined;
+  const parsed = textOf(recordOf(control.parameters).DynamicPlaceholderId).trim();
+  const raw = recordOf(control.rawData);
+  const rawParameters = textOf(raw["s:par"]) || textOf(raw.par);
+  return parsed || new URLSearchParams(rawParameters).get("DynamicPlaceholderId")?.trim() || undefined;
 }
 
-function normalizeGuid(value: string | undefined): string {
-  return (value ?? "").replace(/[{}]/g, "").toLowerCase();
+function normalizeGuid(value: unknown): string {
+  return textOf(value).replace(/[{}]/g, "").toLowerCase();
 }

@@ -12,6 +12,7 @@ import {
   disposeBackgroundWorkerPool,
   runWorkerTask,
 } from "../../foundation/workers/pool/worker-pool-client";
+import { registerWorkProgress } from "../../foundation/workers/progress/work-progress-registry";
 import type { WorkerTaskResult } from "../../foundation/workers/tasks/tasks.types";
 import { WORK_SCHEDULING } from "../../foundation/workers/work-scheduling.const";
 import type { WorkClass } from "../../foundation/workers/work-scheduling.types";
@@ -102,6 +103,8 @@ export function createWorkSession(workClass: WorkClass = WORK_SCHEDULING.FOREGRO
   const activeTasks = new Set<Promise<unknown>>();
   const healthProviders = new Set<HealthProvider>();
   const recoveryCountByTaskId = new Map<string, number>();
+  const attachedRequestIds = new Set<string>();
+  const progress = registerWorkProgress(id, workClass);
   let state: WorkSessionState = "open";
   let released = false;
   let lastProgressAt = performance.now();
@@ -189,6 +192,17 @@ export function createWorkSession(workClass: WorkClass = WORK_SCHEDULING.FOREGRO
     return acceptsTasks() ? await track(runWorkerTask({ ...task, requestId: id, workClass }), task.taskId) : undefined;
   }
 
+  // Agent: Harvests that run under their own request id (crops, Graph re-roots) still belong to this session: their
+  // Agent: tasks count toward its progress and are cancelled with it.
+  function attachRequest(requestId: string): void {
+    if (acceptsTasks()) {
+      attachedRequestIds.add(requestId);
+      progress.attachRequest(requestId);
+    } else {
+      cancelWorkerRequest(requestId);
+    }
+  }
+
   async function settleActiveTasks(): Promise<void> {
     if (activeTasks.size > 0) {
       await Promise.allSettled(Array.from(activeTasks));
@@ -204,6 +218,7 @@ export function createWorkSession(workClass: WorkClass = WORK_SCHEDULING.FOREGRO
       clearInterval(healthTimer);
       healthTimer = undefined;
     }
+    progress.dispose();
     await releasePoolLease(id);
     state = "released";
   }
@@ -235,6 +250,7 @@ export function createWorkSession(workClass: WorkClass = WORK_SCHEDULING.FOREGRO
       state = "cancelling";
       controller.abort();
       cancelWorkerRequest(id);
+      attachedRequestIds.forEach((requestId) => cancelWorkerRequest(requestId));
       extensionLog.debug("Shell work session: cancellation requested", {
         sessionId: id,
         activeTaskCount: activeTasks.size,
@@ -263,6 +279,9 @@ export function createWorkSession(workClass: WorkClass = WORK_SCHEDULING.FOREGRO
     registerHealthProvider,
     markProgress,
     runTask,
+    describe: progress.describe,
+    reportProgress: progress.reportPhase,
+    attachRequest,
     complete,
     cancel,
   };

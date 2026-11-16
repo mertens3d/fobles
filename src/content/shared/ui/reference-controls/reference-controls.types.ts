@@ -1,1 +1,1 @@
-export type PhaseProgressDisplay = { completed: number; max: number; percent: number };
+export type WorkProgressFooterProps = { workSessionId: string };

@@ -1,14 +1,8 @@
 // @source-path [fobles] src/content/features/reference-graph/event-handlers.ts
 
 import { extensionLog } from "../../logger";
-import {
-  closeReferenceGraphProgressModal,
-  initializeReferenceGraphProgressModal,
-  openReferenceGraphProgressModal,
-} from "./build-progress";
 import type { SitecoreHarvestResult } from "../../foundation/harvesting/harvesting.types";
 import type { SitecoreHarvestFiltersState } from "../../../constants/_base/_base.types";
-import { PROGRESS_STEPS } from "../../foundation/harvesting/planner/harvest-steps";
 import type { HarvestForLink } from "./reference-graph.types";
 import type { PreparedReferenceGraph } from "./reference-graph.types";
 
@@ -25,7 +19,7 @@ export function attachGraphEventHandlers(
   cy: cytoscape.Core,
   container: HTMLElement,
   harvestForLink: HarvestForLink,
-  doc: Document,
+  _doc: Document,
   getCurrentFilters: () => SitecoreHarvestFiltersState,
   graphHistory: PreparedReferenceGraph[],
   getCurrentPreparedGraph: () => PreparedReferenceGraph,
@@ -97,6 +91,7 @@ export function attachGraphEventHandlers(
     }
   });
 
+  let rerootInFlight = false;
   cy.on("dbltap", "node", (event) => {
     const node = getEventNode(event);
     const link = getNodeLink(node);
@@ -104,27 +99,25 @@ export function attachGraphEventHandlers(
       return;
     }
 
+    // Agent: Progress for the re-root shows in the Graph footer and toolbar (the work session owns it). One re-root at
+    // Agent: a time: a second double-click while one is running is ignored.
+    if (rerootInFlight) {
+      return;
+    }
     extensionLog.debug("Reference graph: re-rooting at clicked node", { link });
-    let cancelled = false;
-    openReferenceGraphProgressModal(doc, () => {
-      cancelled = true;
-      closeReferenceGraphProgressModal(doc);
-    });
-
+    rerootInFlight = true;
     const filters = getCurrentFilters();
-
-    initializeReferenceGraphProgressModal(doc, PROGRESS_STEPS, filters);
-
-    void harvestForLink(link, filters).then((newGraph) => {
-      closeReferenceGraphProgressModal(doc);
-
-      if (cancelled || !newGraph) {
-        return;
-      }
-
-      graphHistory.push(getCurrentPreparedGraph());
-      onHistoryChange(graphHistory.length);
-      void onGraphChange(newGraph);
-    });
+    void harvestForLink(link, filters)
+      .then((newGraph) => {
+        if (!newGraph) {
+          return;
+        }
+        graphHistory.push(getCurrentPreparedGraph());
+        onHistoryChange(graphHistory.length);
+        void onGraphChange(newGraph);
+      })
+      .finally(() => {
+        rerootInFlight = false;
+      });
   });
 }

@@ -4,10 +4,9 @@ import { REFERENCE_GRAPH } from "../../../constants/graph.presets";
 import { showFoblesCleanupDialog } from "../../../shared/error-dialog";
 import type { AuditFindingStore } from "../../features/auditor/auditor.types";
 import { createAuditorView } from "../../features/auditor/components/auditor-dialog/auditor-dialog";
-import { closeReferenceGraphProgressModal } from "../../features/reference-graph/build-progress";
 import { disposeActiveEnrichmentController } from "../../features/reference-graph/enrichment/enrichment-controller";
 import type { HarvestForLink } from "../../features/reference-graph/reference-graph.types";
-import type { PreparedReferenceGraph } from "../../features/reference-graph/reference-graph.types";
+import type { ReferenceGraphLoading } from "../../features/reference-graph/reference-graph.types";
 import { createReferenceGraphView } from "../../features/reference-graph/reference-graph-modal";
 import { logHeapSnapshot } from "../../foundation/diagnostics/heap-snapshot";
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
@@ -63,7 +62,7 @@ export function openAuditorUtility(
 export function openReferenceGraphUtility(
   doc: Document,
   workOperation: WorkOperation,
-  preparedGraph: PreparedReferenceGraph,
+  loading: ReferenceGraphLoading,
   harvestForLink: HarvestForLink,
   lockAlreadyHeld = false,
 ): Promise<void> {
@@ -82,7 +81,6 @@ export function openReferenceGraphUtility(
       onClose: async () => {
         const cleanupDialog = showFoblesCleanupDialog(doc);
         disposeActiveEnrichmentController();
-        closeReferenceGraphProgressModal(doc);
         try {
           await workOperation.cancel();
         } finally {
@@ -92,7 +90,7 @@ export function openReferenceGraphUtility(
           resolve();
         }
       },
-      createChildren: () => createReferenceGraphView({ doc, workOperation, preparedGraph, harvestForLink }),
+      createChildren: () => createReferenceGraphView({ doc, workOperation, loading, harvestForLink }),
     }).then((opened) => {
       if (!opened) {
         resolve();

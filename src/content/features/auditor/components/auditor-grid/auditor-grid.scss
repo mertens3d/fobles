@@ -361,16 +361,6 @@
   max-height: min(500px, calc(100vh - 280px));
 }
 
-.fobles-reference-graph-toolbar-footer-phases {
-  display: grid;
-  gap: 4px;
-  margin-top: 7px;
-}
-
-.fobles-reference-graph-enrichment-progress[data-status="complete"] {
-  opacity: 0.8;
-}
-
 .fobles-auditor-app::before {
   content: "Fobles Reference Audit";
   display: block;

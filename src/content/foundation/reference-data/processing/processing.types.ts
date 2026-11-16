@@ -43,21 +43,6 @@ export type ReferenceHarvestingQueue = {
 
 export type ReferenceModelHarvestProgress = { completed: number; max: number; status: "running" | "complete" };
 
-export type ReferenceModelHarvestQueueOptions = {
-  runHarvest: (reference: string, signal: AbortSignal) => Promise<void>;
-  onProgress?: (progress: ReferenceModelHarvestProgress) => void;
-  onError?: (reference: string, error: unknown) => void;
-};
-
-export type ReferenceModelHarvestJob = { reference: string; onSettled?: (succeeded: boolean) => void };
-
-export type ReferenceModelHarvestQueue = {
-  // No-op if `reference` is already queued, active, or settled in this queue's lifetime.
-  // Jobs added while processing are appended and consumed by the same queue lifecycle.
-  enqueue: (reference: string, onSettled?: (succeeded: boolean) => void) => void;
-  dispose: () => void;
-};
-
 export type ReferenceModelProcessingProgress = {
   completedItemCount: number;
   maxItemCount: number;

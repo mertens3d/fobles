@@ -1,24 +1,18 @@
 // @source-path [fobles] src/content/features/reference-graph/reference-graph.ts
 
 import type { ReferenceGraphOperationState } from "./reference-graph.types.js";
-import { showFoblesErrorDialog } from "../../../shared/error-dialog";
 import { getReferenceGraphFilters } from "../../../shared/reference-graph-settings";
-import { PROGRESS_STEPS } from "../../foundation/harvesting/planner/harvest-steps";
 import { openFoblesDataAcquisition } from "../../foundation/reference-data/reference-data-acquisition";
 import type { FoblesDataAcquisition } from "../../foundation/reference-data/reference-data.types";
 import type { WorkOperation } from "../../foundation/workers/operation/work-operation.types";
+import { WORK_PROGRESS } from "../../foundation/workers/progress/work-progress.const";
 import { extensionLog } from "../../logger";
 import { openReferenceGraphUtility } from "../../shell/utility/fobles-utility-launchers";
 import { createWorkOperation } from "../../shell/work-operation/work-operation";
-import {
-  closeReferenceGraphProgressModal,
-  handleHarvestProgress,
-  initializeReferenceGraphProgressModal,
-  openReferenceGraphProgressModal,
-} from "./build-progress";
 import { harvestGraphForLink } from "./harvester";
 import { addGraphElements } from "./prepared-reference-graph";
-import type { PreparedReferenceGraph } from "./reference-graph.types";
+import type { PreparedReferenceGraph, ReferenceGraphLoading } from "./reference-graph.types";
+import { createReferenceGraphLoading } from "./reference-graph-loading";
 import { startReferenceGraphTimer } from "./reference-graph-timing";
 
 export let referenceGraphAbortController: AbortController | undefined;
@@ -43,7 +37,6 @@ class ReferenceGraphOperation {
     });
     this.controller.abort();
     void this.workOperation.cancel();
-    closeReferenceGraphProgressModal(this.doc);
   }
 
   async run(): Promise<void> {
@@ -53,54 +46,65 @@ class ReferenceGraphOperation {
     try {
       await this.buildAndDisplayGraph();
     } catch (error) {
-      closeReferenceGraphProgressModal(this.doc);
-      if (this.controller.signal.aborted) {
-        extensionLog.debug("REFERENCE GRAPH: cancelled", { operationId: this.operationId, error });
-      } else {
-        extensionLog.error("REFERENCE GRAPH: data request failed", { operationId: this.operationId, error });
-        showFoblesErrorDialog(this.doc, {
-          title: "Reference Graph",
-          messagePublicFacing: error instanceof Error ? error.message : "Reference Graph data could not be loaded.",
-        });
-      }
+      extensionLog.error("REFERENCE GRAPH: operation failed", { operationId: this.operationId, error });
     } finally {
       await this.close();
     }
   }
 
+  // Agent: Like the Auditor, the Graph window opens immediately and shows the work session's progress while the
+  // Agent: Reference Model is acquired. Closing the window (or failing to open it) cancels the operation.
   private async buildAndDisplayGraph(): Promise<void> {
+    this.workOperation.describe({ title: WORK_PROGRESS.TITLE.GRAPH });
     const filters = await getReferenceGraphFilters();
-    const graphHolder: { prepared?: PreparedReferenceGraph } = {};
-    this.dataAcquisition = await openFoblesDataAcquisition({
-      flavor: "reference-model",
-      target: "current-object",
-      doc: this.doc,
-      workOperation: this.workOperation,
-      signal: this.controller.signal,
-      filters,
-      onModelReady: (model) => {
-        graphHolder.prepared = addGraphElements(model);
-      },
-      onAcquireProgress: (step, status) => handleHarvestProgress(this.doc, step, status),
-      onHarvestRequired: () => {
-        initializeReferenceGraphProgressModal(this.doc, PROGRESS_STEPS, filters);
-        openReferenceGraphProgressModal(this.doc, () => this.cancel());
-      },
-    });
-    this.throwIfCancelled();
-    if (!this.dataAcquisition || !graphHolder.prepared) {
-      throw new Error("The requested data was unavailable.");
-    }
-    this.transition("displaying");
-    closeReferenceGraphProgressModal(this.doc);
-    const prepared = graphHolder.prepared;
-    await openReferenceGraphUtility(
+    const loading = createReferenceGraphLoading();
+    const windowClosed = openReferenceGraphUtility(
       this.doc,
       this.workOperation,
-      prepared,
+      loading,
       async (link, graphFilters, existingResult) =>
-        await harvestGraphForLink(link, this.doc, this.controller, graphFilters, existingResult),
+        await harvestGraphForLink(link, this.workOperation, graphFilters, existingResult),
     );
+    void windowClosed.then(() => this.cancel());
+    await this.acquireGraph(filters, loading);
+    await windowClosed;
+  }
+
+  private async acquireGraph(
+    filters: Awaited<ReturnType<typeof getReferenceGraphFilters>>,
+    loading: ReferenceGraphLoading,
+  ): Promise<void> {
+    const graphHolder: { prepared?: PreparedReferenceGraph } = {};
+    try {
+      this.dataAcquisition = await openFoblesDataAcquisition({
+        flavor: "reference-model",
+        target: "current-object",
+        doc: this.doc,
+        workOperation: this.workOperation,
+        signal: this.controller.signal,
+        filters,
+        onModelReady: (model) => {
+          graphHolder.prepared = addGraphElements(model);
+        },
+      });
+      this.throwIfCancelled();
+      if (!this.dataAcquisition || !graphHolder.prepared) {
+        throw new Error("The requested data was unavailable.");
+      }
+      this.transition("displaying");
+      loading.resolve(graphHolder.prepared);
+    } catch (error) {
+      this.reportAcquisitionFailure(error, loading);
+    }
+  }
+
+  private reportAcquisitionFailure(error: unknown, loading: ReferenceGraphLoading): void {
+    if (this.controller.signal.aborted) {
+      extensionLog.debug("REFERENCE GRAPH: cancelled", { operationId: this.operationId, error });
+    } else {
+      extensionLog.error("REFERENCE GRAPH: data request failed", { operationId: this.operationId, error });
+      loading.fail(error instanceof Error ? error.message : "Reference Graph data could not be loaded.");
+    }
   }
 
   private throwIfCancelled(): void {
@@ -114,7 +118,6 @@ class ReferenceGraphOperation {
       return;
     }
     this.transition("disposing");
-    closeReferenceGraphProgressModal(this.doc);
     this.controller.abort();
     this.dataAcquisition?.dispose();
     await this.workOperation.cancel();

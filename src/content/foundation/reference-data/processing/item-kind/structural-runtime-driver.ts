@@ -13,6 +13,7 @@ import type { SitecoreDataFactMap } from "../../../cache/sitecore-data/sitecore-
 import type { SitecoreDataCacheKey } from "../../../cache/sitecore-data/sitecore-data.types";
 import type { TemplateDerivedRecord } from "../../../cache/sitecore-data/sitecore-data.types";
 import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity.ts";
+import { WORK_PROGRESS } from "../../../workers/progress/work-progress.const.ts";
 import { WORK_SCHEDULING } from "../../../workers/work-scheduling.const.ts";
 import type { SitecoreItemLocator } from "../../../workers/tasks/tasks.types";
 import type { ItemGraphNodeData } from "../../model/model.types.ts";
@@ -26,6 +27,8 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
   }
   await initializeRuntimeSettings();
   const session = options.createSession(WORK_SCHEDULING.BACKGROUND);
+  // Agent: Names the session for every progress display (row 1); each worker task supplies its own label (row 2).
+  session.describe({ title: WORK_PROGRESS.TITLE.STRUCTURE });
   const now = options?.now ?? Date.now;
   const inflight = new Map<string, Promise<StructuralRead<unknown> | undefined>>();
   const failures: unknown[] = [];

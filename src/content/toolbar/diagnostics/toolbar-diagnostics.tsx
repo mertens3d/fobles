@@ -2,30 +2,39 @@
 
 import { useEffect, useState } from "react";
 import { getStructuralSettings, watchStructuralSettings } from "../../../shared/structural/structural-settings";
-import { getWorkerPoolStatus } from "../../foundation/workers/pool/worker-pool-client";
-import { subscribeActivity } from "../../shared/activity/activity-events";
-import { PhaseProgressBar } from "../../shared/ui/reference-controls/phase-progress-bar";
-import { DIAGNOSTIC_OPERATION_LABELS, TOOLBAR_DIAGNOSTICS } from "./toolbar-diagnostics.const";
+import { pickRelevantWorkProgress } from "../../foundation/workers/progress/work-progress-snapshot";
+import { useWorkProgressSnapshots } from "../../shared/ui/work-progress/use-work-progress";
+import { WorkProgress } from "../../shared/ui/work-progress/work-progress";
+import { TOOLBAR_DIAGNOSTICS } from "./toolbar-diagnostics.const";
 import { observeToolbarDiagnostics } from "./toolbar-diagnostics-subscription";
-import type { ToolbarDiagnosticsProps, ToolbarDiagnosticsServices, ToolbarDiagnosticsState } from "./toolbar-diagnostics.types";
+import type { ToolbarDiagnosticsProps } from "./toolbar-diagnostics.types";
+import type { ToolbarDiagnosticsServices, ToolbarDiagnosticsState } from "./toolbar-diagnostics.types";
 import { WORKER_TASK_MANAGER_TOGGLE_EVENT } from "./diagnostics.const";
 
-const services: ToolbarDiagnosticsServices = { getSettings: getStructuralSettings, getStatus: getWorkerPoolStatus, subscribe: subscribeActivity, watchSettings: watchStructuralSettings };
+const services: ToolbarDiagnosticsServices = {
+  getSettings: getStructuralSettings,
+  watchSettings: watchStructuralSettings,
+};
+
+// Agent: Shows the most relevant active work session (foreground first, then most recent) and counts the rest.
+// Agent: Mounted only while diagnostics are enabled, so the progress subscription lives only that long.
+function ToolbarWorkProgress() {
+  const { primary, others } = pickRelevantWorkProgress(useWorkProgressSnapshots());
+  const title = primary
+    ? `${primary.label}: ${primary.completed} / ${primary.max}. Click for Worker Monitor.`
+    : `${TOOLBAR_DIAGNOSTICS.IDLE}. Click for Worker Monitor.`;
+  return (
+    <section className={TOOLBAR_DIAGNOSTICS.CLASS} aria-label={TOOLBAR_DIAGNOSTICS.LABEL}>
+      <button type="button" className="fobles-toolbar-diagnostics-summary" title={title}
+        onClick={() => window.dispatchEvent(new CustomEvent(WORKER_TASK_MANAGER_TOGGLE_EVENT))}>
+        <WorkProgress snapshot={primary} others={others} idleLabel={TOOLBAR_DIAGNOSTICS.IDLE} />
+      </button>
+    </section>
+  );
+}
 
 export function ToolbarDiagnostics({ services: dependencies = services }: ToolbarDiagnosticsProps) {
   const [state, setState] = useState<ToolbarDiagnosticsState>({ enabled: false });
   useEffect(() => observeToolbarDiagnostics(dependencies, setState), [dependencies]);
-  const status = state.status;
-  const active = (status?.activeForeground ?? 0) + (status?.activeBackground ?? 0);
-  const task = status?.activeTasks.find((entry) => entry.workClass === "foreground") ?? status?.activeTasks[0] ?? status?.queuedTasks[0];
-  const operation = task ? DIAGNOSTIC_OPERATION_LABELS[task.type] : TOOLBAR_DIAGNOSTICS.IDLE;
-  const queued = (status?.queuedForeground ?? 0) + (status?.queuedBackground ?? 0);
-  const total = active + queued;
-  const summaryLabel = total > 0 ? operation : "Idle";
-  return state.enabled ? <section className={TOOLBAR_DIAGNOSTICS.CLASS} aria-label={TOOLBAR_DIAGNOSTICS.LABEL}>
-    <button type="button" className="fobles-toolbar-diagnostics-summary" title={`${active} active · ${queued} queued. Click for Worker Monitor.`}
-      onClick={() => window.dispatchEvent(new CustomEvent(WORKER_TASK_MANAGER_TOGGLE_EVENT))}>
-      <PhaseProgressBar label={summaryLabel} displayLabel={summaryLabel} progress={{ completed: total > 0 ? Math.max(0, total - queued) : 0, max: total > 0 ? total : 1, status: total > 0 ? "running" : "idle" }} />
-    </button>
-  </section> : null;
+  return state.enabled ? <ToolbarWorkProgress /> : null;
 }
