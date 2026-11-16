@@ -30,7 +30,7 @@ export function WorkProgress({ snapshot, idleLabel = WORK_PROGRESS_TEXT.IDLE, ot
           {count ? <span className="fobles-work-progress-count">{count}</span> : null}
           {others > 0 ? <span className="fobles-work-progress-more">+{others} more</span> : null}
         </div>
-        {snapshot ? <div className="fobles-work-progress-task">{taskText(snapshot)}</div> : null}
+        <div className="fobles-work-progress-task">{snapshot ? taskText(snapshot) : WORK_PROGRESS_TEXT.BLANK_TASK}</div>
       </div>
     </div>
   );

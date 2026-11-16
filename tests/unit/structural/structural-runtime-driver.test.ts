@@ -40,7 +40,7 @@ void test("runtime tasks use background WorkSession priority, real URL constants
   assert.deepEqual((await driver.bases(guid(10), false))?.value, [guid(2)]);
   await driver.finish();
   assert.deepEqual(f.classes, [WORK_SCHEDULING.BACKGROUND]);
-  assert.deepEqual(f.descriptions, [{ title: WORK_PROGRESS.TITLE.STRUCTURE }]);
+  assert.deepEqual(f.descriptions, [{ title: WORK_PROGRESS.TITLE.ITEM_CONTEXT }]);
   assert.equal(f.completed(), 1);
   assert.equal(f.cancelled(), 1);
   assert.ok(f.tasks.every((task) => new URL(task.url).searchParams.get(SITECORE.SEARCH_PARAMS.CONTENT_DATABASE) === "master"));

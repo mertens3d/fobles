@@ -336,8 +336,8 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
             <NodeDetailsPanel selectedTreeNodeId={selectedTreeNodeId} nodesById={model.nodesById} processingStateByTreeNodeId={model.processingStateByTreeNodeId} />
           </FoblesDetailsWindow>
         ) : null}
+        <AuditorTestDetailsDialog selection={selectedTestDetails} ownerRef={appRef} onClose={() => setSelectedTestDetails(undefined)} />
       </div>
-      <AuditorTestDetailsDialog selection={selectedTestDetails} onClose={() => setSelectedTestDetails(undefined)} />
       <AuditorHelpDialog open={showHelp} onClose={() => setShowHelp(false)} />
     </div>
   );

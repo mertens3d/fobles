@@ -17,6 +17,6 @@ export const WORK_PROGRESS = {
   TITLE: {
     AUDIT: "Auditing",
     GRAPH: "Graphing",
-    STRUCTURE: "Mapping Site Structure",
+    ITEM_CONTEXT: "Mapping Item Context",
   },
 } as const;

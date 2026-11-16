@@ -181,17 +181,23 @@ void test("named ancestor limit bounds structural discovery", async () => {
   assert.deepEqual(f.readSites(), []);
 });
 
-void test("normal discovery of a proven fresh Known Site match opens no driver and never crawls", async () => {
+void test("each active-item change re-proves a proven fresh Known Site root like a page open and never crawls", async () => {
   const f = fixture();
   const site = f.content(20, "/sitecore/content/Site", guid(2));
   const page = f.content(21, `${site.path}/Home`, guid(1));
   f.seed({ ...site, templateId: guid(2), validatedAt: 1000 });
   await f.service.lookupKnownSite(SCOPE, site.path);
   await f.service.whenIdle();
-  f.calls.length = 0;
-  f.service.scheduleStructuralDiscovery(SCOPE, [page]);
-  await f.service.whenIdle();
-  assert.deepEqual(f.calls, []);
+  for (let change = 0; change < 2; change += 1) {
+    f.calls.length = 0;
+    f.service.scheduleStructuralDiscovery(SCOPE, [page]);
+    await f.service.whenIdle();
+    assert.equal(f.calls.filter((call) => call.startsWith("driver:")).length, 1);
+    assert.ok(f.calls.includes(`qi:${site.id}:true`));
+    assert.ok(!f.calls.some((call) => call.startsWith("parent:")));
+    assert.ok(!f.calls.some((call) => call.startsWith(`qi:${page.id}:`)));
+  }
+  assert.deepEqual(f.readSites().map((entry) => entry.id), [site.id]);
 });
 
 void test("settings fingerprints revalidate fresh Known Sites without ancestor walks", async () => {

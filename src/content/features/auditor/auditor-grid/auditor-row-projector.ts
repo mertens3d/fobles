@@ -10,6 +10,7 @@ import { buildAuditReportTree } from "../audit-report-tree";
 import { applyAuditorGroupStatus } from "./auditor-group-status";
 import type {
   AuditorDescendantFailure,
+  AuditorFailureOccurrence,
   AuditorGroupStatusContext,
   AuditorTreeRow,
   JourneyStage,
@@ -119,32 +120,57 @@ export function projectAuditorRows(
   return rows;
 }
 
+function isFailure(finding: AuditFinding): boolean {
+  return finding.status === "error" || finding.status === "warning";
+}
+
+function ancestorsOf(row: AuditorTreeRow, rowsById: ReadonlyMap<string, AuditorTreeRow>): AuditorTreeRow[] {
+  const ancestors: AuditorTreeRow[] = [];
+  let parent = row.parentId ? rowsById.get(row.parentId) : undefined;
+  while (parent && !ancestors.includes(parent)) {
+    ancestors.push(parent);
+    parent = parent.parentId ? rowsById.get(parent.parentId) : undefined;
+  }
+  return ancestors;
+}
+
+// Agent: The same item failing the same check is one failure, wherever it was referenced from.
+function failureKey(finding: AuditFinding, row: AuditorTreeRow): string {
+  const identity = finding.itemId?.trim().toLowerCase() || finding.itemPath?.trim().toLowerCase() || row.id;
+  return [finding.checkKey, finding.status, identity, finding.summary].join("|");
+}
+
+function recordOccurrence(
+  failures: Map<string, AuditorDescendantFailure>,
+  row: AuditorTreeRow,
+  finding: AuditFinding,
+  occurrence: AuditorFailureOccurrence,
+): void {
+  const key = failureKey(finding, row);
+  const existing = failures.get(key);
+  failures.set(key, existing
+    ? { ...existing, occurrences: [...existing.occurrences, occurrence] }
+    : { key, label: row.label, finding, occurrences: [occurrence] });
+}
+
+// Agent: Every ancestor lists each unique descendant failure once, with all the places it was found.
 function populateDescendantFailures(rows: AuditorTreeRow[]): void {
   const rowsById = new Map(rows.map((row) => [row.id, row]));
+  const failuresByAncestorId = new Map<string, Map<string, AuditorDescendantFailure>>();
   rows.forEach((sourceRow) => {
-    const findings = sourceRow.findings.filter((finding) => finding.status === "error" || finding.status === "warning");
-    if (findings.length === 0) {
-      return;
-    }
-    const hierarchy = [sourceRow.label];
-    let parentId = sourceRow.parentId;
-    while (parentId) {
-      const parent = rowsById.get(parentId);
-      if (!parent) {
-        break;
-      }
-      hierarchy.unshift(parent.label);
-      parentId = parent.parentId;
-    }
-    const failure: AuditorDescendantFailure = { rowId: sourceRow.id, label: sourceRow.label, hierarchy, findings };
-    let ancestorId = sourceRow.parentId;
-    while (ancestorId) {
-      const ancestor = rowsById.get(ancestorId);
-      if (!ancestor) {
-        break;
-      }
-      ancestor.descendantFailures = [...ancestor.descendantFailures, failure];
-      ancestorId = ancestor.parentId;
+    const failing = sourceRow.findings.filter(isFailure);
+    const ancestors = failing.length ? ancestorsOf(sourceRow, rowsById) : [];
+    const hierarchy = [...ancestors.map((ancestor) => ancestor.label).reverse(), sourceRow.label];
+    ancestors.forEach((ancestor) => {
+      const failures = failuresByAncestorId.get(ancestor.id) ?? new Map<string, AuditorDescendantFailure>();
+      failuresByAncestorId.set(ancestor.id, failures);
+      failing.forEach((finding) => recordOccurrence(failures, sourceRow, finding, { rowId: sourceRow.id, hierarchy }));
+    });
+  });
+  failuresByAncestorId.forEach((failures, ancestorId) => {
+    const ancestor = rowsById.get(ancestorId);
+    if (ancestor) {
+      ancestor.descendantFailures = Array.from(failures.values());
     }
   });
 }

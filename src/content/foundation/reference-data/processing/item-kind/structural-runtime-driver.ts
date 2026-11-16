@@ -28,7 +28,7 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
   await initializeRuntimeSettings();
   const session = options.createSession(WORK_SCHEDULING.BACKGROUND);
   // Agent: Names the session for every progress display (row 1); each worker task supplies its own label (row 2).
-  session.describe({ title: WORK_PROGRESS.TITLE.STRUCTURE });
+  session.describe({ title: WORK_PROGRESS.TITLE.ITEM_CONTEXT });
   const now = options?.now ?? Date.now;
   const inflight = new Map<string, Promise<StructuralRead<unknown> | undefined>>();
   const failures: unknown[] = [];

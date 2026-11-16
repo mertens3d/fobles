@@ -16,7 +16,8 @@ const services: ToolbarDiagnosticsServices = {
   watchSettings: watchStructuralSettings,
 };
 
-// Agent: Shows the most relevant active work session (foreground first, then most recent) and counts the rest.
+// Agent: Shows the most relevant registered work session (active first, then foreground, then most recent) with the
+// Agent: same WorkProgress display and snapshot the Worker Monitor and owner footers use; other active sessions are counted.
 // Agent: Mounted only while diagnostics are enabled, so the progress subscription lives only that long.
 function ToolbarWorkProgress() {
   const { primary, others } = pickRelevantWorkProgress(useWorkProgressSnapshots());

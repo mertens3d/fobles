@@ -7,6 +7,7 @@ import type { WorkerPoolState } from "./pool.types";
 import type { WorkerPoolStatus } from "./pool.types";
 import type { WorkerPoolTaskStatus } from "./pool.types";
 import { getWorkerTaskHistory } from "./worker-task-history.ts";
+import { getWorkerTargetKey } from "../transport/worker-target-service";
 
 function taskStatus(queued: QueuedTask, phase: WorkerPoolTaskStatus["phase"]): WorkerPoolTaskStatus {
   const task = queued.task;
@@ -47,6 +48,7 @@ export function snapshotWorkerPoolStatus(
       : undefined;
     return {
       workerNumber: index + 1,
+      workerKey: worker.target ? getWorkerTargetKey(worker.target) : undefined,
       state: worker.state,
       currentUrl: worker.currentUrl,
       targetKind: worker.target?.kind,

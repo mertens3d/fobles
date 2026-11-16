@@ -1,6 +1,6 @@
 // @source-path [fobles] tests/e2e/stateful/toolbar-history/item-history.spec.ts
 
-import { ITEM_HISTORY_CAPTURE } from "../../../../src/content/item-history/item-history.const";
+import { SITECORE_DOM_WATCHER } from "../../../../src/content/foundation/sitecore/watchers/watchers.const";
 import { HISTORY_CLASS, HISTORY_TEXT } from "../../../../src/content/toolbar/history/history.const";
 import { historyStorageKey } from "../../../../src/shared/item-history/item-history-model";
 import { TEST_CONST } from "../../../constants/TEST_CONST";
@@ -55,7 +55,7 @@ foblesTest.describe("Toolbar item history", () => {
     }).toBe(true);
     const revisitedTimestamp = (await readStoredHistory(sharedBrowserContext, frame))[0].lastVisitedAt;
     await mutateQuickInfo(frame, { ...revisit, id: canonicalGuid(initial.id).replace(/[{}-]/g, "") });
-    await page.waitForTimeout(ITEM_HISTORY_CAPTURE.DEBOUNCE_MS + 100);
+    await page.waitForTimeout(SITECORE_DOM_WATCHER.DEBOUNCE_MS + 100);
     expect((await readStoredHistory(sharedBrowserContext, frame))[0].lastVisitedAt).toBe(revisitedTimestamp);
     await expect(historyPanel(frame).locator(`.${HISTORY_CLASS.ROW}`)).toHaveCount(2);
     await expect.poll(async () => (await readStoredHistory(sharedBrowserContext, frame)).map((item) => item.name))
@@ -80,7 +80,7 @@ foblesTest.describe("Toolbar item history", () => {
       expect(target.searchParams.get("sc_content")).toBe("web");
       await expect.poll(async () => (await readStoredHistory(sharedBrowserContext, frame)).some((item) => item.name === visit.name))
         .toBe(true);
-      await page.waitForTimeout(ITEM_HISTORY_CAPTURE.DEBOUNCE_MS + 100);
+      await page.waitForTimeout(SITECORE_DOM_WATCHER.DEBOUNCE_MS + 100);
       const after = await readStoredHistoryScopes(sharedBrowserContext);
       expect(Object.entries(after).filter(([, items]) => items.some((item) => item.name === visit.name)).map(([key]) => key))
         .toEqual([webKey]);

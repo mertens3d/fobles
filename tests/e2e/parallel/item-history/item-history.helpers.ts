@@ -3,7 +3,7 @@
 import type { BrowserContext } from "@playwright/test";
 import { readFile } from "node:fs/promises";
 import path from "node:path";
-import { ITEM_HISTORY_CAPTURE } from "../../../../src/content/item-history/item-history.const";
+import { SITECORE_DOM_WATCHER } from "../../../../src/content/foundation/sitecore/watchers/watchers.const";
 import { extensionPath } from "../../../fixtures/playwright.const";
 import { HISTORY_CLASS } from "../../../../src/content/toolbar/history/history.const";
 import { ITEM_HISTORY } from "../../../../src/shared/item-history/item-history.const";
@@ -171,7 +171,7 @@ export async function mutateHistoryDatabase(frame: Frame, database: string, plac
       input.setAttribute("value", "master");
       (placement === "inside" ? editors : document.body).appendChild(input);
     }, { editorsSelector: SITECORE.SELECTORS.EDITORS, placement });
-    await frame.page().waitForTimeout(ITEM_HISTORY_CAPTURE.ATTACHMENT_CHECK_MS + ITEM_HISTORY_CAPTURE.DEBOUNCE_MS + 100);
+    await frame.page().waitForTimeout(SITECORE_DOM_WATCHER.ATTACHMENT_CHECK_MS + SITECORE_DOM_WATCHER.DEBOUNCE_MS + 100);
   }
 
   await frame.evaluate(({ databaseSelector, databaseKeys, database }) => {

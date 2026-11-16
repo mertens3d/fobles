@@ -4,7 +4,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 import { Window } from "happy-dom";
 import { getQuickInfo } from "../../../src/content/foundation/sitecore/quick-info.ts";
-import { readHistoryVisit, resolveHistoryScope } from "../../../src/content/item-history/quick-info.ts";
+import { readHistoryVisit, resolveHistoryScope } from "../../../src/content/foundation/sitecore/watchers/active-item-reader.ts";
 
 const ITEM_ID = "{AABBCCDD-1234-5678-9ABC-DEF012345678}";
 const NORMALIZED_ID = "aabbccdd-1234-5678-9abc-def012345678";

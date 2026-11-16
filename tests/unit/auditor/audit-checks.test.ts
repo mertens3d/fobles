@@ -126,6 +126,52 @@ void test("reference-resolved-check: error for not-found and warning for failed"
   await referenceResolvedCheck.run(failedContext);
   assert.equal(failedContext.findingStore.getSnapshot()[0]?.status, "warning");
 });
+void test("reference-resolved-check: details name the referencing item, the route and the path from the audited item", async () => {
+  const target = makeItemNode("target", makeItem({ scItemId: "id-2", scItemName: "Minified Page" }));
+  const group: ReferenceModelNode = {
+    treeNodeId: "template-group", nodeType: "nonItem", name: "Template",
+    provenance: { type: "synthetic", label: "Template" }, children: [target],
+  };
+  const root = makeItemNode("root", makeItem({ scItemId: "id-1", scItemName: "Search" }), [group]);
+  const context = makeContext({
+    referenceModelRoot: root,
+    processingStateByTreeNodeId: new Map<string, ProcessingStatus>([["root", "verified"], ["target", "failed"]]),
+    resolveCandidateTreeNodeIds: new Set(["root", "target"]),
+  });
+  await referenceResolvedCheck.run(context);
+  const details = new Map(context.findingStore.getSnapshot().map((finding) => [finding.referenceModelNodeId, finding.details]));
+  assert.equal(details.get("root"), "This is the audited item itself.");
+  assert.equal(
+    details.get("target"),
+    'Referenced by: "Search" through Template\nPath from audited item: Search \u203a Template \u203a Minified Page',
+  );
+});
+void test("reference-resolved-check: details describe a field reference and tolerate missing names", async () => {
+  const owner = makeItem({ scItemId: "id-1", scItemName: "Search" });
+  const target: ReferenceModelItemNode = {
+    treeNodeId: "target", nodeType: "item", scItem: makeItem({ scItemId: "id-2" }), children: [],
+    provenance: {
+      type: "field-reference", item: owner, sectionName: "Content", fieldName: "Link",
+      sourceValue: "{ID-2}", confidence: "inferred",
+    },
+  };
+  const unnamedGroup: ReferenceModelNode = {
+    treeNodeId: "group", nodeType: "nonItem", name: "", provenance: { type: "synthetic", label: "" }, children: [target],
+  };
+  const root = makeItemNode("root", owner, [unnamedGroup]);
+  const context = makeContext({
+    referenceModelRoot: root,
+    processingStateByTreeNodeId: new Map<string, ProcessingStatus>([["target", "not-found"]]),
+    resolveCandidateTreeNodeIds: new Set(["target"]),
+  });
+  await referenceResolvedCheck.run(context);
+  assert.equal(
+    context.findingStore.getSnapshot()[0]?.details,
+    'Referenced by: "Search" through (unnamed group)\n'
+      + 'Reference: field "Link" in section "Content" holds "{ID-2}"\n'
+      + "Path from audited item: Search \u203a (unnamed group) \u203a id-2",
+  );
+});
 // --- cache-validation-check (check 3) ---
 void test("cache-validation-check: no finding for a node that never had a cache comparison", async () => {
   const context = contextWithProcessingState("enriched");

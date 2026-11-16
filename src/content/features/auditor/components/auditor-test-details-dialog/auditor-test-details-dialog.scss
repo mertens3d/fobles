@@ -1,10 +1,11 @@
 /* @source-path [fobles] src/content/features/auditor/components/auditor-test-details-dialog/auditor-test-details-dialog.scss */
 
-.fobles-auditor-test-details-backdrop { position: fixed; inset: 0; z-index: 2147483646; display: flex; align-items: flex-start; justify-content: center; padding: 22px; background: rgba(22, 39, 61, 0.28); }
-.fobles-auditor-test-details { position: relative; width: min(760px, calc(100vw - 44px)); max-height: calc(100vh - 44px); overflow: auto; padding: 18px 22px 20px; border: 1px solid #7aa7df; border-radius: 3px; background: #fff; box-shadow: 0 14px 32px rgba(28, 48, 74, 0.24); color: #20344f; font: 12px/1.4 Arial, sans-serif; }
-.fobles-auditor-test-details > .fobles-dialog-icon-button { position: absolute; top: 10px; right: 10px; }
-.fobles-auditor-test-details-header { padding: 0 42px 13px 0; border-bottom: 1px solid #d7e0eb; }
-.fobles-auditor-test-details-header h2 { margin: 0 0 7px; color: #172e4d; font-size: 20px; font-weight: 600; }
+/* Agent: Content of the shared Fobles details window; the window supplies the title bar, close button, frame and scrolling. */
+/* Agent: Test Results opens at 80% of the Auditor workspace, centred, instead of the 420px details-overlay column. */
+.fobles-client-window--overlay:has(> .fobles-auditor-test-results-window) { top: 10%; right: 10%; bottom: 10%; left: 10%; width: auto; min-width: 320px; min-height: 260px; }
+/* Agent: The window body (.fobles-window-content) owns the only vertical scrollbar; the content never scrolls itself. */
+.fobles-auditor-test-details { box-sizing: border-box; width: 100%; max-height: none; overflow: visible; padding: 12px 14px 16px; border: 0; border-radius: 0; box-shadow: none; background: #fff; color: #20344f; font: 12px/1.4 Arial, sans-serif; }
+.fobles-auditor-test-details-header { padding: 0 0 13px; border-bottom: 1px solid #d7e0eb; }
 .fobles-auditor-test-details-parent { display: flex; gap: 8px; align-items: baseline; color: #344a66; }
 .fobles-auditor-test-details-parent strong { color: #172e4d; }
 .fobles-auditor-test-results { display: grid; gap: 10px; padding-top: 12px; }
@@ -41,3 +42,5 @@
 .fobles-auditor-descendant-failure-heading div div { margin-top: 2px; color: #66788d; font-size: 11px; }
 .fobles-auditor-test-result-icon { background: transparent !important; }
 .fobles-auditor-descendant-failure-heading > span { background: transparent !important; }
+.fobles-auditor-descendant-failure-occurrences { margin: 0 0 8px 26px; padding: 0 0 0 14px; color: #66788d; font-size: 11px; }
+.fobles-auditor-descendant-failure-occurrences li + li { margin-top: 2px; }

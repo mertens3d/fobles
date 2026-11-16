@@ -4,13 +4,13 @@ import assert from "node:assert/strict";
 import { setTimeout as delay } from "node:timers/promises";
 import { test } from "node:test";
 import { Window } from "happy-dom";
-import { readHistoryVisit, resolveHistoryScope } from "../../../src/content/item-history/quick-info.ts";
-import { ITEM_HISTORY_CAPTURE } from "../../../src/content/item-history/item-history.const.ts";
+import { readHistoryVisit, resolveHistoryScope } from "../../../src/content/foundation/sitecore/watchers/active-item-reader.ts";
+import { SITECORE_DOM_WATCHER } from "../../../src/content/foundation/sitecore/watchers/watchers.const.ts";
 
 const ITEM_ID = "{AABBCCDD-1234-5678-9ABC-DEF012345678}";
 const NORMALIZED_ID = "aabbccdd-1234-5678-9abc-def012345678";
-const SETTLE_MS = ITEM_HISTORY_CAPTURE.DEBOUNCE_MS + 50;
-const ATTACHMENT_SETTLE_MS = ITEM_HISTORY_CAPTURE.ATTACHMENT_CHECK_MS + SETTLE_MS;
+const SETTLE_MS = SITECORE_DOM_WATCHER.DEBOUNCE_MS + 50;
+const ATTACHMENT_SETTLE_MS = SITECORE_DOM_WATCHER.ATTACHMENT_CHECK_MS + SETTLE_MS;
 
 function createWindow(markup = ""): Window {
   const view = new Window({ url: "https://sitecore.example/sitecore/shell/" });
@@ -63,7 +63,7 @@ void test("observer and manager capture lifecycle", async (t) => {
       Reflect.deleteProperty(globalThis, "chrome");
     }
   });
-  const { observeQuickInfo } = await import("../../../src/content/item-history/quick-info-observer.ts");
+  const { observeQuickInfo } = await import("../../../src/content/foundation/sitecore/watchers/quick-info-observer.ts");
   const { startItemHistoryManager } = await import("../../../src/content/item-history/item-history-manager.ts");
 
   await t.test("initial callback, filtered mutations, debounce, database values and cleanup", async () => {

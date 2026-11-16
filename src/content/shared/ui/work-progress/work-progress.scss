@@ -2,6 +2,8 @@
 
 @use "../../../styles/tokens" as *;
 
+$fobles-work-progress-track-width: 120px;
+
 .fobles-work-progress {
   container-type: inline-size;
   box-sizing: border-box;
@@ -26,11 +28,10 @@
   min-width: 0;
 }
 
-/* Agent: The bar yields space before the session label so the session name stays readable in narrow hosts. */
+/* Agent: The bar keeps one constant width in every host; the session label absorbs the remaining space and truncates. */
 .fobles-work-progress-track {
-  flex: 1 1 0;
-  min-width: 24px;
-  max-width: 160px;
+  flex: 0 0 $fobles-work-progress-track-width;
+  width: $fobles-work-progress-track-width;
   height: 6px;
   overflow: hidden;
   border-radius: 999px;
@@ -53,7 +54,7 @@
 }
 
 .fobles-work-progress-label {
-  flex: 0 1 auto;
+  flex: 1 1 auto;
 }
 
 .fobles-work-progress-count,
@@ -64,7 +65,9 @@
   white-space: nowrap;
 }
 
+/* Agent: The task row always renders (a blank line when there is no task), so the display never changes height. */
 .fobles-work-progress-task {
+  min-height: 1.35em;
   color: $fobles-muted;
 }
 

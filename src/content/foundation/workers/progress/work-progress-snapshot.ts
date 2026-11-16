@@ -58,11 +58,18 @@ function relevanceOrder(left: WorkProgressSnapshot, right: WorkProgressSnapshot)
   return leftForeground - rightForeground || right.startedAt - left.startedAt;
 }
 
-// Agent: The toolbar shows one session: foreground before background, then the most recently started. Every other
-// Agent: active session is only counted ("+N more"); the Worker Monitor lists them all.
+function isActiveSnapshot(snapshot: WorkProgressSnapshot): boolean {
+  return snapshot.status === "active";
+}
+
+// Agent: The toolbar shows one session: active before settled, then foreground before background, then the most
+// Agent: recently started. A settled session stays registered until its owner (Auditor, Graph, discovery) releases it,
+// Agent: so the toolbar keeps showing it (e.g. Auditing "Search" 18 / 18 Idle) exactly as the Worker Monitor and the
+// Agent: owner's footer do; a bare "Idle" means no session is registered. Only other active sessions count as "+N more".
 export function pickRelevantWorkProgress(snapshots: readonly WorkProgressSnapshot[]): RelevantWorkProgress {
-  const active = snapshots.filter((snapshot) => snapshot.status === "active").sort(relevanceOrder);
-  return { primary: active[0], others: Math.max(0, active.length - 1) };
+  const active = snapshots.filter(isActiveSnapshot).sort(relevanceOrder);
+  const settled = snapshots.filter((snapshot) => !isActiveSnapshot(snapshot)).sort(relevanceOrder);
+  return { primary: active[0] ?? settled[0], others: Math.max(0, active.length - 1) };
 }
 
 export function workProgressPercent(snapshot: Pick<WorkProgressSnapshot, "completed" | "max" | "status">): number {

@@ -35,7 +35,7 @@ void test("discovery logs scoped cache misses, found Sites, validation results a
     assert.ok(diagnostic, message);
     assert.deepEqual((diagnostic.arguments[1] as { scope: unknown }).scope, SCOPE);
   }
-  assert.equal(f.calls.filter((call) => call.startsWith("driver:")).length, 1);
+  assert.equal(f.calls.filter((call) => call.startsWith("driver:")).length, 2);
   f.seed({ ...f.readSites()[0], validatedAt: 0 });
   await f.service.lookupKnownSite(SCOPE, site.path);
   await f.service.whenIdle();

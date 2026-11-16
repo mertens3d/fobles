@@ -4,7 +4,7 @@ import { fileURLToPath, pathToFileURL } from "node:url";
 import { build } from "esbuild";
 import { Window } from "happy-dom";
 import { act } from "react";
-import { ITEM_HISTORY_CAPTURE } from "../../../src/content/item-history/item-history.const.ts";
+import { SITECORE_DOM_WATCHER } from "../../../src/content/foundation/sitecore/watchers/watchers.const.ts";
 import { ITEM_ID, MASTER } from "./history-sites-test.const.ts";
 import type { HistorySitesBundle, HistoryStorageListener } from "./history-sites-test.types.ts";
 
@@ -66,7 +66,7 @@ export async function update(action: () => void, observe = false): Promise<void>
   await act(async () => {
     action();
     if (observe) {
-      await new Promise((resolve) => setTimeout(resolve, ITEM_HISTORY_CAPTURE.DEBOUNCE_MS + 50));
+      await new Promise((resolve) => setTimeout(resolve, SITECORE_DOM_WATCHER.DEBOUNCE_MS + 50));
     }
     await Promise.resolve();
     await new Promise((resolve) => setTimeout(resolve, 0));

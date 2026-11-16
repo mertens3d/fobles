@@ -5,6 +5,7 @@ import { extensionLog } from "../../../logger.ts";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
 import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing.types";
 import { buildAuditFinding } from "../audit-finding-factory.ts";
+import { describeReferenceResolvedDetails } from "./reference-resolved-details.ts";
 import type { AuditCheck } from "../auditor.types";
 import type { AuditCheckContext } from "../auditor.types";
 import type { AuditFinding } from "../auditor.types";
@@ -34,7 +35,8 @@ export const referenceResolvedCheck: AuditCheck = {
   run(context: AuditCheckContext): Promise<void> {
     const findings: AuditFinding[] = [];
     const diagnostics: ReferenceResolvedDiagnostic[] = [];
-    function visit(node: ReferenceModelNode): void {
+    // Agent: ancestors runs from the audited item down to this node's parent; the details explain the reference with it.
+    function visit(node: ReferenceModelNode, ancestors: readonly ReferenceModelNode[]): void {
       if (node.nodeType === "item" && context.resolveCandidateTreeNodeIds.has(node.treeNodeId)) {
         const processingStatus = context.processingStateByTreeNodeId.get(node.treeNodeId);
         const interpreted = interpretResolveState(processingStatus);
@@ -56,6 +58,7 @@ export const referenceResolvedCheck: AuditCheck = {
               processingStatus === "not-found"
                 ? `Referenced item ${node.scItem.scItemId ?? node.scItem.scItemPath ?? "(unknown)"} could not be found.`
                 : interpreted.summary,
+            details: describeReferenceResolvedDetails(node, ancestors),
             context:
               node.provenance.type === "rendering-parameter"
                 ? `Rendering parameter ${node.provenance.parameterName} references ${node.provenance.decodedValue || node.provenance.parameterValue}.`
@@ -64,9 +67,9 @@ export const referenceResolvedCheck: AuditCheck = {
           }),
         );
       }
-      node.children.forEach(visit);
+      node.children.forEach((child) => visit(child, [...ancestors, node]));
     }
-    visit(context.referenceModelRoot);
+    visit(context.referenceModelRoot, []);
     extensionLog.debug("Auditor reference resolved diagnostic: projection", {
       candidateCount: context.resolveCandidateTreeNodeIds.size,
       findingCount: findings.length,

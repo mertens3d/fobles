@@ -61,11 +61,14 @@ export type AuditorTreeRow = AuditReportTreeNode & {
 
 export type AuditorRowsByParentId = ReadonlyMap<string, readonly AuditorTreeRow[]>;
 
+export type AuditorFailureOccurrence = { rowId: string; hierarchy: readonly string[] };
+
+// Agent: One unique failing finding below a row (same check, status, item and summary), with every place it occurs.
 export type AuditorDescendantFailure = {
-  rowId: string;
+  key: string;
   label: string;
-  hierarchy: readonly string[];
-  findings: readonly AuditFinding[];
+  finding: AuditFinding;
+  occurrences: readonly AuditorFailureOccurrence[];
 };
 
 export type AuditorTestDetailsSelection = { row: AuditorTreeRow; ancestors: readonly AuditorTreeRow[] };

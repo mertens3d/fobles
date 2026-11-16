@@ -26,16 +26,22 @@
 .fobles-worker-task-manager-table tbody tr { cursor: pointer; }
 .fobles-worker-task-manager-table tbody tr:nth-child(even) { background: rgba(0, 0, 0, 0.025); }
 .fobles-worker-task-manager-table tbody tr:hover { background: rgba(0, 120, 215, 0.1); }
+/* Agent: Worker State and Work Session History share one column set (worker-monitor.const.ts), so one width map
+   serves both: Time, Worker, State, Session, Task, Item Name, Target, Class, Phase, Outcome, Recoveries, No Progress,
+   URL. Item Name (6) has no fixed width and takes the remaining space. */
 .fobles-worker-task-manager-table th:nth-child(1), .fobles-worker-task-manager-table td:nth-child(1) { width: 88px; }
 .fobles-worker-task-manager-table th:nth-child(2), .fobles-worker-task-manager-table td:nth-child(2) { width: 84px; }
-.fobles-worker-task-manager-table th:nth-child(3), .fobles-worker-task-manager-table td:nth-child(3) { width: 78px; }
-.fobles-worker-task-manager-table th:nth-child(4), .fobles-worker-task-manager-table td:nth-child(4) { width: 126px; }
-.fobles-worker-task-manager-table th:nth-child(5), .fobles-worker-task-manager-table td:nth-child(5) { width: 118px; }
-.fobles-worker-task-manager-table th:nth-child(6), .fobles-worker-task-manager-table td:nth-child(6) { width: 54px; }
+.fobles-worker-task-manager-table th:nth-child(3), .fobles-worker-task-manager-table td:nth-child(3) { width: 72px; }
+.fobles-worker-task-manager-table th:nth-child(4), .fobles-worker-task-manager-table td:nth-child(4) { width: 160px; }
+.fobles-worker-task-manager-table th:nth-child(5), .fobles-worker-task-manager-table td:nth-child(5) { width: 126px; }
 .fobles-worker-task-manager-table th:nth-child(7), .fobles-worker-task-manager-table td:nth-child(7) { width: 80px; }
-.fobles-worker-task-manager-table th:nth-child(8), .fobles-worker-task-manager-table td:nth-child(8) { width: 78px; }
-.fobles-worker-task-manager-table th:nth-child(9), .fobles-worker-task-manager-table td:nth-child(9) { width: 44px; text-align: right; }
-.fobles-worker-task-manager-table th:nth-child(11), .fobles-worker-task-manager-table td:nth-child(11) { width: 160px; }
+.fobles-worker-task-manager-table th:nth-child(8), .fobles-worker-task-manager-table td:nth-child(8) { width: 48px; text-align: center; }
+.fobles-worker-task-manager-table th:nth-child(9), .fobles-worker-task-manager-table td:nth-child(9) { width: 78px; }
+.fobles-worker-task-manager-table th:nth-child(10), .fobles-worker-task-manager-table td:nth-child(10) { width: 80px; }
+.fobles-worker-task-manager-table th:nth-child(11), .fobles-worker-task-manager-table td:nth-child(11) { width: 84px; text-align: right; }
+.fobles-worker-task-manager-table th:nth-child(12), .fobles-worker-task-manager-table td:nth-child(12) { width: 90px; text-align: right; }
+.fobles-worker-task-manager-table th:nth-child(13), .fobles-worker-task-manager-table td:nth-child(13) { width: 180px; }
+.fobles-worker-task-manager-table tbody tr.is-static { cursor: default; }
 .fobles-worker-monitor-sessions { display: grid; gap: 6px; padding: 6px 8px; }
 .fobles-worker-monitor-session { padding: 4px 6px; border: 1px solid $fobles-border; border-radius: 4px; background: $fobles-white; }
 .fobles-worker-task-manager-details { display: grid; grid-template-columns: 110px minmax(0, 1fr); gap: 4px 10px; margin: 0 0 12px; }
@@ -48,7 +54,7 @@
 
 .fobles-worker-monitor-group > h3 { position: sticky; top: 0; z-index: 3; margin: 0; padding: 7px 8px; border-bottom: 1px solid $fobles-border; background: $fobles-surface; font-size: 12px; }
 .fobles-worker-monitor-group + .fobles-worker-monitor-group { border-top: 2px solid $fobles-border; }
-.fobles-worker-task-manager-table { min-width: 980px; }
+.fobles-worker-task-manager-table { min-width: 1300px; }
 
 
 .fobles-worker-monitor-workspace { position: relative; display: block; min-width: 0; min-height: 0; flex: 1; }
@@ -58,9 +64,6 @@
 .fobles-worker-state-details-titlebar { display: flex; min-height: 34px; align-items: center; justify-content: space-between; padding: 0 6px 0 10px; background: #2f6fb1; color: #fff; }
 .fobles-worker-state-details-client { position: relative; min-width: 0; min-height: 0; flex: 1 1 auto; overflow: auto; }
 .fobles-worker-state-details-client > .fobles-details-panel { width: 100%; min-height: 100%; margin: 0; box-sizing: border-box; }
-.fobles-worker-state-table { min-width: 620px; }
-.fobles-worker-state-table th:nth-child(1), .fobles-worker-state-table td:nth-child(1) { width: 220px; }
-.fobles-worker-state-table th:nth-child(2), .fobles-worker-state-table td:nth-child(2) { width: 110px; }
 
 .fobles-worker-state-details-client > .fobles-details-panel { position: static; inset: auto; width: 100%; min-width: 0; min-height: 100%; margin: 0; padding: 0; box-sizing: border-box; }
 .fobles-worker-state-details-client > .fobles-details-panel > .fobles-details-panel-header { display: none; }
@@ -75,21 +78,7 @@
 .fobles-worker-state-details .fobles-details-panel-header > strong { display: none; }
 .fobles-worker-state-details .fobles-details-panel-header { justify-content: flex-end; }
 
-.fobles-worker-state-table { table-layout: fixed; min-width: 1080px; }
-.fobles-worker-state-table th:nth-child(1), .fobles-worker-state-table td:nth-child(1) { width: 56px; }
-.fobles-worker-state-table th:nth-child(2), .fobles-worker-state-table td:nth-child(2) { width: 72px; }
-.fobles-worker-state-table th:nth-child(3), .fobles-worker-state-table td:nth-child(3) { width: 160px; }
-.fobles-worker-state-table th:nth-child(4), .fobles-worker-state-table td:nth-child(4) { width: 84px; }
-.fobles-worker-state-table th:nth-child(5), .fobles-worker-state-table td:nth-child(5) { width: 220px; }
-.fobles-worker-state-table th:nth-child(6), .fobles-worker-state-table td:nth-child(6) { min-width: 220px; }
-.fobles-worker-state-table th:nth-child(7), .fobles-worker-state-table td:nth-child(7) { width: 92px; }
-.fobles-worker-state-table th:nth-child(8), .fobles-worker-state-table td:nth-child(8) { width: 82px; }
-
-.fobles-worker-state-grid { width: 100%; min-width: 0; overflow: hidden; font-size: 11px; }
-.fobles-worker-state-grid-row { display: grid; grid-template-columns: 56px 72px minmax(90px, 1fr) 84px minmax(140px, 1.6fr) minmax(120px, 1.4fr) 92px 82px; width: 100%; min-width: 0; border-bottom: 1px solid $fobles-border; }
-.fobles-worker-state-grid-row > span { min-width: 0; padding: 5px 6px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; box-sizing: border-box; }
-.fobles-worker-state-grid-header { position: sticky; z-index: 2; top: 0; background: $fobles-surface; font-weight: 600; }
-@media (max-width: 760px) { .fobles-worker-state-grid-row { grid-template-columns: 48px 64px minmax(72px, 1fr) 72px minmax(110px, 1.5fr) minmax(92px, 1.2fr) 76px 68px; } }
+/* Agent: The old Worker State grid/table styles were removed; both tables now use .fobles-worker-task-manager-table. */
 
 .fobles-worker-task-manager .fobles-collapsible-section dl { display: grid; grid-template-columns: max-content 1fr max-content 1fr; gap: 3px 8px; margin: 0; padding: 6px 8px 8px; font-size: 11px; }
 .fobles-worker-task-manager .fobles-collapsible-section dt { font-weight: 600; }

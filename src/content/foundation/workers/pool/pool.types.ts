@@ -64,6 +64,8 @@ export type WorkerTaskSnapshot = {
 
 export type WorkerPoolWorkerStatus = {
   workerNumber: number;
+  // Agent: Same key the task history records (iframe:<id> / tab:<id>); undefined until the worker has a target.
+  workerKey: string | undefined;
   state: PoolWorkerState;
   currentUrl: string | undefined;
   targetKind: "iframe" | "tab" | undefined;

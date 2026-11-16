@@ -55,7 +55,7 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
     }
   }
 
-  async function discover(scope: StructuralScope, visit: StructuralVisit, fresh: boolean): Promise<void> {
+  async function discover(scope: StructuralScope, visit: StructuralVisit, fresh: boolean, confirmKnownSite: boolean): Promise<void> {
     await initializeRuntimeSettings();
     const scopeKey = knownSitesStorageKey(scope);
     if (!templates.has(scopeKey)) {
@@ -64,9 +64,9 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
     const settings = await deps.settings();
     const sites = await deps.readSites(scope);
     const known = fresh ? undefined : matchKnownSite(sites, visit.path);
-    const validate = known !== undefined && needsValidation(scope, known, settings);
+    const validate = known !== undefined && (confirmKnownSite || needsValidation(scope, known, settings));
     extensionLog.debug("Structural discovery: start", {
-      scope, target: visit, fresh, knownSite: known?.id, validate,
+      scope, target: visit, fresh, knownSite: known?.id, validate, confirmKnownSite,
     });
     extensionLog.debug(known ? "Structural discovery: cache path match" : "Structural discovery: unmatched path", {
       scope, target: visit, siteId: known?.id, reason: fresh ? "forced-rediscovery" : known ? "known-site-match" : "no-known-site-match",
@@ -163,23 +163,25 @@ export function createStructuralDiscoveryService(deps: StructuralServiceDependen
     });
   }
 
-  function enqueue(scope: StructuralScope, visit: StructuralVisit, revalidate = false): void {
+  function enqueue(scope: StructuralScope, visit: StructuralVisit, revalidate = false, confirmKnownSite = false): void {
     const key = `${knownSitesStorageKey(scope)}:${visit.id}:structural`;
     if (!pending.has(key)) {
       pending.add(key);
-      extensionLog.debug("Structural discovery: enqueue", { scope, target: visit, revalidate });
-      queue = queue.then(() => discover(scope, visit, revalidate)).catch((error: unknown) => {
+      extensionLog.debug("Structural discovery: enqueue", { scope, target: visit, revalidate, confirmKnownSite });
+      queue = queue.then(() => discover(scope, visit, revalidate, confirmKnownSite)).catch((error: unknown) => {
         extensionLog.warn("Structural discovery: failed", { scope, target: visit, revalidate, error });
         deps.onError(error);
       }).finally(() => pending.delete(key));
     }
   }
 
+  // Agent: Active-item entry point (page load and Content Tree selection alike). Each change re-proves the matched
+  // Agent: Known Site root by ID exactly as a fresh page does, without walking ancestors of a matched item.
   function scheduleStructuralDiscovery(scope: StructuralScope, visits: readonly StructuralVisit[]): void {
     try {
       const normalizedScope = normalizeHistoryScope(scope);
       for (const visit of visits) {
-        enqueue(normalizedScope, normalizeHistoryVisit(visit));
+        enqueue(normalizedScope, normalizeHistoryVisit(visit), false, true);
       }
     } catch (error) {
       deps.onError(error);

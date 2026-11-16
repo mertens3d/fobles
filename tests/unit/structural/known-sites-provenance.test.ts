@@ -18,7 +18,7 @@ void test("a new service validates fresh stored settings-A roots under settings 
   assert.ok(!f.calls.some((call) => call.startsWith("parent:")));
 });
 
-void test("each new service proves stored roots once, then repeated lookups and discovery never recrawl", async () => {
+void test("each new service proves stored roots once; lookups never recrawl and active-item discovery only re-proves the root", async () => {
   const f = fixture();
   const site = f.content(20, "/sitecore/content/Site", guid(2));
   f.seed({ ...site, templateId: guid(2), validatedAt: 1000 });
@@ -30,8 +30,12 @@ void test("each new service proves stored roots once, then repeated lookups and 
     assert.ok(!f.calls.some((call) => call.startsWith("parent:")));
     f.calls.length = 0;
     await service.lookupKnownSite(SCOPE, site.path);
-    service.scheduleStructuralDiscovery(SCOPE, [{ ...site, id: guid(21), path: `${site.path}/Home` }]);
     await service.whenIdle();
     assert.deepEqual(f.calls, []);
+    service.scheduleStructuralDiscovery(SCOPE, [{ ...site, id: guid(21), path: `${site.path}/Home` }]);
+    await service.whenIdle();
+    assert.equal(f.calls.filter((call) => call.startsWith("driver:")).length, 1);
+    assert.ok(f.calls.includes(`qi:${site.id}:true`));
+    assert.ok(!f.calls.some((call) => call.startsWith("parent:")));
   }
 });

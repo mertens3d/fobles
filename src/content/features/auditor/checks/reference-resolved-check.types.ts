@@ -1,3 +1,4 @@
+import type { ReferenceModelProvenance } from "../../../foundation/reference-data/model/model.types";
 import type { ProcessingStatus } from "../../../foundation/reference-data/processing/processing.types";
 import type { AuditFindingStatus } from "../auditor.types";
 
@@ -10,3 +11,5 @@ export type ReferenceResolvedDiagnostic = {
   itemId: string | undefined;
   itemPath: string | undefined;
 };
+
+export type ReferenceProvenanceOf<T extends ReferenceModelProvenance["type"]> = Extract<ReferenceModelProvenance, { type: T }>;
