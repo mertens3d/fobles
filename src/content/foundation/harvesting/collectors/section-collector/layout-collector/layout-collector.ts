@@ -26,8 +26,12 @@ const processLayoutFieldValue = (harvestContext: HarvestContext, layoutName: str
   const layoutSectionField: LayoutSectionField = { name: layoutName, devices: [], rawMarkup: sectionFieldHtml?.value };
   const xml = sectionFieldHtml?.value;
 
+  if (!sectionFieldHtml) {
+    return { field: layoutSectionField, failure: { code: "layout-unavailable", message: `${layoutName} field is unavailable`, details: { layoutName, fieldPresent: false } } };
+  }
+
   if (!xml) {
-    return { field: layoutSectionField, failure: { code: "layout-unavailable", message: `${layoutName} field is unavailable`, details: { layoutName, fieldPresent: Boolean(sectionFieldHtml) } } };
+    return { field: layoutSectionField };
   }
 
   const rawProcessedXml = processLayoutXml(xml);

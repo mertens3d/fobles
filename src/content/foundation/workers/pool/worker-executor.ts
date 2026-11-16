@@ -230,7 +230,14 @@ async function runTaskOnWorker(context: WorkerExecutorContext, worker: PoolWorke
   worker.lastProgressAt = performance.now();
   worker.activeTaskId = queued.task.taskId;
   const workerKey = getWorkerTargetKey(target);
+  startJobClock(queued);
   const taskTimeoutMs = Math.min(getRuntimeSettings().workerPool.taskTimeoutMs, remainingJobMs(queued));
+  if (taskTimeoutMs <= 0) {
+    const message = "Worker job deadline exhausted before task execution";
+    extensionLog.warn("Worker pool: task execution skipped because execution budget is exhausted", { workerKey, taskId: queued.task.taskId, taskType: queued.task.type, url: queued.task.url });
+    await retryOrResolveError(context, worker, queued, message);
+    return;
+  }
   context.activeTaskByWorkerKey.set(workerKey, {
     target,
     requestId: queued.task.requestId,
@@ -396,11 +403,11 @@ async function runOnNewWorker(context: WorkerExecutorContext, worker: PoolWorker
   let target: WorkerTarget | undefined;
 
   try {
-    target = await withinJobDeadline(
-      queued,
-      createWorkerTarget(queued.hostTabId, queued.task.url, DEBUG_WORKER_POOL),
-      "worker creation/readiness",
-    );
+    const acquisitionStartedAt = performance.now();
+    target = await createWorkerTarget(queued.hostTabId, queued.task.url, DEBUG_WORKER_POOL);
+    if (startedJobs.has(queued)) {
+      queued.deadlineAt += performance.now() - acquisitionStartedAt;
+    }
   } catch (error) {
     extensionLog.warn("Worker pool: failed to create worker", {
       hostTabId: queued.hostTabId,
@@ -546,6 +553,5 @@ export async function runTaskOnNewWorker(
   worker: PoolWorker,
   queued: QueuedTask,
 ): Promise<void> {
-  startJobClock(queued);
   await runOnNewWorker(context, worker, queued);
 }

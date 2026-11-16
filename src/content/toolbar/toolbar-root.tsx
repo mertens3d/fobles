@@ -1,6 +1,7 @@
 // @source-path [fobles] src/content/toolbar/toolbar-root.tsx
 
 import { Fragment } from "react";
+import { FoblesErrorBanner } from "../shared/error-manager/fobles-error-banner";
 import { FoblesUtilityWindows } from "../shell/utility/fobles-utility-windows";
 import { WorkerIframeWindow } from "../shell/worker-iframes/worker-iframe-window";
 import { WorkerTaskManagerWindow } from "./diagnostics/worker-task-manager-window";
@@ -11,6 +12,7 @@ export function ToolbarRoot({ doc }: { doc: Document }) {
   const state = useToolbarState(doc);
   return <Fragment>
     {state.visible ? <ToolbarApp context={state.context} /> : null}
+    <FoblesErrorBanner />
     <FoblesUtilityWindows doc={doc} />
     <WorkerTaskManagerWindow />
     <WorkerIframeWindow />

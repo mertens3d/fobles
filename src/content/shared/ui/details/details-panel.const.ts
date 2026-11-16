@@ -9,6 +9,6 @@ export const DETAILS_PANEL = {
     BUTTON: "fobles-reference-graph-button",
     COPY: "fobles-reference-graph-button fobles-reference-graph-node-details-copy",
   },
-  TEXT: { COPY: "Copy", COPIED: "Copied!" },
+  TEXT: { COPY: "Copy", COPIED: "Copied!", NODE_DETAILS: "Node Details" },
   ACTIONS_STYLE: { display: "flex", alignItems: "center", gap: 8, marginLeft: "auto" },
 } as const;

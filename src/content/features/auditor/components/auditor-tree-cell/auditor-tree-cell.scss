@@ -8,3 +8,25 @@
 .fobles-auditor-tree-label { display: inline-flex; min-width: 0; align-items: baseline; overflow: hidden; }
 .fobles-auditor-tree-label-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .fobles-auditor-tree-label-qualifier { position: relative; top: -3px; flex: 0 0 auto; margin-left: 5px; color: #7a8290; font-size: 10px; font-weight: 400; line-height: 1; }
+
+// Agent: Group status (count / auditing dots / note / failed) and ghosted placeholder rows.
+.fobles-auditor-tree-count { flex: 0 0 auto; margin-left: 5px; color: #5d6b80; font-variant-numeric: tabular-nums; }
+.fobles-auditor-tree-note { flex: 0 0 auto; margin-left: 6px; color: #8a93a0; font-style: italic; }
+.fobles-auditor-tree-failed { flex: 0 0 auto; margin-left: 5px; color: #b26a00; cursor: help; }
+.fobles-auditor-tree-row--empty .fobles-auditor-tree-label, .fobles-auditor-tree-row--not-applicable .fobles-auditor-tree-label { color: #9aa3b0; }
+.fobles-auditor-tree-row--empty .fobles-auditor-tree-count { color: #9aa3b0; }
+.fobles-auditor-tree-row--empty .fobles-auditor-tree-icon, .fobles-auditor-tree-row--not-applicable .fobles-auditor-tree-icon { opacity: 0.5; }
+.fobles-auditor-tree-row--placeholder .fobles-auditor-tree-label { color: #8a93a0; font-style: italic; }
+.fobles-auditor-tree-dots { display: inline-flex; flex: 0 0 auto; width: 1.2em; margin-left: 1px; color: inherit; }
+.fobles-auditor-tree-dots > span { animation-duration: var(--fobles-auditor-dots-cycle, 1200ms); animation-delay: var(--fobles-auditor-dots-delay, 0ms); animation-iteration-count: infinite; animation-timing-function: step-end; }
+.fobles-auditor-tree-dots > span:nth-child(2) { animation-name: fobles-auditor-dot-second; }
+.fobles-auditor-tree-dots > span:nth-child(3) { animation-name: fobles-auditor-dot-third; }
+.fobles-auditor-tree-sr { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; border: 0; }
+
+// Agent: "." -> ".." -> "..." -> repeat. The first dot is always shown; the second appears at 1/3, the third at 2/3.
+@keyframes fobles-auditor-dot-second { 0% { opacity: 0; } 33.333% { opacity: 1; } 100% { opacity: 1; } }
+@keyframes fobles-auditor-dot-third { 0% { opacity: 0; } 66.666% { opacity: 1; } 100% { opacity: 1; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .fobles-auditor-tree-dots > span { animation: none; opacity: 1; }
+}

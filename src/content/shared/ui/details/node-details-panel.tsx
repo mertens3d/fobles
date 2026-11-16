@@ -235,10 +235,7 @@ export function NodeDetailsPanel({
         ];
   const diagnosticTreeNode = buildDiagnosticTreeNode(treeNode);
   return (
-    <DetailsPanel
-      title="Node Details"
-getCopyText={() => buildClipboardText(diagnosticTreeNode, formattedRawSource, formattedItemRawMarkup)}
-    >
+    <DetailsPanel getCopyText={() => buildClipboardText(diagnosticTreeNode, formattedRawSource, formattedItemRawMarkup)}>
       {rows.map(([label, value]) => (
         <div key={label} className={DETAILS_PANEL.CLASS.ROW}>
           <strong>{label}: </strong>

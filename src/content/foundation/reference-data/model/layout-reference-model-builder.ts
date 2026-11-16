@@ -13,6 +13,11 @@ import type { LayoutDevice } from "./model.types.ts";
 import type { LayoutPlacement } from "./model.types.ts";
 import type { LayoutSectionField } from "./model.types.ts";
 import type { ItemGraphNodeData } from "./model.types.ts";
+import type { ScControl } from "./model.types.ts";
+
+const LAYOUT_DELTA_ROOT_PATTERN = /^\s*<r\b[^>]*\bp:p\s*=\s*["']1["']/i;
+const NUMBERED_DYNAMIC_PLACEHOLDER_PATTERN = /-(\d+)$/;
+const UID_DYNAMIC_PLACEHOLDER_PATTERN = /-(\{[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}\})-\d+$/i;
 
 export function createReferenceModelNodeId(...parts: Array<string | undefined>): string {
   return parts
@@ -60,7 +65,7 @@ export function createLayoutSectionReferenceModel(
     branch: "layouts",
     relationshipToParent: "related",
     children: layout.devices.map((device, deviceIndex) =>
-      createDeviceReferenceModelNode(treeNodeId, device, deviceIndex, pageLayoutItemsByDeviceId),
+      createDeviceReferenceModelNode(treeNodeId, device, deviceIndex, pageLayoutItemsByDeviceId, isLayoutDelta(layout)),
     ),
   });
 }
@@ -70,6 +75,7 @@ function createDeviceReferenceModelNode(
   device: LayoutDevice,
   deviceIndex: number,
   pageLayoutItemsByDeviceId: Map<string, ItemGraphNodeData>,
+  inheritsLayout: boolean,
 ): ReferenceModelItemNode {
   const treeNodeId = createReferenceModelNodeId(
     layoutTreeNodeId,
@@ -81,7 +87,7 @@ function createDeviceReferenceModelNode(
     (device.scDeviceItem.scItemId ? pageLayoutItemsByDeviceId.get(device.scDeviceItem.scItemId) : undefined);
   const pageLayoutNode = pageLayoutItem
     ? createPageLayoutReferenceModelNode(treeNodeId, pageLayoutItem, device.placements)
-    : createMissingPageLayoutReferenceModelNode(treeNodeId, device.placements);
+    : createMissingPageLayoutReferenceModelNode(treeNodeId, device.placements, inheritsLayout);
 
   return createReferenceModelItemNode({
     treeNodeId,
@@ -95,17 +101,27 @@ function createDeviceReferenceModelNode(
   });
 }
 
+// Agent: A layout field whose root is <r p:p="1"> is a delta over the template's __Standard Values. A device in a delta
+// Agent: without an l="" attribute keeps the Standard Values layout; it is not missing. Only a full (non-delta) layout
+// Agent: value without l="" really has no layout set.
+function isLayoutDelta(layout: LayoutSectionField): boolean {
+  return LAYOUT_DELTA_ROOT_PATTERN.test(layout.rawMarkup ?? "");
+}
+
 function createMissingPageLayoutReferenceModelNode(
   deviceTreeNodeId: string,
   placements: readonly LayoutPlacement[],
+  inheritsLayout: boolean,
 ): ReferenceModelNonItemNode {
   const treeNodeId = createReferenceModelNodeId(deviceTreeNodeId, "page-layout");
+  // Agent: Graph labels wrap at 16 characters per line, so the qualifier stays short ("Page Layout" / "(inherited)").
+  const name = inheritsLayout ? "Page Layout (inherited)" : "Page Layout (none set)";
 
   return createReferenceModelNonItemNode({
     treeNodeId,
-    name: "Page Layout (does not exist)",
+    name,
     kind: CONST.FOBLES.REFERENCE_GRAPH.NODE_KIND.PAGE_LAYOUT,
-    provenance: createSyntheticProvenance("Page Layout (does not exist)"),
+    provenance: createSyntheticProvenance(name),
     collapseKey: GRAPH_COLLAPSE_KEY.PAGE_LAYOUT,
     branch: "layouts",
     relationshipToParent: "related",
@@ -141,10 +157,17 @@ function createPlacementReferenceModelNode(
     CONST.FOBLES.REFERENCE_GRAPH.LAYOUT_SCOPE.PLACEHOLDER,
     placement.path,
   );
+  const ownerByPlacement = new Map(
+    placement.placements.map((childPlacement) => [childPlacement, findOwningControl(placement, childPlacement)]),
+  );
+  const childPlaceholderNodes = (owner: ScControl | undefined): ReferenceModelNode[] =>
+    placement.placements
+      .filter((childPlacement) => ownerByPlacement.get(childPlacement) === owner)
+      .map((childPlacement) => createPlacementReferenceModelNode(treeNodeId, childPlacement));
   const children: ReferenceModelNode[] = [
-    ...placement.placements.map((childPlacement) => createPlacementReferenceModelNode(treeNodeId, childPlacement)),
+    ...childPlaceholderNodes(undefined),
     ...placement.controls.map((control, controlIndex) =>
-      createRenderingReferenceModelNode(treeNodeId, control, controlIndex),
+      createRenderingReferenceModelNode(treeNodeId, control, controlIndex, childPlaceholderNodes(control)),
     ),
   ];
 
@@ -158,4 +181,35 @@ function createPlacementReferenceModelNode(
     relationshipToParent: "related",
     children,
   });
+}
+
+// Agent: Dynamic placeholders belong to the rendering that exposes them, so they nest under that rendering instead of
+// Agent: beside it. SXA/JSS keys look like "container-1" (the owner has DynamicPlaceholderId=1 in its parameters);
+// Agent: classic keys look like "main-{RENDERING UID}-0". A placeholder with no single clear owner stays where it is.
+function findOwningControl(parent: LayoutPlacement, child: LayoutPlacement): ScControl | undefined {
+  const ownerUid = rawPlaceholderSegments(child)
+    .map((segment) => UID_DYNAMIC_PLACEHOLDER_PATTERN.exec(segment)?.[1])
+    .find((uid): uid is string => Boolean(uid));
+  const dynamicId = NUMBERED_DYNAMIC_PLACEHOLDER_PATTERN.exec(child.name)?.[1];
+  const candidates = ownerUid
+    ? parent.controls.filter((control) => normalizeGuid(control.uid) === normalizeGuid(ownerUid))
+    : parent.controls.filter((control) => dynamicId !== undefined && readDynamicPlaceholderId(control) === dynamicId);
+
+  return candidates.length === 1 ? candidates[0] : undefined;
+}
+
+function rawPlaceholderSegments(placement: LayoutPlacement): string[] {
+  const depth = placement.path.split("/").length - 1;
+  return placement.sourcePaths
+    .map((sourcePath) => sourcePath.split("/").filter(Boolean)[depth])
+    .filter((segment): segment is string => Boolean(segment));
+}
+
+function readDynamicPlaceholderId(control: ScControl): string | undefined {
+  const rawParameters = control.rawData["s:par"] ?? control.rawData.par ?? "";
+  return new URLSearchParams(rawParameters).get("DynamicPlaceholderId")?.trim() || undefined;
+}
+
+function normalizeGuid(value: string | undefined): string {
+  return (value ?? "").replace(/[{}]/g, "").toLowerCase();
 }

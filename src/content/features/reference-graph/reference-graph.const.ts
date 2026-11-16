@@ -17,3 +17,5 @@ export const DEFAULT_GRAPH_PARAMETER_VISIBILITY_SETTINGS: GraphParameterVisibili
 };
 
 export const STORAGE_KEY = "fobles-reference-graph-parameter-visibility";
+
+export const REFERENCE_GRAPH_DETAILS_WINDOW = { ID: "fobles-reference-graph-node-details-window" } as const;

@@ -6,7 +6,8 @@ import { GRAPH_VIEWPORT } from "../../../constants/graph-viewport.const";
 import { extensionLog } from "../../logger";
 import { GraphToolbar } from "./components/graph-toolbar";
 import { GraphZoomControls } from "./components/graph-zoom-controls";
-import { ReferenceModelViewer } from "../../shared/ui/reference-model/reference-model-viewer";
+import { ReferenceModelViewer, referenceModelWindowTitle } from "../../shared/ui/reference-model/reference-model-viewer";
+import { DETAILS_PANEL } from "../../shared/ui/details/details-panel.const";
 import { useCytoscape } from "./hooks/use-cytoscape";
 import { useReferenceGraph } from "./hooks/use-reference-graph";
 import { useReferenceGraphActions } from "./hooks/use-reference-graph-actions";
@@ -14,8 +15,12 @@ import type { ReferenceGraphAppProps } from "./reference-graph-app.types";
 import { getFoblesDataSession } from "../../foundation/reference-data/reference-data-service";
 import { subscribeRootRefresh } from "./lifecycle/root-refresh-events";
 import { NodeDetailsPanel } from "../../shared/ui/details/node-details-panel";
+import { FoblesDetailsWindow } from "../../shared/dialog/fobles-details-window";
+import { REFERENCE_MODEL_VIEWER } from "../../shared/ui/reference-model/reference-model.const";
+import { REFERENCE_GRAPH_DETAILS_WINDOW } from "./reference-graph.const";
 
 export function ReferenceGraphApp({ doc, workSession, initialPreparedGraph, harvestForLink }: ReferenceGraphAppProps) {
+  const appRef = useRef<HTMLDivElement | null>(null);
   const containerRef = useRef<HTMLDivElement | null>(null);
   const cyRef = useRef<cytoscape.Core | undefined>(undefined);
   const graphState = useReferenceGraph({ initialPreparedGraph });
@@ -103,12 +108,16 @@ export function ReferenceGraphApp({ doc, workSession, initialPreparedGraph, harv
     graphState.enrichmentProgress === undefined ? "pending" : graphState.enrichmentProgress.status;
 
   return (
-    <div className="fobles-reference-graph-app" data-enrichment-status={enrichmentStatus}>
+    <div ref={appRef} className="fobles-reference-graph-app" data-enrichment-status={enrichmentStatus}>
       {graphState.treeDataVisible && (
-        <ReferenceModelViewer
-          referenceModel={graphState.currentPreparedGraph.referenceModel}
+        <FoblesDetailsWindow
+          id={REFERENCE_MODEL_VIEWER.WINDOW_ID.GRAPH}
+          title={referenceModelWindowTitle(graphState.currentPreparedGraph.referenceModel)}
+          ownerRef={appRef}
           onClose={handleCloseReferenceModel}
-        />
+        >
+          <ReferenceModelViewer referenceModel={graphState.currentPreparedGraph.referenceModel} />
+        </FoblesDetailsWindow>
       )}
       <GraphToolbar
         rootItemId={graphState.currentPreparedGraph.harvestedData.rootItem.scItemId}
@@ -130,12 +139,20 @@ export function ReferenceGraphApp({ doc, workSession, initialPreparedGraph, harv
         enrichmentProgress={graphState.enrichmentProgress}
         onViewReferenceModel={handleViewReferenceModel}
       />
-      <NodeDetailsPanel
-        selectedTreeNodeId={graphState.selectedTreeNodeId}
-        nodesById={graphState.currentPreparedGraph.nodesById}
-        processingStateByTreeNodeId={graphState.currentPreparedGraph.processingStateByTreeNodeId}
-        onClose={() => graphState.setSelectedTreeNodeId(undefined)}
-      />
+      {graphState.selectedTreeNodeId ? (
+        <FoblesDetailsWindow
+          id={REFERENCE_GRAPH_DETAILS_WINDOW.ID}
+          title={DETAILS_PANEL.TEXT.NODE_DETAILS}
+          ownerRef={appRef}
+          onClose={() => graphState.setSelectedTreeNodeId(undefined)}
+        >
+          <NodeDetailsPanel
+            selectedTreeNodeId={graphState.selectedTreeNodeId}
+            nodesById={graphState.currentPreparedGraph.nodesById}
+            processingStateByTreeNodeId={graphState.currentPreparedGraph.processingStateByTreeNodeId}
+          />
+        </FoblesDetailsWindow>
+      ) : null}
       <div ref={containerRef} className="fobles-reference-graph-canvas" />
       {graphState.graphBusy && <div className="fobles-reference-graph-canvas-blocker" aria-hidden="true" />}
       <GraphZoomControls

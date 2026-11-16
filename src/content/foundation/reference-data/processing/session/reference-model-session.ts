@@ -4,6 +4,7 @@ import { extensionLog } from "../../../../logger";
 import * as cache from "../../../cache/sitecore-data/sitecore-data-cache";
 import type { SitecoreDataCacheKey, SitecoreDataFactMap, SitecoreDataFactName } from "../../../cache/sitecore-data/sitecore-data.types";
 import { harvestSitecoreWithWorkers } from "../../../harvesting/coordinator/foreground-harvest-coordinator";
+import type { SitecoreHarvestResult } from "../../../harvesting/harvesting.types";
 import { resolveSitecoreDataIdentity } from "../../../sitecore/data/sitecore-data-identity";
 import { buildFoblesUrl } from "../../../sitecore/fobles-url";
 import type { SitecoreItemLocator, WorkerTask } from "../../../workers/tasks/tasks.types.js";
@@ -129,14 +130,27 @@ export async function startSharedReferenceModelSession({
           }
         : {}),
     };
-    const result = await harvestSitecoreWithWorkers(harvestRequest, { signal: harvestSignal });
+    const result = await harvestSitecoreWithWorkers(harvestRequest, {
+      signal: harvestSignal,
+      onResultBeforeRestore: (early) => showCropResult(job, early),
+    });
     if (!result) {
       throw new Error(`Reference Harvesting produced no ${job.factName} fact for ${job.item.value}`);
     }
     const value = factFromResult(job.factName, result);
     await cache.putFact(cacheKey(job.item), job.factName, value);
-    await publish(patchReferenceModelFact(prepared, job.item, job.factName, value, activeFilters));
+    await showCropResult(job, result);
     await Promise.all(relationshipLocators(job.factName, value).map(hydrateOrQueue));
+  }
+
+  // Agent: Layout crops call this twice: once with the finished harvest before Sitecore's editor state is restored
+  // Agent: (so the tree shows the layout seconds sooner), and again with the confirmed result. Patching is idempotent.
+  async function showCropResult(job: ReferenceHarvestingJob, result: SitecoreHarvestResult): Promise<void> {
+    if (disposed) {
+      return;
+    }
+    const value = factFromResult(job.factName, result);
+    await publish(patchReferenceModelFact(prepared, job.item, job.factName, value, activeFilters));
     if (sameItem(job.item, rootItem)) {
       onRootRefresh?.(prepared.harvestedData);
     }

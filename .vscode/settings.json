@@ -13,6 +13,10 @@
       "fileMatch": ["*.module.json"],
       "url": "./.sitecore/schemas/ModuleFile.schema.json"
     }
-  ]
+  ],
+  "files.exclude": {
+    "dist": true,
+    "node_modules": true
+  }
   
 }

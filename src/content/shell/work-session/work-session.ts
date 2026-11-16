@@ -171,16 +171,22 @@ export function createWorkSession(workClass: WorkClass = WORK_SCHEDULING.FOREGRO
     return promise;
   }
 
+  // Agent: A completed foreground session keeps its pool lease (resources are retained until cancel/release), so it
+  // Agent: must keep accepting follow-up tasks. The Auditor completes its operation once the first audit settles, and
+  // Agent: everything discovered after that (Children, Parent, Referrers turned on later) still needs Quick Info.
+  function acceptsTasks(): boolean {
+    const retained = state === "completed" && workClass === WORK_SCHEDULING.FOREGROUND;
+    return (state === "open" || retained) && !controller.signal.aborted;
+  }
+
   async function runTask(task: WorkSessionTask): Promise<WorkerTaskResult | undefined> {
-    if (state !== "open" || controller.signal.aborted) {
+    if (!acceptsTasks()) {
       return undefined;
     }
     if (poolDisposalPromise) {
       await poolDisposalPromise;
     }
-    return state === "open" && !controller.signal.aborted
-      ? await track(runWorkerTask({ ...task, requestId: id, workClass }), task.taskId)
-      : undefined;
+    return acceptsTasks() ? await track(runWorkerTask({ ...task, requestId: id, workClass }), task.taskId) : undefined;
   }
 
   async function settleActiveTasks(): Promise<void> {

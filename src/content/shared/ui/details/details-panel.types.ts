@@ -3,7 +3,7 @@
 import type { ReactNode } from "react";
 
 export type DetailsPanelProps = {
-  title: string;
+  title?: string;
   getCopyText?: () => string;
   actions?: ReactNode;
   children?: ReactNode;

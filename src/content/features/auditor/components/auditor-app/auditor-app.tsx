@@ -9,7 +9,9 @@ import { logHeapSnapshot } from "../../../../foundation/diagnostics/heap-snapsho
 import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_base.types";
 import type { PhaseProgress } from "../../../../foundation/reference-data/progress/lifecycle.types";
 import { LifecycleProgressFooter } from "../../../../shared/ui/reference-controls/lifecycle-progress-footer";
-import { ReferenceModelViewer } from "../../../../shared/ui/reference-model/reference-model-viewer";
+import { ReferenceModelViewer, referenceModelWindowTitle } from "../../../../shared/ui/reference-model/reference-model-viewer";
+import { DETAILS_PANEL } from "../../../../shared/ui/details/details-panel.const";
+import { REFERENCE_MODEL_VIEWER } from "../../../../shared/ui/reference-model/reference-model.const";
 import { getGraphPresentationState } from "../../../../foundation/reference-data/model/graph-presentation-state";
 import type { AuditFinding } from "../../auditor.types";
 import type { AuditFindingStatus } from "../../auditor.types";
@@ -227,6 +229,9 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
     completedElapsedSeconds.current = (performance.now() - startedAt.current) / 1000;
   }
   const resolveComplete = resolveProgress?.status === "complete";
+  // Agent: Auditing has settled once item processing is complete and the Reference Harvesting queue is idle. Until
+  // Agent: then a group whose data has not arrived shows as "auditing"; afterwards it shows as "couldn't audit".
+  const auditingSettled = resolveComplete && harvestProgress?.status !== "running";
   useEffect(() => {
     const showHelpFromWindow = (): void => setShowHelp(true);
     window.addEventListener("fobles:auditor-help", showHelpFromWindow);
@@ -363,9 +368,6 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
           />
         }
       />
-      {viewReferenceModel && model ? (
-        <ReferenceModelViewer referenceModel={model.referenceModel} onClose={() => setViewReferenceModel(false)} />
-      ) : null}
       <div className="fobles-auditor-search-row">
         <input
           type="search"
@@ -385,13 +387,25 @@ export function AuditorApp({ doc, findingStore, workOperationId }: AuditorAppPro
               processingStateByTreeNodeId={model.processingStateByTreeNodeId}
               modelRevision={modelRevision}
               graphFilters={graphFilters}
+              rootHarvest={model.harvestedData}
+              auditingSettled={auditingSettled}
               onViewData={setSelectedTreeNodeId}
               onViewTestDetails={setSelectedTestDetails}
             />
           ) : null}
         </div>
+        {viewReferenceModel && model ? (
+          <FoblesDetailsWindow
+            id={REFERENCE_MODEL_VIEWER.WINDOW_ID.AUDITOR}
+            title={referenceModelWindowTitle(model.referenceModel)}
+            ownerRef={appRef}
+            onClose={() => setViewReferenceModel(false)}
+          >
+            <ReferenceModelViewer referenceModel={model.referenceModel} />
+          </FoblesDetailsWindow>
+        ) : null}
         {selectedTreeNodeId && model ? (
-          <FoblesDetailsWindow id="fobles-auditor-workspace-details" title="Auditor Details" ownerRef={appRef} onClose={() => setSelectedTreeNodeId(undefined)}>
+          <FoblesDetailsWindow id="fobles-auditor-workspace-details" title={DETAILS_PANEL.TEXT.NODE_DETAILS} ownerRef={appRef} onClose={() => setSelectedTreeNodeId(undefined)}>
             <NodeDetailsPanel selectedTreeNodeId={selectedTreeNodeId} nodesById={model.nodesById} processingStateByTreeNodeId={model.processingStateByTreeNodeId} />
           </FoblesDetailsWindow>
         ) : null}

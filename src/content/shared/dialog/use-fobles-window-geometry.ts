@@ -3,6 +3,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 import { extensionLog } from "../../logger";
+import { reportFoblesError } from "../error-manager/error-manager";
 import { FOBLES_WINDOW } from "./fobles-window.const";
 import {
   centeredRect,
@@ -41,7 +42,9 @@ export function useFoblesWindowGeometry({
 
   const persist = useCallback(
     (next: FoblesWindowState) => {
-      void setStorageValue({ [storageKey]: next }, "local");
+      void setStorageValue({ [storageKey]: next }, "local", true).catch((error: unknown) => {
+        reportFoblesError("Failed to persist Fobles window geometry", error, { storageKey });
+      });
     },
     [storageKey],
   );
@@ -54,13 +57,17 @@ export function useFoblesWindowGeometry({
 
   useEffect(() => {
     let active = true;
-    void getStorageValue<unknown>([storageKey], "local").then((values) => {
+    void getStorageValue<unknown>([storageKey], "local", true).then((values) => {
       if (!active || hasUserInteractedRef.current) {
         return;
       }
       const hydrated = parsePersistedFoblesWindowState(values[storageKey], window, minWidth, minHeight);
       if (hydrated) {
         setState((current) => ({ ...current, ...hydrated }));
+      }
+    }).catch((error: unknown) => {
+      if (active) {
+        reportFoblesError("Failed to restore Fobles window geometry", error, { storageKey });
       }
     });
     return () => {

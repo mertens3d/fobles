@@ -56,4 +56,16 @@
 .fobles-window--client-overlay .fobles-details-panel-header { position: static; margin: 0; padding: 8px 12px; }
 .fobles-window--client-overlay .fobles-details-panel-content { margin: 0; padding: 0 12px 12px; }
 
+// Agent: Details panels are light-surface window content. Replace the legacy dark graph-panel colors (white text, white
+// Agent: dividers) and draw the disclosure marker explicitly so it always reads closed = ▸, open = ▾.
+.fobles-window--client-overlay .fobles-details-panel { background: transparent; color: $fobles-text; }
+.fobles-window--client-overlay .fobles-details-panel-header { display: flex; justify-content: flex-end; border-bottom: 1px solid $fobles-border; }
+.fobles-window--client-overlay .fobles-details-panel-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+.fobles-window--client-overlay .fobles-details-panel details { border-top: 1px solid $fobles-border; }
+.fobles-window--client-overlay .fobles-details-panel summary { display: block; list-style: none; color: $fobles-text; }
+.fobles-window--client-overlay .fobles-details-panel summary::-webkit-details-marker { display: none; }
+.fobles-window--client-overlay .fobles-details-panel summary::before { content: "\25B8"; display: inline-block; width: 1.1em; transform: none; }
+.fobles-window--client-overlay .fobles-details-panel details[open] > summary::before { content: "\25BE"; }
+.fobles-window--client-overlay .fobles-details-panel pre { padding: 6px 8px; border-radius: $fobles-radius-small; background: $fobles-surface; color: $fobles-text; }
+
 .fobles-window.is-collapsed { left: var(--fobles-window-collapsed-left) !important; top: var(--fobles-window-collapsed-top) !important; width: 300px !important; height: 34px !important; }

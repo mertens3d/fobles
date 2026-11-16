@@ -7,7 +7,13 @@ import type { ProcessingStateByTreeNodeId } from "../../../foundation/reference-
 import type { SitecoreHarvestFiltersState } from "../../../../constants/_base/_base.types";
 import type { AuditFinding } from "../auditor.types";
 import { buildAuditReportTree } from "../audit-report-tree";
-import type { AuditorDescendantFailure, AuditorTreeRow, JourneyStage } from "./auditor-grid.types";
+import { applyAuditorGroupStatus } from "./auditor-group-status";
+import type {
+  AuditorDescendantFailure,
+  AuditorGroupStatusContext,
+  AuditorTreeRow,
+  JourneyStage,
+} from "./auditor-grid.types";
 
 const JOURNEY_RANK: Record<JourneyStage, number> = { referenced: 1, cached: 2, live: 3, tested: 4 };
 const JOURNEY_BY_RANK: Record<number, JourneyStage> = { 1: "referenced", 2: "cached", 3: "live", 4: "tested" };
@@ -46,6 +52,7 @@ export function projectAuditorRows(
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId,
   liveSeen: ReadonlySet<string>,
   graphFilters: SitecoreHarvestFiltersState,
+  groupStatusContext?: AuditorGroupStatusContext,
 ): AuditorTreeRow[] {
   const nodesById = indexReferenceModelNodes(referenceModelRoot);
   const findingsByNode = indexFindingsByNode(findings);
@@ -80,6 +87,7 @@ export function projectAuditorRows(
 
       results.push({
         ...row,
+        branch: node ? getGraphPresentationState(node).branch : undefined,
         collapseKey: node ? getGraphPresentationState(node).collapseKey : undefined,
         journeyStage,
         sitecoreUrl:
@@ -104,10 +112,11 @@ export function projectAuditorRows(
       });
     });
 
-  setVisibleChildren(results);
-  populateDescendantFailures(results);
-  rollupJourney(results);
-  return results;
+  const rows = applyAuditorGroupStatus(results, nodesById, groupStatusContext);
+  setVisibleChildren(rows);
+  populateDescendantFailures(rows);
+  rollupJourney(rows);
+  return rows;
 }
 
 function populateDescendantFailures(rows: AuditorTreeRow[]): void {

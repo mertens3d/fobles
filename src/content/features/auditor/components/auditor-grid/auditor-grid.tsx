@@ -13,6 +13,7 @@ import {
 import type { ReferenceModelNode } from "../../../../foundation/reference-data/model/model.types";
 import type { ProcessingStateByTreeNodeId } from "../../../../foundation/reference-data/processing/processing.types";
 import type { SitecoreHarvestFiltersState } from "../../../../../constants/_base/_base.types";
+import type { SitecoreHarvestResult } from "../../../../foundation/harvesting/harvesting.types";
 import {
   getExpandedByCollapseKey,
   setExpandedStateForCollapseKey,
@@ -29,6 +30,7 @@ import {
 import { applyAuditorLayoutView } from "../../auditor-grid/auditor-layout-row-filter";
 import { projectAuditorRows } from "../../auditor-grid/auditor-row-projector";
 import type {
+  AuditorGroupStatusContext,
   AuditorTestDetailsSelection,
   AuditorTreeRow,
   ToggleModifiers,
@@ -47,6 +49,8 @@ export type AuditorGridProps = {
   processingStateByTreeNodeId: ProcessingStateByTreeNodeId;
   modelRevision: number;
   graphFilters: SitecoreHarvestFiltersState;
+  rootHarvest: SitecoreHarvestResult;
+  auditingSettled: boolean;
   onViewData: (treeNodeId: string) => void;
   onViewTestDetails: (selection: AuditorTestDetailsSelection) => void;
 };
@@ -69,6 +73,8 @@ export function AuditorGrid({
   processingStateByTreeNodeId,
   modelRevision,
   graphFilters,
+  rootHarvest,
+  auditingSettled,
   onViewData,
   onViewTestDetails,
 }: AuditorGridProps) {
@@ -78,9 +84,21 @@ export function AuditorGrid({
       liveSeen.current.add(treeNodeId);
     }
   });
+  const groupStatusContext = useMemo<AuditorGroupStatusContext>(
+    () => ({ graphFilters, rootHarvest, settled: auditingSettled }),
+    [graphFilters, rootHarvest, auditingSettled, modelRevision],
+  );
   const allRows = useMemo(
-    () => projectAuditorRows(referenceModelRoot, findings, processingStateByTreeNodeId, liveSeen.current, graphFilters),
-    [referenceModelRoot, findings, processingStateByTreeNodeId, modelRevision, graphFilters],
+    () =>
+      projectAuditorRows(
+        referenceModelRoot,
+        findings,
+        processingStateByTreeNodeId,
+        liveSeen.current,
+        graphFilters,
+        groupStatusContext,
+      ),
+    [referenceModelRoot, findings, processingStateByTreeNodeId, modelRevision, graphFilters, groupStatusContext],
   );
   const [expanded, setExpanded] = useState<ReadonlySet<string>>(() => new Set());
   const [explicitlyCollapsed, setExplicitlyCollapsed] = useState<ReadonlySet<string>>(() => new Set());
@@ -227,7 +245,15 @@ export function AuditorGrid({
 
   const columnDefs = useMemo<ColDef<AuditorTreeRow>[]>(
     () => [
-      { field: "status", headerName: "", width: 24, minWidth: 24, maxWidth: 24, cellRenderer: AuditorStatusCell },
+      {
+        field: "status",
+        headerName: "",
+        width: 24,
+        minWidth: 24,
+        maxWidth: 24,
+        cellRenderer: (params: ICellRendererParams<AuditorTreeRow>) =>
+          params.data?.referenceModelNodeId ? <AuditorStatusCell {...params} /> : null,
+      },
       {
         field: "journeyStage",
         headerName: "",
@@ -311,7 +337,11 @@ export function AuditorGrid({
           columnDefs={columnDefs}
           getRowId={(params) => params.data.id}
           getRowClass={(params) =>
-            params.data?.isSitecoreItem ? "fobles-auditor-grid-row--item" : "fobles-auditor-grid-row--relationship"
+            params.data?.placeholder
+              ? "fobles-auditor-grid-row--placeholder"
+              : params.data?.isSitecoreItem
+                ? "fobles-auditor-grid-row--item"
+                : "fobles-auditor-grid-row--relationship"
           }
           defaultColDef={{ resizable: false, sortable: false }}
           headerHeight={0}

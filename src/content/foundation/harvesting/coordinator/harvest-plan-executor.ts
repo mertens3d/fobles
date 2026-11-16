@@ -26,6 +26,7 @@ import { factNameForTaskType, resolveFact } from "../../sitecore/data/sitecore-d
 import { resolveSitecoreDataIdentity } from "../../sitecore/data/sitecore-data-identity";
 import type { SitecoreDataCacheKey } from "../../cache/sitecore-data/sitecore-data.types";
 import { runWithReferenceHarvestingLease } from "./reference-harvesting-lease";
+import type { HarvestedBeforeRestoreCallback } from "./coordinator.types";
 
 const TASK_TIMEOUT_MS = 30000;
 
@@ -264,6 +265,7 @@ async function restoreOriginalState(request: HarvestRequest): Promise<void> {
 export async function executeHarvestPlan(
   request: HarvestRequest,
   onProgress: HarvestProgressCallback | undefined,
+  onHarvestedBeforeRestore?: HarvestedBeforeRestoreCallback,
 ): Promise<WorkerTaskResult[]> {
   extensionLog.debug(`[${request.requestId}]: starting harvest plan execution`);
 
@@ -275,13 +277,16 @@ export async function executeHarvestPlan(
   }
 
   const statefulRequest: HarvestRequest & { session: NonNullable<HarvestRequest["session"]> } = { ...request, session };
-  return await runWithReferenceHarvestingLease(() => executeStatefulHarvestPlan(statefulRequest, onProgress, cacheKey));
+  return await runWithReferenceHarvestingLease(() =>
+    executeStatefulHarvestPlan(statefulRequest, onProgress, cacheKey, onHarvestedBeforeRestore),
+  );
 }
 
 async function executeStatefulHarvestPlan(
   request: HarvestRequest & { session: NonNullable<HarvestRequest["session"]> },
   onProgress: HarvestProgressCallback | undefined,
   cacheKey: SitecoreDataCacheKey | undefined,
+  onHarvestedBeforeRestore: HarvestedBeforeRestoreCallback | undefined,
 ): Promise<WorkerTaskResult[]> {
   const { normalTasks, layoutTasks } = planCollectorTaskGroups(request);
 
@@ -309,6 +314,10 @@ async function executeStatefulHarvestPlan(
     harvestError = error;
   }
 
+  if (harvestResults) {
+    await deliverBeforeRestore(request, harvestResults, onHarvestedBeforeRestore);
+  }
+
   try {
     await restoreOriginalState(request);
   } catch (restoreError: unknown) {
@@ -327,6 +336,25 @@ async function executeStatefulHarvestPlan(
       : Object.assign(new Error("Harvest failed with a non-Error value"), { cause: harvestError });
   }
   return harvestResults ?? [];
+}
+
+// Agent: Restoring Raw Values / Standard Fields takes several seconds (each toggle reloads the editor and retires the
+// Agent: workers), but the harvested data is already final. Hand it over first so the UI can show it immediately; the
+// Agent: restore still runs inside the same lease, so nothing else touches the editor until it is done. A failing
+// Agent: consumer must never skip the restore, so its error is logged and swallowed here.
+async function deliverBeforeRestore(
+  request: HarvestRequest,
+  harvestResults: readonly WorkerTaskResult[],
+  onHarvestedBeforeRestore: HarvestedBeforeRestoreCallback | undefined,
+): Promise<void> {
+  try {
+    await onHarvestedBeforeRestore?.(harvestResults);
+  } catch (error: unknown) {
+    extensionLog.warn("Reference graph: early harvest delivery failed; continuing with restore", {
+      requestId: request.requestId,
+      error,
+    });
+  }
 }
 
 async function setAndVerifyEditorState(

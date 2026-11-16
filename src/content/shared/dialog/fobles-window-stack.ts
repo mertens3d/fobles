@@ -3,6 +3,7 @@
 import type { PersistedWindowStack } from "./dialog.types.js";
 import { getStorageValue, setStorageValue } from "../../../shared/storage/storage";
 import { extensionLog } from "../../logger";
+import { reportFoblesError } from "../error-manager/error-manager";
 import { FOBLES_WINDOW } from "./fobles-window.const";
 
 const STACK_STORAGE_KEY = "fobles.window.stack";
@@ -30,7 +31,10 @@ function persistOrder(windows: readonly HTMLElement[]): void {
   void setStorageValue(
     { [STACK_STORAGE_KEY]: { order: windows.map(windowKey).filter(Boolean) } satisfies PersistedWindowStack },
     "local",
-  );
+    true,
+  ).catch((error: unknown) => {
+    reportFoblesError("Failed to persist Fobles window stack", error, { storageKey: STACK_STORAGE_KEY });
+  });
 }
 
 function normalize(windows: readonly HTMLElement[]): void {
@@ -111,7 +115,7 @@ export function bringFoblesWindowToFront(element: HTMLElement): void {
 
 export function registerFoblesWindow(element: HTMLElement): () => void {
   let active = true;
-  void getStorageValue<unknown>([STACK_STORAGE_KEY], "local").then((values) => {
+  void getStorageValue<unknown>([STACK_STORAGE_KEY], "local", true).then((values) => {
     if (!active) {
       return;
     }
@@ -126,6 +130,10 @@ export function registerFoblesWindow(element: HTMLElement): () => void {
         (rank.get(windowKey(a)) ?? Number.MAX_SAFE_INTEGER) - (rank.get(windowKey(b)) ?? Number.MAX_SAFE_INTEGER),
     );
     normalize(windows);
+  }).catch((error: unknown) => {
+    if (active) {
+      reportFoblesError("Failed to restore Fobles window stack", error, { storageKey: STACK_STORAGE_KEY });
+    }
   });
   bringFoblesWindowToFront(element);
   return () => {

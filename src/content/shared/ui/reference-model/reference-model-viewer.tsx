@@ -1,51 +1,58 @@
 // @source-path [fobles] src/content/shared/ui/reference-model/reference-model-viewer.tsx
 
-import { useState } from "react";
-import { copySanitizedText, downloadSanitizedText } from "../../../../shared/export/text-export";
+import { downloadSanitizedText } from "../../../../shared/export/text-export";
+import { sanitizeExportText } from "../../../../shared/export/export-sanitizer";
 import type { ReferenceModelNode } from "../../../foundation/reference-data/model/model.types";
-import { DialogIconButton } from "../dialog/dialog-icon-button";
-import { AUDITOR_EXPORT_CSV_EVENT } from "./reference-model.const";
-const COPIED_FEEDBACK_DURATION_MS = 1500;
+import { DetailsPanel } from "../details/details-panel";
+import { DETAILS_PANEL } from "../details/details-panel.const";
+import { AUDITOR_EXPORT_CSV_EVENT, REFERENCE_MODEL_VIEWER } from "./reference-model.const";
 
-export type ReferenceModelViewerProps = { referenceModel: ReferenceModelNode; onClose: () => void };
+export type ReferenceModelViewerProps = { referenceModel: ReferenceModelNode };
 
-export function ReferenceModelViewer({ referenceModel, onClose }: ReferenceModelViewerProps) {
-  const [copied, setCopied] = useState(false);
+function rootLabel(referenceModel: ReferenceModelNode): string | undefined {
+  return referenceModel.nodeType === "item"
+    ? (referenceModel.scItem.scItemName ?? referenceModel.scItem.scItemId)
+    : referenceModel.name;
+}
+
+// Agent: The hosting FoblesDetailsWindow owns the only visible title, so the root item name goes there.
+export function referenceModelWindowTitle(referenceModel: ReferenceModelNode): string {
+  const label = rootLabel(referenceModel);
+  return label ? `${REFERENCE_MODEL_VIEWER.TITLE}: ${label}` : REFERENCE_MODEL_VIEWER.TITLE;
+}
+
+function downloadFileName(): string {
+  return `${REFERENCE_MODEL_VIEWER.FILE_PREFIX}${new Date().toISOString().replace(/[:.]/g, "-")}.json`;
+}
+
+// Agent: Content only. Callers host this inside FoblesDetailsWindow, which owns the title bar, close control,
+// Agent: placement and clickaway; DetailsPanel owns the action row and the shared CopyButton.
+export function ReferenceModelViewer({ referenceModel }: ReferenceModelViewerProps) {
   const formattedJson = JSON.stringify(referenceModel, null, 2);
 
-  async function handleCopy(): Promise<void> {
-    await copySanitizedText(formattedJson);
-    setCopied(true);
-    setTimeout(() => setCopied(false), COPIED_FEEDBACK_DURATION_MS);
+  function handleDownload(): void {
+    downloadSanitizedText(document, formattedJson, downloadFileName(), REFERENCE_MODEL_VIEWER.JSON_MIME_TYPE);
   }
 
-  function handleDownload(): void {
-    downloadSanitizedText(
-      document,
-      formattedJson,
-      `fobles-reference-model-${new Date().toISOString().replace(/[:.]/g, "-")}.json`,
-      "application/json;charset=utf-8",
-    );
+  function handleExportCsv(): void {
+    window.dispatchEvent(new Event(AUDITOR_EXPORT_CSV_EVENT));
   }
 
   return (
-    <section className="fobles-reference-model-viewer">
-      <header className="fobles-reference-model-viewer-header">
-        <h2>Reference Model</h2>
-        <div className="fobles-reference-model-viewer-actions">
-          <button type="button" onClick={() => void handleCopy()}>
-            {copied ? "Copied" : "Copy to Clipboard"}
+    <DetailsPanel
+      getCopyText={() => sanitizeExportText(formattedJson).value}
+      actions={
+        <>
+          <button type="button" className={DETAILS_PANEL.CLASS.BUTTON} onClick={handleDownload}>
+            {REFERENCE_MODEL_VIEWER.TEXT.DOWNLOAD_JSON}
           </button>
-          <button type="button" onClick={handleDownload}>
-            Download JSON
+          <button type="button" className={DETAILS_PANEL.CLASS.BUTTON} onClick={handleExportCsv}>
+            {REFERENCE_MODEL_VIEWER.TEXT.EXPORT_CSV}
           </button>
-          <button type="button" onClick={() => window.dispatchEvent(new Event(AUDITOR_EXPORT_CSV_EVENT))}>
-            Export CSV
-          </button>
-          <DialogIconButton kind="close" label="Close Reference Model" onClick={onClose} />
-        </div>
-      </header>
-      <pre>{formattedJson}</pre>
-    </section>
+        </>
+      }
+    >
+      <pre className={REFERENCE_MODEL_VIEWER.CLASS.JSON}>{formattedJson}</pre>
+    </DetailsPanel>
   );
 }

@@ -91,7 +91,7 @@ export type AuditReportTreeNode = {
   id: string;
   parentId: string | undefined;
   depth: number;
-  kind: "reference-model" | "finding";
+  kind: "reference-model" | "finding" | "synthetic-group" | "placeholder";
   label: string;
   details: string | undefined;
   path: string | undefined;

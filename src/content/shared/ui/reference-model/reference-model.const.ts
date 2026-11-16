@@ -77,3 +77,12 @@ export const NODE_PRESENTATION_BY_KIND: NodePresentationByKind = {
   [NODE_KIND.TEMPLATE]: { labelMode: "name", color: "#0f9aa0", width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT },
   [NODE_KIND.VARIANT]: { labelMode: "name", color: "#8a3fd6", width: DEFAULT_WIDTH, height: DEFAULT_HEIGHT },
 };
+
+export const REFERENCE_MODEL_VIEWER = {
+  CLASS: { JSON: "fobles-reference-model-viewer-json" },
+  FILE_PREFIX: "fobles-reference-model-",
+  JSON_MIME_TYPE: "application/json;charset=utf-8",
+  TEXT: { DOWNLOAD_JSON: "Download JSON", EXPORT_CSV: "Export CSV" },
+  TITLE: "Reference Model",
+  WINDOW_ID: { AUDITOR: "fobles-auditor-reference-model", GRAPH: "fobles-reference-graph-reference-model" },
+} as const;

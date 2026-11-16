@@ -17,6 +17,7 @@ export function createRenderingReferenceModelNode(
   pageLayoutTreeNodeId: string,
   control: ScControl,
   controlIndex: number,
+  exposedPlaceholders: readonly ReferenceModelNode[] = [],
 ): ReferenceModelItemNode {
   const rendering = control.rendering;
   const renderingTreeNodeId = createReferenceModelNodeId(
@@ -35,6 +36,9 @@ export function createRenderingReferenceModelNode(
   if (parameters.length > 0) {
     children.push(createRenderingParametersReferenceModelNode(renderingTreeNodeId, parameters));
   }
+
+  // Agent: Placeholders this rendering exposes (e.g. Container -> container-1) hang under it, after its own data.
+  children.push(...exposedPlaceholders);
 
   return createReferenceModelItemNode({
     treeNodeId: renderingTreeNodeId,

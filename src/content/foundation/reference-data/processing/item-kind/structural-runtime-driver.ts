@@ -186,7 +186,7 @@ export async function createStructuralRuntimeDriver(scope: StructuralScope, opti
 
   async function bases(id: string, fresh: boolean): Promise<StructuralRead<readonly string[]> | undefined> {
     const key = structuralTemplateCacheKey(normalized, id);
-    let fact = await cache.getCachedFact(key, "templateBases");
+    const fact = await cache.getCachedFact(key, "templateBases");
     if (!fact && !fresh) {
       const sections = await cache.getCachedFact(keyFor({ kind: "id", value: id }), "customSections");
       const inheritedTemplateIds = sections ? collectTemplateBasesFromSections(sections.value.sections) : undefined;

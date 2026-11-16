@@ -2,6 +2,7 @@ import type { ActiveSpecialist, RuntimeMessage, SpecialistFeature } from "./back
 /// <reference types="chrome" />
 
 import { LOGGER, MESSAGE } from "../constants/extension.const.ts";
+import { createErrorResult } from "../content/foundation/workers/tasks/worker-task.ts";
 import { REFERENCE_GRAPH } from "../constants/graph.presets.ts";
 import {
   clearHostWorkerIframeTargets,
@@ -171,11 +172,11 @@ chrome.runtime.onMessage.addListener((request: RuntimeMessage, sender, sendRespo
           hostTabId: sender.tab?.id,
           elapsedMs: Math.round(performance.now() - startedAt),
         });
-        sendResponse(undefined);
+        sendResponse({ ok: true });
       })
       .catch((error: unknown) => {
         extensionLog.error(LOGGER.NAMESPACE, "Failed to dispose worker pool", error);
-        sendResponse(undefined);
+        sendResponse({ ok: false, errorMessage: error instanceof Error ? error.message : String(error) });
       });
     keepMessageChannelOpen = true;
   } else if ("type" in request && request.type === MESSAGE_TYPE.POOL_RUN_TASK) {
@@ -219,7 +220,7 @@ chrome.runtime.onMessage.addListener((request: RuntimeMessage, sender, sendRespo
           elapsedMs: Math.round(performance.now() - startedAt),
           error,
         });
-        sendResponse(undefined);
+        sendResponse(createErrorResult(request.task, error instanceof Error ? error.message : String(error)));
       });
     keepMessageChannelOpen = true;
   }

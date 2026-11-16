@@ -4,6 +4,7 @@ import type { TreeIndentStyle } from "./auditor-tree-cell.types.js";
 import type { MouseEvent } from "react";
 import { CONST } from "../../../../../constants/const";
 import type { AuditorTreeRow, LabelParts, ToggleModifiers } from "../../auditor-grid/auditor-grid.types";
+import { AuditorGroupBadge } from "./auditor-group-badge";
 
 const STRUCTURAL_ICON_BY_LABEL: Readonly<Record<string, string>> = {
   layouts: CONST.SITECORE.ICONS.OFFICE.LAYOUT_DETAILS_24,
@@ -35,10 +36,24 @@ function resolveFallbackIcon(name: string, qualifier: string | undefined): strin
   );
 }
 
+// Agent: Dims groups that are known to be empty or not applicable, so "none" reads differently from "auditing".
+function rowStateClass(row: AuditorTreeRow): string {
+  const status = row.groupStatus;
+  const modifier =
+    status?.state === "not-applicable"
+      ? "not-applicable"
+      : status?.state === "failed"
+        ? "failed"
+        : status?.count?.shown === 0
+          ? "empty"
+          : undefined;
+  return modifier ? ` fobles-auditor-tree-row--${modifier}` : "";
+}
+
 export function AuditorTreeCell({ row, opened, onToggle }: AuditorTreeCellProps) {
   const { name, qualifier } = splitQualifier(row.label);
   const style: TreeIndentStyle = { "--fobles-auditor-tree-depth": row.depth };
-  const icon = row.icon ?? resolveFallbackIcon(name, qualifier);
+  const icon = row.placeholder ? undefined : (row.icon ?? resolveFallbackIcon(name, qualifier));
 
   function handleToggle(event: MouseEvent): void {
     event.stopPropagation();
@@ -46,7 +61,7 @@ export function AuditorTreeCell({ row, opened, onToggle }: AuditorTreeCellProps)
   }
 
   return (
-    <div className={`fobles-auditor-tree-row fobles-auditor-tree-row--${row.kind}`} style={style}>
+    <div className={`fobles-auditor-tree-row fobles-auditor-tree-row--${row.kind}${rowStateClass(row)}`} style={style}>
       {row.hasChildren ? (
         <button
           type="button"
@@ -63,6 +78,7 @@ export function AuditorTreeCell({ row, opened, onToggle }: AuditorTreeCellProps)
       <span className="fobles-auditor-tree-label">
         <span className="fobles-auditor-tree-label-name">{name}</span>
         {qualifier ? <span className="fobles-auditor-tree-label-qualifier">{qualifier}</span> : null}
+        <AuditorGroupBadge row={row} />
       </span>
     </div>
   );

@@ -55,7 +55,7 @@ export async function harvestSitecoreWithWorkers(
   request: HarvestRequest,
   options: HarvestOptions = {},
 ): Promise<SitecoreHarvestResult | undefined> {
-  const { onProgress, signal } = options;
+  const { onProgress, signal, onResultBeforeRestore } = options;
   const abortListener = (): void => cancelWorkerRequest(request.requestId);
 
   signal?.addEventListener("abort", abortListener);
@@ -64,7 +64,18 @@ export async function harvestSitecoreWithWorkers(
   reportSkippedSteps(request, onProgress);
 
   try {
-    const collectorResults = await executeHarvestPlan(request, onProgress);
+    const collectorResults = await executeHarvestPlan(
+      request,
+      onProgress,
+      onResultBeforeRestore
+        ? async (results) => {
+            const early = signal?.aborted ? undefined : createHarvestResult(request, results, undefined);
+            if (early) {
+              await onResultBeforeRestore(early);
+            }
+          }
+        : undefined,
+    );
 
     onProgress?.({ stepKey: "fetch-document", label: "Fetching Document" }, "complete");
     onProgress?.({ stepKey: "parse-document", label: "Parsing Document" }, "complete");
